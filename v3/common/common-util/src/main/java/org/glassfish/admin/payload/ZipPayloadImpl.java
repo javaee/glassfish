@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -251,11 +251,16 @@ class ZipPayloadImpl extends PayloadImpl {
          * @throws java.io.IOException
          */
         public static Inbound newInstance(final String payloadContentType, final InputStream is) throws IOException {
-            if ( ! PAYLOAD_IMPL_CONTENT_TYPE.equals(payloadContentType)) {
-                return null;
-            }
             return new Inbound(is);
         }
+
+	/**
+	 * Does this Inbound Payload implementation support the given content type?
+	 * @return true if the content type is supported
+	 */
+	public static boolean supportsContentType(final String contentType) {
+	    return PAYLOAD_IMPL_CONTENT_TYPE.equalsIgnoreCase(contentType);
+	}
         
         public Iterator<Payload.Part> parts() {
             return new Iterator<Payload.Part>() {

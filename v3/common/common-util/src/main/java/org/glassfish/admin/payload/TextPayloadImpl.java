@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -67,6 +67,13 @@ import java.util.Iterator;
  */
 public class TextPayloadImpl {
 
+    /**
+     * requests and responses using the text payload implementation should have
+     * the Content-Type set to text/*.
+     */
+    private static final String PAYLOAD_IMPL_CONTENT_TYPE =
+            "text/";
+
     public static class Inbound extends PayloadImpl.Inbound {
 
         private final InputStream is;
@@ -75,6 +82,15 @@ public class TextPayloadImpl {
         public static Inbound newInstance(final String messageContentType, final InputStream is) {
             return new Inbound(messageContentType, is);
         }
+
+	/**
+	 * Does this Inbound Payload implementation support the given content type?
+	 * @return true if the content type is supported
+	 */
+	public static boolean supportsContentType(String contentType) {
+	    return PAYLOAD_IMPL_CONTENT_TYPE.regionMatches(true, 0,
+		    contentType, 0, PAYLOAD_IMPL_CONTENT_TYPE.length());
+	}
 
         private Inbound(final String contentType, final InputStream is) {
             this.contentType = contentType;

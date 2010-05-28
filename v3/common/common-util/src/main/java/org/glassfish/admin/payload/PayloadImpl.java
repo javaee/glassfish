@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -375,10 +375,12 @@ public class PayloadImpl implements Payload {
             if (payloadContentType == null) {
                 return EMPTY_PAYLOAD;
             }
-            if (payloadContentType.startsWith("text")) {
+            if (TextPayloadImpl.Inbound.supportsContentType(payloadContentType)) {
                 return TextPayloadImpl.Inbound.newInstance(payloadContentType, is);
-            } else {
+	    } else if (ZipPayloadImpl.Inbound.supportsContentType(payloadContentType)) {
                 return ZipPayloadImpl.Inbound.newInstance(payloadContentType, is);
+            } else {
+		return null;
             }
         }
 
