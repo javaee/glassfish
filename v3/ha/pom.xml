@@ -66,6 +66,6 @@
     <modules>
         <module>ha-api</module>
         <module>ha-file-store</module>
-        <module>ha-apt</module>
+        <!--<module>ha-apt</module>-->
     </modules>
 </project>
