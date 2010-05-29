@@ -47,8 +47,7 @@ import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.config.serverbeans.Node;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -97,12 +96,12 @@ public class SSHLauncher {
     public void init(String nodeName) {
         Node node = habitat.getComponent(Node.class, nodeName);
         this.host = node.getHostNode();
-        //Getting the first one right now. Do we really need a list to be
+        //XXX: Getting the first one right now. Do we really need a list to be
         // returned?
         SshConnector connector = node.getSshConnector().get(0);
         int port = Integer.parseInt(connector.getsshPort());
         this.port = port == 0 ? 22 : port;
-        //Getting the first one right now. Do we really need a list to be
+        //XXX: Getting the first one right now. Do we really need a list to be
         // returned?        
         SshAuth sshAuth = connector.getSshAuth().get(0);
         String userName = sshAuth.getUserName();
@@ -178,12 +177,15 @@ public class SSHLauncher {
         return isAuthenticated;
     }
 
-    public void runCommand(String command) throws IOException, 
+    public void runCommand(String command, OutputStream os) throws IOException, 
                     InterruptedException 
     {
         openConnection();
-        connection.exec(command, 
-                    new BufferedOutputStream(new ByteArrayOutputStream()));
+        //XXX: Currently have the user specify the OutputStream where
+        //the output of running the command. Also right now nodehome is
+        //not used. Need to add that in. For now the full command path
+        //needs to be specified.
+        connection.exec(command, os);
 
         // XXX: Should we close connection after each command or cache it
         // and re-use it?
