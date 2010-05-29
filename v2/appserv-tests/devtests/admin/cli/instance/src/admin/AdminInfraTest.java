@@ -53,6 +53,7 @@ public class AdminInfraTest extends BaseDevTest {
             host0 = "localhost";
         }
         host = host0;
+		printf("\n**************************************\n*************************\nHost= " + host + "\n********************\n************");
         glassFishHome = getGlassFishHome();
         // it does NOT need to exist -- do not insist!
         instancesHome = new File(new File(glassFishHome, "nodeagents"), host);
@@ -75,13 +76,13 @@ public class AdminInfraTest extends BaseDevTest {
     public void run() {
         boolean wasRunning = false;
         try {
-            startDomain();
+            //startDomain();
             bhakti();
             byron();
             stat.printSummary();
         }
         finally {
-            stopDomain();
+            //stopDomain();
         }
     }
 
@@ -116,7 +117,8 @@ public class AdminInfraTest extends BaseDevTest {
     private void byron() {
         // pidgin English because the strings get truncated.
         report("i1 dir not exists", !checkInstanceDir(I1));
-        report("create-local-instance", asadmin("create-local-instance", "--nodeagent", host, I1));
+        report("create-local-instance", asadmin("create-local-instance", I1));
+        //report("create-local-instance", asadmin("create-local-instance", "--nodeagent", host, I1));
         report("list-instances", asadmin("list-instances"));
         report("i1 dir created", checkInstanceDir(I1));
         printf("Awesome -- the directory was created!!");
