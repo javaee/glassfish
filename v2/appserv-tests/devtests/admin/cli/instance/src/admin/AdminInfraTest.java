@@ -78,6 +78,7 @@ public class AdminInfraTest extends BaseDevTest {
         boolean wasRunning = false;
 		bhakti();
 		byron();
+        report("THIS IS HOPELESSLY BROKEN", true);
 		stat.printSummary();
     }
 
