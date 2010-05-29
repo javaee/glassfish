@@ -1,19 +1,11 @@
-rm -rf  v3
-mkdir v3
-pushd v3
+export ROOT=`pwd`
+rm -rf glassfishv3
 wget -O glassfish.zip http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 unzip -q glassfish.zip
-export S1AS_HOME=$PWD/glassfishv3/glassfish
-popd
-export APS_HOME=$PWD/appserv-tests
-export AS_LOGFILE=$S1AS_HOME/cli.log 
-#export AS_DEBUG=true 
-
-#Copy over the modified run.xml for dumping thread stack
-#cp ../../run.xml $PWD/appserv-tests/config
-
+export S1AS_HOME=$ROOT/glassfishv3/glassfish
+export APS_HOME=$ROOT/appserv-tests
+export AS_LOGFILE=$S1AS_HOME/cli.log
 rm -rf $S1AS_HOME/domains/domain1
-
 cd $APS_HOME
 
 echo "AS_ADMIN_PASSWORD=" > temppwd
@@ -40,7 +32,7 @@ config.dottedname.prefix=server
 resources.dottedname.prefix=domain.resources
 results.mailhost=localhost
 results.mailer=QLTestsForPEInstallOrDASInEEInstall@sun.com
-results.mailee=yourname@sun.com
+results.mailee=byron.nevins@oracle.com
 autodeploy.dir=\${env.S1AS_HOME}/domains/\${admin.domain}/autodeploy
 precompilejsp=true
 jvm.maxpermsize=192m
@@ -48,14 +40,19 @@ appserver.instance.dir=\${admin.domain.dir}/\${admin.domain}" > config.propertie
 
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
 
-pushd $APS_HOME/devtests/admin/cli
+cd $APS_HOME/devtests/admin/cli
 
-ant all report-result |tee log.txt
-# ant all |tee log.txt
 
-(cat log.txt | grep  Total |cut -f2 -d']' |sort |uniq -c |grep -v PAS) || true
-popd
-cd $S1AS_HOME/bin/
-#./asadmin stop-domain
+echo ******** here are the props *******
+echo ******** here are the props *******
+cat $APS_HOME/config.properties
+echo ******** here are the props *******
+echo ******** here are the props *******
 
-#(jps |grep ASMain |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+
+#ant all report-result |tee log.txt
+ant all |tee log.txt
+
+#(cat log.txt | grep  Total |cut -f2 -d']' |sort |uniq -c |grep -v PAS) || true
+
+$S1AS_HOME/bin/asadmin stop-domain domain1
