@@ -60,6 +60,13 @@ public class TransactionSynchronizationRegistryImpl
     private static StringManager sm = 
                    StringManager.getManager(TransactionSynchronizationRegistryImpl.class);
 
+    public TransactionSynchronizationRegistryImpl() {
+    }
+
+    public TransactionSynchronizationRegistryImpl(TransactionManager t) {
+        transactionManager = t;
+    }
+
     /**
      * Return an opaque object to represent the transaction bound to the
      * current thread at the time this method is called. The returned object
