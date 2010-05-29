@@ -1,9 +1,10 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved. 
+* Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved. 
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -35,51 +36,59 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+--> 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish</groupId>
-        <artifactId>glassfish-parent</artifactId>
+        <groupId>org.glassfish.cluster</groupId>
+        <artifactId>cluster</artifactId>
         <version>3.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>org.glassfish.cluster</groupId>
-    <artifactId>cluster</artifactId>
-    <packaging>pom</packaging>
-    <name>Cluster</name>
-    <developers>
-         <developer>           
-            <name>Sheetal Vartak</name>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>                
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>shannon</id>
-            <name>Bill Shannon</name>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>bnevins</id>
-            <name>Byron Nevins</name>
-            <organization>Oracle Corporation</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
-    <modules>
-        <module>common</module>
-        <module>admin</module>
-        <module>cli</module>
-        <module>ssh</module>
-        <!--<module>gms-adapter</module> -->
-    </modules>
+    
+    <artifactId>cluster-ssh</artifactId>
+    <packaging>hk2-jar</packaging>
+    <name>Cluster SSH Provisioning</name>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.1</include>
+                    <include>**/*.1m</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>trilead-ssh2-repackaged</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>auto-depends</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>config-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+    </dependencies>
 </project>
 
