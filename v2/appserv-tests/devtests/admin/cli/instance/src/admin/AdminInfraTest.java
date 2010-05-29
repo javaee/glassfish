@@ -109,8 +109,8 @@ public class AdminInfraTest extends BaseDevTest {
     private void byron() {
         // pidgin English because the strings get truncated.
         report("i1 dir not exists", !checkInstanceDir(I1));
-        //report("create-local-instance", asadmin("create-local-instance", I1));
-        report("create-local-instance", asadmin("create-local-instance", "--nodeagent", host, I1));
+        report("create-local-instance", asadmin("create-local-instance", I1));
+        //report("create-local-instance", asadmin("create-local-instance", "--nodeagent", host, I1));
         report("list-instances", asadmin("list-instances"));
         report("i1 dir created", checkInstanceDir(I1));
         printf("Awesome -- the directory was created!!");
