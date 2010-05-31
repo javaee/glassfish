@@ -108,7 +108,7 @@ public class AdminInfraTest extends BaseDevTest {
 		// May 29 -- commenting out!
         // pidgin English because the strings get truncated.
 
-		boolean jenniferFixedThis = false;
+		boolean jenniferFixedThis = true;
 
 		if(jenniferFixedThis) {
 			report("i1 dir not exists", !checkInstanceDir(I1));
