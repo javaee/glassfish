@@ -57,6 +57,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.ObservableBean;
 
@@ -70,7 +71,12 @@ import javax.naming.NamingException;
  */
 public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, ConfigListener {
 
-    private static final Logger logger = LogDomains.getLogger(ResourceManager.class,LogDomains.RESOURCE_BUNDLE);
+    private static final Logger logger =
+            LogDomains.getLogger(ResourceManager.class,LogDomains.RESOURCE_BUNDLE);
+
+    private static LocalStringManagerImpl localStrings =
+        new LocalStringManagerImpl(ResourceManager.class);
+
 
     @Inject
     private ResourcesBinder resourcesBinder;
@@ -328,9 +334,11 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                     }
                 }
             } catch (Exception ex) {
-                final String msg = ResourceManager.class.getName() + " : Error while handling change Event";
-                logger.severe(msg);
-                np = new NotProcessed(msg);
+                logger.log(Level.SEVERE, "resources.resource-manager.change-event-failed");
+                np = new NotProcessed(
+                        localStrings.getLocalString(
+                        "resources.resource-manager.change-event-failed",
+                        "Change event failed"));
             }
             return np;
         }
@@ -373,7 +381,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                     instancesToDestroy.add(instance);
                     //Remove listener from the removed instance
                     ResourceManager.this.removeListenerFromResource(instance);
-                    //get appropriate deployer and unddeploy resource
+                    //get appropriate deployer and undeploy resource
                     getResourceDeployer(instance).undeployResource(instance);
                 } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
                     //Added in case of a property remove
@@ -383,9 +391,11 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                     //TODO V3: asadmin delete-resource-ref
                 }
             } catch (Exception ex) {
-                final String msg = ResourceManager.class.getName() + " : Error while handling remove Event";
-                logger.severe(msg);
-                np = new NotProcessed(msg);
+                logger.log(Level.SEVERE, "resources.resource-manager.remove-event-failed");
+                np = new NotProcessed(
+                        localStrings.getLocalString(
+                        "resources.resource-manager.remove-event-failed",
+                        "Remove event failed"));
             }
             return np;
         }
