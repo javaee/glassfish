@@ -73,7 +73,9 @@ public class RWLockDataStructure implements DataStructure {
         this.maxSize = maxSize;
         this.handler = handler;
         initializeStrategy(strategyClass);
-        _logger.log(Level.INFO, "initializing reentrant ds");
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.log(Level.FINEST, "pool.datastructure.rwlockds.init");
+        }
     }
 
     private void initializeStrategy(String strategyClass) {
