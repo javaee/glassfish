@@ -153,8 +153,12 @@ public class DynamicConfigListener implements ConfigListener {
 
                     boolean isRemovedOld = grizzlyService.removeNetworkProxy(proxy);
                     final Future future = grizzlyService.createNetworkProxy(listener);
-                    future.get(30, TimeUnit.SECONDS);
-                    grizzlyService.registerNetworkProxy(listenerPort);
+                    if (future != null) {
+                        future.get(30, TimeUnit.SECONDS);
+                        grizzlyService.registerNetworkProxy(listenerPort);
+                    } else {
+                        logger.log(Level.FINE, "Skipping proxy registration for the listener " + listener.getName());
+                    }
                 }
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Network listener configuration error. Type: " + type, e);
