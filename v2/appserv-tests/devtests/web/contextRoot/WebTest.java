@@ -91,9 +91,9 @@ public class WebTest {
         if (responseCode == 200) {
             stat.addStatus(TEST_NAME, stat.PASS);
         } else {
-            stat.addStatus("Wrong response code. Expected: 200, received: "
-                           + responseCode,
-                           stat.FAIL);
+            System.out.println("Wrong response code. Expected: 200, received: "
+                           + responseCode);
+            stat.addStatus(TEST_NAME, stat.FAIL);
         }
     }
 }
