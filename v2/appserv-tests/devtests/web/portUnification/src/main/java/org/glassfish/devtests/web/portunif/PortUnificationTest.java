@@ -72,40 +72,49 @@ public class PortUnificationTest extends BaseDevTest {
     }
 
     public void run() throws IOException {
-        report("create-port-unification", asadmin("create-port-unification",
-            puName));
-        createHttpElements();
-        createDummyProtocolElements();
-        report("set-listener", asadmin("set",
-            "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.protocol=" + puName));
-        report("enable-listener", asadmin("set",
-            "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true"));
-        final String content = getContent(new URL("http://localhost:" + port).openConnection());
-        report("http-read", content.contains("<h1>Your server is now running</h1>"));
-        report("dummy-read", "Dummy-Protocol-Response".equals(getDummyProtocolContent("localhost")));
-
-        report("disable-listener", asadmin("set",
-            "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"));
-        report("reset-listener", asadmin("set",
-            "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.protocol=http-listener-2"));
-
-        deletePUElements();
-        stat.printSummary();
+        try {
+            report("create-pu-protocol", asadmin("create-protocol",
+                puName));
+            createHttpElements();
+            createDummyProtocolElements();
+            report("set-listener", asadmin("set",
+                "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.protocol="
+                    + puName));
+            report("enable-listener", asadmin("set",
+                "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true"));
+            final String content = getContent(new URL("http://localhost:" + port).openConnection());
+            report("http-read", content.contains("<h1>Your server is now running</h1>"));
+            report("dummy-read", "Dummy-Protocol-Response".equals(getDummyProtocolContent("localhost")));
+            report("disable-listener", asadmin("set",
+                "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"));
+            report("reset-listener", asadmin("set",
+                "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.protocol=http-listener-2"));
+            deletePUElements();
+        } finally {
+            stat.printSummary();
+        }
     }
 
-    private String getContent(URLConnection connection) throws IOException {
-        final InputStream inputStream = connection.getInputStream();
-        InputStreamReader reader = new InputStreamReader(inputStream);
+    private String getContent(URLConnection connection) {
+        InputStreamReader reader = null;
         try {
-            StringBuilder builder = new StringBuilder();
-            char[] buffer = new char[1024];
-            int read;
-            while ((read = reader.read(buffer)) != -1) {
-                builder.append(buffer, 0, read);
+            try {
+                reader = new InputStreamReader(connection.getInputStream());
+                StringBuilder builder = new StringBuilder();
+                char[] buffer = new char[1024];
+                int read;
+                while ((read = reader.read(buffer)) != -1) {
+                    builder.append(buffer, 0, read);
+                }
+                return builder.toString();
+            } finally {
+                if(reader != null) {
+                    reader.close();
+                }
             }
-            return builder.toString();
-        } finally {
-            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
         }
     }
 
@@ -163,18 +172,15 @@ public class PortUnificationTest extends BaseDevTest {
     private void deletePUElements() {
         report("delete-http-protocol", asadmin("delete-protocol",
             httpName));
-
         report("delete-protocol-finder-http", asadmin("delete-protocol-finder",
             "--protocol", puName,
             "http-finder"));
         report("delete-protocol-finder-dummy", asadmin("delete-protocol-finder",
             "--protocol", puName,
             "dummy-finder"));
-
         report("delete-protocol-filter-dummy", asadmin("delete-protocol-filter",
             "--protocol", dummyName,
             "dummy-filter"));
-        
         report("delete-dummy-protocol", asadmin("delete-protocol",
             dummyName));
         report("delete-pu-protocol", asadmin("delete-protocol",

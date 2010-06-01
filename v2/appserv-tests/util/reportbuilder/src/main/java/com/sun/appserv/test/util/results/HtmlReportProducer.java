@@ -113,6 +113,7 @@ public class HtmlReportProducer {
         buffer.append(String.format("* %-12s %5d *\n", result, count));
     }
 
+    @SuppressWarnings({"unchecked"})
     private void map() {
         final StartElement start = event.asStartElement();
         final String name = start.getName().getLocalPart();

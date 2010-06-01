@@ -12,7 +12,10 @@ skip() {
             sed -e "s@^ *<ant dir=\"${NAME}\" target=\"all\"/>@<!--&-->@" build.xml > build.xml.sed
             mv build.xml.sed build.xml
         else
-            echo "***** ${NAME} is not a valid test directory *****"
+            if [ ! -z "${NAME}" ]
+            then
+                echo "***** ${NAME} is not a valid test directory *****"
+            fi
         fi
     done
 }

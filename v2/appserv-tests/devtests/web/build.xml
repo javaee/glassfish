@@ -167,6 +167,7 @@
         <ant dir="distributableWebappEnforceSerializableSessionAttrs" target="all"/>
         <ant dir="errorPageExceptionTypeWrapper" target="all"/>
         <ant dir="errorPageHandlingForError" target="all"/>
+        <ant dir="filterMultipleInit" target="all"/>  
         <ant dir="filterURIMapping" target="all"/>
         <ant dir="forwardWithQueryString" target="all"/>
         <ant dir="getAttributeAfterForward" target="all"/>
@@ -225,9 +226,9 @@
         <ant dir="servlet-3.0/relativeOrderingWebFragments" target="all"/>
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/servletContainerInitializer/jsfManagedBeanAnnotation" target="all"/>
-        <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithWars" target="all"/>
         <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithEAR" target="all"/>
         <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithInterfaceImplementation" target="all"/>
+        <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithWars" target="all"/>
         <ant dir="servlet-3.0/servletContainerInitializerAddRestrictedServletContextListener" target="all"/>
         <ant dir="servlet-3.0/servletContextAddListenerByClassName" target="all"/>
         <ant dir="servlet-3.0/servletContextAddServletAndFilterByClass" target="all"/>
@@ -308,12 +309,11 @@
         <ant dir="sessionSetMaxInactiveIntervalToZeroAndInvalidate" target="all"/>
         <ant dir="setMultiValuedResponseHeader" target="all"/>
         <ant dir="standalonewar" target="all"/>  
-        <ant dir="filterMultipleInit" target="all"/>  
     </target>
 
     <target name="web-container" depends="init-report">
-        <ant dir="asadminDeletes" target="all"/>
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
+        <ant dir="asadminDeletes" target="all"/>
         <ant dir="broken_webapp" target="all"/>
         <ant dir="classPathManifestAttribute" target="all"/>
         <ant dir="classPathManifestAttributePrecompile" target="all"/>
@@ -334,6 +334,7 @@
         <ant dir="embeddedAddServlet" target="all"/>
         <ant dir="emptyContextRoot" target="all"/>
         <ant dir="errorPageExceptionTypeMapping" target="all"/>
+        <ant dir="explodedWar" target="all"/>
         <ant dir="extraClassPathJarUrl" target="all"/>
         <ant dir="extraClassPathRelative" target="all"/>
         <ant dir="formHintField" target="all"/>
@@ -414,7 +415,6 @@
         <ant dir="webdavCopyDelete" target="all"/>
         <ant dir="welcomePageExtensionMatch" target="all"/>
         <ant dir="weldJsfLoginPage" target="all"/>
-        <ant dir="explodedWar" target="all"/>
     </target>
 
     <target name="security" depends="init-report">
@@ -426,6 +426,7 @@
         <ant dir="authPassthroughSendRedirectFromJspWithHttpsServerName" target="all"/>
         <ant dir="authPassthroughSendRedirectHostRequestHeaderWithoutPort" target="all"/>
         <ant dir="authPassthroughSendRedirectWithHttpsServerName" target="all"/>
+        <ant dir="changeSessionIdOnAuthentication" target="all"/>
         <ant dir="formLoginAccessSessionOnResumedRequest" target="all"/>
         <ant dir="formLoginJSecurityCheckDirectAccess" target="all"/>
         <ant dir="formLoginTransportGuaranteeConfidential" target="all"/>
@@ -448,7 +449,6 @@
         <ant dir="sslCookie" target="all"/>
         <ant dir="traceEnabled" target="all"/>
         <ant dir="virtualServerAuthRealmProperty" target="all"/>
-        <ant dir="changeSessionIdOnAuthentication" target="all"/>
     </target>
 
     <target name="http-connector" depends="init-report">
@@ -546,7 +546,6 @@
             <fileset dir="." includes="*.txt"/>
         </delete>
     </target>
-
 
     <target name="clean-webapps" depends="clean-webapps-common" />
 
