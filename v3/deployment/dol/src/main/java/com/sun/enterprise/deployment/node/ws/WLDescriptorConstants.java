@@ -46,23 +46,23 @@ public class WLDescriptorConstants {
     /**
      * Web Logic WebServices descriptor entry
      */
-    private static String WL_WEBSERVICES_ENTRY = "weblogic-webservices.xml";
+    private static final String WL_WEBSERVICES_ENTRY = "weblogic-webservices.xml";
 
     /**
      * Web Logic WebServices descriptor entry in a web jar
      */
-    public static String WL_WEB_WEBSERVICES_JAR_ENTRY = "WEB-INF/" + WL_WEBSERVICES_ENTRY;
+    public static final String WL_WEB_WEBSERVICES_JAR_ENTRY = "WEB-INF/" + WL_WEBSERVICES_ENTRY;
 
     /**
      * Web Logic  WebServices descriptor entry in an ejb jar
      */
-    public static String WL_EJB_WEBSERVICES_JAR_ENTRY = "META-INF/" + WL_WEBSERVICES_ENTRY;
+    public static final String WL_EJB_WEBSERVICES_JAR_ENTRY = "META-INF/" + WL_WEBSERVICES_ENTRY;
 
-    public static String WL_WEBSERVICES_XML_NS = "http://xmlns.oracle.com/weblogic/weblogic-webservices";
+    public static final String WL_WEBSERVICES_XML_NS = "http://xmlns.oracle.com/weblogic/weblogic-webservices";
 
-    public static String WL_WEBSERVICES_XML_SCHEMA = "weblogic-webservices.xsd";
+    public static final String WL_WEBSERVICES_XML_SCHEMA = "weblogic-webservices.xsd";
 
-    public static String WL_WEBSERVICES_SCHEMA_LOCATION = "http://www.oracle.com/technology/weblogic/weblogic-webservices/1.0" + "/" + WL_WEBSERVICES_XML_SCHEMA;
+    public static final String WL_WEBSERVICES_SCHEMA_LOCATION = "http://www.oracle.com/technology/weblogic/weblogic-webservices/1.0" + "/" + WL_WEBSERVICES_XML_SCHEMA;
 
 
 }
