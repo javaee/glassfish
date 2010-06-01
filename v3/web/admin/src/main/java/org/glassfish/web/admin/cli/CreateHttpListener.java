@@ -117,6 +117,7 @@ public class CreateHttpListener implements AdminCommand {
     @Inject
     Domain domain;
     private static final String DEFAULT_TRANSPORT = "tcp";
+    private NetworkConfig networkConfig = null;
 
     /**
      * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
@@ -134,7 +135,7 @@ public class CreateHttpListener implements AdminCommand {
             config = domain.getConfigNamed(cluster.getConfigRef());
         }
         final ActionReport report = context.getActionReport();
-        NetworkConfig networkConfig = config.getNetworkConfig();
+        networkConfig = config.getNetworkConfig();
         HttpService httpService = config.getHttpService();
         if (!(verifyUniqueName(report, networkConfig) && verifyUniquePort(report, networkConfig)
             && verifyDefaultVirtualServer(report))) {
@@ -296,11 +297,17 @@ public class CreateHttpListener implements AdminCommand {
 
     private boolean createOrGetTransport(final AdminCommandContext context) throws TransactionFailure {
         boolean newTransport = false;
-        if (habitat.getComponent(Transport.class, DEFAULT_TRANSPORT) == null) {
+        for (Transport t : networkConfig.getTransports().getTransport()) {
+            if (!t.getName().equals(DEFAULT_TRANSPORT)) {
+                 newTransport = true;
+            }
+        }
+        if (newTransport) {
             final CreateTransport command = (CreateTransport) runner
                 .getCommand("create-transport", context.getActionReport(), context.getLogger());
             command.transportName = listenerId;
             command.acceptorThreads = acceptorThreads;
+            command.target = target;
             command.execute(context);
             checkProgress(context);
             newTransport = true;
@@ -313,6 +320,7 @@ public class CreateHttpListener implements AdminCommand {
             .getCommand("create-protocol", context.getActionReport(), context.getLogger());
         command.protocolName = listenerId;
         command.securityEnabled = securityEnabled;
+        command.target = target;
         command.execute(context);
         checkProgress(context);
         return true;
@@ -325,6 +333,7 @@ public class CreateHttpListener implements AdminCommand {
         command.defaultVirtualServer = defaultVirtualServer;
         command.xPoweredBy = xPoweredBy;
         command.serverName = serverName;
+        command.target = target;
         command.execute(context);
         checkProgress(context);
         return true;
@@ -340,6 +349,7 @@ public class CreateHttpListener implements AdminCommand {
         final DeleteProtocol command = (DeleteProtocol) runner
             .getCommand("delete-protocol", context.getActionReport(), context.getLogger());
         command.protocolName = listenerId;
+        command.target = target;
         command.execute(context);
         return true;
     }
@@ -348,6 +358,7 @@ public class CreateHttpListener implements AdminCommand {
         final DeleteTransport command = (DeleteTransport) runner
             .getCommand("delete-transport", context.getActionReport(), context.getLogger());
         command.transportName = listenerId;
+        command.target = target;
         command.execute(context);
         return true;
     }
@@ -356,12 +367,13 @@ public class CreateHttpListener implements AdminCommand {
         final DeleteNetworkListener command = (DeleteNetworkListener) runner
             .getCommand("delete-network-listener", context.getActionReport(), context.getLogger());
         command.networkListenerName = listenerId;
+        command.target = target;
         command.execute(context);
         return true;
     }
 
     private boolean defaultVirtualServerExists() {
-        return (defaultVirtualServer != null) && (habitat.getComponent(VirtualServer.class, defaultVirtualServer)
-            != null);
+        return (defaultVirtualServer != null) && (
+                config.getHttpService().getVirtualServerByName(defaultVirtualServer) != null);
     }
 }

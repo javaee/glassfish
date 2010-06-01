@@ -137,7 +137,7 @@ public class CreateNetworkListener implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-        Protocol prot = habitat.getComponent(Protocol.class, protocol);
+        Protocol prot = networkConfig.findProtocol(protocol);
         if (prot == null) {
             report.setMessage(localStrings.getLocalString("create.http.fail.protocolnotfound",
                 "The specified protocol {0} is not yet configured", protocol));
@@ -196,7 +196,8 @@ public class CreateNetworkListener implements AdminCommand {
                 }
             }
         }
-        return habitat.getComponent(VirtualServer.class, name);
+
+        return config.getHttpService().getVirtualServerByName(name);
     }
 
     private boolean verifyUniquePort(NetworkConfig networkConfig) {

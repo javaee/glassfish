@@ -38,6 +38,8 @@ package org.glassfish.web.admin.cli;
 import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
@@ -91,10 +93,14 @@ public class CreateHttp implements AdminCommand {
     String serverName;
     @Param(name = "xpowered", optional = true, defaultValue = "true")
     Boolean xPoweredBy = false;
+    @Param(name = "target", optional = true, defaultValue = "server")
+    String target;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
     @Inject
     Habitat habitat;
+    @Inject
+    Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
@@ -103,6 +109,14 @@ public class CreateHttp implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         final ActionReport report = context.getActionReport();
         // check for duplicates
         Protocols protocols = config.getNetworkConfig().getProtocols();

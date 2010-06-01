@@ -36,6 +36,8 @@
 package org.glassfish.web.admin.cli;
 
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.Protocol;
@@ -81,8 +83,12 @@ public class CreateProtocol implements AdminCommand {
     // the way create-ssl has been done. Grizzly team concurs on this proposal
     @Param(name = "securityenabled", optional = true, defaultValue = "false")
     Boolean securityEnabled = false;
+    @Param(name = "target", optional = true, defaultValue = "server")
+    String target;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
+    @Inject
+    Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
@@ -91,6 +97,14 @@ public class CreateProtocol implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         final ActionReport report = context.getActionReport();
         // check for duplicates
         NetworkConfig networkConfig = config.getNetworkConfig();

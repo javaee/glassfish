@@ -103,8 +103,8 @@ public class DeleteNetworkListener implements AdminCommand {
         NetworkListeners networkListeners = config.getNetworkConfig().getNetworkListeners();
         try {
             if (findListener(report)) {
-                final VirtualServer virtualServer = habitat.getComponent(VirtualServer.class,
-                    listenerToBeRemoved.findHttpProtocol().getHttp().getDefaultVirtualServer());
+                final VirtualServer virtualServer = config.getHttpService().getVirtualServerByName(
+                        listenerToBeRemoved.findHttpProtocol().getHttp().getDefaultVirtualServer());
 
                 ConfigSupport.apply(new ConfigCode() {
                     public Object run(ConfigBeanProxy... params) throws PropertyVetoException {
@@ -127,7 +127,7 @@ public class DeleteNetworkListener implements AdminCommand {
     }
 
     private boolean findListener(ActionReport report) {
-        listenerToBeRemoved = habitat.getComponent(NetworkListener.class, networkListenerName);
+        listenerToBeRemoved = config.getNetworkConfig().getNetworkListener(networkListenerName);
         if (listenerToBeRemoved == null) {
             report.setMessage(localStrings.getLocalString("delete.network.listener.notexists",
                 "{0} Network Listener doesn't exist", networkListenerName));

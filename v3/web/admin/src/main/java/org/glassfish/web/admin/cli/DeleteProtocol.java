@@ -39,6 +39,8 @@ package org.glassfish.web.admin.cli;
 import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
@@ -73,6 +75,9 @@ public class DeleteProtocol implements AdminCommand {
 
     @Param(name="protocolname", primary=true)
     String protocolName;
+    
+    @Param(name = "target", optional = true, defaultValue = "server")
+    String target;
 
     Protocol protocol = null;
     
@@ -81,6 +86,9 @@ public class DeleteProtocol implements AdminCommand {
 
     @Inject
     Habitat habitat;
+    
+    @Inject
+    Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -89,6 +97,14 @@ public class DeleteProtocol implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         ActionReport report = context.getActionReport();
 
         NetworkConfig networkConfig = config.getNetworkConfig();

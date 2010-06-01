@@ -4,6 +4,8 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.config.dom.ProtocolChain;
@@ -37,12 +39,24 @@ public class CreateProtocolFilter implements AdminCommand {
     String protocolName;
     @Param(name = "classname", optional = false)
     String classname;
+    @Param(name = "target", optional = true, defaultValue = "server")
+    String target;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
+    @Inject
+    Domain domain;
     private ActionReport report;
 
     @Override
     public void execute(AdminCommandContext context) {
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         report = context.getActionReport();
         try {
             final Protocols protocols = config.getNetworkConfig().getProtocols();
