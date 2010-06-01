@@ -46,15 +46,10 @@ import java.util.*;
 public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeImpl implements ExtensibleType<T> {
 
     final TypeProxy parent;
-    final Map<String, MethodModelImpl> methods = new HashMap<String, MethodModelImpl>();
 
     public ExtensibleTypeImpl(ModelBuilder tb) {
         super(tb);
         this.parent =  tb.parent;
-    }
-
-    public void addMethod(MethodModelImpl m) {
-        methods.put(m.getName(), m);
     }
 
     public T getParent() {

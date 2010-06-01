@@ -4,6 +4,8 @@ import org.glassfish.hk2.classmodel.reflect.*;
 import org.glassfish.hk2.classmodel.reflect.impl.TypesImpl;
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Assert;
 
@@ -22,7 +24,9 @@ public class ModelTest {
 
     final static String packageName = "org.glassfish.hk2.classmodel.reflect.test.model";
 
-    @Test
+    Types types;
+
+    @Before
     public void modelTest() throws IOException, InterruptedException {
         File userDir = new File(System.getProperty("user.dir"));
         File modelDir = new File(userDir, "target" + File.separator + "test-classes");
@@ -44,10 +48,21 @@ public class ModelTest {
                 }
                 Assert.assertTrue("Exceptions returned", exceptions.length==0);
             }
-            Types types = pc.getTypes();
+            types = pc.getTypes();
             for (Type t : types.getAllTypes()) {
                 System.out.println(t.toString());
             }
+        }
+    }
+
+    @Test
+    public void orderTest() {
+
+        Type order = types.getBy("org.glassfish.hk2.classmodel.reflect.test.ordering.MethodDeclarationOrderTest");
+        Assert.assertNotNull(order);
+        System.out.println("Found " + order.getName());
+        for (MethodModel mm : order.getMethods()) {
+            System.out.println("method found  : "  + mm.getName());
         }
     }
 }
