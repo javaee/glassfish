@@ -47,6 +47,7 @@ import java.util.*;
 public class TypeImpl extends AnnotatedElementImpl implements Type {
 
     final TypeProxy sink;
+    final List<MethodModel> methods = new ArrayList<MethodModel>();
 
 
     public TypeImpl(ModelBuilder tb) {
@@ -56,12 +57,12 @@ public class TypeImpl extends AnnotatedElementImpl implements Type {
     }
 
     void addMethod(MethodModelImpl m) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        methods.add(m);
     }
 
     @Override
     public Collection<MethodModel> getMethods() {
-        return Collections.emptyList();
+        return Collections.unmodifiableList(methods);
     }
 
     TypeProxy getProxy() {

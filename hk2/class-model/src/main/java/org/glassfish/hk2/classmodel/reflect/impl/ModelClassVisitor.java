@@ -49,7 +49,7 @@ public class ModelClassVisitor implements ClassVisitor {
     private final ParsingContext ctx;
     private final TypeBuilder typeBuilder;
     TypeImpl type;
-    boolean visitField=false;
+    boolean deepVisit =false;
 
     public ModelClassVisitor(ParsingContext ctx) {
         this.ctx = ctx;
@@ -66,7 +66,7 @@ public class ModelClassVisitor implements ClassVisitor {
         TypeProxy parent = (parentName!=null?typeBuilder.getHolder(parentName):null);
         String className = org.objectweb.asm.Type.getObjectType(name).getClassName();
         type = typeBuilder.getType(access, className, parent);
-        visitField=ctx.getConfig().getInjectionTargetAnnotations().isEmpty();
+        deepVisit =ctx.getConfig().getInjectionTargetAnnotations().isEmpty();
 
         // reverse index
         if (parent!=null) {
@@ -115,7 +115,7 @@ public class ModelClassVisitor implements ClassVisitor {
 
         if (ctx.getConfig().getInjectionTargetAnnotations().contains(desc)) {
             System.out.println("Inspecting fields of " + type.getName());
-            visitField=true;
+            deepVisit =true;
         }
 
         return new AnnotationVisitor() {
@@ -159,7 +159,7 @@ public class ModelClassVisitor implements ClassVisitor {
     @Override
     public FieldVisitor visitField(int access, final String name, final String desc, final String signature, final Object value) {
 
-        if (!visitField) {
+        if (!deepVisit) {
             return null;
         }
 
@@ -211,6 +211,12 @@ public class ModelClassVisitor implements ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        if (!deepVisit) {
+            return null;
+        }
+
+        MethodModelImpl method = new MethodModelImpl(new ModelBuilder(name, null));
+        type.addMethod(method);
         return null;
     }
 

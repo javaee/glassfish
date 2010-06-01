@@ -66,7 +66,8 @@ public interface Transactor {
 	 * @param t is the transaction to commit, should be the same as the
 	 * one passed during the join(Transaction t) call.
 	 *
-	 * @return true if the trsaction commiting would be successful
+	 * @return true if the transaction committing would be successful
+     * @throws TransactionFailure if the changes cannot be validated
 	 */
     public boolean canCommit(Transaction t) throws TransactionFailure;
 

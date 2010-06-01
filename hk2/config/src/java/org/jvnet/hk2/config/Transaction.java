@@ -80,6 +80,24 @@ public class Transaction {
         }
     }
 
+    /**
+     * Tests if the transaction participants will pass the prepare phase successfully.
+     * The prepare phase will invoke validation of the changes, so a positive return
+     * usually means the changes are valid and unless a external factor arise, the
+     * {@link #commit()} method will succeed.
+     *
+     * @return true if the participants changes are valid, false otherwise
+     * @throws TransactionFailure if the changes are not valid 
+     */
+    public boolean canCommit() throws TransactionFailure {
+        for (Transactor t : participants) {
+            if (!t.canCommit(this)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 	/**
 	 * Commits all participants to this transaction
 	 * 
@@ -92,10 +110,8 @@ public class Transaction {
     public synchronized List<PropertyChangeEvent> commit()
             throws RetryableException, TransactionFailure {
 
-        for (Transactor t : participants) {
-            if (!t.canCommit(this)) {
-                throw new RetryableException();
-            }
+        if (!canCommit()) {
+            throw new RetryableException();
         }
         List<PropertyChangeEvent> transactionChanges = new ArrayList<PropertyChangeEvent>();
         for (Transactor t : participants) {
