@@ -398,14 +398,16 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 
     String jdkHome;
    	try {
-		//check for bundled JDK first, set jdk home to relative value
+		//check for bundled JDK first, set jdk home 
+		//JDK home is resolved to absolute value since asadmin is not
+		//yet able to process and use relative path for it - FIXME
 		File bundledJDKDir = new File (installDir, "jdk");
 		if (bundledJDKDir.exists()) {
 			if (isWindows) {
-				jdkHome="..\\..\\jdk";
+				jdkHome=installDir + "\\jdk";
 			}
 			else {
-				jdkHome="../../jdk";
+				jdkHome=installDir + "/jdk";
 			}
 		}
 		else {
