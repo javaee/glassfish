@@ -1109,7 +1109,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         for (com.sun.enterprise.config.serverbeans.VirtualServer vs : virtualServers) {
             createHost(vs, httpService, securityService);
             if (_logger.isLoggable(Level.INFO)) {
-                _logger.log(Level.INFO, "webContainerFINE.virtualServer.created", vs.getId());
+                _logger.log(Level.INFO, "webContainer.virtualServer.created", vs.getId());
             }
 
         }
