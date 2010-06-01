@@ -64,7 +64,8 @@ public interface Deployer<T extends Container, U extends ApplicationContainer> {
     /**
      * Loads the meta date associated with the application.
      *
-     * @parameters type type of metadata that this deployer has declared providing.
+     * @param type type of meta-data that this deployer has declared providing.
+     * @return the meta-data of type V
      */
     public <V> V loadMetaData(Class<V> type, DeploymentContext context);
 
