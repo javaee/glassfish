@@ -335,6 +335,8 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
     }
 
     private void getListOfFiles(File directory, String prefix, List<String> list) {
+        if (!directory.isDirectory())
+            return;
         for (File f : directory.listFiles()) {
             String name = prefix==null?f.getName():prefix+"/"+f.getName();
             if (f.isDirectory()) {
@@ -474,4 +476,9 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
         }
         return null;
     }
+
+   @Override
+   public void close() throws IOException {
+   }
+
 }
