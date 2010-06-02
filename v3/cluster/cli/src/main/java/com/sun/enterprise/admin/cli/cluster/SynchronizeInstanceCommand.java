@@ -341,48 +341,4 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
         }
         dir.setLastModified(modtime);
     }
-
-    /**
-     * Set the programOptions based on the das.properties file.
-     */
-    private void setDasDefaults(File propfile) throws CommandException {
-        Properties dasprops = new Properties();
-        FileInputStream fis = null;
-        try {
-            // read properties and set them in programOptions
-            // properties are:
-            // agent.das.port
-            // agent.das.host
-            // agent.das.isSecure
-            // agent.das.user           XXX - not in v2?
-            fis = new FileInputStream(propfile);
-            dasprops.load(fis);
-            String p;
-            p = dasprops.getProperty("agent.das.host");
-            if (p != null)
-                programOpts.setHost(p);
-            p = dasprops.getProperty("agent.das.port");
-            if (p != null)
-                programOpts.setPort(Integer.parseInt(p));
-            p = dasprops.getProperty("agent.das.isSecure");
-            if (p != null)
-                programOpts.setSecure(Boolean.parseBoolean(p));
-            p = dasprops.getProperty("agent.das.user");
-            if (p != null)
-                programOpts.setUser(p);
-            // XXX - what about the DAS admin password?
-        } catch (IOException ioex) {
-            throw new CommandException(
-                        strings.get("Instance.cantReadDasProperties",
-                                    propfile.getPath()));
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException cex) {
-                    // ignore it
-                }
-            }
-        }
-    }
 }
