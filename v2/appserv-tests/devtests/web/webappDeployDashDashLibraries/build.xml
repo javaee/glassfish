@@ -73,20 +73,9 @@
     </target> 
 
     <target name="build-publish-war" depends="build, publish-war-common" />
-    
+
     <target name="deploy" depends="init-common">
-        <echo message="Deploying ${assemble.dir}/${appname}-web.war from ${basedir}."
-              level="verbose"/>
-        <property name="precompilejsp" value="true"/>
-        <exec executable="${ASADMIN}" failonerror="false">
-            <arg line="deploy"/>
-            <arg line="${as.props}"/>
-            <arg line="--contextroot ${contextroot}"/>
-            <arg line="--libraries myclasses.jar"/>
-            <arg line="--upload=true"/>
-            <arg line="--target ${appserver.instance.name}"/>
-            <arg line="${assemble.dir}/${appname}-web.war"/>
-        </exec>
+      <antcall target="deploy-war-common"/>
     </target>
     
     <target name="run" depends="init-common">
