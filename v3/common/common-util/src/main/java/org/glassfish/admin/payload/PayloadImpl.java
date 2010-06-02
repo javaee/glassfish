@@ -119,7 +119,7 @@ public class PayloadImpl implements Payload {
                 final File file) throws IOException {
             attachFile(contentType, fileURI, dataRequestName, props, file, false /* isRecursive */);
         }
-        
+
         public void attachFile(
                 final String contentType,
                 final URI fileURI,
@@ -138,9 +138,15 @@ public class PayloadImpl implements Payload {
                     );
 
             if (file.isDirectory() && isRecursive) {
+                String relativeURIPath = fileURI.getPath();
+                if (relativeURIPath.endsWith("/")) {
+                    relativeURIPath = relativeURIPath.substring(0, relativeURIPath.length() - 1);
+                }
+                relativeURIPath = relativeURIPath.substring(0, relativeURIPath.lastIndexOf("/") + 1);
+
                 attachFilesRecursively(
-                        file.toURI(),
-                        fileURI,
+                        file.getParentFile().toURI(),
+                        URI.create(relativeURIPath),
                         fileURI,
                         dataRequestName,
                         enhancedProps,
@@ -209,7 +215,7 @@ public class PayloadImpl implements Payload {
                             actualBaseDirAbsURI,
                             targetBaseDirRelURI,
                             targetBaseDirRelURI.resolve(actualBaseDirAbsURI.relativize(f.toURI())),
-                            dataRequestName,
+                            "",
                             enhancedProps,
                             f);
                 } else {
@@ -245,7 +251,14 @@ public class PayloadImpl implements Payload {
                 dirFileURIPath + (dirFileURIPath.endsWith("/") ? "" : "/"),
                 enhancedProps,
                 (InputStream) null));
-
+            /*
+             * The enhanced properties contains a setting for the data-request-name
+             * which will be used to inject as a paramter if the receiver is
+             * a command.  We don't want lower-level directories to appear to be
+             * the injectable value when in fact the higher-level directory is
+             * the correct value.
+             */
+            enhancedProps.remove("data-request-name");
             attachContainedFilesRecursively(
                     actualBaseDirAbsURI,
                     targetBaseDirRelURI,

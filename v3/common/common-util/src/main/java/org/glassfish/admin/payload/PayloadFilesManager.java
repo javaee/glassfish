@@ -122,6 +122,40 @@ public abstract class PayloadFilesManager {
         return targetDir;
     }
 
+    protected URI getParentURI(Part part) throws UnsupportedEncodingException {
+            /*
+             * parentURI and parentFile start as the target extraction directory for this
+             * manager, but will change iff the part specifies a file
+             * transfer root.
+             */
+            File parentFile = getTargetDir();
+            URI parentFileURI = parentFile.toURI();
+
+            final Properties partProps = part.getProperties();
+            String parentPathFromPart = partProps.getProperty("file-xfer-root");
+            if (parentPathFromPart != null) {
+                if (! parentPathFromPart.endsWith(File.separator)) {
+                    parentPathFromPart = parentPathFromPart + File.separator;
+                }
+                final File xferRootFile = new File(parentPathFromPart);
+                if (xferRootFile.isAbsolute()) {
+                    parentFile = xferRootFile;
+                    parentFileURI = parentFile.toURI();
+                } else {
+                    parentFile = new File(parentFile, parentPathFromPart);
+                    /*
+                     * If this parent directory does not exist, then the URI from
+                     * the File object will lack the trailing slash.  So create
+                     * the URI a little oddly to account for that case.
+                     */
+                    parentFileURI = URI.create(
+                            parentFile.toURI().toASCIIString() +
+                            (parentFile.exists() ? "" : "/"));
+                }
+            }
+            return parentFileURI;
+        }
+
     /**
      * Extracts files from a Payload and leaves them on disk.
      * <p>
@@ -225,51 +259,6 @@ public abstract class PayloadFilesManager {
             // no-op for permanent files
         }
 
-        private URI getParentURI(Part part) throws UnsupportedEncodingException {
-            /*
-             * parentURI and parentFile start as the target extraction directory for this
-             * manager, but will change iff the part specifies a file
-             * transfer root.
-             */
-            File parentFile = getTargetDir();
-            URI parentFileURI = parentFile.toURI();
-
-            final Properties partProps = part.getProperties();
-            String parentPathFromPart = partProps.getProperty("file-xfer-root");
-            if (parentPathFromPart != null) {
-                if (! parentPathFromPart.endsWith(File.separator)) {
-                    parentPathFromPart = parentPathFromPart + File.separator;
-                }
-                final File xferRootFile = new File(parentPathFromPart);
-                if (xferRootFile.isAbsolute()) {
-                    parentFile = xferRootFile;
-                    parentFileURI = parentFile.toURI();
-                } else {
-                    parentFile = new File(parentFile, parentPathFromPart);
-                    /*
-                     * If this parent directory does not exist, then the URI from
-                     * the File object will lack the trailing slash.  So create
-                     * the URI a little oddly to account for that case.
-                     */
-                    parentFileURI = URI.create(
-                            parentFile.toURI().toASCIIString() +
-                            (parentFile.exists() ? "" : "/"));
-                }
-            }
-            return parentFileURI;
-        }
-
-        @Override
-        protected URI getOutputFileURI(Part part, String name) throws IOException {
-            /*
-             * The part name might have path elements using / as the
-             * separator, so figure out the full path for the resulting
-             * file.
-             */
-            URI targetURI = getParentURI(part).resolve(name);
-            return targetURI;
-        }
-
         @Override
         protected void postProcessParts() {
             final boolean isFine = logger.isLoggable(Level.FINE);
@@ -295,16 +284,16 @@ public abstract class PayloadFilesManager {
      */
     public static class Temp extends PayloadFilesManager {
 
-        /*
-         * regex to match colons and backslashes on Windows and slashes on non-Windows 
-         */
-        private static final String DIR_PATH_TO_FLAT_NAME_PATTERN = (File.separatorChar == '\\') ?
-                "[:\\\\]" : "/";
+//        /*
+//         * regex to match colons and backslashes on Windows and slashes on non-Windows
+//         */
+//        private static final String DIR_PATH_TO_FLAT_NAME_PATTERN = (File.separatorChar == '\\') ?
+//                "[:\\\\]" : "/";
 
         private boolean isCleanedUp = false;
 
-        /** maps payload part name paths (excluding name and type) to temp file subdirs */
-        private Map<String,File> pathToTempSubdir = new HashMap<String,File>();
+//        /** maps payload part name paths (excluding name and type) to temp file subdirs */
+//        private Map<String,File> pathToTempSubdir = new HashMap<String,File>();
 
         public Temp(final File parentDir, final ActionReport report,
                 final Logger logger) throws IOException {
@@ -355,71 +344,71 @@ public abstract class PayloadFilesManager {
         }
 
         @Override
-        protected URI getOutputFileURI(Part part, String name) throws IOException {
-
-            /*
-             * See if our map already has an entry for this part's parent path.
-             */
-            String parentPath = getParentPath(name);
-            File tempFile;
-            if (parentPath != null) {
-                URI parentURI = getTempSubDirForPath(parentPath);
-                tempFile = new File(new File(parentURI), getNameAndType(name));
-            } else {
-                tempFile = new File(getTargetDir(), getNameAndType(name));
-            }
-            return tempFile.toURI();
-        }
-
-        @Override
         protected void postProcessParts() {
             // no-op
         }
 
 
-        private String getParentPath(final String partName) {
-            int lastSlash = partName.lastIndexOf('/');
-            if (lastSlash != -1) {
-                return partName.substring(0, lastSlash);
-            }
-            return null;
-        }
+//        private String getParentPath(String partName) {
+//            if (partName.endsWith("/")) {
+//                partName = partName.substring(0, partName.length() - 1);
+//            }
+//            int lastSlash = partName.lastIndexOf('/');
+//            if (lastSlash != -1) {
+//                return partName.substring(0, lastSlash);
+//            }
+//            return null;
+//        }
 
-        URI getTempSubDirForPath(String parentPath) throws IOException {
-            /*
-             * Convert the parent path (which is currently in URI form) to
-             * the local file system form.
-             */
-            parentPath = parentPath.replace('/', File.separatorChar);
-            File tempSubDir = pathToTempSubdir.get(parentPath);
-            if (tempSubDir == null) {
-                /*
-                 * Replace slashes (forward or backward) that are directory
-                 * separators and replace colons (from Windows devices) with single
-                 * dashes.  This technique generates unique but flat directory
-                 * names so same-named files in different directories will
-                 * go to different directories.
-                 *
-                 * The extra dashes make sure the prefix meets createTempFile's reqts.
-                 * 
-                 */
-                String tempDirPrefix = parentPath.replaceAll(DIR_PATH_TO_FLAT_NAME_PATTERN, "-") + "---";
-                tempSubDir = createTempFolder(getTargetDir(), tempDirPrefix, super.logger);
-                pathToTempSubdir.put(parentPath, tempSubDir);
-            }
-            return tempSubDir.toURI();
-        }
+//        URI getTempSubDirForPath(String path) throws IOException {
+//            /*
+//             * Convert the path (which is currently in URI form) to
+//             * the local file system form.
+//             */
+//            path = path.replace('/', File.separatorChar);
+//            File tempSubDir = pathToTempSubdir.get(path);
+//            if (tempSubDir == null) {
+//                /*
+//                 * Replace slashes (forward or backward) that are directory
+//                 * separators and replace colons (from Windows devices) with single
+//                 * dashes.  This technique generates unique but flat directory
+//                 * names so same-named files in different directories will
+//                 * go to different directories.
+//                 *
+//                 * The extra dashes make sure the prefix meets createTempFile's reqts.
+//                 *
+//                 */
+//                String tempDirPrefix = path.replaceAll(DIR_PATH_TO_FLAT_NAME_PATTERN, "-") + "---";
+//                tempSubDir = createTempFolder(getTargetDir(), tempDirPrefix, super.logger);
+//                pathToTempSubdir.put(path, tempSubDir);
+//            }
+//            return tempSubDir.toURI();
+//        }
 
-        private String getNameAndType(final String path) {
-            final int lastSlash = path.lastIndexOf('/');
-            return path.substring(lastSlash + 1);
-        }
+//        private String getNameAndType(String path) {
+//            if (path.endsWith("/")) {
+//                path = path.substring(0, path.length() - 1);
+//            }
+//            final int lastSlash = path.lastIndexOf('/');
+//            return path.substring(lastSlash + 1);
+//        }
 
     }
 
     protected abstract void postExtract(final File extractedFile);
 
-    protected abstract URI getOutputFileURI(final Payload.Part part, final String name) throws IOException;
+    protected URI getOutputFileURI(Part part, String name) throws IOException {
+        /*
+         * The part name might have path elements using / as the
+         * separator, so figure out the full path for the resulting
+         * file.
+         */
+        if (name.startsWith("/")) {
+            name = name.substring(1);
+        }
+        URI targetURI = getParentURI(part).resolve(name);
+        return targetURI;
+    }
 
     private File removeFile(final Payload.Part part) throws IOException {
         final File result = removeFileWithoutConsumingPartBody(part);

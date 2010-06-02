@@ -37,7 +37,6 @@
 package org.glassfish.deployment.admin;
 
 import java.net.URISyntaxException;
-import org.glassfish.admin.payload.PayloadFilesManager;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -59,7 +58,6 @@ import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.deployment.common.DeploymentException;
-import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
@@ -72,6 +70,7 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
@@ -79,9 +78,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.LogRecord;
 import org.glassfish.api.ActionReport.ExitCode;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.Payload;
 import org.glassfish.api.event.EventListener;
-import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 
@@ -153,6 +152,11 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     public void execute(AdminCommandContext context) {
 
       events.register(this);
+
+      final DeployCommandSupplementalInfo suppInfo =
+              new DeployCommandSupplementalInfo();
+      context.getActionReport().
+              setResultType(DeployCommandSupplementalInfo.class, suppInfo);
 
       try {
         long operationStartTime = Calendar.getInstance().getTimeInMillis();
@@ -306,7 +310,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                     moveAppFilesToPermanentLocation(
                             deploymentContext, logger);
                     recordFileLocations(appProps);
-
+                    prepareParametersForSupplementalCommand(suppInfo,
+                             deploymentContext, name);
                     // register application information in domain.xml
                     deployment.registerAppInDomainXML(appInfo, deploymentContext);
                 } catch (Exception e) {
@@ -442,6 +447,21 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         return result;
     }
 
+    private void prepareParametersForSupplementalCommand(
+            final DeployCommandSupplementalInfo suppInfo,
+            final DeploymentContext dc,
+            final String appName) {
+        if (safeCopyOfApp != null) {
+            suppInfo.setArchiveFile(safeCopyOfApp);
+        }
+        if (safeCopyOfDeploymentPlan != null) {
+            suppInfo.setDeploymentPlan(safeCopyOfDeploymentPlan);
+        }
+
+        suppInfo.setDeploymentContext(dc);
+        
+    }
+    
     private void recordFileLocations(
             final Properties appProps) throws URISyntaxException {
         /*

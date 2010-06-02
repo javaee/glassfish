@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Handler;
@@ -270,18 +271,18 @@ public class PayloadFilesManagerTest {
         }.run("testPathlessFile");
     }
 
-    @Test
-    public void testWindowsPath() throws Exception {
-        System.out.println("testWindowsPath");
-        testForBadChars("C:\\Program Files\\someDir");
-    }
-
-    @Test
-    public void testNonWindowsPath() throws Exception {
-        System.out.println("testNonWindowsPath");
-        testForBadChars("/Users/whoever/someDir");
-
-    }
+//    @Test
+//    public void testWindowsPath() throws Exception {
+//        System.out.println("testWindowsPath");
+//        testForBadChars("C:\\Program Files\\someDir");
+//    }
+//
+//    @Test
+//    public void testNonWindowsPath() throws Exception {
+//        System.out.println("testNonWindowsPath");
+//        testForBadChars("/Users/whoever/someDir");
+//
+//    }
 
     @Test
     public void simplePermanentTransferTest() throws Exception {
@@ -936,6 +937,102 @@ public class PayloadFilesManagerTest {
                 protected void addParts(Outbound ob, PayloadFilesManager instance) throws Exception {
                     ob.attachFile(
                             "application/octet-stream",
+                            URI.create("x/"),
+                            "test-xfer",
+                            dir,
+                            true /* isRecursive */);
+
+                }
+
+                @Override
+                protected void checkResults(Inbound ib, PayloadFilesManager instance) throws Exception {
+                    /*
+                     * Extract files to where we want them.
+                     */
+                    final List<File> files = instance.processParts(ib);
+
+                    final Set<File> missing = new HashSet<File>();
+                    for (File f : desiredResults) {
+                        if ( ! f.exists()) {
+                            missing.add(f);
+                        }
+                    }
+                    assertEquals("Unexpected missing files after extraction", Collections.EMPTY_SET, missing);
+
+
+                }
+
+                @Override
+                protected void cleanup() {
+                    for (File f : desiredResults) {
+                        f.delete();
+                    }
+                }
+
+            }.init(targetDir).run("simplePermanentRecursiveTransferTest");
+        } finally {
+            if (targetDir != null) {
+                FileUtils.whack(targetDir);
+            }
+        }
+    }
+
+    @Test
+    public void simplePermanentRecursiveTransferDirOnlyTest() throws Exception {
+        final String DIR = "x/";
+        final String Y_SUBDIR = "y/";
+        final String Z_SUBDIR = "z/";
+
+        final Set<File> desiredResults = new HashSet<File>();
+
+        /*
+         * Create a directory into which we'll copy some small files.
+         */
+        final File origDir = File.createTempFile("pfm", "");
+        origDir.delete();
+        origDir.mkdir();
+
+        final File dir = new File(origDir, DIR);
+        dir.mkdir();
+        final File ySubdir = new File(dir, Y_SUBDIR);
+        ySubdir.mkdir();
+        final File zSubdir = new File(dir, Y_SUBDIR + Z_SUBDIR);
+        zSubdir.mkdir();
+
+        File targetDir = null;
+
+        try {
+            /*
+             * Choose the directory into which we want the PayloadFilesManager to
+             * deliver the files.
+             */
+
+            targetDir = File.createTempFile("tgt", "");
+            targetDir.delete();
+            targetDir.mkdir();
+
+            desiredResults.add(new File(targetDir.toURI().resolve(DIR)));
+            desiredResults.add(new File(targetDir.toURI().resolve(DIR + Y_SUBDIR)));
+            desiredResults.add(new File(targetDir.toURI().resolve(DIR + Y_SUBDIR + Z_SUBDIR)));
+
+            /*
+             * Add the original directory recursively.
+             */
+
+
+            new CommonPermTest() {
+
+                @Override
+                protected CommonPermTest init(File targetDir) {
+                    super.init(targetDir);
+
+                    return this;
+                }
+
+                @Override
+                protected void addParts(Outbound ob, PayloadFilesManager instance) throws Exception {
+                    ob.attachFile(
+                            "application/octet-stream",
                             URI.create(DIR),
                             "test-xfer",
                             dir,
@@ -968,7 +1065,99 @@ public class PayloadFilesManagerTest {
                     }
                 }
 
-            }.init(targetDir).run("simplePermanentRecursiveTransferTest");
+            }.init(targetDir).run("simplePermanentRecursiveTransferDirOnlyTest");
+        } finally {
+            if (targetDir != null) {
+                FileUtils.whack(targetDir);
+            }
+        }
+    }
+
+    @Test
+    public void simpleTempRecursiveTransferDirOnlyTest() throws Exception {
+        final String DIR = "x/";
+        final String Y_SUBDIR = "y/";
+        final String Z_SUBDIR = "z/";
+
+        final List<String> desiredResultsNamePrefixes = new ArrayList<String>();
+
+        /*
+         * Create a directory into which we'll copy some small files.
+         */
+        final File origDir = File.createTempFile("pfm", "");
+        origDir.delete();
+        origDir.mkdir();
+
+        final File dir = new File(origDir, DIR);
+        dir.mkdir();
+        final File ySubdir = new File(dir, Y_SUBDIR);
+        ySubdir.mkdir();
+        final File zSubdir = new File(ySubdir, Z_SUBDIR);
+        zSubdir.mkdir();
+
+        File targetDir = null;
+
+        try {
+            /*
+             * Choose the directory into which we want the PayloadFilesManager to
+             * deliver the files.
+             */
+
+            targetDir = File.createTempFile("tgt", "");
+            targetDir.delete();
+            targetDir.mkdir();
+
+            desiredResultsNamePrefixes.add("/x");
+            desiredResultsNamePrefixes.add("/x/y");
+            desiredResultsNamePrefixes.add("/x/y/z");
+
+            /*
+             * Add the original directory recursively.
+             */
+
+
+            new CommonTempTest() {
+
+                @Override
+                protected void addParts(Outbound ob, PayloadFilesManager instance) throws Exception {
+                    ob.attachFile(
+                            "application/octet-stream",
+                            URI.create(DIR),
+                            "test-xfer",
+                            dir,
+                            true /* isRecursive */);
+
+                }
+
+                @Override
+                protected void checkResults(Inbound ib, PayloadFilesManager instance) throws Exception {
+                    /*
+                     * Extract files to where we want them.
+                     */
+                    final List<File> files = instance.processParts(ib);
+
+                  checkNextFile:
+                    for (File f : files) {
+
+                        for (ListIterator<String> it = desiredResultsNamePrefixes.listIterator(); it.hasNext();) {
+                            final String desiredPrefix = it.next();
+                            if (f.getPath().contains(desiredPrefix)) {
+                                it.remove();
+                                continue checkNextFile;
+                            }
+                        }
+                    }
+
+                    assertEquals("Unexpected missing files after extraction", Collections.EMPTY_LIST, desiredResultsNamePrefixes);
+
+
+                }
+
+                @Override
+                protected void cleanup() {
+                }
+
+            }.run("simpleTempRecursiveTransferDirOnlyTest");
         } finally {
             if (targetDir != null) {
                 FileUtils.whack(targetDir);
@@ -990,26 +1179,28 @@ public class PayloadFilesManagerTest {
         return props;
     }
 
-    private void testForBadChars(String initialPath) {
-        URI uri = null;
-        URI targetDirURI = null;
-        try {
-            PayloadFilesManager.Temp instance = new PayloadFilesManager.Temp(Logger.getAnonymousLogger());
-            uri = instance.getTempSubDirForPath(initialPath);
-            targetDirURI = instance.getTargetDir().toURI();
-
-            System.out.println("  " + initialPath + " -> " + uri.toASCIIString());
-            String uriString = targetDirURI.relativize(uri).toASCIIString();
-            
-            // trim the trailing slash for the directory
-            uriString = uriString.substring(0, uriString.length() - 1);
-            assertFalse("path " + uriString + " still contains bad character(s)",
-                    uriString.contains("/") ||
-                    uriString.contains("\\") ||
-                    (uriString.contains(":") && File.separatorChar == '\\'));        } catch (Exception e) {
-            fail("unexpected exception " + e.getLocalizedMessage());
-        }
-    }
+//    private void testForBadChars(String initialPath) {
+//        URI uri = null;
+//        URI targetDirURI = null;
+//        try {
+//            PayloadFilesManager.Temp instance = new PayloadFilesManager.Temp(Logger.getAnonymousLogger());
+//            uri = URI.create(initialPath.replace(File.separator, "/"));
+//            targetDirURI = instance.getTargetDir().toURI();
+//
+//            System.out.println("  " + initialPath + " -> " + uri.toASCIIString());
+//            String uriString = targetDirURI.relativize(uri).toASCIIString();
+//
+//            // trim the trailing slash for the directory
+//            if (uriString.endsWith("/")) {
+//                uriString = uriString.substring(0, uriString.length() - 1);
+//            }
+//            assertFalse("path " + uriString + " still contains bad character(s)",
+//                    uriString.contains("/") ||
+//                    uriString.contains("\\") ||
+//                    (uriString.contains(":") && File.separatorChar == '\\'));        } catch (Exception e) {
+//            fail("unexpected exception " + e.getMessage());
+//        }
+//    }
     
     private abstract class CommonTest {
         protected final static String payloadType = "application/zip";

@@ -652,13 +652,16 @@ public class RemoteAdminCommand {
             String filename) throws IOException {
         File f = SmartFile.sanitize(new File(filename));
         logger.finer("FILE PARAM: " + optionName + " = " + f);
-        // attach the file to the payload
+        // attach the file to the payload - include the option name in the
+        // relative URI to avoid possible conflicts with same-named files
+        // in different directories
         if (doUpload)
             outboundPayload.attachFile(FILE_PAYLOAD_MIME_TYPE,
-                URI.create(f.getName()),
+                URI.create(optionName + "/" + f.getName() + (f.isDirectory() ? "/" : "")),
                 optionName,
                 null,
-                f);
+                f,
+                true /* isRecursive - in case it's a directory */);
         if (f != null) {
             // if we are about to upload it -- give just the name
             // o/w give the full path
@@ -928,24 +931,13 @@ public class RemoteAdminCommand {
             ParamModel opt = commandModel.getModelFor(paramName);
             if (opt != null && opt.getType() == File.class) {
                 sawFile = true;
-                // if any FILE parameter is a directory, turn off doUpload
-                String filename = param.getValue().get(0);
-                File file = new File(filename);
-                if (file.isDirectory())
-                    sawDirectory = true;
             }
         }
 
         // now check the operands for files
         ParamModel operandParam = getOperandModel();
         if (operandParam != null && operandParam.getType() == File.class) {
-            for (String filename : operands) {
-                sawFile = true;
-                // if any FILE parameter is a directory, turn off doUpload
-                File file = new File(filename);
-                if (file.isDirectory())
-                    sawDirectory = true;
-            }
+            sawFile = ! operands.isEmpty();
         }
 
         if (sawFile) {
