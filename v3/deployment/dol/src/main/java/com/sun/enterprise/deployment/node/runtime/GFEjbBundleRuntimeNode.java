@@ -85,7 +85,6 @@ public class GFEjbBundleRuntimeNode extends EjbBundleRuntimeNode {
     * @return the doctype tag name
     */
    public static String registerBundle(Map publicIDToDTD) {    
-       publicIDToDTD.put(DTDRegistry.GF_EJBJAR_310_DTD_PUBLIC_ID, DTDRegistry.GF_EJBJAR_310_DTD_SYSTEM_ID);
        publicIDToDTD.put(DTDRegistry.GF_EJBJAR_311_DTD_PUBLIC_ID, DTDRegistry.GF_EJBJAR_311_DTD_SYSTEM_ID);
        return RuntimeTagNames.GF_EJB_RUNTIME_TAG;       
    }    

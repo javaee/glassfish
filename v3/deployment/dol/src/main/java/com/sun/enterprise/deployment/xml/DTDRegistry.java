@@ -269,25 +269,20 @@ public final class DTDRegistry {
     public static final String SUN_CMP_MAPPING_810_DTD_SYSTEM_ID =
         "http://www.sun.com/software/appserver/dtds/sun-cmp-mapping_1_2.dtd";
 
-    public static final String GF_WEBAPP_300_DTD_PUBLIC_ID = 
-        "-//GlassFish.org//DTD GlassFish Application Server 3.0 Servlet 3.0//EN";
-    public static final String GF_WEBAPP_300_DTD_SYSTEM_ID = 
-        "http://glassfish.org/dtds/glassfish-web-app_3_0-0.dtd";
+    public static final String GF_WEBAPP_301_DTD_PUBLIC_ID = 
+        "-//GlassFish.org//DTD GlassFish Application Server 3.1 Servlet 3.0//EN";
+    public static final String GF_WEBAPP_301_DTD_SYSTEM_ID = 
+        "http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd";
 
-    public static final String GF_APPLICATION_600_DTD_PUBLIC_ID =
-        "-//GlassFish.org//DTD GlassFish Application Server 3.0 Java EE Application 6.0//EN";
-    public static final String GF_APPLICATION_600_DTD_SYSTEM_ID =
-        "http://glassfish.org/dtds/glassfish-application_6_0-0.dtd";
+    public static final String GF_APPLICATION_601_DTD_PUBLIC_ID =
+        "-//GlassFish.org//DTD GlassFish Application Server 3.1 Java EE Application 6.0//EN";
+    public static final String GF_APPLICATION_601_DTD_SYSTEM_ID =
+        "http://glassfish.org/dtds/glassfish-application_6_0-1.dtd";
 
-    public static final String GF_APPCLIENT_600_DTD_PUBLIC_ID =
-        "-//GlassFish.org//DTD GlassFish Application Server 3.0 Java EE Application Client 6.0//EN";
-    public static final String GF_APPCLIENT_600_DTD_SYSTEM_ID =
-        "http://glassfish.org/dtds/glassfish-application-client_6_0-0.dtd";
-
-    public static final String GF_EJBJAR_310_DTD_PUBLIC_ID =
-        "-//GlassFish.org//DTD GlassFish Application Server 3.0 EJB 3.1//EN";
-    public static final String GF_EJBJAR_310_DTD_SYSTEM_ID =
-        "http://glassfish.org/dtds/glassfish-ejb-jar_3_1-0.dtd";
+    public static final String GF_APPCLIENT_601_DTD_PUBLIC_ID =
+        "-//GlassFish.org//DTD GlassFish Application Server 3.1 Java EE Application Client 6.0//EN";
+    public static final String GF_APPCLIENT_601_DTD_SYSTEM_ID =
+        "http://glassfish.org/dtds/glassfish-application-client_6_0-1.dtd";
 
     public static final String GF_EJBJAR_311_DTD_PUBLIC_ID =
         "-//GlassFish.org//DTD GlassFish Application Server 3.1 EJB 3.1//EN";

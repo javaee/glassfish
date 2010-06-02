@@ -71,14 +71,14 @@ public class GFWebBundleRuntimeNode extends WebBundleRuntimeNode {
      * @return the DOCTYPE that should be written to the XML file
      */
     public String getDocType() {
-        return DTDRegistry.GF_WEBAPP_300_DTD_PUBLIC_ID;
+        return DTDRegistry.GF_WEBAPP_301_DTD_PUBLIC_ID;
     }
     
     /**
      * @return the SystemID of the XML file
      */
     public String getSystemID() {
-        return DTDRegistry.GF_WEBAPP_300_DTD_SYSTEM_ID;
+        return DTDRegistry.GF_WEBAPP_301_DTD_SYSTEM_ID;
     }
 
    /**
@@ -88,7 +88,7 @@ public class GFWebBundleRuntimeNode extends WebBundleRuntimeNode {
     * @return the doctype tag name
     */
    public static String registerBundle(Map publicIDToDTD) {    
-       publicIDToDTD.put(DTDRegistry.GF_WEBAPP_300_DTD_PUBLIC_ID, DTDRegistry.GF_WEBAPP_300_DTD_SYSTEM_ID);
+       publicIDToDTD.put(DTDRegistry.GF_WEBAPP_301_DTD_PUBLIC_ID, DTDRegistry.GF_WEBAPP_301_DTD_SYSTEM_ID);
        
        return RuntimeTagNames.GF_WEB_RUNTIME_TAG;       
    }    

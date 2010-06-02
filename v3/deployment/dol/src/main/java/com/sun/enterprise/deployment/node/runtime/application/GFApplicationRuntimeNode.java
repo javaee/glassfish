@@ -65,14 +65,14 @@ public class GFApplicationRuntimeNode extends ApplicationRuntimeNode {
      * @return the DOCTYPE that should be written to the XML file
      */
     public String getDocType() {
-        return DTDRegistry.GF_APPLICATION_600_DTD_PUBLIC_ID;
+        return DTDRegistry.GF_APPLICATION_601_DTD_PUBLIC_ID;
     }
     
     /**
      * @return the SystemID of the XML file
      */
     public String getSystemID() {
-        return DTDRegistry.GF_APPLICATION_600_DTD_SYSTEM_ID;
+        return DTDRegistry.GF_APPLICATION_601_DTD_SYSTEM_ID;
     }
 
    /**
@@ -82,7 +82,7 @@ public class GFApplicationRuntimeNode extends ApplicationRuntimeNode {
     * @return the doctype tag name
     */
    public static String registerBundle(Map publicIDToDTD) {    
-       publicIDToDTD.put(DTDRegistry.GF_APPLICATION_600_DTD_PUBLIC_ID, DTDRegistry.GF_APPLICATION_600_DTD_SYSTEM_ID);
+       publicIDToDTD.put(DTDRegistry.GF_APPLICATION_601_DTD_PUBLIC_ID, DTDRegistry.GF_APPLICATION_601_DTD_SYSTEM_ID);
        return RuntimeTagNames.GF_APPLICATION_RUNTIME_TAG;       
    }    
 }
