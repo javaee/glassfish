@@ -47,7 +47,6 @@ import java.util.*;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
-
 /**
  * Abstraction for a scattered archive (parts disseminated in various directories)
  *
@@ -318,7 +317,11 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
                     JarFile jar = new JarFile(f);
                     Enumeration<JarEntry> jarEntries = jar.entries();
                     while (jarEntries.hasMoreElements()) {
-                        entries.add(jarEntries.nextElement().getName());
+                        JarEntry jarEntry = jarEntries.nextElement();
+                        if (jarEntry.isDirectory()) {
+                            continue;
+                        }
+                        entries.add(jarEntry.getName());
                     }
                 } else {
                     getListOfFiles(f, prefix, entries);
