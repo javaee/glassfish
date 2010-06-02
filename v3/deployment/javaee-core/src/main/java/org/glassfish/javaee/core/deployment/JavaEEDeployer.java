@@ -193,21 +193,9 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
     public boolean prepare(DeploymentContext dc) {
         try {
             prepareScratchDirs(dc);
-/*
-            // TODO: Need to revisit this when we have a good plan for system 
-            // applications in v3
-            // currently the object type is always user for applications 
-            // under <applications> element
-            // if we need to use this code again, also need to move to a 
-            // place which only gets done once per application
-            if (dc.getAppProps().getProperty(ServerTags.OBJECT_TYPE)==null) {
-                String objectType = getObjectType(dc);
-                if (objectType != null) {
-                    dc.getAppProps().setProperty(ServerTags.OBJECT_TYPE,
-                        objectType);
-                }
-            }
-*/
+
+            if (! dc.getCommandParameters(OpsParams.class).origin.isArtifactsPresent()) {
+             // only generate artifacts when there is no artifacts present
 
              //In jaxrpc it was required to run
              //Wscompile to generate the artifacts for clients too.
@@ -220,6 +208,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
                 }
             }
             generateArtifacts(dc);
+            }
             return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions

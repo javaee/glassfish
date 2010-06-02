@@ -50,11 +50,65 @@ public abstract class OpsParams implements CommandParameters {
      * activities.
      *
      * load when an already deployed application is being reloaded.
-     * deploy when a new application is deployed
+     * deploy when a new application is deployed on DAS
+     * deploy_instance when a new application is deployed on instance
      * unload when a loaded application is stopped
      * undeploy when a deployed application is removed from the system.
      */
-    public enum Origin { load, deploy, unload, undeploy }
+    public enum Origin { 
+        load, deploy, deploy_instance, unload, undeploy;
+
+        // whether it's part of the deployment, on DAS or on instance
+        public boolean isDeploy() {
+            if (this == Origin.deploy || this == Origin.deploy_instance) {
+                return true;
+            }    
+            else {
+                return false;
+            }
+        }
+
+        // whether it's loading application only
+        public boolean isLoad() {
+            if (this == Origin.load) {
+                return true;
+            }    
+            else {
+                return false;
+            }
+        }
+
+        // whether the artifacts are already present and no need to 
+        // generate
+        public boolean isArtifactsPresent() {
+            if (this == Origin.load || this == Origin.deploy_instance) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        // whether it's undeploy
+        public boolean isUndeploy() {
+            if (this == Origin.undeploy) {
+                return true;
+            }    
+            else {
+                return false;
+            }
+        }
+
+        // whether it's unloading application only
+        public boolean isUnload() {
+            if (this == Origin.unload) {
+                return true;
+            }    
+            else {
+                return false;
+            }
+        }
+    }
 
     /**
      * Type of deployment operation, by default it's deployment

@@ -42,6 +42,8 @@ import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.OpsParams;
+
 
 /**
  * Convenient superclass for Deployers which only do prepare and 
@@ -73,7 +75,10 @@ public abstract class SimpleDeployer <T extends Container,
      */
     public boolean prepare(DeploymentContext dc) {
         try {
-            generateArtifacts(dc);
+            if (! dc.getCommandParameters(OpsParams.class).origin.isArtifactsPresent()) {
+                // only generate artifacts when no artifacts are present
+                generateArtifacts(dc);
+            }
             return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
