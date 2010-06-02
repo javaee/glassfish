@@ -107,7 +107,6 @@
         <antcall target="delete-user-common">
             <param name="user" value="javaee"/>
         </antcall>
-        <delete file="${appserver.instance.dir}/config/context.xml"/>
     </target>
 
     <target name="usage">
