@@ -119,7 +119,8 @@ public final class InstanceInfo {
             RemoteAdminCommand rac = new RemoteAdminCommand("uptime", host, port, false, "admin", null, logger);
             rac.setConnectTimeout(timeoutInMsec);
             ParameterMap map = new ParameterMap();
-            return rac.executeCommand(map);
+            map.set("type", "terse");
+            return rac.executeCommand(map).trim();
         }
         catch (CommandException ex) {
             return "Not Running";

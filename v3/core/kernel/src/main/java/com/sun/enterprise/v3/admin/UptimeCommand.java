@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.v3.admin;
 
+import org.glassfish.api.Param;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -60,14 +61,33 @@ public class UptimeCommand implements AdminCommand {
     @Inject
     ServerEnvironmentImpl env;
 
+    // TODO bnevins June 1 2010
+    // the default should go to "terse".  But first all callers that parse the
+    // output should be found and changed.  In the meantime the default is exactly
+    // what 3.0 did.
+    
+    @Param(optional=true, acceptableValues="raw,terse,verbose", defaultValue="verbose")
+    String type;
+
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         long start = env.getStartupContext().getCreationTime();
         long totalTime_ms = System.currentTimeMillis() - start;
         Duration duration = new Duration(totalTime_ms);
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        // send in total ms. as a String so that it does not get commas inserted
-        report.setMessage(localStrings.getLocalString("uptime.output", "Uptime: {0}, Total milliseconds: {1}", duration, "" + totalTime_ms));
+        String message;
+
+        if("raw".equals(type))
+            // just the milliseconds maam!  Probably a computer program is calling us...
+            message = "" + totalTime_ms;
+        else if("terse".equals(type))
+            // Compact output.  Used by list-instances for instance.
+            message = localStrings.getLocalString("uptime.output.terse", "Uptime: {0}", duration);
+        else
+            message = localStrings.getLocalString("uptime.output.normal", "Uptime: {0}, Total milliseconds: {1}", duration, "" + totalTime_ms);
+
+        report.setMessage(message);
     }
+
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(UptimeCommand.class);
 }

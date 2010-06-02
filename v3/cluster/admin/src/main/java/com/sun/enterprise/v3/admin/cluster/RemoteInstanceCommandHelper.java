@@ -36,6 +36,7 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.admin.ServerEnvironment;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.grizzly.config.dom.NetworkListener;
@@ -90,7 +91,12 @@ final class RemoteInstanceCommandHelper {
         // TODO May 14 - for now we assume this is the host
         // TODO May 14 - for now we assume this is the host
         // TODO May 14 - for now we assume this is the host
-        return server.getNodeAgentRef();
+        String host = server.getNodeAgentRef();
+
+        if(StringUtils.ok(host))
+            return host;
+        else
+            return Strings.get("noNodeAgentRef");
         // TODO May 14 - for now we assume this is the host
         // TODO May 14 - for now we assume this is the host
         // TODO May 14 - for now we assume this is the host
