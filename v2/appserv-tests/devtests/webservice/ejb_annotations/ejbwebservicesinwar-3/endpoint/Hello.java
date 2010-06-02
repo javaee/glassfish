@@ -2,9 +2,9 @@ package endpoint;
 
 import javax.jws.WebService;
 import javax.jws.WebMethod;
-import javax.ejb.SessionContext;
 import javax.annotation.Resource;
-
+import javax.ejb.SessionContext;
+import javax.xml.ws.WebServiceContext;
 
 
 @javax.ejb.Stateless
@@ -15,12 +15,12 @@ import javax.annotation.Resource;
 )
 public class Hello {
 @Resource
-   private SessionContext sc;
+   private WebServiceContext sc;
 
 	public Hello() {}
 
 	@WebMethod(operationName="sayHello", action="urn:SayHello")
 	public String sayHello(String who) {
-		return "WebSvcTest-Hello " + who;
+		return "Hello " + who;
 	}
 }
