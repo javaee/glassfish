@@ -13,3 +13,5 @@ weblogicDD/contextRoot
 weblogicDD/delegate
 explodedWar
 filterMultipleInit
+servlet-3.0/servletContainerInitializer/sharedLibWithWars # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=12091 is fixed
+
