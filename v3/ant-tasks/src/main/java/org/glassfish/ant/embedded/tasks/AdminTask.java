@@ -105,7 +105,7 @@ public class AdminTask extends TaskBase {
 
         if (commandLine != null) {
             try {
-            log("executing admin task : " + commandLine + " serverID = " + serverID);
+            log("executing admin task[serverID=" + serverID + "] : " + commandLine);
                 String args[] = getArgs(commandLine);
                 if (args.length == 0) {
                    error("admin command not specified");
@@ -117,8 +117,8 @@ public class AdminTask extends TaskBase {
                 }
                 Parser parser = new Parser(args, 1,  null, true);
                 ParameterMap pMap = parser.getOptions();
-                runner.getCommandInvocation(args[0], report).
-                    parameters(pMap).execute();
+                pMap.set("DEFAULT", parser.getOperands());
+                runner.getCommandInvocation(args[0], report).parameters(pMap).execute();
                 System.out.println("executed : " + commandLine);
             } catch (Exception ex) {
                 error(ex);
@@ -136,8 +136,9 @@ public class AdminTask extends TaskBase {
                                 throws ArgumentTokenizer.ArgumentException {
         List<String> args = new ArrayList<String>();
         ArgumentTokenizer t = new ArgumentTokenizer(line);
-        while (t.hasMoreTokens())
+        while (t.hasMoreTokens()) {
             args.add(t.nextToken());
+        }
         return args.toArray(new String[args.size()]);
     }
 
