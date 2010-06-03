@@ -46,6 +46,8 @@ import java.net.*;
  */
 public class AdminInfraTest extends BaseDevTest {
     public AdminInfraTest() {
+
+        printf("DEBUG is turned **ON**");
         String host0 = null;
         try {
             host0 = InetAddress.getLocalHost().getHostName();
@@ -54,10 +56,11 @@ public class AdminInfraTest extends BaseDevTest {
             host0 = "localhost";
         }
         host = host0;
-		printf("\n**************************************\n*************************\nHost= " + host + "\n********************\n************");
+        System.out.println("Host= " + host);
         glassFishHome = getGlassFishHome();
         // it does NOT need to exist -- do not insist!
         instancesHome = new File(new File(glassFishHome, "nodeagents"), host);
+        printf("GF HOME = " + glassFishHome);
     }
 
     public static void main(String[] args) {
@@ -75,11 +78,15 @@ public class AdminInfraTest extends BaseDevTest {
     }
 
     public void run() {
-        boolean wasRunning = false;
-		bhakti();
-		byron();
-        report("THIS IS HOPELESSLY BROKEN", true);
-		stat.printSummary();
+        try {
+            startDomain();
+            create();
+            delete();
+            stat.printSummary();
+        }
+        finally {
+            stopDomain();
+        }
     }
 
     private void startDomain() {
@@ -99,33 +106,31 @@ public class AdminInfraTest extends BaseDevTest {
             asadmin("stop-domain", "domain1");
     }
 
-    private void bhakti() {
+    private void create() {
+        // pidgin English because the strings get truncated.
+        printf("Create " + instanceNames.length + " instances");
+        for(String iname : instanceNames) {
+            report(iname + "-nodir", !checkInstanceDir(iname));
+            report(iname + "-create", asadmin("create-local-instance", iname));
+            report(iname + "-list", asadmin("list-instances"));
+            report(iname + "-yesdir", checkInstanceDir(iname));
+        }
     }
 
-    private void byron() {
-		// The create fails every single time on Hudson (UNIX).  It never fails for me
-		// on Windows.  It reports a rendezvous failure
-		// May 29 -- commenting out!
-        // pidgin English because the strings get truncated.
-
-		boolean jenniferFixedThis = true;
-
-		if(jenniferFixedThis) {
-			report("i1 dir not exists", !checkInstanceDir(I1));
-			report("create-local-instance", asadmin("create-local-instance", I1));
-			report("list-instances", asadmin("list-instances"));
-			report("i1 dir created", checkInstanceDir(I1));
-			printf("Awesome -- the directory was created!!");
-			report("delete-local-instance", asadmin("delete-local-instance", "i1"));
-			report("i1 dir destroyed", !checkInstanceDir(I1));
-		}
+    private void delete() {
+        printf("Delete " + instanceNames.length + " instances");
+        for(String iname : instanceNames) {
+            report(iname + "-yes-dir", checkInstanceDir(iname));
+            report(iname + "-delete", asadmin("delete-local-instance", iname));
+            report(iname + "-no-dir", !checkInstanceDir(iname));
+        }
     }
 
     private boolean checkInstanceDir(String name) {
         File inf = new File(instancesHome, name);
         boolean exists = inf.isDirectory();
         String existsString = exists ? "DOES exist" : "does NOT exist";
-        printf("The instance-dir, %s, %s\n", inf.toString(), existsString);
+        //printf("The instance-dir, %s, %s\n", inf.toString(), existsString);
         return exists;
     }
 
@@ -134,9 +139,20 @@ public class AdminInfraTest extends BaseDevTest {
             System.out.printf("**** DEBUG MESSAGE ****  " + fmt + "\n", args);
     }
     private final String host;
-    private final String I1 = "i1";
     private final File glassFishHome;
     private final File instancesHome;
     private boolean domain1WasRunning;
-    private final static boolean DEBUG = false;
+    private final static boolean DEBUG;
+    private static final String[] instanceNames = new String[]{
+        "i0", "i1", "i2", "i3", "i4", "i5", "i6", "i7", "i8", "i9"
+    };
+
+    static {
+        String name = System.getProperty("user.name");
+
+        if(name != null && name.equals("bnevins"))
+            DEBUG = true;
+        else
+            DEBUG = false;
+    }
 }

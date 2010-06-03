@@ -18,13 +18,13 @@
                     <location>instance/src</location>
                 </source-folder>
                 <source-folder>
-                    <label>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</label>
+                    <label>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</label>
                     <type>java</type>
-                    <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</location>
+                    <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</location>
                 </source-folder>
                 <source-folder>
-                    <label>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</label>
-                    <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</location>
+                    <label>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</label>
+                    <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</location>
                 </source-folder>
             </folders>
             <ide-actions>
@@ -56,8 +56,8 @@
                         <location>instance/src</location>
                     </source-folder>
                     <source-folder style="packages">
-                        <label>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</label>
-                        <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</location>
+                        <label>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</label>
+                        <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</location>
                     </source-folder>
                     <source-file>
                         <location>build.xml</location>
@@ -77,8 +77,8 @@
             <compilation-unit>
                 <package-root>cluster/src</package-root>
                 <package-root>instance/src</package-root>
-                <package-root>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</package-root>
-                <classpath mode="compile">../../../util/reportbuilder/src/main</classpath>
+                <package-root>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</package-root>
+                <classpath mode="compile">../../../util/reportbuilder/src/main/java</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
