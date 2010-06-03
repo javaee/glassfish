@@ -987,6 +987,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <!-- deploy the applications in AppServ  -->
 <target name="deploy-common" depends="init-common">
+    <antcall target="deploy-common-embedded"/>
     <antcall target="deploy-common-pe"/>
     <antcall target="deploy-common-ee"/>
 </target>       
@@ -996,7 +997,11 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <antcall target="deploy-verify-common-ee"/>
 </target>       
 
-<target name="deploy-common-pe" depends="init-common" unless="ee">
+<target name="deploy-common-embedded" if="env.EMBEDDED">
+        <glassfish-embedded-deploy app="${assemble.dir}/${appname}App.ear" name="${appname}" libraries="${libraries}"/>
+</target>
+
+<target name="deploy-common-pe" depends="init-common" unless="env.EMBEDDED">
   <property name="deployed.app" value="${assemble.dir}/${appname}App.ear"/>
    <property name="extra-params" value=""/>
   <exec executable="${ASADMIN}" failonerror="false">
