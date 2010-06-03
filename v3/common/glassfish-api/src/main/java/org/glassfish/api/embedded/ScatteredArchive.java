@@ -141,7 +141,7 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
         public Builder addMetadata(String name, File metadata) {
             if (!metadata.exists()) {
                 throw new IllegalArgumentException(metadata.getAbsolutePath() + " not found");
-            }            
+            }
             this.metadata.put(name, metadata);
             return this;
         }
@@ -213,7 +213,7 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
     final List<URL> urls = new ArrayList<URL>();
     final Map<String, File> metadata = new HashMap<String, File>();
     final Builder.type type;
-    final String prefix; 
+    final String prefix;
 
     private ScatteredArchive(Builder builder, Builder.type type) {
         name = builder.name;
@@ -261,7 +261,7 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
     public InputStream getEntry(String arg) throws IOException {
         File f = getFile(arg);
         if (f!=null && f.exists()) return new FileInputStream(f);
-        return null;
+        return getJarEntry(arg);
     }
 
     @Override
@@ -281,7 +281,7 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
 
     public boolean exists(String name) throws IOException {
         if ("WEB-INF".equals(name) && type == Builder.type.war) {
-            return true;    
+            return true;
         }
         File f = getFile(name);
         return f!=null && f.exists();
@@ -475,6 +475,34 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
             f = new File(f, name);
             if (f.exists()) {
                 return f;
+            }
+        }
+        return null;
+    }
+
+    private InputStream getJarEntry(String name) {
+        for (URL url : urls) {
+            File f = null;
+            try {
+                f = new File(url.toURI());
+            } catch(URISyntaxException e) {
+                f = new File(url.getPath());
+            }
+            try {
+                if (f.getName().endsWith(".jar")) {
+                    JarFile jar = new JarFile(f);
+                    Enumeration<JarEntry> jarEntries = jar.entries();
+                    while (jarEntries.hasMoreElements()) {
+                        JarEntry jarEntry = jarEntries.nextElement();
+                        String entryName = jarEntry.getName();
+                        if (entryName.equals(name)) {
+                            return jar.getInputStream(jarEntry);
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return null;
             }
         }
         return null;
