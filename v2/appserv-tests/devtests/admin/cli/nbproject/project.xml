@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.ant.freeform</type>
+    <configuration>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <!-- Do not use Project Properties customizer when editing this file manually. -->
+            <name>admin-devtests</name>
+            <properties/>
+            <folders>
+                <source-folder>
+                    <label>cluster\src</label>
+                    <type>java</type>
+                    <location>cluster/src</location>
+                </source-folder>
+                <source-folder>
+                    <label>instance\src</label>
+                    <type>java</type>
+                    <location>instance/src</location>
+                </source-folder>
+                <source-folder>
+                    <label>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</label>
+                    <type>java</type>
+                    <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</location>
+                </source-folder>
+                <source-folder>
+                    <label>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</label>
+                    <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</location>
+                </source-folder>
+            </folders>
+            <ide-actions>
+                <action name="build">
+                    <target>all</target>
+                </action>
+                <action name="clean">
+                    <target>cleanAS</target>
+                </action>
+                <action name="run">
+                    <target>runclient-common</target>
+                </action>
+                <action name="test">
+                    <target>runtest</target>
+                </action>
+                <action name="rebuild">
+                    <target>cleanAS</target>
+                    <target>all</target>
+                </action>
+            </ide-actions>
+            <view>
+                <items>
+                    <source-folder style="packages">
+                        <label>cluster\src</label>
+                        <location>cluster/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>instance\src</label>
+                        <location>instance/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</label>
+                        <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</location>
+                    </source-folder>
+                    <source-file>
+                        <location>build.xml</location>
+                    </source-file>
+                </items>
+                <context-menu>
+                    <ide-action name="build"/>
+                    <ide-action name="rebuild"/>
+                    <ide-action name="clean"/>
+                    <ide-action name="run"/>
+                    <ide-action name="test"/>
+                </context-menu>
+            </view>
+            <subprojects/>
+        </general-data>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
+            <compilation-unit>
+                <package-root>cluster/src</package-root>
+                <package-root>instance/src</package-root>
+                <package-root>C:\gf\v2\appserv-tests\util\reportbuilder\src\main</package-root>
+                <classpath mode="compile">../../../util/reportbuilder/src/main</classpath>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+        </java-data>
+    </configuration>
+</project>
