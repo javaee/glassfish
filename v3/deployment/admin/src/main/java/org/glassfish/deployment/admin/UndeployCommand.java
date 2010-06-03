@@ -80,7 +80,7 @@ import org.glassfish.deployment.versioning.VersioningException;
 @Service(name="undeploy")
 @I18n("undeploy.command")
 @Scoped(PerLookup.class)
-@Cluster(value={RuntimeType.DAS})
+@Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 public class UndeployCommand extends UndeployCommandParameters implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(UndeployCommand.class);
@@ -114,7 +114,8 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
         // retrieve matched version(s) if exist
         List<String> matchedVersions = null;
         try {
-            matchedVersions = versioningService.getMatchedVersions(name);
+            matchedVersions = versioningService.getMatchedVersions(name, 
+                target);
         } catch (VersioningException e) {
             report.failure(logger, e.getMessage());
             return;

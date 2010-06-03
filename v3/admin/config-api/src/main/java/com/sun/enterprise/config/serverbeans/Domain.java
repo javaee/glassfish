@@ -368,6 +368,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     @DuckTyped
     ApplicationRef getApplicationRefInServer(String sn, String name);
 
+    @DuckTyped
+    List<ApplicationRef> getApplicationRefsInServer(String sn);
+
     /**
      * Returns the list of system-applications that are referenced from the given server.
      * A server references an application, if the server has an element named
@@ -394,6 +397,22 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
 
     @DuckTyped
     Cluster getClusterNamed(String name);
+
+    @DuckTyped
+    boolean isCurrentInstanceMatchingTarget(String target, 
+        String currentInstance);
+
+    @DuckTyped
+    List<Server> getServersInTarget(String target);
+
+    @DuckTyped
+    List<ApplicationRef> getApplicationRefsInTarget(String target);
+
+    @DuckTyped
+    ApplicationRef getApplicationRefInTarget(String appName, String target);
+
+    @DuckTyped
+    boolean isAppRefEnabledInTarget(String appName, String target);
 
     @DuckTyped
     ReferenceContainer getReferenceContainerNamed(String name);
@@ -438,6 +457,15 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                 }
             }
             return aref;
+        }
+
+        public static List<ApplicationRef> getApplicationRefsInServer(Domain me, String sn) {
+            Server server = getServerNamed(me, sn);
+            if (server != null) {
+                return server.getApplicationRef();
+            } else {
+                return Collections.EMPTY_LIST;
+            }
         }
 
         public static List<Application> getSystemApplicationsReferencedFrom(Domain d, String sn) {
@@ -515,6 +543,81 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                 }
             }
             return null;
+        }
+
+        public static boolean isCurrentInstanceMatchingTarget(Domain d, 
+            String target, String currentInstance) {
+
+            if (target == null || currentInstance == null) {
+                return false;
+            }
+
+            if (currentInstance.equals(target)) {
+                // standalone instance case
+                return true;
+            }
+
+            Cluster cluster = getClusterNamed(d, target);
+
+            if (cluster != null) {
+                for (Server svr : cluster.getInstances() ) {
+                    if (svr.getName().equals(currentInstance)) {
+                        // cluster instance case
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+
+        public static List<Server> getServersInTarget(
+            Domain me, String target) {
+            List<Server> servers = new ArrayList<Server>(); 
+            Server server = me.getServerNamed(target);
+            if (server != null) {
+                servers.add(server);
+            } else {
+                Cluster cluster = getClusterNamed(me, target);
+                if (cluster != null) {
+                    servers.addAll(cluster.getInstances());
+                }
+            } 
+            return servers;
+        }
+
+        public static List<ApplicationRef> getApplicationRefsInTarget(
+            Domain me, String target) {
+            Server server = me.getServerNamed(target);
+            if (server != null) {
+                return server.getApplicationRef();
+            } else {
+                Cluster cluster = getClusterNamed(me, target);
+                if (cluster != null) {
+                    return cluster.getApplicationRef();
+                }
+            }
+            return Collections.EMPTY_LIST;
+        }
+
+        public static ApplicationRef getApplicationRefInTarget(
+            Domain me, String appName, String target) {
+            for (ApplicationRef ref : getApplicationRefsInTarget(me, target)) {
+                if (ref.getRef().equals(appName)) {
+                    return ref;
+                }
+            }
+            return null;
+        }
+
+        public static boolean isAppRefEnabledInTarget(
+            Domain me, String appName, String target) {
+            ApplicationRef ref = getApplicationRefInTarget(me, appName, target);
+            if (ref != null && Boolean.valueOf(ref.getEnabled())) {
+                return true;
+            }
+            return false;
         }
 
          public static ReferenceContainer getReferenceContainerNamed(Domain d, String name) {

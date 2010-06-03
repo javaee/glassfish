@@ -45,6 +45,7 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.Utility;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.logging.LogDomains;
@@ -346,8 +347,7 @@ public class ApplicationLifecycle implements Deployment {
                  // if enable attribute is set to true
                  // and the target is the default server instance of current VM
                  // we load and start the application
-                if (commandParams.enabled && commandParams.target.equals(
-                    server.getName())) {
+                if (commandParams.enabled && domain.isCurrentInstanceMatchingTarget(commandParams.target, server.getName())) {
                     Thread.currentThread().setContextClassLoader(context.getFinalClassLoader());
                     appInfo.setLibraries(commandParams.libraries());
                     try {
@@ -803,7 +803,16 @@ public class ApplicationLifecycle implements Deployment {
 
         events.send(new Event(Deployment.UNDEPLOYMENT_START, info));
 
-        unload(appName, context);
+        // TODO: use this workaround till the command replication is turned on 
+        // by default
+        boolean doReplication = false;
+        if(Utility.getEnvOrProp("ENABLE_REPLICATION")!=null) {
+            doReplication = Boolean.parseBoolean(Utility.getEnvOrProp("ENABLE_REPLICATION"));
+         }
+        if (!doReplication) {
+            unload(appName, context);
+        }
+
         try {
             info.clean(context);
         } catch(Exception e) {
@@ -999,6 +1008,56 @@ public class ApplicationLifecycle implements Deployment {
         }, domain);
     }
 
+
+    public void updateAppEnabledAttributeInDomainXML(final String appName,
+        final String target, final boolean enabled) throws TransactionFailure {
+        ConfigSupport.apply(new SingleConfigCode() {
+            public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
+                // get the transaction
+                Transaction t = configSupport.getTransaction(param);
+                if (t!=null) {
+                    Server servr = ((Domain)param).getServerNamed(target);
+                    if (servr != null) {
+                        // update the application-ref from standalone
+                        // server instance
+                        for (ApplicationRef appRef :
+                            servr.getApplicationRef()) {
+                            if (appRef.getRef().equals(appName)) {
+                                ConfigBeanProxy appRef_w = configSupport.enrollInTransaction(t, appRef);
+                                ((ApplicationRef)appRef_w).setEnabled(String.valueOf(enabled));
+                                break;
+                            }
+                        }
+                    }
+                    Cluster cluster = ((Domain)param).getClusterNamed(target);
+                    if (cluster != null) {
+                        // update the application-ref from cluster
+                        for (ApplicationRef appRef :
+                            cluster.getApplicationRef()) {
+                            if (appRef.getRef().equals(appName)) {
+                                ConfigBeanProxy appRef_w = configSupport.enrollInTransaction(t, appRef);
+                                ((ApplicationRef)appRef_w).setEnabled(String.valueOf(enabled));
+                                break;
+                            }
+                        }
+
+                        // update the application-ref from cluster instances
+                        for (Server svr : cluster.getInstances() ) {
+                            for (ApplicationRef appRef :
+                                svr.getApplicationRef()) {
+                                if (appRef.getRef().equals(appName)) {
+                                    ConfigBeanProxy appRef_w = configSupport.enrollInTransaction(t, appRef);
+                                    ((ApplicationRef)appRef_w).setEnabled(String.valueOf(enabled));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+             }
+             return Boolean.TRUE;
+            }
+        }, domain);
+    }
 
     // check if the application is registered in domain.xml
     public boolean isRegistered(String appName) {

@@ -179,7 +179,9 @@ public interface Deployment {
     public void unregisterAppFromDomainXML(final String appName, 
         final String target)
         throws TransactionFailure;
-    
+
+    public void updateAppEnabledAttributeInDomainXML(final String appName,
+        final String target, final boolean enabled) throws TransactionFailure;
 
     public List<EngineInfo> setupContainerInfos(
             DeploymentContext context) throws Exception;

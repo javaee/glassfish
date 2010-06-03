@@ -49,6 +49,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -513,24 +514,35 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             //if application is already deployed and force=true,
             //then undeploy the application first.
-            UndeployCommandParameters undeployParams = new UndeployCommandParameters(name);
-            undeployParams.keepreposdir = keepreposdir;
-            undeployParams.droptables = dropandcreatetables;
-            undeployParams.ignoreCascade = force;
+
+            // Use ParameterMap till we have a better way
+            // to invoke a command on both DAS and instance with the
+            // replication framework
+            final ParameterMap parameters = new ParameterMap();
+            parameters.add("DEFAULT", name);
+            parameters.add("target", target);
+            parameters.add("keepreposdir", keepreposdir.toString());
+            if (dropandcreatetables != null) {
+                parameters.add("droptables", dropandcreatetables.toString());
+            }
+            parameters.add("ignoreCascade", force.toString());
 
             ActionReport subReport = report.addSubActionsReport();
             if (properties!=null && properties.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
-                undeployParams.properties = new Properties();
-                undeployParams.properties.put(DeploymentProperties.KEEP_SESSIONS, properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
+                Properties undeployProperties = new Properties();
+                undeployProperties.put(DeploymentProperties.KEEP_SESSIONS, properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
+                parameters.add("properties", propertiesValue(undeployProperties, ':'));
                 subReport.setExtraProperties(new Properties());
             } else if (property!=null && property.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
-                undeployParams.properties = new Properties();
-                undeployParams.properties.put(DeploymentProperties.KEEP_SESSIONS, property.getProperty(DeploymentProperties.KEEP_SESSIONS));
+                Properties undeployProperties = new Properties();
+                undeployProperties.put(DeploymentProperties.KEEP_SESSIONS, properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
+                parameters.add("properties", propertiesValue(undeployProperties, ':'));
                 subReport.setExtraProperties(new Properties());
             }
 
             CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("undeploy", subReport);
-            inv.parameters(undeployParams).execute();
+
+            inv.parameters(parameters).execute();
             return subReport.getExtraProperties();
         }
         return null;
@@ -676,4 +688,17 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             return false;
         }
     }
+
+    private String propertiesValue(final Properties props, final char sep) {
+        final StringBuilder sb = new StringBuilder();
+        String currentSep = "";
+        for (Enumeration en = props.propertyNames(); en.hasMoreElements();) {
+            final Object key = en.nextElement();
+            final Object v = props.get(key);
+            sb.append(currentSep).append(key.toString()).append("=").append(v.toString());
+            currentSep = String.valueOf(sep);
+        }
+        return sb.toString();
+    }
+
 }

@@ -42,10 +42,13 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.ApplicationName;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.StateCommandParameters;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.glassfish.api.ActionReport;
@@ -78,6 +81,7 @@ import org.glassfish.deployment.versioning.VersioningSyntaxException;
  */
 @Service(name="enable")
 @I18n("enable.command")
+@Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @Scoped(PerLookup.class)
 public class EnableCommand extends StateCommandParameters implements AdminCommand {
 
@@ -85,6 +89,9 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
 
     @Inject
     Deployment deployment;
+
+    @Inject
+    Domain domain;
 
     @Inject
     ServerEnvironmentImpl env;
@@ -109,6 +116,19 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
+        // TODO: use this workaround till the command replication is turned on
+        // by default
+        boolean doReplication = false;
+        if(Utility.getEnvOrProp("ENABLE_REPLICATION")!=null) {
+            doReplication = Boolean.parseBoolean(Utility.getEnvOrProp("ENABLE_REPLICATION"));
+         }
+        if (!doReplication) {
+        if (!deployment.isRegistered(name())) {
+            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name()));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
         // try to disable the enabled version, if exist
         try {
             versioningService.handleDisable(name(),target, report);
@@ -116,17 +136,22 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
             report.failure(logger, e.getMessage());
             return;
         }
-        
-        if (!deployment.isRegistered(name())) {
-            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name()));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
         }
 
         // return if the application is already in enabled state
-        if (Boolean.valueOf(ConfigBeansUtilities.getEnabled(target, 
-            name()))) {
+        if (domain.isAppRefEnabledInTarget(name(), target)) {
             logger.fine("The application is already enabled");
+            return;
+        }
+
+        if (!domain.isCurrentInstanceMatchingTarget(target, server.getName())) {
+            // if the target does not match with the current instance name
+            // we should just update the domain.xml and return
+            try {
+                deployment.updateAppEnabledAttributeInDomainXML(name(), target, true);
+            } catch(TransactionFailure e) {
+                logger.warning("failed to set enable attribute for " + name());
+            }
             return;
         }
 
@@ -145,13 +170,13 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
                     break;
                 }
             }
-
             for (ApplicationRef ref : server.getApplicationRef()) {
                 if (ref.getRef().equals(name())) {
                     appRef = ref;
                     break;
                 }
             }
+
             if (app!=null) {
                 commandParams = app.getDeployParameters(appRef);
                 commandParams.origin = Origin.load;
@@ -202,14 +227,10 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
 
             if (report.getActionExitCode().equals(
                 ActionReport.ExitCode.SUCCESS)) {
-                if (appRef!=null) {
-                    ConfigSupport.apply(new SingleConfigCode<ApplicationRef>() {
-                        public Object run(ApplicationRef param) throws
-                            PropertyVetoException, TransactionFailure {
-                            param.setEnabled(String.valueOf(true));
-                            return null;
-                        }
-                    }, appRef);
+                try {
+                    deployment.updateAppEnabledAttributeInDomainXML(name(), target, true);
+                } catch(TransactionFailure e) {
+                    logger.warning("failed to set enable attribute for " + name());
                 }
             }
 

@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -51,6 +52,8 @@ import org.glassfish.api.deployment.StateCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.admin.config.ApplicationName;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -76,6 +79,7 @@ import org.glassfish.deployment.versioning.VersioningException;
  */
 @Service(name="disable")
 @I18n("disable.command")
+@Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @Scoped(PerLookup.class)
     
 public class DisableCommand extends StateCommandParameters implements AdminCommand {
@@ -87,6 +91,9 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
 
     @Inject
     Deployment deployment;
+
+    @Inject
+    Domain domain;
 
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
@@ -110,7 +117,7 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
         String appName = name();
 
         try {
-            List<String> matchedVersions = versioningService.getMatchedVersions(appName);
+            List<String> matchedVersions = versioningService.getMatchedVersions(appName, target);
             if (matchedVersions == Collections.EMPTY_LIST) {
                 // no version matched by the expression
                 // nothing to do : success
@@ -138,10 +145,16 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
             return;
 
         }
-        // return if the application is already in disabled state
-        if (!Boolean.valueOf(ConfigBeansUtilities.getEnabled(target,
-            appName))) {
-            logger.fine("The application is already disabled");
+
+        if (!domain.isCurrentInstanceMatchingTarget(target, server.getName())) {
+            // if the target does not match with the current instance name
+            // we should just update the domain.xml and return
+            try {
+                deployment.updateAppEnabledAttributeInDomainXML(name(), target, false);
+            } catch(TransactionFailure e) {
+                logger.warning("failed to set enable attribute for " + name());
+            }
+
             return;
         }
 
@@ -171,18 +184,11 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
 
             if (report.getActionExitCode().equals(
                 ActionReport.ExitCode.SUCCESS)) {
-            for (ApplicationRef ref : server.getApplicationRef()) {
-                if (ref.getRef().equals(appName)) {
-                    ConfigSupport.apply(new SingleConfigCode<ApplicationRef>() {
-                        public Object run(ApplicationRef param) throws
-                                PropertyVetoException, TransactionFailure {
-                            param.setEnabled(String.valueOf(false));
-                            return null;
-                        }
-                    }, ref);
-                    break;
+                try {
+                    deployment.updateAppEnabledAttributeInDomainXML(name(), target, false);
+                } catch(TransactionFailure e) {
+                    logger.warning("failed to set enable attribute for " + name());
                 }
-            }
             }
 
         } catch(Exception e) {

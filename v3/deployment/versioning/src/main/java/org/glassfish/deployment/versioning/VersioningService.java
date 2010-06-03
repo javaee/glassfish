@@ -36,7 +36,8 @@
 
 package org.glassfish.deployment.versioning;
 
-import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.ArrayList;
@@ -47,9 +48,8 @@ import java.util.StringTokenizer;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.config.ApplicationName;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.deployment.OpsParams.Origin;
-import org.glassfish.api.deployment.StateCommandParameters;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -73,7 +73,7 @@ public class VersioningService {
     private CommandRunner commandRunner;
 
     @Inject
-    private Applications applications;
+    private Domain domain; 
     
     static final String REPOSITORY_DASH = "-";
     public static final String EXPRESSION_SEPARATOR = ":";
@@ -156,23 +156,23 @@ public class VersioningService {
      *
      * @param untaggedName the application name as an untagged version : an
      * application name without version identifier
-     * @param allApplications the set of applications
+     * @param allApplicationRefs the set of application refs
      * @return all the version(s) of the given application in the given set of
      * applications
      */
     public List<String> getVersions(String untaggedName,
-            List<ApplicationName> allApplications) {
+            List<ApplicationRef> allApplicationRefs) {
         
         List<String> allVersions = new ArrayList<String>();
-        Iterator it = allApplications.iterator();
+        Iterator<ApplicationRef> it = allApplicationRefs.iterator();
 
         while (it.hasNext()) {
-            ApplicationName app = ((ApplicationName) it.next());
+            ApplicationRef ref = it.next();
 
             // if a tagged version or untagged version of the app
-            if (app.getName().startsWith(untaggedName+EXPRESSION_SEPARATOR) ||
-                    app.getName().equals(untaggedName)) {
-                allVersions.add(app.getName());
+            if (ref.getRef().startsWith(untaggedName+EXPRESSION_SEPARATOR) ||
+                    ref.getRef().equals(untaggedName)) {
+                allVersions.add(ref.getRef());
             }
         }
 
@@ -185,11 +185,13 @@ public class VersioningService {
      *
      * @param untaggedName the application name as an untagged version : an
      * application name without version identifier
+     * @param target the target where we want to get all the versions
      * @return all the version(s) of the given application
      */
-    public List<String> getAllversions(String untaggedName){
-        List<ApplicationName> allApplications = applications.getModules();
-        return getVersions(untaggedName,allApplications);
+    public List<String> getAllversions(String untaggedName, String target) {
+        List<ApplicationRef> allApplicationRefs = 
+            domain.getApplicationRefsInTarget(target);
+        return getVersions(untaggedName,allApplicationRefs);
     }
 
     /**
@@ -205,7 +207,7 @@ public class VersioningService {
             throws VersioningSyntaxException {
 
         String untaggedName = getUntaggedName(name);
-        List<String> allVersions = getAllversions(untaggedName);
+        List<String> allVersions = getAllversions(untaggedName, target);
         
         if (allVersions != null) {
             Iterator it = allVersions.iterator();
@@ -214,9 +216,9 @@ public class VersioningService {
                 String app = (String) it.next();
 
                 // if a version of the app is enabled
-                if (Boolean.valueOf(
-                        ConfigBeansUtilities.getEnabled(target, app))) {
-
+                ApplicationRef ref = domain.getApplicationRefInTarget(
+                    app, target);
+                if (ref != null && Boolean.valueOf(ref.getEnabled())) {
                     return app;
                 }
             }
@@ -310,21 +312,19 @@ public class VersioningService {
      * Process the expression matching operation of the given application name.
      *
      * @param name the application name containing the version expression
-     * @return a List of all expression matched versions
-     * @throws VersioningException if the application has no version registered,
+     * @param target the target we are looking for the verisons 
+     * @return a List of all expression matched versions, return empty list
+     * if no version is registered on this target
      * or if getUntaggedName throws an exception
      */
-    public final List<String> getMatchedVersions(String name)
+    public final List<String> getMatchedVersions(String name, String target)
             throws VersioningException {
 
         String untagged = getUntaggedName(name);
-        List<String> allVersions = getAllversions(untagged);
+        List<String> allVersions = getAllversions(untagged, target);
 
-        if(allVersions.size() == 0){
-            throw new VersioningException(
-                LOCALSTRINGS.getLocalString("application.noversion",
-                "Application {0} has no version registered",
-                untagged));
+        if(allVersions.size() == 0) {
+             return Collections.EMPTY_LIST;
         }
         
         return matchExpression(allVersions, name);
@@ -368,21 +368,20 @@ public class VersioningService {
     public void handleDisable(final String appName, final String target,
             final ActionReport report) throws VersioningSyntaxException {
 
-        StateCommandParameters commandParams = new StateCommandParameters();
         // retrieve the currently enabled version of the application
         String enabledVersion = getEnabledVersion(appName, target);
 
         // invoke disable if the currently enabled version is not itself
         if(enabledVersion != null &&
                   !enabledVersion.equals(appName)){
-            commandParams.component = enabledVersion;
-            commandParams.origin = Origin.load;
-            commandParams.target = target;
+            final ParameterMap parameters = new ParameterMap();
+            parameters.add("DEFAULT", enabledVersion);
+            parameters.add("target", target);
 
             ActionReport subReport = report.addSubActionsReport();
 
             CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("disable", subReport);
-            inv.parameters(commandParams).execute();
+            inv.parameters(parameters).execute();
         }
     }
 }

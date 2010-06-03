@@ -39,7 +39,7 @@ package org.glassfish.deployment.versioning;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
-import org.glassfish.api.admin.config.ApplicationName;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -149,21 +149,21 @@ public class VersioningServiceTest {
         VersioningService instance = new VersioningService();
 
         // the set of applications
-        List<ApplicationName> listApplications = new ArrayList<ApplicationName>();
-        listApplications.add(new ApplicationNameTest(APPLICATION_NAME));
-        listApplications.add(new ApplicationNameTest(APPLICATION_NAME+
+        List<ApplicationRef> listApplications = new ArrayList<ApplicationRef>();
+        listApplications.add(new ApplicationRefTest(APPLICATION_NAME));
+        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
                 VersioningService.EXPRESSION_SEPARATOR+"BETA-1.0.0"));
-        listApplications.add(new ApplicationNameTest(APPLICATION_NAME+
+        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
                 VersioningService.EXPRESSION_SEPARATOR+"RC-1.0.0"));
-        listApplications.add(new ApplicationNameTest(APPLICATION_NAME+
+        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
                 "_RC-1.0.0"));
-        listApplications.add(new ApplicationNameTest(APPLICATION_NAME+
+        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
                 ";RC-1.0.0"));
-        listApplications.add(new ApplicationNameTest(APPLICATION_NAME+
+        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
                 ".RC-1.0.0"));
-        listApplications.add(new ApplicationNameTest(APPLICATION_NAME+
+        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
                 "-RC-1.0.0"));
-        listApplications.add(new ApplicationNameTest(APPLICATION_NAME+
+        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
                 APPLICATION_NAME));
 
         // the expected set of versions
@@ -418,23 +418,66 @@ public class VersioningServiceTest {
         assertEquals(expectedResult, result);
     }
 
-    // this class is used to fake the List<ApplicationName> returned by
+    // this class is used to fake the List<ApplicationRef> returned by
     // Applications.getModule. so we can call the VersioningService.matchExpression
     // with an home made set of applications.
-    private class ApplicationNameTest implements ApplicationName{
-        private String name;
+    private class ApplicationRefTest implements ApplicationRef{
+        private String ref;
 
-        public ApplicationNameTest(String value){
-            this.name = value;
+        public ApplicationRefTest(String value){
+            this.ref = value;
         }
 
         @Override
-        public String getName() {
-            return name;
+        public String getRef() {
+            return ref;
         }
 
         @Override
-        public void setName(String value) throws PropertyVetoException{
+        public void setRef(String value) throws PropertyVetoException{
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setEnabled(String value) throws PropertyVetoException{
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+
+        @Override
+        public String getEnabled() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setLbEnabled(String value) throws PropertyVetoException{
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+
+        @Override
+        public String getLbEnabled(){
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setVirtualServers(String value) throws PropertyVetoException{
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+
+        @Override
+        public String getVirtualServers(){
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setDisableTimeoutInMinutes(String value) throws PropertyVetoException{
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public String getDisableTimeoutInMinutes(){
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
@@ -458,5 +501,11 @@ public class VersioningServiceTest {
         public ConfigBeanProxy deepCopy() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
+
+        @Override
+        public void injectedInto(Object target) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
     }
 }
