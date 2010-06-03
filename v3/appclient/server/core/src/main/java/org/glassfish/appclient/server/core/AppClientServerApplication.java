@@ -59,6 +59,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.api.admin.ProcessEnvironment;
 
 /**
  * Represents an app client module, either stand-alone or nested inside
@@ -81,6 +82,10 @@ public class AppClientServerApplication implements
 
     @Inject
     private Habitat habitat;
+
+    @Inject
+    private ProcessEnvironment processEnv;
+
 
     private DeploymentContext dc;
 
@@ -128,6 +133,9 @@ public class AppClientServerApplication implements
 
 
     boolean start() {
+        if (processEnv.getProcessType().isEmbedded()) {
+            return true;
+        }
         if (jwsInfo == null) {
             jwsInfo = newJavaWebStartInfo();
         }
