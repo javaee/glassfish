@@ -52,6 +52,8 @@ import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.JmsHost;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.IiopService;
+import com.sun.enterprise.config.serverbeans.JmsService;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
@@ -338,32 +340,40 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
              * to create proxies etc. Whenever, IIOP and JMS listeners move to use network-listener elements,
              * then this code can be removed
              */
-            List<IiopListener> iiopListenerList = config.getIiopService().getIiopListener();
-            for(IiopListener oneListener : iiopListenerList) {
-                if(Boolean.valueOf(oneListener.getEnabled()) && Boolean.valueOf(oneListener.getLazyInit())) {
-                    NetworkListener dummy = new DummyNetworkListener();
-                    dummy.setPort(oneListener.getPort());
-                    dummy.setAddress(oneListener.getAddress());
-                    dummy.setProtocol("light-weight-listener");
-                    dummy.setTransport("tcp");
-                    dummy.setName("iiop-service");
-                    createNetworkProxy(dummy);
+
+            final IiopService iiopService = config.getIiopService();
+            if (iiopService != null) {
+                List<IiopListener> iiopListenerList = iiopService.getIiopListener();
+                for (IiopListener oneListener : iiopListenerList) {
+                    if (Boolean.valueOf(oneListener.getEnabled()) && Boolean.valueOf(oneListener.getLazyInit())) {
+                        NetworkListener dummy = new DummyNetworkListener();
+                        dummy.setPort(oneListener.getPort());
+                        dummy.setAddress(oneListener.getAddress());
+                        dummy.setProtocol("light-weight-listener");
+                        dummy.setTransport("tcp");
+                        dummy.setName("iiop-service");
+                        createNetworkProxy(dummy);
+                    }
                 }
             }
+
             /*
              * Do the same as above for JMS listeners also but only for MQ's EMBEDDED MODE
              */
-            if("EMBEDDED".equalsIgnoreCase(config.getJmsService().getType())) {
-                List<JmsHost> jmsHosts = config.getJmsService().getJmsHost();
-                for(JmsHost oneHost : jmsHosts) {
-                    if( Boolean.valueOf(oneHost.getLazyInit())) {
-                        NetworkListener dummy = new DummyNetworkListener();
-                        dummy.setPort(oneHost.getPort());
-                        dummy.setAddress(oneHost.getHost());
-                        dummy.setProtocol("light-weight-listener");
-                        dummy.setTransport("tcp");
-                        dummy.setName("mq-service");
-                        createNetworkProxy(dummy);
+            final JmsService jmsService = config.getJmsService();
+            if (jmsService != null) {
+                if ("EMBEDDED".equalsIgnoreCase(jmsService.getType())) {
+                    List<JmsHost> jmsHosts = jmsService.getJmsHost();
+                    for (JmsHost oneHost : jmsHosts) {
+                        if (Boolean.valueOf(oneHost.getLazyInit())) {
+                            NetworkListener dummy = new DummyNetworkListener();
+                            dummy.setPort(oneHost.getPort());
+                            dummy.setAddress(oneHost.getHost());
+                            dummy.setProtocol("light-weight-listener");
+                            dummy.setTransport("tcp");
+                            dummy.setName("mq-service");
+                            createNetworkProxy(dummy);
+                        }
                     }
                 }
             }
