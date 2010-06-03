@@ -39,6 +39,10 @@ public abstract class BaseDevTest {
         stat.addStatus(step, success ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL);
     }
 
+    public void report(String step, AsadminReturn ret) {
+        stat.addStatus(step, ret.returnValue ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL);
+    }
+
     /**
      * Runs the command with the args given
      *
@@ -95,6 +99,7 @@ public abstract class BaseDevTest {
             //write(errString);
             ret.out = outString;
             ret.err = errString;
+            ret.outAndErr = ret.out + ret.err;
             process.waitFor();
             success = process.exitValue() == 0 && validResults(outString,
                 String.format("Command %s failed.", args[0]),
@@ -266,6 +271,7 @@ public abstract class BaseDevTest {
     public void cleanup() {
     }
 
+    // simple C-struct -- DIY
     protected static class AsadminReturn {
         protected boolean returnValue;
         protected String out;
