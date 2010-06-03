@@ -47,6 +47,21 @@ public abstract class BaseDevTest {
      * @return true if successful
      */
     public boolean asadmin(final String... args) {
+        AsadminReturn ret = asadminWithOutput(args);
+        write(ret.out);
+        write(ret.err);
+        return ret.returnValue;
+    }
+    /**
+     * Runs the command with the args given
+     * Returns the precious output strings for further processing.
+     *
+     * @param args
+     *
+     * @return true if successful
+     */
+    public AsadminReturn asadminWithOutput(final String... args) {
+        AsadminReturn ret = new AsadminReturn();
         String asadmincmd = isWindows() ? "/bin/asadmin.bat" : "/bin/asadmin";
         List<String> command = new ArrayList<String>();
         command.add(System.getenv().get("S1AS_HOME") + asadmincmd);
@@ -76,8 +91,10 @@ public abstract class BaseDevTest {
             }
             String outString = new String(out.toByteArray()).trim();
             String errString = new String(err.toByteArray()).trim();
-            write(outString);
-            write(errString);
+            //write(outString);
+            //write(errString);
+            ret.out = outString;
+            ret.err = errString;
             process.waitFor();
             success = process.exitValue() == 0 && validResults(outString,
                 String.format("Command %s failed.", args[0]),
@@ -91,7 +108,8 @@ public abstract class BaseDevTest {
                 process.destroy();
             }
         }
-        return success;
+        ret.returnValue = success;
+        return ret;
     }
 
     protected boolean validResults(String text, String... invalidResults) {
@@ -246,6 +264,13 @@ public abstract class BaseDevTest {
      * Implementations can override this method to do the cleanup for eg deleting instances, deleting clusters etc
      */
     public void cleanup() {
+    }
+
+    protected static class AsadminReturn {
+        protected boolean returnValue;
+        protected String out;
+        protected String err;
+        protected String outAndErr;
     }
 
 }
