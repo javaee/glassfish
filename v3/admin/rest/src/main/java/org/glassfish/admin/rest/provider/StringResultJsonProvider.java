@@ -97,7 +97,7 @@ public class StringResultJsonProvider extends ProviderUtil
         String indent = Constants.INDENT;
         result ="{" ;
 
-        result = result + getTypeKey(proxy.getName()) + ":{";
+        result = result + quote(getTypeKey(proxy.getName())) + ":{";
         if (proxy.isError()) {
             result = result + getAttribute("error", proxy.getErrorMessage());
         } else {
@@ -114,12 +114,6 @@ public class StringResultJsonProvider extends ProviderUtil
         result = result + "\n\n" + "}";
         return result;
     }
-
-
-    private String getTypeKey(String name) {
-       return quote(upperCaseFirstLetter(eleminateHypen(name)));
-    }
-
 
     private String getAttribute(String name, String value) {
         String result ="";

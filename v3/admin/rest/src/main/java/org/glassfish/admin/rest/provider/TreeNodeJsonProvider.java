@@ -101,7 +101,7 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
         result ="{" ;
         result = result + "\n\n" + indent;
 
-        result = result + getTypeKey() + ":{";
+        result = result + quote(getTypeKey(getName(uriInfo.getPath(), '/'))) + ":{";
         //display hint if module monitoring levels are OFF.
         if ((proxy.isEmpty()) && (uriInfo.getPath().equalsIgnoreCase("domain"))) {
             result = result + getHint(uriInfo, MediaType.APPLICATION_JSON);
@@ -117,11 +117,6 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
 
         result = result + "\n\n" + "}";
         return result;
-    }
-
-
-    private String getTypeKey() {
-       return quote(upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/'))));
     }
 
 

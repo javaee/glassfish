@@ -101,7 +101,8 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
         String indent = Constants.INDENT;
 
         result ="<" ;
-        result = result + getTypeKey(proxy.getDom());
+         final String typeKey = getTypeKey(getName(uriInfo.getAbsolutePath().toString(), '/'));
+         result = result + typeKey;
         String attributes = getAttributes(proxy.getDom());
         if ((attributes != null) && (attributes.length() > 1)) {
             result = result + " ";
@@ -128,16 +129,9 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
             result = result + getEndXmlElement(getResourcesKey().replace(' ', '-'));
         }
 
-        result = result + "\n\n" + getEndXmlElement(getTypeKey(proxy.getDom()));
+        result = result + "\n\n" + getEndXmlElement(typeKey);
         return result;
     }
-
-
-    private String getTypeKey(Dom proxy) {
-        String uri = uriInfo.getAbsolutePath().toString();
-        return upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
-    }
-
 
     private String getAttributes(Dom proxy) {
         String result ="";
@@ -146,7 +140,7 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
             result = result + eleminateHypen(attributeName) + "=" + quote(proxy.attribute(attributeName));
             result = result + " ";
         }
-        
+
         int endIndex = result.length() - 1;
         if (endIndex > 0) result = result.substring(0, endIndex );
         return result;

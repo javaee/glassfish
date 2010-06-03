@@ -57,6 +57,7 @@ import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
 import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.external.statistics.Statistic;
+import org.jvnet.hk2.config.Dom;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -129,6 +130,13 @@ public class ProviderUtil extends Util {
         return sb.toString();
     }
 
+    static protected final String slashToDash(String string) {
+        if (string != null && !string.isEmpty()) {
+            return string.replaceAll("/", "-");
+        } else {
+            return string;
+        }
+    }
 
     static protected final String readAsString(InputStream in) throws IOException {
         Reader reader = new InputStreamReader(in);
@@ -394,7 +402,7 @@ public class ProviderUtil extends Util {
     /**
      * Method to get the hint to display in case module monitoring levels are OFF
      *
-     * @param UriInfo the uri context object of the input request
+     * @param uriInfo the uri context object of the input request
      * @param mediaType the media type of the input request
      * @return a hit to display when module monitoring levels are all OFF
      */
@@ -437,6 +445,10 @@ public class ProviderUtil extends Util {
        }
 
        return result;
+    }
+
+    protected String getTypeKey(String uri) {
+        return upperCaseFirstLetter(slashToDash(decode(uri)));
     }
 
 

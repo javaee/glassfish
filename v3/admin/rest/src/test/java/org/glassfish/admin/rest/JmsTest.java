@@ -81,7 +81,8 @@ public class JmsTest extends RestTestBase {
         final String jndiName = "jndi/" + generateRandomString();
         String encodedJndiName = jndiName;
         try {
-            encodedJndiName = URLEncoder.encode(URLEncoder.encode(jndiName, "UTF-8"), "UTF-8");
+            encodedJndiName = URLEncoder.encode(jndiName, "UTF-8");
+            System.out.println(encodedJndiName);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

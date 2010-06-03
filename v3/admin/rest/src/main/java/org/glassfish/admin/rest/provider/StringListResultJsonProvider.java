@@ -129,12 +129,6 @@ public class StringListResultJsonProvider extends ProviderUtil
         return result;
     }
 
-
-    private String getTypeKey(String name) {
-       return quote(upperCaseFirstLetter(eleminateHypen(name)));
-    }
-
-
     private String getAttribute(String name, String value) {
         String result ="";
         result = result + quote(name) + " : " + quote(value);

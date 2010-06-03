@@ -130,9 +130,9 @@ public class StringListResultXmlProvider extends ProviderUtil implements
     }
 
 
-    private String getTypeKey(String name) {
-       return upperCaseFirstLetter(eleminateHypen(name));
-    }
+//    private String getTypeKey(String name) {
+//       return upperCaseFirstLetter(eleminateHypen(name));
+//    }
 
 
     private String getAttribute(String name, String value) {

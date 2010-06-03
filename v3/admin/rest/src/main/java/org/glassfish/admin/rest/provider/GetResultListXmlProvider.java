@@ -100,7 +100,8 @@ public class GetResultListXmlProvider extends ProviderUtil implements MessageBod
         String result;
         String indent = Constants.INDENT;
 
-        result = getStartXmlElement(getTypeKey());
+         final String typeKey = getTypeKey(getName(uriInfo.getPath(), '/'));
+         result = getStartXmlElement(typeKey);
 
         result = result + "\n\n" + indent;
         result = result + getStartXmlElement(getMethodsKey());
@@ -119,14 +120,14 @@ public class GetResultListXmlProvider extends ProviderUtil implements MessageBod
             result = result + getEndXmlElement(getResourcesKey().replace(' ', '-'));
         }
 
-        result = result + "\n\n" + getEndXmlElement(getTypeKey());
+        result = result + "\n\n" + getEndXmlElement(typeKey);
         return result;
     }
 
 
-    private String getTypeKey() {
-       return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
-    }
+//    private String getTypeKey() {
+//       return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
+//    }
 
 
     private String getResourcesLinks(List<Dom> proxyList,

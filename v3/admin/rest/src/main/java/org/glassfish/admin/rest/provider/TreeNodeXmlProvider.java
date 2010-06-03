@@ -96,7 +96,8 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
 
      private String getXml(List<TreeNode> proxy) {
         String result;
-        result ="<" + getTypeKey();
+         final String typeKey = getTypeKey(getName(uriInfo.getPath(), '/'));
+         result ="<" + typeKey;
 
         //display hint if module monitoring levels are OFF.
         if ((proxy.isEmpty()) && (uriInfo.getPath().equalsIgnoreCase("domain"))) {
@@ -109,15 +110,9 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
         }
 
         result = result + getResourcesLinks(proxy);
-        result = result + getEndXmlElement(getTypeKey());
+        result = result + getEndXmlElement(typeKey);
         return result;
     }
-
-
-    private String getTypeKey() {
-       return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
-    }
-
 
     private String getAttributes(List<TreeNode> nodeList) {
         String result ="";

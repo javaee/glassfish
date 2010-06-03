@@ -102,7 +102,7 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
         result ="{" ;
         result = result + "\n\n" + indent;
 
-        result = result + getTypeKey(proxy.getDom()) + ":{";
+        result = result + quote(getTypeKey(getName(uriInfo.getAbsolutePath().toString(), '/'))) + ":{";
         result = result + getAttributes(proxy.getDom());
         result = result + "},";
 
@@ -127,13 +127,6 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
         result = result + "\n\n" + "}";
         return result;
     }
-
-
-    private String getTypeKey(Dom proxy) {
-        String uri = uriInfo.getAbsolutePath().toString();
-        return quote(upperCaseFirstLetter(eleminateHypen(getName(uri, '/'))));
-    }
-
 
     private String getAttributes(Dom proxy) {
         String result ="";

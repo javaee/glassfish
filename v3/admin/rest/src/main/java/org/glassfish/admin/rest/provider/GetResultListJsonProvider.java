@@ -104,7 +104,7 @@ public class GetResultListJsonProvider extends ProviderUtil implements MessageBo
         result ="{" ;
         result = result + "\n\n" + indent;
 
-        result = result + getTypeKey() + ":{";
+        result = result + quote(getTypeKey(getName(uriInfo.getPath(), '/'))) + ":{";
         result = result + getAttributes();
         result = result + "},";
 
@@ -128,12 +128,6 @@ public class GetResultListJsonProvider extends ProviderUtil implements MessageBo
         result = result + "\n\n" + "}";
         return result;
     }
-
-
-    private String getTypeKey() {
-       return quote(upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/'))));
-    }
-
 
     private String getAttributes() {
         //No attributes for this resource. This resource is an abstraction.

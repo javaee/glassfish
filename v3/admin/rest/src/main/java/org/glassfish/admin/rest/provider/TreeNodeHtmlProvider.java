@@ -97,7 +97,7 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
 
      private String getHtml(List<TreeNode> proxy) {
         String result = getHtmlHeader();
-        result = result + "<h1>" + getTypeKey() + "</h1>" + "<hr>";
+        result = result + "<h1>" + getTypeKey(getName(uriInfo.getPath(), '/')) + "</h1>" + "<hr>";
 
         //display hint if module monitoring levels are OFF.
         if ((proxy.isEmpty()) && (uriInfo.getPath().equalsIgnoreCase("domain"))) {
@@ -112,12 +112,6 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
         result = result + "</html></body>";
         return result;
     }
-
-
-    private String getTypeKey() {
-       return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
-    }
-
 
     private String getAttributes(List<TreeNode> nodeList) {
         String result ="";

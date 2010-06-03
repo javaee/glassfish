@@ -98,7 +98,8 @@ public class StringResultXmlProvider extends ProviderUtil implements
         String indent = Constants.INDENT;
         result ="<" ;
 
-        result = result + getTypeKey(proxy.getName());
+         final String typeKey = getTypeKey(proxy.getName());
+         result = result + typeKey;
         String attribute;
         if (proxy.isError()) {
             attribute = getAttribute("error", proxy.getErrorMessage());
@@ -118,15 +119,9 @@ public class StringResultXmlProvider extends ProviderUtil implements
             indent + Constants.INDENT);
         result = result + "\n" + indent + "</" + getMethodsKey() + ">";
 
-        result = result + "\n\n" + "</" + getTypeKey(proxy.getName()) + ">";
+        result = result + "\n\n" + "</" + typeKey + ">";
         return result;
     }
-
-
-    private String getTypeKey(String name) {
-       return upperCaseFirstLetter(eleminateHypen(name));
-    }
-
 
     private String getAttribute(String name, String value) {
         String result ="";

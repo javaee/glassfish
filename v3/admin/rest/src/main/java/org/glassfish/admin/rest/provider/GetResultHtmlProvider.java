@@ -95,7 +95,8 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
 
     private String getHtml(GetResult proxy) {
         String result = getHtmlHeader();
-        result = result + "<h1>" + getTypeKey(proxy.getDom()) + "</h1>";
+        final String typeKey = getTypeKey(getName(uriInfo.getAbsolutePath().toString(), '/'));
+        result = result + "<h1>" + typeKey + "</h1>";
 
         String attributes = getHtmlRespresentationForAttributes((ConfigBean)proxy.getDom(), uriInfo);
         result = getHtmlForComponent(attributes, "Attributes", result);
@@ -103,7 +104,7 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
         String command = proxy.getDeleteCommand();
         String deleteCommand = getHtmlRespresentationsForCommand(
                 proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", "Delete", uriInfo);
-        result = getHtmlForComponent(deleteCommand, "Delete " + getTypeKey(proxy.getDom()), result);
+        result = getHtmlForComponent(deleteCommand, "Delete " + typeKey, result);
 
         String childResourceLinks = getResourcesLinks(proxy.getDom(),
             proxy.getCommandResourcesPaths());
@@ -113,10 +114,10 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
         return result;
     }
 
-    private String getTypeKey(Dom proxy) {
-        String uri = uriInfo.getAbsolutePath().toString();
-        return upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
-    }
+//    private String getTypeKey(Dom proxy) {
+//        String uri = uriInfo.getAbsolutePath().toString();
+//        return upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
+//    }
 
 
     private String getResourcesLinks(Dom proxy, String[][] commandResourcesPaths) {

@@ -38,6 +38,8 @@ package org.glassfish.admin.rest;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.admin.rest.provider.ProviderUtil;
 import javax.ws.rs.core.UriInfo;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 
 /**
@@ -107,7 +109,7 @@ public class Util {
 
     /**
      * Removes any hypens ( - ) from the given string.
-     * When it removes a hypen, it converts next immidiate
+     * When it removes a hypen, it converts next immediate
      * character, if any,  to an Uppercase.(schema2beans convention)
      * @param string the input string
      * @return a <code>String</code> resulted after removing the hypens
@@ -132,6 +134,16 @@ public class Util {
         return string;
     }
 
+    public String decode(String string) {
+        String ret = string;
+
+        try {
+            ret = URLDecoder.decode(string, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+        }
+
+        return ret;
+    }
 
     /**
     * Converts the first letter of the given string to Uppercase.

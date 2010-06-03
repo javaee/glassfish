@@ -97,12 +97,13 @@ public class GetResultListHtmlProvider extends ProviderUtil implements MessageBo
 
      private String getHtml(GetResultList proxy) {
         String result = getHtmlHeader();
-        result = result + "<h1>" + getTypeKey() + "</h1>";
+         final String typeKey = getTypeKey(getName(uriInfo.getPath(), '/'));
+         result = result + "<h1>" + typeKey + "</h1>";
 
         String command = proxy.getPostCommand();
         String postCommand = getHtmlRespresentationsForCommand(
             proxy.getMetaData().getMethodMetaData("POST"), "POST", "Create", uriInfo);
-        result = getHtmlForComponent(postCommand, "Create " + getTypeKey(), result);
+        result = getHtmlForComponent(postCommand, "Create " + typeKey, result);
 
         String childResourceLinks = getResourcesLinks(proxy.getDomList(),
             proxy.getCommandResourcesPaths());
@@ -113,9 +114,9 @@ public class GetResultListHtmlProvider extends ProviderUtil implements MessageBo
     }
 
 
-    private String getTypeKey() {
-       return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
-    }
+//    private String getTypeKey() {
+//       return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
+//    }
 
 
     private String getResourcesLinks(List<Dom> proxyList,

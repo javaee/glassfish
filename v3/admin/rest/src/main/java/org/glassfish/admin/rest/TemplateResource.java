@@ -35,6 +35,9 @@
  */
 package org.glassfish.admin.rest;
 
+import java.io.*;
+import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,22 +48,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import javax.ws.rs.POST;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+
 import com.sun.jersey.api.core.ResourceContext;
 
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -70,6 +66,8 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.ArrayList;
 import javax.ws.rs.PathParam;
 
+import com.sun.jersey.spi.container.ContainerRequest;
+import org.glassfish.admin.rest.resources.DomainStopResource;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.RestRedirect;
 
@@ -123,8 +121,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
     @Produces({MediaType.TEXT_HTML,
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public GetResult get(@QueryParam("expandLevel")
-            @DefaultValue("1") int expandLevel) {
+    public GetResult get(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
         if (getEntity() == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
@@ -160,7 +157,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             if ((data.containsKey("operation")) &&
                     (data.get("operation").equals("__deleteoperation"))) {
                 data.remove("operation");
-                return delete(data, "true");
+                return delete(data);
             }
 
             Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
@@ -189,7 +186,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
 
     @DELETE
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_OCTET_STREAM})
-    public Response delete(HashMap<String, String> data, @DefaultValue("false") @QueryParam("cascade") String cascade) {
+    public Response delete(HashMap<String, String> data) {
         //User can not directly delete the resource. User can only
         //do so implicitly through asadmin command
         try {
@@ -200,7 +197,13 @@ public class TemplateResource<E extends ConfigBeanProxy> {
                         errorMessage, requestHeaders, uriInfo);
             }
 
-            data.put("cascade", cascade);
+            MultivaluedMap<String, String> qs = ((ContainerRequest) requestHeaders).getQueryParameters();
+            for (Map.Entry<String, List<String>> entry : qs.entrySet()) {
+                String key = entry.getKey();
+                for (String value : entry.getValue()) {
+                    data.put(key, value); // TODO: Last one wins? Can't imagine we'll see List.size() > 1, but...
+                }
+            }
             __resourceUtil.purgeEmptyEntries(data);
 
             __resourceUtil.adjustParameters(data);
@@ -434,24 +437,42 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         return null;//not processed
     }
 
-
+    // TODO: Why is this not calling getResourceName()?
     private void addDefaultParameter(HashMap<String, String> data) {
+        /*
         int index = uriInfo.getAbsolutePath().getPath().lastIndexOf('/');
         String defaultParameterValue = uriInfo.getAbsolutePath().getPath().substring(index + 1);
-        data.put("DEFAULT", defaultParameterValue);
+        try {
+            data.put("DEFAULT", URLDecoder.decode(defaultParameterValue, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        */
+        List<PathSegment> segments = uriInfo.getPathSegments();
+        data.put("DEFAULT", segments.get(segments.size()-1).getPath());
     }
 
     private String getResourceName(String absoluteName, String delimiter) {
-        if (null == absoluteName) {
-            return absoluteName;
-        }
-        int index = absoluteName.lastIndexOf(delimiter);
-        if (index != -1) {
-            index = index + delimiter.length();
-            return absoluteName.substring(index);
-        } else {
-            return absoluteName;
-        }
+//        String resourceName = absoluteName;
+//        if (null == absoluteName) {
+//            return absoluteName;
+//        }
+//        int index = absoluteName.lastIndexOf(delimiter);
+//        if (index != -1) {
+//            index = index + delimiter.length();
+//            resourceName =  absoluteName.substring(index);
+//        }
+//
+//        try {
+//            return URLDecoder.decode(resourceName, "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
+        List<PathSegment> segments = uriInfo.getPathSegments();
+        String resourceName = segments.get(segments.size()-1).getPath();
+
+        return resourceName;
     }
+
     private ResourceUtil __resourceUtil;
 }
