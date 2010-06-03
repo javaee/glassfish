@@ -93,8 +93,12 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
     protected int executeCommand() throws CommandException {
         if (synchronizeInstance())
             return SUCCESS;
-        else
+        else {
+            logger.printMessage(strings.get("Sync.noConnect",
+                                    programOpts.getHost(),
+                                    Integer.toString(programOpts.getPort())));
             return ERROR;
+        }
     }
 
     /**
@@ -200,7 +204,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             synchronizeFiles(sr);
 
             /*
-             * Check any subdirectories of the instance directory.
+             * Check any subdirectories of the instance config directory.
              * We only expect one - the config-specific directory,
              * but since we don't have an easy way of knowing the
              * name of that directory, we include them all.  The
