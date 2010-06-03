@@ -204,7 +204,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             if (bundleDesc.hasWebServiceClients())     {
                 JAXRPCCodeGenFacade jaxrpcCodeGenFacade = habitat.getByContract(JAXRPCCodeGenFacade.class);
                 if (jaxrpcCodeGenFacade != null) {
-                    jaxrpcCodeGenFacade.run(habitat,dc,getModuleClassPath(dc)) ;
+                    jaxrpcCodeGenFacade.run(habitat,dc,getModuleClassPath(dc), true) ;
                 }
             }
             generateArtifacts(dc);

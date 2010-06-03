@@ -59,7 +59,7 @@ public class JaxRpcCodegenFactory {
         return registeredFactory;
     }
     
-    public JaxRpcCodegenAdapter getAdapter() {
-        return new JaxRpcRICodegen();
+    public JaxRpcCodegenAdapter getAdapter(boolean processServiceReferences) {
+        return new JaxRpcRICodegen(processServiceReferences);
     }
 }

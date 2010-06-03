@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2006-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2006-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -173,7 +173,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 } else {
                     JAXRPCCodeGenFacade facade= habitat.getByContract(JAXRPCCodeGenFacade.class);
                     if (facade != null) {
-                        facade.run(habitat, dc, moduleCP);
+                        facade.run(habitat, dc, moduleCP, false);
                     }  else {
                         throw new DeploymentException(rb.getString("jaxrpc.codegen.fail")) ;
                     }

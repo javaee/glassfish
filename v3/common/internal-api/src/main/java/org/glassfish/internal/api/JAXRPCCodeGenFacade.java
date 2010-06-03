@@ -52,7 +52,7 @@ import org.jvnet.hk2.component.Habitat;
 @Contract
 public interface JAXRPCCodeGenFacade {
 
-     public void run(Habitat habitat, DeploymentContext context, String cp) throws Exception ;
+     public void run(Habitat habitat, DeploymentContext context, String cp, boolean processServiceReferences) throws Exception ;
 
 
 }

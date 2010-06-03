@@ -52,8 +52,8 @@ import org.jvnet.hk2.component.Habitat;
 @Service
 public class JAXRPCCodeGenFacadeImpl implements JAXRPCCodeGenFacade {
 
-public void run(Habitat habitat, DeploymentContext context, String cp) throws Exception {
-    JaxRpcCodegenFactory.newInstance().getAdapter().run(habitat, context,cp);
+public void run(Habitat habitat, DeploymentContext context, String cp, boolean processServiceReferences) throws Exception {
+    JaxRpcCodegenFactory.newInstance().getAdapter(processServiceReferences).run(habitat, context,cp);
 }
 
 }
