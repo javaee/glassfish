@@ -41,8 +41,13 @@ package org.glassfish.api.admin.config;
  * A configured object that can reference another configured object
  *
  * @author Jerome Dochez
+ * @author Byron Nevins
  */
 public interface ReferenceContainer {
 
     public String getReference();
+    public boolean isCluster();
+    public boolean isServer();
+    public boolean isInstance();
+    public boolean isDas();
 }
