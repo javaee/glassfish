@@ -71,6 +71,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -122,6 +123,7 @@ public class PayloadFilesManagerTest {
         assertTrue(result.toASCIIString().endsWith("/myApp.ear"));
     }
 
+    @Ignore
     @Test
     public void testGetOutputFileURIWindows() throws Exception {
         System.out.println("getOutputFileURIWindows");
@@ -1073,6 +1075,7 @@ public class PayloadFilesManagerTest {
         }
     }
 
+    @Ignore
     @Test
     public void simpleTempRecursiveTransferDirOnlyTest() throws Exception {
         final String DIR = "x/";
