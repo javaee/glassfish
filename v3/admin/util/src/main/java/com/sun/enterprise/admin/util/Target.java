@@ -34,44 +34,76 @@
  * holder.
  *
  */
-package com.sun.enterprise.v3.admin.cluster;
+package com.sun.enterprise.admin.util;
 
 import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class Target {
-    private String targetName;
+    @Inject
     private Domain domain;
 
-    private ArrayList<Server> instances = new ArrayList<Server>();
-
-    public Target(String target, Domain domain) {
-        targetName = target;
-        this.domain = domain;
-        init();
+    /**
+     * Checks if a given target is cluster or nor
+     * @param targetName the name of the target
+     * @return true if the target represents a cluster; false otherwise
+     */
+    public boolean isCluster(String targetName) {
+        return (domain.getServerNamed(targetName) == null);
     }
 
-    private void init() {
+    /**
+     * Returns the Cluster element for a given cluster name
+     * @param targetName the name of the target
+     * @return Cluster element that represents the cluster
+     */
+    public Cluster getCluster(String targetName) {
+        if(!isCluster(targetName))
+            return null;
+        List<Cluster> clList = domain.getClusters().getCluster();
+        for(Cluster cl : clList) {
+            if(targetName.equals(cl.getName())) {
+                return cl;
+            }
+        }
+        return null;
+    }
 
+    /**
+     * Returns the config element that represents a given cluster
+     * @param targetName the name of the target
+     * @return Config element representing the cluster
+     */
+    public Config getClusterConfig(String targetName) {
+        Cluster cl = getCluster(targetName);
+        if(cl == null)
+            return null;
+        return(domain.getConfigNamed(cl.getConfigRef()));
+    }
+
+    /**
+     * Given the name of a target, returns a list of Server objects. If given target is a standalone server,
+     * then the server's Server element is returned in the list. If the target is a cluster, then the list of Server
+     * elements that represent all server instances of that cluster is returned.
+     * @param targetName the name of the target
+     * @return list of Server elements that represent the target
+     */
+    public List<Server> getInstances(String targetName) {
+        List<Server> instances = new ArrayList<Server>();
         //TODO : Target can be a config or a domain; handle that here
-        //If given target is an instance itself, this is the only target
         if(domain.getServerNamed(targetName) != null) {
             instances.add(domain.getServerNamed(targetName));
         } else {
             //TODO : Is this the way to get instances ? Cant we use some DuckType methods in config beans ?
-            Cluster cluster = null;
-            List<Cluster> clList = domain.getClusters().getCluster();
-            for(Cluster cl : clList) {
-                if(targetName.equals(cl.getName())) {
-                    cluster = cl;
-                    break;
-                }
-            }
+            Cluster cluster = getCluster(targetName);
             if(cluster != null) {
                 String clusterConfigName = cluster.getConfigRef();
                 List<Server> svrList = domain.getServers().getServer();
@@ -82,9 +114,6 @@ public class Target {
                 }
             }
         }
-    }
-
-    public List<Server> getInstances() {
         return instances;
     }
 }

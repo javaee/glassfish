@@ -36,6 +36,7 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.admin.util.Target;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.config.serverbeans.Cluster;
@@ -125,14 +126,15 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
 
         //Do replication only is this is DAS
         //TODO : Got to check for default server name and stop replication if target is default server itself.
-        if(serverEnv.isDas() && parameters.getOne("target") != null) {
-            Target target = new Target(parameters.getOne("target"), domain);
-            List<Server> instancesForReplication = target.getInstances();
+        String targetName = parameters.getOne("target");
+        if(serverEnv.isDas() && (targetName != null)) {
+            Target target = habitat.getComponent(Target.class);
+            List<Server> instancesForReplication = target.getInstances(targetName);
             if(instancesForReplication.size() == 0) {
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
                 aReport.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.notargets",
-                        "Unable to find instances for target {0}", target));
+                        "Unable to find instances for target {0}", targetName));
                 //TODO : Undoable command support needed ?
                 return getReturnValueFor(onFailure);
             }
