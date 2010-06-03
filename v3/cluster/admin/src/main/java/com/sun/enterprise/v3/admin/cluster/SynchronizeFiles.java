@@ -45,7 +45,9 @@ import java.util.logging.Level;
 import javax.xml.bind.*;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.PerLookup;
 
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -76,6 +78,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
  * @author Bill Shannon
  */
 @Service(name="_synchronize-files")
+@Scoped(PerLookup.class)
 @I18n("synchronize.command")
 public class SynchronizeFiles implements AdminCommand {
 
