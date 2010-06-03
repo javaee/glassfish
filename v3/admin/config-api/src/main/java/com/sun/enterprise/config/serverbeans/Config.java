@@ -45,8 +45,6 @@ import java.util.Map;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.grizzly.config.dom.NetworkConfig;
-import org.glassfish.config.support.Delete;
-import org.glassfish.config.support.TypeAndNameResolver;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.Container;

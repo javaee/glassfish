@@ -210,8 +210,32 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @DuckTyped
     Cluster getCluster();
 
+    // four trivial methods that ReferenceContainer's need to implement
+    @DuckTyped
+    @Override
+    boolean isCluster();
+
+    @DuckTyped
+    @Override
+    boolean isServer();
+
+    @DuckTyped
+    @Override
+    boolean isDas();
+
+    @DuckTyped
+    @Override
+    boolean isInstance();
 
     class Duck {
+        public static boolean isCluster(Server server) { return false; }
+        public static boolean isServer(Server server)  { return true; }
+        public static boolean isInstance(Server server) { return !isDas(server); }
+        public static boolean isDas(Server server) {
+            String name = server.getName();
+            // todo find the constant somewhere for "server"!
+            return name != null && name.equals("server");
+        }
 
         public static Cluster getCluster(Server server) {
             Dom serverDom = Dom.unwrap(server);
@@ -430,6 +454,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         @Inject
         Configs configs;
 
+        @Inject
+        private Domain domain;
+
         @Override
         public void decorate(AdminCommandContext context, Servers parent, final Server child) throws PropertyVetoException, TransactionFailure  {
             Logger logger = LogDomains.getLogger(Server.class, LogDomains.ADMIN_LOGGER);
@@ -440,6 +467,11 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             if (isStandAlone) { // remove config <instance>-config
                 String instanceConfig = child.getConfigRef();
                 final Config config = configs.getConfigByName(instanceConfig);
+
+                // bnevins June 2010
+                // don't delete the config is someone else holds a reference to it!
+                if(config != null && domain.getReferenceContainersOf(config).size() > 1)
+                    return;
                 try {
                     ConfigSupport.apply(new SingleConfigCode<Configs>() {
 

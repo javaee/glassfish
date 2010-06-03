@@ -226,8 +226,30 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @DuckTyped
     List<Server> getInstances();
 
+    // four trivial methods that ReferenceContainer's need to implement
+    @DuckTyped
+    @Override
+    boolean isCluster();
+
+    @DuckTyped
+    @Override
+    boolean isServer();
+
+    @DuckTyped
+    @Override
+    boolean isDas();
+
+    @DuckTyped
+    @Override
+    boolean isInstance();
+
     class Duck {
-        public static String getReference(Cluster cluster) {
+        public static boolean isCluster(Server server) { return true; }
+        public static boolean isServer(Server server)  { return false; }
+        public static boolean isInstance(Server server) { return false; }
+        public static boolean isDas(Server server) { return false; }
+
+            public static String getReference(Cluster cluster) {
             return cluster.getConfigRef();
         }
 

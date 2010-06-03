@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.api.admin.config.ReferenceContainer;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.api.admin.config.PropertiesDesc;
@@ -48,6 +49,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
+import com.sun.enterprise.util.StringUtils;
 
 import java.beans.PropertyVetoException;
 import java.util.*;
@@ -393,6 +395,15 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     @DuckTyped
     Cluster getClusterNamed(String name);
 
+    @DuckTyped
+    ReferenceContainer getReferenceContainerNamed(String name);
+
+    @DuckTyped
+    List<ReferenceContainer> getAllReferenceContainers();
+
+    @DuckTyped
+    List<ReferenceContainer> getReferenceContainersOf(Config config);
+
     class Duck {
         public static List<Application> getAllDefinedSystemApplications(Domain me) {
             List<Application> allSysApps = new ArrayList<Application>();
@@ -504,6 +515,45 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                 }
             }
             return null;
+        }
+
+         public static ReferenceContainer getReferenceContainerNamed(Domain d, String name) {
+            // Clusters and Servers are ReferenceContainers
+            Cluster c = getClusterNamed(d, name);
+
+            if(c != null)
+                return c;
+
+            return getServerNamed(d, name);
+        }
+
+        public static List<ReferenceContainer> getReferenceContainersOf(Domain d, Config config) {
+            // Clusters and Servers are ReferenceContainers
+            List<ReferenceContainer> sub = new LinkedList<ReferenceContainer>();
+
+            // both the config and its name need to be sanity-checked
+            String name = null;
+
+            if(config != null)
+                name = config.getName();
+
+            if(!StringUtils.ok(name))  // we choose to make this not an error
+                return sub;
+
+            List<ReferenceContainer> all = getAllReferenceContainers(d);
+
+            for(ReferenceContainer rc : all) {
+                if(name.equals(rc.getReference()))
+                    sub.add(rc);
+            }
+            return sub;
+        }
+
+        public static List<ReferenceContainer> getAllReferenceContainers(Domain d) {
+            List<ReferenceContainer> ReferenceContainers = new LinkedList<ReferenceContainer>();
+            ReferenceContainers.addAll(d.getServers().getServer());
+            ReferenceContainers.addAll(d.getClusters().getCluster());
+            return ReferenceContainers;
         }
     }
 }
