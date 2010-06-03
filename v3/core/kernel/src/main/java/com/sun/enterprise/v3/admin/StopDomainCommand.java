@@ -1,5 +1,4 @@
 /*
- *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
@@ -46,6 +45,8 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Iterator;
 import java.util.Collection;
@@ -57,6 +58,7 @@ import java.util.Collection;
  * @author Jerome Dochez
  */
 @Service(name="stop-domain")
+@Scoped(PerLookup.class)
 @Async
 @I18n("stop.domain.command")
 @Cluster(RuntimeType.DAS)

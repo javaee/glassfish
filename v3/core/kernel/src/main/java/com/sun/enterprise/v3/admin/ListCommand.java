@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,14 +32,15 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- *
  */
 
 package com.sun.enterprise.v3.admin;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.Dom;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -63,13 +64,14 @@ import com.sun.enterprise.config.serverbeans.Domain;
  * Time: 1:27:53 AM
  */
 @Service(name="list")
+@Scoped(PerLookup.class)
 public class ListCommand extends V2DottedNameSupport implements AdminCommand {
 
     @Inject
     Domain domain;
 
     //How to define short option name?
-    @Param(optional=true, defaultValue="false", shortName="m")
+    @Param(name="MoniTor", optional=true, defaultValue="false", shortName="m", alias="Mon")
     Boolean monitor;
 
     @Param(primary = true)

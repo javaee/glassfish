@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2006-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2006-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,10 +42,12 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.Param;
-import org.jvnet.hk2.annotations.Inject;
 
 /**
  * Return the version and build number
@@ -53,6 +55,7 @@ import org.jvnet.hk2.annotations.Inject;
  * @author Jerome Dochez
  */
 @Service(name="version")
+@Scoped(PerLookup.class)
 @I18n("version.command")
 public class VersionCommand implements AdminCommand {
     
