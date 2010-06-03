@@ -459,6 +459,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         }
 
         suppInfo.setDeploymentContext(dc);
+        suppInfo.setName(appName);
         
     }
     

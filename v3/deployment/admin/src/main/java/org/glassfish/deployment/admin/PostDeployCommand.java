@@ -117,6 +117,7 @@ public class PostDeployCommand extends DeployCommandParameters implements AdminC
             paramMap.set(DeployCommandParameters.ParameterNames.DEPLOYMENT_PLAN, actualPlan.getAbsolutePath());
         }
         paramMap.set("upload", "true");
+        paramMap.set("name", suppInfo.name());
 
         clusterExecutor.execute("_deploy", this, context, paramMap);
 
