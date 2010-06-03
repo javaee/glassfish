@@ -135,13 +135,13 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     }
 
     /**
-     * Set the programOptions based on the das.properties file.
+     * Set the programOpts based on the das.properties file.
      */
     protected void setDasDefaults(File propfile) throws CommandException {
         Properties dasprops = new Properties();
         FileInputStream fis = null;
         try {
-            // read properties and set them in programOptions
+            // read properties and set them in programOpts
             // properties are:
             // agent.das.port
             // agent.das.host
@@ -149,13 +149,24 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             // agent.das.user           XXX - not in v2?
             fis = new FileInputStream(propfile);
             dasprops.load(fis);
+            fis.close();
+            fis = null;
             String p;
             p = dasprops.getProperty("agent.das.host");
             if (p != null)
                 programOpts.setHost(p);
             p = dasprops.getProperty("agent.das.port");
+            int port = -1;
             if (p != null)
-                programOpts.setPort(Integer.parseInt(p));
+                port = Integer.parseInt(p);
+            p = dasprops.getProperty("agent.das.protocol");
+            if (p != null && p.equals("rmi_jrmp")) {
+                programOpts.setPort(updateDasPort(dasprops, port, propfile));
+            } else if (p == null || p.equals("http"))
+                programOpts.setPort(port);
+            else
+                throw new CommandException(strings.get("Instance.badProtocol",
+                                                    propfile.toString(), p));
             p = dasprops.getProperty("agent.das.isSecure");
             if (p != null)
                 programOpts.setSecure(Boolean.parseBoolean(p));
@@ -176,6 +187,69 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                 }
             }
         }
+    }
+
+    /**
+     * Update DAS port from an old V2 das.properties file.
+     * If the old port is the standard jrmp port, just use the new
+     * standard http port.  Otherwise, prompt for the new port number
+     * if possible.  In any event, try to rewrite the das.properties
+     * file with the new values.
+     */
+    private int updateDasPort(Properties dasprops, int port, File propfile) {
+        Console cons;
+        if (port == 8686) {     // the old JRMP port
+            logger.printMessage(
+                strings.get("Instance.oldDasProperties",
+                    propfile.toString(), Integer.toString(port),
+                    Integer.toString(programOpts.getPort())));
+            port = programOpts.getPort();
+        } else if ((cons = System.console()) != null) {
+            String line = cons.readLine("%s",
+                strings.get("Instance.oldDasPropertiesPrompt",
+                    propfile.toString(), Integer.toString(port),
+                    Integer.toString(programOpts.getPort())));
+            while (line != null && line.length() > 0) {
+                try {
+                    port = Integer.parseInt(line);
+                    if (port > 0 && port <= 65535)
+                        break;
+                } catch (NumberFormatException nfex) {
+                }
+                line = cons.readLine(strings.get("Instance.reenterPort"),
+                    Integer.toString(programOpts.getPort()));
+            }
+        } else {
+            logger.printMessage(
+                strings.get("Instance.oldDasPropertiesWrong",
+                    propfile.toString(), Integer.toString(port),
+                    Integer.toString(programOpts.getPort())));
+            port = programOpts.getPort();
+        }
+        dasprops.setProperty("agent.das.protocol", "http");
+        dasprops.setProperty("agent.das.port", Integer.toString(port));
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(propfile);
+            dasprops.store(fos,
+                "Domain Administration Server Connection Properties");
+            fos.close();
+            fos = null;
+        } catch (IOException ex2) {
+            logger.printMessage(
+                strings.get("Instance.dasPropertiesUpdateFailed"));
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException cex) {
+                    // ignore it
+                }
+            }
+        }
+        // whether we were able to update the file or not, keep going
+        logger.printDebugMessage("New DAS port number: " + port);
+        return port;
     }
 
     private File getTheOneAndOnlyAgent(File parent) throws CommandException {
