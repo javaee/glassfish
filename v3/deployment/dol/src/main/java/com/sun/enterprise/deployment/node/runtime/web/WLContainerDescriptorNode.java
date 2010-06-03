@@ -38,15 +38,9 @@ package com.sun.enterprise.deployment.node.runtime.web;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.XMLNode;
 import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
 import com.sun.enterprise.deployment.runtime.web.ClassLoader;
-import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.net.URLPattern;
-
-import java.util.logging.Level;
 
 /**
  * This node is responsible for handling weblogic.xml container-descriptor.

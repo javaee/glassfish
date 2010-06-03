@@ -87,6 +87,8 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
     protected void Init() {
         registerElementHandler(new XMLElement(RuntimeTagNames.CONTAINER_DESCRIPTOR),
                 WLContainerDescriptorNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.SESSION_DESCRIPTOR),
+                WLSessionDescriptorNode.class);
     }
     
     /**
@@ -166,6 +168,10 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
                     RuntimeTagNames.PREFER_WEB_INF_CLASSES,
                     clBean.getAttributeValue(ClassLoader.DELEGATE));
         }
+
+        // session-descriptor
+        WLSessionDescriptorNode sessionDescriptorNode = new WLSessionDescriptorNode();
+        sessionDescriptorNode.writeDescriptor(root, bundleDescriptor);
 
         return root;
     }

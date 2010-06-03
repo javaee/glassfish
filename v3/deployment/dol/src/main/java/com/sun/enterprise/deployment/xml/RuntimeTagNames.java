@@ -313,7 +313,24 @@ public interface RuntimeTagNames extends TagNames {
     public final static String JNLP_DOC = "jnlp-document";
     // also uses CONTEXT_ROOT defined above in the application-related section
 
+
     // Weblogic specific
-    public final static String PREFER_WEB_INF_CLASSES = "prefer-web-inf-classes";
-    public final static String CONTAINER_DESCRIPTOR = "container-descriptor";
+    // container-descriptor
+    public static final String CONTAINER_DESCRIPTOR = "container-descriptor";
+    public static final String PREFER_WEB_INF_CLASSES = "prefer-web-inf-classes";
+    // session-descriptor
+    public static final String SESSION_DESCRIPTOR = "session-descriptor";
+    public static final String TIMEOUT_SECS = "timeout-secs";
+    public static final String INVALIDATION_INTERVAL_SECS = "invalidation-interval-secs";
+    public static final String MAX_IN_MEMORY_SESSIONS = "max-in-memory-sessions";
+    public static final String COOKIE_NAME = "cookie-name";
+    public static final String COOKIE_PATH = "cookie-path";
+    public static final String COOKIE_DOMAIN = "cookie-domain";
+    public static final String COOKIE_COMMENT = "cookie-comment";
+    public static final String COOKIE_SECURE = "cookie-secure";
+    public static final String COOKIE_MAX_AGE_SECS = "cookie-max-age-secs";
+    public static final String COOKIE_HTTP_ONLY = "cookie-http-only";
+    public static final String COOKIES_ENABLED = "cookies-enabled";
+    public static final String URL_REWRITING_ENABLED = "url-rewriting-enabled";
+    public static final String PERSISTENT_STORE_DIR = "persistent-store-dir";
 }
