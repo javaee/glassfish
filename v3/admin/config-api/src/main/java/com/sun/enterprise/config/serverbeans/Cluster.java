@@ -418,6 +418,8 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @Service
     @Scoped(PerLookup.class)
     class DeleteDecorator implements DeletionDecorator<Clusters, Cluster> {
+        @Inject
+        private Domain domain;
 
         @Inject
         Configs configs;
@@ -425,14 +427,17 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         @Override
         public void decorate(AdminCommandContext context, Clusters parent, Cluster child) throws
                 PropertyVetoException, TransactionFailure{
-            // check if the config is still in used, otherwise delete it.
             Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Cluster.class);
             final ActionReport report = context.getActionReport();
-
-
             String instanceConfig = child.getConfigRef();
             final Config config = configs.getConfigByName(instanceConfig);
+
+            // check if the config is null or still in use by some other
+            // ReferenceContainer -- if so just return...
+            if(config == null || domain.getReferenceContainersOf(config).size() > 1)
+                return;
+
             try {
                 ConfigSupport.apply(new SingleConfigCode<Configs>() {
 
@@ -455,7 +460,6 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 report.setFailureCause(ex);
                 throw ex;
             }
-
         }
     }
 }
