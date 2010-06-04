@@ -55,7 +55,7 @@
         setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
         setPageSessionAttribute(key="dependentType" value="jdbc-resource");
         //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
-        gf.getChildList(parentEndpoint="http://localhost:4848/management/domain/resources", childType="jdbc-connection-pool", result="#{requestScope.listOfRows}");
+        gf.getChildList(parentEndpoint="http://localhost:#{sessionScope.serverPort}/management/domain/resources", childType="jdbc-connection-pool", result="#{requestScope.listOfRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeletePools}");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18njdbc.resourcesTable.Pools}");
         setPageSessionAttribute(key="resHeader" value="$resource{i18njdbc.resourcesTable.colResType}");
