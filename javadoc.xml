@@ -350,8 +350,8 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="mq.download" description="Download MQ" depends="initialize.maven" >
       <artifact:dependencies filesetId="dependency.fileset" sourcesFilesetId="sources.dependency.mq" >
-          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4.2-002-1" classifier="sources" type="zip"/>
-          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4.2-002-1" type="zip"/>
+          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4.2-005" classifier="sources" type="zip"/>
+          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4.2-005" type="zip"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -447,7 +447,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="weld-osgi-bundle.download" description="Download Weld OSGI Bundle" depends="initialize.maven" >
       <artifact:dependencies sourcesFilesetId="sources.dependency.weld-osgi-bundle" >
-          <dependency groupId="org.jboss.weld" artifactId="weld-osgi-bundle" version="1.0.1-SP1" classifier="sources" >
+          <dependency groupId="org.jboss.weld" artifactId="weld-osgi-bundle" version="1.0.1-SP3" classifier="sources" >
               <exclusion groupId="javax.annotation" artifactId="jsr250-api" />
           </dependency>
           <remoteRepository refid="nexus.repository" />
