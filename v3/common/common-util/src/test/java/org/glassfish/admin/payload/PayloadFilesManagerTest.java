@@ -123,19 +123,6 @@ public class PayloadFilesManagerTest {
         assertTrue(result.toASCIIString().endsWith("/myApp.ear"));
     }
 
-    @Ignore
-    @Test
-    public void testGetOutputFileURIWindows() throws Exception {
-        System.out.println("getOutputFileURIWindows");
-
-        final PayloadFilesManager instance = new PayloadFilesManager.Temp(Logger.getAnonymousLogger());
-        final String originalPath = "with" + File.separator + "separator";
-        final Part testPart = PayloadImpl.Part.newInstance("text/plain", originalPath, null, "random content");
-        final URI result = instance.getOutputFileURI(testPart, testPart.getName());
-        System.out.println("  " + originalPath + " -> " + result);
-        assertTrue(result.toASCIIString().endsWith("/separator"));
-    }
-
     @Test
     public void testBraces() throws Exception {
         System.out.println("testBraces");
@@ -1075,7 +1062,6 @@ public class PayloadFilesManagerTest {
         }
     }
 
-    @Ignore
     @Test
     public void simpleTempRecursiveTransferDirOnlyTest() throws Exception {
         final String DIR = "x/";
@@ -1143,7 +1129,7 @@ public class PayloadFilesManagerTest {
                     for (File f : files) {
 
                         for (ListIterator<String> it = desiredResultsNamePrefixes.listIterator(); it.hasNext();) {
-                            final String desiredPrefix = it.next();
+                            final String desiredPrefix = it.next().replace("/", File.separator);
                             if (f.getPath().contains(desiredPrefix)) {
                                 it.remove();
                                 continue checkNextFile;
