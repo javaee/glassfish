@@ -96,8 +96,7 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
     private String getXml(GetResult proxy) {
         String result;
         String indent = Constants.INDENT;
-        final String typeKey = "entity";
-                //getTypeKey(getName(uriInfo.getAbsolutePath().toString(), '/'));
+        final String typeKey = getTypeKey(getName(uriInfo.getAbsolutePath().toString(), '/'));
 
         result = "<";
         result = result + typeKey;

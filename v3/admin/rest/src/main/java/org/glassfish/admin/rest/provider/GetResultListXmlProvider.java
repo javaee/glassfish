@@ -39,6 +39,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.jvnet.hk2.config.Dom;
@@ -130,15 +131,14 @@ public class GetResultListXmlProvider extends ProviderUtil implements MessageBod
 //    }
 
 
-    private String getResourcesLinks(List<Dom> proxyList,
-        String[][] commandResourcesPaths, String indent) {
+    private String getResourcesLinks(List<Dom> proxyList, String[][] commandResourcesPaths, String indent) {
         String result = "";
         String elementName;
         for (Dom proxy: proxyList) { //for each element
             try {
                     result = result + "\n" + indent;
                     result = result + getStartXmlElement(getResourceKey().replace(' ', '-'));
-                    elementName = proxy.getKey();
+                    elementName = URLEncoder.encode(proxy.getKey(), "UTF-8");
                     result = result + getElementLink(uriInfo,elementName);
                     result = result + getEndXmlElement(getResourceKey().replace(' ', '-'));
             } catch (Exception e) {
