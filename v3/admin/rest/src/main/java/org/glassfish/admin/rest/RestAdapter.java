@@ -108,6 +108,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     RestService restService;
 
     protected RestAdapter() {
+        setAllowEncodedSlash(true);
     }
 
 
