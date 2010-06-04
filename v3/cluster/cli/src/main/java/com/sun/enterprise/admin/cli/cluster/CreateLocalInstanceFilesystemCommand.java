@@ -48,6 +48,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.admin.cli.*;
+import static com.sun.enterprise.admin.cli.CLIConstants.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.net.NetUtils;
@@ -79,7 +80,6 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     @Param(name = "agentproperties", optional = true, separator = ':')
     private Properties agentProperties;  //TODO Properties error handling
 
-    //TODO where to get masterpassword?
     //@Param(name = "savemasterpassword", optional = true, defaultValue = "false")
     //private boolean saveMasterPassword = false;
 
@@ -90,30 +90,6 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     int DASPort = -1;
     String DASProtocol;
     boolean dasIsSecure;
-
-    public static final String K_ADMIN_PORT = "agent.adminPort";
-    public static final String K_ADMIN_HOST = "agent.adminHost";
-    public static final String K_AGENT_PROTOCOL = "agent.protocol";
-    public static final String K_CLIENT_HOST = "agent.client.host";
-    public static final String K_DAS_HOST = "agent.das.host";
-    public static final String K_DAS_PROTOCOL = "agent.das.protocol";
-    public static final String K_DAS_PORT = "agent.das.port";
-    public static final String K_DAS_IS_SECURE = "agent.das.isSecure";
-
-    public static final String K_MASTER_PASSWORD = "agent.masterpassword";
-    public static final String K_SAVE_MASTER_PASSWORD = "agent.saveMasterPassword";
-
-    public static final String AGENT_LISTEN_ADDRESS_NAME="listenaddress";
-    public static final String REMOTE_CLIENT_ADDRESS_NAME="remoteclientaddress";
-    public static final String AGENT_JMX_PROTOCOL_NAME="agentjmxprotocol";
-    public static final String DAS_JMX_PROTOCOL_NAME="dasjmxprotocol";
-    public static final String AGENT_DAS_IS_SECURE="isDASSecure";
-
-    public static final String NODEAGENT_DEFAULT_DAS_IS_SECURE = "false";
-    public static final String NODEAGENT_DEFAULT_DAS_PORT = String.valueOf(CLIConstants.DEFAULT_ADMIN_PORT);
-    public static final String NODEAGENT_DEFAULT_HOST_ADDRESS = "0.0.0.0";
-    public static final String NODEAGENT_JMX_DEFAULT_PROTOCOL = "rmi_jrmp";
-    public static final String HOST_NAME_PROPERTY = "com.sun.aas.hostName";
 
     private File agentConfigDir;
     private File applicationsDir;
@@ -188,7 +164,8 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     protected int executeCommand()
             throws CommandException {
         //if (saveMasterPassword) {
-        //    createMasterPasswordFile();
+        //    String masterPassword = getPassword(null, "changeit", true);
+        //    createMasterPasswordFile(masterPassword);
         //}
         return createDirectories();
     }

@@ -59,6 +59,30 @@ public class CLIConstants {
     public static final int     ERROR                           = 1;
     public static final int     DEATH_TIMEOUT_MS                = 1 * 60 * 1000;
 
+    public static final String K_ADMIN_PORT = "agent.adminPort";
+    public static final String K_ADMIN_HOST = "agent.adminHost";
+    public static final String K_AGENT_PROTOCOL = "agent.protocol";
+    public static final String K_CLIENT_HOST = "agent.client.host";
+    public static final String K_DAS_HOST = "agent.das.host";
+    public static final String K_DAS_PROTOCOL = "agent.das.protocol";
+    public static final String K_DAS_PORT = "agent.das.port";
+    public static final String K_DAS_IS_SECURE = "agent.das.isSecure";
+
+    public static final String K_MASTER_PASSWORD = "agent.masterpassword";
+    public static final String K_SAVE_MASTER_PASSWORD = "agent.saveMasterPassword";
+
+    public static final String AGENT_LISTEN_ADDRESS_NAME="listenaddress";
+    public static final String REMOTE_CLIENT_ADDRESS_NAME="remoteclientaddress";
+    public static final String AGENT_JMX_PROTOCOL_NAME="agentjmxprotocol";
+    public static final String DAS_JMX_PROTOCOL_NAME="dasjmxprotocol";
+    public static final String AGENT_DAS_IS_SECURE="isDASSecure";
+
+    public static final String NODEAGENT_DEFAULT_DAS_IS_SECURE = "false";
+    public static final String NODEAGENT_DEFAULT_DAS_PORT = String.valueOf(CLIConstants.DEFAULT_ADMIN_PORT);
+    public static final String NODEAGENT_DEFAULT_HOST_ADDRESS = "0.0.0.0";
+    public static final String NODEAGENT_JMX_DEFAULT_PROTOCOL = "rmi_jrmp";
+    public static final String HOST_NAME_PROPERTY = "com.sun.aas.hostName";
+
     ////////////////////////////////////////////////////////////////////////////
     ///////       private                   ////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
