@@ -59,108 +59,107 @@
 
 
     <target name="create-cluster" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-cluster"/>
-            <arg line="c1" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-cluster" />
+        <param name="operand.props"
+               value="c1"/>
+      </antcall>
     </target>
 
     <target name="create-local-instance" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-local-instance"/>
-            <arg line="--cluster c1" />
-            <arg line="--systemproperties HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848" />
-            <arg line="in1" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-local-instance" />
+        <param name="operand.props"
+               value="--cluster c1 --systemproperties HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848 in1"/> 
+      </antcall>
     </target>
 
     <target name="delete-local-instance" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-local-instance"/>
-            <arg line="in1" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-local-instance" />
+        <param name="operand.props"
+               value="in1" />
+        </antcall>
     </target>
 
     <target name="start-local-instance" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="start-local-instance"/>
-            <arg line="in1" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="start-local-instance" />
+        <param name="operand.props"
+               value="in1" />
+        </antcall>
     </target>
 
     <target name="stop-local-instance" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="stop-local-instance"/>
-            <arg line="in1" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="stop-local-instance" />
+        <param name="operand.props"
+               value="in1" />
+        </antcall>
     </target>
 
     <target name="delete-cluster" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-cluster"/>
-            <arg line="c1" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-cluster" />
+        <param name="operand.props"
+               value="c1"/>
+      </antcall>
     </target>
 
     <target name="create-virtual-server" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-virtual-server"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--hosts ${http.host}" />
-            <arg line="--target c1" />
-            <arg line="c1-server" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-virtual-server" />
+        <param name="operand.props"
+               value="--target c1 c1-server"/>
+      </antcall>
     </target>
 
     <target name="create-protocol" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-protocol"/>
-            <arg line="--target c1"/>
-            <arg line="c1-protocol" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-protocol" />
+        <param name="operand.props"
+               value="--target c1 c1-protocol"/>
+      </antcall>
     </target>
+
     <target name="create-http" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-http"/>
-            <arg line="--target c1"/>
-            <arg line="--default-virtual-server c1-server" />
-            <arg line="c1-protocol" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-http" />
+        <param name="operand.props"
+               value="--target c1 --default-virtual-server c1-server c1-protocol"/>
+      </antcall>
     </target>
 
     <target name="delete-protocol" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-protocol"/>
-            <arg line="--target c1"/>
-            <arg line="c1-protocol" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-protocol" />
+        <param name="operand.props"
+               value="--target c1 c1-protocol"/>
+      </antcall>
     </target>
 
     <target name="create-network-listener" depends="create-protocol,create-http">
-        <exec executable="${ASADMIN}">
-            <arg line="create-network-listener"/>
-            <arg line="--target c1"/>
-            <arg line="--listenerport ${http.alternate.port}" />
-            <arg line="--protocol c1-protocol" />
-            <arg line="c1-network-listener" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-network-listener" />
+        <param name="operand.props"
+               value="--target c1 --listenerport ${http.alternate.port} --protocol c1-protocol c1-network-listener"/>
+      </antcall>
     </target>
 
     <target name="delete-virtual-server" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-virtual-server"/>
-            <arg line="--target c1" />
-            <arg line="c1-server" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-virtual-server" />
+        <param name="operand.props"
+               value="--target c1 c1-server"/>
+      </antcall>
     </target>
 
     <target name="delete-network-listener" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-network-listener"/>
-            <arg line="--target c1" />
-            <arg line="c1-network-listener" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-network-listener" />
+        <param name="operand.props"
+               value="--target c1 c1-network-listener"/>
+      </antcall>
     </target>
 
     <target name="clean" depends="init-common">

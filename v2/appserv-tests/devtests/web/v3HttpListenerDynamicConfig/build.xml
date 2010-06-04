@@ -49,28 +49,19 @@
     <target name="all" depends="create-http-listener,build,deploy,run,delete-http-listener,run-again,undeploy"/>
 
     <target name="create-http-listener" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-http-listener"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--passwordfile ${admin.password.file}"/>
-            <arg line="--host ${admin.host}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--listeneraddress ${http.address}" />
-            <arg line="--listenerport ${http.alternate.port}" />
-            <arg line="--defaultvs server" />
-            <arg line="test-listener" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-http-listener" />
+        <param name="operand.props"
+               value="--listeneraddress ${http.address} --listenerport ${http.alternate.port} --defaultvs server test-listener"/>
+      </antcall>
     </target>
 
     <target name="delete-http-listener" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-http-listener"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--passwordfile ${admin.password.file}"/>
-            <arg line="--host ${admin.host}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="test-listener" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-http-listener" />
+        <param name="operand.props"
+               value="test-listener"/>
+      </antcall>
     </target>
 
     <target name="clean" depends="init-common">

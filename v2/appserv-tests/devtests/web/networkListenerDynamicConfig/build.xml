@@ -49,27 +49,19 @@
     <target name="all" depends="create-network-listener,build,deploy,run,delete-network-listener,run-again,undeploy"/>
 
     <target name="create-network-listener" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-network-listener"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--passwordfile ${admin.password.file}"/>
-            <arg line="--host ${admin.host}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--listenerport ${http.alternate.port}"/>
-            <arg line="--protocol http-listener-1"/>
-            <arg line="network-listener-1" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-network-listener" />
+        <param name="operand.props"
+               value="--listenerport ${http.alternate.port} --protocol http-listener-1 network-listener-1"/>
+      </antcall>
     </target>
 
     <target name="delete-network-listener" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-network-listener"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--passwordfile ${admin.password.file}"/>
-            <arg line="--host ${admin.host}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="network-listener-1" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-network-listener" />
+        <param name="operand.props"
+               value="network-listener-1"/>
+      </antcall>
     </target>
 
     <target name="clean" depends="init-common">

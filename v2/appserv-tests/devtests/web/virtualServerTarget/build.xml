@@ -9,9 +9,7 @@
  and Distribution License("CDDL") (collectively, the "License").  You
  may not use this file except in compliance with the License. You can obtain
  a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
- language governing permissions and limitations under the License.
-
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific language governing permissions and limitations under the License.
  When distributing the software, include this License Header Notice in each
  file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  Sun designates this particular file as subject to the "Classpath" exception
@@ -49,61 +47,52 @@
     <target name="all" depends="build,create-cluster,create-virtual-server,create-http-listener,deploy,run,undeploy,delete-http-listener,delete-virtual-server,delete-cluster"/>
 
     <target name="create-cluster" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-cluster"/>
-            <arg line="c1" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-cluster" />
+        <param name="operand.props"
+               value="c1"/>
+      </antcall>
     </target>
 
     <target name="delete-cluster" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-cluster"/>
-            <arg line="c1" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-cluster" />
+        <param name="operand.props"
+               value="c1"/>
+      </antcall>
     </target>
 
     <target name="create-virtual-server" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-virtual-server"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--hosts ${http.host}" />
-            <arg line="--target server" />
-            <arg line="server3" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-virtual-server" />
+        <param name="operand.props"
+               value="--target c1 c1-server"/>
+      </antcall>
     </target>
 
     <target name="create-http-listener" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-http-listener"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--listeneraddress ${http.address}" />
-            <arg line="--listenerport ${http.alternate.port}" />
-            <arg line="--target server" />
-            <arg line="--defaultvs server3" />
-            <arg line="http-listener-server3" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-http-listener" />
+        <param name="operand.props"
+               value="--target c1 --listeneraddress ${http.address} --listenerport ${http.alternate.port} --defaultvs c1-server c1-http-listener"/>
+      </antcall>
     </target>
 
+
     <target name="delete-virtual-server" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-virtual-server"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--target server" />
-            <arg line="server3" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-virtual-server" />
+        <param name="operand.props"
+               value="--target c1 c1-server"/>
+      </antcall>
     </target>
 
     <target name="delete-http-listener" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-http-listener"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--target server" />
-            <arg line="http-listener-server3" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-http-listener" />
+        <param name="operand.props"
+               value="--target c1 c1-http-listener"/>
+      </antcall>
     </target>
 
     <target name="clean" depends="init-common">

@@ -104,23 +104,19 @@
     </target>   
 
     <target name="create-vs" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-virtual-server"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--httplisteners=http-listener-1"/>
-            <arg line="--hosts abc" />
-            <arg line="TestServer" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-virtual-server" />
+        <param name="operand.props"
+               value="--httplisteners=http-listener-1 --hosts abc TestServer" />
+      </antcall>
     </target>
 
     <target name="delete-virtual-server" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-virtual-server"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="TestServer" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-virtual-server" />
+        <param name="operand.props"
+               value="TestServer"/>
+      </antcall>
     </target>
 
     <target name="restore" depends="init-common">

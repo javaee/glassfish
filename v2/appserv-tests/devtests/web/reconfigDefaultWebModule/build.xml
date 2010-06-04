@@ -49,51 +49,35 @@
     <target name="all" depends="create-virtual-server,create-http-listener,run,delete-http-listener,delete-virtual-server"/>
 
     <target name="create-http-listener" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-http-listener"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--passwordfile ${admin.password.file}"/>
-            <arg line="--host ${admin.host}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--listeneraddress ${http.address}" />
-            <arg line="--listenerport ${http.alternate.port}" />
-            <arg line="--defaultvs server3" />
-            <arg line="http-listener-server"/>
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-http-listener" />
+        <param name="operand.props"
+               value="--listeneraddress ${http.address} --listenerport ${http.alternate.port} --defaultvs server3 http-listener-server"/>
+      </antcall>
     </target>
     
     <target name="create-virtual-server" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-virtual-server"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--passwordfile ${admin.password.file}"/>
-            <arg line="--hosts ${http.host}" />
-            <arg line="--host ${admin.host}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="server3" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-virtual-server" />
+        <param name="operand.props"
+               value="--hosts ${http.host} server3" />
+      </antcall>
     </target>
 
     <target name="delete-virtual-server" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-virtual-server"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--passwordfile ${admin.password.file}"/>
-            <arg line="--host ${admin.host}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="server3" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-virtual-server" />
+        <param name="operand.props"
+               value="server3"/>
+      </antcall>
     </target>
 
     <target name="delete-http-listener" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-http-listener"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--passwordfile ${admin.password.file}"/>
-            <arg line="--host ${admin.host}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="http-listener-server" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-http-listener" />
+        <param name="operand.props"
+               value="http-listener-server"/>
+      </antcall>
     </target>
 
     <target name="run" depends="init-common">

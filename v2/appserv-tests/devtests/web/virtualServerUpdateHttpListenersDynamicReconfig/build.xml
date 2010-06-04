@@ -72,35 +72,27 @@
     </target> 
     
     <target name="create-virtual-server-vs1" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-virtual-server"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--hosts vs1" />
-            <arg line="vs1" />
-        </exec>
+        <antcall target="asadmin-common-ignore-fail">
+          <param name="admin.command" value="create-virtual-server" />
+          <param name="operand.props"
+                 value="--hosts vs1 vs1" />
+        </antcall>
     </target>
 
     <target name="create-virtual-server-vs2" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-virtual-server"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--hosts vs2" />
-            <arg line="vs2" />
-        </exec>
+        <antcall target="asadmin-common-ignore-fail">
+          <param name="admin.command" value="create-virtual-server" />
+          <param name="operand.props"
+                 value="--hosts vs2 vs2" />
+        </antcall>
     </target>
 
     <target name="create-http-listener" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-http-listener"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--listeneraddress ${http.address}" />
-            <arg line="--listenerport ${http.alternate.port}" />
-            <arg line="--defaultvs vs1" />
-            <arg line="my-listener" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-http-listener" />
+        <param name="operand.props"
+               value="--listeneraddress ${http.address} --listenerport ${http.alternate.port} --defaultvs vs1 my-listener"/>
+      </antcall>
     </target>
 
     <target name="set-http-listeners" depends="init-common">
@@ -153,30 +145,27 @@
     </target>   
 
     <target name="delete-virtual-server-vs1" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-virtual-server"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="vs1" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-virtual-server" />
+        <param name="operand.props"
+               value="vs1"/>
+      </antcall>
     </target>
 
     <target name="delete-virtual-server-vs2" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-virtual-server"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="vs2" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-virtual-server" />
+        <param name="operand.props"
+               value="vs2"/>
+      </antcall>
     </target>
 
     <target name="delete-http-listener" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-http-listener"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="my-listener" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-http-listener" />
+        <param name="operand.props"
+               value="my-listener"/>
+      </antcall>
     </target>
 
     <target name="restore" depends="init-common">

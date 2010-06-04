@@ -104,13 +104,11 @@
     </target>   
 
     <target name="create-vs" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-virtual-server"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--hosts myvs" />
-            <arg line="myvs" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-virtual-server" />
+        <param name="operand.props"
+               value="--hosts myvs myvs" />
+      </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
@@ -119,12 +117,11 @@
     </target>
 
     <target name="delete-virtual-server" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-virtual-server"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="myvs" />
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-virtual-server" />
+        <param name="operand.props"
+               value="myvs"/>
+      </antcall>
     </target>
 
     <target name="assign-default-module" depends="init-common">
