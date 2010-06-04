@@ -173,9 +173,9 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
             if (sshPort != "-1" || sshHost != null) {
                 SshConnector sshC = instance.createChild(SshConnector.class);
                 if (sshPort != "-1")
-                    sshC.setsshPort(sshPort);
+                    sshC.setSshPort(sshPort);
                 if (sshHost != null)
-                    sshC.setsshHost(sshHost);
+                    sshC.setSshHost(sshHost);
                 if (sshuser != null || sshkeyfile != null) {
                     SshAuth sshA = sshC.createChild(SshAuth.class);
                     if (sshuser != null)

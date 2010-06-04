@@ -99,7 +99,7 @@ public class SSHLauncher {
         //XXX: Getting the first one right now. Do we really need a list to be
         // returned?
         SshConnector connector = node.getSshConnector().get(0);
-        int port = Integer.parseInt(connector.getsshPort());
+        int port = Integer.parseInt(connector.getSshPort());
         this.port = port == 0 ? 22 : port;
         //XXX: Getting the first one right now. Do we really need a list to be
         // returned?        
