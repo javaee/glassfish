@@ -103,6 +103,8 @@ public class ResourcesXMLParser implements EntityResolver
     private static final int NONCONNECTOR = 2;
     private static final int CONNECTOR = 1;
 
+    private static final String SUN_RESOURCES = "sun-resources";
+
     /** Creates new ResourcesXMLParser */
     public ResourcesXMLParser(File resourceFile) throws Exception {
         this.resourceFile = resourceFile;
@@ -130,6 +132,7 @@ public class ResourcesXMLParser implements EntityResolver
             }
             InputSource is = new InputSource(resourceFile.toURI().toString());
             document = builder.parse(is);
+            detectDeprecatedDescriptor();
         }/*catch(SAXParseException saxpe){
             throw new Exception(saxpe.getLocalizedMessage());
         }*/catch (SAXException sxe) {
@@ -163,7 +166,23 @@ public class ResourcesXMLParser implements EntityResolver
             throw new Exception(ioe.getLocalizedMessage());
         }
     }
-    
+
+    /**
+     * detects and logs a warning if any of the deprecated descriptor (sun-resources*.dtd) is specified
+     */
+    private void detectDeprecatedDescriptor() {
+        String publicId = document.getDoctype().getPublicId();
+        String systemId = document.getDoctype().getSystemId();
+        Logger logger  = Logger.getLogger(ResourcesXMLParser.class.getName());
+        //TODO LogStrings 
+        if( (publicId != null && publicId.contains(SUN_RESOURCES)) ||
+                (systemId != null && systemId.contains(SUN_RESOURCES))){
+            String msg = localStrings.getString(
+                    "deprecated.resources.dtd", resourceFile.getAbsolutePath() );
+            logger.log(Level.WARNING, msg);
+        }
+    }
+
     /**
      * Get All the resources from the document object.
      *
