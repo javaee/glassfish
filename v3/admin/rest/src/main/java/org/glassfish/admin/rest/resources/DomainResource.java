@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -84,16 +84,16 @@ public String[][] getCommandResourcesPaths() {
 return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, {"version", "GET"}, {"rotate-log", "POST"}, {"host-port", "GET"}};
 }
 
-	@Path("configs/")
-	public ConfigsResource getConfigsResource() {
-		ConfigsResource resource = resourceContext.getResource(ConfigsResource.class);
-		resource.setEntity(getEntity().getConfigs() );
-		return resource;
-	}
 	@Path("resources/")
 	public ResourcesResource getResourcesResource() {
 		ResourcesResource resource = resourceContext.getResource(ResourcesResource.class);
 		resource.setEntity(getEntity().getResources() );
+		return resource;
+	}
+	@Path("load-balancers/")
+	public LoadBalancersResource getLoadBalancersResource() {
+		LoadBalancersResource resource = resourceContext.getResource(LoadBalancersResource.class);
+		resource.setEntity(getEntity().getLoadBalancers() );
 		return resource;
 	}
 	@Path("lb-configs/")
@@ -102,10 +102,22 @@ return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, 
 		resource.setEntity(getEntity().getLbConfigs() );
 		return resource;
 	}
-	@Path("load-balancers/")
-	public LoadBalancersResource getLoadBalancersResource() {
-		LoadBalancersResource resource = resourceContext.getResource(LoadBalancersResource.class);
-		resource.setEntity(getEntity().getLoadBalancers() );
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setEntity(getEntity().getProperty() );
+		return resource;
+	}
+	@Path("system-applications/")
+	public SystemApplicationsResource getSystemApplicationsResource() {
+		SystemApplicationsResource resource = resourceContext.getResource(SystemApplicationsResource.class);
+		resource.setEntity(getEntity().getSystemApplications() );
+		return resource;
+	}
+	@Path("configs/")
+	public ConfigsResource getConfigsResource() {
+		ConfigsResource resource = resourceContext.getResource(ConfigsResource.class);
+		resource.setEntity(getEntity().getConfigs() );
 		return resource;
 	}
 	@Path("clusters/")
@@ -120,10 +132,10 @@ return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, 
 		resource.setEntity(getEntity().getServers() );
 		return resource;
 	}
-	@Path("amx-pref/")
-	public AmxPrefResource getAmxPrefResource() {
-		AmxPrefResource resource = resourceContext.getResource(AmxPrefResource.class);
-		resource.setEntity(getEntity().getAmxPref() );
+	@Path("nodes/")
+	public NodesResource getNodesResource() {
+		NodesResource resource = resourceContext.getResource(NodesResource.class);
+		resource.setEntity(getEntity().getNodes() );
 		return resource;
 	}
 	@Path("node-agents/")
@@ -132,16 +144,10 @@ return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, 
 		resource.setEntity(getEntity().getNodeAgents() );
 		return resource;
 	}
-	@Path("applications/")
-	public ApplicationsResource getApplicationsResource() {
-		ApplicationsResource resource = resourceContext.getResource(ApplicationsResource.class);
-		resource.setEntity(getEntity().getApplications() );
-		return resource;
-	}
-	@Path("property/")
-	public ListPropertyResource getPropertyResource() {
-		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+	@Path("amx-pref/")
+	public AmxPrefResource getAmxPrefResource() {
+		AmxPrefResource resource = resourceContext.getResource(AmxPrefResource.class);
+		resource.setEntity(getEntity().getAmxPref() );
 		return resource;
 	}
 	@Path("system-property/")
@@ -150,10 +156,10 @@ return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, 
 		resource.setEntity(getEntity().getSystemProperty() );
 		return resource;
 	}
-	@Path("system-applications/")
-	public SystemApplicationsResource getSystemApplicationsResource() {
-		SystemApplicationsResource resource = resourceContext.getResource(SystemApplicationsResource.class);
-		resource.setEntity(getEntity().getSystemApplications() );
+	@Path("applications/")
+	public ApplicationsResource getApplicationsResource() {
+		ApplicationsResource resource = resourceContext.getResource(ApplicationsResource.class);
+		resource.setEntity(getEntity().getApplications() );
 		return resource;
 	}
 }

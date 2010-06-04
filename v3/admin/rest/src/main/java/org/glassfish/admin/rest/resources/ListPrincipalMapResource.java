@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,9 +44,7 @@ public class ListPrincipalMapResource extends TemplateListOfResource<PrincipalMa
 	public PrincipalMapResource getPrincipalMapResource(@PathParam("EisPrincipal") String id) {
 		PrincipalMapResource resource = resourceContext.getResource(PrincipalMapResource.class);
 		for (PrincipalMap c: entity){
-			//Using '-' for back-slash in resource names
-			//For example, jndi names has back-slash in it.
-			if(c.getEisPrincipal().replace('/', '-').equals(id)){
+			if(c.getEisPrincipal().equals(id)){
 				resource.setEntity(c);
 			}
 		}

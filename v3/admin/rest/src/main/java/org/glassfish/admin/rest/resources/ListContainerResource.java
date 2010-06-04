@@ -33,13 +33,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import org.glassfish.api.admin.config.Container;
 public class ListContainerResource extends TemplateListOfResource<Container> {
 
@@ -49,12 +45,13 @@ public class ListContainerResource extends TemplateListOfResource<Container> {
 		ContainerResource resource = resourceContext.getResource(ContainerResource.class);
 		for (Container c: entity){
 //THIS KEY IS THE FIRST Attribute ONE ludo
-
+			throw new RuntimeException("ThisIsAModelBug:NoKeyAttr ");
 		}
 		return resource;
 	}
 
 
+@Override
 public String getPostCommand() {
 	return null;
 }
