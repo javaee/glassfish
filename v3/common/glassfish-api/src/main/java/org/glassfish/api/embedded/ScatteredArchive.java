@@ -279,12 +279,14 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
      * @return does the file exist?
      */
 
+
     public boolean exists(String name) throws IOException {
         if ("WEB-INF".equals(name) && type == Builder.type.war) {
             return true;
         }
         File f = getFile(name);
-        return f!=null && f.exists();
+        if (f!=null && f.exists()) return true;
+        return getEntry(name) != null;
     }
 
     /**
