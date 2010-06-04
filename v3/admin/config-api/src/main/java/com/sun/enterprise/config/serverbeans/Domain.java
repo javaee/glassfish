@@ -655,7 +655,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
         public static List<ReferenceContainer> getAllReferenceContainers(Domain d) {
             List<ReferenceContainer> ReferenceContainers = new LinkedList<ReferenceContainer>();
             ReferenceContainers.addAll(d.getServers().getServer());
-            ReferenceContainers.addAll(d.getClusters().getCluster());
+            if (d.getClusters() != null) {
+                ReferenceContainers.addAll(d.getClusters().getCluster());
+            }
             return ReferenceContainers;
         }
     }
