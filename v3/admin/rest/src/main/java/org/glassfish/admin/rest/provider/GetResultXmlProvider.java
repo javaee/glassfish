@@ -63,46 +63,44 @@ import org.glassfish.admin.rest.Constants;
 @Produces(MediaType.APPLICATION_XML)
 public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWriter<GetResult> {
 
-     @Context
-     protected UriInfo uriInfo;
+    @Context
+    protected UriInfo uriInfo;
 
-     @Override
-     public long getSize(final GetResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
-     }
+    @Override
+    public long getSize(final GetResult proxy, final Class<?> type, final Type genericType,
+                        final Annotation[] annotations, final MediaType mediaType) {
+        return -1;
+    }
 
+    @Override
+    public boolean isWriteable(final Class<?> type, final Type genericType,
+                               final Annotation[] annotations, final MediaType mediaType) {
+        try {
+            if (Class.forName("org.glassfish.admin.rest.provider.GetResult").equals(genericType)) {
+                return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
+            }
+        } catch (java.lang.ClassNotFoundException e) {
+            return false;
+        }
+        return false;
+    }
 
-     @Override
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         try {
-             if (Class.forName("org.glassfish.admin.rest.provider.GetResult").equals(genericType)) {
-                 return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
-             }
-         } catch (java.lang.ClassNotFoundException e) {
-             return false;
-         }
-         return false;
-     }
+    @Override
+    public void writeTo(final GetResult proxy, final Class<?> type, final Type genericType,
+                        final Annotation[] annotations, final MediaType mediaType,
+                        final MultivaluedMap<String, Object> httpHeaders,
+                        final OutputStream entityStream) throws IOException, WebApplicationException {
+        entityStream.write(getXml(proxy).getBytes());
+    }
 
-
-     @Override
-     public void writeTo(final GetResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getXml(proxy).getBytes());
-     }
-
-
-     private String getXml(GetResult proxy) {
+    private String getXml(GetResult proxy) {
         String result;
         String indent = Constants.INDENT;
+        final String typeKey = "entity";
+                //getTypeKey(getName(uriInfo.getAbsolutePath().toString(), '/'));
 
-        result ="<" ;
-         final String typeKey = getTypeKey(getName(uriInfo.getAbsolutePath().toString(), '/'));
-         result = result + typeKey;
+        result = "<";
+        result = result + typeKey;
         String attributes = getAttributes(proxy.getDom());
         if ((attributes != null) && (attributes.length() > 1)) {
             result = result + " ";
@@ -113,18 +111,18 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
         result = result + "\n\n" + indent;
         result = result + getStartXmlElement(getMethodsKey());
         result = result + getXmlForMethodMetaData(proxy.getMetaData(),
-            indent + Constants.INDENT);
+                indent + Constants.INDENT);
         result = result + "\n" + indent + getEndXmlElement(getMethodsKey());
 
-       //do not display empty child resources array
-        if ((proxy.getDom().getElementNames().size() > 0) ||
-                (proxy.getCommandResourcesPaths().length > 0) ||
-                     ("applications".equals(getName(uriInfo.getPath(), '/')))) {
+        //do not display empty child resources array
+        if ((proxy.getDom().getElementNames().size() > 0)
+                || (proxy.getCommandResourcesPaths().length > 0)
+                || ("applications".equals(getName(uriInfo.getPath(), '/')))) {
 
             result = result + "\n\n" + indent;
             result = result + getStartXmlElement(getResourcesKey().replace(' ', '-'));
             result = result + getResourcesLinks(proxy.getDom(),
-                proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
+                    proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
             result = result + "\n" + indent;
             result = result + getEndXmlElement(getResourcesKey().replace(' ', '-'));
         }
@@ -134,7 +132,7 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
     }
 
     private String getAttributes(Dom proxy) {
-        String result ="";
+        String result = "";
         Set<String> attributeNames = proxy.model.getAttributeNames();
         for (String attributeName : attributeNames) {
             result = result + eleminateHypen(attributeName) + "=" + quote(proxy.attribute(attributeName));
@@ -142,30 +140,31 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
         }
 
         int endIndex = result.length() - 1;
-        if (endIndex > 0) result = result.substring(0, endIndex );
+        if (endIndex > 0) {
+            result = result.substring(0, endIndex);
+        }
         return result;
     }
 
-
     private String getResourcesLinks(Dom proxy,
-            String[][] commandResourcesPaths, String indent) {
+                                     String[][] commandResourcesPaths, String indent) {
         String result = "";
         Set<String> elementNames = proxy.getElementNames();
 
         //expose ../applications/application resource to enable deployment
         //when no applications deployed on server
         if (elementNames.isEmpty()) {
-            if("applications".equals(getName(uriInfo.getPath(), '/'))) {
+            if ("applications".equals(getName(uriInfo.getPath(), '/'))) {
                 elementNames.add("application");
             }
         }
 
         for (String elementName : elementNames) { //for each element
             try {
-                    result = result + "\n" + indent;
-                    result = result + getStartXmlElement(getResourceKey().replace(' ', '-'));
-                    result = result + getElementLink(uriInfo, elementName);
-                    result = result + getEndXmlElement(getResourceKey().replace(' ', '-'));
+                result = result + "\n" + indent;
+                result = result + getStartXmlElement(getResourceKey().replace(' ', '-'));
+                result = result + getElementLink(uriInfo, elementName);
+                result = result + getEndXmlElement(getResourceKey().replace(' ', '-'));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -184,6 +183,4 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
         }
         return result;
     }
-
-
 }
