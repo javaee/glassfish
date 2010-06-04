@@ -65,7 +65,7 @@ public interface ServerRef extends ConfigBeanProxy, Injectable, Ref  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(key=true)
     @NotNull
     @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_.;]*")
     public String getRef();
