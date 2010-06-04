@@ -49,7 +49,7 @@
                     );
                     prepareSuccessfulMsg();
                     if ("#{valueMap['Ping']}") {
-                        // TODO
+                        // REST-TODO
                         pingJdbcConnectionPool(jndiName="#{valueMap['Name']}", wmsg="$resource{i18njdbc.msg.warning.poolSavedPingFailed}");
                     }
                     gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
