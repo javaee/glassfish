@@ -36,8 +36,8 @@
 -->
 <!DOCTYPE glassfish-web-app PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.0 Servlet 3.0//EN" "http://glassfish.org/dtds/glassfish-web-app_3_0-0.dtd">
 
-<sun-web-app>
+<glassfish-web-app>
     <description>tomcat-test</description>
     <class-loader delegate="false"/>
-</sun-web-app>
+</glassfish-web-app>
 
