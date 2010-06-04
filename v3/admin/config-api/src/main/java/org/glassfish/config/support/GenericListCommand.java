@@ -43,9 +43,11 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.config.Named;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.InjectionManager;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.*;
 
 import java.beans.PropertyVetoException;
@@ -59,6 +61,7 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
+@Scoped(PerLookup.class)
 public class GenericListCommand  extends GenericCrudCommand implements AdminCommand {
 
     @Inject
