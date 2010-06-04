@@ -51,7 +51,7 @@
 
     setPageSessionAttribute(key="parentUrl", value="http://localhost:#{sessionScope.serverPort}/management/domain/resources/");
 
-    gf.getDefaultValues(enpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.tmpMap}");
+    gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.tmpMap}");
 
     setJDBCPoolWizard(fromStep2="$attribute{fromStep2}", attrMap="#{pageSession.tmpMap}",
         ResTypeList=>$attribute{ResTypeList}, DBVendorList=>$attribute{DBVendorList});
