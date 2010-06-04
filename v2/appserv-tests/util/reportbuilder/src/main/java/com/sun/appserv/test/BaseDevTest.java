@@ -272,11 +272,11 @@ public abstract class BaseDevTest {
     }
 
     // simple C-struct -- DIY
-    protected static class AsadminReturn {
-        protected boolean returnValue;
-        protected String out;
-        protected String err;
-        protected String outAndErr;
+    public static class AsadminReturn {
+        public boolean returnValue;
+        public String out;
+        public String err;
+        public String outAndErr;
     }
 
 }
