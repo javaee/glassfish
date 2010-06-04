@@ -52,7 +52,6 @@ public class AdminInfraTest extends BaseDevTest {
     public static void main(String[] args)  {
         AdminInfraTest test = new AdminInfraTest();
         test.run();
-        test.cleanup();
     }
 
     @Override
@@ -99,9 +98,7 @@ public class AdminInfraTest extends BaseDevTest {
 
         //list-clusters
         report("list-clusters", asadmin("list-clusters"));
-
-        report("delete-cluster", asadmin("delete-cluster", "cl1"));
-        
+        cleanup();
         stat.printSummary();
 
     }
@@ -109,10 +106,9 @@ public class AdminInfraTest extends BaseDevTest {
     @Override
     public void cleanup(){
         //Cleanup the code so that tests run successfully next time
-        asadmin("delete-cluster", "cl1");
-        asadmin("delete-cluster", "cl2") ;
-        asadmin("delete-cluster", "cl3")    ;
-        asadmin("delete-cluster", "cl4")    ;
-
+        report("delete-cl1", asadmin("delete-cluster", "cl1"));
+        report("delete-cl2", asadmin("delete-cluster", "cl2"));
+        report("delete-cl3", !asadmin("delete-cluster", "cl3")); // should not have been created
+        report("delete-cl4", asadmin("delete-cluster", "cl4"));
     }
 }
