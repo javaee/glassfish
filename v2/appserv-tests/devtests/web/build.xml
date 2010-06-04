@@ -502,6 +502,7 @@
         <ant dir="weblogicDD/contextRoot" target="all"/>
         <ant dir="weblogicDD/delegate" target="all"/>
         <ant dir="weblogicDD/sessionCookieConfigDeclarative" target="all"/>
+        <ant dir="weblogicDD/sessionExpired" target="all"/>
     </target>
 
     <target name="init-report" unless="report.inited">
