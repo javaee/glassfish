@@ -53,11 +53,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class RestApiHandlers {
     public static final String FORM_ENCODING = "application/x-www-form-urlencoded";
     public static final String RESPONSE_TYPE = "application/xml";
+    public static final String GUI_TOKEN_FOR_EMPTY_PROPERTY_VALUE = "()";
 
     @Handler(id = "gf.getDefaultValues",
             input = {
@@ -166,6 +169,25 @@ public class RestApiHandlers {
         }
     }
 
+    @Handler(id = "gf.getChildList",
+        input = {
+            @HandlerInput(name = "parentEndpoint", type = String.class, required = true),
+            @HandlerInput(name = "childType", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = java.util.List.class)
+    })
+    public static void getChildList(HandlerContext handlerCtx) {
+        try {
+            handlerCtx.setOutputValue("result",
+                    buildChildEntityList((String)handlerCtx.getInputValue("parentEndpoint"),
+                    (String)handlerCtx.getInputValue("childType"), null));
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+    //*******************************************************************************************************************
+    //*******************************************************************************************************************
     protected static Map<String, String> buildDefaultValueMap(String endpoint) throws ParserConfigurationException, SAXException, IOException {
         Map<String, String> defaultValues = new HashMap<String, String>();
 
@@ -265,7 +287,7 @@ public class RestApiHandlers {
         }
     }
 
-    protected static Map<String, String> getEntityAttrs(String entity) {
+    public static Map<String, String> getEntityAttrs(String entity) {
         Map<String, String> attrs = new HashMap<String, String>();
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -278,6 +300,7 @@ public class RestApiHandlers {
                 attrs.put(upperCaseFirstLetter(node.getNodeName()), node.getNodeValue());
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return attrs;
@@ -289,11 +312,88 @@ public class RestApiHandlers {
      * @param string the input string
      * @return the string with the Uppercase first letter
      */
-    protected static String upperCaseFirstLetter(String string) {
+    public static String upperCaseFirstLetter(String string) {
         if (string == null || string.length() <= 0) {
             return string;
         }
         return string.substring(0, 1).toUpperCase() + string.substring(1);
+    }
+
+    public static List<String> getChildResourceList(String document) throws SAXException, IOException, ParserConfigurationException {
+        List<String> children = new ArrayList<String>();
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.parse(new ByteArrayInputStream(document.getBytes()));
+        Element root = doc.getDocumentElement();
+        NodeList nl = root.getElementsByTagName("childResource");
+        if (nl.getLength() > 0) {
+            for (int i = 0; i < nl.getLength(); i++) {
+                Node child = nl.item(i);
+                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                    children.add(child.getTextContent());
+                }
+            }
+        }
+
+        return children;
+    }
+
+    /**
+     * Given the parent URL and the desired childType, this method will build a List of Maps that
+     * contains each child entities values.  In addition to the entity values, each row will
+     * have a field, 'selected', set to false, as well as the URL encoded entity name ('encodedName').
+     *
+     * @param parent
+     * @param childType
+     * @param skipList
+     * @return
+     * @throws Exception
+     */
+    public static List<Map> buildChildEntityList(String parent, String childType, List skipList) throws Exception {
+        String endpoint = parent.endsWith("/") ?
+            parent + childType : parent + "/" + childType;
+        boolean hasSkip = true;
+        if (skipList == null ){
+            hasSkip = false;
+        }
+        boolean convert = false;
+        if (childType.equals("property")){
+            convert = true;
+        }
+
+        List<Map> childElements = new ArrayList<Map>();
+        try {
+            String foo = RestApiHandlers.get(endpoint);
+            List<String> childUrls = getChildResourceList(foo);
+            for (String childUrl : childUrls) {
+                String bar = RestApiHandlers.get(childUrl);
+                Map<String, String> entity = RestApiHandlers.getEntityAttrs(bar);
+                HashMap<String, Object> oneRow = new HashMap<String, Object>();
+
+                if (hasSkip && skipList.contains(entity.get("Name"))) {
+                    continue;
+                }
+
+                oneRow.put("selected", false);
+                for(String attrName : entity.keySet()){
+                    oneRow.put(attrName, getA(entity, attrName, convert));
+                }
+                oneRow.put("encodedName", URLEncoder.encode(entity.get("Name"), "UTF-8"));
+
+                childElements.add(oneRow);
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+        return childElements;
+    }
+
+    private static String getA(Map<String, String> attrs,  String key, boolean convert){
+        Object val = attrs.get(key);
+        if (val == null){
+            return "";
+        }
+        return (convert && (val.equals(""))) ? GUI_TOKEN_FOR_EMPTY_PROPERTY_VALUE : val.toString();
     }
 
     //******************************************************************************************************************
