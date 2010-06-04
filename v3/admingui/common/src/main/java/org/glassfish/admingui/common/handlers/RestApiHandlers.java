@@ -96,7 +96,7 @@ public class RestApiHandlers {
 
     /**
      * For the given REST endpoint, retrieve the values of the entity and return those as a Map.  If the entity is not
-     * found, an Exception is thrown.
+     * found, an Exception is thrown.  This is the REST-based alternative to getProxyAttrs.
      */
     @Handler(id = "gf.getEntityAttrs",
             input = {
@@ -115,6 +115,11 @@ public class RestApiHandlers {
         }
     }
 
+    /**
+     *
+     * REST-based version of createProxy
+     * @param handlerCtx
+     */
     @Handler(id = "gf.createEntity",
             input = {
                     @HandlerInput(name = "endpoint", type = String.class, required = true),
