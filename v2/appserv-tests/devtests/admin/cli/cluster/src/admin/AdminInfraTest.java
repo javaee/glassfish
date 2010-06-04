@@ -110,5 +110,11 @@ public class AdminInfraTest extends BaseDevTest {
         report("delete-cl2", asadmin("delete-cluster", "cl2"));
         report("delete-cl3", !asadmin("delete-cluster", "cl3")); // should not have been created
         report("delete-cl4", asadmin("delete-cluster", "cl4"));
+
+        AsadminReturn ret = asadminWithOutput("list-clusters");
+        String s = ret.err.trim();
+        System.out.println("list-clusters returned: (should be nothing)");
+        System.out.println(s);
+        report("verify-list-of-zero-clusters", (s == null || s.length() < 3));
     }
 }
