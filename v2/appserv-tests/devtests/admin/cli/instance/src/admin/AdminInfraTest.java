@@ -107,14 +107,15 @@ public class AdminInfraTest extends BaseDevTest {
     }
 
     private void create() {
-        // pidgin English because the strings get truncated.
         printf("Create " + instanceNames.length + " instances");
         for(String iname : instanceNames) {
             report(iname + "-nodir", !checkInstanceDir(iname));
             report(iname + "-create", asadmin("create-local-instance", iname));
-            report(iname + "-list", asadmin("list-instances"));
             report(iname + "-yesdir", checkInstanceDir(iname));
         }
+
+        report("list-instance-after-create", asadmin("list-instances"));
+        
     }
 
     private void delete() {
@@ -124,6 +125,11 @@ public class AdminInfraTest extends BaseDevTest {
             report(iname + "-delete", asadmin("delete-local-instance", iname));
             report(iname + "-no-dir", !checkInstanceDir(iname));
         }
+        AsadminReturn ret = asadminWithOutput("list-instances");
+        System.out.println(ret.outAndErr);
+        boolean success = ret.outAndErr.indexOf("Nothing to list.") >= 0;
+
+        report("list-instance-after-delete", success);
     }
 
     private boolean checkInstanceDir(String name) {
