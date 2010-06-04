@@ -64,6 +64,7 @@ public class DummyNetworkListener implements NetworkListener {
     private String pool;
     private String transport;
     private String jkEnabled;
+    private String jkConfigurationFile;
     private final List<Property> properties = new ArrayList();
 
     public DummyNetworkListener() {
@@ -131,6 +132,14 @@ public class DummyNetworkListener implements NetworkListener {
 
     public void setJkEnabled(String value) {
         jkEnabled = value;
+    }
+
+    public String getJkConfigurationFile() {
+        return jkConfigurationFile;
+    }
+
+    public void setJkConfigurationFile(String jkConfigurationFile) {
+        this.jkConfigurationFile = jkConfigurationFile;
     }
 
     public void injectedInto(Object target){}
