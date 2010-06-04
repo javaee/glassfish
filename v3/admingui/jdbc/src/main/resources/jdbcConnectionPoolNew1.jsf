@@ -47,11 +47,14 @@
     setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
     setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
-    getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.tmpMap}")
-    setJDBCPoolWizard(fromStep2="$attribute{fromStep2}" 
-                attrMap="#{pageSession.tmpMap}"
-                ResTypeList=>$attribute{ResTypeList}
-                DBVendorList=>$attribute{DBVendorList});
+    //getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.tmpMap}")
+
+    setPageSessionAttribute(key="parentUrl", value="http://localhost:4848/management/domain/resources/");
+
+    gf.getDefaultValues(enpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.tmpMap}");
+
+    setJDBCPoolWizard(fromStep2="$attribute{fromStep2}", attrMap="#{pageSession.tmpMap}",
+        ResTypeList=>$attribute{ResTypeList}, DBVendorList=>$attribute{DBVendorList});
     />
     </event>
             <sun:form id="propertyForm">

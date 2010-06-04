@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -41,7 +40,8 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                    saveJdbcConnectionPool(objectNameStr="#{pageSession.objectNameStr}"
+                    //saveJdbcConnectionPool(objectNameStr="#{pageSession.objectNameStr}"
+                    gf.createEntity(endpoint="#{pageSession.resourceUrl}"
                         attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}"
@@ -49,6 +49,7 @@
                     );
                     prepareSuccessfulMsg();
                     if ("#{valueMap['Ping']}") {
+                        // TODO
                         pingJdbcConnectionPool(jndiName="#{valueMap['Name']}", wmsg="$resource{i18njdbc.msg.warning.poolSavedPingFailed}");
                     }
                     gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");

@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -51,11 +50,19 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=jdbc-connection-pool,name=#{pageSession.Name}");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
+
+
+        setPageSessionAttribute(key="parentUrl", value="http://localhost:4848/management/domain/resources");
         setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
+        setPageSessionAttribute(key="rest-api" value="${true}");
+
+        gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}", valueMap="#{pageSession.valueMap}");
+
         setPageSessionAttribute(key="type" value="#{valueMap.ResType}");
         setPageSessionAttribute(key="convertToFalseList" value={"IsConnectionValidationRequired" "FailAllConnections" "AllowNonComponentCallers" "NonTransactionalConnections" "IsIsolationLevelGuaranteed"});
         setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );

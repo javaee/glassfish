@@ -17,7 +17,8 @@
         <!command
             getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            deleteCascade(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", dependentType="#{pageSession.dependentType}", selectedRows="${selectedRows}");
+            //deleteCascade(objectNameStr="#{pageSession.objectNameStr}",type="#{pageSession.childType}", dependentType="#{pageSession.dependentType}", 
+            gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", selectedRows="${selectedRows}");
             setAttribute(key="selectedRows" value="${selectedRows}");
             gf.redirect(page="#{pageSession.listLink}");
         />

@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -53,7 +52,8 @@
         onClick="document.getElementById('form2:validate').value='true'; if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
        <!command
             updateJdbcConnectionPoolWizardStep2();
-            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+//            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+            gf.createEntity(endpoint="#{pageSession.parentUrl}",
                     attrs="#{wizardMap}"
                     convertToFalse="#{pageSession.convertToFalseList}"
                     result => $attribute{objStr});
