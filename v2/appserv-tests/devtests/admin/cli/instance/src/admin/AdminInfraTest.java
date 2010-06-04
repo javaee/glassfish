@@ -112,6 +112,12 @@ public class AdminInfraTest extends BaseDevTest {
             report(iname + "-nodir", !checkInstanceDir(iname));
             report(iname + "-create", asadmin("create-local-instance", iname));
             report(iname + "-yesdir", checkInstanceDir(iname));
+            report(iname + "-yes-regdas", asadmin("get", "servers.server."+iname));
+            report(iname + "-yes-config", asadmin("get", "configs.config."+iname+"-config"));
+            AsadminReturn ret = asadminWithOutput("get", "servers.server."+iname+".config-ref");
+            System.out.println(ret.outAndErr);
+            boolean success = ret.outAndErr.indexOf("servers.server."+iname+".config-ref="+iname+"-config") >= 0;
+            report(iname + "-yes-configref", success);
         }
 
         report("list-instance-after-create", asadmin("list-instances"));
@@ -124,6 +130,8 @@ public class AdminInfraTest extends BaseDevTest {
             report(iname + "-yes-dir", checkInstanceDir(iname));
             report(iname + "-delete", asadmin("delete-local-instance", iname));
             report(iname + "-no-dir", !checkInstanceDir(iname));
+            report(iname + "-no-regdas", !asadmin("get", "servers.server."+iname));
+            report(iname + "-no-config", !asadmin("get", "configs.config."+iname+"-config"));
         }
         AsadminReturn ret = asadminWithOutput("list-instances");
         System.out.println(ret.outAndErr);
