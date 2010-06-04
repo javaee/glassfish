@@ -82,6 +82,7 @@ public class AdminInfraTest extends BaseDevTest {
             startDomain();
             create();
             delete();
+            createFail();
             stat.printSummary();
         }
         finally {
@@ -112,16 +113,31 @@ public class AdminInfraTest extends BaseDevTest {
             report(iname + "-nodir", !checkInstanceDir(iname));
             report(iname + "-create", asadmin("create-local-instance", iname));
             report(iname + "-yesdir", checkInstanceDir(iname));
-            report(iname + "-yes-regdas", asadmin("get", "servers.server."+iname));
-            report(iname + "-yes-config", asadmin("get", "configs.config."+iname+"-config"));
-            AsadminReturn ret = asadminWithOutput("get", "servers.server."+iname+".config-ref");
-            System.out.println(ret.outAndErr);
-            boolean success = ret.outAndErr.indexOf("servers.server."+iname+".config-ref="+iname+"-config") >= 0;
-            report(iname + "-yes-configref", success);
         }
 
         report("list-instance-after-create", asadmin("list-instances"));
-        
+
+        printf("Check " + instanceNames[0]+ " is registered to DAS");
+        report(instanceNames[0] + "-yes-regdas", asadmin("get", "servers.server."+instanceNames[0]));
+
+        printf("Check " + instanceNames[0]+ "-config exists.");
+        report(instanceNames[0] + "-yes-config", asadmin("get", "configs.config."+instanceNames[0]+"-config"));
+
+        printf("Check " + instanceNames[0]+ " has config-ref set.");
+        AsadminReturn ret = asadminWithOutput("get", "servers.server."+instanceNames[0]+".config-ref");
+        System.out.println(ret.outAndErr);
+        boolean success = ret.outAndErr.indexOf("servers.server."+instanceNames[0]+".config-ref="+instanceNames[0]+"-config") >= 0;
+        report(instanceNames[0] + "-yes-configref", success);
+
+        report("das-properties-exists-after-create", checkDasProperties());
+    }
+
+    private void createFail() {
+        //printf("create-local-instance with wrong host");
+        //report("create-local-instance-wronghost", !asadmin("--host", "wronghost", "create-local-instance", "instancefail"));
+
+        printf("create-local-instance with non-existent cluster");
+        report("create-local-instance-nosuchcluster", !asadmin("create-local-instance", "--cluster", "nocluster", "noinstance"));
     }
 
     private void delete() {
@@ -130,14 +146,16 @@ public class AdminInfraTest extends BaseDevTest {
             report(iname + "-yes-dir", checkInstanceDir(iname));
             report(iname + "-delete", asadmin("delete-local-instance", iname));
             report(iname + "-no-dir", !checkInstanceDir(iname));
-            report(iname + "-no-regdas", !asadmin("get", "servers.server."+iname));
-            report(iname + "-no-config", !asadmin("get", "configs.config."+iname+"-config"));
         }
+
         AsadminReturn ret = asadminWithOutput("list-instances");
         System.out.println(ret.outAndErr);
         boolean success = ret.outAndErr.indexOf("Nothing to list.") >= 0;
 
         report("list-instance-after-delete", success);
+
+        report(instanceNames[0] + "-no-regdas", !asadmin("get", "servers.server."+instanceNames[0]));
+        report(instanceNames[0] + "-no-config", !asadmin("get", "configs.config."+instanceNames[0]+"-config"));
     }
 
     private boolean checkInstanceDir(String name) {
@@ -146,6 +164,11 @@ public class AdminInfraTest extends BaseDevTest {
         String existsString = exists ? "DOES exist" : "does NOT exist";
         //printf("The instance-dir, %s, %s\n", inf.toString(), existsString);
         return exists;
+    }
+
+    private boolean checkDasProperties() {
+        File dasFile = new File(instancesHome, "agent" + File.separator + "config" + File.separator + "das.properties");
+        return dasFile.exists();
     }
 
     private void printf(String fmt, Object... args) {
