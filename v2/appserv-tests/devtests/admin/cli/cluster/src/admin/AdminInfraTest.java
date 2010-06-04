@@ -35,7 +35,6 @@
  */
 package admin;
 
-
 import com.sun.appserv.test.BaseDevTest;
 
 import javax.xml.xpath.XPathExpressionException;
@@ -46,10 +45,9 @@ import javax.xml.xpath.XPathConstants;
  * @author Bhakti Mehta
  */
 public class AdminInfraTest extends BaseDevTest {
-
     private static final boolean DEBUG = false;
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
         AdminInfraTest test = new AdminInfraTest();
         test.run();
     }
@@ -65,35 +63,42 @@ public class AdminInfraTest extends BaseDevTest {
     }
 
     public void run() {
-        report("create-cluster", asadmin("create-cluster","cl1"));
+        String xpathExpr = "count" + "(" + "/domain/clusters/cluster" + ")";
+        double startingNumberOfClusters = 0.0;
+        Object o = evalXPath(xpathExpr, XPathConstants.NUMBER);
+        if(o instanceof Double) {
+            startingNumberOfClusters = (Double)o;
+        }
+
+        report("create-cluster", asadmin("create-cluster", "cl1"));
 
         //create-cluster using existing config
         report("create-cluster-with-config", asadmin("create-cluster",
-                "--config" ,"cl1-config",
+                "--config", "cl1-config",
                 "cl2"));
 
         //check for duplicates
-        report("create-cluster-duplicates", !asadmin("create-cluster","cl1"));
+        report("create-cluster-duplicates", !asadmin("create-cluster", "cl1"));
 
         //create-cluster using non existing config
         report("create-cluster-nonexistent-config", !asadmin("create-cluster",
-                "--config" ,"junk-config",
+                "--config", "junk-config",
                 "cl3"));
 
         //create-cluster using systemproperties
         report("create-cluster-system-props", asadmin("create-cluster",
-                "--systemproperties" ,"foo=bar",
+                "--systemproperties", "foo=bar",
                 "cl4"));
 
         //evaluate using xpath that there are 3 elements in the domain.xml
-        String xpathExpr = "count"+"("+"/domain/clusters/cluster"+")";
 
-        Object o = evalXPath(xpathExpr, XPathConstants.NUMBER);
-        System.out.println ("No of cluster elements in cluster: "+o);
-        if (o instanceof Double) {
-            report ("evaluation-xpath-create-cluster",o.equals(new Double("3")));
-        } else {
-            report ("evaluation-xpath-create-cluster",false);
+         o = evalXPath(xpathExpr, XPathConstants.NUMBER);
+        System.out.println("No of cluster elements in cluster: " + o);
+        if(o instanceof Double) {
+            report("evaluation-xpath-create-cluster", o.equals(new Double(3.0 + startingNumberOfClusters)));
+        }
+        else {
+            report("evaluation-xpath-create-cluster", false);
         }
 
         //list-clusters
@@ -104,7 +109,7 @@ public class AdminInfraTest extends BaseDevTest {
     }
 
     @Override
-    public void cleanup(){
+    public void cleanup() {
         //Cleanup the code so that tests run successfully next time
         report("delete-cl1", asadmin("delete-cluster", "cl1"));
         report("delete-cl2", asadmin("delete-cluster", "cl2"));
@@ -112,9 +117,18 @@ public class AdminInfraTest extends BaseDevTest {
         report("delete-cl4", asadmin("delete-cluster", "cl4"));
 
         AsadminReturn ret = asadminWithOutput("list-clusters");
-        String s = ret.err.trim();
-        System.out.println("list-clusters returned: (should be nothing)");
+        String s = (ret.out == null) ? "" : ret.out.trim();
+
+        // make sure none of OUR clusters are in there.  Other clusters that are
+        // in the user's domain are OK...
+
+        boolean success = s.indexOf("cl1") < 0
+                && s.indexOf("cl2") < 0
+                && s.indexOf("cl3") < 0
+                && s.indexOf("cl4") < 0;
+
+        System.out.println("list-clusters returned:");
         System.out.println(s);
-        report("verify-list-of-zero-clusters", (s == null || s.length() < 3));
+        report("verify-list-of-zero-clusters", success);
     }
 }
