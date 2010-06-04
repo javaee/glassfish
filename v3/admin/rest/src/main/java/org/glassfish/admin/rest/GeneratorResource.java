@@ -153,7 +153,7 @@ public class GeneratorResource {
         Domain entity = RestService.getDomain();
 
         File loc =
-                new File(System.getProperty("user.home") + "/acvs/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources");
+                new File(System.getProperty("user.home") + "/src/glassfish/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources");
         loc.mkdirs();
         genDir = loc.getAbsolutePath();
 
@@ -326,9 +326,10 @@ public class GeneratorResource {
                     keyAttributeName = getBeanName(model.getAttributeNames().iterator().next());
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 keyAttributeName = "ThisIsAModelBug:NoKeyAttr"; //no attr choice fo a key!!! Error!!!
-                } //firstone
-            } else {
+            } //firstone
+        } else {
             keyAttributeName = getBeanName(model.key.substring(1, model.key.length()));
         }
         out.write("\n");
@@ -341,11 +342,15 @@ public class GeneratorResource {
 
         }
 
-        out.write("\t\t\t//Using '-' for back-slash in resource names\n");
-        out.write("\t\t\t//For example, jndi names has back-slash in it.\n");
-        out.write("\t\t\tif(c.get" + keyAttributeName + "().replace('/', '-').equals(id)){\n");
-        out.write("\t\t\t\tresource.setEntity(c);\n");
-        out.write("\t\t\t}\n");
+        // TODO: throw a RuntimeException on this for now. We probably need to skip the two ConfigBeans
+        // that are problematic here.  Some how.
+        if (!keyAttributeName.equals("ThisIsAModelBug:NoKeyAttr")) {
+            out.write("\t\t\tif(c.get" + keyAttributeName + "().equals(id)){\n");
+            out.write("\t\t\t\tresource.setEntity(c);\n");
+            out.write("\t\t\t}\n");
+        } else {
+            out.write("\t\t\tthrow new RuntimeException(\"" + keyAttributeName + " \");\n");
+        }
         out.write("\t\t}\n");
         out.write("\t\treturn resource;\n");
         out.write("\t}\n\n");
