@@ -95,13 +95,13 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         if (!filesystemOnly) {
             if (!rendezvousWithDAS()) {
                 throw new CommandException(
-                        strings.get("Unable to rendezvous with DAS on host={0}, port={1}, protocol={2}", DASHost, DASPort, DASProtocol));
+                        strings.get("Instance.rendezvousFailed", DASHost, "" + DASPort));
             }
 
             _rendezvousOccurred = rendezvousOccurred();
             if (_rendezvousOccurred) {
                 throw new CommandException(
-                        strings.get("Rendezvous with DAS on host {0}, port {1} has already occurred to create instance {2}", DASHost, DASPort, instanceName));
+                        strings.get("Instance.rendezvousAlready", instanceName, DASHost, "" + DASPort));
             }
         }
     }
@@ -128,7 +128,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         try {
             exitCode = super.executeCommand();
         } catch (CommandException ce) {
-            String msg = "Something went wrong in creating the local filesystem for instance {0}" + instanceName;
+            String msg = "Something went wrong in creating the local filesystem for instance " + instanceName;
             if (ce.getLocalizedMessage() != null) {
                 msg = msg + ": " + ce.getLocalizedMessage();
             }
@@ -144,10 +144,12 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
 
     private boolean rendezvousWithDAS() {
         try {
+            logger.printMessage(strings.get("Instance.rendezvousAttempt", DASHost, "" + DASPort));
             RemoteAdminCommand rac = new RemoteAdminCommand("uptime", DASHost, DASPort, dasIsSecure, "admin", null, logger.getLogger());
             rac.setConnectTimeout(10000);
             ParameterMap map = new ParameterMap();
             rac.executeCommand(map);
+            logger.printMessage(strings.get("Instance.rendezvousSuccess", DASHost, "" + DASPort));
             return true;
         } catch (CommandException ex) {
             return false;
@@ -221,7 +223,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             if (ce.getLocalizedMessage() != null) {
                 logger.printDebugMessage(ce.getLocalizedMessage());
             }
-            logger.printExceptionStackTrace(ce);
+            //logger.printExceptionStackTrace(ce);
         }
         return rendezvousOccurred;
     }
