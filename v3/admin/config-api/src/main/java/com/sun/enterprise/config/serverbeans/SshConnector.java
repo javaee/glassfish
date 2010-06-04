@@ -83,7 +83,6 @@ public interface SshConnector extends ConfigBeanProxy, Injectable {
       *         {@link String }
       */
      @Attribute(key=true)
-     @NotNull
       String getsshPort();
 
      /**
@@ -94,6 +93,23 @@ public interface SshConnector extends ConfigBeanProxy, Injectable {
       */
      @Param(name="sshport", optional=true)
       void setsshPort(String value) throws PropertyVetoException;
+       /**
+      * Gets the value of the sshport property.
+      *
+      * @return possible object is
+      *         {@link String }
+      */
+     @Attribute
+      String getsshHost();
+
+     /**
+      * Sets the value of the sshport property.
+      *
+      * @param value allowed object is
+      *              {@link String }
+      */
+     @Param(name="sshnodehost", optional=true)
+      void setsshHost(String value) throws PropertyVetoException;
 
      @Element
      List <SshAuth> getSshAuth();
