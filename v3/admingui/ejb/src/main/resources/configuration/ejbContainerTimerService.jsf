@@ -56,13 +56,11 @@
         setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/ejb-container/ejb-timer-service");
         setPageSessionAttribute(key="rest-api" value="${true}");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
-        gf.getChildList(parentEndpoint="#{pageSession.selfUrl}", childType="property", result="#{requestScope.listOfRows}");
 
-        //getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        //REST-TODO take care property table
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
 
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/ejb/configuration/ejbContainerTimerService.jsf?configName=#{pageSession.configName}");
-
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
