@@ -17,7 +17,16 @@
         <!command
             getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
+
+            if (#{pageSession.rest-api}){
+                gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", selectedRows="${selectedRows}");
+            }
+
+            //REST-TODO  remove the following when all page is converted.
+            if (!#{pageSession.rest-api}){
+                deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
+            }
+
             setAttribute(key="selectedRows" value="${selectedRows}");
             if (#{pageSession.additionalDeleteHandler}){
                 gf.invokeHandler(handler="#{pageSession.additionalDeleteHandler}", args="#{pageSession.additionalDeleteHandlerArgs}" );
