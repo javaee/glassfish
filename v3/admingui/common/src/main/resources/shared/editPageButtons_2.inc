@@ -64,25 +64,50 @@
                 //    }
                 //}
                 -->
-                if(#{pageSession.hasPropertySheet}){
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                        skipAttrs="#{pageSession.skipAttrsList}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                        onlyUseAttrs="#{pageSession.onlyUseAttrs}"
-                    );
-                    if(#{pageSession.has2Objects}){
-                        saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}"  attrs="#{pageSession.valueMap2}"
-                            skipAttrs="#{pageSession.skipAttrsList2}"
-                            convertToFalse="#{pageSession.convertToFalseList2}"
-                            onlyUseAttrs="#{pageSession.onlyUseAttrs2}"
+
+               if (#{pageSession.rest-api}){
+                    if(#{pageSession.hasPropertySheet}){
+                        gf.createEntity(endpoint="#{pageSession.selfUrl}"
+                            attrs="#{pageSession.valueMap}"
+                            skipAttrs="#{pageSession.skipAttrsList}"
+                            convertToFalse="#{pageSession.convertToFalseList}"
+                            onlyUseAttrs="#{pageSession.onlyUseAttrs}"
                         );
+                    if(#{pageSession.has2Objects}){
+                            gf.createEntity(endpoint="#{pageSession.selfUrl2}"
+                                attrs="#{pageSession.valueMap2}"
+                                skipAttrs="#{pageSession.skipAttrsList2}"
+                                convertToFalse="#{pageSession.convertToFalseList2}"
+                                onlyUseAttrs="#{pageSession.onlyUseAttrs2}"
+                            );
+                        }
                     }
-                }
+               }
+
+               if ( !#{pageSession.rest-api}){
+                    if(#{pageSession.hasPropertySheet}){
+                        saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                            skipAttrs="#{pageSession.skipAttrsList}"
+                            convertToFalse="#{pageSession.convertToFalseList}"
+                            onlyUseAttrs="#{pageSession.onlyUseAttrs}"
+                        );
+                        if(#{pageSession.has2Objects}){
+                            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}"  attrs="#{pageSession.valueMap2}"
+                                skipAttrs="#{pageSession.skipAttrsList2}"
+                                convertToFalse="#{pageSession.convertToFalseList2}"
+                                onlyUseAttrs="#{pageSession.onlyUseAttrs2}"
+                            );
+                        }
+                    }
+               }
+
+                //REST-TODO  need to take care of setProxyProperties()
                 if (#{pageSession.hasPropertyTable}){
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                 }
+
                 if (#{pageSession.additionalSaveHandler}){
                     gf.invokeHandler(handler="#{pageSession.additionalSaveHandler}", args="#{pageSession.additionalSaveHandlerArgs}" );
                 }
@@ -90,9 +115,36 @@
                 gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
+
+
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
+
+                    if (#{pageSession.rest-api}){
+                    gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
+                        attrs="#{pageSession.valueMap}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                        result => $attribute{objStr});
+                    if(#{pageSession.has2Objects}){
+                        if (#{pageSession.parentObjectNameStr2}){
+                            gf.createEntity(endpoint="#{pageSession.parentUrl2}/#{pageSession.childType2}"
+                                attrs="#{pageSession.valueMap2}"
+                                convertToFalse="#{pageSession.convertToFalseList2}"
+                                result => $attribute{resultEndpoint});
+                        }
+                        if (!#{pageSession.parentObjectNameStr2}){
+                            //create as a sub-element
+                            gf.createEntity(endpoint="$attribute{resultEndpoint}"
+                                attrs="#{pageSession.valueMap2}"
+                                convertToFalse="#{pageSession.convertToFalseList2}"
+                                result => $attribute{resultEndpoint2});
+                        }
+                    }
+                    }
+
+                    //REST-TODO  Remove the following section after all pages converted.
+                    if (#{pageSession.rest-api}){
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"
@@ -112,11 +164,15 @@
                                 result => $attribute{objStr2});
                         }
                     }
+                    }
+
+                    ////REST-TODO  need to take care setProxyProperties()
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                         setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                     }
+
                     //when creating resource, need to create the resource-ref
                     if (#{pageSession.createResourceRef}){
                         mapPut(map="#{pageSession.valueMap2}" key="ref" value="#{pageSession.valueMap['Name']}")
@@ -124,6 +180,7 @@
                             attrs="#{pageSession.valueMap2}"
                             convertToFalse={"Enabled"} );
                     }
+
                     if (#{pageSession.additionalSaveHandler}){
                         gf.invokeHandler(handler="#{pageSession.additionalSaveHandler}", args="#{pageSession.additionalSaveHandlerArgs}" );
                     }
@@ -134,6 +191,8 @@
                     gf.redirect(page="#{pageSession.parentPage}?configName=#{configName}")
                 />
             </sun:button>
+
+
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                 <!command
                     gf.redirect(page="#{parentPage}?configName=#{configName}");

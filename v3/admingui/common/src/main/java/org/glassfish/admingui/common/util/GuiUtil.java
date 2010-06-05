@@ -148,8 +148,16 @@ public class GuiUtil {
             ServletRequest srequest = (ServletRequest) request;
             String serverName = srequest.getServerName();
             sessionMap.put("serverName", serverName);
-            sessionMap.put("serverPort", V3AMXUtil.getAdminPort());
-            sessionMap.put("requestIsSecured", Boolean.valueOf(srequest.isSecure()));
+            Integer port = V3AMXUtil.getAdminPort();
+            sessionMap.put("serverPort", port);
+            if (srequest.isSecure()){
+                sessionMap.put("requestIsSecured", Boolean.TRUE);
+                sessionMap.put("REST_URL", "https://"+serverName+":"+ port + "/management/domain");
+            }else{
+                sessionMap.put("requestIsSecured", Boolean.FALSE);
+                sessionMap.put("REST_URL", "http://"+serverName+":"+ port + "/management/domain");
+            }
+
         }else{
             //should never get here.
             sessionMap.put("serverName", "");
