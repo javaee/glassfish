@@ -49,7 +49,7 @@
     setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
     //getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.tmpMap}")
 
-    setPageSessionAttribute(key="parentUrl", value="http://localhost:#{sessionScope.serverPort}/management/domain/resources/");
+    setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
 
     gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.tmpMap}");
 

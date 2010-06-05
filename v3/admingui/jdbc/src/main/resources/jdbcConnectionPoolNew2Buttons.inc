@@ -53,7 +53,7 @@
        <!command
             updateJdbcConnectionPoolWizardStep2();
 //            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-            gf.createEntity(endpoint="#{pageSession.parentUrl}",
+            gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}",
                     attrs="#{wizardMap}"
                     convertToFalse="#{pageSession.convertToFalseList}"
                     result => $attribute{objStr});
