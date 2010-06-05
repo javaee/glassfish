@@ -122,13 +122,21 @@ public class AdminInfraTest extends BaseDevTest {
         // make sure none of OUR clusters are in there.  Other clusters that are
         // in the user's domain are OK...
 
-        boolean success = s.indexOf("cl1") < 0
+        boolean success = 
+				   s.indexOf("cl1") < 0
                 && s.indexOf("cl2") < 0
                 && s.indexOf("cl3") < 0
                 && s.indexOf("cl4") < 0;
 
         System.out.println("list-clusters returned:");
         System.out.println(s);
+
+		if(!success) {
+        	System.out.println("IT 12153 is apparently not fixed!!  \nLet's try a restart and call list-clusters again...");
+			asadmin("restart-domain");
+			asadmin("list-clusters");
+		}
+	else	
         report("verify-list-of-zero-clusters", success);
     }
 }
