@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -49,17 +49,26 @@
         setSessionAttribute(key="ejbContainerTabs" value="ejbTimerTab");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=ejb-container");
-        setPageSessionAttribute(key="childType" value="ejb-timer-service");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/ejb-container,type=ejb-timer-service");
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+
+        setPageSessionAttribute(key="childType" value="ejb-timer-service");
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/ejb-container");
+        setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/ejb-container/ejb-timer-service");
+        setPageSessionAttribute(key="rest-api" value="${true}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        gf.getChildList(parentEndpoint="#{pageSession.selfUrl}", childType="property", result="#{requestScope.listOfRows}");
+
+        //getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/ejb/configuration/ejbContainerTimerService.jsf?configName=#{pageSession.configName}");
+
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{false}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
-        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     />
     </event>
 
@@ -91,6 +100,7 @@
          </sun:propertySheetSection>
      </sun:propertySheet>
 
+#include "/common/shared/propertyDescTable.inc"
 
 	<sun:hidden id="helpKey" value="$resource{help_ejb.ejbContainerTimerService}" />
     </sun:form>
