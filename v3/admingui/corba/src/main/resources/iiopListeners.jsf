@@ -52,6 +52,13 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service");
         setPageSessionAttribute(key="childType" value="iiop-listener");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
+
+        <!-- the following failed, because the key for iiop-listener is 'id', not 'name'
+            setPageSessionAttribute(key="rest-url" value="true");
+            setPageSessionAttribute(key="parentUrl" value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/iiop-service");
+            gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="iiop-listener", result="#{requestScope.listOfRows}");
+        -->
+
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_corba.msg.JS.confirmDeleteIiopListener}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/corba/iiopListenerNew.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/corba/iiopListeners.jsf?configName=#{pageSession.configName}");
