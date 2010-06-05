@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -43,10 +43,13 @@
             if ("#{pageSession.valueMap['LazyConnectionAssociation']}") {
                     setValueExpression(expression="#{pageSession.valueMap['LazyConnectionEnlistment']}", value="#{true}");
             }
-            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                skipAttrs="#{pageSession.skipAttrsList}"
-                convertToFalse="#{pageSession.convertToFalseList}"
-            );
+
+            gf.createEntity(endpoint="#{pageSession.resourceUrl}"
+                        attrs="#{pageSession.valueMap}"
+                        skipAttrs="#{pageSession.skipAttrsList}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                    );
+
             prepareSuccessfulMsg();
             if ("#{valueMap['Ping']}") {
                 pingJdbcConnectionPool(jndiName="#{valueMap['Name']}", wmsg="$resource{i18njdbc.msg.warning.poolSavedPingFailed}");
