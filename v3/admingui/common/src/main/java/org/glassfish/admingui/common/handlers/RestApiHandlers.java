@@ -130,7 +130,7 @@ public class RestApiHandlers {
             output = {
                     @HandlerOutput(name = "result", type = String.class)
             })
-    public static void createProxy(HandlerContext handlerCtx) {
+    public static void createEntity(HandlerContext handlerCtx) {
         Map<String, String> attrs = (Map) handlerCtx.getInputValue("attrs");
         if (attrs == null) {
             attrs = new HashMap<String, String>();
