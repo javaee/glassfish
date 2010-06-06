@@ -94,6 +94,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
 
         if (!filesystemOnly) {
             if (!rendezvousWithDAS()) {
+                instanceDir.delete();
                 throw new CommandException(
                         strings.get("Instance.rendezvousFailed", DASHost, "" + DASPort));
             }
