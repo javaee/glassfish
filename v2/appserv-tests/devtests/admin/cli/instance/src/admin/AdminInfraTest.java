@@ -38,6 +38,8 @@ package admin;
 import com.sun.appserv.test.BaseDevTest;
 import java.io.*;
 import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * Dev test for create/delete/list instance
@@ -46,7 +48,6 @@ import java.net.*;
  */
 public class AdminInfraTest extends BaseDevTest {
     public AdminInfraTest() {
-
         printf("DEBUG is turned **ON**");
         String host0 = null;
         try {
@@ -83,6 +84,8 @@ public class AdminInfraTest extends BaseDevTest {
             create();
             delete();
             createFail();
+            testNoCreateForStop();
+            createStartStopDelete();
             stat.printSummary();
         }
         finally {
@@ -104,7 +107,30 @@ public class AdminInfraTest extends BaseDevTest {
 
     private void stopDomain() {
         if(!domain1WasRunning)
-            asadmin("stop-domain", "domain1");
+            report("stop-domain-xxxx", asadmin("stop-domain", "domain1"));
+    }
+
+    private void testNoCreateForStop() {
+        String metname = "testNoCreateForStop";
+        String iname = generateInstanceName();
+
+        report(metname + "-nodir-before", !checkInstanceDir(iname));
+        asadmin("stop-local-instance", iname); // should NOT create any files
+        report(metname + "-nodir-after", !checkInstanceDir(iname));
+    }
+    private void createStartStopDelete() {
+        String metname = "createStartStopDelete";
+        String iname = generateInstanceName();
+
+        report(metname + "-nodir-xxxx", !checkInstanceDir(iname));
+        asadmin("stop-local-instance", iname); // in case it's running?!?
+        report(metname + "-nodir", !checkInstanceDir(iname));
+        report(metname + "-create", asadmin("create-local-instance", iname));
+        report(metname + "-yesdir", checkInstanceDir(iname));
+        report(metname + "-start", asadmin("start-local-instance", iname));
+        report(metname + "-stop",  asadmin("stop-local-instance", iname));
+        report(metname + "-delete", asadmin("delete-local-instance", iname));
+        report(metname + "-no-dir-again", !checkInstanceDir(iname));
     }
 
     private void create() {
@@ -138,6 +164,7 @@ public class AdminInfraTest extends BaseDevTest {
 
         printf("create-local-instance with non-existent cluster");
         report("create-local-instance-nosuchcluster", !asadmin("create-local-instance", "--cluster", "nocluster", "noinstance"));
+        report("cleanup-failed-c-l-i", checkInstanceDir("noinstance"));
     }
 
     private void delete() {
@@ -145,7 +172,9 @@ public class AdminInfraTest extends BaseDevTest {
         for(String iname : instanceNames) {
             report(iname + "-yes-dir", checkInstanceDir(iname));
             report(iname + "-delete", asadmin("delete-local-instance", iname));
-            report(iname + "-no-dir", !checkInstanceDir(iname));
+            report(iname + "-no-dir-again", !checkInstanceDir(iname));
+            report(iname + "-no-regdas", !asadmin("get", "servers.server."+iname));
+            report(iname + "-no-config", !asadmin("get", "configs.config."+iname+"-config"));
         }
 
         AsadminReturn ret = asadminWithOutput("list-instances");
@@ -154,21 +183,24 @@ public class AdminInfraTest extends BaseDevTest {
 
         report("list-instance-after-delete", success);
 
-        report(instanceNames[0] + "-no-regdas", !asadmin("get", "servers.server."+instanceNames[0]));
-        report(instanceNames[0] + "-no-config", !asadmin("get", "configs.config."+instanceNames[0]+"-config"));
     }
 
     private boolean checkInstanceDir(String name) {
         File inf = new File(instancesHome, name);
         boolean exists = inf.isDirectory();
         String existsString = exists ? "DOES exist" : "does NOT exist";
-        //printf("The instance-dir, %s, %s\n", inf.toString(), existsString);
         return exists;
     }
 
     private boolean checkDasProperties() {
         File dasFile = new File(instancesHome, "agent" + File.separator + "config" + File.separator + "das.properties");
         return dasFile.exists();
+    }
+
+    private String generateInstanceName() {
+        String s = "" + System.currentTimeMillis();
+        s = s.substring(4, 10);
+        return "in_" + s;
     }
 
     private void printf(String fmt, Object... args) {

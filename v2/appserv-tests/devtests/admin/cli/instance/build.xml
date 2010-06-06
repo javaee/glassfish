@@ -35,10 +35,10 @@
  holder.
 -->
 <!DOCTYPE project [
-        <!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
-        <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
-        <!ENTITY run SYSTEM "./../../../../config/run.xml">
-        ]>
+<!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+<!ENTITY run SYSTEM "./../../../../config/run.xml">
+]>
 
 <project name="admin_clitest" default="all" basedir=".">
 
@@ -66,7 +66,10 @@
     </target>
 
     <target name="all" depends="init-common, build">
-        <java classname="admin.AdminInfraTest" fork="true" classpath="${test}"/>
+        <java classname="admin.AdminInfraTest" fork="true" classpath="${test}">
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1323"/>
+        </java>
     </target>
 
     <target name="usage">
