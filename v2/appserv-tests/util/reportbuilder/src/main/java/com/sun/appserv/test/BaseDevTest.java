@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,8 +23,10 @@ import javax.xml.xpath.XPathFactory;
 import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+import com.sun.appserv.test.util.process.*;
 
 public abstract class BaseDevTest {
+
     public final SimpleReporterAdapter stat;
 
     @SuppressWarnings({"IOResourceOpenedButNotSafelyClosed"})
@@ -56,6 +60,7 @@ public abstract class BaseDevTest {
         write(ret.err);
         return ret.returnValue;
     }
+
     /**
      * Runs the command with the args given
      * Returns the precious output strings for further processing.
@@ -71,49 +76,28 @@ public abstract class BaseDevTest {
         command.add(System.getenv().get("S1AS_HOME") + asadmincmd);
         command.addAll(Arrays.asList(antProp("as.props").split(" ")));
         command.addAll(Arrays.asList(args));
-        ProcessBuilder builder = new ProcessBuilder(command);
-        Process process = null;
-        boolean success = false;
+
+        ProcessManager pm = new ProcessManager(command);
+
+        // the tests may be running unattended -- don't wait forever!
+        pm.setTimeoutMsec(DEFAULT_TIMEOUT_MSEC);
+
+        pm.setEcho(false);
+        int exit = 1;
+
         try {
-            process = builder.start();
-            InputStream inStream = process.getInputStream();
-            InputStream errStream = process.getErrorStream();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ByteArrayOutputStream err = new ByteArrayOutputStream();
-            try {
-                final byte[] buf = new byte[1000];
-                int read;
-                while ((read = inStream.read(buf)) != -1) {
-                    out.write(buf, 0, read);
-                }
-                while ((read = errStream.read(buf)) != -1) {
-                    err.write(buf, 0, read);
-                }
-            } finally {
-                errStream.close();
-                inStream.close();
-            }
-            String outString = new String(out.toByteArray()).trim();
-            String errString = new String(err.toByteArray()).trim();
-            //write(outString);
-            //write(errString);
-            ret.out = outString;
-            ret.err = errString;
-            ret.outAndErr = ret.out + ret.err;
-            process.waitFor();
-            success = process.exitValue() == 0 && validResults(outString,
-                String.format("Command %s failed.", args[0]),
-                "list-commands")
-                && errString.length() == 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            success = false;
-        } finally {
-            if (process != null) {
-                process.destroy();
-            }
+            exit = pm.execute();
         }
-        ret.returnValue = success;
+        catch (ProcessManagerException ex) {
+            exit = 1;
+        }
+
+        ret.out = pm.getStdout();
+        ret.err = pm.getStderr();
+        ret.outAndErr = ret.out + ret.err;
+        ret.returnValue = (exit == 0 && validResults(ret.out,
+                String.format("Command %s failed.", args[0]), "list-commands"));
+
         return ret;
     }
 
@@ -145,8 +129,8 @@ public abstract class BaseDevTest {
                 }
                 System.getProperties().putAll(props);
                 System.setProperty("as.props", String.format("--user %s --passwordfile %s --host %s --port %s"
-                    + " --echo=true --terse=true", antProp("admin.user"), antProp("admin.password.file"),
-                    antProp("admin.host"), antProp("admin.port")));
+                        + " --echo=true --terse=true", antProp("admin.user"), antProp("admin.password.file"),
+                        antProp("admin.host"), antProp("admin.port")));
                 value = System.getProperty(key);
                 int index;
                 while ((index = value.indexOf("${env.")) != -1) {
@@ -273,10 +257,11 @@ public abstract class BaseDevTest {
 
     // simple C-struct -- DIY
     public static class AsadminReturn {
+
         public boolean returnValue;
         public String out;
         public String err;
         public String outAndErr;
     }
-
+    private static final int DEFAULT_TIMEOUT_MSEC = 120000; // 2 minutes
 }
