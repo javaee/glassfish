@@ -116,17 +116,6 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         else
             throw new CommandException(strings.get("Instance.badInstanceName"));
 
-        //ProgramOptions should takes care of default values?
-        if (!ok(DASHost)) {
-             try {
-                DASHost = InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException ex) {
-                logger.getLogger().warning(strings.get("Instance.unknownHost"));
-                logger.getLogger().warning(ex.getLocalizedMessage());
-                DASHost = CLIConstants.DEFAULT_HOSTNAME;
-            }
-        }
-
         if (agentPort != null) {
             if (!NetUtils.isPortStringValid(agentPort)) {
                 throw new CommandException(strings.get("Instance.invalidAgentPort", agentPort));
@@ -147,14 +136,18 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         docrootDir = new File(instanceDir, "docroot");
         loggingPropsFile = new File(configDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
 
+        if (dasPropsFile.isFile()) {
+            setDasDefaults(dasPropsFile);
+        }
+
         DASHost = programOpts.getHost();
         DASPort = programOpts.getPort();
         dasIsSecure = programOpts.isSecure();
         
-        if (DASPort == -1) {
-            DASPort = dasIsSecure ? 4849 : 4848;
-        }
-        DASProtocol = dasIsSecure ? "https" : "http";
+        //if (DASPort == -1) {
+        //    DASPort = dasIsSecure ? 4849 : 4848;
+        //}
+        DASProtocol = "http";
 
     }
 
@@ -217,7 +210,9 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         String filename = "";
         try {
             filename = dasPropsFile.getName();
-            writeDasProperties();
+            if (!dasPropsFile.isFile()) {
+                writeDasProperties();
+            }
             filename = nodeagentPropsFile.getName();
             writeNodeagentProperties();
             filename = loggingPropsFile.getName();
@@ -228,12 +223,8 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     }
 
     private void writeDasProperties() throws IOException {
-        if (!dasPropsFile.isFile()) {
-            dasPropsFile.createNewFile();
-        }
-
+        dasPropsFile.createNewFile();
         dasProperties = new Properties();
-        
         dasProperties.setProperty(K_DAS_HOST, DASHost);
         dasProperties.setProperty(K_DAS_PORT, String.valueOf(DASPort));
         dasProperties.setProperty(K_DAS_IS_SECURE, String.valueOf(dasIsSecure));
