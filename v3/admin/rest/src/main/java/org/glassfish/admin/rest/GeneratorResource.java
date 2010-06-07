@@ -80,6 +80,8 @@ public class GeneratorResource {
         {"ListConnectorResource", "create-connector-resource"},
         {"ListExternalJndiResource","create-jndi-resource"},
         {"ListMailResource", "create-javamail-resource"},
+        {"ListWorkSecurityMap", "create-connector-work-security-map"},
+        {"ListExternalJndiResource", "create-jndi-resource"},
         {"ListResourceAdapterConfig", "create-resource-adapter-config"},
         {"ListConnectorConnectionPool", "create-connector-connection-pool"},
         {"ListAuthRealm", "create-auth-realm"},

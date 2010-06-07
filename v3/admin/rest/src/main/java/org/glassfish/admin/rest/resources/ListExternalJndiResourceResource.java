@@ -50,6 +50,6 @@ public class ListExternalJndiResourceResource extends TemplateListOfResource {
 
 @Override
 public String getPostCommand() {
-	return null;
+	return "create-jndi-resource";
 }
 }

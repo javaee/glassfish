@@ -50,6 +50,6 @@ public class ListWorkSecurityMapResource extends TemplateListOfResource {
 
 @Override
 public String getPostCommand() {
-	return null;
+	return "create-connector-work-security-map";
 }
 }
