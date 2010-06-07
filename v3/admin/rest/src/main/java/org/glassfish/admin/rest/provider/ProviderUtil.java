@@ -39,15 +39,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jvnet.hk2.config.ConfigBean;
 
@@ -57,7 +61,6 @@ import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
 import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.external.statistics.Statistic;
-import org.jvnet.hk2.config.Dom;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -150,11 +153,12 @@ public class ProviderUtil extends Util {
     }
 
 
-    static protected final String getElementLink(UriInfo uriInfo,
-        String elementName) {
-        //Using '-' for back-slash in resource names
-        //For example, jndi names has back-slash in it
-        elementName = elementName.replace('/', '-');
+    static protected final String getElementLink(UriInfo uriInfo, String elementName) {
+        try {
+            elementName = URLEncoder.encode(elementName, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(ProviderUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         String link = uriInfo.getAbsolutePath().toString();
         return link.endsWith("/")?

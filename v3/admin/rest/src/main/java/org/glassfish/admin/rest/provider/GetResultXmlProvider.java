@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -131,18 +131,32 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
     }
 
     private String getAttributes(Dom proxy) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         Set<String> attributeNames = proxy.model.getAttributeNames();
         for (String attributeName : attributeNames) {
-            result = result + eleminateHypen(attributeName) + "=" + quote(proxy.attribute(attributeName));
-            result = result + " ";
+            result.append(eleminateHypen(attributeName))
+                    .append("=")
+                    .append(quote(proxy.attribute(attributeName)))
+                    .append(" ");
         }
 
-        int endIndex = result.length() - 1;
-        if (endIndex > 0) {
-            result = result.substring(0, endIndex);
+        // Per Anissa's request
+        // TODO: Update JSON and HTML providers
+        if (!attributeNames.contains("name")) {
+            String key = proxy.model.key;
+            if (key != null) {
+                key = key.replaceAll("@", "");
+                result.append("name=")
+                        .append(quote(proxy.attribute(key)))
+                        .append(" ");
+            }
         }
-        return result;
+
+//        int endIndex = result.length() - 1;
+//        if (endIndex > 0) {
+//            result = result.substring(0, endIndex);
+//        }
+        return result.toString().trim();
     }
 
     private String getResourcesLinks(Dom proxy,
