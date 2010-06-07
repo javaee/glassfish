@@ -33,11 +33,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.web.admin.cli;
 
 import java.util.List;
 
+import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -62,57 +62,47 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  * Delete Protocol command
- *
  */
-@Service(name="delete-http")
+@Service(name = "delete-http")
 @Scoped(PerLookup.class)
 @I18n("delete.http")
 public class DeleteHttp implements AdminCommand {
-
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(DeleteHttp.class);
-
-    @Param(name="protocolname", primary=true)
+    @Param(name = "protocolname", primary = true)
     String protocolName;
-
     @Param(name = "target", optional = true, defaultValue = "server")
     String target;
-
     Protocol protocolToBeRemoved = null;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
-    
     @Inject
     Domain domain;
 
-    
     /**
-     * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
+     * the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
         Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
+        if (targetServer != null) {
             config = domain.getConfigNamed(targetServer.getConfigRef());
         }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
+        Cluster cluster = domain.getClusterNamed(target);
+        if (cluster != null) {
             config = domain.getConfigNamed(cluster.getConfigRef());
-        }  config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         ActionReport report = context.getActionReport();
-
         NetworkConfig networkConfig = config.getNetworkConfig();
         Protocols protocols = networkConfig.getProtocols();
-
         try {
             for (Protocol protocol : protocols.getProtocol()) {
                 if (protocolName.equalsIgnoreCase(protocol.getName())) {
                     protocolToBeRemoved = protocol;
                 }
             }
-
             if (protocolToBeRemoved == null) {
                 report.setMessage(localStrings.getLocalString(
                     "delete.http.notexists", "{0} http doesn't exist",
@@ -120,23 +110,20 @@ public class DeleteHttp implements AdminCommand {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
-
             // check if the protocol whose http to be deleted is being used by
             // any network listener, then do not delete it.
-
             List<NetworkListener> nwlsnrList =
                 protocolToBeRemoved.findNetworkListeners();
             for (NetworkListener nwlsnr : nwlsnrList) {
-               if (protocolToBeRemoved.getName().equals(nwlsnr.getProtocol())) {
+                if (protocolToBeRemoved.getName().equals(nwlsnr.getProtocol())) {
                     report.setMessage(localStrings.getLocalString(
                         "delete.protocol.beingused",
                         "{0} protocol is being used in the network listener {1}",
                         protocolName, nwlsnr.getName()));
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
-               }
+                }
             }
-
             ConfigSupport.apply(new SingleConfigCode<Protocol>() {
                 public Object run(Protocol param) {
                     param.setHttp(null);
@@ -144,7 +131,7 @@ public class DeleteHttp implements AdminCommand {
                 }
             }, protocolToBeRemoved);
 
-        } catch(TransactionFailure e) {
+        } catch (TransactionFailure e) {
             report.setMessage(localStrings.getLocalString(
                 "delete.http.fail", "Deletion of http {0} failed",
                 protocolName) + "  " + e.getLocalizedMessage());
@@ -152,7 +139,6 @@ public class DeleteHttp implements AdminCommand {
             report.setFailureCause(e);
             return;
         }
-
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }
