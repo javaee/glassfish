@@ -44,6 +44,7 @@ import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -75,6 +76,7 @@ public class DomainXmlTransformer {
     private Logger _logger = Logger.getAnonymousLogger(
             "com.sun.logging.enterprise.system.container.ejb.LogStrings");
 
+    private static final String VIRTUAL_SERVER = "virtual-server";
     private static final String NETWORK_LISTENERS = "network-listeners";
     private static final String IIOP_LISTENER = "iiop-listener";
     private static final String PROTOCOLS = "protocols";
@@ -84,6 +86,11 @@ public class DomainXmlTransformer {
     private static final String LAZY_INIT_ATTR = "lazy-init";
     private static final String ENABLED = "enabled";
     private static final String FALSE = "false";
+
+    private static final Set<String> SKIP_ELEMENTS = new HashSet(Arrays.asList(VIRTUAL_SERVER));
+    private static final Set<String> EMPTY_ELEMENTS = new HashSet(Arrays.asList(NETWORK_LISTENERS, PROTOCOLS, APPLICATIONS));
+    private static final Set<String> LAZY_SETTINGS_ELEMENTS = new HashSet(Arrays.asList(IIOP_LISTENER, JMS_HOST));
+    private static final Set<String> DISABLE_ELEMENTS = new HashSet(Arrays.asList(JMX_CONNECTOR));
 
     private static final StringManager localStrings = 
         StringManager.getManager(DomainXmlTransformer.class);
@@ -124,30 +131,33 @@ public class DomainXmlTransformer {
                 XMLEvent event = parser.nextEvent();
                 if (event.isStartElement()) {
                     String name = event.asStartElement().getName().getLocalPart();
-                    if (name.equals(NETWORK_LISTENERS) 
-                            || name.equals(JMS_HOST)
-                            || name.equals(JMX_CONNECTOR)
-                            || name.equals(PROTOCOLS)
-                            || name.equals(IIOP_LISTENER)
-                            || name.equals(APPLICATIONS)) {
-                        if( name.equals(IIOP_LISTENER) || name.equals(JMS_HOST)) {
-
-                            // Make sure lazy init is not enabled by creating a new start element
-                            // based on the original but that never includes the lazy init attribute
-                            StartElement newStartEvent = getAdjustedStartEvent(event, LAZY_INIT_ATTR);
-                            writer.add(newStartEvent);
-
-                        } else if( name.equals(JMX_CONNECTOR) ) {
-                            // Disable this element
-                            StartElement newStartEvent = getDisabledStartEvent(event);
-                            writer.add(newStartEvent);
-
-                        } else {
-                            writer.add(event);
+                    if (SKIP_ELEMENTS.contains(name)) {
+                        if (_logger.isLoggable(Level.FINE)) {
+                            _logger.fine("[DomainXmlTransformer] Skipping all of: " + name);
                         }
+                        getEndEventFor(parser, name);
+                        continue;
+                    } 
+
+                    boolean skip_to_end = false;
+                    if (EMPTY_ELEMENTS.contains(name)) {
                         if (_logger.isLoggable(Level.FINE)) {
                             _logger.fine("[DomainXmlTransformer] Skipping details of: " + name);
                         }
+                        skip_to_end = true;
+                    } else if (LAZY_SETTINGS_ELEMENTS.contains(name)) {
+                        // Make sure lazy init is not enabled by creating a new start element
+                        // based on the original but that never includes the lazy init attribute
+                        event  = getAdjustedStartEvent(event, LAZY_INIT_ATTR);
+                        skip_to_end = true;
+                    } else if (DISABLE_ELEMENTS.contains(name)) {
+                        // Disable this element
+                        event  = getDisabledStartEvent(event);
+                        skip_to_end = true;
+                    }
+
+                    if (skip_to_end) {
+                        writer.add(event);
                         event = getEndEventFor(parser, name);
                     }
                 } 
