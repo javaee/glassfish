@@ -201,18 +201,14 @@ public class GeneratorResource {
     private void processRedirectsAnnotation(ConfigModel model) {
 
         Class<? extends ConfigBeanProxy> cbp = null;
-        System.out.println("\n\nAnnotation" + model.targetTypeName);
         try {
             cbp = (Class<? extends ConfigBeanProxy>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
             // cbp = (Class<? extends ConfigBeanProxy>)this.getClass().getClassLoader().loadClass(model.targetTypeName) ;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        System.out.println("re Annotation" + model.targetTypeName);
         RestRedirects restRedirects = cbp.getAnnotation(RestRedirects.class);
-        System.out.println("re Annotation restRedirects" + restRedirects);
         if (restRedirects != null) {
-            System.out.println("LUDO: NOT NULL                Annotation restRedirects" + restRedirects);
 
             RestRedirect[] values = restRedirects.value();
             for (RestRedirect r : values) {
@@ -276,7 +272,6 @@ public class GeneratorResource {
         genListFiles.put(serverConfigName, serverConfigName);
         String beanName = getBeanName(serverConfigName);
         File file = new File(genDir + "/List" + beanName + "Resource.java");
-        // File file = new File("/Users/ludo/tmp/" + beanName + "Resource.java");
         try {
             file.createNewFile();
         } catch (Exception e) {
@@ -293,30 +288,10 @@ public class GeneratorResource {
         out.write("import javax.ws.rs.Path;\n");
         out.write("import javax.ws.rs.PathParam;\n");
 
-//        out.write("import org.glassfish.admin.rest.TemplateResource;\n");
         out.write("import org.glassfish.admin.rest.TemplateListOfResource;\n");
-//        out.write("import com.sun.jersey.api.core.ResourceContext;\n");
-//        out.write("import " + model.targetTypeName + ";\n");
-
-
-
-        // out.write("@Path(\"/" + serverConfigName + "/\")\n");
         out.write("public class List" + beanName + "Resource extends TemplateListOfResource {\n\n");
 
-////        out.write("private List<" + beanName + "> entity;\n");
-////        out.write("public void setEntity(List<" + beanName + "> p ){\n");
-////        out.write("entity = p;\n");
-////        out.write("}\n");
-////
-////
-////        out.write("public  List<" + beanName + "> getEntity() {\n");
-////        if (beanName.equals("Domain")) {
-////            out.write("return RestService.theDomain;\n");
-////        } else {
-////            out.write("return entity;\n");
-////
-////        }
-////        out.write("}\n");
+
         String keyAttributeName = null;
         if (model.key == null) {
             try {
@@ -340,27 +315,9 @@ public class GeneratorResource {
         out.write("\t@Path(\"{" + keyAttributeName + "}/\")\n");
         out.write("\tpublic " + beanName + "Resource get" + beanName + "Resource(@PathParam(\"" + keyAttributeName + "\") String id) {\n");
         out.write("\t\t" + beanName + "Resource resource = resourceContext.getResource(" + beanName + "Resource.class);\n");
-//////        out.write("\t\tfor (" + beanName + " c: entity){\n");
-//////        if (model.key == null) {
-//////            out.write("//THIS KEY IS THE FIRST Attribute ONE ludo\n");
-//////
-//////        }
-//////
-//////        // TODO: throw a RuntimeException on this for now. We probably need to skip the two ConfigBeans
-//////        // that are problematic here.  Some how.
-//////        if (!keyAttributeName.equals("ThisIsAModelBug:NoKeyAttr")) {
-//////            out.write("\t\t\tif(c.get" + keyAttributeName + "().equals(id)){\n");
-//////            out.write("\t\t\t\tresource.setEntity(c);\n");
-//////            out.write("\t\t\t}\n");
-//////        } else {
-//////            out.write("\t\t\tthrow new RuntimeException(\"" + keyAttributeName + " \");\n");
-//////        }
-//////        out.write("\t\t}\n");
-
         out.write("\t\tresource.setBeanByKey(entity, id);\n");
         out.write("\t\treturn resource;\n");
         out.write("\t}\n\n");
- ///////ludo       generateCommand("List" + beanName, out);
         generateCommandResources("List" + beanName, out);
 
         out.write("\n");
@@ -453,17 +410,10 @@ public class GeneratorResource {
                 System.out.println("proxy.getElement(a).isCollection() " + a);
             } else {
                 ConfigModel.Node node = (ConfigModel.Node) prop;
-                //String childbeanName = getBeanName(a);
 
                 ConfigModel childModel = node.getModel();
 
-//                String getterName = getBeanName(a);
 
-                System.out.println("Model.targetTypeName" + model.targetTypeName);
-                System.out.println("newModel.targetTypeName" + childModel.targetTypeName);
-                System.out.println("ConfigModel.Node node isCollection=" + prop.isCollection());
-                System.out.println("ConfigModel.Node node isLeaf=" + prop.isLeaf());
-                System.out.println("ConfigModel.Node node xlmname=" + prop.xmlName());
 //                if (childModel.targetTypeName.endsWith("ApplicationName")) {//was named
 //                    a = "application";
 //                    getterName = "Applications";
@@ -490,105 +440,58 @@ public class GeneratorResource {
                 String childbeanName = childModel.targetTypeName.substring(childModel.targetTypeName.lastIndexOf(".") + 1,
                         childModel.targetTypeName.length());
 
-              //  if (!childModel.targetTypeName.endsWith("Resource")) {
-                    String prefix = "";
-                    if (prop.isCollection()) {
-                        prefix = "List";
-                    }
+                String prefix = "";
+                if (prop.isCollection()) {
+                    prefix = "List";
+                }
 
-                    if (a.equals("*")) {
-//                        getterName = childbeanName + "s";
-                        try {
-                            Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); ///  a shoulf be the typename
+                if (a.equals("*")) {
+                    try {
+                        Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); ///  a shoulf be the typename
 
 
-                            List<ConfigModel> lcm = document.getAllModelsImplementing(subType);
-                            if (lcm != null) {
-                                for (ConfigModel cmodel : lcm) {
-                                    String newName = cmodel.targetTypeName.substring(cmodel.targetTypeName.lastIndexOf(".") + 1,
-                                            cmodel.targetTypeName.length());
-                                    out.write("@Path(\"" + cmodel.getTagName() + "/\")\n");
-                                    out.write("public List" + newName + "Resource get" + newName + "Resource() {\n");
-                                    out.write("\tList" + newName + "Resource resource = resourceContext.getResource(List" + newName + "Resource.class);\n");
-                                  //  out.write("\tresource.setEntity(getEntity().nodeElements(\""+childModel.getTagName()+"\"));");
-                                    out.write("\tresource.setParentAndTagName(getEntity() , \""+cmodel.getTagName()+"\");\n");
+                        List<ConfigModel> lcm = document.getAllModelsImplementing(subType);
+                        if (lcm != null) {
+                            for (ConfigModel cmodel : lcm) {
+                                String newName = cmodel.targetTypeName.substring(cmodel.targetTypeName.lastIndexOf(".") + 1,
+                                        cmodel.targetTypeName.length());
+                                out.write("@Path(\"" + cmodel.getTagName() + "/\")\n");
+                                out.write("public List" + newName + "Resource get" + newName + "Resource() {\n");
+                                out.write("\tList" + newName + "Resource resource = resourceContext.getResource(List" + newName + "Resource.class);\n");
+                                //  out.write("\tresource.setEntity(getEntity().nodeElements(\""+childModel.getTagName()+"\"));");
+                                out.write("\tresource.setParentAndTagName(getEntity() , \"" + cmodel.getTagName() + "\");\n");
 
-                                    out.write("\treturn resource;\n");
-                                    out.write("}\n");
-                                    if (prop.isCollection()) {
-                                        generateList(cmodel);
-                                    } else {
-                                        generateSingle(cmodel);
+                                out.write("\treturn resource;\n");
+                                out.write("}\n");
+                                if (prop.isCollection()) {
+                                    generateList(cmodel);
+                                } else {
+                                    generateSingle(cmodel);
 
-                                    }
                                 }
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+
+                    out.write("\t@Path(\"" + childModel.getTagName() + "/\")\n");
+                    out.write("\tpublic " + prefix + childbeanName + "Resource get" + childbeanName + "Resource() {\n");
+
+                    out.write("\t\t" + prefix + childbeanName + "Resource resource = resourceContext.getResource(" + prefix + childbeanName + "Resource.class);\n");
+                    out.write("\t\tresource.setParentAndTagName(getEntity() , \"" + childModel.getTagName() + "\");\n");
+                    out.write("\t\treturn resource;\n");
+                    out.write("\t}\n");
+
+                    if (prop.isCollection()) {
+                        generateList(childModel);
                     } else {
-
-                        out.write("\t@Path(\"" + childModel.getTagName() + "/\")\n");
-                        out.write("\tpublic " + prefix + childbeanName + "Resource get" + childbeanName + "Resource() {\n");
-
-                        out.write("\t\t" + prefix + childbeanName + "Resource resource = resourceContext.getResource(" + prefix + childbeanName + "Resource.class);\n");
-                        ///out.write("\t\tresource.setEntity(getEntity().get" + getterName + "() );\n");
-                        out.write("\t\tresource.setParentAndTagName(getEntity() , \""+childModel.getTagName()+"\");\n");
-//                       if (prefix.equals("List")){
-//                            out.write("\t\tresource.setEntity(getEntity().nodeElements(\""+childModel.getTagName()+"\"));\n");
-//
-//                        }else {
-//                            out.write("\t\tresource.setEntity(getEntity().nodeElement(\""+childModel.getTagName()+"\"));\n");
-//
-//                        }
-                        out.write("\t\treturn resource;\n");
-                        out.write("\t}\n");
-
-                        if (prop.isCollection()) {
-                            generateList(childModel);
-                        } else {
-                            generateSingle(childModel);
-
-                        }
+                        generateSingle(childModel);
 
                     }
-//                } else {
-//
-//
-//
-//
-//                    try {
-//                        Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); ///  a shoulf be the typename
-//
-//
-//                        List<ConfigModel> lcm = document.getAllModelsImplementing(subType);
-//                        if (lcm != null) {
-//                            for (ConfigModel childmodel : lcm) {
-//                                System.out.println("--->targetTypeName=" + childmodel.targetTypeName);
-//                                String newName = childmodel.targetTypeName.substring(childmodel.targetTypeName.lastIndexOf(".") + 1,
-//                                        childmodel.targetTypeName.length());
-//                                out.write("@Path(\"" + childmodel.getTagName() + "/\")\n");
-//                                out.write("public List" + newName + "Resource get" + newName + "Resource() {\n");
-//                                out.write("\t\tList" + newName + "Resource resource = resourceContext.getResource(List" + newName + "Resource.class);\n");
-//                         //   out.write("\t\tresource.setEntity(getEntity().nodeElements(\""+childModel.getTagName()+"\"));\n");
-//                                    out.write("\t\tresource.setParentAndTagName(getEntity() , \""+childModel.getTagName()+"\");\n");
-//
-//                                out.write("\t\treturn resource;\n");
-//                                out.write("}\n");
-//                                generateList(childmodel);
-//
-//
-//
-//                            }
-//                        }
-//
-//                        //com.sun.enterprise.config.serverbeans.CustomResource
-//
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
 
+                }
 
             }
 
@@ -686,85 +589,6 @@ public class GeneratorResource {
         return null;
     }
 
-
-    /*
-     * temporary mapping to add Admin Commands to some of our configbeans
-     *
-     * */
-    
- /*   private static String MappingConfigBeansToCommands[][] = {
-        {"Domain", "stop-domain"},
-        {"Domain", "restart-domain"},
-        {"Domain", "uptime"},
-        {"Domain", "version"},
-        {"Domain", "rotate-log"},
-        {"Domain", "get-host-and-port"},
-        {"ListApplication", "deploy"},
-        {"Application", "redeploy"},
-        //  {"ListExternalJndiResource", ""},
-        //{"ListWorkSecurityMap", ""},
-        //{"ListPersistenceManagerFactoryResource", ""},
-
-        //{"", "create-connector-work-security-map"},
-        //  {"", "create-file-user"},
-        //    {"", "create-jmsResource"},
-        //    {"", "create-jmsdest"},
-        //   {"", "create-jvm-options"},
-        //    {"", "create-password-alias"},
-        ////    {"", "create-ssl"},
-        {"ConnectionPool", "ping-connection-pool"},/*
-    addResources
-    change-admin-password
-    disable
-    enable
-    generate-jvm-report
-    get
-    get-client-stubs
-    // get-host-and-port
-    //redeploy
-    //undeploy
-    // ping-connection-pool
-
-    // create-admin-object
-    //create-connector-connection-pool
-    // create-connectorResource
-    //create-customResource
-    //create-javamailResource
-    //create-jdbc-connection-pool
-    //create-jdbcResource
-    // createResource-adapter-config
-    delete-admin-object
-    delete-audit-module
-    delete-auth-realm
-    delete-connector-connection-pool
-    delete-connectorResource
-    delete-connector-work-security-map
-    delete-customResource
-    delete-file-user
-    delete-http-listener
-    delete-iiop-listener
-    delete-javamailResource
-    delete-jdbc-connection-pool
-    delete-jdbcResource
-    delete-jms-host
-    monitor
-    delete-jmsResource
-    delete-jmsdest
-    delete-jvm-options
-    delete-message-security-provider
-    delete-password-alias
-    delete-profiler
-    deleteResource-adapter-config
-    deleteResource-ref
-    update-file-user
-    delete-ssl
-    update-password-alias
-    delete-system-property
-    delete-virtual-server
-
-
-     };
-*/
 
     private void generateCommandResources(String resourceName,
         BufferedWriter out) throws IOException {
@@ -888,87 +712,6 @@ public class GeneratorResource {
 
         out.write("    }\n");
         out.write("}\n");
-        /*
-        //imports
-        out.write("import java.util.HashMap;\n\n");
-        out.write("import javax.ws.rs.*;\n");
-        out.write("import javax.ws.rs.core.Context;\n");
-        out.write("import javax.ws.rs.core.HttpHeaders;\n");
-        out.write("import javax.ws.rs.core.MediaType;\n");
-        out.write("import javax.ws.rs.core.Response;\n");
-        out.write("import javax.ws.rs.core.UriInfo;\n\n");
-        out.write("import com.sun.enterprise.util.LocalStringManagerImpl;\n\n");
-        out.write("import org.glassfish.admin.rest.provider.OptionsResult;\n");
-        out.write("import org.glassfish.admin.rest.provider.MethodMetaData;\n");
-        if (commandMethod.equals("GET")) {
-            out.write("import org.glassfish.admin.rest.provider.StringResult;\n");
-        }
-        out.write("import org.glassfish.admin.rest.Constants;\n");
-        out.write("import org.glassfish.admin.rest.ResourceUtil;\n");
-        out.write("import org.glassfish.admin.rest.RestService;\n");
-        out.write("import org.glassfish.api.ActionReport;\n\n");
-
-        //class header
-        out.write("public class " + commandResourceName + " {\n\n");
-
-        //constructor
-        out.write("public " + commandResourceName + "() {\n");
-        out.write("__resourceUtil = new ResourceUtil();\n");
-        out.write("}\n");
-
-        //create command method
-        if (commandMethod.equals("GET")) {
-            //get method
-            createCommandGetMethod(commandName, commandMethod, out);
-
-            //create options method
-            createCommandOptionsMethod(out, Constants.QUERY_PARAMETER);
-        } else {
-            //post, put or delete method
-            createCommandMethod(commandMethod, out);
-
-            //get method
-            createGetMethod(out);
-
-            //create options method
-            createCommandOptionsMethod(out, Constants.MESSAGE_PARAMETER);
-        }
-
-
-        //variable declarations
-        out.write("public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ResourceUtil.class);\n");
-        out.write("@Context\n");
-        out.write("protected HttpHeaders requestHeaders;\n");
-        out.write("@Context\n");
-        out.write("protected UriInfo uriInfo;\n\n");
-        out.write("private static final String resourceName = \"" + resourceName + "\";\n");
-        out.write("private static final String commandName = \"" + commandName + "\";\n");
-        out.write("private static final String commandDisplayName = \"" + commandDisplayName + "\";\n");
-        out.write("private static final String commandMethod = \"" + commandMethod + "\";\n");
-        out.write("private static final String commandAction = \"" + commandAction + "\";\n");
-
-        boolean isLinkedToParent = false;
-        if (configBeansToCommandResourcesArray.length > 5 ) {
-            out.write("private HashMap<String, String> commandParams =\n");
-            out.write("new HashMap<String, String>() {{\n");
-            for (int i=5; i <= configBeansToCommandResourcesArray.length - 1; i++) {
-                String[] name_value = stringToArray(configBeansToCommandResourcesArray[i], "=");
-                if (name_value[1].equals(Constants.PARENT_NAME_VARIABLE)) {
-                    isLinkedToParent = true;
-                }
-                out.write("put(\"" + name_value[0] + "\",\"" + name_value[1] + "\");\n");
-            }
-
-            out.write("}};\n");
-        } else {
-            out.write("private HashMap<String, String> commandParams = null;\n");
-        }
-        out.write("private static final boolean isLinkedToParent = " + isLinkedToParent + ";\n");
-        out.write("private ResourceUtil __resourceUtil;\n");
-        out.write("}\n");
-
-
-        */
 
         out.close();
         System.out.println("created:" + file.getAbsolutePath());
@@ -1030,199 +773,7 @@ public class GeneratorResource {
         out.close();
     }
 
-/*
-    private void createCommandMethod(String commandMethod, BufferedWriter out) throws IOException {
-        out.write("@" + commandMethod + "\n");
-        out.write("@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})\n");
-        out.write("public Response executeCommand(HashMap<String, String> data) {\n");
-        out.write("try {\n");
-        out.write("if (data.containsKey(\"error\")) {\n");
-        out.write("String errorMessage = localStrings.getLocalString(\"rest.request.parsing.error\", \"Unable to parse the input entity. Please check the syntax.\");\n");
-        out.write("return __resourceUtil.getResponse(400, \n errorMessage, requestHeaders, uriInfo);\n");
-        out.write("}\n\n");
 
-        out.write("if (commandParams != null) {\n");
-        out.write("//formulate parent-link attribute for this command resource\n");
-        out.write("//Parent link attribute may or may not be the id/target attribute\n");
-        out.write("if (isLinkedToParent) {\n");
-        out.write("__resourceUtil.resolveParentParamValue(commandParams, uriInfo);\n");
-        out.write("}\n\n");
-        out.write("data.putAll(commandParams);\n");
-        out.write("}\n\n");
-        out.write("__resourceUtil.adjustParameters(data);\n\n");
-        out.write("__resourceUtil.purgeEmptyEntries(data);\n\n");
-
-        out.write("ActionReport actionReport = __resourceUtil.runCommand(commandName, data, RestService.getHabitat());\n\n");
-        out.write("ActionReport.ExitCode exitCode = actionReport.getActionExitCode();\n\n");
-
-        out.write("if (exitCode == ActionReport.ExitCode.SUCCESS) {\n");
-        out.write("String successMessage = localStrings.getLocalString(\"rest.request.success.message\",\n");
-        out.write("\"{0} of {1} executed successfully.\", new Object[] {commandMethod, uriInfo.getAbsolutePath()});\n");
-        out.write("return __resourceUtil.getResponse(200, \n successMessage, requestHeaders, uriInfo);\n");
-        out.write("}\n\n");
-
-        out.write("String errorMessage = actionReport.getMessage();\n");
-        out.write("return __resourceUtil.getResponse(400, \n errorMessage, requestHeaders, uriInfo);\n");
-        out.write("} catch (Exception e) {\n");
-        out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
-        out.write("}\n");
-        out.write("}\n");
-
-        out.write("//Handle POST request without any entity(input).\n");
-        out.write("//Do not care what the Content-Type is.\n");
-        out.write("@" + commandMethod + "\n");
-        out.write("public Response executeCommand() {\n");
-        out.write("try {\n");
-        out.write("return executeCommand(new HashMap<String, String>());\n");
-        out.write("} catch (Exception e) {\n");
-        out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
-        out.write("}\n");
-        out.write("}\n");
-
-
-        //hack-1 : support delete method for html
-        //Currently, browsers do not support delete method. For html media,
-        //delete operations can be supported through POST. Redirect html
-        //client POST request for delete operation to DELETE method.
-
-        //In case of delete command reosurce, we will also create post method
-        //which simply forwards the request to delete method. Only in case of
-        //html client delete request is routed through post. For other clients
-        //delete request is directly handled by delete method.
-        if (commandMethod.equals("DELETE")) {
-            out.write("//hack-1 : support delete method for html\n");
-            out.write("//Currently, browsers do not support delete method. For html media,\n");
-            out.write("//delete operations can be supported through POST. Redirect html\n");
-            out.write("//client POST request for delete operation to DELETE method.\n\n");
-
-            out.write("//In case of delete command reosurce, we will also create post method\n");
-            out.write("//which simply forwards the request to delete method. Only in case of\n");
-            out.write("//html client delete request is routed through post. For other clients\n");
-            out.write("//delete request is directly handled by delete method.\n");
-
-            out.write("@" + "POST" + "\n");
-            out.write("@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})\n");
-            out.write("public Response hack(HashMap<String, String> data) {\n");
-            out.write("if ((data.containsKey(\"operation\")) &&\n");
-            out.write("(data.get(\"operation\").equals(\"__deleteoperation\"))) {\n");
-            out.write("data.remove(\"operation\");\n");
-            out.write("}\n");
-            out.write("return executeCommand(data);\n");
-            out.write("}\n");
-        }
-    }
-
-
-    private void createGetMethod(BufferedWriter out)
-                throws IOException {
-        out.write("@" + "GET" + "\n");
-        out.write("@Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})\n");
-        out.write("public org.glassfish.admin.rest.provider.CommandResourceGetResult get() {\n");
-        out.write("try {\n");
-        out.write("return new org.glassfish.admin.rest.provider.CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, commandAction, options());\n");
-        out.write("} catch (Exception e) {\n");
-        out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
-        out.write("}\n");
-        out.write("}\n");
-    }
-
-
-    private void createCommandGetMethod(String commandName,
-            String commandMethod, BufferedWriter out) throws IOException {
-        CommandRunner cr = RestService.getHabitat().getComponent(CommandRunner.class);
-        CommandModel cm = null;
-        try {
-            cm = cr.getModel(commandName, RestService.logger);
-        } catch (Exception e) {
-            System.out.println("Error - Command Unknown: " + commandName);
-            return;
-        }
-        if (cm == null) {
-            System.out.println("Error - Command Unknown: " + commandName);
-            return;
-        }
-        java.util.Collection<CommandModel.ParamModel> params = cm.getParameters();
-
-        out.write("@" + commandMethod + "\n");//commandMethod - GET
-        out.write("@Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})\n");
-        out.write("public StringResult executeCommand(\n");
-        boolean first = true;
-        for (CommandModel.ParamModel pm : params) {
-            if (first == false) {
-                out.write(" ,\n");
-            }
-            first = false;
-            out.write("\t @QueryParam(\"" + pm.getName() + "\") ");
-            out.write(" @DefaultValue(\"" + pm.getParam().defaultValue() + "\") ");
-            out.write(" String " + getBeanName(pm.getName()) + " \n");
-        }
-        out.write(" \t) {\n");
-
-        out.write("try {\n");
-        out.write("\tjava.util.Properties properties = new java.util.Properties();\n");
-        for (CommandModel.ParamModel pm : params) {
-            out.write("\tif (!" + getBeanName(pm.getName()) + ".isEmpty()) {\n");
-            out.write("\t\tproperties.put(\"" + pm.getName() + "\", " + getBeanName(pm.getName()) + ");\n");
-            out.write("\t}");
-        }
-
-        out.write("if (commandParams != null) {\n");
-        out.write("//formulate parent-link attribute for this command resource\n");
-        out.write("//Parent link attribute may or may not be the id/target attribute\n");
-        out.write("if (isLinkedToParent) {\n");
-        out.write("__resourceUtil.resolveParentParamValue(commandParams, uriInfo);\n");
-        out.write("}\n");
-        out.write("properties.putAll(commandParams);\n");
-        out.write("}\n\n");
-
-        out.write("ActionReport actionReport = __resourceUtil.runCommand(commandName, properties, RestService.getHabitat());\n\n");
-        out.write("ActionReport.ExitCode exitCode = actionReport.getActionExitCode();\n\n");
-        out.write("StringResult results = new StringResult(commandName, __resourceUtil.getMessage(actionReport), options());\n");
-        out.write("if (exitCode == ActionReport.ExitCode.SUCCESS) {\n");
-        out.write("results.setStatusCode(200); \n");
-        out.write("} else {\n");
-        out.write("results.setStatusCode(400); \n");
-        out.write("results.setIsError(true);\n");
-        out.write("results.setErrorMessage(actionReport.getMessage());\n");
-        out.write("}\n\n");
-
-        out.write("return results;\n\n");
-
-        out.write("} catch (Exception e) {\n");
-        out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
-        out.write("}\n");
-        out.write("}\n");
-    }
-
-
-    private void createCommandOptionsMethod(BufferedWriter out, int parameterType) throws IOException {
-        out.write("@OPTIONS\n");
-        out.write("@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})\n");
-        out.write("public OptionsResult options() {\n");
-        out.write("OptionsResult optionsResult = new OptionsResult(resourceName);\n");
-        out.write("try {\n");
-        out.write("//command method metadata\n");
-        out.write("MethodMetaData methodMetaData = __resourceUtil.getMethodMetaData(\n");
-        if (parameterType == Constants.QUERY_PARAMETER) {
-             out.write("commandName, commandParams, Constants.QUERY_PARAMETER, RestService.getHabitat(), RestService.logger);\n");
-        } else {
-            //message parameter
-            out.write("commandName, commandParams, Constants.MESSAGE_PARAMETER, RestService.getHabitat(), RestService.logger);\n");
-
-            //GET meta data
-            out.write("//GET meta data\n");
-            out.write("optionsResult.putMethodMetaData(\"GET\", new MethodMetaData());\n");
-        }
-
-        out.write("optionsResult.putMethodMetaData(commandMethod, methodMetaData);\n");
-        out.write("} catch (Exception e) {\n");
-        out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
-        out.write("}\n\n");
-
-        out.write("return optionsResult;\n");
-        out.write("}\n\n");
-    }
-*/
 
     //This method converts a string into stringarray, uses the delimeter as the
     //separator character.
