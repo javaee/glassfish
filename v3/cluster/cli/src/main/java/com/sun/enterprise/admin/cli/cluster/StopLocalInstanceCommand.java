@@ -66,19 +66,22 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
         super.validate();
     }
 
+    @Override
+    protected boolean mkdirs(File f) {
+        // we definitely do NOT want dirs created for this instance if
+        // they don't exist!
+        return false;
+    }
+
     /**
-     * Override initInstance in LocalInstanceCommand to only initialize
-     * the local instance information (name, directory) in the local
-     * case, when no --host has been specified.
+     * Big trouble if you allow the super implementation to run
+     * because it creates directories.  If this command is called with
+     * an instance that doesn't exist -- new dirs will be created which
+     * can cause other problems.
      */
     @Override
     protected void initInstance() throws CommandException {
-        // only initialize instance domain information if it's a local operation
-        if(isLocalInstance())
-            super.initInstance();
-        else if(userArgInstanceName != null)   // remote case
-            throw new CommandException(
-                    strings.get("StopInstance.noInstanceNameAllowed"));
+        super.initInstance();
     }
 
     /**
@@ -86,43 +89,32 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
+        // if the local password isn't available, the instance isn't running
+        // (localPassword is set by initInstance)
+        File serverDir = getServerDirs().getServerDir();
+
+        if(serverDir == null || !serverDir.isDirectory())
+            return noSuchInstance();
+
+        if(getServerDirs().getLocalPassword() == null)
+            return instanceNotRunning();
 
         String serverName = getServerDirs().getServerName();
-        boolean isLocal = ok(serverName);
+        int adminPort = getAdminPort(serverName);
+        programOpts.setPort(adminPort);
+        logger.printDebugMessage("StopInstance.stoppingMessage" +  adminPort);
 
-        if(isLocal) {
-            // if the local password isn't available, the instance isn't running
-            // (localPassword is set by initInstance)
-            if(getServerDirs().getLocalPassword() == null)
-                return instanceNotRunning();
+        /*
+         * If we're using the local password, we don't want to prompt
+         * for a new password.  If the local password doesn't work it
+         * most likely means we're talking to the wrong server.
+         */
+        programOpts.setInteractive(false);
 
-            int adminPort = getAdminPort(serverName);
-            programOpts.setPort(adminPort);
-            logger.printDebugMessage("StopInstance.stoppingMessage" +  adminPort);
+        if(!isThisServer(serverDir, "Instance-Root_value"))
+            return instanceNotRunning();
 
-            /*
-             * If we're using the local password, we don't want to prompt
-             * for a new password.  If the local password doesn't work it
-             * most likely means we're talking to the wrong server.
-             */
-            programOpts.setInteractive(false);
-
-
-            // in the local case, make sure we're talking to the correct DAS
-            File serverDir = getServerDirs().getServerDir();
-
-            if(!isThisServer(serverDir, "Instance-Root_value"))
-                return instanceNotRunning();
-
-            logger.printDebugMessage("It's the correct Instance");
-        }
-        else { // remote
-            if(!DASUtils.pingDASQuietly(programOpts, env))
-                return instanceNotRunning();
-
-            logger.printDebugMessage("Instance is running remotely");
-            programOpts.setInteractive(false);
-        }
+        logger.printDebugMessage("It's the correct Instance");
         return doRemoteCommand();
     }
 
@@ -130,21 +122,22 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
      * Print message and return exit code when
      * we detect that the DAS is not running.
      */
-    private int instanceNotRunning()
-            throws CommandException, CommandValidationException {
+    private int instanceNotRunning() {
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
 
         logger.printWarning(strings.get("StopInstance.instanceNotRunning"));
         return 0;
     }
-
-    // TODO -- I don't think this will work in all cases!
-    // e.g. localhost, vaio, vaio.sfbay, vaio.sfbay.sun.com should all
-    // match on my machine
-    
-    private boolean isLocalInstance() {
-        return programOpts.getHost().equals(CLIConstants.DEFAULT_HOSTNAME);
+    /**
+     * Print message and return exit code when
+     * we detect that there is no such instance
+     */
+    private int noSuchInstance() {
+        // by definition this is not an error
+        // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
+        logger.printWarning(strings.get("StopInstance.noSuchInstance"));
+        return 0;
     }
 
     /**
@@ -154,7 +147,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
             throws CommandException, CommandValidationException {
         // run the remote stop-domain command and throw away the output
         RemoteCommand cmd = new RemoteCommand("stop-instance", programOpts, env);
-        cmd.executeAndReturnOutput("stop-domain");
+        cmd.executeAndReturnOutput("stop-instance");
         waitForDeath();
         return 0;
     }

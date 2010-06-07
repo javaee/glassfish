@@ -77,6 +77,14 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         initInstance();
     }
 
+    /** 
+     * override this method if your class does NOT want to create directories
+     * @param f the directory to create
+     */
+    protected boolean mkdirs(File f) {
+        return f.mkdirs();
+    }
+    
     protected void initInstance() throws CommandException {
         String agentsDirPath = null;  // normally <install-root>/nodeagents
 
@@ -86,7 +94,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             agentsDirPath = getAgentsDirPath();
 
         agentsDir = new File(agentsDirPath);
-        agentsDir.mkdirs();
+        mkdirs(agentsDir);
 
         if(!agentsDir.isDirectory()) {
             throw new CommandException(
@@ -103,7 +111,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 
         if(instanceName != null) {
             instanceDir = new File(nodeAgentDir, instanceName);
-            instanceDir.mkdirs();
+            mkdirs(instanceDir);
         }
         else {
             instanceDir = getTheOneAndOnlyInstance(nodeAgentDir);
@@ -137,7 +145,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     /**
      * Set the programOpts based on the das.properties file.
      */
-    protected void setDasDefaults(File propfile) throws CommandException {
+    protected final void setDasDefaults(File propfile) throws CommandException {
         Properties dasprops = new Properties();
         FileInputStream fis = null;
         try {
