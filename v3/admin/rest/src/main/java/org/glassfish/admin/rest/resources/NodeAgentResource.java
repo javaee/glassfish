@@ -34,33 +34,32 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.NodeAgent;
-public class NodeAgentResource extends TemplateResource<NodeAgent> {
+public class NodeAgentResource extends TemplateResource {
 
 	@Path("auth-realm/")
 	public AuthRealmResource getAuthRealmResource() {
 		AuthRealmResource resource = resourceContext.getResource(AuthRealmResource.class);
-		resource.setEntity(getEntity().getAuthRealm() );
+		resource.setParentAndTagName(getEntity() , "auth-realm");
 		return resource;
 	}
 	@Path("jmx-connector/")
 	public JmxConnectorResource getJmxConnectorResource() {
 		JmxConnectorResource resource = resourceContext.getResource(JmxConnectorResource.class);
-		resource.setEntity(getEntity().getJmxConnector() );
+		resource.setParentAndTagName(getEntity() , "jmx-connector");
 		return resource;
 	}
 	@Path("log-service/")
 	public LogServiceResource getLogServiceResource() {
 		LogServiceResource resource = resourceContext.getResource(LogServiceResource.class);
-		resource.setEntity(getEntity().getLogService() );
+		resource.setParentAndTagName(getEntity() , "log-service");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 }

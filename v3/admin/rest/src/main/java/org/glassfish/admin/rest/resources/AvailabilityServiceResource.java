@@ -34,33 +34,32 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.AvailabilityService;
-public class AvailabilityServiceResource extends TemplateResource<AvailabilityService> {
+public class AvailabilityServiceResource extends TemplateResource {
 
 	@Path("jms-availability/")
 	public JmsAvailabilityResource getJmsAvailabilityResource() {
 		JmsAvailabilityResource resource = resourceContext.getResource(JmsAvailabilityResource.class);
-		resource.setEntity(getEntity().getJmsAvailability() );
+		resource.setParentAndTagName(getEntity() , "jms-availability");
 		return resource;
 	}
 	@Path("web-container-availability/")
 	public WebContainerAvailabilityResource getWebContainerAvailabilityResource() {
 		WebContainerAvailabilityResource resource = resourceContext.getResource(WebContainerAvailabilityResource.class);
-		resource.setEntity(getEntity().getWebContainerAvailability() );
+		resource.setParentAndTagName(getEntity() , "web-container-availability");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("ejb-container-availability/")
 	public EjbContainerAvailabilityResource getEjbContainerAvailabilityResource() {
 		EjbContainerAvailabilityResource resource = resourceContext.getResource(EjbContainerAvailabilityResource.class);
-		resource.setEntity(getEntity().getEjbContainerAvailability() );
+		resource.setParentAndTagName(getEntity() , "ejb-container-availability");
 		return resource;
 	}
 }

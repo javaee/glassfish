@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.SystemProperty;
-public class ListSystemPropertyResource extends TemplateListOfResource<SystemProperty> {
+public class ListSystemPropertyResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public SystemPropertyResource getSystemPropertyResource(@PathParam("Name") String id) {
 		SystemPropertyResource resource = resourceContext.getResource(SystemPropertyResource.class);
-		for (SystemProperty c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

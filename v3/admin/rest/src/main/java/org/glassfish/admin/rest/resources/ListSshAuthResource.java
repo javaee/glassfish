@@ -34,21 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.SshAuth;
-public class ListSshAuthResource extends TemplateListOfResource<SshAuth> {
+public class ListSshAuthResource extends TemplateListOfResource {
 
 
 	@Path("{UserName}/")
 	public SshAuthResource getSshAuthResource(@PathParam("UserName") String id) {
 		SshAuthResource resource = resourceContext.getResource(SshAuthResource.class);
-		for (SshAuth c: entity){
-//THIS KEY IS THE FIRST Attribute ONE ludo
-			if(c.getUserName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

@@ -34,21 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.grizzly.config.dom.Protocols;
-public class ProtocolsResource extends TemplateResource<Protocols> {
+public class ProtocolsResource extends TemplateResource {
 
 	@Path("protocol/")
 	public ListProtocolResource getProtocolResource() {
 		ListProtocolResource resource = resourceContext.getResource(ListProtocolResource.class);
-		resource.setEntity(getEntity().getProtocol() );
+		resource.setParentAndTagName(getEntity() , "protocol");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 }

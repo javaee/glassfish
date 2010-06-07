@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.ManagementRule;
-public class ListManagementRuleResource extends TemplateListOfResource<ManagementRule> {
+public class ListManagementRuleResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public ManagementRuleResource getManagementRuleResource(@PathParam("Name") String id) {
 		ManagementRuleResource resource = resourceContext.getResource(ManagementRuleResource.class);
-		for (ManagementRule c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

@@ -34,10 +34,9 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.AuthRealm;
-public class AuthRealmResource extends TemplateResource<AuthRealm> {
+public class AuthRealmResource extends TemplateResource {
 
 @Path("create-user/")
 public AuthRealmCreateUserResource getAuthRealmCreateUserResource() {
@@ -65,7 +64,7 @@ return new String[][]{{"create-user", "POST"}, {"delete-user", "DELETE"}, {"list
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 }

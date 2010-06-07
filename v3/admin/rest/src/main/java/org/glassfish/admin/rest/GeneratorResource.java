@@ -78,6 +78,7 @@ public class GeneratorResource {
         {"ListJdbcResource", "create-jdbc-resource"},
         {"ListJdbcConnectionPool", "create-jdbc-connection-pool"},
         {"ListConnectorResource", "create-connector-resource"},
+        {"ListExternalJndiResource","create-jndi-resource"},
         {"ListMailResource", "create-javamail-resource"},
         {"ListResourceAdapterConfig", "create-resource-adapter-config"},
         {"ListConnectorConnectionPool", "create-connector-connection-pool"},
@@ -94,6 +95,7 @@ public class GeneratorResource {
         {"ListResourceRef", "create-resource-ref"},
         {"ListSystemProperty", "create-system-properties"},
         {"ListVirtualServer", "create-virtual-server"},
+	{"ListCluster", "create-cluster"} ,
         {"ListThreadPool", "create-threadpool"}
      };
 
@@ -288,16 +290,18 @@ public class GeneratorResource {
         BufferedWriter out = new BufferedWriter(fstream);
         genHeader(out);
         out.write("package org.glassfish.admin.rest.resources;\n");
-        out.write("import javax.ws.rs.*;\n");
+        out.write("import javax.ws.rs.Path;\n");
+        out.write("import javax.ws.rs.PathParam;\n");
+
 //        out.write("import org.glassfish.admin.rest.TemplateResource;\n");
         out.write("import org.glassfish.admin.rest.TemplateListOfResource;\n");
 //        out.write("import com.sun.jersey.api.core.ResourceContext;\n");
-        out.write("import " + model.targetTypeName + ";\n");
+//        out.write("import " + model.targetTypeName + ";\n");
 
 
 
         // out.write("@Path(\"/" + serverConfigName + "/\")\n");
-        out.write("public class List" + beanName + "Resource extends TemplateListOfResource<" + beanName + "> {\n\n");
+        out.write("public class List" + beanName + "Resource extends TemplateListOfResource {\n\n");
 
 ////        out.write("private List<" + beanName + "> entity;\n");
 ////        out.write("public void setEntity(List<" + beanName + "> p ){\n");
@@ -336,22 +340,24 @@ public class GeneratorResource {
         out.write("\t@Path(\"{" + keyAttributeName + "}/\")\n");
         out.write("\tpublic " + beanName + "Resource get" + beanName + "Resource(@PathParam(\"" + keyAttributeName + "\") String id) {\n");
         out.write("\t\t" + beanName + "Resource resource = resourceContext.getResource(" + beanName + "Resource.class);\n");
-        out.write("\t\tfor (" + beanName + " c: entity){\n");
-        if (model.key == null) {
-            out.write("//THIS KEY IS THE FIRST Attribute ONE ludo\n");
+//////        out.write("\t\tfor (" + beanName + " c: entity){\n");
+//////        if (model.key == null) {
+//////            out.write("//THIS KEY IS THE FIRST Attribute ONE ludo\n");
+//////
+//////        }
+//////
+//////        // TODO: throw a RuntimeException on this for now. We probably need to skip the two ConfigBeans
+//////        // that are problematic here.  Some how.
+//////        if (!keyAttributeName.equals("ThisIsAModelBug:NoKeyAttr")) {
+//////            out.write("\t\t\tif(c.get" + keyAttributeName + "().equals(id)){\n");
+//////            out.write("\t\t\t\tresource.setEntity(c);\n");
+//////            out.write("\t\t\t}\n");
+//////        } else {
+//////            out.write("\t\t\tthrow new RuntimeException(\"" + keyAttributeName + " \");\n");
+//////        }
+//////        out.write("\t\t}\n");
 
-        }
-
-        // TODO: throw a RuntimeException on this for now. We probably need to skip the two ConfigBeans
-        // that are problematic here.  Some how.
-        if (!keyAttributeName.equals("ThisIsAModelBug:NoKeyAttr")) {
-            out.write("\t\t\tif(c.get" + keyAttributeName + "().equals(id)){\n");
-            out.write("\t\t\t\tresource.setEntity(c);\n");
-            out.write("\t\t\t}\n");
-        } else {
-            out.write("\t\t\tthrow new RuntimeException(\"" + keyAttributeName + " \");\n");
-        }
-        out.write("\t\t}\n");
+        out.write("\t\tresource.setBeanByKey(entity, id);\n");
         out.write("\t\treturn resource;\n");
         out.write("\t}\n\n");
  ///////ludo       generateCommand("List" + beanName, out);
@@ -396,12 +402,9 @@ public class GeneratorResource {
         BufferedWriter out = new BufferedWriter(fstream);
         genHeader(out);
         out.write("package org.glassfish.admin.rest.resources;\n");
-        out.write("import javax.ws.rs.*;\n");
-//        out.write("import java.util.*;\n");
+        out.write("import javax.ws.rs.Path;\n");
         out.write("import org.glassfish.admin.rest.TemplateResource;\n");
-//        out.write("import org.glassfish.admin.rest.TemplateListOfResource;\n");
-//        out.write("import com.sun.jersey.api.core.ResourceContext;\n");
-        out.write("import " + model.targetTypeName + ";\n");
+
 
 
 
@@ -409,18 +412,12 @@ public class GeneratorResource {
             out.write("@Path(\"/" + "domain" + "/\")\n");
         }
 
-        out.write("public class " + beanName + "Resource extends TemplateResource<" + beanName + "> {\n\n");
+        out.write("public class " + beanName + "Resource extends TemplateResource {\n\n");
 
-//        if (!beanName.equals("Domain")) {
-//            out.write("private " + beanName + " entity;\n");
-//            out.write("public void setEntity(" + beanName + " p ){\n");
-//            out.write("entity = p;\n");
-//            out.write("}\n");
-//        }
 
         if (beanName.equals("Domain")) {
-            out.write("@Override public " + beanName + " getEntity() {\n");
-            out.write("return org.glassfish.admin.rest.RestService.getDomain();\n");
+            out.write("@Override public " + "org.jvnet.hk2.config.Dom" + " getEntity() {\n");
+            out.write("\treturn org.glassfish.admin.rest.RestService.getDomainBean();\n");
             out.write("}\n");
         }
 
@@ -433,10 +430,6 @@ public class GeneratorResource {
         Set<String> elem = model.getElementNames();
 
         for (String a : elem) {
-            System.out.println("a= " + a);
-
-
-
             ConfigModel.Property prop = model.getElement(a);
 
 
@@ -450,7 +443,7 @@ public class GeneratorResource {
                     out.write("\tpublic " + name + "Resource get" + name + "Resource() {\n");
 
                     out.write("\t\t" + name + "Resource resource = resourceContext.getResource(" + name + "Resource.class);\n");
-                    out.write("\t\tresource.setEntity(getEntity().get" + name + "() );\n");
+                    out.write("\t\tresource.setParentAndTagName(getEntity() , \""+a+"\");\n");
                     out.write("\t\treturn resource;\n");
                     out.write("\t}\n");
 
@@ -464,110 +457,137 @@ public class GeneratorResource {
 
                 ConfigModel childModel = node.getModel();
 
-                String getterName = getBeanName(a);
+//                String getterName = getBeanName(a);
 
                 System.out.println("Model.targetTypeName" + model.targetTypeName);
                 System.out.println("newModel.targetTypeName" + childModel.targetTypeName);
                 System.out.println("ConfigModel.Node node isCollection=" + prop.isCollection());
                 System.out.println("ConfigModel.Node node isLeaf=" + prop.isLeaf());
                 System.out.println("ConfigModel.Node node xlmname=" + prop.xmlName());
-                if (childModel.targetTypeName.endsWith("ApplicationName")) {//was named
-                    a = "application";
-                    getterName = "Applications";
-                    try {
-                        Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); ///  a shoulf be the typename
-
-
-                        List<ConfigModel> lcm = document.getAllModelsImplementing(subType);
-                        if (lcm != null) {
-                            for (ConfigModel childmodel : lcm) {
-                                System.out.println("***childmodel.targetTypeName" + childmodel.targetTypeName);
-                                if (childmodel.targetTypeName.equals("com.sun.enterprise.config.serverbeans.Application")) {
-                                    childModel = childmodel;
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        Logger.getLogger(GeneratorResource.class.getName()).log(Level.SEVERE, e.getMessage());
-                    }
-
-
-                }
+//                if (childModel.targetTypeName.endsWith("ApplicationName")) {//was named
+//                    a = "application";
+//                    getterName = "Applications";
+//                    try {
+//                        Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); ///  a shoulf be the typename
+//
+//
+//                        List<ConfigModel> lcm = document.getAllModelsImplementing(subType);
+//                        if (lcm != null) {
+//                            for (ConfigModel childmodel : lcm) {
+//                                System.out.println("***childmodel.targetTypeName" + childmodel.targetTypeName);
+//                                if (childmodel.targetTypeName.equals("com.sun.enterprise.config.serverbeans.Application")) {
+//                                    childModel = childmodel;
+//                                }
+//                            }
+//                        }
+//                    } catch (Exception e) {
+//                        Logger.getLogger(GeneratorResource.class.getName()).log(Level.SEVERE, e.getMessage());
+//                    }
+//
+//
+//                }
 
                 String childbeanName = childModel.targetTypeName.substring(childModel.targetTypeName.lastIndexOf(".") + 1,
                         childModel.targetTypeName.length());
 
-                if (!childModel.targetTypeName.endsWith("Resource")) {
+              //  if (!childModel.targetTypeName.endsWith("Resource")) {
                     String prefix = "";
                     if (prop.isCollection()) {
                         prefix = "List";
                     }
 
                     if (a.equals("*")) {
-                        getterName = childbeanName + "s";
-                    }
-
-                    out.write("\t@Path(\"" + childModel.getTagName() + "/\")\n");
-                    out.write("\tpublic " + prefix + childbeanName + "Resource get" + childbeanName + "Resource() {\n");
-
-                    out.write("\t\t" + prefix + childbeanName + "Resource resource = resourceContext.getResource(" + prefix + childbeanName + "Resource.class);\n");
-                    out.write("\t\tresource.setEntity(getEntity().get" + getterName + "() );\n");
-                    out.write("\t\treturn resource;\n");
-                    out.write("\t}\n");
-
-                    if (prop.isCollection()) {
-                        generateList(childModel);
-                    } else {
-                        generateSingle(childModel);
-
-                    }
+//                        getterName = childbeanName + "s";
+                        try {
+                            Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); ///  a shoulf be the typename
 
 
-                } else {
+                            List<ConfigModel> lcm = document.getAllModelsImplementing(subType);
+                            if (lcm != null) {
+                                for (ConfigModel cmodel : lcm) {
+                                    String newName = cmodel.targetTypeName.substring(cmodel.targetTypeName.lastIndexOf(".") + 1,
+                                            cmodel.targetTypeName.length());
+                                    out.write("@Path(\"" + cmodel.getTagName() + "/\")\n");
+                                    out.write("public List" + newName + "Resource get" + newName + "Resource() {\n");
+                                    out.write("\tList" + newName + "Resource resource = resourceContext.getResource(List" + newName + "Resource.class);\n");
+                                  //  out.write("\tresource.setEntity(getEntity().nodeElements(\""+childModel.getTagName()+"\"));");
+                                    out.write("\tresource.setParentAndTagName(getEntity() , \""+cmodel.getTagName()+"\");\n");
 
+                                    out.write("\treturn resource;\n");
+                                    out.write("}\n");
+                                    if (prop.isCollection()) {
+                                        generateList(cmodel);
+                                    } else {
+                                        generateSingle(cmodel);
 
-
-
-                    try {
-                        Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); ///  a shoulf be the typename
-
-
-                        List<ConfigModel> lcm = document.getAllModelsImplementing(subType);
-                        if (lcm != null) {
-                            for (ConfigModel childmodel : lcm) {
-                                System.out.println("--->targetTypeName=" + childmodel.targetTypeName);
-                                String newName = childmodel.targetTypeName.substring(childmodel.targetTypeName.lastIndexOf(".") + 1,
-                                        childmodel.targetTypeName.length());
-                                out.write("@Path(\"" + childmodel.getTagName() + "/\")\n");
-                                out.write("public List" + newName + "Resource get" + newName + "Resource() {\n");
-                                out.write("List" + newName + "Resource resource = resourceContext.getResource(List" + newName + "Resource.class);\n");
-                                out.write("java.util.List<com.sun.enterprise.config.serverbeans.Resource> l = entity.getResources();\n");
-                                out.write("java.util.List<" + childmodel.targetTypeName + "> newList = new java.util.ArrayList();\n");
-                                out.write("for (com.sun.enterprise.config.serverbeans.Resource r: l){\n");
-                                out.write("try {\n");
-                                out.write("if (r instanceof " + childmodel.targetTypeName + ") {\n");
-                                out.write("newList.add((" + childmodel.targetTypeName + ")r);\n");
-                                out.write("}\n");
-                                out.write("} catch (Exception e){\n");
-
-                                out.write("}\n");
-                                out.write("}\n");
-                                out.write("resource.setEntity(newList );\n");
-                                out.write("return resource;\n");
-                                out.write("}\n\n\n");
-                                generateList(childmodel);
-
-
-
+                                    }
+                                }
                             }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+
+                        out.write("\t@Path(\"" + childModel.getTagName() + "/\")\n");
+                        out.write("\tpublic " + prefix + childbeanName + "Resource get" + childbeanName + "Resource() {\n");
+
+                        out.write("\t\t" + prefix + childbeanName + "Resource resource = resourceContext.getResource(" + prefix + childbeanName + "Resource.class);\n");
+                        ///out.write("\t\tresource.setEntity(getEntity().get" + getterName + "() );\n");
+                        out.write("\t\tresource.setParentAndTagName(getEntity() , \""+childModel.getTagName()+"\");\n");
+//                       if (prefix.equals("List")){
+//                            out.write("\t\tresource.setEntity(getEntity().nodeElements(\""+childModel.getTagName()+"\"));\n");
+//
+//                        }else {
+//                            out.write("\t\tresource.setEntity(getEntity().nodeElement(\""+childModel.getTagName()+"\"));\n");
+//
+//                        }
+                        out.write("\t\treturn resource;\n");
+                        out.write("\t}\n");
+
+                        if (prop.isCollection()) {
+                            generateList(childModel);
+                        } else {
+                            generateSingle(childModel);
+
                         }
 
-                        //com.sun.enterprise.config.serverbeans.CustomResource
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
-                }
+//                } else {
+//
+//
+//
+//
+//                    try {
+//                        Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); ///  a shoulf be the typename
+//
+//
+//                        List<ConfigModel> lcm = document.getAllModelsImplementing(subType);
+//                        if (lcm != null) {
+//                            for (ConfigModel childmodel : lcm) {
+//                                System.out.println("--->targetTypeName=" + childmodel.targetTypeName);
+//                                String newName = childmodel.targetTypeName.substring(childmodel.targetTypeName.lastIndexOf(".") + 1,
+//                                        childmodel.targetTypeName.length());
+//                                out.write("@Path(\"" + childmodel.getTagName() + "/\")\n");
+//                                out.write("public List" + newName + "Resource get" + newName + "Resource() {\n");
+//                                out.write("\t\tList" + newName + "Resource resource = resourceContext.getResource(List" + newName + "Resource.class);\n");
+//                         //   out.write("\t\tresource.setEntity(getEntity().nodeElements(\""+childModel.getTagName()+"\"));\n");
+//                                    out.write("\t\tresource.setParentAndTagName(getEntity() , \""+childModel.getTagName()+"\");\n");
+//
+//                                out.write("\t\treturn resource;\n");
+//                                out.write("}\n");
+//                                generateList(childmodel);
+//
+//
+//
+//                            }
+//                        }
+//
+//                        //com.sun.enterprise.config.serverbeans.CustomResource
+//
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
 
 
             }

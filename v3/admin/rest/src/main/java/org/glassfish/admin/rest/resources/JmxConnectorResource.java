@@ -34,21 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.JmxConnector;
-public class JmxConnectorResource extends TemplateResource<JmxConnector> {
+public class JmxConnectorResource extends TemplateResource {
 
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("ssl/")
 	public SslResource getSslResource() {
 		SslResource resource = resourceContext.getResource(SslResource.class);
-		resource.setEntity(getEntity().getSsl() );
+		resource.setParentAndTagName(getEntity() , "ssl");
 		return resource;
 	}
 }

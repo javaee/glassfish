@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.SecurityMap;
-public class ListSecurityMapResource extends TemplateListOfResource<SecurityMap> {
+public class ListSecurityMapResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public SecurityMapResource getSecurityMapResource(@PathParam("Name") String id) {
 		SecurityMapResource resource = resourceContext.getResource(SecurityMapResource.class);
-		for (SecurityMap c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

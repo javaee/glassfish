@@ -39,6 +39,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Set;
 
 import org.jvnet.hk2.config.ConfigBean;
@@ -52,6 +53,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import org.jvnet.hk2.config.ConfigModel;
 
 /**
  *
@@ -122,7 +124,7 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
 
     private String getResourcesLinks(Dom proxy, String[][] commandResourcesPaths) {
         String result = "";
-        Set<String> elementNames = proxy.getElementNames();
+        Set<String> elementNames = proxy.model.getElementNames();
 
         //expose ../applications/application resource to enable deployment
         //when no applications deployed on server
@@ -131,29 +133,36 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
                 elementNames.add("application");
             }
         }
-
         for (String elementName : elementNames) { //for each element
-            try {
+            if (elementName.equals("*")) {
+                ConfigModel.Node node = (ConfigModel.Node) proxy.model.getElement(elementName);
+                ConfigModel childModel = node.getModel();
+                try {
+                    Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); 
+                    List<ConfigModel> lcm = proxy.document.getAllModelsImplementing(subType);
+                    if (lcm != null) {
+                        for (ConfigModel cmodel : lcm) {
+                            result = result + "<a href=\"" + getElementLink(uriInfo, cmodel.getTagName()) + "\">";
+                            result = result + cmodel.getTagName() + "</a><br>";
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
                 result = result + "<a href=\"" + getElementLink(uriInfo, elementName) + "\">";
-                result = result + elementName;
-                result = result + "</a>";
-                result = result + "<br>";
-            } catch (Exception e) {
-                e.printStackTrace();
+                result = result + elementName + "</a><br>";
             }
         }
 
         //add command resources
         for (String[] commandResourcePath : commandResourcesPaths) {
-            try {
                 result = result + "<a href=\"" +
                     getElementLink(uriInfo, commandResourcePath[0]) + "\">";
                 result = result + commandResourcePath[0];
                 result = result + "</a>";
                 result = result + "<br>";
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
         }
 
         if (!result.equals("")) {

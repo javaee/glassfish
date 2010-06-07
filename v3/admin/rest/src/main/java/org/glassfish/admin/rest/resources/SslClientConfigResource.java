@@ -34,15 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.SslClientConfig;
-public class SslClientConfigResource extends TemplateResource<SslClientConfig> {
+public class SslClientConfigResource extends TemplateResource {
 
 	@Path("ssl/")
 	public SslResource getSslResource() {
 		SslResource resource = resourceContext.getResource(SslResource.class);
-		resource.setEntity(getEntity().getSsl() );
+		resource.setParentAndTagName(getEntity() , "ssl");
 		return resource;
 	}
 }

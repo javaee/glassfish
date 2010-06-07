@@ -54,6 +54,8 @@ import org.glassfish.api.Startup;
 import org.glassfish.internal.api.LocalPassword;
 import org.glassfish.internal.api.RestInterfaceUID;
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.Dom;
 
 
 /**
@@ -104,6 +106,12 @@ public class RestService implements Startup, PostConstruct, PreDestroy, RestInte
         return theDomain;
     }
 
+    public static ConfigBean getDomainBean() {
+        Dom dom1 = Dom.unwrap(getDomain());
+        Dom root = dom1.document.getRoot();
+        return (ConfigBean) root;
+    }
+    
     public static MonitoringRuntimeDataRegistry getMonitoringRegistry() {
         return theMonitoringRegistry;
     }

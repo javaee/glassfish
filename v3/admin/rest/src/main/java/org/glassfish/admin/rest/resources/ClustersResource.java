@@ -34,15 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.Clusters;
-public class ClustersResource extends TemplateResource<Clusters> {
+public class ClustersResource extends TemplateResource {
 
 	@Path("cluster/")
 	public ListClusterResource getClusterResource() {
 		ListClusterResource resource = resourceContext.getResource(ListClusterResource.class);
-		resource.setEntity(getEntity().getCluster() );
+		resource.setParentAndTagName(getEntity() , "cluster");
 		return resource;
 	}
 }

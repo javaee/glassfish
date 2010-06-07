@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.IiopListener;
-public class ListIiopListenerResource extends TemplateListOfResource<IiopListener> {
+public class ListIiopListenerResource extends TemplateListOfResource {
 
 
 	@Path("{Id}/")
 	public IiopListenerResource getIiopListenerResource(@PathParam("Id") String id) {
 		IiopListenerResource resource = resourceContext.getResource(IiopListenerResource.class);
-		for (IiopListener c: entity){
-			if(c.getId().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

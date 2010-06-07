@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.AuthRealm;
-public class ListAuthRealmResource extends TemplateListOfResource<AuthRealm> {
+public class ListAuthRealmResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public AuthRealmResource getAuthRealmResource(@PathParam("Name") String id) {
 		AuthRealmResource resource = resourceContext.getResource(AuthRealmResource.class);
-		for (AuthRealm c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

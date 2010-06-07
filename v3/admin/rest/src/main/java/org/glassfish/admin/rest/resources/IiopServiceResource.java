@@ -34,10 +34,9 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.IiopService;
-public class IiopServiceResource extends TemplateResource<IiopService> {
+public class IiopServiceResource extends TemplateResource {
 
 @Path("create-ssl/")
 public IiopServiceCreateSslResource getIiopServiceCreateSslResource() {
@@ -59,19 +58,19 @@ return new String[][]{{"create-ssl", "POST"}, {"delete-ssl", "DELETE"}};
 	@Path("orb/")
 	public OrbResource getOrbResource() {
 		OrbResource resource = resourceContext.getResource(OrbResource.class);
-		resource.setEntity(getEntity().getOrb() );
+		resource.setParentAndTagName(getEntity() , "orb");
 		return resource;
 	}
 	@Path("iiop-listener/")
 	public ListIiopListenerResource getIiopListenerResource() {
 		ListIiopListenerResource resource = resourceContext.getResource(ListIiopListenerResource.class);
-		resource.setEntity(getEntity().getIiopListener() );
+		resource.setParentAndTagName(getEntity() , "iiop-listener");
 		return resource;
 	}
 	@Path("ssl-client-config/")
 	public SslClientConfigResource getSslClientConfigResource() {
 		SslClientConfigResource resource = resourceContext.getResource(SslClientConfigResource.class);
-		resource.setEntity(getEntity().getSslClientConfig() );
+		resource.setParentAndTagName(getEntity() , "ssl-client-config");
 		return resource;
 	}
 }

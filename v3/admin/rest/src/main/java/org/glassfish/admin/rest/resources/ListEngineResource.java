@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.Engine;
-public class ListEngineResource extends TemplateListOfResource<Engine> {
+public class ListEngineResource extends TemplateListOfResource {
 
 
 	@Path("{Sniffer}/")
 	public EngineResource getEngineResource(@PathParam("Sniffer") String id) {
 		EngineResource resource = resourceContext.getResource(EngineResource.class);
-		for (Engine c: entity){
-			if(c.getSniffer().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

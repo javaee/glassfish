@@ -34,14 +34,13 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.Domain;
 @Path("/domain/")
-public class DomainResource extends TemplateResource<Domain> {
+public class DomainResource extends TemplateResource {
 
-@Override public Domain getEntity() {
-return org.glassfish.admin.rest.RestService.getDomain();
+@Override public org.jvnet.hk2.config.Dom getEntity() {
+	return org.glassfish.admin.rest.RestService.getDomainBean();
 }
 @Path("stop/")
 public DomainStopResource getDomainStopResource() {
@@ -87,79 +86,79 @@ return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, 
 	@Path("resources/")
 	public ResourcesResource getResourcesResource() {
 		ResourcesResource resource = resourceContext.getResource(ResourcesResource.class);
-		resource.setEntity(getEntity().getResources() );
+		resource.setParentAndTagName(getEntity() , "resources");
 		return resource;
 	}
 	@Path("load-balancers/")
 	public LoadBalancersResource getLoadBalancersResource() {
 		LoadBalancersResource resource = resourceContext.getResource(LoadBalancersResource.class);
-		resource.setEntity(getEntity().getLoadBalancers() );
+		resource.setParentAndTagName(getEntity() , "load-balancers");
 		return resource;
 	}
 	@Path("lb-configs/")
 	public LbConfigsResource getLbConfigsResource() {
 		LbConfigsResource resource = resourceContext.getResource(LbConfigsResource.class);
-		resource.setEntity(getEntity().getLbConfigs() );
+		resource.setParentAndTagName(getEntity() , "lb-configs");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("system-applications/")
 	public SystemApplicationsResource getSystemApplicationsResource() {
 		SystemApplicationsResource resource = resourceContext.getResource(SystemApplicationsResource.class);
-		resource.setEntity(getEntity().getSystemApplications() );
+		resource.setParentAndTagName(getEntity() , "system-applications");
 		return resource;
 	}
 	@Path("configs/")
 	public ConfigsResource getConfigsResource() {
 		ConfigsResource resource = resourceContext.getResource(ConfigsResource.class);
-		resource.setEntity(getEntity().getConfigs() );
+		resource.setParentAndTagName(getEntity() , "configs");
 		return resource;
 	}
 	@Path("clusters/")
 	public ClustersResource getClustersResource() {
 		ClustersResource resource = resourceContext.getResource(ClustersResource.class);
-		resource.setEntity(getEntity().getClusters() );
+		resource.setParentAndTagName(getEntity() , "clusters");
 		return resource;
 	}
 	@Path("servers/")
 	public ServersResource getServersResource() {
 		ServersResource resource = resourceContext.getResource(ServersResource.class);
-		resource.setEntity(getEntity().getServers() );
+		resource.setParentAndTagName(getEntity() , "servers");
 		return resource;
 	}
 	@Path("nodes/")
 	public NodesResource getNodesResource() {
 		NodesResource resource = resourceContext.getResource(NodesResource.class);
-		resource.setEntity(getEntity().getNodes() );
+		resource.setParentAndTagName(getEntity() , "nodes");
 		return resource;
 	}
 	@Path("node-agents/")
 	public NodeAgentsResource getNodeAgentsResource() {
 		NodeAgentsResource resource = resourceContext.getResource(NodeAgentsResource.class);
-		resource.setEntity(getEntity().getNodeAgents() );
+		resource.setParentAndTagName(getEntity() , "node-agents");
 		return resource;
 	}
 	@Path("amx-pref/")
 	public AmxPrefResource getAmxPrefResource() {
 		AmxPrefResource resource = resourceContext.getResource(AmxPrefResource.class);
-		resource.setEntity(getEntity().getAmxPref() );
+		resource.setParentAndTagName(getEntity() , "amx-pref");
 		return resource;
 	}
 	@Path("system-property/")
 	public ListSystemPropertyResource getSystemPropertyResource() {
 		ListSystemPropertyResource resource = resourceContext.getResource(ListSystemPropertyResource.class);
-		resource.setEntity(getEntity().getSystemProperty() );
+		resource.setParentAndTagName(getEntity() , "system-property");
 		return resource;
 	}
 	@Path("applications/")
 	public ApplicationsResource getApplicationsResource() {
 		ApplicationsResource resource = resourceContext.getResource(ApplicationsResource.class);
-		resource.setEntity(getEntity().getApplications() );
+		resource.setParentAndTagName(getEntity() , "applications");
 		return resource;
 	}
 }

@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
-public class ListApplicationRefResource extends TemplateListOfResource<ApplicationRef> {
+public class ListApplicationRefResource extends TemplateListOfResource {
 
 
 	@Path("{Ref}/")
 	public ApplicationRefResource getApplicationRefResource(@PathParam("Ref") String id) {
 		ApplicationRefResource resource = resourceContext.getResource(ApplicationRefResource.class);
-		for (ApplicationRef c: entity){
-			if(c.getRef().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

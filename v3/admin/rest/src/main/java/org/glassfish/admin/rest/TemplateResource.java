@@ -35,9 +35,6 @@
  */
 package org.glassfish.admin.rest;
 
-import java.io.*;
-import java.lang.reflect.Method;
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,15 +45,22 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.POST;
 import javax.ws.rs.WebApplicationException;
-
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import com.sun.jersey.api.core.ResourceContext;
 
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
-
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -66,8 +70,6 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.ArrayList;
 import javax.ws.rs.PathParam;
 
-import com.sun.jersey.spi.container.ContainerRequest;
-import org.glassfish.admin.rest.resources.DomainStopResource;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.RestRedirect;
 
@@ -79,12 +81,13 @@ import org.jvnet.hk2.config.ValidationException;
 import org.glassfish.admin.rest.provider.GetResult;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
+import org.jvnet.hk2.config.ConfigModel;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
  * @author Rajeshwar Patil
  */
-public class TemplateResource<E extends ConfigBeanProxy> {
+public class TemplateResource {
     @Context
     protected HttpHeaders requestHeaders;
 
@@ -93,7 +96,9 @@ public class TemplateResource<E extends ConfigBeanProxy> {
 
     @Context
     protected ResourceContext resourceContext;
-    protected E entity;
+    protected Dom entity;
+    protected Dom parent;
+    protected String tagName;
 
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
 
@@ -109,30 +114,38 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         __resourceUtil = new ResourceUtil();
     }
 
-    public void setEntity(E p) {
+    public void setEntity(Dom p) {
         entity = p;
     }
 
-    public E getEntity() {
+    public Dom getEntity() {
         return entity;
+    }
+    
+    public void setParentAndTagName(Dom parent, String tagName) {
+        this.parent = parent;
+        this.tagName = tagName;
+        entity = parent.nodeElement(tagName);
+
     }
 
     @GET
     @Produces({MediaType.TEXT_HTML,
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public GetResult get(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
+    public GetResult get(@QueryParam("expandLevel")
+            @DefaultValue("1") int expandLevel) {
         if (getEntity() == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        return new GetResult((ConfigBean)Dom.unwrap(getEntity()), getDeleteCommand(),
+        return new GetResult(getEntity(), getDeleteCommand(),
                 getCommandResourcesPaths(), options());
     }
 
-    public ConfigBean getConfigBean() {
-        return (ConfigBean) Dom.unwrap(getEntity());
-    }
+//    public ConfigBean getConfigBean() {
+//        return (ConfigBean) Dom.unwrap(getEntity());
+//    }
 
     // TODO: This is wrong. Updates are done via PUT
     @POST  //update
@@ -157,12 +170,12 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             if ((data.containsKey("operation")) &&
                     (data.get("operation").equals("__deleteoperation"))) {
                 data.remove("operation");
-                return delete(data);
+                return delete(data, "true");
             }
 
             Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
             data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
-            mapOfChanges.put(getConfigBean(), data);
+            mapOfChanges.put((ConfigBean)getEntity(), data);
             RestService.getConfigSupport().apply(mapOfChanges); //throws TransactionFailure
 
             String successMessage = localStrings.getLocalString("rest.resource.update.message",
@@ -186,7 +199,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
 
     @DELETE
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_OCTET_STREAM})
-    public Response delete(HashMap<String, String> data) {
+    public Response delete(HashMap<String, String> data, @DefaultValue("false") @QueryParam("cascade") String cascade) {
         //User can not directly delete the resource. User can only
         //do so implicitly through asadmin command
         try {
@@ -197,13 +210,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
                         errorMessage, requestHeaders, uriInfo);
             }
 
-            MultivaluedMap<String, String> qs = ((ContainerRequest) requestHeaders).getQueryParameters();
-            for (Map.Entry<String, List<String>> entry : qs.entrySet()) {
-                String key = entry.getKey();
-                for (String value : entry.getValue()) {
-                    data.put(key, value); // TODO: Last one wins? Can't imagine we'll see List.size() > 1, but...
-                }
-            }
+            data.put("cascade", cascade);
             __resourceUtil.purgeEmptyEntries(data);
 
             __resourceUtil.adjustParameters(data);
@@ -260,7 +267,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
 
             /////optionsResult.putMethodMetaData("POST", new MethodMetaData());
             MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
-                (ConfigBean) Dom.unwrap(getEntity()));
+                (ConfigBean)getEntity());
             postMethodMetaData.setDescription("Update");
             optionsResult.putMethodMetaData("POST", postMethodMetaData);
 
@@ -423,7 +430,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
 
     public String getDeleteCommand() {
         return __resourceUtil.getCommand(
-                RestRedirect.OpType.DELETE, getConfigBean());
+                RestRedirect.OpType.DELETE, (ConfigBean)getEntity());
     }
 
     private ActionReport runCommand(String commandName,
@@ -437,42 +444,60 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         return null;//not processed
     }
 
-    // TODO: Why is this not calling getResourceName()?
+
     private void addDefaultParameter(HashMap<String, String> data) {
-        /*
         int index = uriInfo.getAbsolutePath().getPath().lastIndexOf('/');
         String defaultParameterValue = uriInfo.getAbsolutePath().getPath().substring(index + 1);
-        try {
-            data.put("DEFAULT", URLDecoder.decode(defaultParameterValue, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        */
-        List<PathSegment> segments = uriInfo.getPathSegments();
-        data.put("DEFAULT", segments.get(segments.size()-1).getPath());
+        data.put("DEFAULT", defaultParameterValue);
     }
 
     private String getResourceName(String absoluteName, String delimiter) {
-//        String resourceName = absoluteName;
-//        if (null == absoluteName) {
-//            return absoluteName;
-//        }
-//        int index = absoluteName.lastIndexOf(delimiter);
-//        if (index != -1) {
-//            index = index + delimiter.length();
-//            resourceName =  absoluteName.substring(index);
-//        }
-//
-//        try {
-//            return URLDecoder.decode(resourceName, "UTF-8");
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
-        List<PathSegment> segments = uriInfo.getPathSegments();
-        String resourceName = segments.get(segments.size()-1).getPath();
-
-        return resourceName;
+        if (null == absoluteName) {
+            return absoluteName;
+        }
+        int index = absoluteName.lastIndexOf(delimiter);
+        if (index != -1) {
+            index = index + delimiter.length();
+            return absoluteName.substring(index);
+        } else {
+            return absoluteName;
+        }
     }
-
     private ResourceUtil __resourceUtil;
+
+
+    public void setBeanByKey(List<Dom> parentList,String id) {
+        for (Dom c : parentList) {
+
+
+            String keyAttributeName = null;
+            ConfigModel model = c.model;
+            if (model.key == null) {
+                try {
+                    for (String s : model.getAttributeNames()) {//no key, by default use the name attr
+                        if (s.equals("name")) {
+                            keyAttributeName = s;
+                        }
+                    }
+                    if (keyAttributeName == null)//nothing, so pick the first one
+                    {
+                        keyAttributeName = model.getAttributeNames().iterator().next();
+                    }
+                } catch (Exception e) {
+                    keyAttributeName = "ThisIsAModelBug:NoKeyAttr"; //no attr choice fo a key!!! Error!!!
+                } //firstone
+            } else {
+                keyAttributeName = model.key.substring(1, model.key.length());
+            }
+
+
+
+            //Using '-' for back-slash in resource names
+            //For example, jndi names has back-slash in it.
+            String keyvalue = c.attribute(keyAttributeName.toLowerCase());
+            if (keyvalue.replace('/', '-').equals(id)) {
+                setEntity((ConfigBean) c);
+            }
+        }
+    }
 }

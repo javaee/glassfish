@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.AuditModule;
-public class ListAuditModuleResource extends TemplateListOfResource<AuditModule> {
+public class ListAuditModuleResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public AuditModuleResource getAuditModuleResource(@PathParam("Name") String id) {
 		AuditModuleResource resource = resourceContext.getResource(AuditModuleResource.class);
-		for (AuditModule c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

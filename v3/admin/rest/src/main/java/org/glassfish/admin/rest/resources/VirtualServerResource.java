@@ -34,21 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-public class VirtualServerResource extends TemplateResource<VirtualServer> {
+public class VirtualServerResource extends TemplateResource {
 
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("http-access-log/")
 	public HttpAccessLogResource getHttpAccessLogResource() {
 		HttpAccessLogResource resource = resourceContext.getResource(HttpAccessLogResource.class);
-		resource.setEntity(getEntity().getHttpAccessLog() );
+		resource.setParentAndTagName(getEntity() , "http-access-log");
 		return resource;
 	}
 }

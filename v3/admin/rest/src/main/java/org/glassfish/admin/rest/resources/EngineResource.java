@@ -34,21 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.Engine;
-public class EngineResource extends TemplateResource<Engine> {
+public class EngineResource extends TemplateResource {
 
-	@Path("application-config/")
-	public ListApplicationConfigResource getApplicationConfigResource() {
-		ListApplicationConfigResource resource = resourceContext.getResource(ListApplicationConfigResource.class);
-		resource.setEntity(getEntity().getApplicationConfigs() );
-		return resource;
-	}
+@Path("web-module-config/")
+public ListWebModuleConfigResource getWebModuleConfigResource() {
+	ListWebModuleConfigResource resource = resourceContext.getResource(ListWebModuleConfigResource.class);
+	resource.setParentAndTagName(getEntity() , "web-module-config");
+	return resource;
+}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 }

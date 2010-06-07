@@ -34,15 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.SshConnector;
-public class SshConnectorResource extends TemplateResource<SshConnector> {
+public class SshConnectorResource extends TemplateResource {
 
 	@Path("ssh-auth/")
 	public ListSshAuthResource getSshAuthResource() {
 		ListSshAuthResource resource = resourceContext.getResource(ListSshAuthResource.class);
-		resource.setEntity(getEntity().getSshAuth() );
+		resource.setParentAndTagName(getEntity() , "ssh-auth");
 		return resource;
 	}
 }

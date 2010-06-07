@@ -33,11 +33,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest.resources;
-import org.glassfish.admin.rest.TemplateResource;
-import org.glassfish.api.monitoring.ContainerMonitoring;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.TemplateListOfResource;
+public class ListWebModuleConfigResource extends TemplateListOfResource {
 
-public class MonitoringItemResource extends TemplateResource<ContainerMonitoring> {
 
+	@Path("{ThisIsAModelBug:NoKeyAttr}/")
+	public WebModuleConfigResource getWebModuleConfigResource(@PathParam("ThisIsAModelBug:NoKeyAttr") String id) {
+		WebModuleConfigResource resource = resourceContext.getResource(WebModuleConfigResource.class);
+		resource.setBeanByKey(entity, id);
+		return resource;
+	}
+
+
+@Override
+public String getPostCommand() {
+	return null;
+}
 }

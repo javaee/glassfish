@@ -34,21 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.grizzly.config.dom.Http;
-public class HttpResource extends TemplateResource<Http> {
+public class HttpResource extends TemplateResource {
 
 	@Path("file-cache/")
 	public FileCacheResource getFileCacheResource() {
 		FileCacheResource resource = resourceContext.getResource(FileCacheResource.class);
-		resource.setEntity(getEntity().getFileCache() );
+		resource.setParentAndTagName(getEntity() , "file-cache");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 }

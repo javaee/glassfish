@@ -34,9 +34,8 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import org.glassfish.api.monitoring.ContainerMonitoring;
-public class ContainerMonitoringResource extends TemplateResource<ContainerMonitoring> {
+public class ContainerMonitoringResource extends TemplateResource {
 
 }

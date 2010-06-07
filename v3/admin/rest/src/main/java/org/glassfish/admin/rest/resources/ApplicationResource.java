@@ -34,10 +34,9 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.Application;
-public class ApplicationResource extends TemplateResource<Application> {
+public class ApplicationResource extends TemplateResource {
 
 @Path("enable/")
 public ApplicationEnableResource getApplicationEnableResource() {
@@ -59,25 +58,25 @@ return new String[][]{{"enable", "POST"}, {"disable", "POST"}};
 	@Path("module/")
 	public ListModuleResource getModuleResource() {
 		ListModuleResource resource = resourceContext.getResource(ListModuleResource.class);
-		resource.setEntity(getEntity().getModule() );
+		resource.setParentAndTagName(getEntity() , "module");
 		return resource;
 	}
 	@Path("web-service-endpoint/")
 	public ListWebServiceEndpointResource getWebServiceEndpointResource() {
 		ListWebServiceEndpointResource resource = resourceContext.getResource(ListWebServiceEndpointResource.class);
-		resource.setEntity(getEntity().getWebServiceEndpoint() );
+		resource.setParentAndTagName(getEntity() , "web-service-endpoint");
 		return resource;
 	}
 	@Path("engine/")
 	public ListEngineResource getEngineResource() {
 		ListEngineResource resource = resourceContext.getResource(ListEngineResource.class);
-		resource.setEntity(getEntity().getEngine() );
+		resource.setParentAndTagName(getEntity() , "engine");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 }

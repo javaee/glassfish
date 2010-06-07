@@ -34,21 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.WebServiceEndpoint;
-public class WebServiceEndpointResource extends TemplateResource<WebServiceEndpoint> {
+public class WebServiceEndpointResource extends TemplateResource {
 
 	@Path("registry-location/")
 	public ListRegistryLocationResource getRegistryLocationResource() {
 		ListRegistryLocationResource resource = resourceContext.getResource(ListRegistryLocationResource.class);
-		resource.setEntity(getEntity().getRegistryLocation() );
+		resource.setParentAndTagName(getEntity() , "registry-location");
 		return resource;
 	}
 	@Path("transformation-rule/")
 	public ListTransformationRuleResource getTransformationRuleResource() {
 		ListTransformationRuleResource resource = resourceContext.getResource(ListTransformationRuleResource.class);
-		resource.setEntity(getEntity().getTransformationRule() );
+		resource.setParentAndTagName(getEntity() , "transformation-rule");
 		return resource;
 	}
 }

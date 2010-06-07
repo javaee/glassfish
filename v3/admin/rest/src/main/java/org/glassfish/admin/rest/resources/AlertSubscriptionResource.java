@@ -34,15 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.AlertSubscription;
-public class AlertSubscriptionResource extends TemplateResource<AlertSubscription> {
+public class AlertSubscriptionResource extends TemplateResource {
 
 	@Path("filter-config/")
 	public FilterConfigResource getFilterConfigResource() {
 		FilterConfigResource resource = resourceContext.getResource(FilterConfigResource.class);
-		resource.setEntity(getEntity().getFilterConfig() );
+		resource.setParentAndTagName(getEntity() , "filter-config");
 		return resource;
 	}
 }

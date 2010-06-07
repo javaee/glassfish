@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.GroupMap;
-public class ListGroupMapResource extends TemplateListOfResource<GroupMap> {
+public class ListGroupMapResource extends TemplateListOfResource {
 
 
 	@Path("{EisGroup}/")
 	public GroupMapResource getGroupMapResource(@PathParam("EisGroup") String id) {
 		GroupMapResource resource = resourceContext.getResource(GroupMapResource.class);
-		for (GroupMap c: entity){
-			if(c.getEisGroup().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

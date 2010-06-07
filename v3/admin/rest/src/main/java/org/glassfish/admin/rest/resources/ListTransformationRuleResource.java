@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.TransformationRule;
-public class ListTransformationRuleResource extends TemplateListOfResource<TransformationRule> {
+public class ListTransformationRuleResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public TransformationRuleResource getTransformationRuleResource(@PathParam("Name") String id) {
 		TransformationRuleResource resource = resourceContext.getResource(TransformationRuleResource.class);
-		for (TransformationRule c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

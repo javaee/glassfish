@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.grizzly.config.dom.ProtocolFinder;
-public class ListProtocolFinderResource extends TemplateListOfResource<ProtocolFinder> {
+public class ListProtocolFinderResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public ProtocolFinderResource getProtocolFinderResource(@PathParam("Name") String id) {
 		ProtocolFinderResource resource = resourceContext.getResource(ProtocolFinderResource.class);
-		for (ProtocolFinder c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

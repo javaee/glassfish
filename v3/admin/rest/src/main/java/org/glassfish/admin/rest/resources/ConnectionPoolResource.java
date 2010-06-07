@@ -34,10 +34,9 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.ConnectionPool;
-public class ConnectionPoolResource extends TemplateResource<ConnectionPool> {
+public class ConnectionPoolResource extends TemplateResource {
 
 @Path("ping/")
 public ConnectionPoolPingResource getConnectionPoolPingResource() {

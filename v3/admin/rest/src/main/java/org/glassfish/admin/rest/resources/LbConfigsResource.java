@@ -34,15 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.LbConfigs;
-public class LbConfigsResource extends TemplateResource<LbConfigs> {
+public class LbConfigsResource extends TemplateResource {
 
 	@Path("lb-config/")
 	public ListLbConfigResource getLbConfigResource() {
 		ListLbConfigResource resource = resourceContext.getResource(ListLbConfigResource.class);
-		resource.setEntity(getEntity().getLbConfig() );
+		resource.setParentAndTagName(getEntity() , "lb-config");
 		return resource;
 	}
 }

@@ -34,15 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.NodeAgents;
-public class NodeAgentsResource extends TemplateResource<NodeAgents> {
+public class NodeAgentsResource extends TemplateResource {
 
 	@Path("node-agent/")
 	public ListNodeAgentResource getNodeAgentResource() {
 		ListNodeAgentResource resource = resourceContext.getResource(ListNodeAgentResource.class);
-		resource.setEntity(getEntity().getNodeAgent() );
+		resource.setParentAndTagName(getEntity() , "node-agent");
 		return resource;
 	}
 }

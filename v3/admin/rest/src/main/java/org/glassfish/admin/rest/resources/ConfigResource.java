@@ -34,147 +34,146 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.Config;
-public class ConfigResource extends TemplateResource<Config> {
+public class ConfigResource extends TemplateResource {
 
 	@Path("admin-service/")
 	public AdminServiceResource getAdminServiceResource() {
 		AdminServiceResource resource = resourceContext.getResource(AdminServiceResource.class);
-		resource.setEntity(getEntity().getAdminService() );
+		resource.setParentAndTagName(getEntity() , "admin-service");
 		return resource;
 	}
 	@Path("ejb-container/")
 	public EjbContainerResource getEjbContainerResource() {
 		EjbContainerResource resource = resourceContext.getResource(EjbContainerResource.class);
-		resource.setEntity(getEntity().getEjbContainer() );
+		resource.setParentAndTagName(getEntity() , "ejb-container");
 		return resource;
 	}
 	@Path("transaction-service/")
 	public TransactionServiceResource getTransactionServiceResource() {
 		TransactionServiceResource resource = resourceContext.getResource(TransactionServiceResource.class);
-		resource.setEntity(getEntity().getTransactionService() );
+		resource.setParentAndTagName(getEntity() , "transaction-service");
 		return resource;
 	}
 	@Path("management-rules/")
 	public ManagementRulesResource getManagementRulesResource() {
 		ManagementRulesResource resource = resourceContext.getResource(ManagementRulesResource.class);
-		resource.setEntity(getEntity().getManagementRules() );
+		resource.setParentAndTagName(getEntity() , "management-rules");
 		return resource;
 	}
 	@Path("java-config/")
 	public JavaConfigResource getJavaConfigResource() {
 		JavaConfigResource resource = resourceContext.getResource(JavaConfigResource.class);
-		resource.setEntity(getEntity().getJavaConfig() );
+		resource.setParentAndTagName(getEntity() , "java-config");
 		return resource;
 	}
-	@Path("container/")
-	public ListContainerResource getContainerResource() {
-		ListContainerResource resource = resourceContext.getResource(ListContainerResource.class);
-		resource.setEntity(getEntity().getContainers() );
-		return resource;
-	}
+@Path("jruby-container/")
+public ListJrubyContainerResource getJrubyContainerResource() {
+	ListJrubyContainerResource resource = resourceContext.getResource(ListJrubyContainerResource.class);
+	resource.setParentAndTagName(getEntity() , "jruby-container");
+	return resource;
+}
 	@Path("monitoring-service/")
 	public MonitoringServiceResource getMonitoringServiceResource() {
 		MonitoringServiceResource resource = resourceContext.getResource(MonitoringServiceResource.class);
-		resource.setEntity(getEntity().getMonitoringService() );
+		resource.setParentAndTagName(getEntity() , "monitoring-service");
 		return resource;
 	}
 	@Path("group-management-service/")
 	public GroupManagementServiceResource getGroupManagementServiceResource() {
 		GroupManagementServiceResource resource = resourceContext.getResource(GroupManagementServiceResource.class);
-		resource.setEntity(getEntity().getGroupManagementService() );
+		resource.setParentAndTagName(getEntity() , "group-management-service");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("availability-service/")
 	public AvailabilityServiceResource getAvailabilityServiceResource() {
 		AvailabilityServiceResource resource = resourceContext.getResource(AvailabilityServiceResource.class);
-		resource.setEntity(getEntity().getAvailabilityService() );
+		resource.setParentAndTagName(getEntity() , "availability-service");
 		return resource;
 	}
 	@Path("thread-pools/")
 	public ThreadPoolsResource getThreadPoolsResource() {
 		ThreadPoolsResource resource = resourceContext.getResource(ThreadPoolsResource.class);
-		resource.setEntity(getEntity().getThreadPools() );
+		resource.setParentAndTagName(getEntity() , "thread-pools");
 		return resource;
 	}
 	@Path("web-container/")
 	public WebContainerResource getWebContainerResource() {
 		WebContainerResource resource = resourceContext.getResource(WebContainerResource.class);
-		resource.setEntity(getEntity().getWebContainer() );
+		resource.setParentAndTagName(getEntity() , "web-container");
 		return resource;
 	}
 	@Path("mdb-container/")
 	public MdbContainerResource getMdbContainerResource() {
 		MdbContainerResource resource = resourceContext.getResource(MdbContainerResource.class);
-		resource.setEntity(getEntity().getMdbContainer() );
+		resource.setParentAndTagName(getEntity() , "mdb-container");
 		return resource;
 	}
 	@Path("log-service/")
 	public LogServiceResource getLogServiceResource() {
 		LogServiceResource resource = resourceContext.getResource(LogServiceResource.class);
-		resource.setEntity(getEntity().getLogService() );
+		resource.setParentAndTagName(getEntity() , "log-service");
 		return resource;
 	}
 	@Path("http-service/")
 	public HttpServiceResource getHttpServiceResource() {
 		HttpServiceResource resource = resourceContext.getResource(HttpServiceResource.class);
-		resource.setEntity(getEntity().getHttpService() );
+		resource.setParentAndTagName(getEntity() , "http-service");
 		return resource;
 	}
 	@Path("jms-service/")
 	public JmsServiceResource getJmsServiceResource() {
 		JmsServiceResource resource = resourceContext.getResource(JmsServiceResource.class);
-		resource.setEntity(getEntity().getJmsService() );
+		resource.setParentAndTagName(getEntity() , "jms-service");
 		return resource;
 	}
 	@Path("alert-service/")
 	public AlertServiceResource getAlertServiceResource() {
 		AlertServiceResource resource = resourceContext.getResource(AlertServiceResource.class);
-		resource.setEntity(getEntity().getAlertService() );
+		resource.setParentAndTagName(getEntity() , "alert-service");
 		return resource;
 	}
 	@Path("connector-service/")
 	public ConnectorServiceResource getConnectorServiceResource() {
 		ConnectorServiceResource resource = resourceContext.getResource(ConnectorServiceResource.class);
-		resource.setEntity(getEntity().getConnectorService() );
+		resource.setParentAndTagName(getEntity() , "connector-service");
 		return resource;
 	}
 	@Path("network-config/")
 	public NetworkConfigResource getNetworkConfigResource() {
 		NetworkConfigResource resource = resourceContext.getResource(NetworkConfigResource.class);
-		resource.setEntity(getEntity().getNetworkConfig() );
+		resource.setParentAndTagName(getEntity() , "network-config");
 		return resource;
 	}
 	@Path("system-property/")
 	public ListSystemPropertyResource getSystemPropertyResource() {
 		ListSystemPropertyResource resource = resourceContext.getResource(ListSystemPropertyResource.class);
-		resource.setEntity(getEntity().getSystemProperty() );
+		resource.setParentAndTagName(getEntity() , "system-property");
 		return resource;
 	}
 	@Path("iiop-service/")
 	public IiopServiceResource getIiopServiceResource() {
 		IiopServiceResource resource = resourceContext.getResource(IiopServiceResource.class);
-		resource.setEntity(getEntity().getIiopService() );
+		resource.setParentAndTagName(getEntity() , "iiop-service");
 		return resource;
 	}
 	@Path("diagnostic-service/")
 	public DiagnosticServiceResource getDiagnosticServiceResource() {
 		DiagnosticServiceResource resource = resourceContext.getResource(DiagnosticServiceResource.class);
-		resource.setEntity(getEntity().getDiagnosticService() );
+		resource.setParentAndTagName(getEntity() , "diagnostic-service");
 		return resource;
 	}
 	@Path("security-service/")
 	public SecurityServiceResource getSecurityServiceResource() {
 		SecurityServiceResource resource = resourceContext.getResource(SecurityServiceResource.class);
-		resource.setEntity(getEntity().getSecurityService() );
+		resource.setParentAndTagName(getEntity() , "security-service");
 		return resource;
 	}
 }

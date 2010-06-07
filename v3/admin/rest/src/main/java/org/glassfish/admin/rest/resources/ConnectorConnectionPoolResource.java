@@ -34,21 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-public class ConnectorConnectionPoolResource extends TemplateResource<ConnectorConnectionPool> {
+public class ConnectorConnectionPoolResource extends TemplateResource {
 
 	@Path("security-map/")
 	public ListSecurityMapResource getSecurityMapResource() {
 		ListSecurityMapResource resource = resourceContext.getResource(ListSecurityMapResource.class);
-		resource.setEntity(getEntity().getSecurityMap() );
+		resource.setParentAndTagName(getEntity() , "security-map");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 }

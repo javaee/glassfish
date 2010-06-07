@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.WebServiceEndpoint;
-public class ListWebServiceEndpointResource extends TemplateListOfResource<WebServiceEndpoint> {
+public class ListWebServiceEndpointResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public WebServiceEndpointResource getWebServiceEndpointResource(@PathParam("Name") String id) {
 		WebServiceEndpointResource resource = resourceContext.getResource(WebServiceEndpointResource.class);
-		for (WebServiceEndpoint c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

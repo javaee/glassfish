@@ -34,15 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.Nodes;
-public class NodesResource extends TemplateResource<Nodes> {
+public class NodesResource extends TemplateResource {
 
 	@Path("node/")
 	public ListNodeResource getNodeResource() {
 		ListNodeResource resource = resourceContext.getResource(ListNodeResource.class);
-		resource.setEntity(getEntity().getNode() );
+		resource.setParentAndTagName(getEntity() , "node");
 		return resource;
 	}
 }

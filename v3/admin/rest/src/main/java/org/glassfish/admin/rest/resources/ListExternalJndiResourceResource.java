@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.ExternalJndiResource;
-public class ListExternalJndiResourceResource extends TemplateListOfResource<ExternalJndiResource> {
+public class ListExternalJndiResourceResource extends TemplateListOfResource {
 
 
 	@Path("{JndiName}/")
 	public ExternalJndiResourceResource getExternalJndiResourceResource(@PathParam("JndiName") String id) {
 		ExternalJndiResourceResource resource = resourceContext.getResource(ExternalJndiResourceResource.class);
-		for (ExternalJndiResource c: entity){
-			if(c.getJndiName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

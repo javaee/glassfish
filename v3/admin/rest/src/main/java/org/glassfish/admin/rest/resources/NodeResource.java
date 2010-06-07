@@ -34,27 +34,26 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.Node;
-public class NodeResource extends TemplateResource<Node> {
+public class NodeResource extends TemplateResource {
 
 	@Path("application-ref/")
 	public ListApplicationRefResource getApplicationRefResource() {
 		ListApplicationRefResource resource = resourceContext.getResource(ListApplicationRefResource.class);
-		resource.setEntity(getEntity().getApplicationRef() );
+		resource.setParentAndTagName(getEntity() , "application-ref");
 		return resource;
 	}
 	@Path("ssh-connector/")
 	public ListSshConnectorResource getSshConnectorResource() {
 		ListSshConnectorResource resource = resourceContext.getResource(ListSshConnectorResource.class);
-		resource.setEntity(getEntity().getSshConnector() );
+		resource.setParentAndTagName(getEntity() , "ssh-connector");
 		return resource;
 	}
 	@Path("resource-ref/")
 	public ListResourceRefResource getResourceRefResource() {
 		ListResourceRefResource resource = resourceContext.getResource(ListResourceRefResource.class);
-		resource.setEntity(getEntity().getResourceRef() );
+		resource.setParentAndTagName(getEntity() , "resource-ref");
 		return resource;
 	}
 }

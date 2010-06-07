@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.Config;
-public class ListConfigResource extends TemplateListOfResource<Config> {
+public class ListConfigResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public ConfigResource getConfigResource(@PathParam("Name") String id) {
 		ConfigResource resource = resourceContext.getResource(ConfigResource.class);
-		for (Config c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

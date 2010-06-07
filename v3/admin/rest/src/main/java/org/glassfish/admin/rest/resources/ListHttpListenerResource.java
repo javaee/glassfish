@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-public class ListHttpListenerResource extends TemplateListOfResource<HttpListener> {
+public class ListHttpListenerResource extends TemplateListOfResource {
 
 
 	@Path("{Id}/")
 	public HttpListenerResource getHttpListenerResource(@PathParam("Id") String id) {
 		HttpListenerResource resource = resourceContext.getResource(HttpListenerResource.class);
-		for (HttpListener c: entity){
-			if(c.getId().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

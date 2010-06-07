@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.LoadBalancer;
-public class ListLoadBalancerResource extends TemplateListOfResource<LoadBalancer> {
+public class ListLoadBalancerResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public LoadBalancerResource getLoadBalancerResource(@PathParam("Name") String id) {
 		LoadBalancerResource resource = resourceContext.getResource(LoadBalancerResource.class);
-		for (LoadBalancer c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

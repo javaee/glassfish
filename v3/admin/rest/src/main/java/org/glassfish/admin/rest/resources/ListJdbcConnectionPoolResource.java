@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-public class ListJdbcConnectionPoolResource extends TemplateListOfResource<JdbcConnectionPool> {
+public class ListJdbcConnectionPoolResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public JdbcConnectionPoolResource getJdbcConnectionPoolResource(@PathParam("Name") String id) {
 		JdbcConnectionPoolResource resource = resourceContext.getResource(JdbcConnectionPoolResource.class);
-		for (JdbcConnectionPool c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

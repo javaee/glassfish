@@ -34,21 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.grizzly.config.dom.ProtocolChain;
-public class ProtocolChainResource extends TemplateResource<ProtocolChain> {
+public class ProtocolChainResource extends TemplateResource {
 
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("protocol-filter/")
 	public ListProtocolFilterResource getProtocolFilterResource() {
 		ListProtocolFilterResource resource = resourceContext.getResource(ListProtocolFilterResource.class);
-		resource.setEntity(getEntity().getProtocolFilter() );
+		resource.setParentAndTagName(getEntity() , "protocol-filter");
 		return resource;
 	}
 }

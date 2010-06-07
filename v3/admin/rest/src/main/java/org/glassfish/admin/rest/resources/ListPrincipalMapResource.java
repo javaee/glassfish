@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.PrincipalMap;
-public class ListPrincipalMapResource extends TemplateListOfResource<PrincipalMap> {
+public class ListPrincipalMapResource extends TemplateListOfResource {
 
 
 	@Path("{EisPrincipal}/")
 	public PrincipalMapResource getPrincipalMapResource(@PathParam("EisPrincipal") String id) {
 		PrincipalMapResource resource = resourceContext.getResource(PrincipalMapResource.class);
-		for (PrincipalMap c: entity){
-			if(c.getEisPrincipal().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

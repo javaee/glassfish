@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.MailResource;
-public class ListMailResourceResource extends TemplateListOfResource<MailResource> {
+public class ListMailResourceResource extends TemplateListOfResource {
 
 
 	@Path("{JndiName}/")
 	public MailResourceResource getMailResourceResource(@PathParam("JndiName") String id) {
 		MailResourceResource resource = resourceContext.getResource(MailResourceResource.class);
-		for (MailResource c: entity){
-			if(c.getJndiName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

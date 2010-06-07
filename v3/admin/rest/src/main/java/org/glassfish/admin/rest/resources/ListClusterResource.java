@@ -34,26 +34,22 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.Cluster;
-public class ListClusterResource extends TemplateListOfResource<Cluster> {
+public class ListClusterResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public ClusterResource getClusterResource(@PathParam("Name") String id) {
 		ClusterResource resource = resourceContext.getResource(ClusterResource.class);
-		for (Cluster c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 
 
 @Override
 public String getPostCommand() {
-	return null;
+	return "create-cluster";
 }
 }

@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.LbConfig;
-public class ListLbConfigResource extends TemplateListOfResource<LbConfig> {
+public class ListLbConfigResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public LbConfigResource getLbConfigResource(@PathParam("Name") String id) {
 		LbConfigResource resource = resourceContext.getResource(LbConfigResource.class);
-		for (LbConfig c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

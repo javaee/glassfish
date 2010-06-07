@@ -34,21 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.ServerRef;
-public class ListServerRefResource extends TemplateListOfResource<ServerRef> {
+public class ListServerRefResource extends TemplateListOfResource {
 
 
 	@Path("{Ref}/")
 	public ServerRefResource getServerRefResource(@PathParam("Ref") String id) {
 		ServerRefResource resource = resourceContext.getResource(ServerRefResource.class);
-		for (ServerRef c: entity){
-//THIS KEY IS THE FIRST Attribute ONE ludo
-			if(c.getRef().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

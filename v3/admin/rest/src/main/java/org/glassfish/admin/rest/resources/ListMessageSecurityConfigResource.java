@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
-public class ListMessageSecurityConfigResource extends TemplateListOfResource<MessageSecurityConfig> {
+public class ListMessageSecurityConfigResource extends TemplateListOfResource {
 
 
 	@Path("{AuthLayer}/")
 	public MessageSecurityConfigResource getMessageSecurityConfigResource(@PathParam("AuthLayer") String id) {
 		MessageSecurityConfigResource resource = resourceContext.getResource(MessageSecurityConfigResource.class);
-		for (MessageSecurityConfig c: entity){
-			if(c.getAuthLayer().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

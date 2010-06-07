@@ -34,27 +34,26 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.grizzly.config.dom.NetworkListeners;
-public class NetworkListenersResource extends TemplateResource<NetworkListeners> {
+public class NetworkListenersResource extends TemplateResource {
 
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("thread-pool/")
 	public ListThreadPoolResource getThreadPoolResource() {
 		ListThreadPoolResource resource = resourceContext.getResource(ListThreadPoolResource.class);
-		resource.setEntity(getEntity().getThreadPool() );
+		resource.setParentAndTagName(getEntity() , "thread-pool");
 		return resource;
 	}
 	@Path("network-listener/")
 	public ListNetworkListenerResource getNetworkListenerResource() {
 		ListNetworkListenerResource resource = resourceContext.getResource(ListNetworkListenerResource.class);
-		resource.setEntity(getEntity().getNetworkListener() );
+		resource.setParentAndTagName(getEntity() , "network-listener");
 		return resource;
 	}
 }

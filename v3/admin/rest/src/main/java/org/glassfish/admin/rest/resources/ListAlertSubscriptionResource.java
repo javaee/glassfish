@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.AlertSubscription;
-public class ListAlertSubscriptionResource extends TemplateListOfResource<AlertSubscription> {
+public class ListAlertSubscriptionResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public AlertSubscriptionResource getAlertSubscriptionResource(@PathParam("Name") String id) {
 		AlertSubscriptionResource resource = resourceContext.getResource(AlertSubscriptionResource.class);
-		for (AlertSubscription c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

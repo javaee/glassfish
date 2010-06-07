@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.grizzly.config.dom.Transport;
-public class ListTransportResource extends TemplateListOfResource<Transport> {
+public class ListTransportResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public TransportResource getTransportResource(@PathParam("Name") String id) {
 		TransportResource resource = resourceContext.getResource(TransportResource.class);
-		for (Transport c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

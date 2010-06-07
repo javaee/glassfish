@@ -34,19 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.ApplicationConfig;
-public class ListApplicationConfigResource extends TemplateListOfResource<ApplicationConfig> {
+public class ListExtensionModuleResource extends TemplateListOfResource {
 
 
-	@Path("{ThisIsAModelBug:NoKeyAttr}/")
-	public ApplicationConfigResource getApplicationConfigResource(@PathParam("ThisIsAModelBug:NoKeyAttr") String id) {
-		ApplicationConfigResource resource = resourceContext.getResource(ApplicationConfigResource.class);
-		for (ApplicationConfig c: entity){
-//THIS KEY IS THE FIRST Attribute ONE ludo
-			throw new RuntimeException("ThisIsAModelBug:NoKeyAttr ");
-		}
+	@Path("{Name}/")
+	public ExtensionModuleResource getExtensionModuleResource(@PathParam("Name") String id) {
+		ExtensionModuleResource resource = resourceContext.getResource(ExtensionModuleResource.class);
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

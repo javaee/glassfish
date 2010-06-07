@@ -34,9 +34,8 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.GroupMap;
-public class GroupMapResource extends TemplateResource<GroupMap> {
+public class GroupMapResource extends TemplateResource {
 
 }

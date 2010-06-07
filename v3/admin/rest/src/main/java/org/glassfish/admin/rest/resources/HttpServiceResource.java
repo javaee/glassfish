@@ -34,63 +34,62 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.HttpService;
-public class HttpServiceResource extends TemplateResource<HttpService> {
+public class HttpServiceResource extends TemplateResource {
 
 	@Path("http-protocol/")
 	public HttpProtocolResource getHttpProtocolResource() {
 		HttpProtocolResource resource = resourceContext.getResource(HttpProtocolResource.class);
-		resource.setEntity(getEntity().getHttpProtocol() );
+		resource.setParentAndTagName(getEntity() , "http-protocol");
 		return resource;
 	}
 	@Path("connection-pool/")
 	public ConnectionPoolResource getConnectionPoolResource() {
 		ConnectionPoolResource resource = resourceContext.getResource(ConnectionPoolResource.class);
-		resource.setEntity(getEntity().getConnectionPool() );
+		resource.setParentAndTagName(getEntity() , "connection-pool");
 		return resource;
 	}
 	@Path("http-file-cache/")
 	public HttpFileCacheResource getHttpFileCacheResource() {
 		HttpFileCacheResource resource = resourceContext.getResource(HttpFileCacheResource.class);
-		resource.setEntity(getEntity().getHttpFileCache() );
+		resource.setParentAndTagName(getEntity() , "http-file-cache");
 		return resource;
 	}
 	@Path("http-listener/")
 	public ListHttpListenerResource getHttpListenerResource() {
 		ListHttpListenerResource resource = resourceContext.getResource(ListHttpListenerResource.class);
-		resource.setEntity(getEntity().getHttpListener() );
+		resource.setParentAndTagName(getEntity() , "http-listener");
 		return resource;
 	}
 	@Path("request-processing/")
 	public RequestProcessingResource getRequestProcessingResource() {
 		RequestProcessingResource resource = resourceContext.getResource(RequestProcessingResource.class);
-		resource.setEntity(getEntity().getRequestProcessing() );
+		resource.setParentAndTagName(getEntity() , "request-processing");
 		return resource;
 	}
 	@Path("virtual-server/")
 	public ListVirtualServerResource getVirtualServerResource() {
 		ListVirtualServerResource resource = resourceContext.getResource(ListVirtualServerResource.class);
-		resource.setEntity(getEntity().getVirtualServer() );
+		resource.setParentAndTagName(getEntity() , "virtual-server");
 		return resource;
 	}
 	@Path("access-log/")
 	public AccessLogResource getAccessLogResource() {
 		AccessLogResource resource = resourceContext.getResource(AccessLogResource.class);
-		resource.setEntity(getEntity().getAccessLog() );
+		resource.setParentAndTagName(getEntity() , "access-log");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("keep-alive/")
 	public KeepAliveResource getKeepAliveResource() {
 		KeepAliveResource resource = resourceContext.getResource(KeepAliveResource.class);
-		resource.setEntity(getEntity().getKeepAlive() );
+		resource.setParentAndTagName(getEntity() , "keep-alive");
 		return resource;
 	}
 }

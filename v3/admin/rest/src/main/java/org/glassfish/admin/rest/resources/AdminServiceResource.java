@@ -34,27 +34,26 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.AdminService;
-public class AdminServiceResource extends TemplateResource<AdminService> {
+public class AdminServiceResource extends TemplateResource {
 
 	@Path("jmx-connector/")
 	public ListJmxConnectorResource getJmxConnectorResource() {
 		ListJmxConnectorResource resource = resourceContext.getResource(ListJmxConnectorResource.class);
-		resource.setEntity(getEntity().getJmxConnector() );
+		resource.setParentAndTagName(getEntity() , "jmx-connector");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("das-config/")
 	public DasConfigResource getDasConfigResource() {
 		DasConfigResource resource = resourceContext.getResource(DasConfigResource.class);
-		resource.setEntity(getEntity().getDasConfig() );
+		resource.setParentAndTagName(getEntity() , "das-config");
 		return resource;
 	}
 }

@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-public class ListVirtualServerResource extends TemplateListOfResource<VirtualServer> {
+public class ListVirtualServerResource extends TemplateListOfResource {
 
 
 	@Path("{Id}/")
 	public VirtualServerResource getVirtualServerResource(@PathParam("Id") String id) {
 		VirtualServerResource resource = resourceContext.getResource(VirtualServerResource.class);
-		for (VirtualServer c: entity){
-			if(c.getId().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

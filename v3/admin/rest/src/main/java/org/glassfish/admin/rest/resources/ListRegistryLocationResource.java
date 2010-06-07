@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.RegistryLocation;
-public class ListRegistryLocationResource extends TemplateListOfResource<RegistryLocation> {
+public class ListRegistryLocationResource extends TemplateListOfResource {
 
 
 	@Path("{ConnectorResourceJndiName}/")
 	public RegistryLocationResource getRegistryLocationResource(@PathParam("ConnectorResourceJndiName") String id) {
 		RegistryLocationResource resource = resourceContext.getResource(RegistryLocationResource.class);
-		for (RegistryLocation c: entity){
-			if(c.getConnectorResourceJndiName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

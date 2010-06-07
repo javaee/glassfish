@@ -34,21 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.grizzly.config.dom.PortUnification;
-public class PortUnificationResource extends TemplateResource<PortUnification> {
+public class PortUnificationResource extends TemplateResource {
 
 	@Path("protocol-finder/")
 	public ListProtocolFinderResource getProtocolFinderResource() {
 		ListProtocolFinderResource resource = resourceContext.getResource(ListProtocolFinderResource.class);
-		resource.setEntity(getEntity().getProtocolFinder() );
+		resource.setParentAndTagName(getEntity() , "protocol-finder");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 }

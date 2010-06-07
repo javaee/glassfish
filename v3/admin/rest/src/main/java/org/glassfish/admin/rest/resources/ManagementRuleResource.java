@@ -34,21 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.ManagementRule;
-public class ManagementRuleResource extends TemplateResource<ManagementRule> {
+public class ManagementRuleResource extends TemplateResource {
 
 	@Path("event/")
 	public EventResource getEventResource() {
 		EventResource resource = resourceContext.getResource(EventResource.class);
-		resource.setEntity(getEntity().getEvent() );
+		resource.setParentAndTagName(getEntity() , "event");
 		return resource;
 	}
 	@Path("action/")
 	public ActionResource getActionResource() {
 		ActionResource resource = resourceContext.getResource(ActionResource.class);
-		resource.setEntity(getEntity().getAction() );
+		resource.setParentAndTagName(getEntity() , "action");
 		return resource;
 	}
 }

@@ -34,33 +34,32 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.Server;
-public class ServerResource extends TemplateResource<Server> {
+public class ServerResource extends TemplateResource {
 
 	@Path("application-ref/")
 	public ListApplicationRefResource getApplicationRefResource() {
 		ListApplicationRefResource resource = resourceContext.getResource(ListApplicationRefResource.class);
-		resource.setEntity(getEntity().getApplicationRef() );
+		resource.setParentAndTagName(getEntity() , "application-ref");
 		return resource;
 	}
 	@Path("resource-ref/")
 	public ListResourceRefResource getResourceRefResource() {
 		ListResourceRefResource resource = resourceContext.getResource(ListResourceRefResource.class);
-		resource.setEntity(getEntity().getResourceRef() );
+		resource.setParentAndTagName(getEntity() , "resource-ref");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("system-property/")
 	public ListSystemPropertyResource getSystemPropertyResource() {
 		ListSystemPropertyResource resource = resourceContext.getResource(ListSystemPropertyResource.class);
-		resource.setEntity(getEntity().getSystemProperty() );
+		resource.setParentAndTagName(getEntity() , "system-property");
 		return resource;
 	}
 }

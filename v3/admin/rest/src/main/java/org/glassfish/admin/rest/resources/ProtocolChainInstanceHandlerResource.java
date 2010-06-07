@@ -34,21 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.grizzly.config.dom.ProtocolChainInstanceHandler;
-public class ProtocolChainInstanceHandlerResource extends TemplateResource<ProtocolChainInstanceHandler> {
+public class ProtocolChainInstanceHandlerResource extends TemplateResource {
 
 	@Path("protocol-chain/")
 	public ProtocolChainResource getProtocolChainResource() {
 		ProtocolChainResource resource = resourceContext.getResource(ProtocolChainResource.class);
-		resource.setEntity(getEntity().getProtocolChain() );
+		resource.setParentAndTagName(getEntity() , "protocol-chain");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 }

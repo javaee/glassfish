@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.JaccProvider;
-public class ListJaccProviderResource extends TemplateListOfResource<JaccProvider> {
+public class ListJaccProviderResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public JaccProviderResource getJaccProviderResource(@PathParam("Name") String id) {
 		JaccProviderResource resource = resourceContext.getResource(JaccProviderResource.class);
-		for (JaccProvider c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

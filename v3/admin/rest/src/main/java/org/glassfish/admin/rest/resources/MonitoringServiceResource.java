@@ -34,27 +34,26 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.MonitoringService;
-public class MonitoringServiceResource extends TemplateResource<MonitoringService> {
+public class MonitoringServiceResource extends TemplateResource {
 
 	@Path("container-monitoring/")
 	public ListContainerMonitoringResource getContainerMonitoringResource() {
 		ListContainerMonitoringResource resource = resourceContext.getResource(ListContainerMonitoringResource.class);
-		resource.setEntity(getEntity().getContainerMonitoring() );
+		resource.setParentAndTagName(getEntity() , "container-monitoring");
 		return resource;
 	}
 	@Path("module-monitoring-levels/")
 	public ModuleMonitoringLevelsResource getModuleMonitoringLevelsResource() {
 		ModuleMonitoringLevelsResource resource = resourceContext.getResource(ModuleMonitoringLevelsResource.class);
-		resource.setEntity(getEntity().getModuleMonitoringLevels() );
+		resource.setParentAndTagName(getEntity() , "module-monitoring-levels");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 }

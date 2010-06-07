@@ -34,21 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.WorkSecurityMap;
-public class WorkSecurityMapResource extends TemplateResource<WorkSecurityMap> {
+public class WorkSecurityMapResource extends TemplateResource {
 
 	@Path("principal-map/")
 	public ListPrincipalMapResource getPrincipalMapResource() {
 		ListPrincipalMapResource resource = resourceContext.getResource(ListPrincipalMapResource.class);
-		resource.setEntity(getEntity().getPrincipalMap() );
+		resource.setParentAndTagName(getEntity() , "principal-map");
 		return resource;
 	}
 	@Path("group-map/")
 	public ListGroupMapResource getGroupMapResource() {
 		ListGroupMapResource resource = resourceContext.getResource(ListGroupMapResource.class);
-		resource.setEntity(getEntity().getGroupMap() );
+		resource.setParentAndTagName(getEntity() , "group-map");
 		return resource;
 	}
 }

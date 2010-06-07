@@ -60,6 +60,7 @@ import org.glassfish.api.ActionReport;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.jersey.api.core.ResourceContext;
+import org.jvnet.hk2.config.Dom;
 
 
 /**
@@ -75,6 +76,8 @@ public abstract class CollectionLeafResource {
     @Context
     protected ResourceContext resourceContext;
     protected List<String> entity;
+    protected Dom parent;
+    protected String tagName;
 
     public final static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CollectionLeafResource.class);
@@ -94,6 +97,12 @@ public abstract class CollectionLeafResource {
         return entity;
     }
 
+    public void setParentAndTagName(Dom parent, String tagName) {
+        this.parent = parent;
+        this.tagName = tagName;
+        entity = parent.leafElements(tagName);
+
+    }
 
     @GET
     @Produces({MediaType.TEXT_HTML,

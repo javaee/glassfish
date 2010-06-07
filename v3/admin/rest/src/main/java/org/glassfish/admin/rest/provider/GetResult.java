@@ -49,7 +49,7 @@ public class GetResult extends Result {
     /**
      * Constructor
      */
-    public GetResult(ConfigBean configBean, String deleteCommand,
+    public GetResult(Dom configBean, String deleteCommand,
             String[][] commandResourcesPaths, OptionsResult metaData) {
         __dom = configBean;
         __deleteCommand = deleteCommand;
@@ -85,7 +85,7 @@ public class GetResult extends Result {
         return __metaData;
     }
 
-    ConfigBean __dom;
+    Dom __dom;
     String __deleteCommand;
     String[][] __commandResourcesPaths;
     OptionsResult __metaData;

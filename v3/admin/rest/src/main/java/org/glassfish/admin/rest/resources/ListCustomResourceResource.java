@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.CustomResource;
-public class ListCustomResourceResource extends TemplateListOfResource<CustomResource> {
+public class ListCustomResourceResource extends TemplateListOfResource {
 
 
 	@Path("{JndiName}/")
 	public CustomResourceResource getCustomResourceResource(@PathParam("JndiName") String id) {
 		CustomResourceResource resource = resourceContext.getResource(CustomResourceResource.class);
-		for (CustomResource c: entity){
-			if(c.getJndiName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

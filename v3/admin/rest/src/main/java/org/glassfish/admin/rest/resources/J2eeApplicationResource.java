@@ -33,29 +33,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import org.glassfish.admin.rest.TemplateResource;
+public class J2eeApplicationResource extends TemplateResource {
 
-import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.api.monitoring.ContainerMonitoring;
-
-public class ListMonitoringItemResource extends TemplateListOfResource<ContainerMonitoring> {
-
-
-	@Path("{Name}/")
-	public MonitoringItemResource getMonitoringItemResource(@PathParam("Name") String id) {
-		MonitoringItemResource resource = resourceContext.getResource(MonitoringItemResource.class);
-		for (ContainerMonitoring c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+	@Path("web-service-endpoint/")
+	public ListWebServiceEndpointResource getWebServiceEndpointResource() {
+		ListWebServiceEndpointResource resource = resourceContext.getResource(ListWebServiceEndpointResource.class);
+		resource.setParentAndTagName(getEntity() , "web-service-endpoint");
 		return resource;
 	}
-
-
-public String getPostCommand() {
-	return null;
-}
+	@Path("property/")
+	public ListPropertyResource getPropertyResource() {
+		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+		resource.setParentAndTagName(getEntity() , "property");
+		return resource;
+	}
 }

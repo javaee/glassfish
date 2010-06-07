@@ -67,12 +67,14 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.admin.rest.provider.GetResultList;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigSupport;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
  * @author Rajeshwar Patil
  */
-public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
+public abstract class TemplateListOfResource {
 
     @Context
     protected HttpHeaders requestHeaders;
@@ -81,7 +83,9 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
     protected UriInfo uriInfo;
     @Context
     protected ResourceContext resourceContext;
-    protected List<E> entity;
+    protected List<Dom> entity;
+    protected Dom parent;
+    protected String tagName;
 
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateListOfResource.class);
 
@@ -97,31 +101,36 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
             @DefaultValue("1") int expandLevel) {
 
         List<Dom> domList = new ArrayList();
-        List<E> entities = getEntity();
+        List<Dom> entities = getEntity();
         if (entities==null){
             return new GetResultList(domList, getPostCommand(),
                getCommandResourcesPaths(), options());//empty dom list
         }
         Iterator iterator = entities.iterator();
-        E e;
+        ConfigBean e;
         while (iterator.hasNext()) {
-            e = (E) iterator.next();
-            domList.add(Dom.unwrap(e));
+            e = (ConfigBean) iterator.next();
+            domList.add(e);
         }
 
         return new GetResultList(domList, getPostCommand(), getCommandResourcesPaths(), options());
     }
 
 
-    public void setEntity(List<E> p) {
+    public void setEntity(List<Dom> p) {
         entity = p;
     }
 
 
-    public List<E> getEntity() {
+    public List<Dom> getEntity() {
         return entity;
     }
+    public void setParentAndTagName(Dom parent, String tagName) {
+        this.parent = parent;
+        this.tagName = tagName;
+        entity = parent.nodeElements(tagName);
 
+    }
 
     @POST //create
     @Produces(MediaType.TEXT_HTML)
@@ -163,6 +172,21 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
                 return __resourceUtil.getResponse(400, /*400 - bad request*/
                     errorMessage, requestHeaders, uriInfo);
             }
+//            else {
+//                            // Example creating a new http-listener element under http-service
+//            //TODO
+//            HashMap<String, String> attributes = new HashMap<String, String>();
+//            attributes.put("id", "test-listener");
+//            attributes.put("enabled", "true");
+//            ConfigSupport.createAndSet(getEntity()., HttpListener.class, attributes);
+//                                String successMessage =
+//                        localStrings.getLocalString("rest.resource.create.message",
+//                            "\"{0}\" created successfully.", new Object[] {resourceToCreate});
+//                    return __resourceUtil.getResponse(201, //201 - created
+//                         successMessage, requestHeaders, uriInfo);
+//
+//
+//            }
             String message =
                 localStrings.getLocalString("rest.resource.post.forbidden",
                     "POST on \"{0}\" is forbidden.", new Object[] {resourceToCreate});

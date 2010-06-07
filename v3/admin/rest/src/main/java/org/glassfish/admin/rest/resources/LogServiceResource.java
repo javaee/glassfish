@@ -34,15 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.LogService;
-public class LogServiceResource extends TemplateResource<LogService> {
+public class LogServiceResource extends TemplateResource {
 
 	@Path("module-log-levels/")
 	public ModuleLogLevelsResource getModuleLogLevelsResource() {
 		ModuleLogLevelsResource resource = resourceContext.getResource(ModuleLogLevelsResource.class);
-		resource.setEntity(getEntity().getModuleLogLevels() );
+		resource.setParentAndTagName(getEntity() , "module-log-levels");
 		return resource;
 	}
 }

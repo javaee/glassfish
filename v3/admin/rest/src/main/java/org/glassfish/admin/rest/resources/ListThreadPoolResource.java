@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.grizzly.config.dom.ThreadPool;
-public class ListThreadPoolResource extends TemplateListOfResource<ThreadPool> {
+public class ListThreadPoolResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public ThreadPoolResource getThreadPoolResource(@PathParam("Name") String id) {
 		ThreadPoolResource resource = resourceContext.getResource(ThreadPoolResource.class);
-		for (ThreadPool c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

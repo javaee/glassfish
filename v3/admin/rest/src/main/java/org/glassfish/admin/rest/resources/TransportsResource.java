@@ -34,27 +34,26 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.grizzly.config.dom.Transports;
-public class TransportsResource extends TemplateResource<Transports> {
+public class TransportsResource extends TemplateResource {
 
 	@Path("transport/")
 	public ListTransportResource getTransportResource() {
 		ListTransportResource resource = resourceContext.getResource(ListTransportResource.class);
-		resource.setEntity(getEntity().getTransport() );
+		resource.setParentAndTagName(getEntity() , "transport");
 		return resource;
 	}
 	@Path("selection-key-handler/")
 	public ListSelectionKeyHandlerResource getSelectionKeyHandlerResource() {
 		ListSelectionKeyHandlerResource resource = resourceContext.getResource(ListSelectionKeyHandlerResource.class);
-		resource.setEntity(getEntity().getSelectionKeyHandler() );
+		resource.setParentAndTagName(getEntity() , "selection-key-handler");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 }

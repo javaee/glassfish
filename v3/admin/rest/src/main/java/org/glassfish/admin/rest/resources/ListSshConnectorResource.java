@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.SshConnector;
-public class ListSshConnectorResource extends TemplateListOfResource<SshConnector> {
+public class ListSshConnectorResource extends TemplateListOfResource {
 
 
 	@Path("{SshPort}/")
 	public SshConnectorResource getSshConnectorResource(@PathParam("SshPort") String id) {
 		SshConnectorResource resource = resourceContext.getResource(SshConnectorResource.class);
-		for (SshConnector c: entity){
-			if(c.getSshPort().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

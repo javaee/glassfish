@@ -34,27 +34,26 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.JavaConfig;
-public class JavaConfigResource extends TemplateResource<JavaConfig> {
+public class JavaConfigResource extends TemplateResource {
 
 	@Path("profiler/")
 	public ProfilerResource getProfilerResource() {
 		ProfilerResource resource = resourceContext.getResource(ProfilerResource.class);
-		resource.setEntity(getEntity().getProfiler() );
+		resource.setParentAndTagName(getEntity() , "profiler");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("jvm-options/")
 	public JvmOptionsResource getJvmOptionsResource() {
 		JvmOptionsResource resource = resourceContext.getResource(JvmOptionsResource.class);
-		resource.setEntity(getEntity().getJvmOptions() );
+		resource.setParentAndTagName(getEntity() , "jvm-options");
 		return resource;
 	}
 }

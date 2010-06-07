@@ -34,9 +34,22 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
-import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.ApplicationConfig;
-public class ApplicationConfigResource extends TemplateResource<ApplicationConfig> {
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.TemplateListOfResource;
+public class ListConnectorModuleResource extends TemplateListOfResource {
 
+
+	@Path("{Name}/")
+	public ConnectorModuleResource getConnectorModuleResource(@PathParam("Name") String id) {
+		ConnectorModuleResource resource = resourceContext.getResource(ConnectorModuleResource.class);
+		resource.setBeanByKey(entity, id);
+		return resource;
+	}
+
+
+@Override
+public String getPostCommand() {
+	return null;
+}
 }

@@ -34,27 +34,26 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.SecurityMap;
-public class SecurityMapResource extends TemplateResource<SecurityMap> {
+public class SecurityMapResource extends TemplateResource {
 
 	@Path("principal/")
 	public PrincipalResource getPrincipalResource() {
 		PrincipalResource resource = resourceContext.getResource(PrincipalResource.class);
-		resource.setEntity(getEntity().getPrincipal() );
+		resource.setParentAndTagName(getEntity() , "principal");
 		return resource;
 	}
 	@Path("user-group/")
 	public UserGroupResource getUserGroupResource() {
 		UserGroupResource resource = resourceContext.getResource(UserGroupResource.class);
-		resource.setEntity(getEntity().getUserGroup() );
+		resource.setParentAndTagName(getEntity() , "user-group");
 		return resource;
 	}
 	@Path("backend-principal/")
 	public BackendPrincipalResource getBackendPrincipalResource() {
 		BackendPrincipalResource resource = resourceContext.getResource(BackendPrincipalResource.class);
-		resource.setEntity(getEntity().getBackendPrincipal() );
+		resource.setParentAndTagName(getEntity() , "backend-principal");
 		return resource;
 	}
 }

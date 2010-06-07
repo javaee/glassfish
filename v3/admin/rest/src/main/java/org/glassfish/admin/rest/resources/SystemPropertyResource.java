@@ -34,9 +34,8 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.SystemProperty;
-public class SystemPropertyResource extends TemplateResource<SystemProperty> {
+public class SystemPropertyResource extends TemplateResource {
 
 }

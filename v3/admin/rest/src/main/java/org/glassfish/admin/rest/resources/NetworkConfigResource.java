@@ -34,33 +34,32 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.grizzly.config.dom.NetworkConfig;
-public class NetworkConfigResource extends TemplateResource<NetworkConfig> {
+public class NetworkConfigResource extends TemplateResource {
 
 	@Path("transports/")
 	public TransportsResource getTransportsResource() {
 		TransportsResource resource = resourceContext.getResource(TransportsResource.class);
-		resource.setEntity(getEntity().getTransports() );
+		resource.setParentAndTagName(getEntity() , "transports");
 		return resource;
 	}
 	@Path("protocols/")
 	public ProtocolsResource getProtocolsResource() {
 		ProtocolsResource resource = resourceContext.getResource(ProtocolsResource.class);
-		resource.setEntity(getEntity().getProtocols() );
+		resource.setParentAndTagName(getEntity() , "protocols");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("network-listeners/")
 	public NetworkListenersResource getNetworkListenersResource() {
 		NetworkListenersResource resource = resourceContext.getResource(NetworkListenersResource.class);
-		resource.setEntity(getEntity().getNetworkListeners() );
+		resource.setParentAndTagName(getEntity() , "network-listeners");
 		return resource;
 	}
 }

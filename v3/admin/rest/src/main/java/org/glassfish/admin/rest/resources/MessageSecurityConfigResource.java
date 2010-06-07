@@ -34,15 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
-public class MessageSecurityConfigResource extends TemplateResource<MessageSecurityConfig> {
+public class MessageSecurityConfigResource extends TemplateResource {
 
 	@Path("provider-config/")
 	public ListProviderConfigResource getProviderConfigResource() {
 		ListProviderConfigResource resource = resourceContext.getResource(ListProviderConfigResource.class);
-		resource.setEntity(getEntity().getProviderConfig() );
+		resource.setParentAndTagName(getEntity() , "provider-config");
 		return resource;
 	}
 }

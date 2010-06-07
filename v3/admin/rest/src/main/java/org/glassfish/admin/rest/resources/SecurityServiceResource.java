@@ -34,39 +34,38 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.SecurityService;
-public class SecurityServiceResource extends TemplateResource<SecurityService> {
+public class SecurityServiceResource extends TemplateResource {
 
 	@Path("auth-realm/")
 	public ListAuthRealmResource getAuthRealmResource() {
 		ListAuthRealmResource resource = resourceContext.getResource(ListAuthRealmResource.class);
-		resource.setEntity(getEntity().getAuthRealm() );
+		resource.setParentAndTagName(getEntity() , "auth-realm");
 		return resource;
 	}
 	@Path("audit-module/")
 	public ListAuditModuleResource getAuditModuleResource() {
 		ListAuditModuleResource resource = resourceContext.getResource(ListAuditModuleResource.class);
-		resource.setEntity(getEntity().getAuditModule() );
+		resource.setParentAndTagName(getEntity() , "audit-module");
 		return resource;
 	}
 	@Path("message-security-config/")
 	public ListMessageSecurityConfigResource getMessageSecurityConfigResource() {
 		ListMessageSecurityConfigResource resource = resourceContext.getResource(ListMessageSecurityConfigResource.class);
-		resource.setEntity(getEntity().getMessageSecurityConfig() );
+		resource.setParentAndTagName(getEntity() , "message-security-config");
 		return resource;
 	}
 	@Path("jacc-provider/")
 	public ListJaccProviderResource getJaccProviderResource() {
 		ListJaccProviderResource resource = resourceContext.getResource(ListJaccProviderResource.class);
-		resource.setEntity(getEntity().getJaccProvider() );
+		resource.setParentAndTagName(getEntity() , "jacc-provider");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 }

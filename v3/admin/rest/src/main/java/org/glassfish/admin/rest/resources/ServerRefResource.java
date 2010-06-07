@@ -34,15 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.ServerRef;
-public class ServerRefResource extends TemplateResource<ServerRef> {
+public class ServerRefResource extends TemplateResource {
 
 	@Path("health-checker/")
 	public HealthCheckerResource getHealthCheckerResource() {
 		HealthCheckerResource resource = resourceContext.getResource(HealthCheckerResource.class);
-		resource.setEntity(getEntity().getHealthChecker() );
+		resource.setParentAndTagName(getEntity() , "health-checker");
 		return resource;
 	}
 }

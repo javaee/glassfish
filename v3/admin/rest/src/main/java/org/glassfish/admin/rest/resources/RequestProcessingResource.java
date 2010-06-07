@@ -34,9 +34,8 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.RequestProcessing;
-public class RequestProcessingResource extends TemplateResource<RequestProcessing> {
+public class RequestProcessingResource extends TemplateResource {
 
 }

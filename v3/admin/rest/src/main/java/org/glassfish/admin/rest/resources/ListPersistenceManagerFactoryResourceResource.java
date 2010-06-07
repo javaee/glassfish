@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.PersistenceManagerFactoryResource;
-public class ListPersistenceManagerFactoryResourceResource extends TemplateListOfResource<PersistenceManagerFactoryResource> {
+public class ListPersistenceManagerFactoryResourceResource extends TemplateListOfResource {
 
 
 	@Path("{JndiName}/")
 	public PersistenceManagerFactoryResourceResource getPersistenceManagerFactoryResourceResource(@PathParam("JndiName") String id) {
 		PersistenceManagerFactoryResourceResource resource = resourceContext.getResource(PersistenceManagerFactoryResourceResource.class);
-		for (PersistenceManagerFactoryResource c: entity){
-			if(c.getJndiName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

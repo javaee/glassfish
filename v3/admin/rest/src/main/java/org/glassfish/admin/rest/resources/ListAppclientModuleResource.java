@@ -34,9 +34,22 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
-import org.glassfish.admin.rest.TemplateResource;
-import org.glassfish.api.admin.config.Container;
-public class ContainerResource extends TemplateResource<Container> {
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.TemplateListOfResource;
+public class ListAppclientModuleResource extends TemplateListOfResource {
 
+
+	@Path("{Name}/")
+	public AppclientModuleResource getAppclientModuleResource(@PathParam("Name") String id) {
+		AppclientModuleResource resource = resourceContext.getResource(AppclientModuleResource.class);
+		resource.setBeanByKey(entity, id);
+		return resource;
+	}
+
+
+@Override
+public String getPostCommand() {
+	return null;
+}
 }

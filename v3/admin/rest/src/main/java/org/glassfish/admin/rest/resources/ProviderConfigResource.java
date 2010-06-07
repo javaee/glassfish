@@ -34,27 +34,26 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.ProviderConfig;
-public class ProviderConfigResource extends TemplateResource<ProviderConfig> {
+public class ProviderConfigResource extends TemplateResource {
 
 	@Path("request-policy/")
 	public RequestPolicyResource getRequestPolicyResource() {
 		RequestPolicyResource resource = resourceContext.getResource(RequestPolicyResource.class);
-		resource.setEntity(getEntity().getRequestPolicy() );
+		resource.setParentAndTagName(getEntity() , "request-policy");
 		return resource;
 	}
 	@Path("response-policy/")
 	public ResponsePolicyResource getResponsePolicyResource() {
 		ResponsePolicyResource resource = resourceContext.getResource(ResponsePolicyResource.class);
-		resource.setEntity(getEntity().getResponsePolicy() );
+		resource.setParentAndTagName(getEntity() , "response-policy");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 }

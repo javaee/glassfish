@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.api.monitoring.ContainerMonitoring;
-public class ListContainerMonitoringResource extends TemplateListOfResource<ContainerMonitoring> {
+public class ListContainerMonitoringResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public ContainerMonitoringResource getContainerMonitoringResource(@PathParam("Name") String id) {
 		ContainerMonitoringResource resource = resourceContext.getResource(ContainerMonitoringResource.class);
-		for (ContainerMonitoring c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

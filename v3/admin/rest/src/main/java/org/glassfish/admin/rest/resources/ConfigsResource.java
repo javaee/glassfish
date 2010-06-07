@@ -34,15 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.Configs;
-public class ConfigsResource extends TemplateResource<Configs> {
+public class ConfigsResource extends TemplateResource {
 
 	@Path("config/")
 	public ListConfigResource getConfigResource() {
 		ListConfigResource resource = resourceContext.getResource(ListConfigResource.class);
-		resource.setEntity(getEntity().getConfig() );
+		resource.setParentAndTagName(getEntity() , "config");
 		return resource;
 	}
 }

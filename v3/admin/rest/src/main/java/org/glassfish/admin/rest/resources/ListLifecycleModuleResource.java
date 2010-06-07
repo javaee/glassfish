@@ -34,19 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.api.admin.config.Container;
-public class ListContainerResource extends TemplateListOfResource<Container> {
+public class ListLifecycleModuleResource extends TemplateListOfResource {
 
 
-	@Path("{ThisIsAModelBug:NoKeyAttr}/")
-	public ContainerResource getContainerResource(@PathParam("ThisIsAModelBug:NoKeyAttr") String id) {
-		ContainerResource resource = resourceContext.getResource(ContainerResource.class);
-		for (Container c: entity){
-//THIS KEY IS THE FIRST Attribute ONE ludo
-			throw new RuntimeException("ThisIsAModelBug:NoKeyAttr ");
-		}
+	@Path("{Name}/")
+	public LifecycleModuleResource getLifecycleModuleResource(@PathParam("Name") String id) {
+		LifecycleModuleResource resource = resourceContext.getResource(LifecycleModuleResource.class);
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

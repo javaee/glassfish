@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.jvnet.hk2.config.types.Property;
-public class ListPropertyResource extends TemplateListOfResource<Property> {
+public class ListPropertyResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public PropertyResource getPropertyResource(@PathParam("Name") String id) {
 		PropertyResource resource = resourceContext.getResource(PropertyResource.class);
-		for (Property c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

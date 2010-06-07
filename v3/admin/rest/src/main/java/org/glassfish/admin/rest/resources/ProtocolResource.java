@@ -34,10 +34,9 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.grizzly.config.dom.Protocol;
-public class ProtocolResource extends TemplateResource<Protocol> {
+public class ProtocolResource extends TemplateResource {
 
 @Path("create-http/")
 public ProtocolCreateHttpResource getProtocolCreateHttpResource() {
@@ -63,31 +62,31 @@ public String getDeleteCommand() {
 	@Path("port-unification/")
 	public PortUnificationResource getPortUnificationResource() {
 		PortUnificationResource resource = resourceContext.getResource(PortUnificationResource.class);
-		resource.setEntity(getEntity().getPortUnification() );
+		resource.setParentAndTagName(getEntity() , "port-unification");
 		return resource;
 	}
 	@Path("http/")
 	public HttpResource getHttpResource() {
 		HttpResource resource = resourceContext.getResource(HttpResource.class);
-		resource.setEntity(getEntity().getHttp() );
+		resource.setParentAndTagName(getEntity() , "http");
 		return resource;
 	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
+		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("ssl/")
 	public SslResource getSslResource() {
 		SslResource resource = resourceContext.getResource(SslResource.class);
-		resource.setEntity(getEntity().getSsl() );
+		resource.setParentAndTagName(getEntity() , "ssl");
 		return resource;
 	}
 	@Path("protocol-chain-instance-handler/")
 	public ProtocolChainInstanceHandlerResource getProtocolChainInstanceHandlerResource() {
 		ProtocolChainInstanceHandlerResource resource = resourceContext.getResource(ProtocolChainInstanceHandlerResource.class);
-		resource.setEntity(getEntity().getProtocolChainInstanceHandler() );
+		resource.setParentAndTagName(getEntity() , "protocol-chain-instance-handler");
 		return resource;
 	}
 }

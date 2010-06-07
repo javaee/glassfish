@@ -34,15 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.ThreadPools;
-public class ThreadPoolsResource extends TemplateResource<ThreadPools> {
+public class ThreadPoolsResource extends TemplateResource {
 
 	@Path("thread-pool/")
 	public ListThreadPoolResource getThreadPoolResource() {
 		ListThreadPoolResource resource = resourceContext.getResource(ListThreadPoolResource.class);
-		resource.setEntity(getEntity().getThreadPool() );
+		resource.setParentAndTagName(getEntity() , "thread-pool");
 		return resource;
 	}
 }

@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.enterprise.config.serverbeans.WorkSecurityMap;
-public class ListWorkSecurityMapResource extends TemplateListOfResource<WorkSecurityMap> {
+public class ListWorkSecurityMapResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public WorkSecurityMapResource getWorkSecurityMapResource(@PathParam("Name") String id) {
 		WorkSecurityMapResource resource = resourceContext.getResource(WorkSecurityMapResource.class);
-		for (WorkSecurityMap c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 

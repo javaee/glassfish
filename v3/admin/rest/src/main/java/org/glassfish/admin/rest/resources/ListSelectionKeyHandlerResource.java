@@ -34,20 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import com.sun.grizzly.config.dom.SelectionKeyHandler;
-public class ListSelectionKeyHandlerResource extends TemplateListOfResource<SelectionKeyHandler> {
+public class ListSelectionKeyHandlerResource extends TemplateListOfResource {
 
 
 	@Path("{Name}/")
 	public SelectionKeyHandlerResource getSelectionKeyHandlerResource(@PathParam("Name") String id) {
 		SelectionKeyHandlerResource resource = resourceContext.getResource(SelectionKeyHandlerResource.class);
-		for (SelectionKeyHandler c: entity){
-			if(c.getName().equals(id)){
-				resource.setEntity(c);
-			}
-		}
+		resource.setBeanByKey(entity, id);
 		return resource;
 	}
 
