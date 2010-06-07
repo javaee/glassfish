@@ -183,19 +183,27 @@ public class AdminInfraTest extends BaseDevTest {
     }
 
     private void createStartStopDelete() {
+            printf("NOT HUNG #5a");
         String metname = "createStartStopDelete";
         String iname = generateInstanceName();
 
         report(metname + "-nodir-xxxx", !checkInstanceDir(iname));
         asadmin("stop-local-instance", iname); // in case it's running?!?
         report(metname + "-nodir", !checkInstanceDir(iname));
+            printf("NOT HUNG #5b");
         report(metname + "-create", asadmin("create-local-instance", iname));
         report(metname + "-yesdir", checkInstanceDir(iname));
+            printf("NOT HUNG #5c");
+
         report(metname + "-start", asadmin("start-local-instance", iname));
+            printf("NOT HUNG #5d");
         report(metname + "-list-instances", isInstanceRunning(iname));
+            printf("NOT HUNG #5e");
         report(metname + "-stop", asadmin("stop-local-instance", iname));
+            printf("NOT HUNG #5f");
 
         if (!asadmin("delete-local-instance", iname)) {
+            printf("NOT HUNG #5g-1");
             if (File.separatorChar == '\\') {
                 System.out.println("&&&&&&&&&   SKIPPING TWO  TESTS  $$$$$$$$$$$$$$");
                 for (int i = 0; i < 25; i++) {
@@ -204,9 +212,11 @@ public class AdminInfraTest extends BaseDevTest {
             }
         }
         else {
+            printf("NOT HUNG #5g-2");
             report(metname + "-delete", true);
             report(metname + "-no-dir-again", !checkInstanceDir(iname));
         }
+            printf("NOT HUNG #5h");
     }
 
     /**
@@ -322,6 +332,8 @@ public class AdminInfraTest extends BaseDevTest {
         if (name != null && name.equals("bnevins"))
             DEBUG = true;
         else if(isHudson)
+            DEBUG = true;
+        else if(Boolean.parseBoolean(System.getenv("AS_DEBUG")))
             DEBUG = true;
         else
             DEBUG = false;
