@@ -119,18 +119,26 @@ public class AdminInfraTest extends BaseDevTest {
 
     public void run() {
         try {
+            printf("NOT HUNG #1");
+            startDomain();
+            printf("NOT HUNG #2");
             testDuplicateReportNames();
             testNamesWithSpaces();
-            startDomain();
+            printf("NOT HUNG #3");
             create();
             delete();
+            printf("NOT HUNG #4");
             createFail();
             testNoCreateForStop();
+            printf("NOT HUNG #5");
             createStartStopDelete();
+            printf("NOT HUNG #6");
             stat.printSummary();
         }
         finally {
+            printf("NOT HUNG #7");
             stopDomain();
+            printf("NOT HUNG #8");
         }
     }
 
@@ -306,16 +314,17 @@ public class AdminInfraTest extends BaseDevTest {
     private static final String[] instanceNames;
     private final SortedSet<String> reportNames = new TreeSet<String>();
     private static final int NUM_INSTANCES = 1;
+    private final static boolean isHudson = Boolean.parseBoolean(System.getenv("HUDSON"));
 
     static {
         String name = System.getProperty("user.name");
 
-        if (name != null && name.equals("bnevins")) {
+        if (name != null && name.equals("bnevins"))
             DEBUG = true;
-        }
-        else {
+        else if(isHudson)
+            DEBUG = true;
+        else
             DEBUG = false;
-        }
 
         instanceNames = new String[NUM_INSTANCES];
 
