@@ -71,7 +71,7 @@ public class StoreEntryMetadataGenerator
         println();
     }
 
-    public void visitGetter(String methodName, String attrName, String javaDoc, TypeMirror paramType) {
+    public void visitSetter(String methodName, String attrName, String javaDoc, TypeMirror paramType) {
         printInfo(methodName, attrName, javaDoc, paramType, "Attribute");
     }
 

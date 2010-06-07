@@ -36,9 +36,11 @@
 
 package org.glassfish.ha.store.spi;
 
+import org.glassfish.ha.store.api.BackingStoreException;
+import org.glassfish.ha.store.api.BackingStoreFactory;
+
 import java.util.Properties;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 

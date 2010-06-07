@@ -39,11 +39,11 @@ package org.glassfish.ha.store.spi;
 import java.lang.reflect.Method;
 
 /**
- * For each attribute A of type T in X, a.b.X_ contains a (static) field whose
- *  type is SessionAttributeMetadata<X, T>. SessionAttributeMetadata describes the attribute
+ * For each attribute A of type T in a.b.X, a.b.X_ contains a (static) field whose
+ *  type is AttributeMetadata<X, T>. AttributeMetadata describes the attribute
  *  by giving its (java) type, name etc.
  * 
- * @param <S> The StoreEntry that this SessionAttributeMetadata belongs to
+ * @param <S> The StoreEntry that this AttributeMetadata belongs to
  * @param <T> The Java type of the Attribute that this Metadata represents
  *
  * @author Mahesh.Kannan@Sun.Com

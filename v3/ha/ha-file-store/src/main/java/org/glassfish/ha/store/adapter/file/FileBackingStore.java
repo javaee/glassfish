@@ -36,12 +36,12 @@
 
 package org.glassfish.ha.store.adapter.file;
 
-import org.glassfish.ha.store.spi.BackingStore;
-import org.glassfish.ha.store.spi.BackingStoreException;
+import org.glassfish.ha.store.api.BackingStore;
+import org.glassfish.ha.store.api.BackingStoreConfiguration;
+import org.glassfish.ha.store.api.BackingStoreException;
 
 import java.io.*;
 
-import java.util.Properties;
 import java.util.logging.*;
 
 /**
@@ -50,58 +50,44 @@ import java.util.logging.*;
  *
  * @author Mahesh Kannan
  */
-public class SimpleFileBackingStore<K, V>
+public class FileBackingStore<K extends Serializable, V extends Serializable>
         extends BackingStore<K, V> {
 
     protected static final Logger _logger =
-            Logger.getLogger(SimpleFileBackingStore.class.getName());
+            Logger.getLogger(FileBackingStore.class.getName());
 
     protected File baseDir;
 
-    protected String storeName;
-
     private boolean shutdown;
 
-    private static Level TRACE_LEVEL = Level.INFO;
+    private static Level TRACE_LEVEL = Level.FINE;
 
-    private Class<K> keyClazz;
-
-    private Class<V> vClazz;
-
-    private ClassLoader loader;
+    private String debugStr;
 
     /**
      * No arg constructor
      */
-    public SimpleFileBackingStore() {
-        loader = Thread.currentThread().getContextClassLoader();
+    public FileBackingStore() {
     }
 
     @Override
-    protected void initialize(String storeName, Class<K> keyClazz, Class<V> vClazz, Properties storeEnv) {
-        loader = Thread.currentThread().getContextClassLoader();
+    protected void initialize(BackingStoreConfiguration<K, V> conf)
+        throws BackingStoreException {
 
-        this.storeName = storeName;
-
-        String baseDirName = (String) storeEnv.get("base.dir.path");
-
+        super.initialize(conf);
+        debugStr = "[FileBackingStore - " + conf.getStoreName() + "] ";
+        String baseDirName = conf.getBaseDirectoryName();
         this.baseDir = new File(baseDirName);
 
         try {
-            if ((baseDir.mkdirs() == false) && (!baseDir.isDirectory())) {
-                throw new BackingStoreException("Create base directory (" + baseDirName + ") failed");
-            } else {
-                if (_logger.isLoggable(TRACE_LEVEL)) {
-                    _logger.log(TRACE_LEVEL, "Successfully Initialized "
-                            + "SimpleFileBackingStore for: " + storeName);
-                }
+            if ((baseDir.mkdirs() == false) && (! baseDir.isDirectory())) {
+                throw new BackingStoreException("[FileBackingStore::initialize] Create base directory (" + baseDirName + ") failed");
             }
-        } catch (Exception ex) {
-            _logger.log(Level.WARNING, "ejb.sfsb_storemgr_init_failed",
-                    new Object[]{baseDirName});
-            _logger.log(Level.WARNING, "ejb.sfsb_storemgr_init_exception", ex);
-        }
 
+            _logger.log(TRACE_LEVEL, "[FileBackingStore::initialize] Successfully Created and initialized store with configuration " + conf);
+        } catch (Exception ex) {
+            _logger.log(Level.WARNING, debugStr + " Exception during initialization", ex);
+        }
     }
 
     @Override
@@ -110,41 +96,53 @@ public class SimpleFileBackingStore<K, V>
         String fileName = key.toString();
         V value = null;
 
-        byte[] data = readFromfile(fileName);
-        try {
-            ByteArrayInputStream bis2 = new ByteArrayInputStream(data);
-            ObjectInputStream ois = super.createObjectInputStream(bis2);
-            value = (V) ois.readObject();
-            if (_logger.isLoggable(TRACE_LEVEL)) {
-                _logger.log(TRACE_LEVEL, storeName
-                        + " Successfully read session: " + key);
-            }
-        } catch (Exception ex) {
-            _logger.log(Level.WARNING,
-                    "ejb.sfsb_storemgr_loadstate_failed",
-                    new Object[]{fileName});
-            _logger.log(Level.WARNING,
-                    "ejb.sfsb_storemgr_loadstate_exception", ex);
+
+        if (_logger.isLoggable(TRACE_LEVEL)) {
+            _logger.log(TRACE_LEVEL, debugStr + "Entered load(" + key + ", " + version + ")");
         }
 
+        byte[] data = readFromfile(fileName);
+        if (data != null) {
+            try {
+                ByteArrayInputStream bis2 = new ByteArrayInputStream(data);
+                ObjectInputStream ois = super.createObjectInputStream(bis2);
+                value = (V) ois.readObject();
+
+                if (_logger.isLoggable(TRACE_LEVEL)) {
+                    _logger.log(TRACE_LEVEL, debugStr + "Done load(" + key + ", " + version + ")");
+                }
+            } catch (Exception ex) {
+                _logger.log(Level.WARNING,debugStr + "Failed to load(" + key + ", " + version + ")", ex);
+            }
+        }
+        
         return value;
     }
 
-    public void remove(Object sessionKey) {
+    public void remove(K sessionKey) {
+        remove(sessionKey.toString());
+    }
+
+    private void remove(String sessionKey) {
         try {
-            removeFile(new File(baseDir, sessionKey.toString()));
+            if (_logger.isLoggable(TRACE_LEVEL)) {
+                _logger.log(TRACE_LEVEL, debugStr + "Entered remove(" + sessionKey + ")");
+            }
+            boolean status = removeFile(new File(baseDir, sessionKey.toString()));
+            if (_logger.isLoggable(TRACE_LEVEL)) {
+                _logger.log(TRACE_LEVEL, debugStr + "Done remove( " + sessionKey + "); status => " + status);
+            }
         } catch (Exception ex) {
-            _logger.log(Level.WARNING,
-                    "ejb.sfsb_storemgr_removestate_failed",
-                    new Object[]{sessionKey.toString()});
-            _logger.log(Level.WARNING,
-                    "ejb.sfsb_storemgr_removestate_exception", ex);
+            _logger.log(TRACE_LEVEL, debugStr + "Failed to remove(" + sessionKey + ")");
         }
     }
 
     @Override
     public void destroy() {
         try {
+            if (_logger.isLoggable(TRACE_LEVEL)) {
+                _logger.log(TRACE_LEVEL, debugStr + "Entered destroy()");
+            }
             String[] fileNames = baseDir.list();
             if (fileNames == null) {
                 return;
@@ -155,15 +153,16 @@ public class SimpleFileBackingStore<K, V>
 
             if (baseDir.delete() == false) {
                 if (baseDir.exists()) {
-                    Object[] params = {baseDir.getAbsolutePath()};
-                    _logger.log(Level.WARNING,
-                            "ejb.sfsb_storemgr_removedir_failed", params);
+                    _logger.log(Level.WARNING, debugStr + " destroy() failed to remove dir: " + baseDir.getAbsolutePath());
                 }
             }
+            if (_logger.isLoggable(TRACE_LEVEL)) {
+                _logger.log(TRACE_LEVEL, debugStr + "Done destroy()");
+            }
         } catch (Throwable th) {
-            _logger.log(Level.WARNING, "ejb.sfsb_storemgr_removeall_exception", th);
+            _logger.log(Level.WARNING, debugStr + " destroy() failed ", th);
         } finally {
-            FileBackingStoreFactory.removemapping(storeName);
+            FileBackingStoreFactory.removemapping(getBackingStoreConfiguration().getStoreName());
         }
     }
 
@@ -171,6 +170,9 @@ public class SimpleFileBackingStore<K, V>
     public int removeExpired(long idleForMillis) {
         long threshold = System.currentTimeMillis() - idleForMillis;
         int expiredSessions = 0;
+        if (_logger.isLoggable(TRACE_LEVEL)) {
+                _logger.log(TRACE_LEVEL, debugStr + "Entered removeExpired()");
+            }
         try {
             String[] fileNames = baseDir.list();
             if (fileNames == null) {
@@ -184,8 +186,8 @@ public class SimpleFileBackingStore<K, V>
                     if (lastAccessed < threshold) {
                         if (!file.delete()) {
                             if (file.exists()) {
-                                _logger.log(Level.WARNING, storeName
-                                        + "Couldn't remove file: " + fileNames[i]);
+                                _logger.log(Level.WARNING, debugStr
+                                        + " Couldn't remove file: " + fileNames[i]);
                             }
                         } else {
                             expiredSessions++;
@@ -193,8 +195,11 @@ public class SimpleFileBackingStore<K, V>
                     }
                 }
             }
+            if (_logger.isLoggable(TRACE_LEVEL)) {
+                _logger.log(TRACE_LEVEL, debugStr + "Done removeExpired()");
+            }
         } catch (Exception ex) {
-            _logger.log(Level.WARNING, storeName + "Exception while getting "
+            _logger.log(Level.WARNING, debugStr + " Exception while getting "
                     + "expired files", ex);
         }
 
@@ -213,22 +218,31 @@ public class SimpleFileBackingStore<K, V>
     }
 
     @Override
-    public void save(K sessionKey, V value, boolean isNew)
+    public String save(K sessionKey, V value, boolean isNew)
             throws BackingStoreException {
 
         String fileName = sessionKey.toString();
 
         if (_logger.isLoggable(TRACE_LEVEL)) {
-            _logger.log(TRACE_LEVEL, storeName + " Attempting to save "
-                    + "session: " + sessionKey);
+            _logger.log(TRACE_LEVEL, debugStr + "Entered save(" + sessionKey + ")");
         }
         writetoFile(sessionKey, fileName, getSerializedState(sessionKey, value));
+        if (_logger.isLoggable(TRACE_LEVEL)) {
+            _logger.log(TRACE_LEVEL, debugStr + "Done save(" + sessionKey + ")");
+        }
+        return getBackingStoreConfiguration().getInstanceName();
     }
 
     @Override
-    public void updateTimestamp(Object sessionKey, long time)
+    public void updateTimestamp(K sessionKey, long time)
             throws BackingStoreException {
+        if (_logger.isLoggable(TRACE_LEVEL)) {
+            _logger.log(TRACE_LEVEL, debugStr + "Entered updateTimestamp(" + sessionKey + ", " + time + ")");
+        }
         touchFile(sessionKey, sessionKey.toString(), time);
+        if (_logger.isLoggable(TRACE_LEVEL)) {
+            _logger.log(TRACE_LEVEL, debugStr + "Done updateTimestamp(" + sessionKey + ", " + time + ")");
+        }
     }
 
     protected void touchFile(Object sessionKey, String fileName, long time)
@@ -238,18 +252,18 @@ public class SimpleFileBackingStore<K, V>
 
             if (file.setLastModified(time) == false) {
                 if (file.exists() == false) {
-                    _logger.log(Level.WARNING, storeName
+                    _logger.log(Level.WARNING, debugStr
                             + ": Cannot update timsestamp for: " + sessionKey
                             + "; File does not exist");
                 } else {
                     throw new BackingStoreException(
-                            storeName + ": Cannot update timsestamp for: " + sessionKey);
+                            debugStr + ": Cannot update timsestamp for: " + sessionKey);
                 }
             }
         } catch (BackingStoreException sfsbSMEx) {
             throw sfsbSMEx;
         } catch (Exception ex) {
-            _logger.log(Level.WARNING, storeName
+            _logger.log(Level.WARNING, debugStr
                     + ": Exception while updating timestamp", ex);
             throw new BackingStoreException(
                     "Cannot update timsestamp for: " + sessionKey
@@ -269,15 +283,6 @@ public class SimpleFileBackingStore<K, V>
                         }
                     }
             );
-        }
-        if (!success) {
-            _logger.log(Level.WARNING, "ejb.sfsb_storemgr_removestate_failed",
-                    new Object[]{file.getName()});
-        } else {
-            if (_logger.isLoggable(TRACE_LEVEL)) {
-                _logger.log(TRACE_LEVEL, storeName + " Removed session: "
-                        + file.getName());
-            }
         }
 
         return success;
@@ -311,7 +316,7 @@ public class SimpleFileBackingStore<K, V>
     private byte[] readFromfile(String fileName) {
         byte[] data = null;
         if (_logger.isLoggable(TRACE_LEVEL)) {
-            _logger.log(TRACE_LEVEL, storeName + "Attempting to load session: "
+            _logger.log(TRACE_LEVEL, debugStr + " Attempting to load session: "
                     + fileName);
         }
 
@@ -337,19 +342,19 @@ public class SimpleFileBackingStore<K, V>
                 try {
                     bis.close();
                 } catch (Exception ex) {
-                    _logger.log(Level.FINEST, storeName + " Error while "
+                    _logger.log(Level.FINEST, debugStr + " Error while "
                             + "closing buffered input stream", ex);
                 }
                 try {
                     fis.close();
                 } catch (Exception ex) {
-                    _logger.log(Level.FINEST, storeName + " Error while "
+                    _logger.log(Level.FINEST, debugStr + " Error while "
                             + "closing file input stream", ex);
                 }
             }
         } else {
             if (_logger.isLoggable(TRACE_LEVEL)) {
-                _logger.log(Level.WARNING, storeName + "Could not find "
+                _logger.log(Level.WARNING, debugStr + "Could not find "
                         + "file for: " + fileName);
             }
         }
@@ -369,13 +374,11 @@ public class SimpleFileBackingStore<K, V>
             bos.write(data, 0, data.length);
             bos.flush();
             if (_logger.isLoggable(TRACE_LEVEL)) {
-                _logger.log(TRACE_LEVEL, storeName + " Successfully saved "
+                _logger.log(TRACE_LEVEL, debugStr + " Successfully saved "
                         + "session: " + sessionKey);
             }
         } catch (Exception ex) {
-            _logger.log(Level.WARNING, "ejb.sfsb_storemgr_savestate_failed",
-                    new Object[]{fileName});
-            _logger.log(Level.WARNING, "ejb.sfsb_storemgr_savestate_exception", ex);
+            _logger.log(Level.WARNING, "writetoFile(" + sessionKey + ") failed", ex);
             try {
                 removeFile(file);
             } catch (Exception ex1) {

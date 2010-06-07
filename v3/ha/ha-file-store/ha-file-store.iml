@@ -10,6 +10,12 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ha-api" exported="" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:hk2:1.0.20" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:hk2-core:1.0.20" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:config:1.0.20" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:auto-depends:1.0.20" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.hk2.external:asm-all-repackaged:1.0.20" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish:bean-validator:3.0-JBoss-4.0.2_03" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:3.8.1" level="project" />
   </component>
 </module>

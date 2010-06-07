@@ -59,14 +59,14 @@ public interface MutableStoreEntry
      *
      * @return The store name
      */
-    public void _markAsDirty(String attrName);
+    public void _markAsDirty(int attrIndex);
 
     /**
      * The String that can be used by the store implementation to hash the StoreEntry
      *
      * @return A (possibly null) key to be used for hashing purpose
      */
-    public void _markAsClean(String attrName);
+    public void _markAsClean(int attrIndex);
 
     /**
      * Get the version of this entry. A null value means that this entry

@@ -34,23 +34,22 @@
  * holder.
  */
 
-package org.glassfish.ha.store.spi;
+package org.glassfish.ha.store.api;
 
 import org.glassfish.ha.store.criteria.Criteria;
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.ha.store.spi.*;
 
 import java.io.*;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Properties;
 
 /**
- * An object that stores a given Metadata against an id. This class defines the
+ * An object that stores a given value against an id. This class defines the
  * set of operations that a container could perform on a store.
  * <p/>
  * <p/>
  * An instance of BackingStore is created by calling
- * <code>BackingStoreFactory.createSimpleStore()</code> method.
+ * <code>BackingStoreFactory.createBackingStore()</code> method.
  * <p/>
  * <p/>
  * The BackingStore instance is created and used for storing data that belongs
@@ -64,87 +63,18 @@ import java.util.Properties;
  * @author Mahesh.Kannan@Sun.Com
  * @author Larry.White@Sun.Com
  */
-public abstract class BackingStore<K, V> {
+public abstract class BackingStore<K extends Serializable, V extends Serializable> {
 
-    private String storeName;
+    BackingStoreConfiguration<K, V> conf;
 
-    private Properties props;
-
-    private Class<V> vClazz;
-
-    protected Properties getProperties() {
-        return props;
+    protected void initialize(BackingStoreConfiguration<K, V> conf)
+        throws BackingStoreException {
+        this.conf = conf;
     }
 
-    protected String getStoreName() {
-        return this.storeName;
+    protected BackingStoreConfiguration<K, V> getBackingStoreConfiguration() {
+        return conf;
     }
-
-    protected void initialize(String storeName, Class<K> keyClazz, Class<V> vClazz, Properties props) {
-        this.storeName = storeName;
-        this.vClazz = vClazz;
-        this.props = props;
-    }
-
-    /**
-     * Creates a new BackingStore for the given storeType.
-     * @param storeType The store type
-     * @param storeName The store name
-     * @param keyClazz  The key class
-     * @param entryClazz The entry class
-     * @param env  Properties that holds implementation specific data
-     * @param <S>  The type of Key
-     * @param <T>  The type of Value
-     *
-     * @return An instance of BackingStore whose keys are of type KeyClazz and Values are entryClazz
-     *
-     * @throws BackingStoreException If any exception during initialization
-     */
-    public static <S, T> BackingStore<S, T> createBackingStore(
-            String storeType, String storeName, Class<S> keyClazz, Class<T> entryClazz,
-            Properties  env)
-            throws BackingStoreException {
-        BackingStore<S, T> store = null;
-        BackingStoreFactory factory = null;
-        try {
-            factory = BackingStoreRegistry.getInstance().getFactoryInstance(storeType);
-        } catch (BackingStoreException bse) {
-            throw bse;
-        } catch (Exception ex) {
-            throw new BackingStoreException(ex.getMessage(), ex);
-        }
-        if (factory != null) {
-            try {
-                store = factory.createBackingStore(storeName, keyClazz, entryClazz, env);
-            } catch (Throwable th) {
-                throw new BackingStoreException("Exception during createBackingStore", th);
-            } 
-        }
-        return store;
-    }
-
-    /**
-     * Create a new instance of Storable. T should be a StoreEntry.
-     *
-     * @return V a new instance
-     * @throws IllegalArgumentException if entryClazz
-     *                                  is not a StoreEntry
-     */
-    public final V createStorable() {
-        V v = null;
-        try {
-            v = vClazz.newInstance();
-            String subClassName = vClazz.getName() + "__Sub__";
-            Class<V> subClazz = (Class<V>) Class.forName(subClassName);
-            v = subClazz.newInstance();
-        } catch (Exception ex) {
-            //FIXME throw Exception
-            System.err.println(getClass().getName() +
-                    " Error while creating storable " + ex.getMessage());
-        }
-        return v;
-    }
-
 
     /**
      * Load and return the data for the given id. The store is expected to
@@ -172,8 +102,9 @@ public abstract class BackingStore<K, V> {
      *                               exception
      * @pram isNew
      * A flag indicating if the entry is new or not.
+     * @return A (possibly null) String indicating the instance name where the data was saved.
      */
-    public abstract void save(K key, V value, boolean isNew) throws BackingStoreException;
+    public abstract String save(K key, V value, boolean isNew) throws BackingStoreException;
 
     /**
      * Remove the association for the id.
@@ -267,7 +198,7 @@ public abstract class BackingStore<K, V> {
     protected ObjectOutputStream createObjectOutputStream(OutputStream os)
         throws IOException {
         ObjectInputOutputStreamFactory oosf = ObjectInputOutputStreamFactoryRegistry.getObjectInputOutputStreamFactory();
-        return oosf.createObjectOutputStream(os);
+        return (oosf == null) ? new ObjectOutputStream(os) : oosf.createObjectOutputStream(os);
     }
 
     protected ObjectInputStream createObjectInputStream(InputStream is)
@@ -277,6 +208,6 @@ public abstract class BackingStore<K, V> {
         return oosf.createObjectInputStream(is, vClazz.getClassLoader());
         */
 
-        return new ObjectInputStreamWithLoader(is, vClazz.getClassLoader());
+        return new ObjectInputStreamWithLoader(is, conf.getValueClazz().getClassLoader());
     }
 }

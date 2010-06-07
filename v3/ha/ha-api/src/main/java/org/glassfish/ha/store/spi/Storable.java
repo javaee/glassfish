@@ -47,14 +47,7 @@ import java.util.Set;
 public interface Storable {
 
     /**
-     * The String that can be used by the store implementation to hash the StoreEntry
-     *
-     * @return A (possibly null) key to be used for hashing purpose
-     */
-    public String _getHashKey();
-
-    /**
-     * Get the version of this entry. A null value means that this entry
+     * Get the version of this entry. -1 means that this entry has no version
      *
      * @return The version or null if this entry has no version
      */
@@ -68,7 +61,7 @@ public interface Storable {
      */
     public Set<String> _getDirtyAttributeNames();
 
-    public Object _getAttributeValue(String attrName);
+    public <T> T _getAttributeValue(String attrName, Class<T> type);
 
     public String _getOwnerInstanceName();
     

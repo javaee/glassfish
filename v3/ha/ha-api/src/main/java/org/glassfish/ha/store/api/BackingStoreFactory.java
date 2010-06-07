@@ -34,22 +34,55 @@
  * holder.
  */
 
-package org.glassfish.ha.store.annotations;
+package org.glassfish.ha.store.api;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.annotation.ElementType;
+import org.jvnet.hk2.annotations.Contract;
+
+import java.io.Serializable;
 
 /**
- * An annotation that can be used to declare a String Attribute
- *  as a an attribute that must be used by (Consistent) hash functions.
- *  HashKey attribute is a special attribute of a StoreEntry.
+ * A factory for creating BackingStore(s). Every provider must provide an
+ * implementation of this interface.
  *
- * @author Mahesh.Kannan@Sun.Com
+ * <p>
+ * The <code>createBackingStore(env)</code> method is called typically during
+ * container creation time. A store instance is typically used to store state
+ * for a single container.
+ *
+ * <p>
+ * Any runtime exception thrown from createBackingStore and
+ * createBatchBackingStore method will cause the container to use a default
+ * persistence-type (typically no replication) and a log message will be logged
+ * at WARNING level.
+ *
+ * @author Mahesh Kannan
+ *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface HashKey {
-    public String name() default "";
+@Contract
+public interface BackingStoreFactory {
+
+    /**
+     * This method is called to create a BackingStore. This
+     * class must be thread safe.
+     * <p>
+     * If the factory can produce a BackingStore that can handle the factors
+     *  specified in the conf, then it must return a fully initialized and operational BackingStore.
+     * Else it must return null.
+     *
+     * @param conf The BackingStoreConfiguration
+     *
+     * @return a BackingStore. The returned BackingStore must be thread safe.
+     *
+     * @throws BackingStoreException
+     *             If the store could not be created
+     */
+    public <K extends Serializable, V extends Serializable> BackingStore<K, V> createBackingStore(BackingStoreConfiguration<K, V> conf)
+            throws BackingStoreException;
+
+    /**
+     *
+     * @return
+     */
+    public BackingStoreTransaction createBackingStoreTransaction();
+
 }

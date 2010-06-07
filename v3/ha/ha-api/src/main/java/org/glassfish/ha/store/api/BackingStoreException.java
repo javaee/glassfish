@@ -34,55 +34,49 @@
  * holder.
  */
 
-package org.glassfish.ha.store.spi;
+package org.glassfish.ha.store.api;
 
 /**
- * A class that saves a set of EjbMetaData atomically. The implementation is
- * responsible for atomically saving all the <code>BatchMetadata</code> that
- * is passed as parameter to the <code>saveAll()</code> method.
+ * This exception is thrown to signal any BackingStore specific exception.
+ * <code>BackingStore.getCause()</code> can be used to get the actual store
+ * specific exception.
  *
  * @author Mahesh.Kannan@Sun.Com
  * @author Larry.White@Sun.Com
+ *
  */
-public interface BatchBackingStore<T> {
+public class BackingStoreException extends Exception {
 
     /**
-     * Save all the BatchMetadata atomically.
-     * <p>
-     * Note that not all <code>BatchMetadata.getAppId()</code> in the
-     * collection may return the same value. The store is expected to save all
-     * of them atomically
+     * Creates a BackingStoreException with null as its detail message. The
+     * cause is not initialized, and may subsequently be initialized by a call
+     * to <code>Throwable.initCause(java.lang.Throwable)</code>.
+     */
+    public BackingStoreException() {
+    }
+
+    /**
+     * constructs a BackingStoreException with the specified detail message
      * 
-     * @param data
-     *            the BatchMetadata to be stored
-     * @throws BackingStoreException
-     * @throws BackingStoreException
-     *             if the underlying store implementation encounters any
-     *             exception
+     * @param message
+     *            the detail message. The detail message is saved for later
+     *            retrieval by the <code>Throwable.getMessage()</code> method.
      */
-    public void saveAll(T... data) throws BackingStoreException;
+    public BackingStoreException(String message) {
+        super(message);
+    }
 
     /**
-     * Save the entry. Overwrites entry if it already exists.
-     *
-     * @param storeName the Store name
-     * @param key the key of the entry
-     * @param entry the StoreEntry
-     * @param isNew true if the entry is new false if the entry has already been persisted.
-     *
-     * @throws IllegalArgumentException if entry is not a
-     *                                  StoreEntry
+     * Constructs a new BackingStoreException exception with the specified cause
+     * and a detail message of (cause==null ? null : cause.toString())
+     * 
+     * @param message
+     *            the detail message. The detail message is saved for
+     * @param th
+     *            the cause
      */
-    public abstract void save(String storeName, Object key, T entry, boolean isNew)
-             throws BackingStoreException;
+    public BackingStoreException(String message, Throwable th) {
+        super(message, th);
+    }
 
-    /**
-     * Commit all the batch operations as (possibly) a single unit. This
-     * BatchManager must not be used after a commit.
-     *
-     * The BatchManager may also implement the save as a write through method.
-     * In which case, commit will be a no-op.
-     */
-    public abstract void commit()
-             throws BackingStoreException;
 }

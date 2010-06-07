@@ -48,7 +48,6 @@ import java.util.Set;
 
 import org.glassfish.ha.store.annotations.Attribute;
 import org.glassfish.ha.store.annotations.Version;
-import org.glassfish.ha.store.annotations.HashKey;
 import org.glassfish.ha.store.apt.generators.StorableGenerator;
 import org.glassfish.ha.store.apt.generators.StoreEntryMetadataGenerator;
 
@@ -88,7 +87,7 @@ public class StoreEntryAnnotationProcessor
 
                 DeclarationFilter getterFilter = new DeclarationFilter() {
                     public boolean matches(Declaration d) {
-                        return d.getSimpleName().startsWith("get");
+                        return d.getSimpleName().startsWith("set");
                     }
                 };
 
@@ -99,33 +98,37 @@ public class StoreEntryAnnotationProcessor
                     String attributeName = null;
                     Attribute attrAnn = m.getAnnotation(Attribute.class);
                     if (attrAnn != null) {
-                        attributeName = attrAnn.name();
-                        methodInfo.type = MethodInfo.MethodType.GETTER;
+                        attributeName = attrAnn.value();
+                        methodInfo.type = MethodInfo.MethodType.SETTER;
                     } else {
                         Version versionAnn = m.getAnnotation(Version.class);
                         if (versionAnn != null) {
                             attributeName = versionAnn.name();
                             methodInfo.type = MethodInfo.MethodType.VERSION;
                         } else {
-                            HashKey hashKeyAnn = m.getAnnotation(HashKey.class);
-                            if (hashKeyAnn != null) {
-                                attributeName = hashKeyAnn.name();
-                                methodInfo.type = MethodInfo.MethodType.HASHKEY;
-                            } else {
-                                //Some getter method
-                                continue;
-                            }
+                            //Some getter method
+                            continue;
                         }
                     }
 
+                    String simpleName = m.getSimpleName();
+                    if (! simpleName.startsWith("set")) {
+                        //TODO Warning??
+                        continue;
+                    }
+                    
                     if (attributeName == null || attributeName.length() == 0) {
-                        attributeName = m.getSimpleName();
+                        attributeName = simpleName;
                         attributeName = Character.toLowerCase(attributeName.charAt(3)) + attributeName.substring(4);
                     }
                     methodInfo.attrName = attributeName;
 
                     System.out.println("Found attribute: " + attributeName);
-                    paramType = m.getReturnType();
+                    Collection<ParameterDeclaration> paramDecls = m.getParameters();
+                    if ((paramDecls != null) && (paramDecls.size() == 1)) {
+                        ParameterDeclaration paramDecl =  paramDecls.iterator().next();
+                        paramType = paramDecl.getType();
+                    }
 
                     methodInfo.getter = m;
                     methodInfo.paramType = paramType;
@@ -144,15 +147,17 @@ public class StoreEntryAnnotationProcessor
             cv.visit(classDecl.getPackage().toString(), classInfo.getJavaDoc(), classDecl.getSimpleName());
             for (MethodInfo methodInfo : classInfo.getMethodInfos()) {
                 switch (methodInfo.type) {
-                    case GETTER:
-                        cv.visitGetter(methodInfo.getter.getSimpleName(), methodInfo.attrName, null, methodInfo.paramType);
+                    case SETTER:
+                        cv.visitSetter(methodInfo.getter.getSimpleName(), methodInfo.attrName, null, methodInfo.paramType);
                         break;
                     case VERSION:
                         cv.visitVersionMethod(methodInfo.getter.getSimpleName(), methodInfo.attrName, null, methodInfo.paramType);
                         break;
+                    /*
                     case HASHKEY:
                         cv.visitHashKeyMethod(methodInfo.getter.getSimpleName(), methodInfo.attrName, null, methodInfo.paramType);
                         break;
+                    */
                 }
             }
             cv.visitEnd();
