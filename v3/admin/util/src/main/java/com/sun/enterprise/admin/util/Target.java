@@ -90,6 +90,23 @@ public class Target {
     }
 
     /**
+     * Given an instance that is part of a cluster, returns the Cluster element of the cluster to which the
+     * given instance belons
+     * @param targetName name of target
+     * @return Cluster element to which this instance below
+     */
+    public Cluster getClusterForInstance(String targetName) {
+        if(isCluster(targetName))
+            return getCluster(targetName);
+        String instanceCfgRef = domain.getServerNamed(targetName).getConfigRef();
+        for(Cluster c : domain.getClusters().getCluster()) {
+            if(c.getConfigRef().equals(instanceCfgRef))
+                return c;
+        }
+        return null;
+    }
+
+    /**
      * Given the name of a target, returns a list of Server objects. If given target is a standalone server,
      * then the server's Server element is returned in the list. If the target is a cluster, then the list of Server
      * elements that represent all server instances of that cluster is returned.
@@ -115,5 +132,20 @@ public class Target {
             }
         }
         return instances;
+    }
+
+    /**
+     * Given name of a target verifies if it is valid
+     * @param targetName name of the target
+     * @return true if the target is a valid cluster or server instance or a config
+     */
+    public boolean isValid(String targetName) {
+        if(isCluster(targetName))
+            return true;
+        if(getInstances(targetName).size() != 0)
+            return true;
+        if(domain.getConfigNamed(targetName) != null)
+            return true;
+        return false;
     }
 }

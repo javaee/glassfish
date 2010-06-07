@@ -85,9 +85,6 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
     private static final LocalStringManagerImpl strings =
                         new LocalStringManagerImpl(GlassFishClusterExecutor.class);
 
-    private FailurePolicy onFailure = FailurePolicy.Error;
-    private FailurePolicy ifOffline = FailurePolicy.Warn;
-
     /**
      * <p>Execute the passed command on targeted remote instances. The list of remote
      * instances is usually retrieved from the passed parameters (with a "target"
@@ -104,26 +101,6 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
      */
     public ActionReport.ExitCode execute(String commandName, AdminCommand command, AdminCommandContext context, ParameterMap parameters) {
 
-        // Obtain the command model for this command.
-        CommandModel model;
-        try {
-            CommandModelProvider c = (CommandModelProvider) command;
-            model = c.getModel();
-        } catch(ClassCastException e) {
-            model = new CommandModelImpl(command.getClass());
-        }
-
-        // Get @Cluster annotation params; if not present, set required defaults.
-        org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
-        if(clAnnotation != null) {
-            if(clAnnotation.ifFailure() != null) {
-                onFailure = clAnnotation.ifFailure();
-            }
-            if(clAnnotation.ifOffline() != null) {
-                ifOffline = clAnnotation.ifOffline();
-            }
-        }
-
         //Do replication only is this is DAS
         //TODO : Got to check for default server name and stop replication if target is default server itself.
         String targetName = parameters.getOne("target");
@@ -136,7 +113,7 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
                 aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.notargets",
                         "Unable to find instances for target {0}", targetName));
                 //TODO : Undoable command support needed ?
-                return getReturnValueFor(onFailure);
+                return ActionReport.ExitCode.FAILURE;
             }
 
             //TODO : Support for dynamic-reconfig-enabled flag should go here
@@ -169,19 +146,19 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
                             "Command " + commandName + "executed successfully on server instance " +
                             rac.getServer().getName() + ";" + result, commandName, rac.getServer().getName()));
                 } catch (CommandException cmdEx) {
-                    aReport.setActionExitCode(getReturnValueFor(onFailure));
+                    aReport.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandFailed",
                             "Command " + commandName + "failed on server instance " +
                             rac.getServer().getName() + ":", commandName,
                             rac.getServer().getName()));
                     aReport.setFailureCause(cmdEx);
                     if(returnValue.compareTo(ActionReport.ExitCode.SUCCESS)==0)
-                        returnValue = getReturnValueFor(onFailure);
+                        returnValue = ActionReport.ExitCode.FAILURE;
                 }
             }
         } catch (Exception ex) {
             ActionReport aReport = context.getActionReport().addSubActionsReport();
-            aReport.setActionExitCode(getReturnValueFor(onFailure));
+            aReport.setActionExitCode(ActionReport.ExitCode.FAILURE);
             aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.replicationfailed",
                     "Error during command replication; Reason : " + ex.getLocalizedMessage(),
                     ex.getLocalizedMessage()));
@@ -190,7 +167,7 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
                             "Error during command replication; Reason : " + ex.getLocalizedMessage(),
                             ex.getLocalizedMessage()));
             if(returnValue.compareTo(ActionReport.ExitCode.SUCCESS)==0)
-                returnValue = getReturnValueFor(onFailure);
+                returnValue = ActionReport.ExitCode.FAILURE;
         }
         return returnValue;
     }
@@ -221,21 +198,5 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
             list.add(new InstanceCommandExecutor(commandName, svr, host, port, logger));
         }
         return list;
-    }
-
-    private ActionReport.ExitCode getReturnValueFor(FailurePolicy policy) {
-        ActionReport.ExitCode retValue = ActionReport.ExitCode.FAILURE;
-        switch(policy) {
-            case Ignore:
-                retValue = ActionReport.ExitCode.SUCCESS;
-                break;
-            case Error:
-                retValue = ActionReport.ExitCode.FAILURE;
-                break;
-            case Warn:
-                retValue = ActionReport.ExitCode.WARNING;
-                break;
-        }
-        return retValue;
     }
 }

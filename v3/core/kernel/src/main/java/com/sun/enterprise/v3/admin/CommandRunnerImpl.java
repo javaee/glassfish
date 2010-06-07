@@ -39,8 +39,9 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.module.common_impl.LogHelper;
-
+        
 import java.io.*;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -797,6 +798,10 @@ public class CommandRunnerImpl implements CommandRunner {
                 report, inv.inboundPayload(), inv.outboundPayload());
 
         List<RuntimeType> runtimeTypes = new ArrayList<RuntimeType>();
+        FailurePolicy onFailure = FailurePolicy.Error;
+        FailurePolicy onOffline = FailurePolicy.Warn;
+        ActionReport.ExitCode finalResult = ActionReport.ExitCode.SUCCESS;
+
         // TODO : Remove this flag once CLIs are compliant with @Cluster requirements
         boolean doReplication = false;
         if(Utility.getEnvOrProp("ENABLE_REPLICATION")!=null) {
@@ -871,14 +876,9 @@ public class CommandRunnerImpl implements CommandRunner {
                         new MapInjectionResolver(model, parameters,
                         ufm.optionNameToFileMap());
 
+            //Do supplemental commands and the main command
             if(doReplication) {
-                // Run Supplemental commands that have to run before this command on this instance type
-                SupplementalCommandExecutor supplementalExecutor = habitat.getComponent(SupplementalCommandExecutor.class,
-                        "SupplementalCommandExecutorImpl");
-                ActionReport.ExitCode supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
-                            Supplemental.Timing.Before, context, injectionMgr);
-                //TODO : Apply FailurePolicy for the above
-                //Run main command if it is applicable for this instance type
+                // Read cluster annotation attributes
                 org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
                 if(clAnnotation == null) {
                     runtimeTypes.add(RuntimeType.DAS);
@@ -892,7 +892,59 @@ public class CommandRunnerImpl implements CommandRunner {
                             runtimeTypes.add(t);
                         }
                     }
+                    if(clAnnotation.ifFailure() != null) {
+                        onFailure = clAnnotation.ifFailure();
+                    }
+                    if(clAnnotation.ifOffline() != null) {
+                        onOffline = clAnnotation.ifOffline();
+                    }
                 }
+
+                // Check if the target is valid
+                String targetName = parameters.getOne("target");
+                if( (targetName != null) &&
+                    (domain.getServerNamed(targetName) == null) &&
+                    (domain.getClusterNamed(targetName) == null) &&
+                    (domain.getConfigNamed(targetName) == null) ) {
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setMessage(adminStrings.getLocalString("commandrunner.executor.invalidtarget",
+                            "The specified target {0} is not a valid target", targetName));
+                    return;
+                }
+
+                //If target is an instance that is part of cluster, disallow operation
+                //TODO : Each command can specify valid target types; validate them here itself
+                //TODO : Looks like this has to be configurable through annotation
+                if( (targetName != null) && (domain.getServerNamed(targetName) != null) ) {
+                    String configRef = domain.getServerNamed(targetName).getConfigRef();
+                    List<Cluster> clusters = domain.getClusters().getCluster();
+                    for(Cluster c : clusters) {
+                        String cfg = c.getConfigRef();
+                        if(cfg.equals(configRef)) {
+                            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                            report.setMessage(adminStrings.getLocalString("commandrunner.executor.instanceopnotallowed",
+                                    "The {0} command is not allowed on target {1} because it is part of cluster {2}",
+                                    model.getCommandName(), targetName, c.getName()));
+                            return;
+                        }
+                    }
+                }
+
+                // Run Supplemental commands that have to run before this command on this instance type
+                SupplementalCommandExecutor supplementalExecutor = habitat.getComponent(SupplementalCommandExecutor.class,
+                        "SupplementalCommandExecutorImpl");
+                ActionReport.ExitCode supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
+                            Supplemental.Timing.Before, context, injectionMgr);
+                if(supplementalReturn != ActionReport.ExitCode.SUCCESS) {
+                    finalResult = getReturnValueFor(onFailure);
+                    if(finalResult.equals(ActionReport.ExitCode.FAILURE)) {
+                        report.setActionExitCode(finalResult);
+                        report.setMessage(adminStrings.getLocalString("commandrunner.executor.supplementalcmdfailed",
+                                "A supplemental command failed; cannot proceed further"));
+                        return;
+                    }
+                }
+                //Run main command if it is applicable for this instance type
                 if( (serverEnv.isDas() && runtimeTypes.contains(RuntimeType.DAS)) ||
                     (serverEnv.isInstance() && runtimeTypes.contains(RuntimeType.INSTANCE)) ) {
                     doCommand(model, command, injectionMgr, context);
@@ -900,7 +952,15 @@ public class CommandRunnerImpl implements CommandRunner {
                 //Run Supplemental commands that have to be run after this command on this instance type
                 supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
                         Supplemental.Timing.After, context, injectionMgr);
-                //TODO : Apply FailurePolicy for the above
+                if(supplementalReturn != ActionReport.ExitCode.SUCCESS) {
+                    finalResult = getReturnValueFor(onFailure);
+                    if(finalResult.equals(ActionReport.ExitCode.FAILURE)) {
+                        report.setActionExitCode(finalResult);
+                        report.setMessage(adminStrings.getLocalString("commandrunner.executor.supplementalcmdfailed",
+                                "A supplemental command failed; cannot proceed further"));
+                        return;
+                    }
+                }
             } else
                 doCommand(model, command, injectionMgr, context);
 
@@ -952,6 +1012,27 @@ public class CommandRunnerImpl implements CommandRunner {
     /*
      * Some private classes used in the implementation of CommandRunner.
      */
+
+    /**
+     * Given a FailurePolicy, calculate the final return value
+     * @param policy current policy
+     * @return final exit code
+     */
+    private ActionReport.ExitCode getReturnValueFor(FailurePolicy policy) {
+        ActionReport.ExitCode retValue = ActionReport.ExitCode.FAILURE;
+        switch(policy) {
+            case Ignore:
+                retValue = ActionReport.ExitCode.SUCCESS;
+                break;
+            case Error:
+                retValue = ActionReport.ExitCode.FAILURE;
+                break;
+            case Warn:
+                retValue = ActionReport.ExitCode.WARNING;
+                break;
+        }
+        return retValue;
+    }
 
     /**
      * ExecutionContext is a CommandInvocation, which

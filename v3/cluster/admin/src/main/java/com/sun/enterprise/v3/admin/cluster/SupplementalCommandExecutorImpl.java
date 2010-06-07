@@ -101,7 +101,10 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
                 }
             }
         }
-        //TODO : Got to scan the result and apply FailurePolicy
+        if(context.getActionReport().hasFailures())
+            return ActionReport.ExitCode.FAILURE;
+        if(context.getActionReport().hasWarnings())
+            return ActionReport.ExitCode.WARNING;
         return ActionReport.ExitCode.SUCCESS;
     }
 
