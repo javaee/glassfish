@@ -386,8 +386,15 @@ logger.setLevel(Level.FINEST);
             return apps;        // no apps
 
         // all apps are under <server>, even in a cluster
-        for (ApplicationRef ref : server.getApplicationRef())
-            apps.put(ref.getRef(), applications.getApplication(ref.getRef()));
+        for (ApplicationRef ref : server.getApplicationRef()) {
+            Application app = applications.getApplication(ref.getRef());
+            logger.finest("SynchronizeFiles: got app " + app.getName());
+            if (Boolean.parseBoolean(app.getDirectoryDeployed()))
+                logger.finest("SynchronizeFiles: skipping directory " +
+                                "deployed app: " + app.getName());
+            else
+                apps.put(app.getName(), app);
+        }
         return apps;
     }
 
