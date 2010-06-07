@@ -38,11 +38,6 @@ package com.sun.enterprise.admin.remote;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  *
  * @author bnevins
