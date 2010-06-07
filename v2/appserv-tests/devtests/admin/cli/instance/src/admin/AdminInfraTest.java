@@ -305,7 +305,7 @@ public class AdminInfraTest extends BaseDevTest {
     private final static boolean DEBUG;
     private static final String[] instanceNames;
     private final SortedSet<String> reportNames = new TreeSet<String>();
-    private static final int NUM_INSTANCES = 62;
+    private static final int NUM_INSTANCES = 1;
 
     static {
         String name = System.getProperty("user.name");
