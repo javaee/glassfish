@@ -18,12 +18,12 @@
             getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
 
-            if (#{pageSession.rest-api}){
+            if (#{pageSession['rest-api']}){
                 gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", selectedRows="${selectedRows}");
             }
 
             //REST-TODO  remove the following when all page is converted.
-            if (!#{pageSession.rest-api}){
+            if (!#{pageSession['rest-api']}){
                 deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
             }
 

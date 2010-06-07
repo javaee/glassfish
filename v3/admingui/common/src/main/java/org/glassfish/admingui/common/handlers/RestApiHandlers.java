@@ -132,9 +132,9 @@ public class RestApiHandlers {
                     @HandlerOutput(name = "result", type = String.class)
             })
     public static void createEntity(HandlerContext handlerCtx) {
-        Map<String, String> attrs = (Map) handlerCtx.getInputValue("attrs");
+        Map<String, Object> attrs = (Map) handlerCtx.getInputValue("attrs");
         if (attrs == null) {
-            attrs = new HashMap<String, String>();
+            attrs = new HashMap<String, Object>();
         }
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
 
@@ -157,9 +157,9 @@ public class RestApiHandlers {
             output = {
                     @HandlerOutput(name = "result", type = Integer.class)})
     public static void restExecuteCommand(HandlerContext handlerCtx) {
-        Map<String, String> attrs = (Map<String, String>) handlerCtx.getInputValue("attrs");
+        Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
         if (attrs == null) {
-            attrs = new HashMap<String, String>();
+            attrs = new HashMap<String, Object>();
         }
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         handlerCtx.setOutputValue("result", post(endpoint, attrs));
@@ -181,9 +181,9 @@ public class RestApiHandlers {
                     @HandlerOutput(name = "result", type = String.class)
             })
     public static void updateEntity(HandlerContext handlerCtx) {
-        Map<String, String> attrs = (Map) handlerCtx.getInputValue("attrs");
+        Map<String, Object> attrs = (Map) handlerCtx.getInputValue("attrs");
         if (attrs == null) {
-            attrs = new HashMap<String, String>();
+            attrs = new HashMap<String, Object>();
         }
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
 
@@ -212,8 +212,8 @@ public class RestApiHandlers {
             })
     public static void deleteCascade(HandlerContext handlerCtx) {
         try {
-            Map<String, String> payload = new HashMap<String, String>();
-            String endpoint = (String) handlerCtx.getInputValue("objectNameStr");
+            Map<String, Object> payload = new HashMap<String, Object>();
+            String endpoint = (String) handlerCtx.getInputValue("endpoint");
             payload.put("cascade", "true");
 
             for (Map oneRow : (List<Map>) handlerCtx.getInputValue("selectedRows")) {
@@ -270,15 +270,16 @@ public class RestApiHandlers {
         return defaultValues;
     }
 
-    protected static MultivaluedMap buildMultivalueMap(Map<String, String> payload) {
+    protected static MultivaluedMap buildMultivalueMap(Map<String, Object> payload) {
         MultivaluedMap formData = new MultivaluedMapImpl();
-        for (final Map.Entry<String, String> entry : payload.entrySet()) {
-            formData.putSingle(entry.getKey(), entry.getValue());
+        for (final Map.Entry<String, Object> entry : payload.entrySet()) {
+            final Object value = entry.getValue();
+            formData.putSingle(entry.getKey(), (value != null) ? value.toString() : value);
         }
         return formData;
     }
 
-    public static int sendCreateRequest(String endpoint, Map<String, String> attrs, List<String> skipAttrs, List<String> onlyUseAttrs, List<String> convertToFalse) {
+    public static int sendCreateRequest(String endpoint, Map<String, Object> attrs, List<String> skipAttrs, List<String> onlyUseAttrs, List<String> convertToFalse) {
         removeSpecifiedAttrs(attrs, skipAttrs);
         attrs = buildUseOnlyAttrMap(attrs, onlyUseAttrs);
         attrs = convertNullValuesToFalse(attrs, convertToFalse);
@@ -289,7 +290,7 @@ public class RestApiHandlers {
 
     // This will send an update request.  Currently, this calls post just like the create does,
     // but the REST API will be modified to use PUT for updates, a more correct use of HTTP
-    public static int sendUpdateRequest(String endpoint, Map<String, String> attrs, List<String> skipAttrs, List<String> onlyUseAttrs, List<String> convertToFalse) {
+    public static int sendUpdateRequest(String endpoint, Map<String, Object> attrs, List<String> skipAttrs, List<String> onlyUseAttrs, List<String> convertToFalse) {
         removeSpecifiedAttrs(attrs, skipAttrs);
         attrs = buildUseOnlyAttrMap(attrs, onlyUseAttrs);
         attrs = convertNullValuesToFalse(attrs, convertToFalse);
@@ -298,32 +299,32 @@ public class RestApiHandlers {
         return post(endpoint, attrs);
     }
 
-    protected static Map<String, String> fixKeyNames(Map<String, String> map) {
-        Map<String, String> results = new HashMap<String, String>();
-        for (Map.Entry<String, String> entry : map.entrySet()) {
+    protected static Map<String, Object> fixKeyNames(Map<String, Object> map) {
+        Map<String, Object> results = new HashMap<String, Object>();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
             String key = entry.getKey().substring(0, 1).toLowerCase() + entry.getKey().substring(1);
-            String value = entry.getValue();
+            Object value = entry.getValue();
             results.put(key, value);
         }
 
         return results;
     }
 
-    protected static void removeSpecifiedAttrs(Map<String, String> attrs, List<String> removeList) {
+    protected static void removeSpecifiedAttrs(Map<String, Object> attrs, List<String> removeList) {
         if (removeList == null || removeList.size() <= 0) {
             return;
         }
-        Set<Map.Entry<String, String>> attrSet = attrs.entrySet();
-        Iterator<Map.Entry<String, String>> iter = attrSet.iterator();
+        Set<Map.Entry<String, Object>> attrSet = attrs.entrySet();
+        Iterator<Map.Entry<String, Object>> iter = attrSet.iterator();
         while (iter.hasNext()) {
-            Map.Entry<String, String> oneEntry = iter.next();
+            Map.Entry<String, Object> oneEntry = iter.next();
             if (removeList.contains(oneEntry.getKey())) {
                 iter.remove();
             }
         }
     }
 
-    protected static Map buildUseOnlyAttrMap(Map<String, String> attrs, List<String> onlyUseAttrs) {
+    protected static Map buildUseOnlyAttrMap(Map<String, Object> attrs, List<String> onlyUseAttrs) {
         if (onlyUseAttrs != null) {
             Map newAttrs = new HashMap();
             for (String key : onlyUseAttrs) {
@@ -339,12 +340,12 @@ public class RestApiHandlers {
     }
 
     // This is ugly, but I'm trying to figure out why the cleaner code doesn't work :(
-    protected static Map<String, String> convertNullValuesToFalse(Map<String, String> attrs, List<String> convertToFalse) {
+    protected static Map<String, Object> convertNullValuesToFalse(Map<String, Object> attrs, List<String> convertToFalse) {
         if (convertToFalse != null) {
-            Map<String, String> newAttrs = new HashMap<String, String>();
+            Map<String, Object> newAttrs = new HashMap<String, Object>();
             String key;
 
-            for (Map.Entry<String, String> entry : attrs.entrySet()) {
+            for (Map.Entry<String, Object> entry : attrs.entrySet()) {
                 key = entry.getKey();
                 if (convertToFalse.contains(key) && ((entry.getValue() == null) || "null".equals(entry.getValue()))) {
                     newAttrs.put(key, "false");
@@ -477,7 +478,7 @@ public class RestApiHandlers {
                 .get(String.class);
     }
 
-    protected static int post(String address, Map<String, String> payload) {
+    protected static int post(String address, Map<String, Object> payload) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
         MultivaluedMap formData = buildMultivalueMap(payload);
         ClientResponse cr = webResource.post(ClientResponse.class, formData);
@@ -490,7 +491,7 @@ public class RestApiHandlers {
         throw new UnsupportedOperationException();
     }
 
-    protected static int delete(String address, Map<String, String> payload) {
+    protected static int delete(String address, Map<String, Object> payload) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
         ClientResponse cr = webResource.queryParams(buildMultivalueMap(payload)).delete(ClientResponse.class);
         checkStatusForSuccess(cr);

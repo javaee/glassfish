@@ -51,7 +51,7 @@
             }
         />
         <!command
-            if (#{pageSession.rest-api}){
+            if (#{pageSession['rest-api']}){
                 //println("================ using REST-API ===========");
                 gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}" orig="#{pageSession.valueMap}" valueMap="#{pageSession.valueMap}")
                 if(#{pageSession.has2Objects}&#{pageSession.parentUrl2}){
@@ -63,7 +63,7 @@
                  REST-TODO
              -->
 
-            if (!#{pageSession.rest-api}){
+            if (!#{pageSession['rest-api']}){
                 //println("!!!!!!!!!!!!!!! original !!!!!!!!");
                 getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  orig="#{pageSession.valueMap}" valueMap="#{pageSession.valueMap}")
                 if(#{pageSession.has2Objects}&#{pageSession.parentObjectNameStr2}){

@@ -52,6 +52,8 @@ public class JvmSettingsTest extends BaseSeleniumTestClass {
         selenium.click("propertyForm:propertySheet:propertSectionTextField:debugEnabledProp:debug");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
         waitForPageLoad("Restart Required", 1000);
+        selenium.check("propertyForm:propertySheet:propertSectionTextField:debugEnabledProp:debug");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
     }
 
     @Test

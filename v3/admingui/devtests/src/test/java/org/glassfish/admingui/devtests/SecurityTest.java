@@ -190,11 +190,4 @@ public class SecurityTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:configuration:security:messageSecurity:messageSecurity_link", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
         deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", LAYER_NAME);
     }
-
-    public static void main(String... args) {
-        BaseSeleniumTestClass bstc = new BaseSeleniumTestClass();
-        for (int i = 0; i < 100; i++) {
-            System.out.println(bstc.selectRandomItem(new String[] {"client", "server", "client-server"}));
-        }
-    }
 }

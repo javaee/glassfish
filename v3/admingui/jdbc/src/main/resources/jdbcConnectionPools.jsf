@@ -45,20 +45,23 @@
 >
 <!define name="content">
     <event>
-    <!beforeCreate
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolNew1.jsf");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
-        setPageSessionAttribute(key="resourceType" value="jdbcConnectionPool");
-        setPageSessionAttribute(key="jdbcpool" value="#{true}" );
-        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain,type=resources");
-        setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
-        setPageSessionAttribute(key="dependentType" value="jdbc-resource");
-        //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
-        gf.getChildList(parentEndpoint="#{sessionScope.REST_URL}/resources", childType="jdbc-connection-pool", result="#{requestScope.listOfRows}");
-        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeletePools}");
-        setPageSessionAttribute(key="tableTitle" value="$resource{i18njdbc.resourcesTable.Pools}");
-        setPageSessionAttribute(key="resHeader" value="$resource{i18njdbc.resourcesTable.colResType}");
+        <!beforeCreate
+            setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf");
+            setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolNew1.jsf");
+            setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
+            setPageSessionAttribute(key="resourceType" value="jdbcConnectionPool");
+            setPageSessionAttribute(key="jdbcpool" value="#{true}" );
+            setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain,type=resources");
+            setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
+            setPageSessionAttribute(key="dependentType" value="jdbc-resource");
+            //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
+            gf.getChildList(parentEndpoint="#{sessionScope.REST_URL}/resources", childType="jdbc-connection-pool", result="#{requestScope.listOfRows}");
+            setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeletePools}");
+            setPageSessionAttribute(key="tableTitle" value="$resource{i18njdbc.resourcesTable.Pools}");
+            setPageSessionAttribute(key="resHeader" value="$resource{i18njdbc.resourcesTable.colResType}");
+
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+            setPageSessionAttribute(key="rest-api" value="${true}");
         />
     </event>
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":resources:JDBC:connectionPoolResources");</script>

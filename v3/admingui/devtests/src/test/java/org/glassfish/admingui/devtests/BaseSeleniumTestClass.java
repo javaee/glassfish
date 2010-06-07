@@ -50,7 +50,7 @@ import static org.junit.Assert.assertEquals;
 
 public class BaseSeleniumTestClass {
     protected static Selenium selenium;
-    protected static int TIMEOUT = 300;
+    protected static int TIMEOUT = 120;
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
     public static final String MSG_NEW_VALUES_SAVED = "New values successfully saved.";
     public static final String TRIGGER_COMMON_TASKS = "Please Register";

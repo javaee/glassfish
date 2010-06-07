@@ -42,7 +42,7 @@ import static org.junit.Assert.assertEquals;
 
 public class LoggerSettingsTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_LOGGER_SETTINGS = "Enterprise Server logging messages";
-    private static final String TRIGGER_LOG_LEVELS = "Module Log Levels";
+    private static final String TRIGGER_LOG_LEVELS = "Specify log levels for individual logger. The available settings are:";
 
     @Test
     public void testLoggerSettings() {

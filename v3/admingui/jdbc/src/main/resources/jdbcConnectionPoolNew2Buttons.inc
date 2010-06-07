@@ -60,7 +60,8 @@
             if (#{pageSession.hasPropertyTable}){
                 getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                 getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                println("***** setProxyProperties needs to be implemented. Bug filed. Nag inserted.");
+                //setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
             }
             if ("#{wizardMap['Ping']}") {
                 pingJdbcConnectionPool(jndiName="#{wizardMap['Name']}" , wmsg="$resource{i18njdbc.msg.warning.poolCreatedPingFailed}");

@@ -65,7 +65,7 @@
                 //}
                 -->
 
-               if (#{pageSession.rest-api}){
+               if (#{pageSession['rest-api']}){
                     if(#{pageSession.hasPropertySheet}){
                         gf.createEntity(endpoint="#{pageSession.selfUrl}"
                             attrs="#{pageSession.valueMap}"
@@ -84,7 +84,7 @@
                     }
                }
 
-               if ( !#{pageSession.rest-api}){
+               if ( !#{pageSession['rest-api']}){
                     if(#{pageSession.hasPropertySheet}){
                         saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                             skipAttrs="#{pageSession.skipAttrsList}"
@@ -121,7 +121,7 @@
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
 
-                    if (#{pageSession.rest-api}){
+                    if (#{pageSession['rest-api']}){
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"
@@ -144,7 +144,7 @@
                     }
 
                     //REST-TODO  Remove the following section after all pages converted.
-                    if (#{pageSession.rest-api}){
+                    if (!#{pageSession['rest-api']}){
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"
