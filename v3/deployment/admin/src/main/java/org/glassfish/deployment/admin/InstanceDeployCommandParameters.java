@@ -37,6 +37,7 @@
 package org.glassfish.deployment.admin;
 
 import java.io.File;
+import java.util.Properties;
 import org.glassfish.api.Param;
 import org.glassfish.api.deployment.DeployCommandParameters;
 
@@ -60,12 +61,19 @@ public class InstanceDeployCommandParameters extends DeployCommandParameters {
     @Param(name=ParameterNames.GENERATED_XML_DIRECTORY)
     public File generatedxmldir = null;
 
+    @Param(name=ParameterNames.APP_PROPS, separator=':')
+    public Properties appprops = null;
+
+    @Param(name=ParameterNames.PRESERVED_CONTEXTROOT, optional=true)
+    public String preservedcontextroot = null;
+
     public static class ParameterNames {
         public static final String GENERATED_EJB_DIRECTORY = "generatedejbdir";
         public static final String GENERATED_JSP_DIRECTORY = "generatedjspdir";
         public static final String GENERATED_POLICY_DIRECTORY = "generatedpolicydir";
         public static final String GENERATED_XML_DIRECTORY = "generatedxmldir";
-
+        public static final String APP_PROPS = "appprops";
+        public static final String PRESERVED_CONTEXTROOT = "preservedcontextroot";
     }
 
 

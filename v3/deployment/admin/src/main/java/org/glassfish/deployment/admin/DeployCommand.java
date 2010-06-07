@@ -285,25 +285,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             if (type==null) {
                 appInfo = deployment.deploy(deploymentContext);
             } else {
-                StringTokenizer st = new StringTokenizer(type);
-                List<Sniffer> sniffers = new ArrayList<Sniffer>();
-                while (st.hasMoreTokens()) {
-                    String aType = st.nextToken();
-                    Sniffer sniffer = snifferManager.getSniffer(aType);
-                    if (sniffer==null) {
-                        report.failure(logger, localStrings.getLocalString("deploy.unknowncontainer",
-                                "{0} is not a recognized container ", new String[] { aType }));
-                        return;
-                    }
-                    if (!snifferManager.canBeIsolated(sniffer)) {
-                        report.failure(logger, localStrings.getLocalString("deploy.isolationerror",
-                                 "container {0} does not support other components containers to be turned off, --type {0} is forbidden",
-                                new String[] { aType }));
-                        return;
-                    }
-                    sniffers.add(sniffer);
-                }
-                appInfo = deployment.deploy(sniffers, deploymentContext);
+                appInfo = deployment.deploy(deployment.prepareSniffersForOSGiDeployment(type, deploymentContext), deploymentContext);
             }
             
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
@@ -312,7 +294,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                             deploymentContext, logger);
                     recordFileLocations(appProps);
                     prepareParametersForSupplementalCommand(suppInfo,
-                             deploymentContext, name);
+                             deploymentContext);
                     // register application information in domain.xml
                     deployment.registerAppInDomainXML(appInfo, deploymentContext);
                 } catch (Exception e) {
@@ -450,8 +432,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
     private void prepareParametersForSupplementalCommand(
             final DeployCommandSupplementalInfo suppInfo,
-            final DeploymentContext dc,
-            final String appName) {
+            final DeploymentContext dc) {
         if (safeCopyOfApp != null) {
             suppInfo.setArchiveFile(safeCopyOfApp);
         }
@@ -460,7 +441,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         }
 
         suppInfo.setDeploymentContext(dc);
-        suppInfo.setName(appName);
         
     }
     

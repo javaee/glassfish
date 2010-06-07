@@ -35,22 +35,36 @@
  */
 package org.glassfish.deployment.admin;
 
-import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.Calendar;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.internal.deployment.SnifferManager;
 import org.jvnet.hk2.annotations.Service;
-
 import org.glassfish.api.ActionReport.ExitCode;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
+
+import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 
 /**
@@ -63,40 +77,117 @@ import org.jvnet.hk2.component.PerLookup;
 @Cluster(value={RuntimeType.INSTANCE})
 public class InstanceDeployCommand extends InstanceDeployCommandParameters implements AdminCommand {
 
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(InstanceDeployCommand.class);
     private final static String LS = System.getProperty("line.separator");
+
+    @Inject
+    Deployment deployment;
+
+    @Inject
+    SnifferManager snifferManager;
+
+    @Inject
+    ArchiveFactory archiveFactory;
+
+    @Inject
+    ServerEnvironment env;
+
+
     @Override
     public void execute(AdminCommandContext ctxt) {
 
+        long operationStartTime = Calendar.getInstance().getTimeInMillis();
+        final ActionReport report = ctxt.getActionReport();
+        final Logger logger = ctxt.getLogger();
+        ReadableArchive archive = null;
 
-        final StringBuilder outputSB = new StringBuilder();
-        outputSB.append(getClass().getName()).append(" is running").append(LS)
-                .append("  path = " + path).append(LS)
-                .append("  deploymentplan = ").append(deploymentplan).append(LS)
-                .append("  generateddirs = ").append(LS);
+        this.origin = Origin.deploy_instance;
 
-        final List<File> generatedDirs = Arrays.asList(generatedejbdir, generatedjspdir, generatedpolicydir, generatedxmldir);
-        for (File generatedDir : generatedDirs) {
-            if (generatedDir != null) {
-                listFile(outputSB, generatedDir, "    ");
+        this.previousContextRoot = preservedcontextroot;
+
+        try {
+            if (!path.exists()) {
+                report.setMessage(localStrings.getLocalString("fnf","File not found", path.getAbsolutePath()));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
             }
 
-        }
-
-        System.out.println(outputSB.toString());
-
-        ctxt.report.setActionExitCode(ExitCode.SUCCESS);
-        ctxt.report.setMessage("InstanceDeploy: path = " + path.getAbsolutePath() +
-                ", plan = " + ((deploymentplan == null) ? "null" : deploymentplan.getAbsolutePath()));
-        return;
-    }
-
-    private void listFile(final StringBuilder sb, final File file, String indentation) {
-        sb.append(indentation).append(file.getAbsolutePath()).append(file.isDirectory() ? "/" : "").append(LS);
-        if (file.isDirectory()) {
-            for (File subFile : file.listFiles()) {
-                listFile(sb, subFile, indentation + "  ");
+            if (snifferManager.hasNoSniffers()) {
+                String msg = localStrings.getLocalString("nocontainer", "No container services registered, done...");
+                report.failure(logger,msg);
+                return;
             }
+
+            archive = archiveFactory.openArchive(path, this);
+            ArchiveHandler archiveHandler = deployment.getArchiveHandler(archive);
+            if (archiveHandler==null) {
+                report.failure(logger,localStrings.getLocalString("deploy.unknownarchivetype","Archive type of {0} was not recognized",path.getName()));
+                return;
+            }
+
+            // clean up any left over repository files
+            if ( ! keepreposdir.booleanValue()) {
+                FileUtils.whack(new File(env.getApplicationRepositoryPath(), name));
+            }
+
+            ExtendedDeploymentContext deploymentContext = deployment.getBuilder(logger, this, report).source(archive).build();
+
+            // clean up any remaining generated files
+            deploymentContext.clean();
+
+            deploymentContext.getAppProps().putAll(appprops);
+
+            // move/copy the generated directories to the expected location
+            renameOrCopyFileParam(generatedejbdir, deploymentContext.getScratchDir("ejb"), logger);
+            renameOrCopyFileParam(generatedjspdir, deploymentContext.getScratchDir("jsp"), logger);
+            renameOrCopyFileParam(generatedxmldir, deploymentContext.getScratchDir("xml"), logger);
+            if (generatedpolicydir != null) {
+                renameOrCopyFileParam(generatedpolicydir, deploymentContext.getScratchDir("policy"), logger);
+            }
+
+            ApplicationInfo appInfo;
+            if (type==null) {
+                appInfo = deployment.deploy(deploymentContext);
+            } else {
+                appInfo = deployment.deploy(deployment.prepareSniffersForOSGiDeployment(type, deploymentContext), deploymentContext);
+            }
+
+            if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
+                try {
+                    // register application information in domain.xml
+                    deployment.registerAppInDomainXML(appInfo, deploymentContext);
+                } catch (Exception e) {
+                    // roll back the deployment and re-throw the exception
+                    deployment.undeploy(name, deploymentContext);
+                    deploymentContext.clean();
+                    throw e;
+                }
+            }
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            report.failure(logger,localStrings.getLocalString(
+                    "errDuringDepl",
+                    "Error during deployment : ") + e.getMessage(),null);
+        } finally {
+            try {
+                if (archive != null)  {
+                    archive.close();
+                }
+            } catch(IOException e) {
+                logger.log(Level.INFO, localStrings.getLocalString(
+                        "errClosingArtifact",
+                        "Error while closing deployable artifact : ",
+                        path.getAbsolutePath()), e);
+            }
+            logger.info(localStrings.getLocalString(
+                        "deploy.done",
+                        "Deployment of {0} done is {1} ms",
+                        name,
+                        (Calendar.getInstance().getTimeInMillis() - operationStartTime)));
+            ctxt.report.setActionExitCode(ExitCode.SUCCESS);
         }
+
     }
 
     private File renameOrCopyFileParam(
@@ -107,6 +198,7 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
             return null;
         }
         File result = null;
+        newLocation.mkdirs();
         final boolean renameResult = FileUtils.renameFile(fileParam, newLocation);
         /*
          * If the rename failed then it could be because the new location is
@@ -116,7 +208,7 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
         if (renameResult) {
             result = newLocation;
         } else {
-            FileUtils.copyFile(fileParam, newLocation);
+            FileUtils.copyTree(fileParam, newLocation);
             result = newLocation;
         }
         return result;

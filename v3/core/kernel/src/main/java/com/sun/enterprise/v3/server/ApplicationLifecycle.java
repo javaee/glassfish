@@ -46,6 +46,7 @@ import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.Utility;
+import java.util.StringTokenizer;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.logging.LogDomains;
@@ -1290,5 +1291,28 @@ public class ApplicationLifecycle implements Deployment {
         }
         appRef.setEnabled(deployParams.enabled.toString());
     }        
+
+    public List<Sniffer> prepareSniffersForOSGiDeployment(String type, 
+        DeploymentContext context) {
+        ActionReport report = context.getActionReport();
+        Logger logger = context.getLogger();
+
+        StringTokenizer st = new StringTokenizer(type);
+        List<Sniffer> sniffers = new ArrayList<Sniffer>();
+        while (st.hasMoreTokens()) {
+            String aType = st.nextToken();
+            Sniffer sniffer = snifferManager.getSniffer(aType);
+            if (sniffer==null) {
+                report.failure(logger, localStrings.getLocalString("deploy.unknowncontainer", "{0} is not a recognized container ", new String[] { aType }));
+                return sniffers;
+            }
+            if (!snifferManager.canBeIsolated(sniffer)) {
+                report.failure(logger, localStrings.getLocalString("deploy.isolationerror", "container {0} does not support other components containers to be turned off, --type {0} is forbidden", new String[] { aType }));
+                return sniffers;
+            }
+            sniffers.add(sniffer);
+        }
+        return sniffers;
+    }
 }
 

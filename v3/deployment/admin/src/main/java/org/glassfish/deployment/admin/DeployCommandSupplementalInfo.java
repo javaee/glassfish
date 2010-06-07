@@ -50,7 +50,6 @@ public class DeployCommandSupplementalInfo {
     private File archiveFile = null;
     private File deploymentPlanFile = null;
     private DeploymentContext dc = null;
-    private String name = null;
 
     public void setArchiveFile(final File f) {
         archiveFile = f;
@@ -74,13 +73,5 @@ public class DeployCommandSupplementalInfo {
 
     public DeploymentContext deploymentContext() {
         return dc;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String name() {
-        return name;
     }
 }

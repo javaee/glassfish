@@ -157,7 +157,7 @@ public class ParameterMapExtractor {
         return sb.toString();
     }
 
-    private String propertiesValue(final Properties props, final char sep) {
+    public String propertiesValue(final Properties props, final char sep) {
         final StringBuilder sb = new StringBuilder();
         String currentSep = "";
         for (Enumeration en = props.propertyNames(); en.hasMoreElements();) {

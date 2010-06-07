@@ -39,6 +39,7 @@ package org.glassfish.deployment.admin;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Properties;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.Cluster;
@@ -78,6 +79,7 @@ public class PostDeployCommand extends DeployCommandParameters implements AdminC
         final DeployCommandSupplementalInfo suppInfo =
                 context.getActionReport().getResultType(DeployCommandSupplementalInfo.class);
         final DeploymentContext dc = suppInfo.deploymentContext();
+        final DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
 
         final ParameterMap paramMap;
         final ParameterMapExtractor extractor = new ParameterMapExtractor(this);
@@ -116,8 +118,28 @@ public class PostDeployCommand extends DeployCommandParameters implements AdminC
         if (actualPlan != null) {
             paramMap.set(DeployCommandParameters.ParameterNames.DEPLOYMENT_PLAN, actualPlan.getAbsolutePath());
         }
+
+        // always upload the archives to the instance side
         paramMap.set("upload", "true");
-        paramMap.set("name", suppInfo.name());
+
+        // pass the calculated name so we don't need to recalculate it on
+        // instance side
+        paramMap.set("name", params.name);
+
+        // pass the params we restored from the previous deployment in case of 
+        // redeployment
+        if (params.previousContextRoot != null) {
+            paramMap.set("preservedcontextroot", params.previousContextRoot);
+        }
+        paramMap.set("virtualservers", params.virtualservers);
+        paramMap.set("libraries", params.libraries);
+
+        // pass the app props so we have the information to persist in the 
+        // domain.xml
+        Properties appProps = dc.getAppProps();
+        // TODO: we need to come back to visit app config
+        appProps.remove("appConfig");
+        paramMap.set("appprops", extractor.propertiesValue(appProps, ':'));
 
         clusterExecutor.execute("_deploy", this, context, paramMap);
 
