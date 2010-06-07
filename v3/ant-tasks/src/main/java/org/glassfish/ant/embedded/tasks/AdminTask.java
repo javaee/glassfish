@@ -119,6 +119,11 @@ public class AdminTask extends TaskBase {
                 ParameterMap pMap = parser.getOptions();
                 pMap.set("DEFAULT", parser.getOperands());
                 runner.getCommandInvocation(args[0], report).parameters(pMap).execute();
+                if (report.hasFailures())
+                    throw new Exception(report.getMessage());
+                if (report.hasWarnings())
+                    System.out.println(report.getMessage());
+
                 System.out.println("executed : " + commandLine);
             } catch (Exception ex) {
                 error(ex);
