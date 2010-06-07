@@ -508,16 +508,15 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             parameters.add("ignoreCascade", force.toString());
 
             ActionReport subReport = report.addSubActionsReport();
+            subReport.setExtraProperties(new Properties());
             if (properties!=null && properties.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
                 Properties undeployProperties = new Properties();
                 undeployProperties.put(DeploymentProperties.KEEP_SESSIONS, properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
                 parameters.add("properties", propertiesValue(undeployProperties, ':'));
-                subReport.setExtraProperties(new Properties());
             } else if (property!=null && property.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
                 Properties undeployProperties = new Properties();
                 undeployProperties.put(DeploymentProperties.KEEP_SESSIONS, properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
                 parameters.add("properties", propertiesValue(undeployProperties, ':'));
-                subReport.setExtraProperties(new Properties());
             }
 
             CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("undeploy", subReport);

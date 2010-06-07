@@ -48,7 +48,6 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.deployment.common.DeploymentException;
-import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.loader.util.ASClassLoaderUtil;
@@ -193,8 +192,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         }
         WebModuleConfig wmInfo = loadWebModuleConfig(dc);
         WebApplication webApp = new WebApplication(container, wmInfo,
-            (Boolean.parseBoolean(dc.getAppProps().getProperty(DeploymentProperties.KEEP_SESSIONS))?
-                dc.getAppProps():null), 
+                dc.getAppProps(),
                 new ApplicationConfigInfo(dc.getAppProps()));
         return webApp;
     }
@@ -202,16 +200,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     
     public void unload(WebApplication webApplication, DeploymentContext dc) {
 
-        // dochez : quite a hack..
-        // I have no choice but to do the following hack. The thing is that
-        // WebApplication.stop() is saving the saving the sessions and it
-        // does not have access to DeploymentContext
-        // we will need a better solution after prelude.
-        if (webApplication.props!=null) {
-            if ((dc.getAppProps().get("ActionReportProperties"))!=null) {
-                ((Properties) dc.getAppProps().get("ActionReportProperties")).putAll(webApplication.props);
-            }
-        }
     }
         
     /**

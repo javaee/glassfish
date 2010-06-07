@@ -333,4 +333,5 @@ public interface RuntimeTagNames extends TagNames {
     public static final String COOKIES_ENABLED = "cookies-enabled";
     public static final String URL_REWRITING_ENABLED = "url-rewriting-enabled";
     public static final String PERSISTENT_STORE_DIR = "persistent-store-dir";
+    public static final String SAVE_SESSIONS_ENABLED = "save-sessions-enabled";
 }

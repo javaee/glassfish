@@ -40,7 +40,15 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
 import com.sun.enterprise.deployment.runtime.web.ClassLoader;
+import com.sun.enterprise.deployment.runtime.web.SessionConfig;
+import com.sun.enterprise.deployment.runtime.web.SessionProperties;
+import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+
+import org.glassfish.deployment.common.DeploymentProperties;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * This node is responsible for handling weblogic.xml container-descriptor.
@@ -55,7 +63,15 @@ public class WLContainerDescriptorNode extends RuntimeDescriptorNode {
      * @param value it's associated value
      */
     public void setElementValue(XMLElement element, String value) {
-        if (element.getQName().equals(RuntimeTagNames.PREFER_WEB_INF_CLASSES)) {
+        String name = element.getQName();
+        if (name.equals(RuntimeTagNames.SAVE_SESSIONS_ENABLED)) {
+            WebBundleDescriptor descriptor = (WebBundleDescriptor)getParentNode().getDescriptor();
+            SessionProperties sessionProperties = getSessionProperties(descriptor, true);
+            WebProperty webProperty = new WebProperty();
+            webProperty.setAttributeValue(WebProperty.NAME, DeploymentProperties.KEEP_SESSIONS);
+            webProperty.setAttributeValue(WebProperty.VALUE, value);
+            sessionProperties.addWebProperty(webProperty);           
+        } else if (name.equals(RuntimeTagNames.PREFER_WEB_INF_CLASSES)) {
             WebBundleDescriptor descriptor = (WebBundleDescriptor)getParentNode().getDescriptor();
             ClassLoader clBean = descriptor.getSunDescriptor().getClassLoader();
             if (clBean == null) {
@@ -74,5 +90,54 @@ public class WLContainerDescriptorNode extends RuntimeDescriptorNode {
      */    
     public Object getDescriptor() {
         return null;
+    }
+
+    public Node writeDescriptor(Element root, WebBundleDescriptor webBundleDescriptor) {
+        Node containerDescriptorNode = null;
+        ClassLoader clBean = webBundleDescriptor.getSunDescriptor().getClassLoader();
+        SessionProperties sessionProperties = getSessionProperties(webBundleDescriptor, false);
+
+        if  (clBean != null || sessionProperties != null) {
+            containerDescriptorNode = appendChild(root, RuntimeTagNames.CONTAINER_DESCRIPTOR);
+        }
+
+        if (sessionProperties != null && sessionProperties.sizeWebProperty() > 0) {
+            for (WebProperty prop : sessionProperties.getWebProperty()) {
+                String name = prop.getAttributeValue(WebProperty.NAME);
+                String value = prop.getAttributeValue(WebProperty.VALUE);
+                if (DeploymentProperties.KEEP_SESSIONS.equals(name)) {
+                    appendTextChild(containerDescriptorNode, RuntimeTagNames.SAVE_SESSIONS_ENABLED, value);
+                    break;
+                }
+            }
+        }
+
+        if (clBean != null) {
+            appendTextChild(containerDescriptorNode,
+                    RuntimeTagNames.PREFER_WEB_INF_CLASSES,
+                    clBean.getAttributeValue(ClassLoader.DELEGATE));
+        }
+
+        return containerDescriptorNode;
+    }
+
+    private SessionProperties getSessionProperties(
+            WebBundleDescriptor webBundleDescriptor, boolean create) {
+
+        SessionProperties sessionProperties = null;
+        SessionConfig runtimeSessionConfig = webBundleDescriptor.getSunDescriptor().getSessionConfig();
+        if (runtimeSessionConfig == null && create) {
+            runtimeSessionConfig = new SessionConfig();
+            webBundleDescriptor.getSunDescriptor().setSessionConfig(runtimeSessionConfig);
+        }
+        if (runtimeSessionConfig != null) {
+            sessionProperties = runtimeSessionConfig.getSessionProperties();
+        }
+
+        if (sessionProperties == null && create) {
+            sessionProperties = new SessionProperties();
+            runtimeSessionConfig.setSessionProperties(sessionProperties);
+        }
+        return sessionProperties;
     }
 }

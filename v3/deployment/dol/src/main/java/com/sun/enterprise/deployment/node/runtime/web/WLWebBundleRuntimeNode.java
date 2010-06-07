@@ -40,8 +40,6 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
 import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.runtime.web.ClassLoader;
-import com.sun.enterprise.deployment.xml.DTDRegistry;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.TagNames;
 import org.w3c.dom.Element;
@@ -160,14 +158,9 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         // context-root?
         appendTextChild(root, RuntimeTagNames.CONTEXT_ROOT, bundleDescriptor.getContextRoot());
 
-        // container-descriptor/prefer-web-inf-classes
-        ClassLoader clBean = bundleDescriptor.getSunDescriptor().getClassLoader();
-        if (clBean != null) {
-            Node containerDescriptorNode = appendChild(root, RuntimeTagNames.CONTAINER_DESCRIPTOR);
-            appendTextChild(containerDescriptorNode,
-                    RuntimeTagNames.PREFER_WEB_INF_CLASSES,
-                    clBean.getAttributeValue(ClassLoader.DELEGATE));
-        }
+        // container-descriptor
+        WLContainerDescriptorNode containerDescriptorNode = new WLContainerDescriptorNode();
+        containerDescriptorNode.writeDescriptor(root, bundleDescriptor);
 
         // session-descriptor
         WLSessionDescriptorNode sessionDescriptorNode = new WLSessionDescriptorNode();

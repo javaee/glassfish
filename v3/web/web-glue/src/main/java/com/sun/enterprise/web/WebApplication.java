@@ -38,6 +38,9 @@ package com.sun.enterprise.web;
 
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.runtime.web.SessionConfig;
+import com.sun.enterprise.deployment.runtime.web.SessionProperties;
+import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.web.ContextParameter;
 import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.util.Result;
@@ -60,7 +63,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
     private final WebContainer container;
     private final WebModuleConfig wmInfo;
-    Properties props = null;
+    private Properties props = null;
     private Set<WebModule> webModules = new HashSet<WebModule>();
     private final org.glassfish.web.plugin.common.WebModuleConfig appConfigCustomizations;
 
@@ -68,7 +71,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
             Properties props, final ApplicationConfigInfo appConfigInfo) {
         this.container = container;
         this.wmInfo = config;
-        this.props = props;
+        this.props = (isKeepSessions(props) ? props : null);
         this.appConfigCustomizations = extractCustomizations(appConfigInfo);
     }
 
@@ -123,11 +126,22 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
         props = null;
 
-        if (Boolean.parseBoolean(stopContext.getAppProps().getProperty(DeploymentProperties.KEEP_SESSIONS))) {
+        boolean keepSessions = isKeepSessions(stopContext.getAppProps());
+        if (keepSessions) {
             props = new Properties();
         }
+
         container.unloadWebModule(getDescriptor().getContextRoot(), null,
                                   null, props);
+
+        if (keepSessions) {
+            Properties actionReportProps =
+                (Properties)stopContext.getAppProps().get("ActionReportProperties");
+            // should not be null here
+            if (actionReportProps != null) {
+                actionReportProps.putAll(props);
+            }
+        }
 
         return true;
     }
@@ -181,6 +195,32 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
      */
     public WebBundleDescriptor getDescriptor() {
         return wmInfo.getDescriptor();
+    }
+
+    private boolean isKeepSessions(Properties prop) {
+        boolean keepSessions = false;
+        String keepSessionsString = prop.getProperty(DeploymentProperties.KEEP_SESSIONS);
+        if (keepSessionsString != null && keepSessionsString.trim().length() > 0) {
+            keepSessions = Boolean.parseBoolean(keepSessionsString);
+        } else {
+           SessionConfig sessionConfig =
+               getDescriptor().getSunDescriptor().getSessionConfig();
+           if (sessionConfig != null) {
+               SessionProperties sessionProperties = sessionConfig.getSessionProperties();
+               if (sessionProperties != null && sessionProperties.sizeWebProperty() > 0) {
+                   for (WebProperty wprop : sessionProperties.getWebProperty()) {
+                       String name = wprop.getAttributeValue(WebProperty.NAME);
+                       String value = wprop.getAttributeValue(WebProperty.VALUE);
+                       if (DeploymentProperties.KEEP_SESSIONS.equals(name)) {
+                           keepSessions= Boolean.parseBoolean(value);
+                           break;
+                       }
+                   }
+               }
+           }
+        }
+
+        return keepSessions;
     }
 
     /**
