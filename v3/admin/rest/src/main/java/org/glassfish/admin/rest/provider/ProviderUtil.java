@@ -283,63 +283,63 @@ public class ProviderUtil extends Util {
     }
 
 
-    static protected String getHtmlRespresentationsForCommand(String command,
-            String commandMethod, String commandDisplayName, UriInfo uriInfo) {
-        return getHtmlRespresentationsForCommand(command, commandMethod,
-            commandDisplayName, uriInfo, true);
-    }
+//    static protected String getHtmlRespresentationsForCommand(String command,
+//            String commandMethod, String commandDisplayName, UriInfo uriInfo) {
+//        return getHtmlRespresentationsForCommand(command, commandMethod,
+//            commandDisplayName, uriInfo, true);
+//    }
 
-
-    static protected String getHtmlRespresentationsForCommand(String command,
-            String commandMethod, String commandDisplayName, UriInfo uriInfo,
-                boolean displayId) {
-        String result ="";
-        if ((command != null) && (!command.equals(""))) {
-            ResourceUtil resourceUtil = new ResourceUtil();
-            MethodMetaData methodMetaData = resourceUtil.getMethodMetaData(
-            command, RestService.getHabitat(), RestService.logger);
-            Set<String> parameters = methodMetaData.parameters();
-            Iterator<String> iterator = parameters.iterator();
-            String parameter;
-            ParameterMetaData parameterMetaData;
-            while (iterator.hasNext()) {
-                parameter = iterator.next();
-                if (!(parameter.equals("id") && (!displayId))) { //do not display id in case of command resources. displayId = false for command resources.
-                     if ((!commandMethod.equals("delete")) ||                                //in case of delete operation(command),
-                        ((commandMethod.equals("delete")) && (!parameter.equals("id")))) {  //do not  display/provide id attribute.
-                        parameterMetaData = methodMetaData.getParameterMetaData(parameter);
-                        result = result +
-                            getHtmlRespresentationForParameter(parameter, parameterMetaData);
-                    }
-                }
-            }
-
-            //Fix to diplay component for commands with 0 arguments.
-            //For example, rotate-log or restart.
-            if (result.equals("")) {
-                result = " ";
-            }
-
-        }
-
-        if (!result.equals("")) {
-            result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() +
-                "\" method=\"" + /*commandMethod*/"post" + "\">" +  //hack-1 : support delete method for html
-                "<dl>" + result;                       //hardcode "post" instead of commandMethod which chould be post or delete.
-
-            //hack-1 : support delete method for html
-            //add hidden field
-            if(commandMethod.equals("delete")) {
-                result = result +
-                    "<input name=\"operation\" value=\"__deleteoperation\" type=\"hidden\">";
-            }
-
-            result = result + "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"" + commandDisplayName + "\" type=\"submit\"></dd>";
-            result = result + "</dl></form></div>";
-        }
-
-        return result;
-    }
+//
+//    static protected String getHtmlRespresentationsForCommand(String command,
+//            String commandMethod, String commandDisplayName, UriInfo uriInfo,
+//                boolean displayId) {
+//        String result ="";
+//        if ((command != null) && (!command.equals(""))) {
+//            ResourceUtil resourceUtil = new ResourceUtil();
+//            MethodMetaData methodMetaData = resourceUtil.getMethodMetaData(
+//            command, RestService.getHabitat(), RestService.logger);
+//            Set<String> parameters = methodMetaData.parameters();
+//            Iterator<String> iterator = parameters.iterator();
+//            String parameter;
+//            ParameterMetaData parameterMetaData;
+//            while (iterator.hasNext()) {
+//                parameter = iterator.next();
+//                if (!(parameter.equals("id") && (!displayId))) { //do not display id in case of command resources. displayId = false for command resources.
+//                     if ((!commandMethod.equals("delete")) ||                                //in case of delete operation(command),
+//                        ((commandMethod.equals("delete")) && (!parameter.equals("id")))) {  //do not  display/provide id attribute.
+//                        parameterMetaData = methodMetaData.getParameterMetaData(parameter);
+//                        result = result +
+//                            getHtmlRespresentationForParameter(parameter, parameterMetaData);
+//                    }
+//                }
+//            }
+//
+//            //Fix to diplay component for commands with 0 arguments.
+//            //For example, rotate-log or restart.
+//            if (result.equals("")) {
+//                result = " ";
+//            }
+//
+//        }
+//
+//        if (!result.equals("")) {
+//            result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() +
+//                "\" method=\"" + /*commandMethod*/"post" + "\">" +  //hack-1 : support delete method for html
+//                "<dl>" + result;                       //hardcode "post" instead of commandMethod which chould be post or delete.
+//
+//            //hack-1 : support delete method for html
+//            //add hidden field
+//            if(commandMethod.equals("delete")) {
+//                result = result +
+//                    "<input name=\"operation\" value=\"__deleteoperation\" type=\"hidden\">";
+//            }
+//
+//            result = result + "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"" + commandDisplayName + "\" type=\"submit\"></dd>";
+//            result = result + "</dl></form></div>";
+//        }
+//
+//        return result;
+//    }
 
 
     static protected String getHtmlRespresentationsForCommand(

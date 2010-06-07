@@ -68,9 +68,9 @@ public class GetResultList extends Result {
     /**
      * Returns postCommand associated with the resource.
      */
-    public String getPostCommand() {
-        return __postCommand;
-    }
+//    public String getPostCommand() {
+//        return __postCommand;
+//    }
 
     /**
      * Returns an array of command resources paths and the operation type.

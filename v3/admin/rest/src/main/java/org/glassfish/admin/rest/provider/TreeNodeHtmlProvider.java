@@ -97,7 +97,7 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
 
      private String getHtml(List<TreeNode> proxy) {
         String result = getHtmlHeader();
-        result = result + "<h1>" + getTypeKey(getName(uriInfo.getPath(), '/')) + "</h1>" + "<hr>";
+        result = result + "<h1>" + upperCaseFirstLetter(slashToDash(decode(getName(uriInfo.getPath(), '/')))) + "</h1>" + "<hr>";
 
         //display hint if module monitoring levels are OFF.
         if ((proxy.isEmpty()) && (uriInfo.getPath().equalsIgnoreCase("domain"))) {
