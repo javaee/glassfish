@@ -150,6 +150,21 @@ public class RestApiHandlers {
         handlerCtx.setOutputValue("result", endpoint);
     }
 
+    @Handler(id = "gf.restExecuteCommand",
+            input = {
+                    @HandlerInput(name = "endpoint", type = String.class, required = true),
+                    @HandlerInput(name = "attrs", type = Map.class, required = true)},
+            output = {
+                    @HandlerOutput(name = "result", type = Integer.class)})
+    public static void restExecuteCommand(HandlerContext handlerCtx) {
+        Map<String, String> attrs = (Map<String, String>) handlerCtx.getInputValue("attrs");
+        if (attrs == null) {
+            attrs = new HashMap<String, String>();
+        }
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        handlerCtx.setOutputValue("result", post(endpoint, attrs));
+    }
+
     /**
      *
      * REST-based version of createProxy
