@@ -38,6 +38,7 @@ package admin;
 import com.sun.appserv.test.BaseDevTest;
 import java.io.*;
 import java.net.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,6 +70,43 @@ public class AdminInfraTest extends BaseDevTest {
     }
 
     @Override
+    public void report(String name, boolean success) {
+        // bnevins june 6 2010
+
+        // crazy base class uses a Map to store these reports.  If you use
+        // the same name > 1 time they are ignored and thrown away!!!
+        // I went with this outrageous kludge because (1) it is just tests
+        // and (2) there are tens of thousands of other files in this harness!!!
+
+        // another issue is hacking off strings after a space.  Makes no sense to me!!
+
+        String name2 = name.replace(' ', '_');
+        if(!name2.equals(name)) {
+            System.out.println("Found spaces in the name.  Replaced with underscore. " +
+                    "before: " + name + ", after: " + name2);
+            name = name2;   // don't foul logic below!
+        }
+
+        int i = 0;
+
+        while(reportNames.add(name2) == false) {
+            name2 = name + i++;
+        }
+
+        if(!name2.equals(name))
+            System.out.println("Duplicate name found (" + name +
+                    ") and replaced with: " + name2);
+
+        super.report(name2, success);
+    }
+
+    @Override
+    public void report(String step, AsadminReturn ret) {
+        report(step, ret.returnValue);
+    }
+
+
+    @Override
     protected String getTestName() {
         return "instance";
     }
@@ -80,6 +118,8 @@ public class AdminInfraTest extends BaseDevTest {
 
     public void run() {
         try {
+            testDuplicateReportNames();
+            testNamesWithSpaces();
             startDomain();
             create();
             delete();
@@ -93,6 +133,15 @@ public class AdminInfraTest extends BaseDevTest {
         }
     }
 
+    private void testNamesWithSpaces() {
+        report("Name with many spaces is here hi there", true);
+        report("Name with many spaces is here hi there", true);
+    }
+    private void testDuplicateReportNames() {
+        report("duplicate_here", true);
+        report("duplicate_here", true);
+        report("duplicate_here", true);
+    }
     private void startDomain() {
         domain1WasRunning = asadmin("start-domain", "domain1");
 
@@ -181,7 +230,7 @@ public class AdminInfraTest extends BaseDevTest {
         System.out.println(ret.outAndErr);
         boolean success = ret.outAndErr.indexOf("Nothing to list.") >= 0;
 
-        report("list-instance-after-delete", success);
+        //report("list-instance-after-delete", success);
 
     }
 
@@ -212,10 +261,10 @@ public class AdminInfraTest extends BaseDevTest {
     private final File instancesHome;
     private boolean domain1WasRunning;
     private final static boolean DEBUG;
-    private static final String[] instanceNames = new String[]{
-        "i0", "i1", "i2", "i3", "i4", "i5", "i6", "i7", "i8", "i9"
-    };
-
+    private static final String[] instanceNames;
+    private final SortedSet<String> reportNames = new TreeSet<String>();
+    private static final int NUM_INSTANCES = 50;
+    
     static {
         String name = System.getProperty("user.name");
 
@@ -223,5 +272,11 @@ public class AdminInfraTest extends BaseDevTest {
             DEBUG = true;
         else
             DEBUG = false;
+
+        instanceNames = new String[NUM_INSTANCES];
+
+        for(int i = 0; i < NUM_INSTANCES; i++) {
+            instanceNames[i] = "instance_" + i;
+        }
     }
 }
