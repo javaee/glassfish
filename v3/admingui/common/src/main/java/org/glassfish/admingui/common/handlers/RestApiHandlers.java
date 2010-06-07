@@ -61,6 +61,7 @@ public class RestApiHandlers {
     public static final String FORM_ENCODING = "application/x-www-form-urlencoded";
     public static final String RESPONSE_TYPE = "application/xml";
     public static final String GUI_TOKEN_FOR_EMPTY_PROPERTY_VALUE = "()";
+    public static final Client JERSEY_CLIENT = Client.create();
 
     @Handler(id = "gf.getDefaultValues",
             input = {
@@ -138,6 +139,40 @@ public class RestApiHandlers {
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
 
         int status = sendCreateRequest(endpoint, attrs, (List) handlerCtx.getInputValue("skipAttrs"),
+                (List) handlerCtx.getInputValue("onlyUseAttrs"), (List) handlerCtx.getInputValue("convertToFalse"));
+
+        if ((status != 200) && (status != 201)) {
+            GuiUtil.getLogger().severe("CreateProxy failed.  parent=" + endpoint + "; attrs =" + attrs);
+            GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
+            return;
+        }
+
+        handlerCtx.setOutputValue("result", endpoint);
+    }
+
+    /**
+     *
+     * REST-based version of createProxy
+     * @param handlerCtx
+     */
+    @Handler(id = "gf.updateEntity",
+            input = {
+                    @HandlerInput(name = "endpoint", type = String.class, required = true),
+                    @HandlerInput(name = "attrs", type = Map.class, required = true),
+                    @HandlerInput(name = "skipAttrs", type = List.class),
+                    @HandlerInput(name = "onlyUseAttrs", type = List.class),
+                    @HandlerInput(name = "convertToFalse", type = List.class)},
+            output = {
+                    @HandlerOutput(name = "result", type = String.class)
+            })
+    public static void updateEntity(HandlerContext handlerCtx) {
+        Map<String, String> attrs = (Map) handlerCtx.getInputValue("attrs");
+        if (attrs == null) {
+            attrs = new HashMap<String, String>();
+        }
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+
+        int status = sendUpdateRequest(endpoint, attrs, (List) handlerCtx.getInputValue("skipAttrs"),
                 (List) handlerCtx.getInputValue("onlyUseAttrs"), (List) handlerCtx.getInputValue("convertToFalse"));
 
         if ((status != 200) && (status != 201)) {
@@ -229,18 +264,19 @@ public class RestApiHandlers {
     }
 
     public static int sendCreateRequest(String endpoint, Map<String, String> attrs, List<String> skipAttrs, List<String> onlyUseAttrs, List<String> convertToFalse) {
-        //Should specify either skipAttrs or onlyUseAttrs
         removeSpecifiedAttrs(attrs, skipAttrs);
+        attrs = buildUseOnlyAttrMap(attrs, onlyUseAttrs);
+        attrs = convertNullValuesToFalse(attrs, convertToFalse);
+        attrs = fixKeyNames(attrs);
 
-        if (onlyUseAttrs != null) {
-            Map newAttrs = new HashMap();
-            for (String key : onlyUseAttrs) {
-                if (attrs.keySet().contains(key)) {
-                    newAttrs.put(key, attrs.get(key));
-                }
-            }
-            attrs = newAttrs;
-        }
+        return post(endpoint, attrs);
+    }
+
+    // This will send an update request.  Currently, this calls post just like the create does,
+    // but the REST API will be modified to use PUT for updates, a more correct use of HTTP
+    public static int sendUpdateRequest(String endpoint, Map<String, String> attrs, List<String> skipAttrs, List<String> onlyUseAttrs, List<String> convertToFalse) {
+        removeSpecifiedAttrs(attrs, skipAttrs);
+        attrs = buildUseOnlyAttrMap(attrs, onlyUseAttrs);
         attrs = convertNullValuesToFalse(attrs, convertToFalse);
         attrs = fixKeyNames(attrs);
 
@@ -270,6 +306,21 @@ public class RestApiHandlers {
                 iter.remove();
             }
         }
+    }
+
+    protected static Map buildUseOnlyAttrMap(Map<String, String> attrs, List<String> onlyUseAttrs) {
+        if (onlyUseAttrs != null) {
+            Map newAttrs = new HashMap();
+            for (String key : onlyUseAttrs) {
+                if (attrs.keySet().contains(key)) {
+                    newAttrs.put(key, attrs.get(key));
+                }
+            }
+            return newAttrs;
+        } else {
+            return attrs;
+        }
+
     }
 
     // This is ugly, but I'm trying to figure out why the cleaner code doesn't work :(
@@ -406,13 +457,13 @@ public class RestApiHandlers {
     //******************************************************************************************************************
 
     protected static String get(String address) {
-        return Client.create().resource(address)
+        return JERSEY_CLIENT.resource(address)
                 .accept(RESPONSE_TYPE)
                 .get(String.class);
     }
 
     protected static int post(String address, Map<String, String> payload) {
-        WebResource webResource = Client.create().resource(address);
+        WebResource webResource = JERSEY_CLIENT.resource(address);
         MultivaluedMap formData = buildMultivalueMap(payload);
         ClientResponse cr = webResource.post(ClientResponse.class, formData);
         checkStatusForSuccess(cr);
@@ -425,14 +476,14 @@ public class RestApiHandlers {
     }
 
     protected static int delete(String address, Map<String, String> payload) {
-        WebResource webResource = Client.create().resource(address);
+        WebResource webResource = JERSEY_CLIENT.resource(address);
         ClientResponse cr = webResource.queryParams(buildMultivalueMap(payload)).delete(ClientResponse.class);
         checkStatusForSuccess(cr);
         return cr.getStatus();
     }
 
     protected static String options(String address, String responseType) {
-        return Client.create().resource(address)
+        return JERSEY_CLIENT.resource(address)
                 .accept(responseType)
                 .options(String.class);
     }
