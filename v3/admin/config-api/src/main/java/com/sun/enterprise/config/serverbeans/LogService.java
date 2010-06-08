@@ -186,7 +186,7 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="0")
+    @Attribute (defaultValue="1")
     @Min(value=1)
     public String getLogRotationLimitInBytes();
 
@@ -255,7 +255,7 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="0")
+    @Attribute (defaultValue="5")
     @Min(value=5)
     @Max(value=500)
     public String getRetainErrorStatisticsForHours();
