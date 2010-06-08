@@ -405,7 +405,16 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
             return resources.toURI();
         }
         try {
-            return urls.get(0).toURI();
+            //TODO : Fix this
+            if (urls.size() > 0) {
+                for (URL url : urls) {
+                    File f = new File(url.toURI());
+                    if (f.isFile())
+                        return url.toURI();
+                }
+                return urls.get(0).toURI();
+            }
+            return null;
         } catch (Exception e) {
             return null;
         }
