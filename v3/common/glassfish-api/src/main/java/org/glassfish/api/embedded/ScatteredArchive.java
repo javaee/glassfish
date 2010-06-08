@@ -46,7 +46,9 @@ import java.net.MalformedURLException;
 import java.util.*;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 import java.util.jar.JarEntry;
+
 /**
  * Abstraction for a scattered archive (parts disseminated in various directories)
  *
@@ -261,13 +263,27 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
     public InputStream getEntry(String arg) throws IOException {
         File f = getFile(arg);
         if (f!=null && f.exists()) return new FileInputStream(f);
-        return getJarEntry(arg);
+        JarFile jar = getJarWithEntry(arg);
+        if (jar != null) {
+            ZipEntry entry = jar.getEntry(arg);
+            if (entry != null) {
+                return jar.getInputStream(entry);
+            }
+        }
+        return null;
     }
 
     @Override
     public long getEntrySize(String arg) {
         File f = getFile(arg);
         if (f!=null && f.exists()) return f.length();
+        JarFile jar = getJarWithEntry(arg);
+        if (jar != null) {
+            ZipEntry entry = jar.getEntry(arg);
+            if (entry != null) {
+                return jar.getEntry(arg).getSize();
+            }
+        }
         return 0L;
     }
 
@@ -284,8 +300,6 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
         if ("WEB-INF".equals(name) && type == Builder.type.war) {
             return true;
         }
-        File f = getFile(name);
-        if (f!=null && f.exists()) return true;
         return getEntry(name) != null;
     }
 
@@ -482,7 +496,7 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
         return null;
     }
 
-    private InputStream getJarEntry(String name) {
+    private JarFile  getJarWithEntry(String name) {
         for (URL url : urls) {
             File f = null;
             try {
@@ -493,13 +507,8 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
             try {
                 if (f.getName().endsWith(".jar")) {
                     JarFile jar = new JarFile(f);
-                    Enumeration<JarEntry> jarEntries = jar.entries();
-                    while (jarEntries.hasMoreElements()) {
-                        JarEntry jarEntry = jarEntries.nextElement();
-                        String entryName = jarEntry.getName();
-                        if (entryName.equals(name)) {
-                            return jar.getInputStream(jarEntry);
-                        }
+                    if (jar.getEntry(name) != null) {
+                        return jar;
                     }
                 }
             } catch (Exception ex) {
