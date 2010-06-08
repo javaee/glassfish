@@ -204,23 +204,14 @@ public class AdminInfraTest extends BaseDevTest {
             report(iname + "-nodir", !checkInstanceDir(iname));
             report(iname + "-create", asadmin("create-local-instance", iname));
             report(iname + "-yesdir", checkInstanceDir(iname));
+            report(iname + "-yes-regdas", asadminWithOutput("get", "servers.server." + iname));
+            report(iname + "-yes-config", asadminWithOutput("get", "configs.config." + iname + "-config"));
+            AsadminReturn ret = asadminWithOutput("get", "servers.server." + iname + ".config-ref");
+            boolean success = ret.outAndErr.indexOf("servers.server." + iname + ".config-ref=" + iname + "-config") >= 0;
+            report(iname + "-yes-configref", success);
         }
-
-        report("list-instance-after-create", asadmin("list-instances"));
-
-        printf("Check " + instanceNames[0] + " is registered to DAS");
-        report(instanceNames[0] + "-yes-regdas", asadmin("get", "servers.server." + instanceNames[0]));
-
-        printf("Check " + instanceNames[0] + "-config exists.");
-        report(instanceNames[0] + "-yes-config", asadmin("get", "configs.config." + instanceNames[0] + "-config"));
-
-        printf("Check " + instanceNames[0] + " has config-ref set.");
-        AsadminReturn ret = asadminWithOutput("get", "servers.server." + instanceNames[0] + ".config-ref");
-        System.out.println(ret.outAndErr);
-        boolean success = ret.outAndErr.indexOf("servers.server." + instanceNames[0] + ".config-ref=" + instanceNames[0] + "-config") >= 0;
-        report(instanceNames[0] + "-yes-configref", success);
-
         report("das-properties-exists-after-create", checkDasProperties());
+        asadmin("list-instances");
     }
 
     private void createFail() {
@@ -280,7 +271,7 @@ public class AdminInfraTest extends BaseDevTest {
     private final static boolean DEBUG;
     private static final String[] instanceNames;
     private final SortedSet<String> reportNames = new TreeSet<String>();
-    private static final int NUM_INSTANCES = 50;
+    private static final int NUM_INSTANCES = 3;
     private final static boolean isHudson = Boolean.parseBoolean(System.getenv("HUDSON"));
 
     static {
