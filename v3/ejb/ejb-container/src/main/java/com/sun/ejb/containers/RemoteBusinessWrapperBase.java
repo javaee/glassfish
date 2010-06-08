@@ -136,7 +136,6 @@ public class RemoteBusinessWrapperBase
         } catch(Exception e) {
             WriteAbortedException wae = new WriteAbortedException
                 ("RemoteBusinessWrapper.readResolve error", e);
-            wae.initCause(e);
             throw wae;
         }
 
