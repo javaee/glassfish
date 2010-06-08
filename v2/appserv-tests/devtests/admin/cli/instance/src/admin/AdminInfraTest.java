@@ -227,7 +227,7 @@ public class AdminInfraTest extends BaseDevTest {
 
         printf("create-local-instance with non-existent cluster");
         report("create-local-instance-nosuchcluster", !asadmin("create-local-instance", "--cluster", "nocluster", "noinstance"));
-        report("cleanup-failed-c-l-i", checkInstanceDir("noinstance"));
+        report("cleanup-failed-c-l-i", !checkInstanceDir("noinstance"));
     }
 
     private void delete() {
