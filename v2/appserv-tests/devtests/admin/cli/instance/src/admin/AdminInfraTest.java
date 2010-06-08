@@ -61,6 +61,7 @@ public class AdminInfraTest extends BaseDevTest {
         host = host0;
         System.out.println("Host= " + host);
         glassFishHome = getGlassFishHome();
+        domainHome = new File(glassFishHome, "domains/domain1");    // yes it is hard-coded!!
         // it does NOT need to exist -- do not insist!
         instancesHome = new File(new File(glassFishHome, "nodeagents"), host);
         printf("GF HOME = " + glassFishHome);
@@ -204,6 +205,12 @@ public class AdminInfraTest extends BaseDevTest {
             report(iname + "-nodir", !checkInstanceDir(iname));
             report(iname + "-create", asadmin("create-local-instance", iname));
             report(iname + "-yesdir", checkInstanceDir(iname));
+            String err = checkSpecialConfigDirsExist(iname);
+
+            if(err != null)
+                System.out.println("ERROR: " + err);
+
+            report(iname + "-yesspecialdirs", err == null ? true : false); // null is good!!
             report(iname + "-yes-regdas", asadminWithOutput("get", "servers.server." + iname));
             report(iname + "-yes-config", asadminWithOutput("get", "configs.config." + iname + "-config"));
             AsadminReturn ret = asadminWithOutput("get", "servers.server." + iname + ".config-ref");
@@ -231,6 +238,7 @@ public class AdminInfraTest extends BaseDevTest {
             report(iname + "-no-dir-again", !checkInstanceDir(iname));
             report(iname + "-no-regdas", !asadmin("get", "servers.server." + iname));
             report(iname + "-no-config", !asadmin("get", "configs.config." + iname + "-config"));
+            report(iname + "-special-dirs-were-deleted", checkSpecialConfigDirsDeleted(iname));
         }
 
         AsadminReturn ret = asadminWithOutput("list-instances");
@@ -244,7 +252,6 @@ public class AdminInfraTest extends BaseDevTest {
     private boolean checkInstanceDir(String name) {
         File inf = new File(instancesHome, name);
         boolean exists = inf.isDirectory();
-        String existsString = exists ? "DOES exist" : "does NOT exist";
         return exists;
     }
 
@@ -259,6 +266,31 @@ public class AdminInfraTest extends BaseDevTest {
         return "in_" + s;
     }
 
+    /**
+     *
+     * @param iname
+     * @return a String if in error o/w return null
+     */
+    private String checkSpecialConfigDirsExist(String iname) {
+        File configConfigDir = new File(domainHome, "config/" + iname + "-config");
+
+        if(!configConfigDir.isDirectory())
+            return configConfigDir.toString().replace('\\', '/') + " was not created as expected.";
+
+        if(!new File(configConfigDir, "lib/ext").isDirectory())
+            return configConfigDir.getPath().replace('\\', '/') + "/lib/ext was not created as expected.";
+
+        if(!new File(configConfigDir, "docroot").isDirectory())
+            return configConfigDir.getPath().replace('\\', '/') + "/docroot was not created as expected.";
+
+        return null;
+    }
+
+    private boolean checkSpecialConfigDirsDeleted(String iname) {
+        File configConfigDir = new File(domainHome, "config/" + iname + "-config");
+        return !configConfigDir.exists();
+    }
+
     private void printf(String fmt, Object... args) {
         if (DEBUG) {
             System.out.printf("**** DEBUG MESSAGE ****  " + fmt + "\n", args);
@@ -267,11 +299,11 @@ public class AdminInfraTest extends BaseDevTest {
     private final String host;
     private final File glassFishHome;
     private final File instancesHome;
-    private boolean domain1WasRunning;
+    private final File domainHome;
     private final static boolean DEBUG;
     private static final String[] instanceNames;
     private final SortedSet<String> reportNames = new TreeSet<String>();
-    private static final int NUM_INSTANCES = 3;
+    private static final int NUM_INSTANCES = 50;
     private final static boolean isHudson = Boolean.parseBoolean(System.getenv("HUDSON"));
 
     static {
