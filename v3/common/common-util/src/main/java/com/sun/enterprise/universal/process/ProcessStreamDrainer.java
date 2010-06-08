@@ -39,8 +39,6 @@
  *
  * Created on October 26, 2006, 9:56 PM
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package com.sun.enterprise.universal.process;
