@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -247,9 +247,8 @@ public class ProviderUtil extends Util {
     }
 
 
-    static protected String getHtmlRespresentationForAttributes(ConfigBean proxy,
-            UriInfo uriInfo) {
-        String result = "";
+    static protected String getHtmlRespresentationForAttributes(ConfigBean proxy, UriInfo uriInfo) {
+        StringBuilder result = new StringBuilder();
 
         Set<String> attributes = proxy.model.getAttributeNames();
         System.out.println("attributes: " + attributes);
@@ -267,19 +266,20 @@ public class ProviderUtil extends Util {
             parameterMetaData = methodMetaData.getParameterMetaData(parameter);
             //parameterMetaData contains attributeNames in camelCasedNames convert them to xmlNames to get the attribute's current value
             String xmlAttributeName = ResourceUtil.convertToXMLName(parameter);
-            result = result +
-                getHtmlRespresentationForParameter(parameter, parameterMetaData,
-                    proxy.attribute(xmlAttributeName));
+            result.append(getHtmlRespresentationForParameter(parameter, parameterMetaData,
+                    proxy.attribute(xmlAttributeName)));
         }
 
-        if (!result.equals("")) {
-            result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() + "\" method=\"post\">" +
-                "<dl>" + result +
+        if (result.length() > 0) {
+            return "<div><form action=\"" + uriInfo.getAbsolutePath().toString() +
+                    "\" method=\"post\"><dl>" + result.toString() +
                     "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"Update\" type=\"submit\"></dd>" +
-                        "</dl></form></div>";
+                    "</dl></form></div>";
+        } else {
+            return "";
         }
 
-        return result;
+//        return result;
     }
 
 
@@ -512,10 +512,8 @@ public class ProviderUtil extends Util {
     }
 
 
-    static private String getHtmlRespresentationForParameter(String parameter,
-        ParameterMetaData parameterMetaData) {
-        return getHtmlRespresentationForParameter(parameter,
-            parameterMetaData, null);
+    static private String getHtmlRespresentationForParameter(String parameter, ParameterMetaData parameterMetaData) {
+        return getHtmlRespresentationForParameter(parameter, parameterMetaData, null);
     }
 
 

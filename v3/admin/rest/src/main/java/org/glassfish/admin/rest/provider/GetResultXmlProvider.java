@@ -140,18 +140,6 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
                     .append(" ");
         }
 
-        // Per Anissa's request
-        // TODO: Update JSON and HTML providers
-        if (!attributeNames.contains("name")) {
-            String key = proxy.model.key;
-            if (key != null) {
-                key = key.replaceAll("@", "");
-                result.append("name=")
-                        .append(quote(proxy.attribute(key)))
-                        .append(" ");
-            }
-        }
-
 //        int endIndex = result.length() - 1;
 //        if (endIndex > 0) {
 //            result = result.substring(0, endIndex);

@@ -59,7 +59,7 @@ public class RestManagementAdapter extends RestAdapter {
          final Set<Class<?>> r = new HashSet<Class<?>>();
 
         // uncomment if you need to run the generator:
-        // r.add(GeneratorResource.class);
+         r.add(GeneratorResource.class);
         r.add(org.glassfish.admin.rest.resources.DomainResource.class);
         return r;
     }

@@ -67,14 +67,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.jersey.spi.container.ContainerRequest;
 import java.util.ArrayList;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.RestRedirect;
 
 import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.ValidationException;
 
@@ -133,8 +133,7 @@ public class TemplateResource {
     @Produces({MediaType.TEXT_HTML,
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public GetResult get(@QueryParam("expandLevel")
-            @DefaultValue("1") int expandLevel) {
+    public GetResult get(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
         if (getEntity() == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
@@ -170,7 +169,7 @@ public class TemplateResource {
             if ((data.containsKey("operation")) &&
                     (data.get("operation").equals("__deleteoperation"))) {
                 data.remove("operation");
-                return delete(data, "true");
+                return delete(data);
             }
 
             Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
@@ -191,6 +190,25 @@ public class TemplateResource {
         }
     }
 
+    /**
+     * <p>This method takes any query string parameters and adds them to the specified map.  This
+     * is used, for example, with the delete operation when cascading deletes are required:</p>
+     * <code style="margin-left: 3em">DELETE http://localhost:4848/.../foo?cascade=true</code>
+     * <p>The reason we need to use query parameters versus "body" variables is the limitation
+     * that HttpURLConnection has in this regard.
+     * 
+     * @param data
+     */
+    protected void addQueryStringToMap(HashMap<String, String> data) {
+        MultivaluedMap<String, String> qs = ((ContainerRequest) requestHeaders).getQueryParameters();
+        for (Map.Entry<String, List<String>> entry : qs.entrySet()) {
+            String key = entry.getKey();
+            for (String value : entry.getValue()) {
+                data.put(key, value); // TODO: Last one wins? Can't imagine we'll see List.size() > 1, but...
+            }
+        }
+    }
+
     protected void removeAttributesToBeSkipped(Map<String, String> data) {
         for (String item : attributesToSkip) {
             data.remove(item);
@@ -199,7 +217,7 @@ public class TemplateResource {
 
     @DELETE
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_OCTET_STREAM})
-    public Response delete(HashMap<String, String> data, @DefaultValue("false") @QueryParam("cascade") String cascade) {
+    public Response delete(HashMap<String, String> data) {
         //User can not directly delete the resource. User can only
         //do so implicitly through asadmin command
         try {
@@ -210,7 +228,8 @@ public class TemplateResource {
                         errorMessage, requestHeaders, uriInfo);
             }
 
-            data.put("cascade", cascade);
+            addQueryStringToMap(data);
+
             __resourceUtil.purgeEmptyEntries(data);
 
             __resourceUtil.adjustParameters(data);
@@ -429,16 +448,13 @@ public class TemplateResource {
     }
 
     public String getDeleteCommand() {
-        return __resourceUtil.getCommand(
-                RestRedirect.OpType.DELETE, (ConfigBean)getEntity());
+        return __resourceUtil.getCommand(RestRedirect.OpType.DELETE, (ConfigBean)getEntity());
     }
 
-    private ActionReport runCommand(String commandName,
-            HashMap<String, String> data) {
+    private ActionReport runCommand(String commandName, HashMap<String, String> data) {
 
         if (commandName != null) {
-            return __resourceUtil.runCommand(commandName,
-                    data, RestService.getHabitat());//processed
+            return __resourceUtil.runCommand(commandName, data, RestService.getHabitat());//processed
         }
 
         return null;//not processed
@@ -468,8 +484,6 @@ public class TemplateResource {
 
     public void setBeanByKey(List<Dom> parentList,String id) {
         for (Dom c : parentList) {
-
-
             String keyAttributeName = null;
             ConfigModel model = c.model;
             if (model.key == null) {
@@ -490,10 +504,6 @@ public class TemplateResource {
                 keyAttributeName = model.key.substring(1, model.key.length());
             }
 
-
-
-            //Using '-' for back-slash in resource names
-            //For example, jndi names has back-slash in it.
             String keyvalue = c.attribute(keyAttributeName.toLowerCase());
             if (keyvalue.equals(id)) {
                 setEntity((ConfigBean) c);

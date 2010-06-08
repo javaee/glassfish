@@ -142,7 +142,13 @@ public class GeneratorResource {
         {"NetworkListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
         {"NetworkListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"},
         {"Protocol", "create-http", "POST", "create-http", "Create", "id=$parent"},
-        {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"}
+        {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"},
+
+        {"JmsService", "jms-ping", "GET", "jms-ping", "Ping JMS"},
+        {"JmsService", "flush-jmsdest", "POST", "flush-jmsdest", "Flush"},
+        {"JmsService", "create-jmsdest", "POST", "create-jmsdest", "Create"},
+        {"JmsService", "delete-jmsdest", "POST", "delete-jmsdest", "Delete"},
+        {"JmsService", "list-jmsdest", "GET", "list-jmsdest", "JmsDest"}
     };
 
 
