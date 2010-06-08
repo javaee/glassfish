@@ -36,23 +36,11 @@
 package wrongtransport;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-import java.security.KeyStore;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 
 import com.sun.appserv.test.BaseDevTest;
-import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 import com.sun.grizzly.config.HttpProtocolFinder;
 
 public class WrongTransport extends BaseDevTest {
@@ -60,23 +48,23 @@ public class WrongTransport extends BaseDevTest {
     private String host = null;
     private String port = null;
 
-    public WrongTransport(final String hostAddress, final String portNumber, final String trustStorePath) {
+    public WrongTransport(final String hostAddress, final String portNumber) {
         host = hostAddress;
         port = portNumber;
         createPUElements();
         try {
-            SSLSocketFactory ssf = getSSLSocketFactory(trustStorePath);
             final String url = "http://" + host + ":" + port + "/";
             System.out.println("Connecting to: " + url);
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setInstanceFollowRedirects(true);
             checkStatus(connection);
             parseResponse(connection);
         } catch (Throwable t) {
             t.printStackTrace();
-		  } finally {
-			  deletePUElements();
-		  }
-		  stat.printSummary();
+        } finally {
+            deletePUElements();
+        }
+        stat.printSummary();
     }
 
     @Override
@@ -90,11 +78,10 @@ public class WrongTransport extends BaseDevTest {
     }
 
     public static void main(String args[]) throws Exception {
-        new WrongTransport(args[0], args[1], args[2]);
+        new WrongTransport(args[0], args[1]);
     }
 
     private void createPUElements() {
-
         // http-redirect
         report("create-http-redirect-protocol", asadmin("create-protocol",
             "http-redirect"));
@@ -102,7 +89,6 @@ public class WrongTransport extends BaseDevTest {
             "--protocol", "http-redirect",
             "--classname", "com.sun.grizzly.config.HttpRedirectFilter",
             "redirect-filter"));
-
         //  admin-listener-http
         report("create-admin-listener-http", asadmin("create-protocol",
             "--securityenabled", "true",
@@ -117,11 +103,9 @@ public class WrongTransport extends BaseDevTest {
             "--ssl3enabled", "false",
             "--clientauthenabled", "false",
             "admin-listener-http"));
-
         //  pu-admin-listener
         report("create-admin-listener-http", asadmin("create-protocol",
             "pu-admin-listener"));
-
         report("create-protocol-finder-admin", asadmin("create-protocol-finder",
             "--protocol", "pu-admin-listener",
             "--target-protocol", "admin-listener-http",
@@ -132,44 +116,21 @@ public class WrongTransport extends BaseDevTest {
             "--target-protocol", "http-redirect",
             "--classname", HttpProtocolFinder.class.getName(),
             "http-redirect"));
-
-		  // reset listener
-		  report("set-http-listener", asadmin("set",
-				  "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol=pu-admin-listener"));
+        // reset listener
+        report("set-http-listener", asadmin("set",
+            "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol=pu-admin-listener"));
     }
-    
-	 private void deletePUElements() {
-		  // reset listener
-		  report("set-http-listener", asadmin("set",
-				  "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol=http-listener-1"));
+
+    private void deletePUElements() {
+        // reset listener
+        report("set-http-listener", asadmin("set",
+            "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol=http-listener-1"));
         report("delete-admin-listener-http", asadmin("delete-protocol",
             "pu-admin-listener"));
         report("delete-admin-listener-http", asadmin("delete-protocol",
             "admin-listener-http"));
         report("delete-admin-listener-http", asadmin("delete-protocol",
             "http-redirect"));
-	 }
-
-    private SSLSocketFactory getSSLSocketFactory(String trustStorePath)
-        throws Exception {
-        SSLContext sc = SSLContext.getInstance("SSL");
-        sc.init(null, getTrustManagers(trustStorePath), null);
-        return sc.getSocketFactory();
-    }
-
-    private HttpsURLConnection doSSLHandshake(String urlAddress, SSLSocketFactory ssf)
-        throws Exception {
-        URL url = new URL(urlAddress);
-        HttpsURLConnection.setDefaultSSLSocketFactory(ssf);
-        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        connection.setHostnameVerifier(
-            new HostnameVerifier() {
-                public boolean verify(String rserver, SSLSession sses) {
-                    return true;
-                }
-            });
-        connection.setDoOutput(true);
-        return connection;
     }
 
     private void checkStatus(HttpURLConnection connection)
@@ -190,20 +151,5 @@ public class WrongTransport extends BaseDevTest {
         } finally {
             in.close();
         }
-    }
-
-    private TrustManager[] getTrustManagers(String path) throws Exception {
-        TrustManager[] tms = null;
-        InputStream stream = new FileInputStream(path);
-        try {
-            KeyStore trustStore = KeyStore.getInstance("JKS");
-            trustStore.load(stream, null);
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-            tmf.init(trustStore);
-            tms = tmf.getTrustManagers();
-        } finally {
-            stream.close();
-        }
-        return tms;
     }
 }
