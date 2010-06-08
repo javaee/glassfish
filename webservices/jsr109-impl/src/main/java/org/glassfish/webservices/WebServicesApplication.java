@@ -117,21 +117,21 @@ public class WebServicesApplication implements ApplicationContainer {
 
         try {
             app = deploymentCtx.getModuleMetaData(Application.class);
-           if (!isJAXWSbasedApp(app)) {
-                Iterator<EjbEndpoint> iter = ejbendpoints.iterator();
-                EjbEndpoint ejbendpoint = null;
-                while(iter.hasNext()) {
-                   ejbendpoint = iter.next();
-                   String contextRoot = ejbendpoint.contextRoot;
 
-                   dispatcher.registerEndpoint(contextRoot, (com.sun.grizzly.tcp.Adapter)adapter, this);
-                   logger.info(format(rb.getString("enterprise.deployment.ejbendpoint.registration"),
-                               app.getAppName(),
+            Iterator<EjbEndpoint> iter = ejbendpoints.iterator();
+            EjbEndpoint ejbendpoint = null;
+            while(iter.hasNext()) {
+                ejbendpoint = iter.next();
+                String contextRoot = ejbendpoint.contextRoot;
 
-                               new WsUtil().getWebServerInfoForDAS().getWebServerRootURL(ejbendpoint.isSecure).toString() + contextRoot)
-                       );
-               }
+                dispatcher.registerEndpoint(contextRoot, (com.sun.grizzly.tcp.Adapter)adapter, this);
+                logger.info(format(rb.getString("enterprise.deployment.ejbendpoint.registration"),
+                        app.getAppName(),
+
+                        new WsUtil().getWebServerInfoForDAS().getWebServerRootURL(ejbendpoint.isSecure).toString() + contextRoot)
+                );
             }
+
         } catch (EndpointRegistrationException e) {
             logger.log(Level.SEVERE,  format(rb.getString("error.registering.endpoint"),e.toString()));
         }
@@ -141,30 +141,37 @@ public class WebServicesApplication implements ApplicationContainer {
 
     private ArrayList<EjbEndpoint> getEjbEndpoints() {
         ejbendpoints = new ArrayList<EjbEndpoint>();
-        
-        EjbEndpoint ejbendpoint = null;
+
         Application app = deploymentCtx.getModuleMetaData(Application.class);
-        if (!isJAXWSbasedApp(app)) {
-            Set<BundleDescriptor> bundles = app.getBundleDescriptors();
-            for(BundleDescriptor bundle : bundles) {
-                WebServicesDescriptor wsDesc = bundle.getWebServices();
-                for (WebService ws : wsDesc.getWebServices()) {
 
-                    for (WebServiceEndpoint endpoint:ws.getEndpoints() ){
-                        //Only add for ejb based endpoints
-                        if (endpoint.implementedByEjbComponent()) {
-                            ejbendpoint = new EjbEndpoint(endpoint.getEndpointAddressUri(),endpoint.isSecure()) ;
-                            ejbendpoints.add(ejbendpoint) ;
-                        }
-                    }
-                }
-            }
+        Set<BundleDescriptor> bundles = app.getBundleDescriptors();
+        for(BundleDescriptor bundle : bundles) {
+            collectEjbEndpoints(bundle);
         }
-
 
         return ejbendpoints;
     }
 
+
+    private void collectEjbEndpoints(BundleDescriptor bundleDesc) {
+        WebServicesDescriptor wsDesc = bundleDesc.getWebServices();
+        for (WebService ws : wsDesc.getWebServices()) {
+            for (WebServiceEndpoint endpoint : ws.getEndpoints()) {
+                //Only add for ejb based endpoints
+                if (endpoint.implementedByEjbComponent()) {
+                    ejbendpoints.add(new EjbEndpoint(endpoint.getEndpointAddressUri(), endpoint.isSecure()));
+                }
+            }
+        }
+        //For ejb webservices in war we need to get the extension descriptors
+        //from the WebBundleDescriptor and process those too
+        //http://monaco.sfbay/detail.jsf?cr=6956406
+        for (EjbBundleDescriptor ejbD : bundleDesc.getExtensionsDescriptors(EjbBundleDescriptor.class)) {
+            collectEjbEndpoints(ejbD);
+        }
+
+
+    }
     public boolean stop(ApplicationContext stopContext) {
         try {
             Iterator<EjbEndpoint> iter = ejbendpoints.iterator();
@@ -198,17 +205,7 @@ public class WebServicesApplication implements ApplicationContainer {
         return app;
     }
 
-    private boolean isJAXWSbasedApp(Application app){
-        if ((app.getStandaloneBundleDescriptor() instanceof WebBundleDescriptor)
-                            &&  ((!app.getStandaloneBundleDescriptor().getSpecVersion().equals("2.5")
-                                  || (!app.getStandaloneBundleDescriptor().hasWebServices()) ) )
-                            ) {
-            //JAXWS based apps
-            //do nothing
-            return true;
-        } else
-           return false;
-    }
+   
 
     private String format(String key, String ... values){
         return MessageFormat.format(key, (Object[]) values);

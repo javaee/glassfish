@@ -36,7 +36,6 @@
 
 package org.glassfish.webservices.annotation.handlers;
 
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -56,7 +55,6 @@ import org.glassfish.apf.impl.HandlerProcessingResultImpl;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
-import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.XModuleType;
@@ -106,6 +104,17 @@ public class WebServiceHandler extends AbstractHandler {
         AnnotatedElementHandler annCtx = annInfo.getProcessingContext().getHandler();
         AnnotatedElement annElem = annInfo.getAnnotatedElement();
         AnnotatedElement origAnnElem = annElem;
+
+        boolean ejbInWar = ignoreWebserviceAnnotations(annElem, annCtx);
+        //Bug  http://monaco.sfbay/detail.jsf?cr=6956406
+        //When there is an ejb webservice packaged in a war
+        //ignore the annotation processing for WebBundleDescriptor
+        //In Ejb webservice in a war there are 2 bundle descriptors
+        //so we should just allow the processing for the EjbBundleDescriptor
+        //and add webservices to that BundleDescriptor
+        if (ejbInWar) {
+            return HandlerProcessingResultImpl.getDefaultResult(getAnnotationType(), ResultType.PROCESSED);
+        }
 
         // sanity check
         if (!(annElem instanceof Class)) {
@@ -514,4 +523,23 @@ public class WebServiceHandler extends AbstractHandler {
           return MessageFormat.format(key,values);
     }
 
+    /**
+     * This is for the ejb webservices in war case
+     * Incase there is an@Stateless and @WebService and the annotationCtx
+     * is a WebBundleContext or WebComponentContext
+     * in that case ignore the annotations so that they do not get added twice
+     * to the bundle descriptors
+     *
+     */
+    private boolean ignoreWebserviceAnnotations(AnnotatedElement annElem,AnnotatedElementHandler annCtx){
+
+        javax.ejb.Stateless stateless = annElem.getAnnotation(javax.ejb.Stateless.class);
+        javax.jws.WebService webservice = annElem.getAnnotation(javax.jws.WebService.class);
+        if ((stateless != null) && (webservice != null)
+               && ( (annCtx instanceof WebBundleContext) || (annCtx instanceof WebComponentContext)) ) {
+            return true;
+        }
+        return false;
+
+    }
 }
