@@ -122,8 +122,13 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
                 }
 
             } else {
-                registerToDAS();
-                _rendezvousOccurred = true;
+                try {
+                    registerToDAS();
+                    _rendezvousOccurred = true;
+                } catch (CommandException ce) {
+                    instanceDir.delete();
+                    throw ce;
+                }
             }
         }
         try {
