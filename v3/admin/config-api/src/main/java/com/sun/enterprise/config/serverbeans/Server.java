@@ -365,7 +365,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 final String instanceName = instance.getName();
                 try {
                     File configConfigDir = new File(env.getConfigDirPath(), cluster.getConfigRef());
-                    configConfigDir.mkdirs();
+                    new File(configConfigDir, "docroot").mkdirs();
+                    new File(configConfigDir, "lib/ext").mkdirs();
                 }
                 catch(Exception e) {
                     // no big deal - just ignore
@@ -394,7 +395,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 }
                 try {
                     File configConfigDir = new File(env.getConfigDirPath(), specifiedConfig.getName());
-                    configConfigDir.mkdirs();
+                    new File(configConfigDir, "docroot").mkdirs();
+                    new File(configConfigDir, "lib/ext").mkdirs();
                 }
                 catch(Exception e) {
                     // no big deal - just ignore
@@ -431,7 +433,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 instance.setConfigRef(configName);
                 try {
                     File configConfigDir = new File(env.getConfigDirPath(), configName);
-                    configConfigDir.mkdirs();
+                    new File(configConfigDir, "docroot").mkdirs();
+                    new File(configConfigDir, "lib/ext").mkdirs();
                 }
                 catch(Exception e) {
                     // no big deal - just ignore

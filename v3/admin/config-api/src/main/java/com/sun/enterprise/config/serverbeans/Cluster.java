@@ -360,7 +360,8 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
 
                 try {
                     File configConfigDir = new File(env.getConfigDirPath(), configName);
-                    configConfigDir.mkdirs();
+                    new File(configConfigDir, "docroot").mkdirs();
+                    new File(configConfigDir, "lib/ext").mkdirs();
                 }
                 catch(Exception e) {
                     // no big deal - just ignore
