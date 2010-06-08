@@ -88,6 +88,24 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
          return RuntimeType.INSTANCE;
     }
 
+    @Override
+    protected boolean mkdirs(File f) {
+        // we definitely do NOT want dirs created for this instance if
+        // they don't exist!
+        return false;
+    }
+
+
+    @Override
+    protected void validate() throws CommandException {
+        super.validate();
+
+        File dir = getServerDirs().getServerDir();
+
+        if(!dir.isDirectory())
+            throw new CommandException(strings.get("Instance.noSuchInstance"));
+    }
+
     /**
      */
     @Override

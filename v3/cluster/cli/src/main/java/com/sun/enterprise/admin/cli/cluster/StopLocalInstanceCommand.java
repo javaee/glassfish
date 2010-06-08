@@ -136,7 +136,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
     private int noSuchInstance() {
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
-        logger.printWarning(strings.get("StopInstance.noSuchInstance"));
+        logger.printWarning(strings.get("Instance.noSuchInstance"));
         return 0;
     }
 
