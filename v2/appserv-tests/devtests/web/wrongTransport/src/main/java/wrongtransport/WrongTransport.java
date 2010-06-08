@@ -44,18 +44,14 @@ import com.sun.appserv.test.BaseDevTest;
 import com.sun.grizzly.config.HttpProtocolFinder;
 
 public class WrongTransport extends BaseDevTest {
-    private static final String TEST_NAME = "wrongProtocol";
-    private String host = null;
-    private String port = null;
+    private static final String TEST_NAME = "wrongTransport";
+    private String secureURL;
 
-    public WrongTransport(final String hostAddress, final String portNumber) {
-        host = hostAddress;
-        port = portNumber;
+    public WrongTransport(final String host, final String port) {
         createPUElements();
         try {
-            final String url = "http://" + host + ":" + port + "/";
-            System.out.println("Connecting to: " + url);
-            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            secureURL = "https://" + host + ":" + port + "/";
+            HttpURLConnection connection = (HttpURLConnection) new URL("http://" + host + ":" + port + "/").openConnection();
             connection.setInstanceFollowRedirects(true);
             checkStatus(connection);
             parseResponse(connection);
@@ -89,47 +85,49 @@ public class WrongTransport extends BaseDevTest {
             "--protocol", "http-redirect",
             "--classname", "com.sun.grizzly.config.HttpRedirectFilter",
             "redirect-filter"));
+
         //  admin-listener-http
-        report("create-admin-listener-http", asadmin("create-protocol",
-            "--securityenabled", "true",
-            "admin-listener-http"));
-        report("create-admin-http", asadmin("create-http",
-            "--default-virtual-server", "__asadmin",
-            "admin-listener-http"));
-        report("create-admin-ssl", asadmin("create-ssl",
-            "--certname", "s1as",
-            "--type", "network-listener",
-            "--ssl2enabled", "false",
-            "--ssl3enabled", "false",
-            "--clientauthenabled", "false",
-            "admin-listener-http"));
-        //  pu-admin-listener
-        report("create-admin-listener-http", asadmin("create-protocol",
-            "pu-admin-listener"));
-        report("create-protocol-finder-admin", asadmin("create-protocol-finder",
-            "--protocol", "pu-admin-listener",
-            "--target-protocol", "admin-listener-http",
+//        report("create-admin-listener-http", asadmin("create-protocol",
+//            "--securityenabled", "true",
+//            "admin-listener-http"));
+//        report("create-admin-http", asadmin("create-http",
+//            "--default-virtual-server", "__asadmin",
+//            "admin-listener-http"));
+//        report("create-admin-ssl", asadmin("create-ssl",
+//            "--certname", "s1as",
+//            "--type", "network-listener",
+//            "--ssl2enabled", "false",
+//            "--ssl3enabled", "false",
+//            "--clientauthenabled", "false",
+//            "admin-listener-http"));
+
+        //  pu-protocol
+        report("create-pu-protocol", asadmin("create-protocol",
+            "pu-protocol"));
+        report("create-protocol-finder-http-finder", asadmin("create-protocol-finder",
+            "--protocol", "pu-protocol",
+            "--target-protocol", "http-listener-2",
             "--classname", HttpProtocolFinder.class.getName(),
             "http-finder"));
-        report("create-protocol-finder-http", asadmin("create-protocol-finder",
-            "--protocol", "pu-admin-listener",
+        report("create-protocol-finder-http-redirect", asadmin("create-protocol-finder",
+            "--protocol", "pu-protocol",
             "--target-protocol", "http-redirect",
             "--classname", HttpProtocolFinder.class.getName(),
             "http-redirect"));
         // reset listener
-        report("set-http-listener", asadmin("set",
-            "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol=pu-admin-listener"));
+        report("set-http-listener-protocol", asadmin("set",
+            "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol=pu-protocol"));
     }
 
     private void deletePUElements() {
         // reset listener
-        report("set-http-listener", asadmin("set",
+        report("reset-http-listener-protocol", asadmin("set",
             "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol=http-listener-1"));
-        report("delete-admin-listener-http", asadmin("delete-protocol",
-            "pu-admin-listener"));
-        report("delete-admin-listener-http", asadmin("delete-protocol",
-            "admin-listener-http"));
-        report("delete-admin-listener-http", asadmin("delete-protocol",
+        report("delete-pu-protocol", asadmin("delete-protocol",
+            "pu-protocol"));
+//        report("delete-admin-listener-http", asadmin("delete-protocol",
+//            "admin-listener-http"));
+        report("delete-http-redirect", asadmin("delete-protocol",
             "http-redirect"));
     }
 
@@ -138,7 +136,7 @@ public class WrongTransport extends BaseDevTest {
         int responseCode = connection.getResponseCode();
         String location = connection.getHeaderField("location");
         report("response-code", responseCode == 302);
-        report("returned-location", location != null && location.equals("https://" + host + ":" + port + "/"));
+        report("returned-location", secureURL.equals(location));
     }
 
     private void parseResponse(HttpURLConnection connection) throws Exception {
