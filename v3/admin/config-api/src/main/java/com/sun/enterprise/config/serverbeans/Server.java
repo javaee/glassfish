@@ -506,8 +506,10 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 if(config != null && domain.getReferenceContainersOf(config).size() > 1)
                     return;
                 try {
-                    File configConfigDir = new File(env.getConfigDirPath(), config.getName());
-                    FileUtils.whack(configConfigDir);
+                    if(config != null) {
+                        File configConfigDir = new File(env.getConfigDirPath(), config.getName());
+                        FileUtils.whack(configConfigDir);
+                    }
                 }
                 catch(Exception e) {
                     // no big deal - just ignore
