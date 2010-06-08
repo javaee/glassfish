@@ -92,7 +92,7 @@ public class AdminInfraTest extends BaseDevTest {
 
         //evaluate using xpath that there are 3 elements in the domain.xml
 
-         o = evalXPath(xpathExpr, XPathConstants.NUMBER);
+        o = evalXPath(xpathExpr, XPathConstants.NUMBER);
         System.out.println("No of cluster elements in cluster: " + o);
         if(o instanceof Double) {
             report("evaluation-xpath-create-cluster", o.equals(new Double(3.0 + startingNumberOfClusters)));
@@ -103,8 +103,22 @@ public class AdminInfraTest extends BaseDevTest {
 
         //list-clusters
         report("list-clusters", asadmin("list-clusters"));
+        testDeleteClusterWithInstances();
         cleanup();
         stat.printSummary();
+
+    }
+
+    private void  testDeleteClusterWithInstances(){
+        //test for issue 12172
+        final String iname = "xyz1";
+        final String cluster = "cl7";
+        asadmin("create-cluster", cluster) ;
+        asadmin("create-local-instance","--cluster",cluster, iname);
+        report("delete-cluster-with-instance", !asadmin("delete-cluster",cluster));
+        asadmin("delete-local-instance",iname);
+        report("delete-cluster-no-instance", asadmin("delete-cluster",cluster));
+
 
     }
 
