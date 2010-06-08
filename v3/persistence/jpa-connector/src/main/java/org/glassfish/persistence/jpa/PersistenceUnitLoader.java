@@ -174,8 +174,7 @@ public class PersistenceUnitLoader {
 
         // XXX  - use DeploymentContext directly instead of creating helper instance first
 
-        boolean isDeploy = providerContainerContractInfo.isDeploy();
-        if (isDeploy) {
+        if (providerContainerContractInfo.isJava2DBRequired()) {
             processor = new JPAJava2DBProcessor(new Java2DBProcessorHelper(providerContainerContractInfo.getDeploymentContext()));
             java2db = processor.isJava2DbPU(pud);
         }

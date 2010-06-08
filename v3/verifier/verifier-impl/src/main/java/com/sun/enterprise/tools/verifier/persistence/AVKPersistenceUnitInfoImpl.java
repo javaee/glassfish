@@ -105,7 +105,7 @@ public class AVKPersistenceUnitInfoImpl extends PersistenceUnitInfoImpl
                 return null;
             }
 
-            public boolean isDeploy()
+            public boolean isJava2DBRequired()
             {
                 return false;
             }

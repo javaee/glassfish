@@ -115,10 +115,6 @@ public class Java2DBProcessorHelper {
      */
     private  boolean deploy;
 
-    /**
-     * True if this is instance is created for undeploy
-     */
-    private  boolean undeploy;
 
     private  Boolean cliCreateTables;
     private  Boolean cliDropAndCreateTables;
@@ -153,8 +149,7 @@ public class Java2DBProcessorHelper {
             logger.fine("---> Origin: " + params.origin);
         }
 
-        deploy = (params.origin == OpsParams.Origin.deploy);
-        undeploy = (params.origin == OpsParams.Origin.undeploy);
+        deploy = params.origin.isDeploy();
 
         deploymentContextProps = ctx.getModuleProps();
     }
@@ -211,20 +206,7 @@ public class Java2DBProcessorHelper {
         subReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         
     }
-    
-    /**
-     * @return true if this instance was created for the deploy operation.
-     */
-    public boolean isDeploy() {
-        return deploy;
-    }
 
-    /**
-     * @return true if this instance was created for the undeploy operation.
-     */
-    public boolean isUndeploy() {
-        return undeploy;
-    }
 
     /**
      * Iterate over all "create" or "drop" ddl files and execute them.

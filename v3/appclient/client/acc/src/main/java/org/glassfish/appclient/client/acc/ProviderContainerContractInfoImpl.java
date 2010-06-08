@@ -136,8 +136,8 @@ public class ProviderContainerContractInfoImpl implements ProviderContainerContr
         return null;
     }
 
-    public boolean isDeploy() {
-        // Returns whether an application is being deployed into server. For an AppClient it is always false
+    public boolean isJava2DBRequired() {
+        // Returns whether Java2DB is required or not. For an AppClient it is always false
         return false;
     }
 

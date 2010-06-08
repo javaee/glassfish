@@ -101,10 +101,10 @@ public interface ProviderContainerContractInfo {
     ValidatorFactory getValidatorFactory();
 
     /**
-     * Answers whether an application is being deployed
-     * @return true if application is being deployed false otherwise
+     * Will be called while loading an application.
+     * @return true if java2DB is required false otherwise
      */
-    boolean isDeploy();
+    boolean isJava2DBRequired();
 
     /**
      * @return DeploymentContext associated with this instance.

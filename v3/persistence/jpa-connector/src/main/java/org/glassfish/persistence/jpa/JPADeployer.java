@@ -86,7 +86,7 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
     protected void cleanArtifacts(DeploymentContext dc) throws DeploymentException {
         // Drop tables if needed on undeploy.
         OpsParams params = dc.getCommandParameters(OpsParams.class);
-        if (params.origin == OpsParams.Origin.undeploy) {
+        if (params.origin.isUndeploy()) {
             Java2DBProcessorHelper helper = new Java2DBProcessorHelper(dc);
             helper.init();
             helper.createOrDropTablesInDB(false, "JPA"); // NOI18N
@@ -256,12 +256,11 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
             return validatorFactory;
         }
 
-        /**
-         * @return true if applicationj is being deployed false other wise (for example if it is an appserver restart)
-         */
-        public boolean isDeploy() {
+        public boolean isJava2DBRequired() {
             OpsParams params = deploymentContext.getCommandParameters(OpsParams.class);
-            return params.origin == OpsParams.Origin.deploy;
+            // We only do java2db while being deployed on DAS. We do not do java2DB on load of an application or being deployed on an instance of a cluster
+            // The method below gives us correct answers to handle above conditions
+            return !params.origin.isArtifactsPresent();
         }
 
         public DeploymentContext getDeploymentContext() {
