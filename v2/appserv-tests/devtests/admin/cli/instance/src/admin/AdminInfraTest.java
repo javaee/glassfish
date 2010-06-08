@@ -118,20 +118,14 @@ public class AdminInfraTest extends BaseDevTest {
     }
 
     public void run() {
-        try {
-            startDomain();
-            testDuplicateReportNames();
-            testNamesWithSpaces();
-            create();
-            delete();
-            createFail();
-            testNoCreateForStop();
-            createStartStopDelete();
-            stat.printSummary();
-        }
-        finally {
-            stopDomain();
-        }
+		testDuplicateReportNames();
+		testNamesWithSpaces();
+		create();
+		delete();
+		createFail();
+		testNoCreateForStop();
+		createStartStopDelete();
+		stat.printSummary();
     }
 
     private void testNamesWithSpaces() {
@@ -143,26 +137,6 @@ public class AdminInfraTest extends BaseDevTest {
         report("duplicate_here", true);
         report("duplicate_here", true);
         report("duplicate_here", true);
-    }
-
-    private void startDomain() {
-        domain1WasRunning = asadmin("start-domain", "domain1");
-
-        if (domain1WasRunning) {
-            printf("\n*******  IGNORE THE SCARY ERROR ABOVE !!!!!!\n"
-                    + "domain1 was already running.  It will not be stopped "
-                    + "at the end of the tests.\n******\n");
-        }
-        else {
-            printf("domain1 was started.");
-        }
-
-    }
-
-    private void stopDomain() {
-        if (!domain1WasRunning) {
-            report("stop-domain-xxxx", asadmin("stop-domain", "domain1"));
-        }
     }
 
     private void testNoCreateForStop() {
