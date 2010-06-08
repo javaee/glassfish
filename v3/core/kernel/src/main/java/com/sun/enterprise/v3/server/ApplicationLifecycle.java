@@ -840,10 +840,10 @@ public class ApplicationLifecycle implements Deployment {
         ConfigSupport.apply(new SingleConfigCode() {
             public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
                 // get the transaction
-                Transaction t = configSupport.getTransaction(param);
+                Transaction t = Transaction.getTransaction(param);
                 if (t!=null) {
                     Applications apps = ((Domain)param).getApplications(); 
-                    ConfigBeanProxy apps_w = configSupport.enrollInTransaction(t, apps);
+                    ConfigBeanProxy apps_w = t.enroll(apps);
                     // adding the application element
                     Application app = apps_w.createChild(Application.class);
                     setAppAttributes(app, deployParams, appProps);
@@ -856,7 +856,7 @@ public class ApplicationLifecycle implements Deployment {
                     if (servr != null) {
                         // adding the application-ref element to the standalone
                         // server instance
-                        ConfigBeanProxy servr_w = configSupport.enrollInTransaction(t, servr);
+                        ConfigBeanProxy servr_w = t.enroll(servr);
                         // adding the application-ref element to the standalone
                         // server instance
                         ApplicationRef appRef = servr_w.createChild(ApplicationRef.class);
@@ -868,13 +868,13 @@ public class ApplicationLifecycle implements Deployment {
                     if (cluster != null) {
                         // adding the application-ref element to the cluster
                         // and instances
-                        ConfigBeanProxy cluster_w = configSupport.enrollInTransaction(t, cluster);
+                        ConfigBeanProxy cluster_w = t.enroll(cluster);
                         ApplicationRef appRef = cluster_w.createChild(ApplicationRef.class);
                         setAppRefAttributes(appRef, deployParams);
                         ((Cluster)cluster_w).getApplicationRef().add(appRef);
 
                         for (Server svr : cluster.getInstances() ) {
-                            ConfigBeanProxy svr_w = configSupport.enrollInTransaction(t, svr);
+                            ConfigBeanProxy svr_w = t.enroll(svr);
                             ApplicationRef appRef2 = svr_w.createChild(ApplicationRef.class);
                             setAppRefAttributes(appRef2, deployParams);
                             ((Server)svr_w).getApplicationRef().add(appRef2);
@@ -950,13 +950,13 @@ public class ApplicationLifecycle implements Deployment {
         ConfigSupport.apply(new SingleConfigCode() {
             public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
                 // get the transaction
-                Transaction t = configSupport.getTransaction(param);
+                Transaction t = Transaction.getTransaction(param);
                 if (t!=null) {
                     Server servr = ((Domain)param).getServerNamed(target);
                     if (servr != null) {
                         // remove the application-ref from standalone 
                         // server instance
-                        ConfigBeanProxy servr_w = configSupport.enrollInTransaction(t, servr);
+                        ConfigBeanProxy servr_w = t.enroll(servr);
                         for (ApplicationRef appRef : 
                             servr.getApplicationRef()) {
                             if (appRef.getRef().equals(appName)) {
@@ -970,7 +970,7 @@ public class ApplicationLifecycle implements Deployment {
                     Cluster cluster = ((Domain)param).getClusterNamed(target);
                     if (cluster != null) {
                         // remove the application-ref from cluster
-                        ConfigBeanProxy cluster_w = configSupport.enrollInTransaction(t, cluster);
+                        ConfigBeanProxy cluster_w = t.enroll(cluster);
                         for (ApplicationRef appRef : 
                             cluster.getApplicationRef()) {
                             if (appRef.getRef().equals(appName)) {
@@ -982,7 +982,7 @@ public class ApplicationLifecycle implements Deployment {
 
                         // remove the application-ref from cluster instances
                         for (Server svr : cluster.getInstances() ) {
-                            ConfigBeanProxy svr_w = configSupport.enrollInTransaction(t, svr);
+                            ConfigBeanProxy svr_w = t.enroll(svr);
                             for (ApplicationRef appRef : 
                                 svr.getApplicationRef()) {
                                 if (appRef.getRef().equals(appName)) {
@@ -996,7 +996,7 @@ public class ApplicationLifecycle implements Deployment {
 
                     // remove application element
                     Applications apps = ((Domain)param).getApplications();
-                    ConfigBeanProxy apps_w = configSupport.enrollInTransaction(t, apps);
+                    ConfigBeanProxy apps_w = t.enroll(apps);
                     for (ApplicationName module : apps.getModules()) {
                         if (module.getName().equals(appName)) {
                             ((Applications)apps_w).getModules().remove(module);
@@ -1015,7 +1015,7 @@ public class ApplicationLifecycle implements Deployment {
         ConfigSupport.apply(new SingleConfigCode() {
             public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
                 // get the transaction
-                Transaction t = configSupport.getTransaction(param);
+                Transaction t = Transaction.getTransaction(param);
                 if (t!=null) {
                     Server servr = ((Domain)param).getServerNamed(target);
                     if (servr != null) {
@@ -1024,7 +1024,7 @@ public class ApplicationLifecycle implements Deployment {
                         for (ApplicationRef appRef :
                             servr.getApplicationRef()) {
                             if (appRef.getRef().equals(appName)) {
-                                ConfigBeanProxy appRef_w = configSupport.enrollInTransaction(t, appRef);
+                                ConfigBeanProxy appRef_w = t.enroll(appRef);
                                 ((ApplicationRef)appRef_w).setEnabled(String.valueOf(enabled));
                                 break;
                             }
@@ -1036,7 +1036,7 @@ public class ApplicationLifecycle implements Deployment {
                         for (ApplicationRef appRef :
                             cluster.getApplicationRef()) {
                             if (appRef.getRef().equals(appName)) {
-                                ConfigBeanProxy appRef_w = configSupport.enrollInTransaction(t, appRef);
+                                ConfigBeanProxy appRef_w = t.enroll(appRef);
                                 ((ApplicationRef)appRef_w).setEnabled(String.valueOf(enabled));
                                 break;
                             }
@@ -1047,7 +1047,7 @@ public class ApplicationLifecycle implements Deployment {
                             for (ApplicationRef appRef :
                                 svr.getApplicationRef()) {
                                 if (appRef.getRef().equals(appName)) {
-                                    ConfigBeanProxy appRef_w = configSupport.enrollInTransaction(t, appRef);
+                                    ConfigBeanProxy appRef_w = t.enroll(appRef);
                                     ((ApplicationRef)appRef_w).setEnabled(String.valueOf(enabled));
                                     break;
                                 }
