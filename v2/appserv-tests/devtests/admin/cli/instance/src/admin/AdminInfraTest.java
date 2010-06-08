@@ -119,26 +119,18 @@ public class AdminInfraTest extends BaseDevTest {
 
     public void run() {
         try {
-            printf("NOT HUNG #1");
             startDomain();
-            printf("NOT HUNG #2");
             testDuplicateReportNames();
             testNamesWithSpaces();
-            printf("NOT HUNG #3");
             create();
             delete();
-            printf("NOT HUNG #4");
             createFail();
             testNoCreateForStop();
-            printf("NOT HUNG #5");
             createStartStopDelete();
-            printf("NOT HUNG #6");
             stat.printSummary();
         }
         finally {
-            printf("NOT HUNG #7");
             stopDomain();
-            printf("NOT HUNG #8");
         }
     }
 
@@ -183,27 +175,20 @@ public class AdminInfraTest extends BaseDevTest {
     }
 
     private void createStartStopDelete() {
-            printf("NOT HUNG #5a");
         String metname = "createStartStopDelete";
         String iname = generateInstanceName();
 
         report(metname + "-nodir-xxxx", !checkInstanceDir(iname));
         asadmin("stop-local-instance", iname); // in case it's running?!?
         report(metname + "-nodir", !checkInstanceDir(iname));
-            printf("NOT HUNG #5b");
         report(metname + "-create", asadmin("create-local-instance", iname));
         report(metname + "-yesdir", checkInstanceDir(iname));
-            printf("NOT HUNG #5c");
 
         report(metname + "-start", asadmin("start-local-instance", iname));
-            printf("NOT HUNG #5d");
         report(metname + "-list-instances", isInstanceRunning(iname));
-            printf("NOT HUNG #5e");
         report(metname + "-stop", asadmin("stop-local-instance", iname));
-            printf("NOT HUNG #5f");
 
         if (!asadmin("delete-local-instance", iname)) {
-            printf("NOT HUNG #5g-1");
             if (File.separatorChar == '\\') {
                 System.out.println("&&&&&&&&&   SKIPPING TWO  TESTS  $$$$$$$$$$$$$$");
                 for (int i = 0; i < 25; i++) {
@@ -212,11 +197,9 @@ public class AdminInfraTest extends BaseDevTest {
             }
         }
         else {
-            printf("NOT HUNG #5g-2");
             report(metname + "-delete", true);
             report(metname + "-no-dir-again", !checkInstanceDir(iname));
         }
-            printf("NOT HUNG #5h");
     }
 
     /**
