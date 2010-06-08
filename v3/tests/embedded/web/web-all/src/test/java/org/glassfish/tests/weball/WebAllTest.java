@@ -39,6 +39,7 @@ package org.glassfish.tests.weball;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.*;
+import org.glassfish.api.embedded.web.*;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -75,6 +76,11 @@ public class WebAllTest {
         server.getHabitat().getComponent(NetworkConfig.class);
         http = server.createPort(8080);
         Assert.assertNotNull("Failed to create port 8080!", http);
+        ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
+        EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
+        embedded.setConfiguration((WebBuilder)b);
+        embedded.bind(http, "http");
+
     }
 
     @Test
