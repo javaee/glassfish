@@ -449,10 +449,31 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             String instanceConfig = child.getConfigRef();
             final Config config = configs.getConfigByName(instanceConfig);
 
+            //check if the cluster contains instances throw error that cluster
+            //cannot be deleted
+            //issue 12172
+            List<ServerRef> serverRefs = child.getServerRef();
+            StringBuffer namesOfServers = new StringBuffer();
+            if (serverRefs.size() > 0) {
+                for (ServerRef serverRef: serverRefs){
+                    namesOfServers.append(new StringBuffer( serverRef.getRef()).append( ','));
+                }
+
+                final String msg = localStrings.getLocalString(
+                        "Cluster.hasInstances",
+                        "Cluster {0} contains server instances {1} and must not contain any instances"
+                        ,child.getName() ,namesOfServers.toString()
+                );
+
+                logger.log(Level.SEVERE, msg);
+                throw new TransactionFailure(msg);
+            }
+
             // check if the config is null or still in use by some other
             // ReferenceContainer -- if so just return...
             if(config == null || domain.getReferenceContainersOf(config).size() > 1)
                 return;
+
 
             try {
                 File configConfigDir = new File(env.getConfigDirPath(), config.getName());
