@@ -641,20 +641,25 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
                 new HashSet<PersistenceUnitDescriptor>();
         for (EntityManagerFactoryReference emfRef :
                 component.getEntityManagerFactoryReferenceDescriptors()) {
-            final String unitName = emfRef.getUnitName();
-            final BundleDescriptor bundle =
-                    emfRef.getReferringBundleDescriptor();
-            PersistenceUnitDescriptor pu = bundle.findReferencedPU(unitName);
-            if (pu == null) {
-                throw new RuntimeException(localStrings.getLocalString(
-                        "enterprise.deployment.exception-unresolved-pu-ref", "xxx", // NOI18N
-                        new Object[]{emfRef.getName(),
-                                bundle.getName()})
-                );
-            }
+            PersistenceUnitDescriptor pu = findReferencedPUViaEMFRef(emfRef);
             pus.add(pu);
         }
         return pus;
+    }
+
+    protected static PersistenceUnitDescriptor findReferencedPUViaEMFRef(EntityManagerFactoryReference emfRef) {
+        final String unitName = emfRef.getUnitName();
+        final BundleDescriptor bundle =
+                emfRef.getReferringBundleDescriptor();
+        PersistenceUnitDescriptor pu = bundle.findReferencedPU(unitName);
+        if (pu == null) {
+            throw new RuntimeException(localStrings.getLocalString(
+                    "enterprise.deployment.exception-unresolved-pu-ref", "xxx", // NOI18N
+                    new Object[]{emfRef.getName(),
+                            bundle.getName()})
+            );
+        }
+        return pu;
     }
 
     /**
@@ -667,28 +672,33 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
                 new HashSet<PersistenceUnitDescriptor>();
         for (EntityManagerReference emRef :
                 component.getEntityManagerReferenceDescriptors()) {
-            final String unitName = emRef.getUnitName();
-            final BundleDescriptor bundle =
-                    emRef.getReferringBundleDescriptor();
-            PersistenceUnitDescriptor pu = bundle.findReferencedPU(unitName);
-            if (pu == null) {
-                throw new RuntimeException(localStrings.getLocalString(
-                        "enterprise.deployment.exception-unresolved-pc-ref", "xxx", // NOI18N
-                        new Object[]{emRef.getName(),
-                                bundle.getName()})
-                );
-            }
-            if ("RESOURCE_LOCAL".equals(pu.getTransactionType())) { // NOI18N
-                throw new RuntimeException(localStrings.getLocalString(
-                        "enterprise.deployment.exception-non-jta-container-managed-em", "xxx", // NOI18N
-                        new Object[]{emRef.getName(),
-                                bundle.getName(),
-                                pu.getName()})
-                );
-            }
+            PersistenceUnitDescriptor pu = findReferencedPUViaEMRef(emRef);
             pus.add(pu);
         }
         return pus;
+    }
+
+    protected static PersistenceUnitDescriptor findReferencedPUViaEMRef(EntityManagerReference emRef) {
+        final String unitName = emRef.getUnitName();
+        final BundleDescriptor bundle =
+                emRef.getReferringBundleDescriptor();
+        PersistenceUnitDescriptor pu = bundle.findReferencedPU(unitName);
+        if (pu == null) {
+            throw new RuntimeException(localStrings.getLocalString(
+                    "enterprise.deployment.exception-unresolved-pc-ref", "xxx", // NOI18N
+                    new Object[]{emRef.getName(),
+                            bundle.getName()})
+            );
+        }
+        if ("RESOURCE_LOCAL".equals(pu.getTransactionType())) { // NOI18N
+            throw new RuntimeException(localStrings.getLocalString(
+                    "enterprise.deployment.exception-non-jta-container-managed-em", "xxx", // NOI18N
+                    new Object[]{emRef.getName(),
+                            bundle.getName(),
+                            pu.getName()})
+            );
+        }
+        return pu;
     }
 
     /**

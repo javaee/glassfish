@@ -887,9 +887,19 @@ public class EjbBundleDescriptor extends BundleDescriptor implements WritableJnd
             findReferencedPUs() {
         Collection<PersistenceUnitDescriptor> pus =
                 new HashSet<PersistenceUnitDescriptor>();
+        // Iterate through all the ejbs
         for (EjbDescriptor ejb : getEjbs()) {
             pus.addAll(findReferencedPUsViaPURefs(ejb));
             pus.addAll(findReferencedPUsViaPCRefs(ejb));
+        }
+
+        // Add bundle level artifacts added by e.g. CDDI
+        for (EntityManagerFactoryReference emfRef : getEntityManagerFactoryReferenceDescriptors()) {
+            pus.add( findReferencedPUViaEMFRef(emfRef) );
+        }
+
+        for (EntityManagerReference emRef : getEntityManagerReferenceDescriptors()) {
+            pus.add( findReferencedPUViaEMRef(emRef) );
         }
         return pus;
     }
