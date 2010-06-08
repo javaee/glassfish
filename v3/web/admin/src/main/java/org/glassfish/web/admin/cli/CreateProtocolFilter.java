@@ -106,9 +106,6 @@ public class CreateProtocolFilter implements AdminCommand {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
-            if (protocol.getHttp() != null || protocol.getSsl() != null) {
-                throw new TransactionFailure("Mixing http/ssl and port unification elements is not allowed.");
-            }
             ProtocolChainInstanceHandler handler = getHandler(protocol);
             ProtocolChain chain = getChain(handler);
             ConfigSupport.apply(new SingleConfigCode<ProtocolChain>() {
