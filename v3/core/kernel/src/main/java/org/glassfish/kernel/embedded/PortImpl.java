@@ -78,77 +78,8 @@ public class PortImpl implements Port {
     int number;
     String defaultVirtualServer = "server";
 
-    public void bind(final int portNumber) {
+    public void setPortNumber(final int portNumber) {
         number = portNumber;
-        listenerName = getListenerName();
-
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Protocols>() {
-                public Object run(Protocols param) throws TransactionFailure {
-                    final Protocol protocol = param.createChild(Protocol.class);
-                    protocol.setName(listenerName);
-                    param.getProtocol().add(protocol);
-                    final Http http = protocol.createChild(Http.class);
-                    http.setDefaultVirtualServer(defaultVirtualServer);
-                    protocol.setHttp(http);
-                    return protocol;
-                }
-            }, config.getProtocols());
-            ConfigSupport.apply(new ConfigCode() {
-                public Object run(ConfigBeanProxy... params) throws TransactionFailure {
-                    NetworkListeners listeners = (NetworkListeners) params[0];
-                    Transports transports = (Transports) params[1];
-                    final NetworkListener listener = listeners.createChild(NetworkListener.class);
-                    listener.setName(listenerName);
-                    listener.setPort(Integer.toString(portNumber));
-                    listener.setProtocol(listenerName);
-                    listener.setThreadPool("http-thread-pool");
-                    if (listener.findThreadPool() == null) {
-                        final ThreadPool pool = listeners.createChild(ThreadPool.class);
-                        pool.setName(listenerName);
-                        listener.setThreadPool(listenerName);
-                    }
-                    listener.setTransport("tcp");
-                    if (listener.findTransport() == null) {
-                        final Transport transport = transports.createChild(Transport.class);
-                        transport.setName(listenerName);
-                        listener.setTransport(listenerName);
-                    }
-                    listeners.getNetworkListener().add(listener);
-                    return listener;
-                }
-            }, config.getNetworkListeners(), config.getTransports());
-
-            VirtualServer vs = httpService.getVirtualServerByName(defaultVirtualServer);
-            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
-                public Object run(VirtualServer avs) throws PropertyVetoException {
-                    avs.addNetworkListener(listenerName);
-                    return avs;
-                }
-            }, vs);
-        } catch (Exception e) {
-            removeListener();
-            e.printStackTrace();
-        }
-    }
-
-    private String getListenerName() {
-        int i = 1;
-        String name = "embedded-listener";
-        while (existsListener(name)) {
-            name = "embedded-listener-" + i++;
-        }
-        return name;
-    }
-
-
-    private boolean existsListener(String lName) {
-        for (NetworkListener nl : config.getNetworkListeners().getNetworkListener()) {
-            if (nl.getName().equals(lName)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void close() {

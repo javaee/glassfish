@@ -37,6 +37,7 @@
 
 package org.glassfish.web.embed.impl;
 
+import java.beans.PropertyVetoException;
 import java.io.File;
 
 import java.util.Arrays;
@@ -44,6 +45,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.*;
+
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.grizzly.config.dom.Http;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import com.sun.grizzly.config.dom.Protocol;
+import com.sun.grizzly.config.dom.Protocols;
+import com.sun.grizzly.config.dom.ThreadPool;
+import com.sun.grizzly.config.dom.Transport;
+import com.sun.grizzly.config.dom.Transports;
+
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.embedded.*;
 import org.glassfish.api.embedded.web.*;
@@ -51,6 +64,7 @@ import org.glassfish.api.embedded.web.config.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.*;
+import org.jvnet.hk2.config.*;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
@@ -75,7 +89,13 @@ import org.omg.CORBA.DynAnyPackage.*;
 public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
     @Inject
+    NetworkConfig config;
+    
+    @Inject
     Habitat habitat;
+
+    @Inject
+    HttpService httpService;
     
     private static Logger log = 
             Logger.getLogger(EmbeddedWebContainerImpl.class.getName());
@@ -102,6 +122,14 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
     
     private boolean listings;
 
+    private int portNumber;
+
+    private String listenerName = "embedded-listener";
+
+    private String defaultvs = "server";
+
+    private String securityEnabled = "false";
+
     // --------------------------------------------------------- Public Methods
 
     public void setConfiguration(WebBuilder builder) {
@@ -126,8 +154,123 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
     public void bind(Port port, String protocol) {
 
+        log.info("EmbeddedWebContainer binding port "+port.getPortNumber()+" protocol "+protocol);
+
+        portNumber = port.getPortNumber();
+        listenerName = getListenerName();
+
+        if (protocol.equals(Port.HTTP_PROTOCOL)) {
+            securityEnabled = "false";
+        } if (protocol.equals(Port.HTTPS_PROTOCOL)) {
+            securityEnabled = "true";
+        }
+
+        try {
+            ConfigSupport.apply(new SingleConfigCode<Protocols>() {
+                public Object run(Protocols param) throws TransactionFailure {
+                    final Protocol protocol = param.createChild(Protocol.class);
+                    protocol.setName(listenerName);
+                    protocol.setSecurityEnabled(securityEnabled);
+                    param.getProtocol().add(protocol);
+                    final Http http = protocol.createChild(Http.class);
+                    http.setDefaultVirtualServer(defaultvs);
+                    protocol.setHttp(http);
+                    return protocol;
+                }
+            }, config.getProtocols());
+            ConfigSupport.apply(new ConfigCode() {
+                public Object run(ConfigBeanProxy... params) throws TransactionFailure {
+                    NetworkListeners listeners = (NetworkListeners) params[0];
+                    Transports transports = (Transports) params[1];
+                    final NetworkListener listener = listeners.createChild(NetworkListener.class);
+                    listener.setName(listenerName);
+                    listener.setPort(Integer.toString(portNumber));
+                    listener.setProtocol(listenerName);
+                    listener.setThreadPool("http-thread-pool");
+                    if (listener.findThreadPool() == null) {
+                        final ThreadPool pool = listeners.createChild(ThreadPool.class);
+                        pool.setName(listenerName);
+                        listener.setThreadPool(listenerName);
+                    }
+                    listener.setTransport("tcp");
+                    if (listener.findTransport() == null) {
+                        final Transport transport = transports.createChild(Transport.class);
+                        transport.setName(listenerName);
+                        listener.setTransport(listenerName);
+                    }
+                    listeners.getNetworkListener().add(listener);
+                    return listener;
+                }
+            }, config.getNetworkListeners(), config.getTransports());
+
+            com.sun.enterprise.config.serverbeans.VirtualServer vs = httpService.getVirtualServerByName(defaultvs);
+            ConfigSupport.apply(new SingleConfigCode<com.sun.enterprise.config.serverbeans.VirtualServer>() {
+                public Object run(com.sun.enterprise.config.serverbeans.VirtualServer avs) throws PropertyVetoException {
+                    avs.addNetworkListener(listenerName);
+                    return avs;
+                }
+            }, vs);
+        } catch (Exception e) {
+            removeListener();
+            e.printStackTrace();
+        }
     }
 
+    private String getListenerName() {
+        int i = 1;
+        String name = "embedded-listener";
+        while (existsListener(name)) {
+            name = "embedded-listener-" + i++;
+        }
+        return name;
+    }
+
+    private boolean existsListener(String lName) {
+        for (NetworkListener nl : config.getNetworkListeners().getNetworkListener()) {
+            if (nl.getName().equals(lName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void removeListener() {
+        try {
+            ConfigSupport.apply(new ConfigCode() {
+                public Object run(ConfigBeanProxy[] params) throws PropertyVetoException, TransactionFailure {
+                    final NetworkListeners nt = (NetworkListeners) params[0];
+                    final com.sun.enterprise.config.serverbeans.VirtualServer vs = (com.sun.enterprise.config.serverbeans.VirtualServer) params[1];
+                    final Protocols protocols = (Protocols) params[2];
+                    List<Protocol> protos = protocols.getProtocol();
+                    for (Protocol proto : protos) {
+                        if (proto.getName().equals(listenerName)) {
+                            protos.remove(proto);
+                            break;
+                        }
+                    }
+                    final List<NetworkListener> list = nt.getNetworkListener();
+                    for (NetworkListener listener : list) {
+                        if (listener.getName().equals(listenerName)) {
+                            list.remove(listener);
+                            break;
+                        }
+                    }
+                    String regex = listenerName + ",?";
+                    String lss = vs.getNetworkListeners();
+                    if (lss != null) {
+                        vs.setNetworkListeners(lss.replaceAll(regex, ""));
+                    }
+                    return null;
+                }
+            }, config.getNetworkListeners(),
+                httpService.getVirtualServerByName(defaultvs),
+                config.getProtocols());
+        } catch (TransactionFailure tf) {
+            tf.printStackTrace();
+            throw new RuntimeException(tf);
+        }
+    }
+    
     /**
      * Starts this <tt>EmbeddedWebContainer</tt> and any of the
      * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances

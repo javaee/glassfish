@@ -79,7 +79,7 @@ public class PortsImpl implements Ports {
             }
         }
         PortImpl port = habitat.getComponent(PortImpl.class);
-        port.bind(portNumber);
+        port.setPortNumber(portNumber);
         ports.put(portNumber, port);
         return port;    }
 
