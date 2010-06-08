@@ -41,7 +41,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class IiopListenerClass extends BaseSeleniumTestClass {
+public class IiopListenerTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_IIOP_LISTENERS = "A number of IIOP listeners can be configured for an ORB";
     private static final String TRIGGER_NEW_IIOP_LISTENER = "New IIOP Listener";
     private static final String TRIGGER_EDIT_IIOP_LISTENER = "Edit IIOP Listener";
