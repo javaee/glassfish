@@ -37,11 +37,8 @@ package org.glassfish.admin.rest.resources;
 import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 @Path("/domain/")
-public class DomainResource extends TemplateResource {
+public class DomainResource extends org.glassfish.admin.rest.staticresources.GlassFishDomainResource {
 
-@Override public org.jvnet.hk2.config.Dom getEntity() {
-	return org.glassfish.admin.rest.RestService.getDomainBean();
-}
 @Path("stop/")
 public DomainStopResource getDomainStopResource() {
 DomainStopResource resource = resourceContext.getResource(DomainStopResource.class);
@@ -78,9 +75,21 @@ DomainHostPortResource resource = resourceContext.getResource(DomainHostPortReso
 return resource;
 }
 
+@Path("list-logger-levels/")
+public DomainListLoggerLevelsResource getDomainListLoggerLevelsResource() {
+DomainListLoggerLevelsResource resource = resourceContext.getResource(DomainListLoggerLevelsResource.class);
+return resource;
+}
+
+@Path("set-log-level/")
+public DomainSetLogLevelResource getDomainSetLogLevelResource() {
+DomainSetLogLevelResource resource = resourceContext.getResource(DomainSetLogLevelResource.class);
+return resource;
+}
+
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, {"version", "GET"}, {"rotate-log", "POST"}, {"host-port", "GET"}};
+return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, {"version", "GET"}, {"rotate-log", "POST"}, {"host-port", "GET"}, {"list-logger-levels", "GET"}, {"set-log-level", "POST"}};
 }
 
 	@Path("resources/")

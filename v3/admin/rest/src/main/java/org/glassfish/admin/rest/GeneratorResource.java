@@ -127,6 +127,9 @@ public class GeneratorResource {
         {"Domain", "version", "GET", "version", "Version"},
         {"Domain", "rotate-log", "POST", "rotate-log", "RotateLog"},
         {"Domain", "get-host-and-port", "GET", "host-port", "HostPort"},
+        {"Domain", "list-logger-levels", "GET", "list-logger-levels", "LogLevels"},
+        {"Domain", "set-log-level", "POST", "set-log-level", "LogLevel"},
+
         ///{"ListApplication", "deploy"},
         ///{"Application", "redeploy"},
         {"Application", "enable", "POST", "enable", "Enable", "id=$parent"},
@@ -163,7 +166,7 @@ public class GeneratorResource {
         Domain entity = RestService.getDomain();
 
         File loc =
-                new File(System.getProperty("user.home") + "/src/glassfish/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources");
+                new File(System.getProperty("user.home") + "/acvs/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources");
         loc.mkdirs();
         genDir = loc.getAbsolutePath();
 
@@ -375,18 +378,14 @@ public class GeneratorResource {
 
         if (beanName.equals("Domain")) {
             out.write("@Path(\"/" + "domain" + "/\")\n");
+            out.write("public class " + beanName + "Resource extends org.glassfish.admin.rest.staticresources.GlassFishDomainResource {\n\n");
+        } else {
+
+            out.write("public class " + beanName + "Resource extends TemplateResource {\n\n");
+
         }
 
-        out.write("public class " + beanName + "Resource extends TemplateResource {\n\n");
 
-
-        if (beanName.equals("Domain")) {
-            out.write("@Override public " + "org.jvnet.hk2.config.Dom" + " getEntity() {\n");
-            out.write("\treturn org.glassfish.admin.rest.RestService.getDomainBean();\n");
-            out.write("}\n");
-        }
-
-     /////ludo   generateCommand(beanName, out);
 
         generateCommandResources(beanName, out);
 

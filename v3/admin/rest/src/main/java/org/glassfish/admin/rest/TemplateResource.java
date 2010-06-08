@@ -81,7 +81,9 @@ import org.jvnet.hk2.config.ValidationException;
 import org.glassfish.admin.rest.provider.GetResult;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.ConfigSupport;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
@@ -126,7 +128,19 @@ public class TemplateResource {
         this.parent = parent;
         this.tagName = tagName;
         entity = parent.nodeElement(tagName);
+        if (entity == null) {
+            //create it on the fly
+            // jerome will change the domain.xml writer to not emit empty tags
+            try {
+                Class<? extends ConfigBeanProxy> proxy = TemplateListOfResource.getElementTypeByName(parent, tagName);
+                HashMap<String, String> data = new HashMap<String, String>();
+                ConfigSupport.createAndSet((ConfigBean) parent, proxy, data);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            entity = parent.nodeElement(tagName);
 
+        }
     }
 
     @GET

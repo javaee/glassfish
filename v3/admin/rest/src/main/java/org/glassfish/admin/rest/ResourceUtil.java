@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -68,6 +68,8 @@ import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.api.Param;
+import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.Dom;
 
 
 /**
@@ -348,7 +350,41 @@ public class ResourceUtil extends Util {
         return methodMetaData;
     }
 
+    public MethodMetaData getMethodMetaData2(Dom parent, ConfigModel childModel, int parameterType) {
+        MethodMetaData methodMetaData = new MethodMetaData();
 
+        Class<? extends ConfigBeanProxy> configBeanProxy = null;
+        try {
+            configBeanProxy = (Class<? extends ConfigBeanProxy>) parent.model.classLoaderHolder.get().loadClass(childModel.targetTypeName);
+
+            Set<String> attributeNames = childModel.getAttributeNames();
+            for (String attributeName : attributeNames) {
+                String methodName = getAttributeMethodName(attributeName);
+                try {
+                    Method method = configBeanProxy.getMethod(methodName);
+                    Attribute attribute = method.getAnnotation(Attribute.class);
+                    if (attribute != null) {
+                        ParameterMetaData parameterMetaData = getParameterMetaData(attribute);
+
+                        //camelCase the attributeName before passing out
+                        attributeName = eleminateHypen(attributeName);
+                        if (parameterType == Constants.QUERY_PARAMETER) {
+                            methodMetaData.putQureyParamMetaData(attributeName, parameterMetaData);
+                        } else {
+                            //message parameter
+                            methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
+                        }
+                    }
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return methodMetaData;
+    }
     /**
      * Constructs and returns the parameter meta-data.
      * @param command the command assocaited with the resource method

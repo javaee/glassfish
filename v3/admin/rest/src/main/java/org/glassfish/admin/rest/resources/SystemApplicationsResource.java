@@ -38,12 +38,6 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class SystemApplicationsResource extends TemplateResource {
 
-@Path("ejb-module/")
-public ListEjbModuleResource getEjbModuleResource() {
-	ListEjbModuleResource resource = resourceContext.getResource(ListEjbModuleResource.class);
-	resource.setParentAndTagName(getEntity() , "ejb-module");
-	return resource;
-}
 @Path("j2ee-application/")
 public ListJ2eeApplicationResource getJ2eeApplicationResource() {
 	ListJ2eeApplicationResource resource = resourceContext.getResource(ListJ2eeApplicationResource.class);
@@ -56,10 +50,16 @@ public ListExtensionModuleResource getExtensionModuleResource() {
 	resource.setParentAndTagName(getEntity() , "extension-module");
 	return resource;
 }
-@Path("appclient-module/")
-public ListAppclientModuleResource getAppclientModuleResource() {
-	ListAppclientModuleResource resource = resourceContext.getResource(ListAppclientModuleResource.class);
-	resource.setParentAndTagName(getEntity() , "appclient-module");
+@Path("application/")
+public ListApplicationResource getApplicationResource() {
+	ListApplicationResource resource = resourceContext.getResource(ListApplicationResource.class);
+	resource.setParentAndTagName(getEntity() , "application");
+	return resource;
+}
+@Path("ejb-module/")
+public ListEjbModuleResource getEjbModuleResource() {
+	ListEjbModuleResource resource = resourceContext.getResource(ListEjbModuleResource.class);
+	resource.setParentAndTagName(getEntity() , "ejb-module");
 	return resource;
 }
 @Path("web-module/")
@@ -68,22 +68,22 @@ public ListWebModuleResource getWebModuleResource() {
 	resource.setParentAndTagName(getEntity() , "web-module");
 	return resource;
 }
-@Path("connector-module/")
-public ListConnectorModuleResource getConnectorModuleResource() {
-	ListConnectorModuleResource resource = resourceContext.getResource(ListConnectorModuleResource.class);
-	resource.setParentAndTagName(getEntity() , "connector-module");
-	return resource;
-}
-@Path("application/")
-public ListApplicationResource getApplicationResource() {
-	ListApplicationResource resource = resourceContext.getResource(ListApplicationResource.class);
-	resource.setParentAndTagName(getEntity() , "application");
+@Path("appclient-module/")
+public ListAppclientModuleResource getAppclientModuleResource() {
+	ListAppclientModuleResource resource = resourceContext.getResource(ListAppclientModuleResource.class);
+	resource.setParentAndTagName(getEntity() , "appclient-module");
 	return resource;
 }
 @Path("lifecycle-module/")
 public ListLifecycleModuleResource getLifecycleModuleResource() {
 	ListLifecycleModuleResource resource = resourceContext.getResource(ListLifecycleModuleResource.class);
 	resource.setParentAndTagName(getEntity() , "lifecycle-module");
+	return resource;
+}
+@Path("connector-module/")
+public ListConnectorModuleResource getConnectorModuleResource() {
+	ListConnectorModuleResource resource = resourceContext.getResource(ListConnectorModuleResource.class);
+	resource.setParentAndTagName(getEntity() , "connector-module");
 	return resource;
 }
 }

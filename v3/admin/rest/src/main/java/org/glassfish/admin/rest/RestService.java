@@ -48,6 +48,7 @@ import org.jvnet.hk2.config.ConfigSupport;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 //import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 
 import org.glassfish.api.Startup;
@@ -80,6 +81,7 @@ public class RestService implements Startup, PostConstruct, PreDestroy, RestInte
     @Inject
     LocalPassword localPassword;
 
+    private static String logLocation;
     private static com.sun.enterprise.config.serverbeans.Domain theDomain;
     private static org.glassfish.flashlight.MonitoringRuntimeDataRegistry theMonitoringRegistry;
     private static ConfigSupport configSupport;
@@ -114,6 +116,10 @@ public class RestService implements Startup, PostConstruct, PreDestroy, RestInte
     
     public static MonitoringRuntimeDataRegistry getMonitoringRegistry() {
         return theMonitoringRegistry;
+    }
+    public static String getLogLocation(){
+           return logLocation;
+
     }
     /*
      *     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
@@ -167,6 +173,8 @@ public class RestService implements Startup, PostConstruct, PreDestroy, RestInte
     private void initialize() throws Exception {
         //System.getProperties().put("com.sun.grizzly.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
         theDomain = domain;
+        logLocation = env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/logs/server.log";
+
         theMonitoringRegistry = monitoringRegistry;
         ConfigSupport cs =
                 RestService.habitat.getComponent(ConfigSupport.class);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -68,7 +68,9 @@ import org.glassfish.admin.rest.provider.GetResultList;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.DomDocument;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
@@ -170,35 +172,46 @@ public abstract class TemplateListOfResource {
 
                 String errorMessage = getErrorMessage(data, actionReport);
                 return __resourceUtil.getResponse(400, /*400 - bad request*/
-                    errorMessage, requestHeaders, uriInfo);
-            }
-//            else {
-//                            // Example creating a new http-listener element under http-service
-//            //TODO
-//            HashMap<String, String> attributes = new HashMap<String, String>();
-//            attributes.put("id", "test-listener");
-//            attributes.put("enabled", "true");
-//            ConfigSupport.createAndSet(getEntity()., HttpListener.class, attributes);
-//                                String successMessage =
-//                        localStrings.getLocalString("rest.resource.create.message",
-//                            "\"{0}\" created successfully.", new Object[] {resourceToCreate});
-//                    return __resourceUtil.getResponse(201, //201 - created
-//                         successMessage, requestHeaders, uriInfo);
-//
-//
-//            }
-            String message =
-                localStrings.getLocalString("rest.resource.post.forbidden",
-                    "POST on \"{0}\" is forbidden.", new Object[] {resourceToCreate});
-            return __resourceUtil.getResponse(403, //403 - forbidden
-                 message, requestHeaders, uriInfo);
+                        errorMessage, requestHeaders, uriInfo);
+            } else {
+                // create it on the fly without a create CLI command.
 
+                Class<? extends ConfigBeanProxy> proxy = getElementTypeByName(parent, tagName);
+                ConfigSupport.createAndSet((ConfigBean) parent, proxy, data);
+                String successMessage =
+                        localStrings.getLocalString("rest.resource.create.message",
+                        "\"{0}\" created successfully.", new Object[]{resourceToCreate});
+                return __resourceUtil.getResponse(201, //201 - created
+                        successMessage, requestHeaders, uriInfo);
+
+            }
         } catch (Exception e) {
             throw new WebApplicationException(e,
-                Response.Status.INTERNAL_SERVER_ERROR);
+                    Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
+    public static Class<? extends ConfigBeanProxy> getElementTypeByName(Dom parentDom, String elementName)
+            throws ClassNotFoundException {
 
+        DomDocument document = parentDom.document;
+        ConfigModel.Property a = parentDom.model.getElement(elementName);
+        if (a != null) {
+            if (a.isLeaf()) {
+                //  : I am not too sure, but that should be a String @Element
+                return null;
+            } else {
+                ConfigModel childModel = ((ConfigModel.Node) a).getModel();
+                return (Class<? extends ConfigBeanProxy>) childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
+            }
+        }
+        // global lookup
+        ConfigModel model = document.getModelByElementName(elementName);
+        if (model != null) {
+            return (Class<? extends ConfigBeanProxy>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
+        }
+
+        return null;
+    }
 
     //called in case of POST on application resource (deployment).
     //resourceToCreate is the name attribute if provided.
@@ -303,6 +316,31 @@ public abstract class TemplateListOfResource {
                     postMethodMetaData.setIsFileUploadOperation(true);
                 }
                 optionsResult.putMethodMetaData("POST", postMethodMetaData);
+            } else {
+                ConfigModel.Node prop = (ConfigModel.Node) parent.model.getElement(tagName);
+                if (prop == null) { //maybe null when Element ("*") is used
+                    ConfigModel.Node prop2 = (ConfigModel.Node) parent.model.getElement("*");
+
+                    ConfigModel childModel = prop2.getModel();
+                    Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); ///  a shoulf be the typename
+                    List<ConfigModel> lcm = parent.document.getAllModelsImplementing(subType);
+                    if (lcm != null) {
+                        for (ConfigModel cmodel : lcm) {
+                            if (cmodel.getTagName().equals(tagName)) {
+                                MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData2(parent,
+                                        cmodel, Constants.MESSAGE_PARAMETER);
+                                postMethodMetaData.setDescription("Update");
+                                optionsResult.putMethodMetaData("POST", postMethodMetaData);
+                            }
+                        }
+                    }
+                } else {
+                    MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData2(parent,
+                            prop.getModel(), Constants.MESSAGE_PARAMETER);
+                    postMethodMetaData.setDescription("Update");
+                    optionsResult.putMethodMetaData("POST", postMethodMetaData);
+                }
+
             }
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
