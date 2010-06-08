@@ -45,12 +45,16 @@
  */
 package com.sun.appserv.test.util.process;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-/**
- *
- */
 public class ProcessManager {
 
     public ProcessManager(String... cmds) {
@@ -60,7 +64,7 @@ public class ProcessManager {
     ////////////////////////////////////////////////////////////////////////////
     public ProcessManager(List<String> Cmdline) {
         cmdline = new String[Cmdline.size()];
-        cmdline = (String[]) Cmdline.toArray(cmdline);
+        cmdline = Cmdline.toArray(cmdline);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -72,9 +76,9 @@ public class ProcessManager {
 
     ////////////////////////////////////////////////////////////////////////////
     public final void setStdinLines(List<String> list) {
-        if (list != null && list.size() > 0) {
+        if (list != null && !list.isEmpty()) {
             stdinLines = new String[list.size()];
-            stdinLines = (String[]) list.toArray(cmdline);
+            stdinLines = list.toArray(cmdline);
         }
     }
 
@@ -105,7 +109,6 @@ public class ProcessManager {
 
             try {
                 exit = process.exitValue();
-                wasError = false;
             } catch (IllegalThreadStateException tse) {
                 // this means that the process is still running...
                 process.destroy();
@@ -156,10 +159,9 @@ public class ProcessManager {
 
         try {
             pipe = new PrintWriter(new BufferedWriter(new OutputStreamWriter(process.getOutputStream())));
-
-            for (int i = 0; i < stdinLines.length; i++) {
-                debug("InputLine ->" + stdinLines[i] + "<-");
-                pipe.println(stdinLines[i]);
+            for (String stdinLine : stdinLines) {
+                debug("InputLine ->" + stdinLine + "<-");
+                pipe.println(stdinLine);
             }
             pipe.flush();
         } catch (Exception e) {
@@ -201,11 +203,9 @@ public class ProcessManager {
 
     ////////////////////////////////////////////////////////////////////////////
     private void waitAwhile() throws InterruptedException {
-        {
-            Thread processWaiter = new Thread(new TimeoutThread(process));
-            processWaiter.start();
-            processWaiter.join(timeout);
-        }
+        Thread processWaiter = new Thread(new TimeoutThread(process));
+        processWaiter.start();
+        processWaiter.join(timeout);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -224,10 +224,7 @@ public class ProcessManager {
             }
 
             List<String> cmds = new ArrayList<String>();
-
-            for (int i = 0; i < args.length; i++) {
-                cmds.add(args[i]);
-            }
+            cmds.addAll(Arrays.asList(args));
 
             ProcessManager pm = new ProcessManager(cmds);
             pm.execute();
@@ -246,8 +243,7 @@ public class ProcessManager {
     private int exit = -1;
     private int timeout;
     private Process process;
-    private boolean wasError = true;
-    private boolean echo = true;    
+    private boolean echo = true;
     private static final boolean debugOn = false;
     private String[] stdinLines;
     private List<Thread> threads = new ArrayList<Thread>(2);

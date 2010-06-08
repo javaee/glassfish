@@ -1,19 +1,55 @@
-package com.sun.appserv.test.util.results;
-/**
- @Class: Test
- @Description: Class holding One Test info.
- @Author : Ramesh Mandava
- @Last Modified :Initial creation By Ramesh on 10/24/2001
- @Last Modified : By Ramesh on 1/20/2002 , For preserving order of entry of
- testcases used a separate testCaseIdVector
- @Last Modified : By Justin Lee on 10/05/2009
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 2005-2010 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
  */
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
+package com.sun.appserv.test.util.results;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Class holding One Test info.
+ * 
+ * @Author : Ramesh Mandava
+ * @Last Modified :Initial creation By Ramesh on 10/24/2001
+ * @Last Modified : By Ramesh on 1/20/2002 , For preserving order of entry of testcases used a separate
+ * testCaseIdVector
+ * @Last Modified : By Justin Lee on 10/05/2009
+ */
 public class Test {
     private String id;
     private String name = ReporterConstants.NA;
@@ -93,7 +129,7 @@ public class Test {
 
     public void addTestCase(TestCase testCase) {
         List<TestCase> list = testCases.get(testCase.getName());
-        if(list == null) {
+        if (list == null) {
             list = new ArrayList<TestCase>();
             list.add(testCase);
             testCases.put(testCase.getName(), list);
@@ -155,9 +191,9 @@ public class Test {
 
     public void merge(final Test test) {
         for (List<TestCase> list : test.getTestCases().values()) {
-        for (TestCase testCase : list) {
-            addTestCase(testCase);
-        }
+            for (TestCase testCase : list) {
+                addTestCase(testCase);
+            }
         }
     }
 }
