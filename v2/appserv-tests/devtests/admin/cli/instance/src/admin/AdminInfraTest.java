@@ -280,7 +280,7 @@ public class AdminInfraTest extends BaseDevTest {
     private final static boolean DEBUG;
     private static final String[] instanceNames;
     private final SortedSet<String> reportNames = new TreeSet<String>();
-    private static final int NUM_INSTANCES = 1;
+    private static final int NUM_INSTANCES = 50;
     private final static boolean isHudson = Boolean.parseBoolean(System.getenv("HUDSON"));
 
     static {
