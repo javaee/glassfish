@@ -44,6 +44,7 @@ import org.jvnet.hk2.component.PerLookup;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -125,6 +126,38 @@ public class Transaction {
             }
         }
         return transactionChanges;
+    }
+
+    /**
+     * Retuns the transaction associated with a writable view
+     * @param source the proxy to the writable view
+     * @return the transaction object for that view or null if not transaction is in progress
+     */
+    public static <T extends ConfigBeanProxy> Transaction getTransaction(final T source) {
+        Object sourceBean = Proxy.getInvocationHandler(source);
+        if (sourceBean instanceof WriteableView) {
+            return ((WriteableView) sourceBean).getTransaction();
+        }
+        return null;
+    }
+
+   /**
+     * Enroll a configuration object in a transaction and returns a writeable view of it
+     *
+     * @param source the configured interface implementation
+     * @return the new interface implementation providing write access
+     * @throws TransactionFailure if the object cannot be enrolled (probably already enrolled in
+     * another transaction).
+     */
+    public <T extends ConfigBeanProxy> T enroll(final T source)
+        throws TransactionFailure {
+
+        ConfigView sourceBean = (ConfigView) Proxy.getInvocationHandler(source);
+        WriteableView writeableView = ConfigSupport.getWriteableView(source, (ConfigBean) sourceBean.getMasterView());
+        if (!writeableView.join(this)) {
+            throw new TransactionFailure("Cannot join transaction : " + sourceBean.getProxyType());
+        }
+        return (T) writeableView.getProxy(sourceBean.getProxyType());
     }
 
 }
