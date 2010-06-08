@@ -37,7 +37,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
+import java.io.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.config.support.*;
@@ -61,6 +63,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.validation.constraints.Min;
+import org.glassfish.api.admin.ServerEnvironment;
 /**
  *
  * Java EE Application Server Configuration
@@ -317,6 +320,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
         @Inject
         Domain domain;
+
+        @Inject
+        private ServerEnvironment env;
         
         @Override
         public void decorate(AdminCommandContext context, Server instance) throws TransactionFailure, PropertyVetoException {
@@ -357,6 +363,13 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
                 Cluster cluster = domain.getClusterNamed(clusterName);
                 final String instanceName = instance.getName();
+                try {
+                    File configConfigDir = new File(env.getConfigDirPath(), cluster.getConfigRef());
+                    configConfigDir.mkdirs();
+                }
+                catch(Exception e) {
+                    // no big deal - just ignore
+                }
 
                 if (cluster != null) {
                     ConfigSupport.apply(new SingleConfigCode<Cluster>() {
@@ -378,6 +391,13 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 if (specifiedConfig == null) {
                     throw new TransactionFailure(localStrings.getLocalString(
                             "noSuchConfig", "Configuration {0} does not exist.", configRef));
+                }
+                try {
+                    File configConfigDir = new File(env.getConfigDirPath(), specifiedConfig.getName());
+                    configConfigDir.mkdirs();
+                }
+                catch(Exception e) {
+                    // no big deal - just ignore
                 }
             }
 
@@ -409,6 +429,13 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
                 final String configName = instance.getName()+"-config";
                 instance.setConfigRef(configName);
+                try {
+                    File configConfigDir = new File(env.getConfigDirPath(), configName);
+                    configConfigDir.mkdirs();
+                }
+                catch(Exception e) {
+                    // no big deal - just ignore
+                }
 
                 ConfigSupport.apply(new ConfigCode() {
                     @Override
@@ -457,6 +484,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         @Inject
         private Domain domain;
 
+        @Inject
+        private ServerEnvironment env;
+
         @Override
         public void decorate(AdminCommandContext context, Servers parent, final Server child) throws PropertyVetoException, TransactionFailure  {
             Logger logger = LogDomains.getLogger(Server.class, LogDomains.ADMIN_LOGGER);
@@ -472,6 +502,13 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 // don't delete the config is someone else holds a reference to it!
                 if(config != null && domain.getReferenceContainersOf(config).size() > 1)
                     return;
+                try {
+                    File configConfigDir = new File(env.getConfigDirPath(), config.getName());
+                    FileUtils.whack(configConfigDir);
+                }
+                catch(Exception e) {
+                    // no big deal - just ignore
+                }
                 try {
                     ConfigSupport.apply(new SingleConfigCode<Configs>() {
 

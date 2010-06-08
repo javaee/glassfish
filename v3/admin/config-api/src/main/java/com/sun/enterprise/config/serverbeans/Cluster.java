@@ -37,7 +37,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
+import java.io.*;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -356,6 +358,16 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 final String configName = instance.getName() + "-config";
                 instance.setConfigRef(configName);
 
+                try {
+                    File configConfigDir = new File(env.getConfigDirPath(), configName);
+                    configConfigDir.mkdirs();
+                }
+                catch(Exception e) {
+                    // no big deal - just ignore
+                }
+
+
+
                 // needs to be changed to join the transaction of instance
                 ConfigSupport.apply(new ConfigCode() {
                     @Override
@@ -424,6 +436,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         @Inject
         Configs configs;
         
+        @Inject
+        private ServerEnvironment env;
+
         @Override
         public void decorate(AdminCommandContext context, Clusters parent, Cluster child) throws
                 PropertyVetoException, TransactionFailure{
@@ -437,6 +452,14 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             // ReferenceContainer -- if so just return...
             if(config == null || domain.getReferenceContainersOf(config).size() > 1)
                 return;
+
+            try {
+                File configConfigDir = new File(env.getConfigDirPath(), config.getName());
+                FileUtils.whack(configConfigDir);
+            }
+            catch(Exception e) {
+                // no big deal - just ignore
+            }
 
             try {
                 ConfigSupport.apply(new SingleConfigCode<Configs>() {
