@@ -126,6 +126,8 @@ public class AdminInfraTest extends BaseDevTest {
 		createFail();
 		testNoCreateForStop();
 		createStartStopDelete();
+                createAdminCommand();
+                deleteAdminCommand();
 		stat.printSummary();
     }
 
@@ -247,6 +249,93 @@ public class AdminInfraTest extends BaseDevTest {
 
         //report("list-instance-after-delete", success);
 
+    }
+
+    private void createAdminCommand() {
+        printf("Call remote AdminCommand create-instance");
+        String iname = "sugar";
+        report("create-instance-success", asadmin("create-instance", "--nodeagent", "mrbean", iname));
+        report("create-instance-regdas", asadminWithOutput("get", "servers.server." + iname));
+        report("create-instance-config", asadminWithOutput("get", "configs.config." + iname + "-config"));
+
+        AsadminReturn ret = asadminWithOutput("get", "servers.server." + iname + ".config-ref");
+        boolean success = ret.outAndErr.indexOf("servers.server." + iname + ".config-ref=" + iname + "-config") >= 0;
+        report("create-instance-configref", success);
+
+        ret = asadminWithOutput("get", "servers.server." + iname + ".node-agent-ref");
+        success = ret.outAndErr.indexOf("servers.server." + iname + ".node-agent-ref=mrbean") >= 0;
+        report("create-instance-nodeagentref", success);
+
+        report("create-instance-existsAlready", !asadmin("create-instance", "--nodeagent", "mrbean", iname));
+
+        createAdminCommandSystemProperties();
+        createAdminCommandClusterConfig();
+    }
+
+    private void createAdminCommandSystemProperties() {
+        printf("Call remote AdminCommand create-instance with system properties");
+        String iname = "instancewithsysprops";
+
+        report("create-instance-sysprops", asadminWithOutput("create-instance", "--nodeagent",
+                "mrbean", "--systemproperties", "prop1=valA:prop2=valB:prop3=valC", iname));
+
+        AsadminReturn ret = asadminWithOutput("get", "servers.server." + iname + ".system-property.prop1.name");
+        boolean success = ret.outAndErr.indexOf("servers.server." + iname + ".system-property.prop1.name=prop1") >= 0;
+        report("create-instance-prop1name", success);
+
+        ret = asadminWithOutput("get", "servers.server." + iname + ".system-property.prop1.value");
+        success = ret.outAndErr.indexOf("servers.server." + iname + ".system-property.prop1.value=valA") >= 0;
+        report("create-instance-prop1value", success);
+        
+        ret = asadminWithOutput("get", "servers.server." + iname + ".system-property.prop3.name");
+        success = ret.outAndErr.indexOf("servers.server." + iname + ".system-property.prop3.name=prop3") >= 0;
+        report("create-instance-prop3name", success);
+
+        ret = asadminWithOutput("get", "servers.server." + iname + ".system-property.prop3.value");
+        success = ret.outAndErr.indexOf("servers.server." + iname + ".system-property.prop3.value=valC") >= 0;
+        report("create-instance-prop3value", success);
+
+        report("delete-instance-sysprops", asadmin("delete-instance", iname));
+    }
+
+    private void createAdminCommandClusterConfig() {
+        printf("Call remote AdminCommand create-instance for a cluster");
+        String iname = "instanceforcluster";
+
+        report("create-instance-cluster", asadmin("create-cluster", "jencluster"));
+
+        report("create-instance-forcluster", asadmin("create-instance", "--nodeagent",
+                "mrbean", "--cluster", "jencluster", iname));
+
+        AsadminReturn ret = asadminWithOutput("get", "servers.server." + iname + ".config-ref");
+        boolean success = ret.outAndErr.indexOf("servers.server." + iname + ".config-ref=jencluster-config") >= 0;
+        report("create-instance-clusterconfigref", success);
+
+        report("delete-instance-forcluster", asadmin("delete-instance", iname));
+        report("delete-instance-cluster", asadmin("delete-cluster", "jencluster"));
+    }
+
+    private void deleteAdminCommand() {
+        printf("Call remote AdminCommand delete-instance");
+        String iname = "sugar";
+        report("delete-instance-success", asadmin("delete-instance", iname));
+        report("delete-instance-regdas", !asadmin("get", "servers.server." + iname));
+        report("delete-instance-config", !asadmin("get", "configs.config." + iname + "-config"));
+    }
+    
+    private void createAdminCommandFail() {
+        printf("Call remote AdminCommand create-instance with bad params");
+        String iname = "badapple";
+        report("create-instance-nodeagentRequired", !asadmin("create-instance", iname));
+        report("create-instance-nosuchcluster", !asadmin("create-instance", "--nodeagent", "mrbean", "--cluster", "nosuchcluster", iname));
+        report("create-instance-nosuchconfig", !asadmin("create-instance", "--nodeagent", "mrbean", "--config", "nosuchconfig", iname));
+        report("create-instance-clusterandconfig", !asadmin("create-instance", "--nodeagent", "mrbean", "--cluster", "c1", "--config", "config1", iname));
+    }
+
+    private void deleteAdminCommandFail() {
+        printf("Call remote AdminCommand delete-instance with bad params");
+        String iname = "nosuchinstance";
+        report("delete-instance-fail", !asadmin("delete-instance", iname));
     }
 
     private boolean checkInstanceDir(String name) {
