@@ -41,7 +41,8 @@
         We only show this button if #{pageSession.edit} is set to true.  refer to issue#8660
     -->
 
-    <sun:button id="loadDefaults" style="margin-left: 8pt"  rendered="#{pageSession.showDef}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
+    <sun:button id="loadDefaultsButton" style="margin-left: 8pt"  rendered="#{pageSession.showDef}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}"
+        onClick="submitAndDisable(this, '$resource{i18n.button.Processing}'); return false;" >
         <!beforeCreate
             if (!#{pageSession.edit}){
                 setPageSessionAttribute(key="showDef" value="#{false}");
