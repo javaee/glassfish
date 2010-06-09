@@ -56,6 +56,7 @@ import org.glassfish.api.embedded.admin.AdminInfo;
 import org.glassfish.api.embedded.admin.EmbeddedAdminContainer;
 import org.glassfish.api.embedded.admin.CommandExecution;
 import org.glassfish.api.embedded.admin.CommandParameters;
+import org.glassfish.api.embedded.web.EmbeddedWebContainer;
 import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.api.container.Sniffer;
 
@@ -86,6 +87,10 @@ public class EmbeddedTest {
         }
         try {
             http = server.createPort(8080);
+            ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
+            server.addContainer(b);
+            EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
+            embedded.bind(http, "http");
         } catch(IOException e) {
             throw new RuntimeException(e);
         }
