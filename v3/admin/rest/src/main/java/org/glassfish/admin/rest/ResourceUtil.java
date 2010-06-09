@@ -355,7 +355,7 @@ public class ResourceUtil extends Util {
 
         Class<? extends ConfigBeanProxy> configBeanProxy = null;
         try {
-            configBeanProxy = (Class<? extends ConfigBeanProxy>) parent.model.classLoaderHolder.get().loadClass(childModel.targetTypeName);
+            configBeanProxy = (Class<? extends ConfigBeanProxy>) childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
 
             Set<String> attributeNames = childModel.getAttributeNames();
             for (String attributeName : attributeNames) {
