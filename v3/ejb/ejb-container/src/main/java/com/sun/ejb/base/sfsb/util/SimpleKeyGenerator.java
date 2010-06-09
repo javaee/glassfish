@@ -50,7 +50,7 @@ import com.sun.enterprise.util.Utility;
  * @author  Mahesh Kannan
  */
 public class SimpleKeyGenerator
-    implements SFSBUUIDUtil
+    implements SFSBUUIDUtil<SimpleKeyGenerator.SimpleSessionKey>
 {
    
     protected long prefix;
@@ -82,7 +82,7 @@ public class SimpleKeyGenerator
      * Create and return the sessionKey.
      * @return the sessionKey object
      */
-    public Object createSessionKey() {
+    public SimpleSessionKey createSessionKey() {
         int id = 0;
         synchronized (this) {
             id = idCounter++;
@@ -102,8 +102,7 @@ public class SimpleKeyGenerator
      * @return A byte[] representation of the key. The byte[] 
      * could be created using serialization.
      */
-    public byte[] keyToByteArray(Object sessionKey) {
-        SimpleSessionKey key = (SimpleSessionKey) sessionKey;
+    public byte[] keyToByteArray(SimpleSessionKey key) {
         byte[] array = new byte[20];
 
         Utility.longToBytes(key.prefix, array, 0);
@@ -121,7 +120,7 @@ public class SimpleKeyGenerator
       * o1.hashCode() == o2.hashCode()
       * @return the sessionKey object
       */
-    public Object byteArrayToKey(byte[] array, int startIndex, int len) {
+    public SimpleSessionKey byteArrayToKey(byte[] array, int startIndex, int len) {
         long myPrefix = Utility.bytesToLong(array, startIndex);
         long mySuffix = Utility.bytesToLong(array, startIndex+8);
         int  myId = Utility.bytesToInt(array, startIndex+16);
@@ -164,7 +163,7 @@ public class SimpleKeyGenerator
 
 
     protected static class SimpleSessionKey
-	implements java.io.Serializable
+	    implements java.io.Serializable
     {
     
 	long prefix;
@@ -176,7 +175,7 @@ public class SimpleKeyGenerator
 	    this.suffix = suffix;
 	    this.id = id;
 	}
-    
+
 	public int hashCode() {
 	    return (int) id;
 	}

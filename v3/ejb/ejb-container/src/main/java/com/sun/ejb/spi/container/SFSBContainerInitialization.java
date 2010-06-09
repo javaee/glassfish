@@ -36,10 +36,15 @@
 
 package com.sun.ejb.spi.container;
 
-import com.sun.ejb.spi.sfsb.store.SFSBStoreManager;
+import com.sun.ejb.base.sfsb.util.SimpleKeyGenerator;
+import com.sun.ejb.spi.sfsb.store.SFSBBeanState;
 import com.sun.ejb.spi.sfsb.util.SFSBUUIDUtil;
 import com.sun.ejb.spi.sfsb.util.CheckpointPolicy;
 import com.sun.ejb.spi.sfsb.util.SFSBVersionManager;
+
+import org.glassfish.ha.store.api.BackingStore;
+
+import java.io.Serializable;
 
 /**
  * This interface that defines the methods that are used by the
@@ -54,9 +59,9 @@ public interface SFSBContainerInitialization {
 
     public void setCheckpointPolicy(CheckpointPolicy policy);
 
-    public void setSFSBStoreManager(SFSBStoreManager storeManager);
+    public BackingStore<Serializable, SFSBBeanState> getBackingStore();
 
-    public SFSBStoreManager getSFSBStoreManager();
+    public void setBackingStore(BackingStore<Serializable, SFSBBeanState> store);
 
     public void setRemovalGracePeriodInSeconds(int val);
 

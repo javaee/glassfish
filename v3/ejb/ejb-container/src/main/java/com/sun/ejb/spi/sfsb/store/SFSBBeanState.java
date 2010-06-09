@@ -42,111 +42,78 @@
 
 package com.sun.ejb.spi.sfsb.store;
 
+import org.glassfish.ha.store.annotations.Attribute;
+import org.glassfish.ha.store.annotations.StoreEntry;
+
+import java.io.Serializable;
+
 /**
- * @author lwhite
+ * @author Mahesh Kannan
  */
-public class SFSBBeanState {
+@StoreEntry
+public class SFSBBeanState
+        implements Serializable {
 
-    /**
-     * Creates a new instance of SFSBBeanState
-     */
-    public SFSBBeanState(Object sessionId, long lastAccess,
-                         boolean isNew, byte[] state,
-                         SFSBStoreManager storeManager) {
-        _clusterId = null;
-        _containerId = -1;
-        _id = sessionId;
-        _lastAccess = lastAccess;
-        _isNew = isNew;
-        _state = state;
-        _storeManager = storeManager;
+    private Serializable sessionId = null;
+
+    private long lastAccess = 0L;
+
+    private boolean isNew = false;
+
+    private byte[] state = null;
+
+    private long version;
+
+    public SFSBBeanState(Serializable sessionId, long lastAccess, boolean isNew, byte[] state, long version) {
+        this.sessionId = sessionId;
+        this.lastAccess = lastAccess;
+        this.isNew = isNew;
+        this.state = state;
+        this.version = version;
     }
 
-    public SFSBBeanState(String clusterId, long containerId,
-                         Object sessionId, long lastAccess,
-                         boolean isNew, byte[] state,
-                         SFSBStoreManager storeManager) {
-        _clusterId = clusterId;
-        _containerId = containerId;
-        _id = sessionId;
-        _lastAccess = lastAccess;
-        _isNew = isNew;
-        _state = state;
-        _storeManager = storeManager;
+    public Serializable getSessionId() {
+        return sessionId;
     }
 
-    public String getClusterId() {
-        return _clusterId;
+    @Attribute
+    public void setSessionId(Serializable sessionId) {
+        this.sessionId = sessionId;
     }
 
-    public long getContainerId() {
-        return _containerId;
-    }
-
-    /**
-     * @return id (key)
-     */
-    public Object getId() {
-        return _id;
-    }
-
-    /**
-     * @return last access time
-     */
     public long getLastAccess() {
-        return _lastAccess;
+        return lastAccess;
     }
 
-    /**
-     * @return tx checkpoint duration (milliseconds)
-     */
-    public long getTxCheckpointDuration() {
-        return _txCheckpointDuration;
+    @Attribute
+    public void setLastAccess(long lastAccess) {
+        this.lastAccess = lastAccess;
     }
 
-    /**
-     * set tx checkpoint duration (milliseconds)
-     * by semantic convention the setter will usually
-     * be incrementing the present value by an additional duration
-     */
-    public void setTxCheckpointDuration(long value) {
-        _txCheckpointDuration = value;
-    }
-
-    /**
-     * @return isNew - true means not persistent; false means already persistent
-     */
     public boolean isNew() {
-        return _isNew;
+        return isNew;
     }
 
-    /**
-     * @return state
-     */
+    @Attribute
+    public void setNew(boolean aNew) {
+        isNew = aNew;
+    }
+
     public byte[] getState() {
-        return _state;
+        return state;
     }
 
-    public SFSBStoreManager getSFSBStoreManager() {
-        return _storeManager;
+    @Attribute
+    public void setState(byte[] state) {
+        this.state = state;
     }
 
     public long getVersion() {
         return version;
     }
 
+    @Attribute
     public void setVersion(long version) {
         this.version = version;
     }
-
-    private String _clusterId;
-    private long _containerId;
-    private Object _id = null;
-    private long _lastAccess = 0L;
-    private long _txCheckpointDuration = 0L;
-    private boolean _isNew = false;
-    private byte[] _state = null;
-    private SFSBStoreManager _storeManager;
-    private long version;
-
 }

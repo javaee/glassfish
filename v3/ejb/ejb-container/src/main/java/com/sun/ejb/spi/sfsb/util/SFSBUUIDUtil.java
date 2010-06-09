@@ -36,6 +36,8 @@
 
 package com.sun.ejb.spi.sfsb.util;
 
+import java.io.Serializable;
+
 /**
  *
  * An instance of this class will be used by the Stateful SessionBean 
@@ -43,19 +45,19 @@ package com.sun.ejb.spi.sfsb.util;
  *
  * @author Mahesh Kannan
  */
-public interface SFSBUUIDUtil {
+public interface SFSBUUIDUtil<T> {
     
    /**
     * Create and return the sessionKey.
     * @return the sessionKey object
     */
-    public Object createSessionKey();
+    public T createSessionKey();
     
    /**
     * Called from the Container before publishing an IOR. The method must convert the sessionKey into a byte[]
     * @return A byte[] representation of the key. The byte[] could be created using serialization.
     */
-    public byte[] keyToByteArray(Object sessionKey);
+    public byte[] keyToByteArray(T sessionKey);
     
     /**
      * Return the sessionKey that represents the sessionKey. This has to be super efficient as the container
@@ -63,6 +65,6 @@ public interface SFSBUUIDUtil {
      *    satisfy both o1.equals(o2) and o1.hashCode() == o2.hashCode()
      * @return the sessionKey object
      */
-     public Object byteArrayToKey(byte[] array, int startIndex, int len);    
+     public T byteArrayToKey(byte[] array, int startIndex, int len);
     
 }

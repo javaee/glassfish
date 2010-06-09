@@ -48,9 +48,10 @@ import com.sun.ejb.spi.container.StatefulEJBContext;
 import com.sun.ejb.base.stats.StatefulSessionStoreMonitor;
 
 import com.sun.ejb.spi.sfsb.store.SFSBBeanState;
-import com.sun.ejb.spi.sfsb.store.SFSBStoreManager;
-import com.sun.ejb.spi.sfsb.store.SFSBStoreManagerException;
+import org.glassfish.ha.store.api.BackingStore;
+import org.glassfish.ha.store.api.BackingStoreException;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.logging.*;
 
@@ -77,8 +78,7 @@ public class LruSessionCache
     private int numVictimsAccessed = 0;
     
     protected SFSBContainerCallback     container;
-    protected SFSBStoreManager          storeManager;
-    //protected MonitorableSFSBStore	monitorableSFSBStore;
+    protected BackingStore<Serializable, SFSBBeanState> backingStore;
 
     private static final byte CACHE_ITEM_VALID = 0;
     private static final byte CACHE_ITEM_LOADING = 1;
@@ -133,15 +133,14 @@ public class LruSessionCache
 	    && (removalTimeoutInSeconds <= cacheIdleTimeoutInSeconds);
     }
 
+    public void setBackingStore(BackingStore<Serializable, SFSBBeanState> store) {
+        this.backingStore = store;
+    }
+
     public void setStatefulSessionStoreMonitor(
 	StatefulSessionStoreMonitor storeMonitor)
     {
 	// this.sfsbStoreMonitor = storeMonitor;
-    }
-
-    public void setSessionStore(SFSBStoreManager storeManager) {
-        this.storeManager = storeManager;
-	//this.monitorableSFSBStore = storeManager.getMonitorableSFSBStore();
     }
     
     /**
@@ -196,7 +195,7 @@ public class LruSessionCache
 
     // return the EJB for the given instance key
     //Called from StatefulSessionContainer
-    public StatefulEJBContext lookupEJB(Object sessionKey,
+    public StatefulEJBContext lookupEJB(Serializable sessionKey,
         SFSBContainerCallback container, Object cookie)
     {
         int hashCode = hash(sessionKey);
@@ -333,16 +332,16 @@ public class LruSessionCache
                 prev = item;
             }
 
-            //remove it from the storeManager also
+            //remove it from the BackingStore also
             //In case it had been checkpointed
 
-            //  remove it from storeManager outside sync block
+            //  remove it from BackingStore outside sync block
 	    if (removeFromStore) {
 		try {
-		    storeManager.remove(sessionKey);
-		} catch (SFSBStoreManagerException sfsbEx) {
+		    backingStore.remove((Serializable) sessionKey);
+		} catch (BackingStoreException sfsbEx) {
 		    _logger.log(Level.WARNING, "[" + cacheName + "]: Exception in "
-			+ "storeManager.remove(" + sessionKey + ")", sfsbEx);
+			+ "backingStore.remove(" + sessionKey + ")", sfsbEx);
 		}
 	    }
 	}
@@ -361,7 +360,7 @@ public class LruSessionCache
 
     // Called by Cache implementation thru container, on Recycler's thread
     // The container has already acquired the lock on the StatefulEJBContext
-    public boolean passivateEJB(StatefulEJBContext ctx, Object sessionKey)
+    public boolean passivateEJB(StatefulEJBContext ctx, Serializable sessionKey)
 	throws java.io.NotSerializableException
     {
 
@@ -390,7 +389,6 @@ public class LruSessionCache
                 if (item == null) {
                     //Could have been removed
                     return true; //???????
-                    //return (storeManager.contains(sessionKey));
                 }
 
                 if (removeIfIdle) {
@@ -464,12 +462,12 @@ public class LruSessionCache
         return false;
     } //passivateEJB
 
-    private Object getStateFromStore(Object sessionKey, SFSBContainerCallback container) {
+    private Object getStateFromStore(Serializable sessionKey, SFSBContainerCallback container) {
 
         Object object = null;
 
         try {
-            SFSBBeanState beanState = storeManager.getState(sessionKey);
+            SFSBBeanState beanState = backingStore.load(sessionKey, null);
             byte[] data = (beanState != null)
                 ? beanState.getState()
                 : null;
@@ -495,7 +493,7 @@ public class LruSessionCache
         return object;
     }
 
-    private boolean saveStateToStore(Object sessionKey, StatefulEJBContext ctx)
+    private boolean saveStateToStore(Serializable sessionKey, StatefulEJBContext ctx)
 	throws java.io.NotSerializableException, java.io.IOException
     {
         byte[] data = IOUtils.serializeObject(ctx.getSessionContext(), true);
@@ -504,21 +502,21 @@ public class LruSessionCache
         boolean status = false;
 	
 	if (data != null) {
-	    SFSBBeanState beanState = storeManager.createSFSBBeanState(
+	    SFSBBeanState beanState = new SFSBBeanState(
 		sessionKey, ctx.getLastAccessTime(),
-		!ctx.existsInStore(), data);
+		!ctx.existsInStore(), data, ctx.getVersion());
         
         //Note: Don't increment the version here because
         //  this is called on an async thread and the client
         //  already has the correct version
         beanState.setVersion(ctx.getVersion());
 	    try {
-		storeManager.passivateSave(beanState);
+		backingStore.save(beanState.getSessionId(), beanState, beanState.isNew());
 		// sfsbStoreMonitor.setPassivationSize(data.length);
 		status = true;
-	    } catch (SFSBStoreManagerException sfsbEx) {
+	    } catch (BackingStoreException sfsbEx) {
 		_logger.log(Level.WARNING, "[" + cacheName + "]: Exception during "
-		    + "storeManager.passivateSave(" + sessionKey + ")", sfsbEx);
+		    + "backingStore.passivateSave(" + sessionKey + ")", sfsbEx);
 	    }
 	}
 

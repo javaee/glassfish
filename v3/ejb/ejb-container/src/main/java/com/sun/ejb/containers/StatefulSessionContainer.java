@@ -37,7 +37,6 @@
 package com.sun.ejb.containers;
 
 import java.util.*;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.NotSerializableException;
@@ -81,8 +80,6 @@ import com.sun.ejb.spi.container.StatefulEJBContext;
 import com.sun.ejb.spi.container.SFSBContainerInitialization;
 
 import com.sun.ejb.spi.sfsb.store.SFSBBeanState;
-import com.sun.ejb.spi.sfsb.store.SFSBStoreManager;
-import com.sun.ejb.spi.sfsb.store.SFSBStoreManagerException;
 
 import com.sun.ejb.spi.sfsb.util.CheckpointPolicy;
 import com.sun.ejb.spi.sfsb.util.SFSBUUIDUtil;
@@ -107,6 +104,8 @@ import com.sun.ejb.monitoring.stats.EjbMonitoringStatsProvider;
 import com.sun.ejb.monitoring.stats.EjbMonitoringUtils;
 import com.sun.ejb.monitoring.probes.EjbCacheProbeProvider;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.ha.store.api.BackingStore;
+import org.glassfish.ha.store.api.BackingStoreException;
 
 /**
  * This class provides container functionality specific to stateful
@@ -154,7 +153,7 @@ public final class StatefulSessionContainer
     private int containerTrimCount = 0;
 
     private LruSessionCache sessionBeanCache;
-    private SFSBStoreManager sfsbStoreManager;
+    private BackingStore<Serializable, SFSBBeanState> backingStore;
     private SFSBUUIDUtil uuidGenerator;
     private ArrayList scheduledTimerTasks = new ArrayList();
 
@@ -347,11 +346,6 @@ public final class StatefulSessionContainer
             }
         }
 
-/** 
-        sfsbStoreMonitor = registryMediator.registerProvider(
-                sfsbStoreManager.getMonitorableSFSBStoreManager(),
-                checkpointPolicy.isHAEnabled());
-**/
         if (checkpointPolicy.isHAEnabled()) {
             sfsbStoreMonitor = new HAStatefulSessionStoreMonitor();
         } else {
@@ -1252,7 +1246,7 @@ public final class StatefulSessionContainer
      */
     private SessionContextImpl _getContextForInstance(byte[] instanceKey) {
 
-        Object sessionKey = uuidGenerator.byteArrayToKey(instanceKey, 0, -1);
+        Serializable sessionKey = (Serializable) uuidGenerator.byteArrayToKey(instanceKey, 0, -1);
 
         if (_logger.isLoggable(TRACE_LEVEL)) {
             _logger.log(TRACE_LEVEL, "[SFSBContainer] Got request for: "
@@ -1407,7 +1401,7 @@ public final class StatefulSessionContainer
     public ComponentContext _getContext(EjbInvocation inv) {
         EJBLocalRemoteObject ejbo = inv.ejbObject;
         SessionContextImpl sc = ejbo.getContext();
-        Object sessionKey = ejbo.getKey();
+        Serializable sessionKey = (Serializable) ejbo.getKey();
 
         if (_logger.isLoggable(TRACE_LEVEL)) {
             logTraceInfo(inv, sessionKey, "Trying to get context");
@@ -1523,9 +1517,9 @@ public final class StatefulSessionContainer
                 long threshold = now - (removalGracePeriodInSeconds * 1000L);
                 if (context.getLastPersistedAt() <= threshold) {
                     try {
-                        sfsbStoreManager.updateLastAccessTime(sessionKey, now);
+                        backingStore.updateTimestamp(sessionKey, now);
                         context.setLastPersistedAt(System.currentTimeMillis());
-                    } catch (SFSBStoreManagerException sfsbEx) {
+                    } catch (BackingStoreException sfsbEx) {
                         _logger.log(Level.WARNING,
                                 "Couldn't update timestamp for: " + sessionKey
                                     + "; Exception: " + sfsbEx);
@@ -1942,9 +1936,9 @@ public final class StatefulSessionContainer
                     sc.setLastPersistedAt(System.currentTimeMillis());
                     long newCtxVersion = sc.incrementAndGetVersion();
                     byte[] serializedState = IOUtils.serializeObject(sc, true);
-                    sfsbBeanState = sfsbStoreManager.createSFSBBeanState(
-                            sc.getInstanceKey(), System.currentTimeMillis(),
-                            !sc.existsInStore(), serializedState);
+                    sfsbBeanState = new SFSBBeanState(
+                            (Serializable) sc.getInstanceKey(), System.currentTimeMillis(),
+                            !sc.existsInStore(), serializedState, sc.getVersion());
                     sfsbBeanState.setVersion(newCtxVersion);
                     interceptorManager.intercept(
                             CallbackType.POST_ACTIVATE, sc);
@@ -2093,8 +2087,7 @@ public final class StatefulSessionContainer
                     sc.setLastPersistedAt(System.currentTimeMillis());
                     boolean saved = false;
                     try {
-                        saved = sessionBeanCache.passivateEJB(sc, sc
-                                .getInstanceKey());
+                        saved = sessionBeanCache.passivateEJB(sc, (Serializable) sc.getInstanceKey());
                     } catch (EMNotSerializableException emNotSerEx) {
                         _logger.log(Level.WARNING, "Extended EM not serializable. "
                                 + "Exception: " + emNotSerEx);
@@ -2395,9 +2388,9 @@ public final class StatefulSessionContainer
             }
             long now = System.currentTimeMillis();
             try {
-                sfsbStoreManager.updateLastAccessTime(sessionKey, now);
+                backingStore.updateTimestamp((Serializable) sessionKey, now);
                 context.setLastPersistedAt(now);
-            } catch (SFSBStoreManagerException sfsbEx) {
+            } catch (BackingStoreException sfsbEx) {
                 _logger.log(Level.WARNING,
                         "Couldn't update timestamp for: " + sessionKey
                                 + ";Exception: " + sfsbEx);
@@ -2587,10 +2580,10 @@ public final class StatefulSessionContainer
 
 
             try {
-                sfsbStoreManager.shutdown();
-            } catch (SFSBStoreManagerException sfsbEx) {
+                backingStore.close();
+            } catch (BackingStoreException sfsbEx) {
                 _logger.log(Level.WARNING, "[" + ejbName + "]: Error during "
-                        + "storeManager.shutdown()", sfsbEx);
+                        + "backingStore.shutdown()", sfsbEx);
             }
         } catch (Throwable th) {
             _logger.log(Level.WARNING, "[" + ejbName + "]: Error during "
@@ -2637,10 +2630,10 @@ public final class StatefulSessionContainer
             sessionBeanCache.destroy();
             
             try {
-                sfsbStoreManager.removeAll();
-            } catch (SFSBStoreManagerException sfsbEx) {
+                backingStore.destroy();
+            } catch (BackingStoreException sfsbEx) {
                 _logger.log(Level.WARNING, "[" + ejbName + "]: Error during "
-                        + "storeManager.shutdown()", sfsbEx);
+                        + "backingStore.shutdown()", sfsbEx);
             }
         } finally {
 
@@ -2836,16 +2829,8 @@ public final class StatefulSessionContainer
         this.checkpointPolicy = policy;
     }
 
-    public void setSFSBStoreManager(SFSBStoreManager storeManager) {
-        this.sfsbStoreManager = storeManager;
-    }
-
     public void setSessionCache(LruSessionCache cache) {
         this.sessionBeanCache = cache;
-    }
-
-    public SFSBStoreManager getSFSBStoreManager() {
-        return this.sfsbStoreManager;
     }
 
     public void setRemovalGracePeriodInSeconds(int val) {
@@ -2855,7 +2840,7 @@ public final class StatefulSessionContainer
     public void removeExpiredSessions() {
         try {
             _logger.log(Level.FINE, "StatefulContainer Removing expired sessions....");
-            long val = sfsbStoreManager.removeExpiredSessions();
+            long val = backingStore.removeExpired(this.removalGracePeriodInSeconds * 1000);
 
             cacheProbeNotifier.ejbExpiredSessionsRemovedEvent(getContainerId(),
                     containerInfo.appName, containerInfo.modName,
@@ -2867,7 +2852,7 @@ public final class StatefulSessionContainer
 **/
             _logger.log(Level.FINE, "StatefulContainer Removed " + val + " sessions....");
 
-        } catch (SFSBStoreManagerException sfsbEx) {
+        } catch (BackingStoreException sfsbEx) {
             _logger.log(Level.WARNING, "Got exception from store manager",
                     sfsbEx);
         }
@@ -2939,6 +2924,16 @@ public final class StatefulSessionContainer
         return sessionBeanCache.getMaxCacheSize();
     }
 
+    @Override
+    public BackingStore<Serializable, SFSBBeanState> getBackingStore() {
+        return backingStore;
+    }
+
+    @Override
+    public void setBackingStore(BackingStore<Serializable, SFSBBeanState> store) {
+        this.backingStore = store;
+    }
+
     private boolean checkpointEJB(SessionContextImpl sc) {
 
         boolean checkpointed = false;
@@ -2983,11 +2978,11 @@ public final class StatefulSessionContainer
                         long newCtxVersion = sc.incrementAndGetVersion();
                         serializedState = IOUtils.serializeObject(sc, true);
                         SFSBBeanState beanState =
-                                sfsbStoreManager.createSFSBBeanState(
-                                        sc.getInstanceKey(), sc.getLastAccessTime(),
-                                        !sc.existsInStore(), serializedState);
+                               new SFSBBeanState(
+                                        (Serializable) sc.getInstanceKey(), sc.getLastAccessTime(),
+                                        !sc.existsInStore(), serializedState, sc.getVersion());
                         beanState.setVersion(newCtxVersion);
-                        sfsbStoreManager.checkpointSave(beanState);
+                        backingStore.save(beanState.getSessionId(), beanState, beanState.isNew());
 
                         //Now that we have successfully stored.....
 

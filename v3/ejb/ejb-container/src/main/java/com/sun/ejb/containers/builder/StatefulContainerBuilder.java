@@ -36,14 +36,15 @@
 
 package com.sun.ejb.containers.builder;
 
+import java.io.File;
+import java.io.Serializable;
+import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import com.sun.appserv.util.cache.CacheListener;
 
 import com.sun.ejb.base.container.util.CacheProperties;
-
-import com.sun.ejb.base.sfsb.initialization.PersistenceStrategyBuilderFactory;
 
 import com.sun.ejb.base.sfsb.util.CheckpointPolicyImpl;
 import com.sun.ejb.base.sfsb.util.ScrambledKeyGenerator;
@@ -53,19 +54,25 @@ import com.sun.ejb.base.sfsb.util.EJBServerConfigLookup;
 import com.sun.ejb.containers.StatefulSessionContainer;
 
 import com.sun.ejb.containers.BaseContainer;
-import com.sun.ejb.containers.EjbContainerUtil;
 
 import com.sun.ejb.containers.util.cache.FIFOSessionCache;
 import com.sun.ejb.containers.util.cache.LruSessionCache;
 import com.sun.ejb.containers.util.cache.NRUSessionCache;
 import com.sun.ejb.containers.util.cache.UnBoundedSessionCache;
 
+import com.sun.ejb.spi.sfsb.store.SFSBBeanState;
+import com.sun.enterprise.config.serverbeans.AvailabilityService;
+import com.sun.enterprise.config.serverbeans.EjbContainer;
+import com.sun.enterprise.config.serverbeans.EjbContainerAvailability;
 import com.sun.enterprise.deployment.EjbDescriptor;
 
-import com.sun.ejb.spi.sfsb.initialization.PersistenceStrategyBuilder;
 import com.sun.ejb.spi.container.SFSBContainerInitialization;
 
-import com.sun.ejb.spi.sfsb.store.SFSBStoreManager;
+import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.ha.store.api.BackingStore;
+import org.glassfish.ha.store.api.BackingStoreConfiguration;
+import org.glassfish.ha.store.api.BackingStoreException;
+import org.glassfish.ha.store.api.BackingStoreFactory;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -105,9 +112,18 @@ public class StatefulContainerBuilder
     @Inject
     private EJBServerConfigLookup ejbConfigLookup;
 
+    @Inject
+    private AvailabilityService availabilityService;
+
+    @Inject
+    private EjbContainerAvailability ejbAvailability;
+
+    @Inject
+    EjbContainer ejbContainerConfig;
+    
     private LruSessionCache sessionCache;
 
-    private SFSBStoreManager sfsbStoreManager;
+    private BackingStore<Serializable, SFSBBeanState> backingStore;
 
     private boolean HAEnabled = false;
 
@@ -134,7 +150,7 @@ public class StatefulContainerBuilder
         buildCheckpointPolicy(this.HAEnabled);
         buildSFSBUUIDUtil();
 
-        //First build storeManager before Cache is built
+        //First build BackingStore before Cache is built
         buildStoreManager();
 
         buildCache();
@@ -159,26 +175,40 @@ public class StatefulContainerBuilder
                 : new SimpleKeyGenerator(getIPAddress(), getPort()));
     }
 
-    private void buildStoreManager() {
+    private void buildStoreManager()
+        throws BackingStoreException {
 
         String persistenceStoreType =
                 ejbConfigLookup.getPersistenceStoreType();
 
-        PersistenceStrategyBuilder storeBuilder =
-                habitat.getComponent(PersistenceStrategyBuilder.class, persistenceStoreType);
+        BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, persistenceStoreType);
+        Properties env = new Properties();
 
+        BackingStoreConfiguration<Serializable, SFSBBeanState> conf = new BackingStoreConfiguration<Serializable, SFSBBeanState>();
+        String storeName = ejbDescriptor.getName() + "-" + getContainer().getComponentId() + "-" + "BackingStore";
 
-        if (_logger.isLoggable(TRACE_LEVEL)) {
-            _logger.log(TRACE_LEVEL, "++SFSBBuilder:: "
-                    + "HAEnabled: " + HAEnabled
-                    + "; specifiedStoreType: " + persistenceStoreType
-                    + "; builder: " + storeBuilder);
+        String subDirName = "";
+
+        if (ejbDescriptor.getApplication().isVirtual()) {
+            String archURI = ejbDescriptor.getEjbBundleDescriptor().
+                    getModuleDescriptor().getArchiveUri();
+            subDirName += FileUtils.makeFriendlyFilename(archURI);
+            subDirName += "_" + FileUtils.makeFriendlyFilename(ejbDescriptor.getName());
+        } else {
+            subDirName += FileUtils.makeFriendlyFilename(ejbDescriptor.getApplication().getRegistrationName());
+            subDirName += "_" + FileUtils.makeFriendlyFilename(ejbDescriptor.getEjbBundleDescriptor().getName());
+            subDirName += "_" + FileUtils.makeFriendlyFilename(ejbDescriptor.getName());
         }
 
-        storeBuilder.initializePersistenceStrategy(
-                containerInitialization, ejbDescriptor);
+        conf.setShortUniqueName(""+ejbDescriptor.getUniqueId()).setStoreName(storeName)
+                .setStoreType(persistenceStoreType)
+                .setBaseDirectory(new File(ejbContainerConfig.getSessionStore(), subDirName))
+                .setKeyClazz(Serializable.class)
+                .setValueClazz(SFSBBeanState.class);
 
-        this.sfsbStoreManager = containerInitialization.getSFSBStoreManager();
+        this.backingStore = factory == null ? null : factory.createBackingStore(conf);
+        _logger.log(Level.WARNING, "StatefulContainerbuilder instantiated store: " +
+            backingStore.getClass().getName() + " ==> " + conf.getStoreName());
     }
 
     private void buildCache() {
@@ -218,9 +248,10 @@ public class StatefulContainerBuilder
         }
 
         sessionCache.addCacheListener((CacheListener) sfsbContainer);
-        sessionCache.setSessionStore(this.sfsbStoreManager);
 
         sfsbContainer.setSessionCache(sessionCache);
+        sessionCache.setBackingStore(backingStore);
+        sfsbContainer.setBackingStore(this.backingStore);
         if (cacheProps.getNumberOfVictimsToSelect() >
                 sfsbContainer.MIN_PASSIVATION_BATCH_COUNT) {
             sfsbContainer.setPassivationBatchCount(
@@ -232,7 +263,7 @@ public class StatefulContainerBuilder
                     + ejbDescriptor.getName() + "] "
                     + cacheProps + "; loadFactor: "
                     + loadFactor
-                    + "; storeManager: " + this.sfsbStoreManager);
+                    + "; backingStore: " + this.backingStore);
         }
     }
 

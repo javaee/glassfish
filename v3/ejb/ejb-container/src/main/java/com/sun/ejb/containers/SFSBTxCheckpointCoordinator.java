@@ -36,28 +36,23 @@
 
 package com.sun.ejb.containers;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.sun.ejb.spi.sfsb.store.SFSBTxStoreManager;
-
-import com.sun.ejb.base.sfsb.initialization.SFSBTxStoreManagerFactory;
-
-import com.sun.ejb.base.sfsb.util.EJBServerConfigLookup;
-
 import com.sun.ejb.spi.sfsb.store.SFSBBeanState;
-import com.sun.ejb.spi.sfsb.store.SFSBStoreManagerException;
 
 import java.util.logging.*;
 
 import com.sun.logging.*;
+import org.glassfish.ha.store.api.BackingStore;
+import org.glassfish.ha.store.api.BackingStoreException;
 
 /**
  * A class to checkpoint HA enabled SFSBs as a single transactional unit.
  *
  * @author Mahesh Kannan
  */
-public class
-        SFSBTxCheckpointCoordinator {
+public class SFSBTxCheckpointCoordinator {
 
     private static final Logger _logger =
             LogDomains.getLogger(SFSBTxCheckpointCoordinator.class, LogDomains.EJB_LOGGER);
@@ -78,7 +73,7 @@ public class
         SessionContextImpl[] contexts = (SessionContextImpl[]) ctxList.toArray(
                 new SessionContextImpl[0]);
         int size = contexts.length;
-        ArrayList states = new ArrayList(size);
+        ArrayList<StoreAndBeanState> states = new ArrayList<StoreAndBeanState>(size);
 
         for (int i = 0; i < size; i++) {
             SessionContextImpl ctx = contexts[i];
@@ -86,7 +81,7 @@ public class
                     (StatefulSessionContainer) ctx.getContainer();
             SFSBBeanState beanState = container.getSFSBBeanState(ctx);
             if (beanState != null) {
-                states.add(beanState);
+                states.add(new StoreAndBeanState(container.getBackingStore(), beanState));
             }
         }
 
@@ -95,10 +90,10 @@ public class
                     new SFSBBeanState[0]);
 
             try {
-                SFSBTxStoreManager txStoreManager = SFSBTxStoreManagerFactory.
-                        createSFSBTxStoreManager(haStoreType);
-                txStoreManager.checkpointSave(beanStates);
-            } catch (SFSBStoreManagerException sfsbEx) {
+                for (StoreAndBeanState st : states) {
+                    st.store.save(st.state.getSessionId(), st.state, st.state.isNew());
+                }
+            } catch (BackingStoreException sfsbEx) {
                 _logger.log(Level.WARNING, "Exception during checkpointSave",
                         sfsbEx);
             } catch (Throwable th) {
@@ -112,6 +107,16 @@ public class
             StatefulSessionContainer container =
                     (StatefulSessionContainer) ctx.getContainer();
             container.txCheckpointCompleted(ctx);
+        }
+    }
+
+    private static final class StoreAndBeanState {
+        BackingStore<Serializable, SFSBBeanState> store;
+        SFSBBeanState state;
+
+        StoreAndBeanState(BackingStore<Serializable, SFSBBeanState> store, SFSBBeanState state) {
+            this.store = store;
+            this.state = state;
         }
     }
 

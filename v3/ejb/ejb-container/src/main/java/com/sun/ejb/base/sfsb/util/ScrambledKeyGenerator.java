@@ -110,7 +110,7 @@ public class ScrambledKeyGenerator
      * Create and return the sessionKey.
      * @return the sessionKey object
      */
-    public Object createSessionKey() {
+    public SimpleSessionKey createSessionKey() {
         int id = 0;
         synchronized (this) {
             id = ++idCounter;
