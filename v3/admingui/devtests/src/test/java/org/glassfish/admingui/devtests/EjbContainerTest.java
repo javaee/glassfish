@@ -53,7 +53,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         final String timeout = Integer.toString(generateRandomNumber(600));
 
         clickAndWait("treeForm:tree:configuration:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
-        
+
         selenium.click("form1:propertySheet:generalPropertySection:commitOptionProp:optC");
         selenium.type("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize", minSize);
         selenium.type("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize", maxSize);
@@ -162,11 +162,17 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         //Now, click the default button and ensure all the default values are filled in
         //The default value should match whats specified in the config bean.
         //Save and come back to the page to assert.
-        selenium.click("form1:propertyContentPage:loadDefaultsButton");
-        waitForButtonEnabled("form1:propertyContentPage:loadDefaultsButton");
+
+        //Location should not be changed by the default button
+        String location = selenium.getValue("form1:propertySheet:generalPropertySection:SessionStoreProp:SessionStore");
+
+        clickAndWaitForButtonEnabled("form1:propertyContentPage:loadDefaultsButton");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
         clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:ejbSettingsTab", TAB_EJB_SETTINGS);
+
+        assertEquals(location, selenium.getValue("form1:propertySheet:generalPropertySection:SessionStoreProp:SessionStore"));
+        
         assertEquals("on", selenium.getValue("form1:propertySheet:generalPropertySection:commitOptionProp:optB"));
         assertEquals("0", selenium.getValue("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize"));
         assertEquals("32", selenium.getValue("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize"));

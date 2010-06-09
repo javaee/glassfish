@@ -126,6 +126,7 @@ public class BaseSeleniumTestClass {
         waitForPageLoad(triggerText, seconds);
     }
 
+    
     protected void clickAndWaitForElement(String clickId, String elementId) {
         selenium.click(clickId);
         for (int second = 0; ; second++) {
@@ -143,6 +144,12 @@ public class BaseSeleniumTestClass {
         }
     }
 
+    protected void clickAndWaitForButtonEnabled(String id) {
+        selenium.click(id);
+        waitForButtonEnabled(id);
+    }
+
+    
     // Argh!
     protected void sleep(int millis) {
         try {
