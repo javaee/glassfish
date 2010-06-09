@@ -16,6 +16,7 @@
         <antcall target="testclose"/>
         <antcall target="twomodules"/>
         <antcall target="timertest"/>
+        <antcall target="modulewithlibs"/>
     </target>
 
     <target name="basic">
@@ -40,6 +41,12 @@
         <record name="timertest.output" action="start" />
             <ant dir="timertest" target="all"/>
         <record name="timertest.output" action="stop" />
+    </target>
+
+    <target name="modulewithlibs">
+        <record name="modulewithlibs.output" action="start" />
+            <ant dir="modulewithlibs" target="all"/>
+        <record name="modulewithlibs.output" action="stop" />
     </target>
 
     <target name="usage">
