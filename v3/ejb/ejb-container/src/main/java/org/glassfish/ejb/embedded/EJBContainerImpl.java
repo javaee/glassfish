@@ -208,25 +208,25 @@ public class EJBContainerImpl extends EJBContainer {
             result = modules.iterator().next().getElement();
         } else if (DeploymentElement.countEJBModules(modules) == 1) {
             // EJB molule with libraries - create ScatteredArchive
-            String mName = null;
+            String aName = null;
             Collection<URL> archives = new ArrayList<URL>();
             for (DeploymentElement m : modules) {
+                boolean isEJBModule = m.isEJBModule();
+                File f = m.getElement();
+                String name = f.getName();
                 if (_logger.isLoggable(Level.INFO)) {
-                    _logger.info("[EJBContainerImpl] adding archive to ScatteredArchive " + m.getElement().getName());
+                    _logger.info("[EJBContainerImpl] adding " + ((isEJBModule)? "EJB module" : "library") + " to ScatteredArchive " + name);
                 }
                 
-                archives.add(m.getElement().toURI().toURL());
-                if (m.isEJBModule()) {
-                    mName = m.getElement().getName();
-                    result = m.getElement();
-                    break;
+                if (isEJBModule) {
+                    // Need to give archive some meaningful name
+                    aName = name;
                 }
+                archives.add(f.toURI().toURL());
             }
-/**
-            ScatteredArchive.Builder saBuilder = new ScatteredArchive.Builder(mName,
+            ScatteredArchive.Builder saBuilder = new ScatteredArchive.Builder(aName,
                     Collections.unmodifiableCollection(archives));
             result = saBuilder.buildJar(); 
-**/
         } else {
             // Create a temp dir by creating a temp file first, then 
             // delete the file and create a directory in its place.
