@@ -52,17 +52,21 @@
     <property name="stylesheet" value="${env.APS_HOME}/config/j2eeReporter.xsl" />
     <property name="xmlfile" value="${env.APS_HOME}/test_resultsValid.xml" />
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
+    <property name="teststorun" value="cli"/>
 
-    <target name="cli">
-      <ant dir="cluster" target="all"/>
-      <ant dir="instance" target="all"/>
+    <target name="cli" depends="cluster, instance"/>
+    <target name="cluster">
+        <ant dir="cluster" target="all"/>
+    </target>
+    <target name="instance">
+        <ant dir="instance" target="all"/>
     </target>
 
     <target name="all" depends="init">
         <record name="admin.output" action="start" />
         <antcall target="stopDomain"/>
         <antcall target="startDomain"/>
-        <antcall target="cli"/>
+        <antcall target="${teststorun}"/>
         <antcall target="stopDomain"/>
         <record name="admin.output" action="stop" />
 

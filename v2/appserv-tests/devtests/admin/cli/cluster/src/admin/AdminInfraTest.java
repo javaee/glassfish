@@ -36,6 +36,16 @@
 package admin;
 
 import com.sun.appserv.test.BaseDevTest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathConstants;
@@ -104,6 +114,7 @@ public class AdminInfraTest extends BaseDevTest {
         //list-clusters
         report("list-clusters", asadmin("list-clusters"));
         testDeleteClusterWithInstances();
+        testEndToEndDemo();
         cleanup();
         stat.printSummary();
 
@@ -120,6 +131,80 @@ public class AdminInfraTest extends BaseDevTest {
         report("delete-cluster-no-instance", asadmin("delete-cluster",cluster));
 
 
+    }
+
+    /*
+     * This is a test based on the MS1 demo of the basic clustering infrastructure.
+     * See http://wiki.glassfish.java.net/Wiki.jsp?page=3.1MS1ClusteringDemo
+     */
+    private void testEndToEndDemo() {
+        final String tn = "end-to-end-";
+        report(tn + "create-cluster", asadmin("create-cluster", "eec1"));
+        report(tn + "create-local-instance1", asadmin("create-local-instance",
+                "--cluster", "eec1", "--systemproperties",
+                "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:" +
+                "IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:" +
+                "JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848", "eein1"));
+        report(tn + "create-local-instance2", asadmin("create-local-instance",
+                "--cluster", "eec1", "--systemproperties",
+                "HTTP_LISTENER_PORT=28080:HTTP_SSL_LISTENER_PORT=28181:IIOP_SSL_LISTENER_PORT=23800:" +
+                "IIOP_LISTENER_PORT=23700:JMX_SYSTEM_CONNECTOR_PORT=27676:IIOP_SSL_MUTUALAUTH_PORT=23801:" +
+                "JMS_PROVIDER_PORT=28686:ASADMIN_LISTENER_PORT=24848", "eein2"));
+        report(tn + "start-local-instance1", asadmin("start-local-instance", "eein1"));
+        report(tn + "start-local-instance2", asadmin("start-local-instance", "eein2"));
+        report(tn + "list-instances", asadmin("list-instances"));
+        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL("http://localhost:18080/")));
+        report(tn + "getindex2", matchString("GlassFish Enterprise Server", getURL("http://localhost:28080/")));
+        report(tn + "getREST1", matchString("server/eein1/property",
+                getURL("http://localhost:14848/management/domain/servers/server/eein1")));
+        report(tn + "getREST1", !matchString("eein2",
+                getURL("http://localhost:14848/management/domain/servers/server")));
+        report(tn + "getREST2", matchString("server/eein2/property",
+                getURL("http://localhost:24848/management/domain/servers/server/eein2")));
+        String s = getURL("http://localhost:4848/management/domain/servers/server");
+        report(tn + "getREST3", matchString("eein1", s));
+        report(tn + "getREST3", matchString("eein2", s));
+        report(tn + "getREST3", matchString("server", s));
+
+        report(tn + "stop-local-instance", asadmin("stop-local-instance", "eein1"));
+        report(tn + "stop-local-instance", asadmin("stop-local-instance", "eein2"));
+        report(tn + "delete-local-instance1", asadmin("delete-local-instance", "eein1"));
+        report(tn + "delete-local-instance2", asadmin("delete-local-instance", "eein2"));
+        report(tn + "delete-cluster", asadmin("delete-cluster", "eec1"));
+
+    }
+
+    /*
+     * Returns true if String b contains String a. 
+     */
+    private boolean matchString(String a, String b) {
+        return b.indexOf(a) != -1;
+    }
+
+    private String getURL(String urlstr) {
+        try {
+            URL u = new URL(urlstr);
+            URLConnection urlc = u.openConnection();
+            BufferedReader ir = new BufferedReader(new InputStreamReader(urlc.getInputStream(),
+                    "ISO-8859-1"));
+            StringWriter ow = new StringWriter();
+            String line;
+            while ((line = ir.readLine()) != null) {
+                ow.write(line);
+                ow.write("\n");
+            }
+            ir.close();
+            ow.close();
+            return ow.getBuffer().toString();
+        }
+        catch (IOException ex) {
+            printf("unable to fetch URL:" + urlstr);
+            return "";
+        }
+    }
+
+    private void printf(String fmt, Object... args) {
+        System.out.printf("**** DEBUG MESSAGE ****  " + fmt + "\n", args);
     }
 
     @Override
