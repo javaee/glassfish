@@ -62,15 +62,15 @@ import org.jvnet.hk2.component.*;
 public class ListInstancesCommand implements AdminCommand, PostConstruct {
     //@Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     //private Server dasServer;
+
     @Inject
     private ServerEnvironment env;
     @Inject
     private Servers servers;
     @Inject
     private Configs configs;
-    @Param(optional=true, defaultValue="2000")
+    @Param(optional = true, defaultValue = "2000")
     String timeoutInMsecString;
-
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
 
     @Override
@@ -86,16 +86,16 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
         try {
             timeoutInMsec = Integer.parseInt(timeoutInMsecString);
         }
-        catch(Exception e) {
+        catch (Exception e) {
             timeoutInMsec = 2000;
         }
-        
+
         ActionReport report = context.getActionReport();
         Logger logger = context.getLogger();
         List<Server> serverList = servers.getServer();
 
         // Require that we be a DAS
-        if(!helper.isDas()) {
+        if (!helper.isDas()) {
             String msg = Strings.get("list.instances.onlyRunsOnDas");
             logger.warning(msg);
             report.setActionExitCode(ExitCode.FAILURE);
@@ -104,13 +104,13 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
         }
 
         // Gather a list of InstanceInfo -- one per instance in domain.xml
-        for(Server server : serverList) {
+        for (Server server : serverList) {
             String name = server.getName();
 
             // skip ourself
             // TODO I'm assuming for now that GetNodeAgentRef's value is the
             //remote hostname
-            if(name != null && !name.equals(SystemPropertyConstants.DAS_SERVER_NAME)) {
+            if (name != null && !name.equals(SystemPropertyConstants.DAS_SERVER_NAME)) {
                 InstanceInfo ii = new InstanceInfo(
                         name, helper.getAdminPort(server), helper.getHost(server), logger, timeoutInMsec);
                 infos.add(ii);
@@ -120,26 +120,13 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
         // report the list
         StringBuilder sb = new StringBuilder();
 
-		if(infos.size() < 1) {
-			sb.append(Strings.get("list.instances.none"));
-		}
-		else {    
-			sb.append(InstanceInfo.getFormattedHeader()).append('\n');
-			boolean first = true;	// no useless extra "\n" at end
-
-			for(InstanceInfo info : infos) {
-				if(first)
-					first = false;
-				else
-					sb.append('\n');
-
-				sb.append(info.toFormattedString());
-			}
-        }
+        if (infos.size() < 1)
+            sb.append(Strings.get("list.instances.none"));
+        else
+            sb.append(InstanceInfo.format(infos));
 
         report.setActionExitCode(ExitCode.SUCCESS);
         report.setMessage(sb.toString());
     }
-
     private RemoteInstanceCommandHelper helper;
 }
