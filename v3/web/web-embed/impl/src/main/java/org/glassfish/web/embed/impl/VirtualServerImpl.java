@@ -42,8 +42,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.*;
+
 import org.apache.catalina.Container;
 import org.apache.catalina.Pipeline;
+import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteAddrValve;
@@ -67,7 +70,7 @@ import org.apache.catalina.authenticator.SingleSignOn;
  */
 public class VirtualServerImpl extends StandardHost implements VirtualServer {
 
-    
+   
     private static Logger log = 
             Logger.getLogger(VirtualServer.class.getName());
         
@@ -147,7 +150,20 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
      * this <tt>VirtualServer</tt> receives requests.
      */
     public Collection<WebListener> getWebListeners() {
-        // TODO
+
+        /*List<WebListener> listeners = new ArrayList<WebListener>();
+        Connector[] connectors =
+                (Connector[]) ((StandardEngine)getParent()).getService().findConnectors();
+
+        for (String name : getNetworkListenerNames()) {
+            for (Connector connector : connectors) {
+                if (name.equals(connector.getName())) {
+                    listeners.add(connector);
+                }
+            }
+        }
+        return listeners;*/
+        
         return null;        
     }
 

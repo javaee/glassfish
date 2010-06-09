@@ -106,15 +106,6 @@ public class EmbeddedWebAPITest {
         
         System.out.println("================ Test Embedded Web API");
 
-        String virtualServerId = "embedded-server";
-
-        /*VirtualServer defaultVirtualServer = (VirtualServer)
-                embedded.createVirtualServer(virtualServerId, root);
-        embedded.addVirtualServer(defaultVirtualServer);
-        
-        Context context = (Context) embedded.createContext(root, null);
-        defaultVirtualServer.addContext(context, "");*/
-
         WebListener listener = embedded.createWebListener("test-listener", WebListenerImpl.class);
         listener.setPort(9090);
         embedded.addWebListener(listener);
@@ -131,6 +122,17 @@ public class EmbeddedWebAPITest {
         for (NetworkListener nl : cnl) {
             System.out.println("Network listener " + nl.getPort());
         }
+
+        String virtualServerId = "embedded-server";
+        VirtualServer defaultVirtualServer = (VirtualServer)
+                embedded.createVirtualServer(virtualServerId, root);
+        embedded.addVirtualServer(defaultVirtualServer);
+
+        VirtualServer vs = embedded.findVirtualServer(virtualServerId);
+        Assert.assertEquals(virtualServerId,vs.getID());
+
+        //Context context = (Context) embedded.createContext(root, null);
+        //defaultVirtualServer.addContext(context, "");
 
         EmbeddedDeployer deployer = server.getDeployer();
         String p = System.getProperty("buildDir");

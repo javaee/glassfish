@@ -46,6 +46,7 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.admin.*;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.embedded.web.EmbeddedWebContainer;
 import org.glassfish.tests.embedded.utils.EmbeddedServerUtils;
 
 import java.io.File;
@@ -84,8 +85,12 @@ public class InplantedTest {
         while(contents.hasMoreElements()) {
             System.out.println(contents.nextElement());
         }
-        server.createPort(8080);
-        server.addContainer(server.createConfig(ContainerBuilder.Type.web));
+        Port http = server.createPort(8080);
+        ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
+        server.addContainer(b);
+        EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
+        embedded.bind(http, "http");
+        
         DeployCommandParameters dp = new DeployCommandParameters(f);
         String appName = server.getDeployer().deploy(war, dp);
         WebClient webClient = new WebClient();

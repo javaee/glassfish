@@ -602,6 +602,18 @@ public class StandardHost
     // END S1AS 5000999
 
 
+     public String getNetworkListeners() {
+         String listeners = "";
+         if (networkListenerNames.length>0) {
+             listeners = networkListenerNames[0];
+             for (int i=1; i<networkListenerNames.length; i++) {
+                 listeners = listeners + "," + networkListenerNames[i];
+             }
+         }
+         return listeners;
+     }
+
+
     // --------------------------------------------------------- Public Methods
 
 

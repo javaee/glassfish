@@ -62,12 +62,14 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
+import org.jvnet.hk2.config.types.Property;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.Realm;
 import org.apache.catalina.core.StandardEngine;
+import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.Embedded;
@@ -114,8 +116,6 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
     private Engine engine = null;
     
     private File path = null;
-    
-    private String defaultDomain = "com.sun.appserv";
     
     private boolean listings;
 
@@ -632,10 +632,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      */
     public VirtualServer createVirtualServer(String id,
         File docRoot, WebListener...  webListeners) {
-        
-        if (log.isLoggable(Level.INFO)) {
-            log.info("Created virtual server "+id+" with ports ");
-        }
+
         VirtualServerImpl virtualServer = new VirtualServerImpl();
         virtualServer.setName(id);
         if (docRoot!=null) {
@@ -644,12 +641,14 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         String[] names = new String[webListeners.length];
         for (int i=0; i<webListeners.length; i++) {
             names[i] = webListeners[i].getId();
-            if (log.isLoggable(Level.INFO)) {
-                log.info(""+ names[i]);
-            }
         }
         virtualServer.setNetworkListenerNames(names);
-        
+
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Created virtual server "+id+" docroot "+docRoot.getPath()+
+                    " networklisteners "+virtualServer.getNetworkListeners());
+        }
+
         return virtualServer;
         
     }
@@ -664,30 +663,24 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      * @return the new <tt>VirtualServer</tt> instance
      */    
     public VirtualServer createVirtualServer(String id, File docRoot) {
-        
-        if (log.isLoggable(Level.INFO)) {
-            log.info("Created virtual server "+id);
-        }
+
         VirtualServerImpl virtualServer = new VirtualServerImpl();
         virtualServer.setName(id);
         if (docRoot!=null) {
             virtualServer.setAppBase(docRoot.getPath());
-        }     
-        Ports ports = habitat.getComponent(Ports.class);
-        // the port is used as unique identifier network listener name
-        String[] portsArray = null;
-        if (ports != null) {
-            Collection<Port> coll = ports.getPorts();
-            portsArray = new String[coll.size()];
-            int i=0;
-            for (Port port:coll) {
-                portsArray[i] = Integer.toString(port.getPortNumber());
-                if (log.isLoggable(Level.INFO)) {
-                    log.info("port = "+portsArray[i]);
-                }
-                i++;
-            }
-            virtualServer.setNetworkListenerNames(portsArray);
+        }
+
+        List<String> networkListenerNames = new ArrayList<String>();
+        for (NetworkListener networkListener :
+                config.getNetworkListeners().getNetworkListener()) {
+            networkListenerNames.add(networkListener.getName());
+
+        }
+        virtualServer.setNetworkListenerNames(networkListenerNames.toArray(new String[0]));
+
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Created virtual server "+id+" docroot "+docRoot.getPath()+
+                    " networklisteners "+virtualServer.getNetworkListeners());
         }
         
         return virtualServer;
@@ -712,17 +705,39 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
     public void addVirtualServer(VirtualServer virtualServer)
         throws ConfigException, LifecycleException {
         
-        if (findVirtualServer(virtualServer.getID())!=null) {
-            throw new ConfigException("VirtualServer with id "+
-                    virtualServer.getID()+" is already registered");
+        final String virtualServerId = virtualServer.getID();
+        final String networkListeners = ((StandardHost)virtualServer).getNetworkListeners();
+        final String docRoot = virtualServer.getDocRoot().getPath();
 
-        } else {
-            engine.setDefaultHost(virtualServer.getID());
-            engine.addChild((Container)virtualServer);
+        for (com.sun.enterprise.config.serverbeans.VirtualServer vs: httpService.getVirtualServer()) {
+            if (virtualServerId.equals(vs.getId())) {
+                throw new ConfigException("VirtualServer with id "+
+                        virtualServerId+" is already registered");
+            }
         }
+        try {
+            ConfigSupport.apply(new SingleConfigCode<HttpService>() {
+                public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
+                    com.sun.enterprise.config.serverbeans.VirtualServer newVirtualServer =
+                            param.createChild(com.sun.enterprise.config.serverbeans.VirtualServer.class);
+                    newVirtualServer.setId(virtualServerId);
+                    newVirtualServer.setNetworkListeners(networkListeners);
+                    Property property = newVirtualServer.createChild(Property.class);
+                    property.setName("docroot");
+                    property.setValue(docRoot);
+                    newVirtualServer.getProperty().add(property);
+                    param.getVirtualServer().add(newVirtualServer);
+                    return newVirtualServer;
+                }
+            }, httpService);
+
+        } catch (TransactionFailure e) {
+            throw new LifecycleException(e);
+        }
+
         if (log.isLoggable(Level.INFO)) {
-            log.info("Added virtual server "+virtualServer.getID());
-        }        
+            log.info("Added virtual server "+virtualServer.getID()+" with networklisteners "+networkListeners);
+        }
         
     }
 
