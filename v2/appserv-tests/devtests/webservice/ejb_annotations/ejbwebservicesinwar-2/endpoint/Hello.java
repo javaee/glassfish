@@ -13,8 +13,8 @@ import javax.ejb.SessionContext;
     targetNamespace="http://example.com/Hello"
 )
 public class Hello {
-@Resource
-   private SessionContext sc;
+//@Resource
+ //  private SessionContext sc;
 
 	public Hello() {}
 

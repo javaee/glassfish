@@ -21,12 +21,13 @@
 	<ant dir="messagectxt" target="all"/>
 	<ant dir="singleton" target="all"/>
 	<ant dir="msgctxinterceptor" target="all"/>
-	<ant dir="ejbwebservicesinwar" target="all"/>
+<!--	<ant dir="ejbwebservicesinwar" target="all"/>-->
 	<ant dir="ejbwebservicesinwar-2" target="all"/>
 	<ant dir="ejbwebservicesinwar-3" target="all"/>
 	<ant dir="ejbwebservicesinwar-sessioncontext" target="all"/>
+	<ant dir="ejbwebservicesinwar-interceptor" target="all"/>
 	<ant dir="async" target="all"/>
-	<ant dir="bigint" target="all"/>
+	<!--<ant dir="bigint" target="all"/>-->
 	<ant dir="libdependent" target="all"/>
 	<ant dir="libdependent-2" target="all"/>
         <ant dir="svchandler" target="all"/>

@@ -39,7 +39,7 @@
 
     <target name="assemble-client" depends="init-common">
       <antcall target="compile-client">
-        <param name="test-wsdl-uri" value="${appname}/HelloService?WSDL"/>
+        <param name="test-wsdl-uri" value="HelloService/Hello?WSDL"/>
         <param name="client-src" value="client"/>
       </antcall>
     </target>
@@ -69,7 +69,7 @@
         <classpath>
           <pathelement path="${build.classes.dir}/client"/>
         </classpath>
-        <arg value="http://${http.host}:${http.port}/ejbwebservicesinwar/HelloService"/>
+        <arg value="http://${http.host}:${http.port}/HelloService/Hello"/>
       </java>
     </target>
 

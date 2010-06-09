@@ -70,7 +70,7 @@
       <mkdir dir="${build.classes.dir}/webclient/WEB-INF/classes"/>
       <antcall target="wsimport">
         <param name="wsimport.args"
-          value="-p client -keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://${http.host}:${http.port}/${appname}/HelloService?WSDL"/>
+          value="-p client -keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://${http.host}:${http.port}/HelloService/Hello?WSDL"/>
       </antcall>
       <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
             includes="webclient/**">

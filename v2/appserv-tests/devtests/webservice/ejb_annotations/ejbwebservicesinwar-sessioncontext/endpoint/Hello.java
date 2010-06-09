@@ -20,6 +20,7 @@ public class Hello {
 
 	@WebMethod(operationName="sayHello", action="urn:SayHello")
 	public String sayHello(String who) {
-		return "Hello " + who +sc;
+		return "Hello " + who  ;
+
 	}
 }
