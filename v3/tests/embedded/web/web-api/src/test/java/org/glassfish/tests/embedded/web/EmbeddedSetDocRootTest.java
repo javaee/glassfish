@@ -50,6 +50,7 @@ import org.glassfish.api.embedded.*;
 import org.glassfish.api.embedded.web.*;
 import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
+import org.glassfish.tests.webapi.HelloWeb;
 
 /**
  * @author Amy Roh

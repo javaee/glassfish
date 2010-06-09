@@ -113,7 +113,7 @@ public class EmbeddedWebAPITest {
         embedded.addVirtualServer(defaultVirtualServer);
         
         Context context = (Context) embedded.createContext(root, null);
-        defaultVirtualServer.addContext(context, "");&/
+        defaultVirtualServer.addContext(context, "");*/
 
         WebListener listener = embedded.createWebListener("test-listener", WebListenerImpl.class);
         listener.setPort(9090);
