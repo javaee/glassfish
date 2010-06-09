@@ -36,9 +36,12 @@
 
 package org.glassfish.ha.store.api;
 
+import java.io.File;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * @author Mahesh Kannan
@@ -51,6 +54,8 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
 
     private String storeName;
 
+    private String shortUniqueName;
+
     private String storeType;
 
     private long maxIdleTimeInSeconds = -1;
@@ -59,7 +64,7 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
 
     private long maxLoadWaitTimeInSeconds;
 
-    private String baseDirectoryName;
+    private File baseDirectory;
 
     private Class<K> keyClazz;
 
@@ -68,6 +73,8 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
     private boolean synchronousSave;
 
     private long typicalPayloadSizeInKiloBytes;
+
+    private Logger logger;
 
     private Map<String, Object> vendorSpecificSettings = new HashMap<String, Object>();
 
@@ -95,6 +102,15 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
 
     public BackingStoreConfiguration setStoreName(String storeName) {
         this.storeName = storeName;
+        return this;
+    }
+
+    public String getShortUniqueName() {
+        return shortUniqueName;
+    }
+
+    public BackingStoreConfiguration setShortUniqueName(String shortUniqueName) {
+        this.shortUniqueName = shortUniqueName;
         return this;
     }
 
@@ -134,12 +150,12 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return this;
     }
 
-    public String getBaseDirectoryName() {
-        return baseDirectoryName;
+    public File getBaseDirectory() {
+        return baseDirectory;
     }
 
-    public BackingStoreConfiguration setBaseDirectoryName(String baseDirectoryName) {
-        this.baseDirectoryName = baseDirectoryName;
+    public BackingStoreConfiguration setBaseDirectory(File baseDirectory) {
+        this.baseDirectory = baseDirectory;
         return this;
     }
 
@@ -179,7 +195,36 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return this;
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public BackingStoreConfiguration setLogger(Logger logger) {
+        this.logger = logger;
+        return this;
+    }
+
     public Map<String, Object> getVendorSpecificSettings() {
         return vendorSpecificSettings;
+    }
+
+    @Override
+    public String toString() {
+        return "BackingStoreConfiguration{" +
+                "clusterName='" + clusterName + '\'' +
+                ", instanceName='" + instanceName + '\'' +
+                ", storeName='" + storeName + '\'' +
+                ", shortUniqueName='" + shortUniqueName + '\'' +
+                ", storeType='" + storeType + '\'' +
+                ", maxIdleTimeInSeconds=" + maxIdleTimeInSeconds +
+                ", relaxVersionCheck='" + relaxVersionCheck + '\'' +
+                ", maxLoadWaitTimeInSeconds=" + maxLoadWaitTimeInSeconds +
+                ", baseDirectoryName='" + baseDirectory + '\'' +
+                ", keyClazz=" + keyClazz +
+                ", valueClazz=" + valueClazz +
+                ", synchronousSave=" + synchronousSave +
+                ", typicalPayloadSizeInKiloBytes=" + typicalPayloadSizeInKiloBytes +
+                ", vendorSpecificSettings=" + vendorSpecificSettings +
+                '}';
     }
 }

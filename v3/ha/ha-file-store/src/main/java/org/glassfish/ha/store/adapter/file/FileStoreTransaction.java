@@ -47,7 +47,8 @@ public class FileStoreTransaction
 
     @Override
     public void commit() throws BackingStoreException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        //For FileStore, store.save() immediately saves the data without checking for Tx.
+        //So this method is a no op
     }
     
 }
