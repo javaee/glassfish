@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,50 +34,30 @@
  * holder.
  *
  */
-
 package org.glassfish.config.support;
 
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.glassfish.api.admin.AdminCommandContext;
-
-import java.lang.annotation.Annotation;
+import org.jvnet.hk2.component.Habitat;
 
 /**
- * A config resolver is responsible for finding the target object of a specified
- * type on which a creation command invocation will be processed.
- *
- * Implementation of these interfaces can be injected with the command invocation
- * parameters in order to determine which object should be returned
+ * a extensible mechanism to define new configuration targets
  *
  * @author Jerome Dochez
  */
-@Contract
-public interface CrudResolver {
+public interface TargetValidator {
+    /**
+     * returns true if the passed target parameter value is a valid identifier
+     * of a target instance.
+     *
+     * @param habitat the habitat where to lookup all the target instances
+     * @param target the target indentifier to check
+     * @return true if target is a valid indentifier of a target instance
+     */
+    public boolean isValid(Habitat habitat, String target);
 
     /**
-     * Retrieves the existing configuration object a command invocation is intented to mutate.
+     * Returns a internalized aware string describing the target type
      *
-     * @param context the command invocation context
-     * @param type the type of the expected instance
-     * @return the instance or null if not found 
+     * @return a type description
      */
-    <T extends ConfigBeanProxy> T resolve(AdminCommandContext context, Class<T> type);
-
-    @Service
-    public static final class DefaultResolver implements CrudResolver {
-        
-        @Inject(name="type", optional=true)
-        CrudResolver defaultResolver=null;
-
-        @Override
-        public <T extends ConfigBeanProxy> T resolve(AdminCommandContext context, Class<T> type) {
-            if (defaultResolver!=null) {
-                return defaultResolver.resolve(context, type);
-            }
-            return null;
-        }
-    }
+    public String getDescription();
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,50 +34,71 @@
  * holder.
  *
  */
-
 package org.glassfish.config.support;
 
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.glassfish.api.admin.AdminCommandContext;
-
-import java.lang.annotation.Annotation;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Servers;
+import org.jvnet.hk2.component.Habitat;
 
 /**
- * A config resolver is responsible for finding the target object of a specified
- * type on which a creation command invocation will be processed.
- *
- * Implementation of these interfaces can be injected with the command invocation
- * parameters in order to determine which object should be returned
- *
- * @author Jerome Dochez
+ * CommandTarget is an enumeration of valid configuration target for a command execution
+ * 
  */
-@Contract
-public interface CrudResolver {
+public enum CommandTarget implements TargetValidator {
 
     /**
-     * Retrieves the existing configuration object a command invocation is intented to mutate.
-     *
-     * @param context the command invocation context
-     * @param type the type of the expected instance
-     * @return the instance or null if not found 
+     * a domain wide configuration change
      */
-    <T extends ConfigBeanProxy> T resolve(AdminCommandContext context, Class<T> type);
-
-    @Service
-    public static final class DefaultResolver implements CrudResolver {
-        
-        @Inject(name="type", optional=true)
-        CrudResolver defaultResolver=null;
-
+    DAS {
         @Override
-        public <T extends ConfigBeanProxy> T resolve(AdminCommandContext context, Class<T> type) {
-            if (defaultResolver!=null) {
-                return defaultResolver.resolve(context, type);
-            }
-            return null;
+        public boolean isValid(Habitat habitat, String target) {
+            return target==null;
         }
+    },
+    /**
+     * a clustered instance configuration change
+     */
+    CLUSTERED_INSTANCE {
+        @Override
+        public boolean isValid(Habitat habitat, String target) {
+            Servers servers = habitat.getComponent(Servers.class);
+            Server server = servers.getServer(target);
+            // check that server is clustered.
+            return false;
+        }},
+    /**
+     * a standalone instance configuration change
+     */
+    STANDALONE_INSTANCE {
+        @Override
+        public boolean isValid(Habitat habitat, String target) {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }},
+    /**
+     * a config configuration change
+     */
+    CONFIG {
+        @Override
+        public boolean isValid(Habitat habitat, String target) {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }},
+    /**
+     * a cluster configuration change
+     */
+    CLUSTER {
+        @Override
+        public boolean isValid(Habitat habitat, String target) {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }};
+
+
+    @Override
+    public boolean isValid(Habitat habitat, String target) {
+        return false;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.name();
     }
 }
