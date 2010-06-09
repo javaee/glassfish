@@ -115,6 +115,16 @@ public final class InstanceInfo {
 
     // TODO what about security????
     private String pingInstance() {
+        // there could be more than one instance with the same admin port
+        // let's get a positive ID!
+
+        if(i9())
+            return getUptime();
+        else
+            return NOT_RUNNING;
+    }
+
+    private String getUptime() {
         try {
             RemoteAdminCommand rac = new RemoteAdminCommand("uptime", host, port, false, "admin", null, logger);
             rac.setConnectTimeout(timeoutInMsec);
@@ -123,9 +133,29 @@ public final class InstanceInfo {
             return rac.executeCommand(map).trim();
         }
         catch (CommandException ex) {
-            return "Not Running";
+            return NOT_RUNNING;
         }
     }
+
+    private boolean i9() {
+        // are you really the right server?
+        // simple test -- is the server-name in the returned string?
+        try {
+            RemoteAdminCommand rac = new RemoteAdminCommand("__locations", host, port, false, "admin", null, logger);
+            rac.setConnectTimeout(timeoutInMsec);
+            ParameterMap map = new ParameterMap();
+            map.set("type", "terse");
+            String ret = rac.executeCommand(map).trim();
+
+            if(ret != null && ret.endsWith("/" + name))
+                return true;
+        }
+        catch (CommandException ex) {
+            // handle below
+        }
+        return false;
+    }
+
     private  String host;
     private  int port;
     private  String name;
@@ -133,7 +163,8 @@ public final class InstanceInfo {
     private  Logger logger;
     private final int timeoutInMsec;
 	// TODO i18n
-	private final static String BREAKER = "\n---------------|------------------------------|---------------|--------------------";
-	private final static String FORMATTED_LINE = "%-15s %-30s %-15s %-20s";
-	private final static String FORMATTED_HEADER = String.format(FORMATTED_LINE, "Instance Name", "Host", "Admin Port", "Current State") + BREAKER;
+    private final static String BREAKER = "\n---------------|------------------------------|---------------|--------------------";
+    private final static String FORMATTED_LINE = "%-15s %-30s %-15s %-20s";
+    private final static String FORMATTED_HEADER = String.format(FORMATTED_LINE, "Instance Name", "Host", "Admin Port", "Current State") + BREAKER;
+    private static final String NOT_RUNNING = Strings.get("ListInstances.NotRunning");
 }
