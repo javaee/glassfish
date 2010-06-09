@@ -39,7 +39,6 @@ package org.glassfish.admingui.devtests;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class EjbContainerTest extends BaseSeleniumTestClass {
     private static final String TAB_EJB_SETTINGS = "Enterprise Java Beans (EJB)";
@@ -136,5 +135,47 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         selenium.type("form1:propertySheet:propertySectionTextField:RedeliveryIntrProp:RedeliveryIntr", "5000");
         selenium.type("form1:propertySheet:propertySectionTextField:TimerDatasourceProp:TimerDatasource", "");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+    }
+
+    //Test that the default button in EJB Settings will fill in the default value when pressed.
+    @Test
+    public void testEjbSettingsDefault() {
+
+        //Go to EJB Settings page, enter some random value
+        clickAndWait("treeForm:tree:configuration:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
+        selenium.click("form1:propertySheet:generalPropertySection:commitOptionProp:optC");
+        selenium.type("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize", "2");
+        selenium.type("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize", "34");
+        selenium.type("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize", "10");
+        selenium.type("form1:propertySheet:poolSettingSection:TimeoutProp:Timeout", "666");
+        selenium.type("form1:propertySheet:cacheSettingSection:MaxCacheProp:MaxCache", "520");
+        selenium.type("form1:propertySheet:cacheSettingSection:CacheResizeProp:CacheResize", "36");
+        selenium.type("form1:propertySheet:cacheSettingSection:RemTimoutProp:RemTimout", "5454");
+        selenium.select("form1:propertySheet:cacheSettingSection:RemPolicyProp:RemPolicy", "label=First In First Out (fifo)");
+        selenium.type("form1:propertySheet:cacheSettingSection:CacheIdleProp:CacheIdle", "666");
+
+        //Save this, goto another tab and back
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
+        clickAndWait("form1:ejbContainerTabs:ejbSettingsTab", TAB_EJB_SETTINGS);
+
+        //Now, click the default button and ensure all the default values are filled in
+        //The default value should match whats specified in the config bean.
+        //Save and come back to the page to assert.
+        selenium.click("form1:propertyContentPage:loadDefaultsButton");
+        waitForButtonEnabled("form1:propertyContentPage:loadDefaultsButton");
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
+        clickAndWait("form1:ejbContainerTabs:ejbSettingsTab", TAB_EJB_SETTINGS);
+        assertEquals("on", selenium.getValue("form1:propertySheet:generalPropertySection:commitOptionProp:optB"));
+        assertEquals("0", selenium.getValue("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize"));
+        assertEquals("32", selenium.getValue("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize"));
+        assertEquals("8", selenium.getValue("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize"));
+        assertEquals("600", selenium.getValue("form1:propertySheet:poolSettingSection:TimeoutProp:Timeout"));
+        assertEquals("512", selenium.getValue("form1:propertySheet:cacheSettingSection:MaxCacheProp:MaxCache"));
+        assertEquals("32", selenium.getValue("form1:propertySheet:cacheSettingSection:CacheResizeProp:CacheResize"));
+        assertEquals("5400", selenium.getValue("form1:propertySheet:cacheSettingSection:RemTimoutProp:RemTimout"));
+        assertEquals("nru", selenium.getValue("form1:propertySheet:cacheSettingSection:RemPolicyProp:RemPolicy"));
+        assertEquals("600", selenium.getValue("form1:propertySheet:cacheSettingSection:CacheIdleProp:CacheIdle"));
     }
 }
