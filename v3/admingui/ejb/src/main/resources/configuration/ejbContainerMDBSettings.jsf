@@ -52,7 +52,7 @@
 
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
         setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/mdb-container");
-        setPageSessionAttribute(key="rest-api" value="${true}");
+        setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
 
         //REST-TODO take care of property table
@@ -61,10 +61,10 @@
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/ejb/configuration/ejbContainerMDBSettings.jsf?configName=#{pageSession.configName}");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
-        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
-        setPageSessionAttribute(key="showCancelButton" value="#{false}" );
-        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
-        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="true" );
+        setPageSessionAttribute(key="showCancelButton" value="false" );
+        setPageSessionAttribute(key="hasPropertySheet" value="true" );
+        setPageSessionAttribute(key="hasPropertyTable" value="true" );
     />
     </event>
 

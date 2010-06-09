@@ -60,7 +60,7 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
         setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
-        setPageSessionAttribute(key="rest-api" value="${true}");
+        setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}", valueMap="#{pageSession.valueMap}");
 
         setPageSessionAttribute(key="convertToFalseList" value={"WrapJdbcObjects" "Pooling" "ConnectionLeakReclaim" "LazyConnectionAssociation" "LazyConnectionEnlistment" "AssociateWithThread" "MatchConnections"});

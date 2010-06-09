@@ -69,7 +69,7 @@
 
         setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
-        setPageSessionAttribute(key="rest-api" value="${true}");
+        setPageSessionAttribute(key="rest-api" value="true");
     />
     </event>
 

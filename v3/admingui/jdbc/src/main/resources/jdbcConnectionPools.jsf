@@ -61,7 +61,7 @@
             setPageSessionAttribute(key="resHeader" value="$resource{i18njdbc.resourcesTable.colResType}");
 
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
-            setPageSessionAttribute(key="rest-api" value="${true}");
+            setPageSessionAttribute(key="rest-api" value="true");
         />
     </event>
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":resources:JDBC:connectionPoolResources");</script>

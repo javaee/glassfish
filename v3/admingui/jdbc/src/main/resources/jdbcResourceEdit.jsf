@@ -73,7 +73,8 @@
     
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcResource.editPageTitle}" helpText="$resource{i18njdbc.jdbcResource.editPageTitleHelp}" >
-        <sun:button style="margin-left: 8pt" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
+        <sun:button style="margin-left: 8pt" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}"
+            onClick="submitAndDisable(this, '$resource{i18n.button.Processing}'); return false;" >
             <!command
                 getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
                 getDefaultProxyAttrs( parentObjectNameStr="amx:pp=/domain/servers,type=server,name=server" childType="resource-ref"  valueMap="#{pageSession.valueMap2}")

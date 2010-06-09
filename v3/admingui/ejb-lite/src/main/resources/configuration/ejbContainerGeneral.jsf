@@ -53,7 +53,7 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
         setPageSessionAttribute(key="childType" value="ejb-container");
         setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/ejb-container");
-        setPageSessionAttribute(key="rest-api" value="${true}");
+        setPageSessionAttribute(key="rest-api" value="true");
 
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
         

@@ -54,7 +54,7 @@
         setPageSessionAttribute(key="childType" value="ejb-timer-service");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/ejb-container");
         setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/ejb-container/ejb-timer-service");
-        setPageSessionAttribute(key="rest-api" value="${true}");
+        setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
 
         //REST-TODO take care property table
