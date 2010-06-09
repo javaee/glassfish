@@ -40,10 +40,7 @@ package org.glassfish.web.embed.impl;
 import java.beans.PropertyVetoException;
 import java.io.File;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.logging.*;
 
 import com.sun.enterprise.config.serverbeans.HttpService;
@@ -129,6 +126,8 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
     private String defaultvs = "server";
 
     private String securityEnabled = "false";
+
+    private List<WebListener> listeners = new ArrayList<WebListener>();
 
     // --------------------------------------------------------- Public Methods
 
@@ -318,17 +317,12 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
                 throw new LifecycleException(new Exception("Cannot find engine implementation"));
             }
         
-            int port = 8080;
-            String webListenerId = "http-listener-1";
-            String virtualServerId = "server";
-            String hostName = "localhost";
             File docRoot = getPath();
-        
-            VirtualServer vs = findVirtualServer(virtualServerId);
+            VirtualServer vs = findVirtualServer(defaultvs);
             if (vs != null) {
                 defaultVirtualServer = vs;
             } else {
-                defaultVirtualServer = createVirtualServer(virtualServerId, docRoot);
+                defaultVirtualServer = createVirtualServer(defaultvs, docRoot);
                 addVirtualServer(defaultVirtualServer);
             }
             if (listings) {
@@ -336,6 +330,15 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
                     context.setDirectoryListing(listings);
                 }
             }
+            if (getWebListeners()==null) {
+                if (log.isLoggable(Level.INFO)) {
+                    log.info("Listener doesn't exist - creating a new listener at port 8080");
+                }
+                WebListener listener = createWebListener(listenerName, WebListenerImpl.class);
+                listener.setPort(8080);
+                addWebListener(listener);
+            }
+            
         } catch (Exception e) {
             throw new LifecycleException(e);
         }
@@ -518,7 +521,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             webListener = c.newInstance();
             webListener.setId(id);
         } catch (Exception e) {
-            log.severe("Couldn't create connector");
+            log.severe("Couldn't create connector "+e.getMessage());
         } 
         
         return webListener;
@@ -542,9 +545,9 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      */
     public void addWebListener(WebListener webListener) 
             throws ConfigException, LifecycleException {
-        
+
         if (findWebListener(webListener.getId())==null) {
-            embedded.addConnector((Connector)webListener);            
+            listeners.add(webListener);
         } else {
             throw new ConfigException("Connector with name '"+
                     webListener.getId()+"' already exsits");           
@@ -552,6 +555,15 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         
         if (log.isLoggable(Level.INFO)) {
             log.info("Added connector "+webListener.getId());
+        }
+
+        try {
+            Ports ports = habitat.getComponent(Ports.class);
+            Port port = ports.createPort(webListener.getPort());
+            // TODO webListneer.protocol
+            bind(port, "http");
+        } catch (java.io.IOException ex) {
+            throw new ConfigException(ex);
         }
         
     }
@@ -566,16 +578,12 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      * registered with this <tt>EmbeddedWebContainer</tt>
      */
     public WebListener findWebListener(String id) {
-        
-        WebListener webListener = null;
-        for (Connector connector : embedded.findConnectors()) {
-            if (connector.getName().equals(id)) {
-                webListener = (WebListener) connector;
+        for (WebListener listener : listeners) {
+            if (listener.getId().equals(id)) {
+                return listener;
             }
         }
-        
-        return webListener;
-        
+        return null;
     }
 
     /**
@@ -586,11 +594,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      * instances registered with this <tt>EmbeddedWebContainer</tt>
      */
     public Collection<WebListener> getWebListeners() {
-        
-        WebListener[] connectors = (WebListener[]) embedded.findConnectors();
-        
-        return Arrays.asList(connectors);
-        
+        return listeners;
     }
 
     /**
@@ -605,11 +609,12 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      */
     public void removeWebListener(WebListener webListener)
         throws LifecycleException {
-        
-        try {
-            embedded.removeConnector((Connector)webListener);
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
+
+        if (listeners.contains(webListener)) {
+            listeners.remove(webListener);
+        } else {
+            throw new LifecycleException(new ConfigException("Connector with name '"+
+                    webListener.getId()+"' does not exsits"));
         }
         
     }
@@ -627,7 +632,6 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      */
     public VirtualServer createVirtualServer(String id,
         File docRoot, WebListener...  webListeners) {
-        
         
         if (log.isLoggable(Level.INFO)) {
             log.info("Created virtual server "+id+" with ports ");
@@ -661,7 +665,6 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      */    
     public VirtualServer createVirtualServer(String id, File docRoot) {
         
-        
         if (log.isLoggable(Level.INFO)) {
             log.info("Created virtual server "+id);
         }
@@ -671,7 +674,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             virtualServer.setAppBase(docRoot.getPath());
         }     
         Ports ports = habitat.getComponent(Ports.class);
-        // the port is use as unique identifier network listener name
+        // the port is used as unique identifier network listener name
         String[] portsArray = null;
         if (ports != null) {
             Collection<Port> coll = ports.getPorts();
@@ -712,14 +715,14 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         if (findVirtualServer(virtualServer.getID())!=null) {
             throw new ConfigException("VirtualServer with id "+
                     virtualServer.getID()+" is already registered");
-          
+
         } else {
             engine.setDefaultHost(virtualServer.getID());
             engine.addChild((Container)virtualServer);
         }
         if (log.isLoggable(Level.INFO)) {
             log.info("Added virtual server "+virtualServer.getID());
-        }
+        }        
         
     }
 
@@ -733,9 +736,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      * registered with this <tt>EmbeddedWebContainer</tt>
      */
     public VirtualServer findVirtualServer(String id) {
-
         return (VirtualServer)engine.findChild(id);
-        
     }
 
     /**

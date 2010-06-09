@@ -3124,8 +3124,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         String name = connector.getName();
 
         Connector[] connectors = _embedded.findConnectors();
-        for (Connector connector1 : connectors) {
-            WebConnector conn = (WebConnector) connector1;
+        for (Connector conn : connectors) {
             if (name.equals(conn.getName())) {
                 _embedded.removeConnector(conn);
                 connectorMap.remove(connector.getName());
@@ -3142,8 +3141,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         Connector[] connectors = _embedded.findConnectors();
         String name = httpListener.getName();
-        for (Connector connector : connectors) {
-            WebConnector conn = (WebConnector) connector;
+        for (Connector conn : connectors) {
             if (name.equals(conn.getName())) {
                 _embedded.removeConnector(conn);
                 connectorMap.remove(name);
