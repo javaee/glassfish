@@ -36,18 +36,17 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
-import java.util.logging.*;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.*;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.component.*;
 
 /**
@@ -60,11 +59,10 @@ import org.jvnet.hk2.component.*;
 @Service(name = "create-instance")
 @I18n("create.instance")
 @Scoped(PerLookup.class)
+@Cluster({RuntimeType.DAS})
 public class CreateInstanceCommand implements AdminCommand {
     @Inject
     private CommandRunner cr;
-    @Inject
-    private ServerEnvironment env;
 
     @Param(name="nodeagent")
     String nodeAgent;
@@ -84,17 +82,7 @@ public class CreateInstanceCommand implements AdminCommand {
 
     @Override
     public void execute(AdminCommandContext context) {
-        Logger logger = context.getLogger();
         ActionReport report = context.getActionReport();
-
-        // Require that we be a DAS ?
-        if(!env.isDas()) {
-            String msg = Strings.get("onlyRunsOnDas", "create-instance");
-            logger.warning(msg);
-            report.setActionExitCode(ExitCode.FAILURE);
-            report.setMessage(msg);
-            return;
-        }
 
         CommandInvocation ci = cr.getCommandInvocation("_register-instance", report);
         ParameterMap map = new ParameterMap();
