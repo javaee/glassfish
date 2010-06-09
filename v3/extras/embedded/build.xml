@@ -37,6 +37,7 @@ own identifying information: Portions Copyright [yyyy]
         <antcall target="jar"/>
         
     	<antcall target="addRars"/>
+	<antcall target="addEjbTimer"/>
 	<attachArtifact file="${finaljar}"/>
      </target>
 
@@ -117,6 +118,11 @@ own identifying information: Portions Copyright [yyyy]
         <jar jarfile="${jardir}/__xa_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__xa_jdbc_ra/**/*"/>
         <jar jarfile="${finaljar}" update="true" basedir="${jardir}" includes="__cp_jdbc_ra.rar, __ds_jdbc_ra.rar, __dm_jdbc_ra.rar, __xa_jdbc_ra.rar"/>
     </target>
+
+  <target name="addEjbTimer" if="includeEjbTimer">
+        <echo message="adding EJBTimer"/>
+        <jar jarfile="${finaljar}" update="true"  basedir="${jardir}/glassfishv3/glassfish/lib/install/applications" includes="ejb-timer-service-app.war"/>
+   </target>
 
 
 </project>

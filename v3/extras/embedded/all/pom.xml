@@ -89,6 +89,7 @@
                 <property name="bundlename" value="org.glassfish.embedded.all"/>
                 <property name="includeRars" value="true"/>
                 <property name="includeDtds" value="true"/>
+                <property name="includeEjbTimer" value="true"/>
                 <ant dir="." antfile="../build.xml" target="create.distribution"/>
               </tasks>
             </configuration>
