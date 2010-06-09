@@ -569,11 +569,14 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
         // swap the deployment descriptors context-root with the one
         // provided in the deployment request.
-        if (dc.getAppProps().get("context-root") != null &&
-            app.isVirtual() && webBundleDesc != null) {
+        //do not do for ejb in war case
+        if (webBundleDesc!= null && webBundleDesc.getExtensionsDescriptors(EjbBundleDescriptor.class).size()==0) {
+            if (dc.getAppProps().get("context-root") != null &&
+                    app.isVirtual() && webBundleDesc != null) {
 
-            String contextRoot = ((String)dc.getAppProps().get("context-root"));
-            webBundleDesc.setContextRoot(contextRoot);
+                String contextRoot = ((String)dc.getAppProps().get("context-root"));
+                webBundleDesc.setContextRoot(contextRoot);
+            }
         }
 
         // Generate final wsdls for all web services and store them in
