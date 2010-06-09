@@ -415,6 +415,7 @@
         <ant dir="webdavCopyDelete" target="all"/>
         <ant dir="welcomePageExtensionMatch" target="all"/>
         <ant dir="weldJsfLoginPage" target="all"/>
+        <ant dir="sessionPreserveAcrossRedeployDeclarative" target="all"/>
     </target>
 
     <target name="security" depends="init-report">
