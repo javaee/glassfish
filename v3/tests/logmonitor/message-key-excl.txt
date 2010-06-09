@@ -1,0 +1,89 @@
+# not for logging to server log
+audit.denied
+audit.ok
+audit.methodname
+audit.session
+
+# logged with level FINE in security module
+acc.secmgron
+acc.secmgroff
+
+# raised issue 11993
+main.jmac_default_factory
+
+# logged with level FINE in persistence module
+database.DBVendorTypeHelper.inputVendorName
+database.DBVendorTypeHelper.detectedVendorType
+database.DBVendorTypeHelper.couldNotLoadResource
+database.DBVendorTypeHelper.regExprDbType
+database.DBVendorTypeHelper.patternSyntaxException
+database.DBVendorTypeHelper.traceVendorNameToTypeProperty
+database.DBVendorTypeHelper.errorParsingVendorNameToTypeProperty
+
+# raised issue 11992
+general.free_port
+general.port_derivation_failed
+general.port_occupied
+
+# logged with level FINE in jdbc module
+jdbc.invalid_connection
+jdbc.duplicate_close_connection
+jdbc.duplicateTxCompleted
+jdbc.executing_init_sql
+jdbc.exc_init_sql_error_stmt_close
+jdbc.execute_init_sql_start
+jdbc.execute_init_sql_end
+CCP.ValidateAtmostEveryIdleSecs.Set
+connection_sharing_start
+connection_sharing_end
+connection_sharing_reset_association
+pool.get_validation_table_names_mc_destroy
+
+# raised issue 11845
+gmsservice.postconstruct
+gmsexception.occurred
+gmsservice.started
+gmsservice.processNotification
+
+# logged with level FINE in appclient module
+enterprise.deployment.appclient.jws.clientJNLPConfigLoad
+enterprise.deployment.appclient.jws.clientJNLPConfigChangeFile
+
+# raised issue 11989
+Java2DBProcessorHelper.cannotConnect
+Java2DBProcessorHelper.ioexception
+Java2DBProcessorHelper.createfilename
+Java2DBProcessorHelper.dropfilename
+Java2DBProcessorHelper.tablewarning
+Java2DBProcessorHelper.executestatement
+Java2DBProcessorHelper.cannotcreatetables
+Java2DBProcessorHelper.cannotdroptables
+JPAJava2DBProcessor.nondefaultprovider
+Java2DBProcessorHelper.generatedlocation
+Java2DBProcessorHelper.sqlexception
+
+# raised issue 11988
+GlassFishDocument.IOException
+GlassFishDocument.XMLException
+GenericCrudCommand.invalid_type
+GenericCrudCommand.invocation_failure
+GenericCrudCommand.nongeneric_type
+GenericCrudCommand.wrong_type
+GenericCrudCommand.introspection_failure
+GenericCrudCommand.too_many_indexes
+GenericCrudCommand.unamed_service
+GenericCrudCommand.transactionException
+GenericCrudCommand.method_invocation_exception
+GenericCreateCommand.configbean_not_found
+GenericCreateCommand.command_model_exception
+GenericCreateCommand.target_object_not_found
+GenericCreateCommand.decorator_not_found
+GenericCreateCommand.deletion_decorator_not_found
+GenericCreateCommand.transaction_exception
+GenericCreateCommand.already_existing_instance
+GenericDeleteCommand.transaction_exception
+GenericDeleteCommand.target_object_not_found
+TypeAndNameResolver.target_object_not_found
+TypeResolver.target_object_not_found
+TypeResolver.no_element_of_that_type
+GenericListCommand.element_has_no_key
