@@ -124,11 +124,14 @@ public class AdminInfraTest extends BaseDevTest {
         //test for issue 12172
         final String iname = "xyz1";
         final String cluster = "cl7";
-        asadmin("create-cluster", cluster) ;
-        asadmin("create-local-instance","--cluster",cluster, iname);
-        report("delete-cluster-with-instance", !asadmin("delete-cluster",cluster));
-        asadmin("delete-local-instance",iname);
-        report("delete-cluster-no-instance", asadmin("delete-cluster",cluster));
+        final String testName = "issue-12172-";
+        report (testName +"create-cl",asadmin("create-cluster", cluster)) ;
+        report(testName +"create-l-i",asadmin("create-local-instance","--cluster",cluster, iname));
+        report(testName+"delete-cl-with-instance", !asadmin("delete-cluster",cluster));
+        report(testName+"delete-l-i",asadmin("delete-local-instance",iname));
+        //check if there is no server-ref property in the cluster element
+        report(testName +"check-serverRef", !asadmin("get", "clusters.cluster."+cluster+".server-ref." + iname));
+        report(testName+"delete-cl-no-ins", asadmin("delete-cluster",cluster));
 
 
     }
