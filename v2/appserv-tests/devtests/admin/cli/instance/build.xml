@@ -69,6 +69,7 @@
         <java classname="admin.AdminInfraTest" fork="true" classpath="${test}">
             <jvmarg value="-Xdebug"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1323"/>
+            <jvmarg value="-DNUM_TESTS=${num_tests}"/>
         </java>
     </target>
 

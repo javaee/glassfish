@@ -50,8 +50,23 @@ import java.util.logging.Logger;
 public class AdminInfraTest extends BaseDevTest {
 
     public AdminInfraTest() {
+        int numTests;
+
+        try {
+            numTests = Integer.parseInt(System.getProperty("NUM_TESTS"));
+
+            if (numTests < 1) {
+                numTests = DEFAULT_NUM_TESTS;
+            }
+        }
+        catch (Exception e) {
+            numTests = DEFAULT_NUM_TESTS;
+        }
+
+        setupInstances(numTests);
         printf("DEBUG is turned **ON**");
         String host0 = null;
+
         try {
             host0 = InetAddress.getLocalHost().getHostName();
         }
@@ -209,7 +224,7 @@ public class AdminInfraTest extends BaseDevTest {
             report(iname + "-yesdir", checkInstanceDir(iname));
             String err = checkSpecialConfigDirsExist(iname);
 
-            if(err != null)
+            if (err != null)
                 System.out.println("ERROR: " + err);
 
             report(iname + "-yesspecialdirs", err == null ? true : false); // null is good!!
@@ -363,13 +378,13 @@ public class AdminInfraTest extends BaseDevTest {
     private String checkSpecialConfigDirsExist(String iname) {
         File configConfigDir = new File(domainHome, "config/" + iname + "-config");
 
-        if(!configConfigDir.isDirectory())
+        if (!configConfigDir.isDirectory())
             return configConfigDir.toString().replace('\\', '/') + " was not created as expected.";
 
-        if(!new File(configConfigDir, "lib/ext").isDirectory())
+        if (!new File(configConfigDir, "lib/ext").isDirectory())
             return configConfigDir.getPath().replace('\\', '/') + "/lib/ext was not created as expected.";
 
-        if(!new File(configConfigDir, "docroot").isDirectory())
+        if (!new File(configConfigDir, "docroot").isDirectory())
             return configConfigDir.getPath().replace('\\', '/') + "/docroot was not created as expected.";
 
         return null;
@@ -385,32 +400,34 @@ public class AdminInfraTest extends BaseDevTest {
             System.out.printf("**** DEBUG MESSAGE ****  " + fmt + "\n", args);
         }
     }
+
+    private static void setupInstances(int num) {
+        instanceNames = new String[num];
+
+        for (int i = 0; i < num; i++) {
+            instanceNames[i] = "instance_" + i;
+        }
+    }
     private final String host;
     private final File glassFishHome;
     private final File instancesHome;
     private final File domainHome;
     private final static boolean DEBUG;
-    private static final String[] instanceNames;
+    private static String[] instanceNames;
     private final SortedSet<String> reportNames = new TreeSet<String>();
-    private static final int NUM_INSTANCES = 50;
     private final static boolean isHudson = Boolean.parseBoolean(System.getenv("HUDSON"));
+    private static final int DEFAULT_NUM_TESTS = 2;
 
     static {
         String name = System.getProperty("user.name");
 
         if (name != null && name.equals("bnevins"))
             DEBUG = true;
-        else if(isHudson)
+        else if (isHudson)
             DEBUG = true;
-        else if(Boolean.parseBoolean(System.getenv("AS_DEBUG")))
+        else if (Boolean.parseBoolean(System.getenv("AS_DEBUG")))
             DEBUG = true;
         else
             DEBUG = false;
-
-        instanceNames = new String[NUM_INSTANCES];
-
-        for (int i = 0; i < NUM_INSTANCES; i++) {
-            instanceNames[i] = "instance_" + i;
-        }
     }
 }
