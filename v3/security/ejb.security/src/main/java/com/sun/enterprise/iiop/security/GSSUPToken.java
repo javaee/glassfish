@@ -57,6 +57,7 @@ import java.util.*;
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 
 import com.sun.enterprise.security.common.Util;
+import com.sun.enterprise.util.Utility;
 import java.util.logging.*;
 import com.sun.logging.*;
 import org.jvnet.hk2.component.Habitat;
@@ -167,7 +168,7 @@ public class GSSUPToken {
             }
             name_utf8 = _name_.getBytes("UTF8");
             //password_utf8 = pwdcred.getPassword().getBytes("UTF8");
-            password_utf8 = Util.convertCharArrayToByteArray("UTF-8", pwdcred.getPassword());
+            password_utf8 = Utility.convertCharArrayToByteArray("UTF-8", pwdcred.getPassword());
         } catch (Exception e) {
             _logger.log(Level.SEVERE,"iiop.password_exception",e);
         }
@@ -259,7 +260,7 @@ public class GSSUPToken {
         try {
             username  = new String(name_utf8, "UTF8");
             //userpwd   = new String(password_utf8, "UTF8");
-            userpwd   = Util.convertByteArrayToCharArray("UTF-8", password_utf8);
+            userpwd   = Utility.convertByteArrayToCharArray("UTF-8", password_utf8);
 	} catch (Exception e) {
             _logger.log(Level.SEVERE,"iiop.user_password_exception",e);
 	}

@@ -48,6 +48,7 @@ import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.util.*;
 import com.sun.enterprise.security.auth.realm.IASRealm;
 import com.sun.enterprise.security.common.Util;
+import com.sun.enterprise.util.Utility;
 import java.nio.charset.Charset;
 import org.glassfish.internal.api.SharedSecureRandom;
 import org.jvnet.hk2.annotations.Service;
@@ -360,7 +361,7 @@ public final class FileRealm extends IASRealm
 
         try {
             
-            ok = SSHA.verify(ud.getSalt(), ud.getHash(), Util.convertCharArrayToByteArray(Charset.defaultCharset().displayName(), password));
+            ok = SSHA.verify(ud.getSalt(), ud.getHash(), Utility.convertCharArrayToByteArray(Charset.defaultCharset().displayName(), password));
 
         } catch (Exception e) {
             _logger.fine("File authentication failed: "+e.toString());
@@ -973,7 +974,7 @@ public final class FileRealm extends IASRealm
         assert (user != null);
         //Copy the password to another reference before storing it to the
         //instance field.
-        byte[] pwdBytes = Util.convertCharArrayToByteArray(Charset.defaultCharset().displayName(), pwd);
+        byte[] pwdBytes = Utility.convertCharArrayToByteArray(Charset.defaultCharset().displayName(), pwd);
         
         SecureRandom rng=SharedSecureRandom.get();
         byte[] salt=new byte[SALT_SIZE];

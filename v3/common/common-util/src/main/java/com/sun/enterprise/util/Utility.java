@@ -46,6 +46,9 @@ import javax.rmi.CORBA.*;
 
 import java.util.logging.*;
 import com.sun.logging.*;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 
 /**
  *  Handy class full of static functions.
@@ -437,5 +440,28 @@ public final class Utility {
             return sysPropVal;
 
         return envVal;
+    }
+    public static char[] convertByteArrayToCharArray(String charset, byte[] byteArray) {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(byteArray);
+        Charset charSet;
+        if (charset == null || "".equals(charset) || !Charset.isSupported(charset)) {
+            charSet = Charset.defaultCharset();
+        } else {
+            charSet = Charset.forName(charset);
+        }
+        CharBuffer charBuffer = charSet.decode(byteBuffer);
+        return charBuffer.array();
+    }
+
+    public static byte[] convertCharArrayToByteArray(String strCharset, char[] charArray) {
+        CharBuffer charBuffer = CharBuffer.wrap(charArray);
+        Charset charSet;
+        if (strCharset == null || "".equals(strCharset) || !Charset.isSupported(strCharset)) {
+            charSet = Charset.defaultCharset();
+        } else {
+            charSet = Charset.forName(strCharset);
+        }
+        ByteBuffer byteBuffer = charSet.encode(charBuffer);
+        return byteBuffer.array();
     }
 }

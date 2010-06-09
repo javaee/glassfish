@@ -67,6 +67,7 @@ import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
 import com.sun.enterprise.security.auth.digest.api.Password;
 import com.sun.enterprise.security.auth.realm.DigestRealmBase;
 import com.sun.enterprise.security.common.Util;
+import com.sun.enterprise.util.Utility;
 import java.io.CharArrayReader;
 import java.io.Reader;
 import java.io.StringReader;
@@ -106,7 +107,7 @@ public final class JDBCRealm extends DigestRealmBase {
     public static final String PARAM_DB_PASSWORD = "db-password";
 
     public static final String PARAM_DIGEST_ALGORITHM = "digest-algorithm";
-    public static final String DEFAULT_DIGEST_ALGORITHM = "MD5";
+    public static final String DEFAULT_DIGEST_ALGORITHM = "SHA-256";
     public static final String NONE = "none";
 
     public static final String PARAM_ENCODING = "encoding";
@@ -446,7 +447,7 @@ public final class JDBCRealm extends DigestRealmBase {
         byte[] bytes = null;
         char[] result = null;
         String charSet = getProperty(PARAM_CHARSET);        
-        bytes = Util.convertCharArrayToByteArray(charSet, password);
+        bytes = Utility.convertCharArrayToByteArray(charSet, password);
         
         if (md != null) {
             synchronized(md) {
@@ -461,7 +462,7 @@ public final class JDBCRealm extends DigestRealmBase {
         } else if (BASE64.equalsIgnoreCase(encoding)) {
             result = base64Encode(bytes).toCharArray();
         } else { // no encoding specified
-            result = Util.convertByteArrayToCharArray(charSet, bytes);
+            result = Utility.convertByteArrayToCharArray(charSet, bytes);
         }
         return result;
     }
