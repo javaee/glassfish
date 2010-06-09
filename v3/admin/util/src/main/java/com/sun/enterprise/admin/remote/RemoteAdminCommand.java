@@ -858,11 +858,15 @@ public class RemoteAdminCommand {
                     sawFile = true;
                 int min = Integer.parseInt(getAttr(attrs, "min"));
                 String max = getAttr(attrs, "max");
-                if (max.equals("unlimited"))
+                boolean multiple = false;
+                if (max.equals("unlimited")) {
+                    multiple = true;
                     type = List.class;
+                }
                 ParamModelData pm = new ParamModelData(
                     getAttr(attrs, "name"), type, min == 0, null);
                 pm.param._primary = true;
+                pm.param._multiple = multiple;
                 cm.add(pm);
             }
 
