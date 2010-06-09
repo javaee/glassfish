@@ -113,7 +113,7 @@ public class BaseSeleniumTestClass {
     }
 
     /**
-     * Click the specified element and wait for the specified trigger text on the resulting page, timing out after 2 minutes.
+     * Click the specified element and wait for the specified trigger text on the resulting page, timing out TIMEOUT seconds.
      *
      * @param triggerText
      */
@@ -171,7 +171,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected void waitForPageLoad(String triggerText, boolean textShouldBeMissing) {
-        waitForPageLoad(triggerText, 60, textShouldBeMissing);
+        waitForPageLoad(triggerText, TIMEOUT, textShouldBeMissing);
     }
 
     protected void waitForPageLoad(String triggerText, int timeout, boolean textShouldBeMissing) {
