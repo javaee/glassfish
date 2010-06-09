@@ -896,8 +896,9 @@ public class ApplicationArchivist extends Archivist<Application>
             newArchivist.copyInto(subSource, subTarget, overwriteManifest);
             target.closeEntry(subTarget);
             String subModulePath = subSource.getURI().getSchemeSpecificPart();
-            if (subModulePath.startsWith(subModulePath)) {
-                subModulePath = subModulePath.substring(subModulePath.length()+File.separator.length());
+            String parentPath = source.getURI().getSchemeSpecificPart();
+            if (subModulePath.startsWith(parentPath)) {
+                subModulePath = subModulePath.substring(parentPath.length()+File.separator.length());
                 for (Enumeration subEntries = subSource.entries();subEntries.hasMoreElements();) {
                     String anEntry = (String) subEntries.nextElement();
                     entriesAdded.add(subModulePath + "/" + anEntry);

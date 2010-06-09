@@ -132,11 +132,11 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
         }
         archivist.setRuntimeXMLValidation(false);
 
+        ApplicationHolder holder = dc.getModuleMetaData(ApplicationHolder.class);
         File deploymentPlan = params.deploymentplan;
-        handleDeploymentPlan(deploymentPlan, archivist, sourceArchive);
+        handleDeploymentPlan(deploymentPlan, archivist, sourceArchive, holder);
 
         long start = System.currentTimeMillis();
-        ApplicationHolder holder = dc.getModuleMetaData(ApplicationHolder.class);
         Application application=null;
         if (holder!=null) {
             application = holder.app;
@@ -220,7 +220,7 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
     }
 
     protected void handleDeploymentPlan(File deploymentPlan,
-        Archivist archivist, ReadableArchive sourceArchive) throws IOException {
+        Archivist archivist, ReadableArchive sourceArchive, ApplicationHolder holder) throws IOException {
         //Note in copying of deployment plan to the portable archive,
         //we should make sure the manifest in the deployment plan jar
         //file does not overwrite the one in the original archive
@@ -230,7 +230,11 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
             // need to revisit for ear case
             WritableArchive targetArchive = archiveFactory.createArchive(
                 sourceArchive.getURI());
-            archivist.copyInto(dpa, targetArchive, false);
+            if (archivist instanceof ApplicationArchivist) {
+                ((ApplicationArchivist)archivist).copyInto(holder.app, dpa, targetArchive, false);
+            } else {
+               archivist.copyInto(dpa, targetArchive, false);
+            }
         }
     }    
 
