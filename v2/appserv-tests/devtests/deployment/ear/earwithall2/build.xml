@@ -62,7 +62,7 @@
 
         <copy file="sun-web.xml" tofile="${portable.war}.sun-web.xml"/>
         <copy file="sun-ejb-jar.xml" tofile="${portable.jar}.sun-ejb-jar.xml"/>
-        <copy file="sun-application.xml" tofile="${portable.ear}.sun-application.xml"/>
+        <copy file="sun-application.xml" tofile="${build}/sun-application.xml"/>
         <jar destfile="${deployplan.jar}"
              basedir="${build}" includes="**.xml"/>
     </target>
