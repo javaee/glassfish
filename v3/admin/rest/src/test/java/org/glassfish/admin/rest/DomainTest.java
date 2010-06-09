@@ -70,7 +70,7 @@ public class DomainTest extends RestTestBase {
 
         payload.put("locale", newLocale);
 
-        ClientResponse response = create(BASE_URL+"/domain", payload);
+        ClientResponse response = create(BASE_URL, payload);
 
         // Reload the domain and make sure our new locale was saved
         Map<String, String> map = getEntityValues(this.read(BASE_URL));
