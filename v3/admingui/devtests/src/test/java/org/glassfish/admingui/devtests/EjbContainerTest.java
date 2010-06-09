@@ -166,10 +166,9 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         //Location should not be changed by the default button
         String location = selenium.getValue("form1:propertySheet:generalPropertySection:SessionStoreProp:SessionStore");
 
+        //We are testing that default button fills in the correct default value, not testing if the Save button works.
+        //no need to click Save for this test.
         clickAndWaitForButtonEnabled("form1:propertyContentPage:loadDefaultsButton");
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
-        clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
-        clickAndWait("form1:ejbContainerTabs:ejbSettingsTab", TAB_EJB_SETTINGS);
 
         assertEquals(location, selenium.getValue("form1:propertySheet:generalPropertySection:SessionStoreProp:SessionStore"));
         
@@ -183,5 +182,9 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         assertEquals("5400", selenium.getValue("form1:propertySheet:cacheSettingSection:RemTimoutProp:RemTimout"));
         assertEquals("nru", selenium.getValue("form1:propertySheet:cacheSettingSection:RemPolicyProp:RemPolicy"));
         assertEquals("600", selenium.getValue("form1:propertySheet:cacheSettingSection:CacheIdleProp:CacheIdle"));
+
+        //will be nice to have the default value back for the server.
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+
     }
 }
