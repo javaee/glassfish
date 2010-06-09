@@ -249,14 +249,14 @@ public class TemplateResource {
             __resourceUtil.adjustParameters(data);
             if (data.get("DEFAULT") == null) {
                 addDefaultParameter(data);
-            }
-
-            String resourceName = getResourceName(uriInfo.getAbsolutePath().getPath(), "/");
-            if (!data.get("DEFAULT").equals(resourceName)) {
-                String errorMessage = localStrings.getLocalString("rest.resource.not.deleted",
-                        "Resource not deleted. Value of \"name\" should be the name of this resource.");
-                return __resourceUtil.getResponse(403, /*forbidden*/
-                        errorMessage, requestHeaders, uriInfo);
+            } else {
+                String resourceName = getResourceName(uriInfo.getAbsolutePath().getPath(), "/");
+                if (!data.get("DEFAULT").equals(resourceName)) {
+                    String errorMessage = localStrings.getLocalString("rest.resource.not.deleted",
+                            "Resource not deleted. Value of \"name\" should be the name of this resource.");
+                    return __resourceUtil.getResponse(403, /*forbidden*/
+                            errorMessage, requestHeaders, uriInfo);
+                }
             }
 
             ActionReport actionReport = runCommand(getDeleteCommand(), data);
@@ -474,10 +474,12 @@ public class TemplateResource {
         return null;//not processed
     }
 
-
+    // This has to be smarter, since we are encoding / in resource names now
     private void addDefaultParameter(HashMap<String, String> data) {
         int index = uriInfo.getAbsolutePath().getPath().lastIndexOf('/');
-        String defaultParameterValue = uriInfo.getAbsolutePath().getPath().substring(index + 1);
+        String defaultParameterValue = 
+            //uriInfo.getAbsolutePath().getPath().substring(index + 1);
+            getEntity().getKey();
         data.put("DEFAULT", defaultParameterValue);
     }
 

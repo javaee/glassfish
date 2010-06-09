@@ -46,10 +46,10 @@ import static org.junit.Assert.*;
  * @author jasonlee
  */
 public class JdbcConnectionPoolTest extends RestTestBase {
-    public static final String BASE_JDBC_CP_URL = BASE_URL+"/domain/resources/jdbc-connection-pool";
+    public static final String BASE_JDBC_CP_URL = BASE_URL+"/resources/jdbc-connection-pool";
     @Test
     public void testReading() {
-        Map<String, String> entity = getEntityValues(get(BASE_JDBC_CP_URL + "/__TimerPool"));
+        Map<String, String> entity = getEntityValues(read(BASE_JDBC_CP_URL + "/__TimerPool"));
         assertEquals("__TimerPool", entity.get("name"));
     }
 
@@ -59,16 +59,16 @@ public class JdbcConnectionPoolTest extends RestTestBase {
         Map<String, String> params = new HashMap<String, String>();
         params.put("name", poolName);
         params.put("datasourceClassname","org.apache.derby.jdbc.ClientDataSource");
-        ClientResponse response = post(BASE_JDBC_CP_URL, params);
+        ClientResponse response = create(BASE_JDBC_CP_URL, params);
         assertEquals(201, response.getStatus());
 
-        Map<String, String> entity = getEntityValues(get(BASE_JDBC_CP_URL + "/"+poolName));
+        Map<String, String> entity = getEntityValues(read(BASE_JDBC_CP_URL + "/"+poolName));
         assertFalse(entity.size() == 0);
 
         response = delete(BASE_JDBC_CP_URL+"/"+poolName, new HashMap<String, String>());
         assertEquals(response.getStatus(), 200);
 
-        entity = getEntityValues(get(BASE_JDBC_CP_URL + "/"+poolName));
+        entity = getEntityValues(read(BASE_JDBC_CP_URL + "/"+poolName));
         assertEquals(entity.size(), 0);
     }
 }

@@ -58,7 +58,7 @@ import java.util.Map;
 
 public class RestTestBase {
 
-    public static final String BASE_URL = "http://localhost:4848/management";
+    public static final String BASE_URL = "http://localhost:4848/management/domain";
 
     public static final String RESPONSE_TYPE = "application/xml";
 
@@ -93,31 +93,25 @@ public class RestTestBase {
     }
 
     protected ClientResponse post(String address, Map<String, String> payload) {
-        WebResource webResource = client.resource(address);
+        return client.resource(address).post(ClientResponse.class, buildMultivalueMap(payload));
+    }
 
-        MultivaluedMap formData = new MultivaluedMapImpl();
-        for (final Map.Entry<String, String> entry : payload.entrySet()) {
-            formData.putSingle(entry.getKey(), entry.getValue());
-        }
-        ClientResponse cr = webResource
-//                .accept(RESPONSE_TYPE)
-                .post(ClientResponse.class, formData);
-        return cr;
+    protected ClientResponse create(String address, Map<String, String> payload) {
+        return post(address, payload);
+    }
+
+    protected String read(String address) {
+        return get(address);
+    }
+
+    protected ClientResponse update(String address, Map<String, String> payload) {
+        // For now... :(
+        return create(address, payload);
+        //return client.resource(address).put(ClientResponse.class, buildMultivalueMap(payload));
     }
 
     protected ClientResponse delete(String address, Map<String, String> payload) {
-        WebResource webResource = client.resource(address);
-        ClientResponse cr = webResource.queryParams(buildMultivalueMap(payload)).delete(ClientResponse.class);
-        return cr;
-    }
-
-    protected String put1(String address, Map<String, String> payload, String responseType) {
-        WebResource webResource = client.resource(address);
-
-        MultivaluedMap formData = new MultivaluedMapImpl();
-        formData.putAll(payload);
-        ClientResponse cr = webResource.type("application/x-www-form-urlencoded").accept(responseType).put(ClientResponse.class, formData);
-        return cr.toString();
+        return client.resource(address).queryParams(buildMultivalueMap(payload)).delete(ClientResponse.class);
     }
 
     /**

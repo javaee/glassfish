@@ -53,9 +53,14 @@ import static org.junit.Assert.*;
  * To change this template use File | Settings | File Templates.
  */
 public class JmsTest extends RestTestBase {
-    static final String URL_ADMIN_OBJECT_RESOURCE = BASE_URL + "/domain/resources/admin-object-resource";
-    static final String URL_CONNECTOR_CONNECTION_POOL = BASE_URL + "/domain/resources/connector-connection-pool";
-    static final String URL_CONNECTOR_RESOURCE = BASE_URL + "/domain/resources/connector-resource";
+    static final String URL_ADMIN_OBJECT_RESOURCE = BASE_URL + "/resources/admin-object-resource";
+    static final String URL_CONNECTOR_CONNECTION_POOL = BASE_URL + "/resources/connector-connection-pool";
+    static final String URL_CONNECTOR_RESOURCE = BASE_URL + "/resources/connector-resource";
+    static final String URL_JMS_HOST = BASE_URL + "/configs/config/server-config/jms-service/jms-host";
+    static final String URL_CREATE_JMS_DEST = BASE_URL + "/configs/config/server-config/jms-service/create-jmsdest";
+    static final String URL_DELETE_JMS_DEST = BASE_URL + "/configs/config/server-config/jms-service/delete-jmsdest";
+    static final String URL_LIST_JMS_DEST = BASE_URL + "/configs/config/server-config/jms-service/list-jmsdest";
+    static final String URL_PING_JMS = BASE_URL + "/configs/config/server-config/jms-service/jms-ping";
 
     @Test
     public void testJmsConnectionFactories() {
@@ -71,43 +76,52 @@ public class JmsTest extends RestTestBase {
         cr_attrs.put("poolname", poolName);
 
         // Create connection pool
-        ClientResponse response = this.post(URL_CONNECTOR_CONNECTION_POOL, ccp_attrs);
+        ClientResponse response = this.create(URL_CONNECTOR_CONNECTION_POOL, ccp_attrs);
         assertEquals(201, response.getStatus());
 
         // Check connection pool creation
-        Map<String, String> pool = getEntityValues(get(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName));
+        Map<String, String> pool = getEntityValues(read(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName));
         assertFalse(pool.size() == 0);
 
         // Create connector resource
-        response = this.post(URL_CONNECTOR_RESOURCE, cr_attrs);
+        response = this.create(URL_CONNECTOR_RESOURCE, cr_attrs);
         assertEquals(201, response.getStatus());
 
         // Check connector resource
-        Map<String, String> resource = getEntityValues(get(URL_CONNECTOR_RESOURCE + "/" + poolName));
+        Map<String, String> resource = getEntityValues(read(URL_CONNECTOR_RESOURCE + "/" + poolName));
         assertFalse(resource.size() == 0);
 
         // Edit and check ccp
-        response = this.post(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName, new HashMap<String, String>() {{
-            put("description", poolName);
-        }});
+        response = this.create(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName, new HashMap<String, String>() {
+
+            {
+                put("description", poolName);
+            }
+        });
         assertEquals(200, response.getStatus());
 
-        pool = getEntityValues(get(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName));
+        pool = getEntityValues(read(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName));
         assertTrue(pool.get("description").equals(poolName));
 
         // Edit and check cr
-        response = this.post(URL_CONNECTOR_RESOURCE + "/" + poolName, new HashMap<String, String>() {{
-            put("description", poolName);
-        }});
+        response = this.create(URL_CONNECTOR_RESOURCE + "/" + poolName, new HashMap<String, String>() {
+
+            {
+                put("description", poolName);
+            }
+        });
         assertEquals(200, response.getStatus());
 
-        resource = getEntityValues(get(URL_CONNECTOR_RESOURCE + "/" + poolName));
+        resource = getEntityValues(read(URL_CONNECTOR_RESOURCE + "/" + poolName));
         assertTrue(pool.get("description").equals(poolName));
 
         // Delete objects
-        response = delete(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName, new HashMap<String, String>() {{
-            put("cascade", "true");
-        }});
+        response = delete(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName, new HashMap<String, String>() {
+
+            {
+                put("cascade", "true");
+            }
+        });
         assertEquals(200, response.getStatus());
     }
 
@@ -118,7 +132,6 @@ public class JmsTest extends RestTestBase {
         try {
             encodedJndiName = URLEncoder.encode(jndiName, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
         Map<String, String> attrs = new HashMap<String, String>();
@@ -126,13 +139,77 @@ public class JmsTest extends RestTestBase {
         attrs.put("raname", "jmsra");
         attrs.put("restype", "javax.jms.Topic");
 
-        ClientResponse response = this.post(URL_ADMIN_OBJECT_RESOURCE, attrs);
+        ClientResponse response = this.create(URL_ADMIN_OBJECT_RESOURCE, attrs);
         assertEquals(201, response.getStatus());
 
-        Map<String, String> entity = getEntityValues(get(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName));
-        assertFalse(entity.size() == 0);
+        Map<String, String> entity = getEntityValues(read(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName));
+        assertFalse(entity.isEmpty());
 
         response = delete(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName, null);
         assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    public void testJmsHosts() {
+        final String jmsHostName = "jmshost" + generateRandomString();
+        Map<String, String> newHost = new HashMap<String, String>() {
+
+            {
+                put("id", jmsHostName);
+                put("adminPassword", "admin");
+                put("port", "7676");
+                put("adminUserName", "admin");
+                put("host", "localhost");
+            }
+        };
+
+        // Test create
+        ClientResponse response = this.create(URL_JMS_HOST, newHost);
+        assertEquals(201, response.getStatus());
+
+        // Test edit
+        Map<String, String> entity = getEntityValues(read(URL_JMS_HOST + "/" + jmsHostName));
+        assertFalse(entity.isEmpty());
+        assertEquals(jmsHostName, entity.get("name"));
+        entity.put("port", "8686");
+        response = update(URL_JMS_HOST + "/" + jmsHostName, entity);
+        assertEquals(200, response.getStatus());
+        entity = getEntityValues(read(URL_JMS_HOST + "/" + jmsHostName));
+        assertEquals("8686", entity.get("port"));
+
+        // Test delete
+        response = delete(URL_JMS_HOST + "/" + jmsHostName, null);
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    public void testJmsDest() {
+        final String jmsDestName = "jmsDest" + generateRandomString();
+        Map<String, String> newDest = new HashMap<String, String>() {{
+            put("id", jmsDestName);
+            put("destType", "topic");
+        }};
+
+        // Test Create
+        ClientResponse response = create(URL_CREATE_JMS_DEST, newDest);
+        // This command returns 200 instead of 201, for some reason.  Odd.
+        assertEquals(200, response.getStatus());
+
+        // Test creation. There's no CLI for editing a JMS destination, so we query
+        // the broker for the newly created destination to make sure it knows about it
+        Map<String, String> entity = getEntityValues(read(URL_LIST_JMS_DEST));
+        assertTrue(entity.get("value").contains(jmsDestName));
+
+        // Test deletion
+        response = post(URL_DELETE_JMS_DEST, newDest); // You POST to commands
+        assertEquals(200, response.getStatus());
+        entity = getEntityValues(read(URL_LIST_JMS_DEST));
+        assertFalse(entity.get("value").contains(jmsDestName));
+    }
+
+    @Test
+    public void testJmsPing() {
+        Map<String, String> entity = getEntityValues(read(URL_PING_JMS));
+        assertTrue(entity.get("value").equals("JMS-ping command executed successfully"));
     }
 }
