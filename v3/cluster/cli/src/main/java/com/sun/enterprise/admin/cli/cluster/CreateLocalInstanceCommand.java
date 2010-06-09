@@ -164,7 +164,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
 
     private int registerToDAS() throws CommandException {
         ArrayList<String> argsList = new ArrayList<String>();
-        argsList.add(0, "create-instance");
+        argsList.add(0, "_register-instance");
         if (clusterName != null) {
             argsList.add("--cluster");
             argsList.add(clusterName);
@@ -188,7 +188,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         String[] argsArray = new String[argsList.size()];
         argsArray = argsList.toArray(argsArray);
 
-        RemoteCommand rc = new RemoteCommand("create-instance", this.programOpts, this.env);
+        RemoteCommand rc = new RemoteCommand("_register-instance", this.programOpts, this.env);
         return rc.execute(argsArray);
     }
 
