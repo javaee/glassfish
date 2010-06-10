@@ -98,9 +98,9 @@ public class ProcessManager {
 
             Runtime rt = Runtime.getRuntime();
             process = rt.exec(cmdline);
-            writeStdin();
             readStream("stderr", process.getErrorStream(), sb_err);
             readStream("stdout", process.getInputStream(), sb_out);
+            writeStdin();
             await();
 
             try {
