@@ -63,8 +63,6 @@ import com.sun.enterprise.util.io.DomainDirs;
 @Service(name = "list-domains")
 @Scoped(PerLookup.class)
 public final class ListDomainsCommand extends LocalDomainCommand {
-    @Param(name = "domaindir", optional = true)
-    private String domainDirParam = null;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ListDomainsCommand.class);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,88 +36,55 @@
 
 package com.sun.enterprise.admin.cli.optional;
 
-import java.io.*;
-
 import org.glassfish.api.admin.*;
-import org.glassfish.api.Param;
-import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.util.ObjectAnalyzer;
-import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.backup.BackupException;
+import com.sun.enterprise.backup.BackupWarningException;
+import com.sun.enterprise.backup.ListManager;
+
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
+
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.backup.BackupRequest;
 
 /**
- * This is a local command for backing-up domains.
- * The Options:
- *  <ul>
- *  <li>domaindir
- *  </ul>
- * The Operand:
- *  <ul>
- *  <li>domain_name
- *  </ul>
+ * This is a local command for listing backed up domains.
+ * 
  */
-
-public abstract class BackupCommands extends LocalDomainCommand {
-
-    BackupRequest   request;
+@Service(name = "list-backups")
+@Scoped(PerLookup.class)
+public final class ListBackupsCommand extends BackupCommands {
 
     private static final LocalStringsImpl strings =
-            new LocalStringsImpl(BackupCommands.class);
+            new LocalStringsImpl(ListDomainsCommand.class);
 
-    @Param(name = "verbose", optional = true)
-    boolean verbose;
-
-    @Param(name = "description", optional = true)
-    String desc;
-
-    @Param(name = "domain_name", primary = true, optional = true)
-    String domainName;
-
-     /**
-     * A method that checks the options and operand that the user supplied.
-     * These tests are slightly different for different CLI commands
-     */
-    protected void checkOptions() throws CommandValidationException {
-        if (verbose && programOpts.isTerse())
-            throw new CommandValidationException(
-                strings.get("NoVerboseAndTerseAtTheSameTime"));
-
-        if (domainDirParam == null || domainDirParam.length() <= 0)
-            domainDirParam = getDomainsDir().getPath();
-
-        File domainsDirFile = new File(domainDirParam);
-
-        // make sure domainsDir exists and is a directory
-        if (!domainsDirFile.isDirectory()) {
-            throw new CommandValidationException(
-                strings.get("InvalidDomainPath", domainDirParam));
+    @Override
+    protected void validate()
+            throws CommandException {
+        super.validate();
+        checkOptions();
+        prepareRequest();
+        initializeLogger();     // in case program options changed
+    }
+     
+  
+    @Override
+    protected int executeCommand()
+            throws CommandException {
+        try {
+            ListManager mgr = new ListManager(request);
+            logger.printMessage(mgr.list());            
+        } catch (BackupWarningException bwe) {
+            logger.printMessage(bwe.getMessage());
+        } catch (BackupException be) {
+            throw new CommandException(be);
         }
-
-        // if user hasn't specified domain_name, get the default one
-        
-        if (domainName == null)
-            domainName = getDomainName();
-         
-        File domainFile = new File(domainsDirFile, domainName);
-
-        if (!domainFile.isDirectory() || !domainFile.canWrite()) {
-            throw new CommandValidationException(
-                strings.get("InvalidDirectory", domainFile.getPath()));
-        }
+        return 0;
     }
 
-   protected void prepareRequest() {
-
-        request = new BackupRequest(domainDirParam, domainName, desc);
-
-        request.setTerse(programOpts.isTerse());
-        request.setVerbose(verbose);
-    }
- 
     @Override
     public String toString() {
         return super.toString() + "\n" + ObjectAnalyzer.toString(this);
     }
-
+   
 }

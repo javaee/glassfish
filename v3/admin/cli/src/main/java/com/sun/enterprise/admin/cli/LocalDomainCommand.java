@@ -38,19 +38,10 @@ package com.sun.enterprise.admin.cli;
 import com.sun.enterprise.util.io.DomainDirs;
 import com.sun.enterprise.util.io.ServerDirs;
 import java.io.*;
-import java.util.*;
-import java.net.Socket;
-import java.security.KeyStore;
 
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 
-import com.sun.enterprise.admin.cli.remote.RemoteCommand;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.universal.io.SmartFile;
-import com.sun.enterprise.universal.xml.MiniXmlParser;
-import com.sun.enterprise.universal.xml.MiniXmlParserException;
-import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.universal.StringUtils;
 
 /**
@@ -62,7 +53,7 @@ import com.sun.enterprise.universal.StringUtils;
  */
 public abstract class LocalDomainCommand extends LocalServerCommand {
     @Param(name = "domaindir", optional = true)
-    private String domainDirParam = null;
+    protected String domainDirParam = null;
     // subclasses decide whether it's optional, required, or not allowed
     //@Param(name = "domain_name", primary = true, optional = true)
     private String userArgDomainName;

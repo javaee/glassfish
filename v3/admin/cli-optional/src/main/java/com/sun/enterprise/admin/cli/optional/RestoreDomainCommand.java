@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,14 +40,22 @@ import java.io.*;
 
 import org.glassfish.api.admin.*;
 import org.glassfish.api.Param;
-import com.sun.enterprise.admin.cli.*;
+
+import com.sun.enterprise.admin.cli.remote.DASUtils;
+
 import com.sun.enterprise.util.ObjectAnalyzer;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.backup.BackupException;
+import com.sun.enterprise.backup.RestoreManager;
 import com.sun.enterprise.backup.BackupRequest;
+import com.sun.enterprise.backup.BackupWarningException;
+
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
 
 /**
- * This is a local command for backing-up domains.
+ * This is a local command for restoring domains.
  * The Options:
  *  <ul>
  *  <li>domaindir
@@ -57,64 +65,71 @@ import com.sun.enterprise.backup.BackupRequest;
  *  <li>domain_name
  *  </ul>
  */
+@Service(name = "restore-domain")
+@Scoped(PerLookup.class)
+public final class RestoreDomainCommand extends BackupCommands {
 
-public abstract class BackupCommands extends LocalDomainCommand {
-
-    BackupRequest   request;
+    @Param(name = "filename", optional = true)
+    private String backupFilename;
 
     private static final LocalStringsImpl strings =
-            new LocalStringsImpl(BackupCommands.class);
+            new LocalStringsImpl(BackupDomainCommand.class);
 
-    @Param(name = "verbose", optional = true)
-    boolean verbose;
-
-    @Param(name = "description", optional = true)
-    String desc;
-
-    @Param(name = "domain_name", primary = true, optional = true)
-    String domainName;
-
-     /**
-     * A method that checks the options and operand that the user supplied.
-     * These tests are slightly different for different CLI commands
+    /**
      */
-    protected void checkOptions() throws CommandValidationException {
-        if (verbose && programOpts.isTerse())
-            throw new CommandValidationException(
-                strings.get("NoVerboseAndTerseAtTheSameTime"));
-
-        if (domainDirParam == null || domainDirParam.length() <= 0)
-            domainDirParam = getDomainsDir().getPath();
-
-        File domainsDirFile = new File(domainDirParam);
-
-        // make sure domainsDir exists and is a directory
-        if (!domainsDirFile.isDirectory()) {
-            throw new CommandValidationException(
-                strings.get("InvalidDomainPath", domainDirParam));
-        }
-
-        // if user hasn't specified domain_name, get the default one
+    @Override
+    protected void validate()
+            throws CommandException {
+        super.validate();
         
-        if (domainName == null)
-            domainName = getDomainName();
-         
-        File domainFile = new File(domainsDirFile, domainName);
+        checkOptions();
 
-        if (!domainFile.isDirectory() || !domainFile.canWrite()) {
-            throw new CommandValidationException(
-                strings.get("InvalidDirectory", domainFile.getPath()));
+        if (DASUtils.pingDASQuietly(programOpts, env)) {
+            throw new CommandException(
+                strings.get("DomainIsNotStopped", domainName));
         }
+
+        if (backupFilename != null) {
+            File f = new File(backupFilename);
+
+            if (!f.exists() || !f.canRead()) {
+                throw new CommandValidationException(
+                    strings.get("FileDoesNotExist", backupFilename));
+            }
+        }
+
+        initRequest();
+
+        initializeLogger();     // in case program options changed
+    }
+ 
+    /**
+     */
+    @Override
+    protected int executeCommand()
+            throws CommandException {
+        try {            
+            RestoreManager mgr = new RestoreManager(request);
+            logger.printMessage(mgr.restore());
+        } catch (BackupWarningException bwe) {
+            logger.printMessage(bwe.getMessage());
+        } catch (BackupException be) {
+            throw new CommandException(be);
+        }
+        return 0;
     }
 
-   protected void prepareRequest() {
-
-        request = new BackupRequest(domainDirParam, domainName, desc);
-
+    private void initRequest() {
+        
+        if (backupFilename == null)
+            request = new BackupRequest(domainDirParam, domainName, desc);
+        else
+            request = new BackupRequest(domainDirParam, domainName, desc,
+                                        backupFilename);
         request.setTerse(programOpts.isTerse());
         request.setVerbose(verbose);
     }
- 
+
     @Override
     public String toString() {
         return super.toString() + "\n" + ObjectAnalyzer.toString(this);

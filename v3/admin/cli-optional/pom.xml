@@ -99,6 +99,14 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>yaminikb</id>
+            <name>Yamini K B</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
     <build>
         <plugins>
@@ -106,10 +114,6 @@
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
                 <configuration>
-                    <excludes>
-                      <!-- See 5776 -->
-                      <exclude>com/sun/**/BackupCommands.java</exclude> 
-                    </excludes>
                     <archive>
                         <manifestEntries>
                                <Class-Path>config-api.jar internal-api.jar config-types.jar grizzly-config.jar</Class-Path>
@@ -191,14 +195,19 @@
             <artifactId>launcher</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <!-- see 5776. Commenting out backup for Prelude -->
-        <!--
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+        </dependency>
         <dependency>    
             <groupId>org.glassfish.admin</groupId>
             <artifactId>backup</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        -->
-        <!-- see 5776. Commenting out backup for Prelude -->
     </dependencies>
 </project>

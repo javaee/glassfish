@@ -154,3 +154,6 @@ delete-jms-host R
 list-jms-hosts R
 stop-instance R
 list-instances R
+backup-domain L
+restore-domain L
+list-backups L

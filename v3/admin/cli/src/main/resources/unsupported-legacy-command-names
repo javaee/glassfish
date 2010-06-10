@@ -6,9 +6,6 @@
 # more sensible command line syntax and separation of command options
 # from asadmin program options. For details, see CLI spec for GlassFish v3.
 # Also see the companion list of commands -- supported-legacy-command-names
-backup-domain L
-restore-domain L
-list-backups L
 install-addons L
 uninstall-addons L
 create-persistence-resource R
