@@ -38,23 +38,15 @@ package com.sun.enterprise.admin.cli.cluster;
 
 
 import java.beans.PropertyVetoException;
-
+import java.util.List;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.ConfigCode;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
-import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.*;
 
 /**
  *  This is a remote command that copies a config to a destination config.
@@ -67,11 +59,10 @@ import com.sun.enterprise.config.serverbeans.Configs;
 @Scoped(PerLookup.class)
 public final class CopyConfigCommand implements AdminCommand {
 
-    @Param(name="srcconfig",primary = true)
-    private String srcConfig;
+    @Param(primary=true, multiple=true)
+    List<String> configs;
 
-    @Param(name="destconfig")
-    private String destConfig;
+   
 
     @Inject
     Domain domain;
@@ -83,7 +74,22 @@ public final class CopyConfigCommand implements AdminCommand {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        SystemPropertyBag spb = null;
 
+        if (configs.size() != 2) {
+            report.setMessage(localStrings.getLocalString("Config.badConfigNames",
+                    "You must specify a source and destination config") + "\n" +
+                    localStrings.getLocalString("Config.copyConfigUsage",
+                     "Usage copy-config \\n[--systemproperties (name=value)[:name=value]*]\\nsource_configuration_name destination_configuration_name"
+       
+            ));
+
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
+        String srcConfig = configs.get(0);
+        String destConfig = configs.get(1);
         //Get the config from the domain
         //does the src config exist
         Config config = domain.getConfigNamed(srcConfig);
@@ -105,9 +111,9 @@ public final class CopyConfigCommand implements AdminCommand {
 
         //Copy the config
         final Config destCopy = (Config)config.deepCopy();
-        //check do we need to add -config to user specified value?
-        final String configName = destConfig ;//+ "-config";
-       
+        final String configName = destConfig ;
+
+    
         try {
             ConfigSupport.apply(new ConfigCode() {
                 @Override
