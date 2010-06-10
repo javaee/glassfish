@@ -36,6 +36,7 @@
 package admin;
 
 
+import java.io.File;
 import javax.xml.xpath.XPathConstants;
 
 /*
@@ -103,7 +104,6 @@ public class ClusterTest extends AdminBaseDevTest {
         testEndToEndDemo();
         cleanup();
         stat.printSummary();
-
     }
 
     private void  testDeleteClusterWithInstances(){
@@ -118,8 +118,6 @@ public class ClusterTest extends AdminBaseDevTest {
         //check if there is no server-ref property in the cluster element
         report(testName +"check-serverRef", !asadmin("get", "clusters.cluster."+cluster+".server-ref." + iname));
         report(testName+"delete-cl-no-ins", asadmin("delete-cluster",cluster));
-
-
     }
 
     /*
@@ -128,6 +126,14 @@ public class ClusterTest extends AdminBaseDevTest {
      */
     private void testEndToEndDemo() {
         final String tn = "end-to-end-";
+
+        final String i1url = "http://localhost:18080/";
+        final String i1murl = "http://localhost:14848/management/domain/";
+        final String i2url = "http://localhost:28080/";
+        final String i2murl = "http://localhost:24848/management/domain/";
+        final String dasmurl = "http://localhost:4848/management/domain/";
+
+        // create a cluster and two instances
         report(tn + "create-cluster", asadmin("create-cluster", "eec1"));
         report(tn + "create-local-instance1", asadmin("create-local-instance",
                 "--cluster", "eec1", "--systemproperties",
@@ -139,24 +145,95 @@ public class ClusterTest extends AdminBaseDevTest {
                 "HTTP_LISTENER_PORT=28080:HTTP_SSL_LISTENER_PORT=28181:IIOP_SSL_LISTENER_PORT=23800:" +
                 "IIOP_LISTENER_PORT=23700:JMX_SYSTEM_CONNECTOR_PORT=27676:IIOP_SSL_MUTUALAUTH_PORT=23801:" +
                 "JMS_PROVIDER_PORT=28686:ASADMIN_LISTENER_PORT=24848", "eein2"));
+
+        // deploy an application to the cluster
+        //File webapp = new File("resources", "helloworld.war");
+        //report(tn + "deploy", asadmin("deploy", "--target", "eec1", webapp.getAbsolutePath()));
+
+        // start the instances
         report(tn + "start-local-instance1", asadmin("start-local-instance", "eein1"));
         report(tn + "start-local-instance2", asadmin("start-local-instance", "eein2"));
-        report(tn + "list-instances", asadmin("list-instances"));
-        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL("http://localhost:18080/")));
-        report(tn + "getindex2", matchString("GlassFish Enterprise Server", getURL("http://localhost:28080/")));
-        report(tn + "getREST1", matchString("server/eein1/property",
-                getURL("http://localhost:14848/management/domain/servers/server/eein1")));
-        report(tn + "getREST1", !matchString("eein2",
-                getURL("http://localhost:14848/management/domain/servers/server")));
-        report(tn + "getREST2", matchString("server/eein2/property",
-                getURL("http://localhost:24848/management/domain/servers/server/eein2")));
-        String s = getURL("http://localhost:4848/management/domain/servers/server");
-        report(tn + "getREST3", matchString("eein1", s));
-        report(tn + "getREST3", matchString("eein2", s));
-        report(tn + "getREST3", matchString("server", s));
 
-        report(tn + "stop-local-instance", asadmin("stop-local-instance", "eein1"));
-        report(tn + "stop-local-instance", asadmin("stop-local-instance", "eein2"));
+        // check that the instances are there
+        report(tn + "list-instances", asadmin("list-instances"));
+        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
+        report(tn + "getindex2", matchString("GlassFish Enterprise Server", getURL(i2url)));
+        //report(tn + "getapp1", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        //report(tn + "getapp2", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+
+        report(tn + "getREST1", matchString("server/eein1/property", getURL(i1murl + "servers/server/eein1")));
+        report(tn + "getREST1a", !matchString("eein2", getURL(i1murl + "servers/server")));
+        report(tn + "getREST2", matchString("server/eein2/property", getURL(i2murl + "servers/server/eein2")));
+        String s = getURL(dasmurl + "servers/server");
+        report(tn + "getREST3a", matchString("eein1", s));
+        report(tn + "getREST3b", matchString("eein2", s));
+        report(tn + "getREST3c", matchString("server", s));
+        
+        // dynamic configuration
+        
+        // create several resources
+        report(tn + "create-jdbc-connection-pool", asadmin("create-jdbc-connection-pool",
+                "--datasourceclassname", "org.apache.derby.jdbc.ClientDataSource",
+                "--restype", "javax.sql.XADataSource",
+                "--target", "eec1", "sample_jdbc_pool"));
+        report(tn + "create-iiop-listener", asadmin("create-iiop-listener",
+                "--target", "eec1",
+                "--listeneraddress", "192.168.1.100",
+                "--iiopport", "1400", "sample_iiop_listener"));
+        report(tn + "create-connector-connection-pool", asadmin("create-connector-connection-pool",
+                "--target", "eec1",
+                "--raname", "jmsra",
+                "--connectiondefinition", "javax.jms.QueueConnectionFactory",
+                "jms/qConnPool"));
+
+        // check that the resources have been created on all instances
+        report(tn + "jdbc-check1", matchString("sample_jdbc_pool",
+                getURL(i1murl + "resources/jdbc-connection-pool")));
+        report(tn + "jdbc-check2", matchString("sample_jdbc_pool",
+                getURL(i2murl + "resources/jdbc-connection-pool")));
+        report(tn + "iiop-check1", matchString("sample_iiop_listener",
+                getURL(i1murl + "configs/config/eec1-config/iiop-service/iiop-listener")));
+        report(tn + "iiop-check2", matchString("sample_iiop_listener",
+                getURL(i2murl + "configs/config/eec1-config/iiop-service/iiop-listener")));
+        report(tn + "cp-check1", matchString("qConnPool",
+                getURL(i1murl + "resources/connector-connection-pool")));
+        report(tn + "cp-check2", matchString("qConnPool",
+                getURL(i2murl + "resources/connector-connection-pool")));
+
+        // try to create a resource on only one instance - should fail
+        report(tn + "create-connector-connection-pool-instance",
+               !asadmin("create-connector-connection-pool", "--target", "eein2",
+               "--raname", "jmsra",
+               "--connectiondefinition", "javax.jms.QueueConnectionFactory",
+               "jms/instanceOnlyConnPool"));
+
+        // delete the resources
+        report(tn + "delete-jdbc-connection-pool", asadmin("delete-jdbc-connection-pool",
+                "--target", "eec1", "sample_jdbc_pool"));
+        report(tn + "delete-iiop-listener", asadmin("delete-iiop-listener",
+                "--target", "eec1", "sample_iiop_listener"));
+        report(tn + "delete-connector-connection-pool", asadmin("delete-connector-connection-pool",
+                "--target", "eec1", "jms/qConnPool"));
+
+        // check that the resources have been deleted
+        report(tn + "jdbc-del-check1", !matchString("sample_jdbc_pool",
+                getURL(i1murl + "resources/resources/jdbc-resource")));
+        report(tn + "jdbc-del-check2", !matchString("sample_jdbc_pool",
+                getURL(i2murl + "resources/resources/jdbc-resource")));
+        report(tn + "iiop-del-check1", !matchString("sample_iiop_listener",
+                getURL(i1murl + "configs/config/eec1-config/iiop-service/iiop-listener")));
+        report(tn + "iiop-del-check2", !matchString("sample_iiop_listener",
+                getURL(i2murl + "configs/config/eec1-config/iiop-service/iiop-listener")));
+        report(tn + "cp-del-check1", !matchString("qConnPool",
+                getURL(i1murl + "resources/connector-connection-pool")));
+        report(tn + "cp-del-check2", !matchString("qConnPool",
+                getURL(i2murl + "resources/connector-connection-pool")));
+
+        // stop the instances
+        report(tn + "stop-local-instance1", asadmin("stop-local-instance", "eein1"));
+        report(tn + "stop-local-instance2", asadmin("stop-local-instance", "eein2"));
+
+        // delete the instances and the cluster
         report(tn + "delete-local-instance1", asadmin("delete-local-instance", "eein1"));
         report(tn + "delete-local-instance2", asadmin("delete-local-instance", "eein2"));
         report(tn + "delete-cluster", asadmin("delete-cluster", "eec1"));
@@ -177,8 +254,7 @@ public class ClusterTest extends AdminBaseDevTest {
         // make sure none of OUR clusters are in there.  Other clusters that are
         // in the user's domain are OK...
 
-        boolean success = 
-				   s.indexOf("cl1") < 0
+        boolean success = s.indexOf("cl1") < 0
                 && s.indexOf("cl2") < 0
                 && s.indexOf("cl3") < 0
                 && s.indexOf("cl4") < 0;
