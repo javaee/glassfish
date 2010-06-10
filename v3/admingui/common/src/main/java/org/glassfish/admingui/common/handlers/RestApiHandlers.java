@@ -208,16 +208,22 @@ public class RestApiHandlers {
     @Handler(id = "gf.deleteCascade",
             input = {
                     @HandlerInput(name = "endpoint", type = String.class, required = true),
-                    @HandlerInput(name = "selectedRows", type = List.class, required = true)
+                    @HandlerInput(name = "selectedRows", type = List.class, required = true),
+                    @HandlerInput(name = "id", type = String.class, defaultValue = "Name"),
+                    @HandlerInput(name = "cascade", type = String.class)
             })
     public static void deleteCascade(HandlerContext handlerCtx) {
         try {
             Map<String, Object> payload = new HashMap<String, Object>();
             String endpoint = (String) handlerCtx.getInputValue("endpoint");
-            payload.put("cascade", "true");
+            String id = (String) handlerCtx.getInputValue("id");
+            String cascade = (String) handlerCtx.getInputValue("cascade");
+            if (cascade != null) {
+                payload.put("cascade", "false");
+            }
 
             for (Map oneRow : (List<Map>) handlerCtx.getInputValue("selectedRows")) {
-                delete(endpoint + "/" + (String) oneRow.get("Name"), payload);
+                delete(endpoint + "/" + (String) oneRow.get(id), payload);
             }
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
@@ -227,7 +233,8 @@ public class RestApiHandlers {
     @Handler(id = "gf.getChildList",
         input = {
             @HandlerInput(name = "parentEndpoint", type = String.class, required = true),
-            @HandlerInput(name = "childType", type = String.class, required = true)},
+            @HandlerInput(name = "childType", type = String.class, required = true),
+            @HandlerInput(name = "id", type = String.class, defaultValue = "Name")},
         output = {
             @HandlerOutput(name = "result", type = java.util.List.class)
     })
@@ -235,7 +242,8 @@ public class RestApiHandlers {
         try {
             handlerCtx.setOutputValue("result",
                     buildChildEntityList((String)handlerCtx.getInputValue("parentEndpoint"),
-                    (String)handlerCtx.getInputValue("childType"), null));
+                    (String)handlerCtx.getInputValue("childType"), null,
+                    (String)handlerCtx.getInputValue("id")));
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -421,7 +429,7 @@ public class RestApiHandlers {
      * @return
      * @throws Exception
      */
-    public static List<Map> buildChildEntityList(String parent, String childType, List skipList) throws Exception {
+    public static List<Map> buildChildEntityList(String parent, String childType, List skipList, String id) throws Exception {
         String endpoint = parent.endsWith("/") ?
             parent + childType : parent + "/" + childType;
         boolean hasSkip = true;
@@ -442,7 +450,7 @@ public class RestApiHandlers {
                 Map<String, String> entity = RestApiHandlers.getEntityAttrs(bar);
                 HashMap<String, Object> oneRow = new HashMap<String, Object>();
 
-                if (hasSkip && skipList.contains(entity.get("Name"))) {
+                if (hasSkip && skipList.contains(entity.get(id))) {
                     continue;
                 }
 
@@ -450,8 +458,8 @@ public class RestApiHandlers {
                 for(String attrName : entity.keySet()){
                     oneRow.put(attrName, getA(entity, attrName, convert));
                 }
-                oneRow.put("encodedName", URLEncoder.encode(entity.get("Name"), "UTF-8"));
-
+                oneRow.put("encodedName", URLEncoder.encode(entity.get(id), "UTF-8"));
+                oneRow.put("Name", entity.get(id));
                 childElements.add(oneRow);
             }
         } catch (Exception e) {
