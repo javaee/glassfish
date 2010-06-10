@@ -62,8 +62,6 @@ public final class CopyConfigCommand implements AdminCommand {
     @Param(primary=true, multiple=true)
     List<String> configs;
 
-   
-
     @Inject
     Domain domain;
 
@@ -132,8 +130,6 @@ public final class CopyConfigCommand implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
-
-
     }
 
 }
