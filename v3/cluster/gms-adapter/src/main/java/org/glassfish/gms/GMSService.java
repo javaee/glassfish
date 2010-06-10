@@ -63,10 +63,9 @@ import java.io.FileNotFoundException;
 /**
  * @author Sheetal.Vartak@Sun.COM
  */
-
 @Service(name="GMSService")
 
-public class GMSService implements Startup, PostConstruct, CallBack {
+public class GMSService implements PostConstruct, CallBack {
 
     private static final Logger logger = LogDomain.getLogger(LogDomain.GMS_LOGGER);
     private GroupManagementService gms;
@@ -78,6 +77,7 @@ public class GMSService implements Startup, PostConstruct, CallBack {
     private final static String SPECTATOR = "SPECTATOR";
     private final static String MEMBERTYPE_STRING = "MEMBER_TYPE";
 
+    // bobby: want to get these from config
     private String instanceName = System.getProperty(INSTANCE_NAME);
     private String clusterName = System.getProperty(CLUSTER_NAME);
     
@@ -91,6 +91,8 @@ public class GMSService implements Startup, PostConstruct, CallBack {
         logger.log(Level.CONFIG, "The following properties need to be set in order to enable GMS : \n" +
                 "INSTANCE_NAME(server for DAS), CLUSTER_NAME, <MEMBER_TYPE>, <TCPSTARTPORT>, <TCPENDPORT>");
     }
+
+    @Override
     public void postConstruct() {
         try {
             logger.log(Level.CONFIG, "gmsservice.postconstruct");
@@ -215,6 +217,7 @@ public class GMSService implements Startup, PostConstruct, CallBack {
         configProps.put(INSTANCE_NAME, instanceName);
         configProps.put(CLUSTER_NAME, clusterName);
 
+        // bobby: get the other names into here
         if (instanceName.equals("server")) {   //instance is DAS
             configProps.put(MEMBERTYPE_STRING, SPECTATOR);
 

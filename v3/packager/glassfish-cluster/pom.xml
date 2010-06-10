@@ -87,6 +87,11 @@
               <artifactId>cluster-common</artifactId>
               <version>${project.version}</version>
           </dependency>
+          <dependency>
+              <groupId>org.glassfish.cluster</groupId>
+              <artifactId>gms-adapter</artifactId>
+              <version>${project.version}</version>
+          </dependency>
 
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	

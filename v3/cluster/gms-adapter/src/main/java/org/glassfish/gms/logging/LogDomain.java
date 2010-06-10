@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-20010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,7 +36,6 @@
 
 package org.glassfish.gms.logging;
 
-
 import java.util.logging.Logger;
 
 /**
@@ -45,16 +44,12 @@ import java.util.logging.Logger;
  * @author Sheetal Vartak
  */
 public class LogDomain  {
+    
     public static final String GMS_LOGGER = "GMSLogger";
     public static final String RESOURCE_BUNDLE = "LogStrings";
     public static final String LOG_STRINGS = "org.glassfish.gms.logging." + RESOURCE_BUNDLE;
 
-    private static Logger gmsLogger = null;
-
     public static Logger getLogger(final String loggerName){
-        if(gmsLogger == null ){
-            gmsLogger =  Logger.getLogger( loggerName,  LOG_STRINGS);
-        }
-        return gmsLogger;
+        return Logger.getLogger(loggerName,  LOG_STRINGS);
     }
 }

@@ -3,7 +3,7 @@
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+* Copyright 2010 Sun Microsystems, Inc. All rights reserved.
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -64,9 +64,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>shoal</artifactId>
-            <version>1.5-SNAPSHOT</version>           
+            <groupId>org.shoal</groupId>
+            <artifactId>shoal-gms</artifactId>
         </dependency>
         <!--<dependency>-->
             <!-- Needed to have a bundle activator to set up a different serialization policy-->
