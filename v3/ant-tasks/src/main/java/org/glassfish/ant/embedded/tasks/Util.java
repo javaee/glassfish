@@ -41,6 +41,9 @@ import java.io.*;
 
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedFileSystem;
+import org.glassfish.api.embedded.ContainerBuilder;
+import org.glassfish.api.embedded.web.EmbeddedWebContainer;
+import org.glassfish.api.embedded.Port;
 
 import java.io.File;
 
@@ -82,11 +85,20 @@ public  class Util {
 
     public static void createPort(Server server, String configFile, int port)
         throws java.io.IOException {
+        Port http = null;
+
         if (configFile == null && port == -1) {
-            server.createPort(Constants.DEFAULT_HTTP_PORT);
+            http = server.createPort(Constants.DEFAULT_HTTP_PORT);
         }
-        else if (port != -1)
-            server.createPort(port);
+        else if (port != -1) {
+            http = server.createPort(port);
+        }
+        if (http != null) {
+            ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
+            server.addContainer(b);
+            EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
+            embedded.bind(http, "http");
+        }
     }
 
 }
