@@ -46,14 +46,16 @@ import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.config.serverbeans.Node;
+import org.jvnet.hk2.component.PostConstruct;
 
 import java.io.OutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 @Service(name="SSHLauncher")
-public class SSHLauncher {
+public class SSHLauncher implements PostConstruct {
 
     @Inject
     Habitat habitat;
@@ -91,15 +93,35 @@ public class SSHLauncher {
 
     private String authType;
 
+    @Inject
+    Node[] nodes;
+
     private File knownHosts;
 
+    private HashMap<String, Node> nodeMap;
+
+    @Override
+    public void postConstruct() {
+        nodeMap = new HashMap<String, Node>();
+        for (Node node: nodes) {
+            nodeMap.put(node.getName(), node);
+        }
+
+
+    }
+
     public void init(String nodeName) {
-        Node node = habitat.getComponent(Node.class, nodeName);
+        Node node = nodeMap.get(nodeName);
         this.host = node.getHostNode();
         //XXX: Getting the first one right now. Do we really need a list to be
         // returned?
         SshConnector connector = node.getSshConnector().get(0);
-        int port = Integer.parseInt(connector.getSshPort());
+        int port;
+        try {
+            port = Integer.parseInt(connector.getSshPort());
+        } catch(NumberFormatException nfe) {
+            port = 22;
+        }
         this.port = port == 0 ? 22 : port;
         //XXX: Getting the first one right now. Do we really need a list to be
         // returned?        
@@ -107,7 +129,6 @@ public class SSHLauncher {
         String userName = sshAuth.getUserName();
         this.userName = SSHUtil.checkString(userName) == null ?
                     System.getProperty("user.name") : userName;
-        System.setProperty("user.name", userName);
         this.keyFile = sshAuth.getKeyfile();
         // String authType = sshAuth.;
         //this.authType = authType == null ? "key" : authType;
