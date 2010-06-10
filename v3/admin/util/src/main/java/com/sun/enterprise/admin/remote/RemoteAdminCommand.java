@@ -859,7 +859,7 @@ public class RemoteAdminCommand {
                 int min = Integer.parseInt(getAttr(attrs, "min"));
                 String max = getAttr(attrs, "max");
                 boolean multiple = false;
-                if (max.equals(Integer.toString((Integer.MAX_VALUE)))) {
+                if (max.equals("unlimited")) {
                     multiple = true;
                     type = List.class;
                 }

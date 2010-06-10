@@ -594,7 +594,7 @@ public class CommandRunnerImpl implements CommandRunner {
 	    primpart.addProperty("min",
 		    primary.getParam().optional() ? "0" : "1");
 	    primpart.addProperty("max", primary.getParam().multiple() ?
-                        Integer.toString(Integer.MAX_VALUE) : "1");
+                        "unlimited" : "1");
 	    String desc = getParamDescription(localStrings, i18n_key, primary);
 	    if (ok(desc))
 		primpart.addProperty("description", desc);
