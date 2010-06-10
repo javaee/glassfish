@@ -35,12 +35,6 @@
  */
 package admin;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.net.URL;
-import java.net.URLConnection;
 
 import javax.xml.xpath.XPathConstants;
 
@@ -49,7 +43,6 @@ import javax.xml.xpath.XPathConstants;
  * @author Bhakti Mehta
  */
 public class ClusterTest extends AdminBaseDevTest {
-    private static final boolean DEBUG = false;
 
     public static void main(String[] args) {
         new ClusterTest().run();
@@ -168,39 +161,6 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "delete-local-instance2", asadmin("delete-local-instance", "eein2"));
         report(tn + "delete-cluster", asadmin("delete-cluster", "eec1"));
 
-    }
-
-    /*
-     * Returns true if String b contains String a. 
-     */
-    private boolean matchString(String a, String b) {
-        return b.indexOf(a) != -1;
-    }
-
-    private String getURL(String urlstr) {
-        try {
-            URL u = new URL(urlstr);
-            URLConnection urlc = u.openConnection();
-            BufferedReader ir = new BufferedReader(new InputStreamReader(urlc.getInputStream(),
-                    "ISO-8859-1"));
-            StringWriter ow = new StringWriter();
-            String line;
-            while ((line = ir.readLine()) != null) {
-                ow.write(line);
-                ow.write("\n");
-            }
-            ir.close();
-            ow.close();
-            return ow.getBuffer().toString();
-        }
-        catch (IOException ex) {
-            printf("unable to fetch URL:" + urlstr);
-            return "";
-        }
-    }
-
-    private void printf(String fmt, Object... args) {
-        System.out.printf("**** DEBUG MESSAGE ****  " + fmt + "\n", args);
     }
 
     @Override

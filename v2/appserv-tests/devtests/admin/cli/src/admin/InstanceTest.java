@@ -37,7 +37,6 @@ package admin;
 
 import java.io.*;
 import java.net.*;
-import java.util.*;
 
 /*
  * Dev test for create/delete/list instance
@@ -81,43 +80,6 @@ public class InstanceTest extends AdminBaseDevTest {
 
     public static void main(String[] args) {
         new InstanceTest().run();
-    }
-
-    @Override
-    public void report(String name, boolean success) {
-        // bnevins june 6 2010
-
-        // crazy base class uses a Map to store these reports.  If you use
-        // the same name > 1 time they are ignored and thrown away!!!
-        // I went with this outrageous kludge because (1) it is just tests
-        // and (2) there are tens of thousands of other files in this harness!!!
-
-        // another issue is hacking off strings after a space.  Makes no sense to me!!
-
-        String name2 = name.replace(' ', '_');
-        if (!name2.equals(name)) {
-            System.out.println("Found spaces in the name.  Replaced with underscore. "
-                    + "before: " + name + ", after: " + name2);
-            name = name2;   // don't foul logic below!
-        }
-
-        int i = 0;
-
-        while (reportNames.add(name2) == false) {
-            name2 = name + i++;
-        }
-
-        if (!name2.equals(name)) {
-            System.out.println("Duplicate name found (" + name
-                    + ") and replaced with: " + name2);
-        }
-
-        super.report(name2, success);
-    }
-
-    @Override
-    public void report(String step, AsadminReturn ret) {
-        report(step, ret.returnValue);
     }
 
     @Override
@@ -392,12 +354,6 @@ public class InstanceTest extends AdminBaseDevTest {
         return !configConfigDir.exists();
     }
 
-    private void printf(String fmt, Object... args) {
-        if (DEBUG) {
-            System.out.printf("**** DEBUG MESSAGE ****  " + fmt + "\n", args);
-        }
-    }
-
     private static void setupInstances(int num) {
         instanceNames = new String[num];
 
@@ -409,22 +365,7 @@ public class InstanceTest extends AdminBaseDevTest {
     private final File glassFishHome;
     private final File instancesHome;
     private final File domainHome;
-    private final static boolean DEBUG;
     private static String[] instanceNames;
-    private final SortedSet<String> reportNames = new TreeSet<String>();
-    private final static boolean isHudson = Boolean.parseBoolean(System.getenv("HUDSON"));
     private static final int DEFAULT_NUM_TESTS = 2;
 
-    static {
-        String name = System.getProperty("user.name");
-
-        if (name != null && name.equals("bnevins"))
-            DEBUG = true;
-        else if (isHudson)
-            DEBUG = true;
-        else if (Boolean.parseBoolean(System.getenv("AS_DEBUG")))
-            DEBUG = true;
-        else
-            DEBUG = false;
-    }
 }
