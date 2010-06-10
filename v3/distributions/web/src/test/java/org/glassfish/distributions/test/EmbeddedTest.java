@@ -96,7 +96,7 @@ public class EmbeddedTest {
         System.out.println("builder is " + b);
         server.addContainer(b);
         EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
-		try {
+        try {
             http = server.createPort(8080);
         } catch(IOException e) {
             throw new RuntimeException(e);
