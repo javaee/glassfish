@@ -64,6 +64,7 @@ import java.util.logging.Logger;
 
 import javax.validation.constraints.Min;
 import org.glassfish.api.admin.ServerEnvironment;
+
 /**
  *
  * Java EE Application Server Configuration
@@ -77,7 +78,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 @SuppressWarnings("unused")
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
 
-    @Param(name="name", primary = true)
+    @Param(name = "name", primary = true)
     public void setName(String value) throws PropertyVetoException;
 
 
@@ -100,7 +101,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name = "config", optional=true)
+    @Param(name = "config", optional = true)
     void setConfigRef(String value) throws PropertyVetoException;
 
     /**
@@ -137,8 +138,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="100")
-    @Min(value=1)
+    @Attribute(defaultValue = "100")
+    @Min(value = 1)
     String getLbWeight();
 
     /**
@@ -149,7 +150,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * @throws PropertyVetoException if a listener vetoes the change
      */
     void setLbWeight(String value) throws PropertyVetoException;
-
 
     /**
      * Gets the value of the systemProperty property.
@@ -171,19 +171,19 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * Objects of the following type(s) are allowed in the list
      * {@link SystemProperty }
      */
-    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal system properties" )
+    @ToDo(priority = ToDo.Priority.IMPORTANT, details = "Provide PropertyDesc for legal system properties")
     @Element
-    @Param(name="systemproperties", optional = true)
+    @Param(name = "systemproperties", optional = true)
     List<SystemProperty> getSystemProperty();
 
     /**
-    	Properties as per {@link PropertyBag}
+    Properties as per {@link PropertyBag}
      */
-    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
-    @PropertiesDesc(props={})
+    @ToDo(priority = ToDo.Priority.IMPORTANT, details = "Provide PropertyDesc for legal props")
+    @PropertiesDesc(props = {})
     @Element
-    @Param(name="properties", optional = true)
-    List<Property> getProperty();    
+    @Param(name = "properties", optional = true)
+    List<Property> getProperty();
 
     @DuckTyped
     String getReference();
@@ -245,7 +245,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         public static Cluster getCluster(Server server) {
             Dom serverDom = Dom.unwrap(server);
             Clusters clusters = serverDom.getHabitat().getComponent(Clusters.class);
-            if (clusters!=null) {
+            if (clusters != null) {
                 for (Cluster cluster : clusters.getCluster()) {
                     for (ServerRef serverRef : cluster.getServerRef()) {
                         if (serverRef.getRef().equals(server.getName())) {
@@ -261,8 +261,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             return server.getConfigRef();
         }
 
-        public static ApplicationRef getApplicationRef(Server server, 
-            String appName) {
+        public static ApplicationRef getApplicationRef(Server server,
+                String appName) {
             for (ApplicationRef appRef : server.getApplicationRef()) {
                 if (appRef.getRef().equals(appName)) {
                     return appRef;
@@ -281,18 +281,18 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         }
 
         public static boolean isResourceRefExists(Server server, String refName) {
-            return getResourceRef(server, refName)!=null;
+            return getResourceRef(server, refName) != null;
         }
 
         public static void deleteResourceRef(Server server, String refName) throws TransactionFailure {
             final ResourceRef ref = getResourceRef(server, refName);
-            if (ref!=null) {
-               ConfigSupport.apply(new SingleConfigCode<Server>() {
+            if (ref != null) {
+                ConfigSupport.apply(new SingleConfigCode<Server>() {
 
                     public Object run(Server param) {
                         return param.getResourceRef().remove(ref);
-                        }
-               }, server);
+                    }
+                }, server);
             }
         }
 
@@ -300,44 +300,42 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
             ConfigSupport.apply(new SingleConfigCode<Server>() {
 
-                    public Object run(Server param) throws PropertyVetoException, TransactionFailure {
+                public Object run(Server param) throws PropertyVetoException, TransactionFailure {
 
-                        ResourceRef newResourceRef = param.createChild(ResourceRef.class);
-                        newResourceRef.setEnabled(enabled);
-                        newResourceRef.setRef(refName);
-                        param.getResourceRef().add(newResourceRef);
-                        return newResourceRef;
-                    }
-                }, server);
+                    ResourceRef newResourceRef = param.createChild(ResourceRef.class);
+                    newResourceRef.setEnabled(enabled);
+                    newResourceRef.setRef(refName);
+                    param.getResourceRef().add(newResourceRef);
+                    return newResourceRef;
+                }
+            }, server);
         }
     }
-    
-
 
     @Service
     @Scoped(PerLookup.class)
     class CreateDecorator implements CreationDecorator<Server> {
-        @Param(name="cluster", optional=true)
-        String clusterName;
 
+        @Param(name = "cluster", optional = true)
+        String clusterName;
         @Inject
         Domain domain;
-
         @Inject
         private ServerEnvironment env;
-        
+
         @Override
         public void decorate(AdminCommandContext context, Server instance) throws TransactionFailure, PropertyVetoException {
             Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Server.class);
+            Transaction t = Transaction.getTransaction(instance);
             String configRef = instance.getConfigRef();
             Clusters clusters = domain.getClusters();
 
             //There should be no cluster/config with the same name as the server
-            if (((clusters!= null && domain.getClusterNamed(instance.getName()) != null)) ||
-                    (domain.getConfigNamed(instance.getName()) != null)){
-                 throw new TransactionFailure(localStrings.getLocalString(
-                            "cannotAddDuplicate", "There is an instance {0} already present.", instance.getName()));
+            if (((clusters != null && domain.getClusterNamed(instance.getName()) != null))
+                    || (domain.getConfigNamed(instance.getName()) != null)) {
+                throw new TransactionFailure(localStrings.getLocalString(
+                        "cannotAddDuplicate", "There is an instance {0} already present.", instance.getName()));
             }
             // cluster instance using cluster config
             if (clusterName != null) {
@@ -347,7 +345,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                             "A configuration name and cluster name cannot both be specified."));
                 }
                 boolean clusterExists = false;
-                
+
                 if (clusters != null) {
                     for (Cluster cluster : clusters.getCluster()) {
                         if (cluster != null && clusterName.equals(cluster.getName())) {
@@ -357,34 +355,30 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                         }
                     }
                 }
-                
+
                 if (!clusterExists) {
                     throw new TransactionFailure(localStrings.getLocalString(
                             "noSuchCluster", "Cluster {0} does not exist.", clusterName));
                 }
 
                 Cluster cluster = domain.getClusterNamed(clusterName);
+
                 final String instanceName = instance.getName();
                 try {
                     File configConfigDir = new File(env.getConfigDirPath(), cluster.getConfigRef());
                     new File(configConfigDir, "docroot").mkdirs();
                     new File(configConfigDir, "lib/ext").mkdirs();
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
                     // no big deal - just ignore
                 }
 
                 if (cluster != null) {
-                    ConfigSupport.apply(new SingleConfigCode<Cluster>() {
-
-                        @Override
-                        public Object run(Cluster c) throws PropertyVetoException, TransactionFailure {
-                            ServerRef newServerRef = c.createChild(ServerRef.class);
-                            newServerRef.setRef(instanceName);
-                            c.getServerRef().add(newServerRef);
-                            return null;
-                        }
-                    }, cluster);
+                    if (t != null) {
+                        Cluster c = t.enroll(cluster);
+                        ServerRef newServerRef = c.createChild(ServerRef.class);
+                        newServerRef.setRef(instanceName);
+                        c.getServerRef().add(newServerRef);
+                    }
                 }
             }
 
@@ -399,8 +393,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     File configConfigDir = new File(env.getConfigDirPath(), specifiedConfig.getName());
                     new File(configConfigDir, "docroot").mkdirs();
                     new File(configConfigDir, "lib/ext").mkdirs();
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
                     // no big deal - just ignore
                 }
             }
@@ -409,11 +402,11 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             if (configRef == null && clusterName == null) {
                 Config defaultConfig = domain.getConfigs().getConfigByName("default-config");
 
-                if(defaultConfig == null) {
+                if (defaultConfig == null) {
                     final String msg = localStrings.getLocalString(Server.class,
-                        "Cluster.noDefaultConfig",
-                        "Can''t find the default config (an element named \"default-config\") " +
-                            "in domain.xml.  You may specify the name of an existing config element next time.");
+                            "Cluster.noDefaultConfig",
+                            "Can''t find the default config (an element named \"default-config\") "
+                            + "in domain.xml.  You may specify the name of an existing config element next time.");
 
                     logger.log(Level.SEVERE, msg);
                     throw new TransactionFailure(msg);
@@ -424,44 +417,42 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     configCopy = (Config) defaultConfig.deepCopy();
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, localStrings.getLocalString(Server.class,
-                    "Cluster.error_while_copying",
-                    "Error while copying the default configuration {0}",
-                    e.toString(), e));
-                    throw new TransactionFailure(e.toString(),e);
+                            "Cluster.error_while_copying",
+                            "Error while copying the default configuration {0}",
+                            e.toString(), e));
+                    throw new TransactionFailure(e.toString(), e);
                 }
 
 
-                final String configName = instance.getName()+"-config";
+                final String configName = instance.getName() + "-config";
                 instance.setConfigRef(configName);
                 try {
                     File configConfigDir = new File(env.getConfigDirPath(), configName);
                     new File(configConfigDir, "docroot").mkdirs();
                     new File(configConfigDir, "lib/ext").mkdirs();
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
                     // no big deal - just ignore
                 }
 
-                ConfigSupport.apply(new ConfigCode() {
-                    @Override
-                    public Object run(ConfigBeanProxy[] w ) throws PropertyVetoException, TransactionFailure {
-                        ((Configs) w[0]).getConfig().add(configCopy);
-                        ((Config) w[1]).setName(configName);
-                        return null;
-                    }
-                }, domain.getConfigs(), configCopy);
+                if (t != null) {
+                    Configs configs = domain.getConfigs();
+                    Configs writableConfigs = t.enroll(configs);
+                    Config writableConfigCopy = t.enroll(configCopy);
+                    writableConfigCopy.setName(configName);
+                    writableConfigs.getConfig().add(writableConfigCopy);
+                }
             }
 
             for (Resource resource : domain.getResources().getResources()) {
                 if (resource.getObjectType().equals("system-all")) {
-                    String name=null;
+                    String name = null;
                     if (resource instanceof BindableResource) {
                         name = ((BindableResource) resource).getJndiName();
                     }
                     if (resource instanceof Named) {
                         name = ((Named) resource).getName();
                     }
-                    if (name==null) {
+                    if (name == null) {
                         throw new TransactionFailure("Cannot add un-named resources to the new server instance");
                     }
                     ResourceRef newResourceRef = instance.createChild(ResourceRef.class);
@@ -481,51 +472,48 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     }
 
     @Service
-    @Scoped(PerLookup.class)    
+    @Scoped(PerLookup.class)
     class DeleteDecorator implements DeletionDecorator<Servers, Server> {
+
         @Inject
         Configs configs;
-
         @Inject
         private Domain domain;
-
         @Inject
         private ServerEnvironment env;
 
         @Override
-        public void decorate(AdminCommandContext context, Servers parent, final Server child) throws PropertyVetoException, TransactionFailure  {
-            Logger logger = LogDomains.getLogger(Server.class, LogDomains.ADMIN_LOGGER);
+        public void decorate(AdminCommandContext context, Servers parent, final Server child) throws PropertyVetoException, TransactionFailure {
+            final Logger logger = LogDomains.getLogger(Server.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Server.class);
             final ActionReport report = context.getActionReport();
+            Transaction t = Transaction.getTransaction(parent);
+            Cluster cluster = child.getCluster();
+            boolean isStandAlone = cluster == null ? true : false;
 
-            boolean isStandAlone = child.getCluster() == null ? true : false;
             if (isStandAlone) { // remove config <instance>-config
                 String instanceConfig = child.getConfigRef();
                 final Config config = configs.getConfigByName(instanceConfig);
 
                 // bnevins June 2010
                 // don't delete the config is someone else holds a reference to it!
-                if(config != null && domain.getReferenceContainersOf(config).size() > 1)
+                if (config != null && domain.getReferenceContainersOf(config).size() > 1) {
                     return;
+                }
                 try {
-                    if(config != null) {
+                    if (config != null) {
                         File configConfigDir = new File(env.getConfigDirPath(), config.getName());
                         FileUtils.whack(configConfigDir);
                     }
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
                     // no big deal - just ignore
                 }
                 try {
-                    ConfigSupport.apply(new SingleConfigCode<Configs>() {
-
-                        @Override
-                        public Object run(Configs c) throws PropertyVetoException, TransactionFailure {
-                            List<Config> configList = c.getConfig();
-                            configList.remove(config);
-                            return null;
-                        }
-                    }, configs);
+                    if (t != null) {
+                        Configs c = t.enroll(configs);
+                        List<Config> configList = c.getConfig();
+                        configList.remove(config);
+                    }
                 } catch (TransactionFailure ex) {
                     logger.log(Level.SEVERE,
                             localStrings.getLocalString("deleteConfigFailed",
@@ -539,39 +527,35 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     throw ex;
                 }
             } else { // remove server-ref from cluster
-                Cluster cluster = child.getCluster();
                 final String instanceName = child.getName();
+                if (t != null) {
+                    try {
+                        Cluster c = t.enroll(cluster);
 
-                try {
-                    ConfigSupport.apply(new SingleConfigCode<Cluster>() {
+                        List<ServerRef> serverRefList = c.getServerRef();
+                        ServerRef serverRef = null;
 
-                        @Override
-                        public Object run(Cluster c) throws PropertyVetoException, TransactionFailure {
-                            List<ServerRef> serverRefList = c.getServerRef();
-                            ServerRef serverRef = null;
-                            for (ServerRef sr : serverRefList) {
-                                if (sr.getRef().equals(instanceName)) {
-                                    serverRef = sr;
-                                    break;
-                                }
+                        for (ServerRef sr : serverRefList) {
+                            if (sr.getRef().equals(instanceName)) {
+                                serverRef = sr;
+                                break;
                             }
-                            if (serverRef != null) {
-                                serverRefList.remove(serverRef);
-                            }
-                            return null;
                         }
-                    }, cluster);
-                } catch (TransactionFailure ex) {
-                    logger.log(Level.SEVERE,
-                            localStrings.getLocalString("deleteServerRefFailed",
-                            "Unable to remove server-ref {0} from cluster {1}", instanceName, cluster.getName()), ex);
-                    String msg = ex.getMessage() != null ? ex.getMessage()
-                            : localStrings.getLocalString("deleteServerRefFailed",
-                            "Unable to remove server-ref {0} from cluster {1}", instanceName, cluster.getName());
-                    report.setMessage(msg);
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setFailureCause(ex);
-                    throw ex;
+                        if (serverRef != null) {
+                            serverRefList.remove(serverRef);
+                        }
+                    } catch (TransactionFailure ex) {
+                        logger.log(Level.SEVERE,
+                                localStrings.getLocalString("deleteServerRefFailed",
+                                "Unable to remove server-ref {0} from cluster {1}", instanceName, cluster.getName()), ex);
+                        String msg = ex.getMessage() != null ? ex.getMessage()
+                                : localStrings.getLocalString("deleteServerRefFailed",
+                                "Unable to remove server-ref {0} from cluster {1}", instanceName, cluster.getName());
+                        report.setMessage(msg);
+                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                        report.setFailureCause(ex);
+                        throw ex;
+                    }
                 }
             }
         }

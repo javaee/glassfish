@@ -347,6 +347,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         public void decorate(AdminCommandContext context, final Cluster instance) throws TransactionFailure, PropertyVetoException {
             Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Cluster.class);
+            Transaction t = Transaction.getTransaction(instance);
 
             //There should be no instance/config with the same name as the cluster
             if ((domain.getServerNamed(instance.getName()) != null) ||
@@ -388,17 +389,13 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                     // no big deal - just ignore
                 }
 
-
-
-                // needs to be changed to join the transaction of instance
-                ConfigSupport.apply(new ConfigCode() {
-                    @Override
-                    public Object run(ConfigBeanProxy[] w ) throws PropertyVetoException, TransactionFailure {
-                        ((Configs) w[0]).getConfig().add(configCopy);
-                        ((Config) w[1]).setName(configName);
-                        return null;
-                    }
-                }, domain.getConfigs(), configCopy);
+                if (t != null) {
+                    Configs configs = domain.getConfigs();
+                    Configs writableConfigs = t.enroll(configs);
+                    Config writableConfigCopy = t.enroll(configCopy);
+                    writableConfigCopy.setName(configName);
+                    writableConfigs.getConfig().add(writableConfigCopy);
+                }
             }  else {
 
                 // cluster using specified config
@@ -469,6 +466,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             final ActionReport report = context.getActionReport();
             String instanceConfig = child.getConfigRef();
             final Config config = configs.getConfigByName(instanceConfig);
+            Transaction t = Transaction.getTransaction(parent);
 
             //check if the cluster contains instances throw error that cluster
             //cannot be deleted
@@ -505,15 +503,11 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             }
 
             try {
-                ConfigSupport.apply(new SingleConfigCode<Configs>() {
-
-                    @Override
-                    public Object run(Configs c) throws PropertyVetoException, TransactionFailure {
-                        List<Config> configList = c.getConfig();
-                        configList.remove(config);
-                        return null;
-                    }
-                }, configs);
+                if (t != null) {
+                    Configs c = t.enroll(configs);
+                    List<Config> configList = c.getConfig();
+                    configList.remove(config);
+                }
             } catch (TransactionFailure ex) {
                 logger.log(Level.SEVERE,
                         localStrings.getLocalString("deleteConfigFailed",
@@ -529,4 +523,3 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         }
     }
 }
-
