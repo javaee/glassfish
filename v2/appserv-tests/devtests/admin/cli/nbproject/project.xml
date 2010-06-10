@@ -26,23 +26,28 @@
                     <type>java</type>
                     <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</location>
                 </source-folder>
+                <source-folder>
+                    <label>src</label>
+                    <type>java</type>
+                    <location>src</location>
+                </source-folder>
             </folders>
             <ide-actions>
                 <action name="build">
-                    <target>all</target>
+                    <target>build</target>
                 </action>
                 <action name="clean">
-                    <target>cleanAS</target>
+                    <target>clean</target>
                 </action>
                 <action name="run">
-                    <target>runclient-common</target>
+                    <target>all</target>
                 </action>
                 <action name="test">
                     <target>runtest</target>
                 </action>
                 <action name="rebuild">
-                    <target>cleanAS</target>
-                    <target>all</target>
+                    <target>clean</target>
+                    <target>build</target>
                 </action>
             </ide-actions>
             <view>
@@ -58,6 +63,10 @@
                     <source-folder style="packages">
                         <label>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</label>
                         <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>src</label>
+                        <location>src</location>
                     </source-folder>
                     <source-file>
                         <location>build.xml</location>
@@ -78,6 +87,7 @@
                 <package-root>cluster/src</package-root>
                 <package-root>instance/src</package-root>
                 <package-root>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</package-root>
+                <package-root>src</package-root>
                 <classpath mode="compile">../../../util/reportbuilder/src/main/java;../../../lib/com-sun-commons-logging.jar;../../../lib/commons-logging.jar;../../../lib/filediff.jar;../../../lib/httpunit.jar;../../../lib/isql.jar;../../../lib/js.jar;../../../lib/junit.jar;../../../lib/ldapjdk.jar;../../../lib/nekohtml.jar;../../../lib/reportbuilder.jar;../../../lib/reporter.jar;../../../lib/selenium-java-client-driver-tests.jar;../../../lib/selenium-java-client-driver.jar;../../../lib/selenium-server-0.9.1-20070223.200626-116-standalone.jar;../../../lib/selenium-server.jar;../../../lib/sslutil.jar;../../../lib/testdriversecurity.jar;../../../lib/testng-5.5-jdk15.jar;../../../lib/testng.jar;../../../lib/Tidy.jar;../../../lib/webtest.jar;../../../lib/xercesImpl.jar;../../../lib/xmlParserAPIs.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>

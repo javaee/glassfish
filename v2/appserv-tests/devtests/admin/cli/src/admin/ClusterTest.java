@@ -35,31 +35,24 @@
  */
 package admin;
 
-import com.sun.appserv.test.BaseDevTest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathConstants;
 
 /*
  * Dev test for create/delete/list cluster
  * @author Bhakti Mehta
  */
-public class AdminInfraTest extends BaseDevTest {
+public class ClusterTest extends AdminBaseDevTest {
     private static final boolean DEBUG = false;
 
     public static void main(String[] args) {
-        AdminInfraTest test = new AdminInfraTest();
-        test.run();
+        new ClusterTest().run();
     }
 
     @Override

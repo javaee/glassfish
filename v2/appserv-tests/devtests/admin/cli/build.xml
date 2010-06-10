@@ -54,12 +54,23 @@
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
     <property name="teststorun" value="cli"/>
 
+    <path id="class.path">
+        <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
+        <pathelement location="build"/>
+        <fileset dir="${env.S1AS_HOME}/modules"/>
+    </path>
+    <pathconvert refid="class.path" property="test"/>
+
     <target name="cli" depends="cluster, instance"/>
     <target name="cluster">
-        <ant dir="cluster" target="all"/>
+        <java classname="admin.ClusterTest"  fork="true" classpath="${test}"/>
     </target>
     <target name="instance">
-        <ant dir="instance" target="all"/>
+        <java classname="admin.InstanceTest"  fork="true" classpath="${test}">
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1323"/>
+            <jvmarg value="-DNUM_TESTS=${num_tests}"/>
+        </java>
     </target>
 
     <target name="all" depends="init">
@@ -75,8 +86,14 @@
         <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
     </target>
 
+    <target name="build">
+        <mkdir dir="build"/>
+        <javac srcdir="src" destdir="build" debug="true"
+               classpath="${test}"
+               includes="**/*.java"/>
+    </target>
 
-    <target name="init">
+    <target name="init" depends="build">
         <delete>
             <fileset dir="${env.APS_HOME}" includes="test_results*"/>
             <fileset dir="${env.APS_HOME}" includes="count.txt"/>
@@ -87,9 +104,7 @@
         </delete>
     </target>
 
-
-
     <target name="usage">
-        <echo>Usage: ant all (Executes the admin tests)</echo>
+        <echo>Usage: ant [-Dtesttorun=instance|cluster] [-Dnum_tests=n] all (Executes the admin tests)</echo>
     </target>
 </project>
