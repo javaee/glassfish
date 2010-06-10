@@ -53,38 +53,42 @@ import javax.servlet.ServletRegistration;
 import org.glassfish.tests.webapi.HelloWeb;
 
 /**
+ * Tests WebBuilding#setListings for directory listing feature
+ * 
  * @author Amy Roh
  */
 public class EmbeddedSetDocRootTest {
 
     static Server server;
     static EmbeddedWebContainer embedded;
-    static File f;
+    static File root;
 
     @BeforeClass
     public static void setupServer() throws Exception {
         try {
+            EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
+            String p = System.getProperty("buildDir");
+            root = new File(p).getParentFile();
+            root =new File(root, "glassfish");
+            EmbeddedFileSystem fs = fsBuilder.instanceRoot(root).build();
+
             Server.Builder builder = new Server.Builder("dirserve");
-            
-            EmbeddedFileSystem.Builder efsBuilder = new EmbeddedFileSystem.Builder();
-            //f = new File("/tmp");
-            f = new File(System.getProperty("basedir"));
-            efsBuilder.instanceRoot(f);
-            EmbeddedFileSystem efs = efsBuilder.build();
-            builder.embeddedFileSystem(efs);
+            builder.embeddedFileSystem(fs);
             server = builder.build();
-            System.out.println("Starting Web " + server);
-            ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
+
             WebBuilder webBuilder = server.createConfig(WebBuilder.class);
-            webBuilder.setDocRootDir(f);
+            webBuilder.setDocRootDir(root);
             webBuilder.setListings(true);
+            System.out.println("builder is " + webBuilder);
             server.addContainer(webBuilder);
-            server.createPort(8080);
-            System.out.println("builder is " + b);
-            System.out.println("Added Web with base directory "+f.getAbsolutePath());
-            embedded = (EmbeddedWebContainer) b.create(server);
+            embedded = (EmbeddedWebContainer) webBuilder.create(server);
             embedded.setLogLevel(Level.INFO);
-            embedded.setConfiguration((WebBuilder)b);
+            embedded.setConfiguration(webBuilder);
+
+            System.out.println("Added Web with base directory "+root.getAbsolutePath());
+
+            Port http = server.createPort(8080);
+            embedded.bind(http, "http");
             embedded.start();
         } catch(Exception e) {
             e.printStackTrace();
@@ -97,25 +101,17 @@ public class EmbeddedSetDocRootTest {
             
         System.out.println("================ EmbeddedSetDocRoot Test");
                 
-        /*VirtualServer defaultVirtualServer = (VirtualServer)
-                embedded.createVirtualServer("test-server", f);
-        embedded.addVirtualServer(defaultVirtualServer);
-
-        Context context = (Context) embedded.createContext(f, null);*/
-        
-        VirtualServer vs = (VirtualServer) embedded.findVirtualServer("server");
-        System.out.println("vs "+vs);
-        Context context = (Context) embedded.createContext(f, null);
-        
-        Servlet servlet = new HelloWeb();
-        ServletRegistration reg = context.addServlet("test-servlet", servlet);
-        reg.addMapping(new String[] {"/hello"});
-
+        /*VirtualServer vs = (VirtualServer)
+                embedded.createVirtualServer("test-server", root);
+        embedded.addVirtualServer(vs);
+        Context context = (Context) embedded.createContext(root, null);
         vs.addContext(context, "/test");
+        
+        Servlet hello = new HelloWeb();
+        ServletRegistration reg = context.addServlet("test-servlet", hello);
+        reg.addMapping(new String[] {"/hello"});*/
 
-        embedded.start();
-
-        /*URL servlet = new URL("http://localhost:8080/hello");
+        URL servlet = new URL("http://localhost:8080");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
@@ -127,9 +123,8 @@ public class EmbeddedSetDocRootTest {
             sb.append(inputLine);
         }
         in.close();
-        System.out.println(inputLine);*/
         
-        Thread.sleep(1000);
+        Thread.sleep(100);
         
      }
 

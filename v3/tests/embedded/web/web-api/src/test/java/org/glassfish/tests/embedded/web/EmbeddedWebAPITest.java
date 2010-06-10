@@ -56,6 +56,9 @@ import org.glassfish.api.embedded.web.*;
 import org.glassfish.web.embed.impl.WebListenerImpl;
 
 /**
+ * Tests creating a port using EmbeddedWebContainer#createWeblistener & WebListener#setPort.
+ * Checks if network listener is correctly added and deployment suceeds on the port specified.
+ *
  * @author Amy Roh
  */
 public class EmbeddedWebAPITest {
@@ -93,6 +96,24 @@ public class EmbeddedWebAPITest {
             embedded = (EmbeddedWebContainer) b.create(server);
             embedded.setLogLevel(Level.INFO);
             embedded.setConfiguration((WebBuilder)b);
+
+            WebListener listener = embedded.createWebListener("test-listener", WebListenerImpl.class);
+            listener.setPort(9090);
+            embedded.addWebListener(listener);
+
+            nc = server.getHabitat().getComponent(NetworkConfig.class);
+            listeners = nc.getNetworkListeners().getNetworkListener();
+            System.out.println("Network listener size after creation " + listeners.size());
+            Assert.assertTrue(listeners.size()==1);
+            for (NetworkListener nl : listeners) {
+                System.out.println("Network listener " + nl.getPort());
+            }
+            Collection<NetworkListener> cnl = server.getHabitat().getAllByContract(NetworkListener.class);
+            System.out.println("Network listener size after creation " + cnl.size());
+            for (NetworkListener nl : cnl) {
+                System.out.println("Network listener " + nl.getPort());
+            }
+
             embedded.start();
 
         } catch(Exception e) {
@@ -105,23 +126,6 @@ public class EmbeddedWebAPITest {
     public void testEmbeddedWebAPI() throws Exception {   
         
         System.out.println("================ Test Embedded Web API");
-
-        WebListener listener = embedded.createWebListener("test-listener", WebListenerImpl.class);
-        listener.setPort(9090);
-        embedded.addWebListener(listener);
-
-        NetworkConfig nc = server.getHabitat().getComponent(NetworkConfig.class);
-        List<NetworkListener> listeners = nc.getNetworkListeners().getNetworkListener();
-        System.out.println("Network listener size after creation " + listeners.size());
-        Assert.assertTrue(listeners.size()==1);
-        for (NetworkListener nl : listeners) {
-            System.out.println("Network listener " + nl.getPort());
-        }
-        Collection<NetworkListener> cnl = server.getHabitat().getAllByContract(NetworkListener.class);
-        System.out.println("Network listener size after creation " + cnl.size());
-        for (NetworkListener nl : cnl) {
-            System.out.println("Network listener " + nl.getPort());
-        }
 
         String virtualServerId = "embedded-server";
         VirtualServer defaultVirtualServer = (VirtualServer)
@@ -162,6 +166,8 @@ public class EmbeddedWebAPITest {
 
         if (appName!=null)
             deployer.undeploy(appName, null);
+
+        embedded.stop();
         
      }
 

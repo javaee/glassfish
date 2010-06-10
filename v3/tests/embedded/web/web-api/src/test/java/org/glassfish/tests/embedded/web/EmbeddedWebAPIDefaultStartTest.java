@@ -49,11 +49,15 @@ import java.net.URL;
 import java.net.URLConnection;
 import org.apache.catalina.Deployer;
 import org.apache.catalina.logger.SystemOutLogger;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.*;
 import org.glassfish.api.embedded.web.*;
 
 
 /**
+ * Tests EmbeddedWebContainer#start correctly starts the server with default 8080 port
+ * if no port is previously defined.
+ *
  * @author Amy Roh
  */
 public class EmbeddedWebAPIDefaultStartTest {
@@ -85,23 +89,37 @@ public class EmbeddedWebAPIDefaultStartTest {
     @Test
     public void testDefaultStart() throws Exception {   
         System.out.println("================ Test Embedded Web API Default Start");
-        server.createPort(8080); 
-        embedded.start();  
-        /*
-        try {
-            URL servlet = new URL("http://localhost:8080");
-            URLConnection yc = servlet.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    yc.getInputStream()));
-            String inputLine;
-            while ((inputLine = in.readLine()) != null)
-                System.out.println(inputLine);
-            in.close();
-        } catch(Exception e) {
-            e.printStackTrace();
-            throw e;
-        }*/
-        Thread.sleep(10000);
+        embedded.start();
+
+        EmbeddedDeployer deployer = server.getDeployer();
+        String p = System.getProperty("buildDir");
+        System.out.println("Root is " + p);
+        ScatteredArchive.Builder builder = new ScatteredArchive.Builder("sampleweb", new File(p));
+        builder.resources(new File(p));
+        builder.addClassPath((new File(p)).toURL());
+        DeployCommandParameters dp = new DeployCommandParameters(new File(p));
+
+        System.out.println("Deploying " + p);
+        String appName = deployer.deploy(builder.buildWar(), dp);
+        Assert.assertNotNull("Deployment failed!", appName);
+
+        URL servlet = new URL("http://localhost:8080/classes/hello");
+        URLConnection yc = servlet.openConnection();
+        BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
+        StringBuilder sb = new StringBuilder();
+        String inputLine;
+        while ((inputLine = in.readLine()) != null){
+            sb.append(inputLine);
+        }
+        in.close();
+        System.out.println(inputLine);
+        Assert.assertEquals("Hello World!", sb.toString());
+
+        Thread.sleep(1000);
+
+        if (appName!=null)
+            deployer.undeploy(appName, null);
+
         embedded.stop();  
     }
     
