@@ -53,7 +53,7 @@
     <property name="xmlfile" value="${env.APS_HOME}/test_resultsValid.xml" />
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
     <property name="teststorun" value="cli"/>
-    <property name="env.ENABLE_REPLICATION" value="true"/>
+    <property name="ENABLE_REPLICATION" value="true"/>
 
     <path id="class.path">
         <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>

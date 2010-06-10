@@ -127,61 +127,65 @@ public class ClusterTest extends AdminBaseDevTest {
     private void testEndToEndDemo() {
         final String tn = "end-to-end-";
 
+        final String cname = "eec1";
         final String i1url = "http://localhost:18080/";
         final String i1murl = "http://localhost:14848/management/domain/";
+        final String i1name = "eein1-with-a-very-very-very-long-name";
         final String i2url = "http://localhost:28080/";
         final String i2murl = "http://localhost:24848/management/domain/";
+        final String i2name = "eein2";
         final String dasmurl = "http://localhost:4848/management/domain/";
 
         // create a cluster and two instances
-        report(tn + "create-cluster", asadmin("create-cluster", "eec1"));
+        report(tn + "create-cluster", asadmin("create-cluster", cname));
         report(tn + "create-local-instance1", asadmin("create-local-instance",
-                "--cluster", "eec1", "--systemproperties",
+                "--cluster", cname, "--systemproperties",
                 "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:" +
                 "IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:" +
-                "JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848", "eein1"));
+                "JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848", i1name));
         report(tn + "create-local-instance2", asadmin("create-local-instance",
-                "--cluster", "eec1", "--systemproperties",
+                "--cluster", cname, "--systemproperties",
                 "HTTP_LISTENER_PORT=28080:HTTP_SSL_LISTENER_PORT=28181:IIOP_SSL_LISTENER_PORT=23800:" +
                 "IIOP_LISTENER_PORT=23700:JMX_SYSTEM_CONNECTOR_PORT=27676:IIOP_SSL_MUTUALAUTH_PORT=23801:" +
-                "JMS_PROVIDER_PORT=28686:ASADMIN_LISTENER_PORT=24848", "eein2"));
-
-        // deploy an application to the cluster
-        //File webapp = new File("resources", "helloworld.war");
-        //report(tn + "deploy", asadmin("deploy", "--target", "eec1", webapp.getAbsolutePath()));
+                "JMS_PROVIDER_PORT=28686:ASADMIN_LISTENER_PORT=24848", i2name));
 
         // start the instances
-        report(tn + "start-local-instance1", asadmin("start-local-instance", "eein1"));
-        report(tn + "start-local-instance2", asadmin("start-local-instance", "eein2"));
+        report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
+        report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
 
         // check that the instances are there
         report(tn + "list-instances", asadmin("list-instances"));
         report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
         report(tn + "getindex2", matchString("GlassFish Enterprise Server", getURL(i2url)));
-        //report(tn + "getapp1", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
-        //report(tn + "getapp2", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
 
-        report(tn + "getREST1", matchString("server/eein1/property", getURL(i1murl + "servers/server/eein1")));
+        // deploy an application to the cluster
+        File webapp = new File("resources", "helloworld.war");
+        report(tn + "deploy", asadmin("deploy", "--target", cname, webapp.getAbsolutePath()));
+
+        report(tn + "getapp1", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "getapp2", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+
+        report(tn + "getREST1", matchString("server/" + i1name + "/property", getURL(i1murl + "servers/server/" + i1name)));
         report(tn + "getREST1a", !matchString("eein2", getURL(i1murl + "servers/server")));
-        report(tn + "getREST2", matchString("server/eein2/property", getURL(i2murl + "servers/server/eein2")));
+        report(tn + "getREST2", matchString("server/" + i2name + "/property", getURL(i2murl + "servers/server/" + i2name)));
         String s = getURL(dasmurl + "servers/server");
-        report(tn + "getREST3a", matchString("eein1", s));
-        report(tn + "getREST3b", matchString("eein2", s));
+        report(tn + "getREST3a", matchString(i1name, s));
+        report(tn + "getREST3b", matchString(i2name, s));
         report(tn + "getREST3c", matchString("server", s));
         
         // dynamic configuration
-        
+
         // create several resources
         report(tn + "create-jdbc-connection-pool", asadmin("create-jdbc-connection-pool",
                 "--datasourceclassname", "org.apache.derby.jdbc.ClientDataSource",
                 "--restype", "javax.sql.XADataSource",
-                "--target", "eec1", "sample_jdbc_pool"));
+                "--target", cname, "sample_jdbc_pool"));
         report(tn + "create-iiop-listener", asadmin("create-iiop-listener",
-                "--target", "eec1",
+                "--target", cname,
                 "--listeneraddress", "192.168.1.100",
                 "--iiopport", "1400", "sample_iiop_listener"));
         report(tn + "create-connector-connection-pool", asadmin("create-connector-connection-pool",
-                "--target", "eec1",
+                "--target", cname,
                 "--raname", "jmsra",
                 "--connectiondefinition", "javax.jms.QueueConnectionFactory",
                 "jms/qConnPool"));
@@ -202,18 +206,18 @@ public class ClusterTest extends AdminBaseDevTest {
 
         // try to create a resource on only one instance - should fail
         report(tn + "create-connector-connection-pool-instance",
-               !asadmin("create-connector-connection-pool", "--target", "eein2",
+               !asadmin("create-connector-connection-pool", "--target", i2name,
                "--raname", "jmsra",
                "--connectiondefinition", "javax.jms.QueueConnectionFactory",
                "jms/instanceOnlyConnPool"));
 
         // delete the resources
         report(tn + "delete-jdbc-connection-pool", asadmin("delete-jdbc-connection-pool",
-                "--target", "eec1", "sample_jdbc_pool"));
+                "--target", cname, "sample_jdbc_pool"));
         report(tn + "delete-iiop-listener", asadmin("delete-iiop-listener",
-                "--target", "eec1", "sample_iiop_listener"));
+                "--target", cname, "sample_iiop_listener"));
         report(tn + "delete-connector-connection-pool", asadmin("delete-connector-connection-pool",
-                "--target", "eec1", "jms/qConnPool"));
+                "--target", cname, "jms/qConnPool"));
 
         // check that the resources have been deleted
         report(tn + "jdbc-del-check1", !matchString("sample_jdbc_pool",
@@ -230,13 +234,13 @@ public class ClusterTest extends AdminBaseDevTest {
                 getURL(i2murl + "resources/connector-connection-pool")));
 
         // stop the instances
-        report(tn + "stop-local-instance1", asadmin("stop-local-instance", "eein1"));
-        report(tn + "stop-local-instance2", asadmin("stop-local-instance", "eein2"));
+        report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
+        report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
 
         // delete the instances and the cluster
-        report(tn + "delete-local-instance1", asadmin("delete-local-instance", "eein1"));
-        report(tn + "delete-local-instance2", asadmin("delete-local-instance", "eein2"));
-        report(tn + "delete-cluster", asadmin("delete-cluster", "eec1"));
+        report(tn + "delete-local-instance1", asadmin("delete-local-instance", i1name));
+        report(tn + "delete-local-instance2", asadmin("delete-local-instance", i2name));
+        report(tn + "delete-cluster", asadmin("delete-cluster", cname));
 
     }
 

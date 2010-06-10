@@ -35,8 +35,10 @@
 <target name="startDomain" depends="startDomainUnix, startDomainWindows"/>
 
 <target name="startDomainUnix" depends="init-common" if="isUnix">
+    <echo message="Starting DAS, ENABLE_REPLICATION=${ENABLE_REPLICATION}"/>
     <exec executable="${ASADMIN}" failonerror="true">
         <arg line="start-domain"/>
+        <env key="ENABLE_REPLICATION" value="${ENABLE_REPLICATION}"/>
     </exec>
     <echo message="run.xml:doing wait for ${http.host}:${http.port}..."/>
     <waitfor timeoutproperty="unableToStart">
@@ -47,8 +49,10 @@
 </target>
 
 <target name="startDomainWindows" depends="init-common" if="isWindows">
+    <echo message="Starting DAS, ENABLE_REPLICATION=${ENABLE_REPLICATION}"/>
     <exec executable="${ASADMIN}" spawn="true">
         <arg line="start-domain"/>
+        <env key="ENABLE_REPLICATION" value="${ENABLE_REPLICATION}"/>
     </exec>
     <waitfor timeoutproperty="unableToStart">
       <http url="http://${http.host}:${http.port}"/>
