@@ -330,9 +330,10 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
                     context.setDirectoryListing(listings);
                 }
             }
-            if (getWebListeners()==null) {
+
+            if (config.getNetworkListeners().getNetworkListener().isEmpty()) {
                 if (log.isLoggable(Level.INFO)) {
-                    log.info("Listener doesn't exist - creating a new listener at port 8080");
+                    log.info("Listener does not exist - creating a new listener at port 8080");
                 }
                 WebListener listener = createWebListener(listenerName, WebListenerImpl.class);
                 listener.setPort(8080);
