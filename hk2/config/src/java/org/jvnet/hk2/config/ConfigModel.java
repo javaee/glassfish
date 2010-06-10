@@ -143,6 +143,19 @@ public final class ConfigModel {
     }
 
     /**
+     * Return the proxy type for this model
+     * @param <T> the proxy type
+     * @return the class object for this proxy type
+     */
+    public <T extends ConfigBeanProxy> Class<T> getProxyType() {
+        try {
+            return (Class<T>) classLoaderHolder.get().loadClass(targetTypeName);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
+    /**
      * Returns the list of all the leaf attribute names on this model
      *
      * @return the list of all leaf attribute names.
@@ -263,6 +276,9 @@ public final class ConfigModel {
     }    
 
     public abstract static class Property {
+
+        public final List<String> annotations = new ArrayList<String>();
+
         /**
          * @see #xmlName()
          */
@@ -306,6 +322,10 @@ public final class ConfigModel {
          *      possible types.
          */
         public abstract void set(Dom dom, Object arg);
+
+        public List<String> getAnnotations() {
+            return annotations;
+        }
     }
 
     public static abstract class Node extends Property {
@@ -659,8 +679,10 @@ public final class ConfigModel {
                 attributes.put(attributeName, leaf);
             } else
             if(name.startsWith("<")) {
-                String elementName = name.substring(1, name.length() - 1);
-                elements.put(elementName,parseValue(elementName,document,value));
+                if (e.getValue().size()>0) {
+                    String elementName = name.substring(1, name.length() - 1);
+                   elements.put(elementName,parseValue(elementName,document,e.getValue()));
+                }
             } else
             if(name.equals(ConfigMetadata.TARGET))
                 targetTypeName = value;
@@ -722,25 +744,36 @@ public final class ConfigModel {
     /**
      * Parses {@link Property} object from a value in the metadata description.
      */
-    private Property parseValue(String elementName, DomDocument document, String value) {
+    private Property parseValue(String elementName, DomDocument document, List<String> values) {
+        String value = values.size()>0 ? values.get(0) : null;
+        if (value==null)
+            return null;
+
+
+
         boolean collection = false;
         if(value.startsWith("collection:")) {
             collection = true;
             value = value.substring(11);
         }
 
+        Property prop;
         if(value.equals("leaf")) {
-            if(collection)  return new CollectionLeaf(elementName);
-            else            return new SingleLeaf(elementName);
+            prop = collection?new CollectionLeaf(elementName):new SingleLeaf(elementName);
+        } else {
+            // this element is a reference to another configured inhabitant.
+            // figure that out.
+            ConfigModel model = document.buildModel(value);
+            prop = collection?new CollectionNode(model,elementName):new SingleNode(model,elementName);
         }
 
-        // this element is a reference to another configured inhabitant.
-        // figure that out.
-        ConfigModel model = document.buildModel(value);
-        if(collection)
-            return new CollectionNode(model,elementName);
-        else
-            return new SingleNode(model,elementName);
+        for (String s  : values) {
+            if (s.startsWith("@")) {
+                 String annotationType = s.substring(1);
+                 prop.annotations.add(annotationType);               
+            }
+        }
+        return prop;
     }
     
     private static String getMetadataFieldKeyedAs(List<String> strings, String name) {

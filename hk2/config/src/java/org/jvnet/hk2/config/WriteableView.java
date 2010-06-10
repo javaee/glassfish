@@ -125,7 +125,12 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             // getter, maybe one of our changed properties
             if (changedAttributes.containsKey(property.xmlName())) {
                 // serve masked changes.
-                return changedAttributes.get(property.xmlName()).getNewValue();
+                Object changedValue = changedAttributes.get(property.xmlName()).getNewValue();
+                if (changedValue instanceof Dom) {
+                    return ((Dom) changedValue).createProxy();
+                } else {
+                    return changedValue;
+                }
             } else {
                 // pass through.
                 return getter(property, method.getGenericReturnType());

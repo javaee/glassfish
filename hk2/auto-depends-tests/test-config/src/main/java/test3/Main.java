@@ -128,6 +128,12 @@ public class Main extends Assert implements ModuleStartup {
         assert(defaults!=null);
         assertEquals(defaults.getMimeTypes(),"text/plain,text/xml,text/plain");
 
+        System.out.println("defaultListener is " + foo.defaultListener);
+        assertNotNull(foo.defaultListener);
+        int port = foo.defaultListener.port;
+        System.out.println("Port for defaultListener is " + port);
+        
+
         // turning off those tests until we get a clear picture on how the @Configured
         // and @CagedBy can play together.
         /*System.out.println(bird.name);

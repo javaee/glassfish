@@ -40,6 +40,7 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Element;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +75,11 @@ public class FooBean {
     public FooBean() {
         e = new Exception();
     }
+
+    @Element("default-listener")
+    @NotNull
+    public HttpListener defaultListener;
+
 
     @Element
     public void setBar(String bar) {
