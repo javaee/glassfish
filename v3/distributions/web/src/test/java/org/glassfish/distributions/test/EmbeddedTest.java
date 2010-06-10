@@ -90,20 +90,19 @@ public class EmbeddedTest {
         for (NetworkListener nl : listeners) {
             System.out.println("Network listener " + nl.getPort());
         }
-        try {
-            http = server.createPort(8080);
-        } catch(IOException e) {
-            throw new RuntimeException(e);
-        }
 
         server.addContainer(server.createConfig(ContainerBuilder.Type.ejb));
         ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
         System.out.println("builder is " + b);
         server.addContainer(b);
         EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
-
-        embedded.start();
+		try {
+            http = server.createPort(8080);
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        }
         embedded.bind(http, "http");
+        embedded.start();
         server.addContainer(ContainerBuilder.Type.all);
         ctr = server.addContainer(server.createConfig(AdminInfo.class));
 
