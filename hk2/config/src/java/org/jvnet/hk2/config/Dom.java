@@ -39,6 +39,7 @@ package org.jvnet.hk2.config;
 import com.sun.hk2.component.LazyInhabitant;
 import org.jvnet.hk2.component.*;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -132,6 +133,48 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     }
 
     public void initializationCompleted() {
+    }
+
+    /* package */ void register() {
+        habitat.add(this);
+        String key = getKey();
+        for (String contract : model.contracts) {
+            habitat.addIndex(this, contract, key);
+        }
+        if (key!=null) {
+            habitat.addIndex(this, model.targetTypeName, key);
+        }
+
+    }
+
+    /* package */ void ensureConstraints(List<Child> children) {
+        Set<String> nullElements = new HashSet<String>(model.getElementNames());
+        nullElements.removeAll(getElementNames());
+
+        for (String s : model.getElementNames()) {
+            ConfigModel.Property p = model.getElement(s);
+            for (String annotation : p.getAnnotations()) {
+                if (annotation.equals(NotNull.class.getName())) {
+                    if (p instanceof ConfigModel.Node) {
+                        ConfigModel childModel = ((ConfigModel.Node) p).model;
+                        Dom child = document.make(habitat, null, this, childModel);
+                        child.register();
+
+                        children.add(new Dom.NodeChild(s, child));
+
+                        // recursive call to ensure the children constraints are also respected
+                        List<Child> grandChildren = new ArrayList<Child>();
+                        child.ensureConstraints(grandChildren);
+                        if (!grandChildren.isEmpty()) {
+                            child.setChildren(grandChildren);
+                        }
+
+                        child.initializationCompleted();
+                    }
+                }
+            }
+        }
+
     }
 
     /**
@@ -775,12 +818,13 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         return createProxy(this.<T>getProxyType());
     }
 
+    /**
+     * Returns the proxy type for this configuration object
+     * @param <T> the proxy type
+     * @return the class object for the proxy type
+     */
     public <T extends ConfigBeanProxy> Class<T> getProxyType() {
-        try {
-            return (Class<T>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
+        return model.getProxyType();
     }
 
     /**
@@ -983,15 +1027,28 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             tagName = model.tagName;
         if(tagName==null)
             throw new IllegalArgumentException("Trying t write a local element "+this+" w/o a tag name");
-        w.writeStartElement(tagName);
+
+        // let's check if this element is empty or not.
+        Map<String, String> attributesToWrite = new HashMap<String, String>();
 
         Map<String, String> localAttr = new HashMap<String, String>(attributes);
         for (Map.Entry<String, String> a : localAttr.entrySet()) {
             ConfigModel.AttributeLeaf am = model.attributes.get(a.getKey());
             String dv = am.getDefaultValue();
             if (dv==null || !dv.equals(a.getValue())) {
-                w.writeAttribute(a.getKey(),a.getValue());
+                attributesToWrite.put(a.getKey(), a.getValue());
             }
+        }
+
+        // we don't write out empty elements.
+        if (attributesToWrite.isEmpty() && children.isEmpty()) {
+            return;
+        }
+
+        w.writeStartElement(tagName);
+        
+        for (Map.Entry<String, String> attributeToWrite : attributesToWrite.entrySet()) {
+            w.writeAttribute(attributeToWrite.getKey(), attributeToWrite.getValue());
         }
 
         List<Child> localChildren = new ArrayList<Child>(children);

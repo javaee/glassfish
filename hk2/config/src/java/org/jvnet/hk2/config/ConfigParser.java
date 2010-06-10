@@ -41,6 +41,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.Dom.Child;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.stream.XMLInputFactory;
 import static javax.xml.stream.XMLStreamConstants.*;
 import javax.xml.stream.XMLStreamException;
@@ -49,7 +50,9 @@ import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.stream.StreamSource;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -212,19 +215,13 @@ public class ConfigParser {
             }
         }
 
+
+        dom.register();
+
+        dom.ensureConstraints(children);
+
         if(children!=null)
             dom.setChildren(children);
-
-        habitat.add(dom);
-
-        // register 'dom' under indices
-        String key = dom.getKey();
-        for (String contract : model.contracts)
-            habitat.addIndex(dom,contract,key);
-        if(key!=null)
-            // if this is named component, register under its own FQCN too
-            // to support look up.
-            habitat.addIndex(dom,model.targetTypeName,key);
 
         dom.initializationCompleted();
         return dom;

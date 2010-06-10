@@ -54,13 +54,7 @@ import com.sun.enterprise.tools.apt.ContractFinder;
 import com.sun.istack.tools.APTTypeVisitor;
 import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.AnnotationTypeDeclaration;
-import com.sun.mirror.declaration.ClassDeclaration;
-import com.sun.mirror.declaration.Declaration;
-import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.declaration.InterfaceDeclaration;
-import com.sun.mirror.declaration.MethodDeclaration;
-import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.declaration.*;
 import com.sun.mirror.type.ArrayType;
 import com.sun.mirror.type.ClassType;
 import com.sun.mirror.type.DeclaredType;
@@ -86,6 +80,7 @@ import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.InjectionTarget;
 import org.jvnet.hk2.config.NoopConfigInjector;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -851,6 +846,17 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 }
 
                 return invokeDom(name).arg(xmlName);
+            }
+
+            @Override
+            protected void generate() {
+                super.generate();
+                if (packer==null) {
+                    for (AnnotationMirror am : p.decl().getAnnotationMirrors()) {
+                        if (!am.toString().contains("hk2"))
+                            metadata.add(xmlTokenName(), am.toString());
+                    }
+                }
             }
 
             protected boolean isRequired() {

@@ -51,7 +51,7 @@ public class HttpListener extends Thread {
     @Attribute
     public int acceptorThreads;
 
-    @Attribute
+    @Attribute(defaultValue = "80")
     public int port;
 
     public void run() {

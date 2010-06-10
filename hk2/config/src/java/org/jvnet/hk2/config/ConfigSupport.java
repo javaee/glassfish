@@ -528,6 +528,7 @@ public class ConfigSupport {
 
                 // create the child
                 ConfigBeanProxy child = param.createChild(childType);
+                Dom dom = Dom.unwrap(child);
 
                 // add the child to the parent.
                 WriteableView writeableParent = (WriteableView) Proxy.getInvocationHandler(param);
@@ -597,7 +598,7 @@ public class ConfigSupport {
                         }
                     } else {
                         // much simpler, I can use the setter directly.
-                        writeableParent.setter(element, child, childType);
+                        writeableParent.setter(element, dom.<ConfigBeanProxy>createProxy(), childType);
                     }
                 } else {
                     throw new TransactionFailure("Parent " + parent.getProxyType() + " does not have a child of type " + childType);
@@ -605,7 +606,14 @@ public class ConfigSupport {
 
                 WriteableView writeableChild = (WriteableView) Proxy.getInvocationHandler(child);
                 applyProperties(writeableChild, attributes);
-                
+
+                List<Dom.Child> children = new ArrayList<Dom.Child>();
+                dom.ensureConstraints(children);
+                if (!children.isEmpty()) {
+                    dom.setChildren(children);
+                }
+                dom.register();
+
                 if (runnable!=null) {
                     runnable.performOn(writeableChild);
                 }
