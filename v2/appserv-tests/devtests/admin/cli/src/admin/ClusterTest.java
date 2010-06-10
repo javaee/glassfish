@@ -163,7 +163,12 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "deploy", asadmin("deploy", "--target", cname, webapp.getAbsolutePath()));
 
         report(tn + "getapp1", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
-        report(tn + "getapp2", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+        String s1 = getURL(i2url + "helloworld/hi.jsp");
+        System.out.println("output from instance 2:" + s1);
+        report(tn + "getapp2", matchString("Hello", s1));
+
+        report(tn + "undeploy", asadmin("undeploy", "--target", cname, "helloworld"));
+        report(tn + "get-del-app1", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
 
         report(tn + "getREST1", matchString("server/" + i1name + "/property", getURL(i1murl + "servers/server/" + i1name)));
         report(tn + "getREST1a", !matchString("eein2", getURL(i1murl + "servers/server")));
