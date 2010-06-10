@@ -87,6 +87,9 @@ public class SimpleReporterAdapter implements Serializable {
     }
 
     public void addStatus(String test, String status) {
+        addStatus(test, status, "");
+    }
+    public void addStatus(String test, String status, String message) {
         int blankIndex = test.indexOf(" ");
         String key = test;
         if (blankIndex != -1) {

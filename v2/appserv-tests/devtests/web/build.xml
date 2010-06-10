@@ -313,6 +313,7 @@
 
     <target name="web-container" depends="init-report">
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
+        <ant dir="allowEncodedSlash" target="all"/>
         <ant dir="asadminDeletes" target="all"/>
         <ant dir="broken_webapp" target="all"/>
         <ant dir="classPathManifestAttribute" target="all"/>
@@ -370,6 +371,7 @@
         <ant dir="sessionMemoryPersist" target="all"/>
         <ant dir="sessionMemoryPersistPrimitiveClass" target="all"/>
         <ant dir="sessionPreserveAcrossRedeploy" target="all"/>
+        <ant dir="sessionPreserveAcrossRedeployDeclarative" target="all"/>
         <ant dir="sessionPropertyEnableCookiesInstanceLevel" target="all"/>
         <ant dir="sessionSerializeOnShutdownOnly" target="all"/>
         <ant dir="sessionWithCookiePersistenceType" target="all"/>
@@ -415,7 +417,6 @@
         <ant dir="webdavCopyDelete" target="all"/>
         <ant dir="welcomePageExtensionMatch" target="all"/>
         <ant dir="weldJsfLoginPage" target="all"/>
-        <ant dir="sessionPreserveAcrossRedeployDeclarative" target="all"/>
     </target>
 
     <target name="security" depends="init-report">
