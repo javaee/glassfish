@@ -12,16 +12,6 @@
                     <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</location>
                 </source-folder>
                 <source-folder>
-                    <label>cluster\src</label>
-                    <type>java</type>
-                    <location>cluster/src</location>
-                </source-folder>
-                <source-folder>
-                    <label>instance\src</label>
-                    <type>java</type>
-                    <location>instance/src</location>
-                </source-folder>
-                <source-folder>
                     <label>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</label>
                     <type>java</type>
                     <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</location>
@@ -53,14 +43,6 @@
             <view>
                 <items>
                     <source-folder style="packages">
-                        <label>cluster\src</label>
-                        <location>cluster/src</location>
-                    </source-folder>
-                    <source-folder style="packages">
-                        <label>instance\src</label>
-                        <location>instance/src</location>
-                    </source-folder>
-                    <source-folder style="packages">
                         <label>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</label>
                         <location>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</location>
                     </source-folder>
@@ -84,8 +66,6 @@
         </general-data>
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
             <compilation-unit>
-                <package-root>cluster/src</package-root>
-                <package-root>instance/src</package-root>
                 <package-root>C:\gf\v2\appserv-tests\util\reportbuilder\src\main\java</package-root>
                 <package-root>src</package-root>
                 <classpath mode="compile">../../../util/reportbuilder/src/main/java;../../../lib/com-sun-commons-logging.jar;../../../lib/commons-logging.jar;../../../lib/filediff.jar;../../../lib/httpunit.jar;../../../lib/isql.jar;../../../lib/js.jar;../../../lib/junit.jar;../../../lib/ldapjdk.jar;../../../lib/nekohtml.jar;../../../lib/reportbuilder.jar;../../../lib/reporter.jar;../../../lib/selenium-java-client-driver-tests.jar;../../../lib/selenium-java-client-driver.jar;../../../lib/selenium-server-0.9.1-20070223.200626-116-standalone.jar;../../../lib/selenium-server.jar;../../../lib/sslutil.jar;../../../lib/testdriversecurity.jar;../../../lib/testng-5.5-jdk15.jar;../../../lib/testng.jar;../../../lib/Tidy.jar;../../../lib/webtest.jar;../../../lib/xercesImpl.jar;../../../lib/xmlParserAPIs.jar</classpath>
