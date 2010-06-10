@@ -12,3 +12,20 @@ servlet-3.0/asyncTimeoutNoListener # comment out until https://grizzly.dev.java.
 servlet-3.0/servletContainerInitializer/sharedLibWithWars # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=12091 is fixed
 sslServerName # test uses BaseDevTest
 wrongTransport # test uses BaseDevTest
+# these tests use asadmin create-network-listener, create-virtual-server and embedded ant tasks need special handling
+httpListenerDynamicConfig
+listenerDisabled
+networkListenerDynamicConfig
+networkListenerDynamicConfigEnabled
+networkListenerTarget  
+reconfigDefaultWebModule
+v3HttpListenerDynamicConfig
+virtualServerChangeHttpListenerWebappNoLongerAccessible
+virtualServerCreateUpperCaseDeployExclusive
+virtualServerDefaultWebModuleReconfig
+virtualServerDynamicConfig
+virtualServerModifyHttpListenerPortAccessWebapp
+virtualServerStateDynamicReconfig
+virtualServerTarget
+virtualServerUpdateHostsDynamicReconfig
+virtualServerUpdateHttpListenersDynamicReconfig
