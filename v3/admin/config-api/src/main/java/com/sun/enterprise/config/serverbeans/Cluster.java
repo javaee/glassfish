@@ -108,6 +108,27 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     void setConfigRef(String value) throws PropertyVetoException;
 
     /**
+     * Gets the value of the gmsEnabled property.
+     *
+     * When "gms-enabled" is set to "true", the GMS services will be
+     * started as a lifecycle module in each the application server in the
+     * cluster.
+     *
+     * @return true | false as a string, null means false
+     */
+    @Attribute (defaultValue="true",dataType=Boolean.class,required=true)
+    String getGmsEnabled();
+
+    /**
+     * Sets the value of the gmsEnabled property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    void setGmsEnabled(String value) throws PropertyVetoException;
+
+    /**
      * Gets the value of the heartbeatEnabled property.
      *
      * When "heartbeat-enabled" is set to "true", the GMS services will be
@@ -140,7 +161,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *         {@link String }
      */
     @Attribute
-    @Min(value=1024)
+    @Min(value=2048)
     @Max(value=49151)
     String getHeartbeatPort();
 
