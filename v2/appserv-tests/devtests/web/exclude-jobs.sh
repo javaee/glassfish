@@ -21,7 +21,7 @@ skip() {
 }
 
 echo start
-if [ -z "${JOB_NAME}" -o "$JOB_NAME" == "webtier-dev-tests-v3-source" ]
+if [ -z "${JOB_NAME}" -o "$JOB_NAME" = "webtier-dev-tests-v3-source" ]
 then
     JOB_NAME=webtier-dev-tests-v3
 fi
