@@ -39,6 +39,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.module.Module;
 import java.io.IOException;
+import java.util.logging.Level;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
@@ -234,7 +235,15 @@ public class AppClientDeployer
             return null;
         }
         appclientDesc.setClassLoader(dc.getClassLoader());
-        AppClientDeployerHelper helper = savedHelper(dc);
+        AppClientDeployerHelper helper = null;
+        try {
+            helper = getSavedHelperOrCreateHelper(dc);
+            DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
+            addArtifactsToDownloads(params.name(), helper);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
 //        helper.addGroupFacadeToEARDownloads();
         final AppClientServerApplication newACServerApp = newACServerApp(dc, helper);
         appClientApps.add(newACServerApp);
@@ -276,23 +285,25 @@ public class AppClientDeployer
             return;
         }
 
-        DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
-
         try {
-            final AppClientArchivist archivist = habitat.getComponent(AppClientArchivist.class);
-            AppClientDeployerHelper helper = createAndSaveHelper(
-                    dc, archivist, gfClientModuleClassLoader);
+            final AppClientDeployerHelper helper = createAndSaveHelper(
+                    dc, gfClientModuleClassLoader);
             helper.prepareJARs();
-            downloadInfo.addArtifacts(params.name(), helper.earLevelDownloads());
-            downloadInfo.addArtifacts(params.name(), helper.clientLevelDownloads());
         } catch (Exception ex) {
             throw new DeploymentException(ex);
         }
     }
-    
+
+    private void addArtifactsToDownloads(final String appName,
+            final AppClientDeployerHelper helper) throws IOException {
+        downloadInfo.addArtifacts(appName, helper.earLevelDownloads());
+        downloadInfo.addArtifacts(appName, helper.clientLevelDownloads());
+    }
+
     private AppClientDeployerHelper createAndSaveHelper(final DeploymentContext dc,
-            final AppClientArchivist archivist, final ClassLoader clientModuleLoader) throws IOException {
-        final AppClientDeployerHelper h =
+            final ClassLoader clientModuleLoader) throws IOException {
+            final AppClientArchivist archivist = habitat.getComponent(AppClientArchivist.class);
+            final AppClientDeployerHelper h =
             AppClientDeployerHelper.newInstance(
                 dc,
                 archivist,
@@ -303,13 +314,27 @@ public class AppClientDeployer
         return h;
     }
 
-    private AppClientDeployerHelper savedHelper(final DeploymentContext dc) {
+    private AppClientDeployerHelper getSavedHelperOrCreateHelper(final DeploymentContext dc) throws IOException {
         final String key = HELPER_KEY_NAME + moduleURI(dc);
-        AppClientDeployerHelper h = dc.getTransientAppMetaData(key,
-                AppClientDeployerHelper.Proxy.class).helper();
+        AppClientDeployerHelper h = null;
+
+        final AppClientDeployerHelper.Proxy p = dc.getTransientAppMetaData(key,
+                AppClientDeployerHelper.Proxy.class);
+        if (p != null) {
+            h = p.helper();
+        }
+
         if (h == null) {
             h = dc.getTransientAppMetaData(key,
                     StandaloneAppClientDeployerHelper.class);
+        }
+        if (h == null) {
+            /*
+             * We are probably loading a previously-deployed app client, so
+             * the helper has not be created yet.  Create it.
+             */
+            h = createAndSaveHelper(dc,
+                    gfClientModuleClassLoader);
         }
         return h;
     }
