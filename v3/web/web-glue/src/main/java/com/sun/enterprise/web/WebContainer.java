@@ -839,7 +839,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         connector.setMapper(mapper);
        
         if (_logger.isLoggable(Level.INFO)) {
-            _logger.log(Level.INFO, "webContainer.HTTP.listenerAndPort", new Object[] {listener.getName(), listener.getPort()});
+            _logger.log(Level.INFO, "webContainer.HTTP.listenerAndPort", new Object[] {listener.getName(), listener.getAddress(), listener.getPort()});
         }
         
         connector.setName(listener.getName());

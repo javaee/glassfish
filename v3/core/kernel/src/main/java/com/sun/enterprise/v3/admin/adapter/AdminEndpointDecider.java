@@ -45,6 +45,8 @@ import com.sun.grizzly.config.dom.NetworkListener;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.server.ServerEnvironmentImpl;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -63,6 +65,7 @@ public final class AdminEndpointDecider {
     private List<String> guiHosts;     //list of virtual servers for admin GUI
     
     private int port;  // both asadmin and admin GUI are on same port
+    private InetAddress address;
     private Config cfg;
     private Logger log;
     
@@ -79,6 +82,10 @@ public final class AdminEndpointDecider {
     
     public int getListenPort() {
         return port;
+    }
+
+    public InetAddress getListenAddress() {
+        return address;
     }
     
     public List<String> getAsadminHosts() {
@@ -117,11 +124,16 @@ public final class AdminEndpointDecider {
                 } catch(NumberFormatException ne) {
                     port = ADMIN_PORT;
                 }
+                try {
+                    address = InetAddress.getByName(ls.getAddress());
+                } catch (UnknownHostException e) {
+                    throw new IllegalStateException(e);
+                }
                 dedicatedAdmin = true;
                 break;
             }
         }
-        if (dedicatedAdmin == false) {
+        if (!dedicatedAdmin) {
             //pick first
             NetworkListener effective = lss.get(0);
             String dvs = effective.findHttpProtocol().getHttp().getDefaultVirtualServer();
@@ -131,6 +143,11 @@ public final class AdminEndpointDecider {
                 port = Integer.valueOf(effective.getPort());
             } catch(NumberFormatException ne) {
                 port = 8080;   // this is the last resort
+            }
+            try {
+                address = InetAddress.getByName(effective.getAddress());
+            } catch (UnknownHostException e) {
+                throw new IllegalStateException(e);
             }
             //get the context root from admin-service
             AdminService as = cfg.getAdminService();

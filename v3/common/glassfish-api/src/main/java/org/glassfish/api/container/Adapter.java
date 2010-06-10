@@ -36,6 +36,7 @@
 
 package org.glassfish.api.container;
 
+import java.net.InetAddress;
 import java.util.List;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -62,9 +63,15 @@ public interface Adapter extends com.sun.grizzly.tcp.Adapter {
      */
     public int getListenPort();
 
+
     /**
-     * Returns the virtaul servers supported by this adapter
-     * @return List<String> the virtual server list supported by the adapter
+     * @return the {@link InetAddress} on which this adapter is listening
+     */
+    public InetAddress getListenAddress();
+
+    /**
+     * Returns the virtual servers supported by this adapter
+     * @return List&lt;String&gt; the virtual server list supported by the adapter
      */
     public List<String> getVirtualServers();
 

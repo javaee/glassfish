@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@ import org.jvnet.hk2.annotations.Contract;
 import org.glassfish.api.deployment.ApplicationContainer;
 import com.sun.grizzly.tcp.Adapter;
 
+import java.net.InetAddress;
 import java.util.Collection;
 
 /**
@@ -93,6 +94,7 @@ public interface RequestDispatcher {
      * number.
      */
     public void registerEndpoint(String contextRoot,
+                                 InetAddress address,
                                  int port,
                                  Collection<String> vsServers,
                                  Adapter endpointAdapter,

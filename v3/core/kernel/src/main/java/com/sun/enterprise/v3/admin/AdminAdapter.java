@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,6 +54,7 @@ import org.glassfish.api.container.Adapter;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 
+import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.util.StringTokenizer;
 import java.util.Map;
@@ -152,8 +153,8 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         
         epd = new AdminEndpointDecider(config, logger);
         registerDynamicReconfigListeners();
-            this.setHandleStaticResources(true);
-            this.setRootFolder(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
+        this.setHandleStaticResources(true);
+        this.addRootFolder(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
     }
 
     /**
@@ -457,7 +458,12 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
     public int getListenPort() {
         return epd.getListenPort();
     }
-    
+
+    @Override
+    public InetAddress getListenAddress() {
+        return epd.getListenAddress();
+    }
+
     public List<String> getVirtualServers() {
         return epd.getAsadminHosts();
     }

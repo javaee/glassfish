@@ -79,6 +79,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -944,6 +945,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     public int getListenPort() {
         return epd.getListenPort();
+    }
+
+    @Override
+    public InetAddress getListenAddress() {
+        return epd.getListenAddress();
     }
 
     public List<String> getVirtualServers() {

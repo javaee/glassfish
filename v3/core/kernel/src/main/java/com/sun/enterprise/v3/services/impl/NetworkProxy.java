@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2007-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2007-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,6 +38,7 @@ package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.util.Result;
 
+import java.net.InetAddress;
 import java.util.concurrent.Future;
 
 /**
@@ -56,17 +57,30 @@ public interface NetworkProxy extends EndpointMapper<com.sun.grizzly.tcp.Adapter
     /** 
      * Stop the proxy. 
      */
-    public void stop();
+    void stop();
     
     
     /** 
      * Start the proxy. 
      */
-    public Future<Result<Thread>> start();
-    
-
-    public int getPort();
+    Future<Result<Thread>> start();
 
 
-    public void destroy();
+    /**
+     * @return the network port upon which this <code>NetworkProxy</code> is
+     *  listening on
+     */
+    int getPort();
+
+
+    /**
+     * @return the {@link InetAddress} of this <code>NetworkProxy</code>
+     */
+    InetAddress getAddress();
+
+
+    /**
+     * Destroy the proxy.
+     */
+    void destroy();
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2007-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2007-20120 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -89,10 +89,6 @@ public class GrizzlyProxy implements NetworkProxy {
     // <http-listener> 'address' attribute
     private InetAddress address;
 
-
-    private Inhabitant<Mapper> onePortMapper;
-
-
     private GrizzlyService grizzlyService;
 
     private VirtualServer vs;
@@ -149,9 +145,9 @@ public class GrizzlyProxy implements NetworkProxy {
 
             final Protocol httpProtocol = networkListener.findHttpProtocol();
 
-            String ct = httpProtocol.getHttp().getDefaultResponseType();
-            adapter.setDefaultContentType(ct);
             if (httpProtocol != null) {
+                String ct = httpProtocol.getHttp().getDefaultResponseType();
+                adapter.setDefaultContentType(ct);
                 final Collection<VirtualServer> list = grizzlyService.getHabitat().getAllByContract(VirtualServer.class);
                 final String vsName = httpProtocol.getHttp().getDefaultVirtualServer();
                 for (VirtualServer virtualServer : list) {
@@ -176,7 +172,7 @@ public class GrizzlyProxy implements NetworkProxy {
                                     String urlPattern = mapping[0].substring("from=".length());
                                     try {
                                         StaticResourcesAdapter a = new StaticResourcesAdapter();
-                                        a.setRootFolder(docBase);
+                                        a.addRootFolder(docBase);
                                         ArrayList<String> al = toArray(vs.getHosts(),";");
                                         al.add(grizzlyListener.getDefaultVirtualServer());
                                         registerEndpoint(urlPattern,al , a, null);
@@ -191,7 +187,7 @@ public class GrizzlyProxy implements NetworkProxy {
                     }
                 }
             }
-            adapter.setRootFolder(embeddedHttp.getWebAppRootPath());
+            adapter.addRootFolder(embeddedHttp.getWebAppRootPath());
             boolean autoConfigure = false;
             // Avoid overriding the default with false
             if (System.getProperty(AUTO_CONFIGURE) != null){
@@ -206,9 +202,9 @@ public class GrizzlyProxy implements NetworkProxy {
             }
             embeddedHttp.getController().useLeaderFollowerStrategy(leaderFollower);
 
-            onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
+            Inhabitant<Mapper> onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
             grizzlyService.getHabitat().addIndex(onePortMapper,
-                Mapper.class.getName(), networkListener.getPort());
+                Mapper.class.getName(), (networkListener.getAddress() + networkListener.getPort()));
             grizzlyService.notifyMapperUpdateListeners(networkListener, mapper);
         }
     }
@@ -229,15 +225,20 @@ public class GrizzlyProxy implements NetworkProxy {
     public void destroy() {
         if(!grizzlyListener.isGenericListener()) {
             grizzlyService.getHabitat().removeIndex(Mapper.class.getName(),
-                        String.valueOf(portNumber));
+                        (networkListener.getAddress() + networkListener.getPort()));
             unregisterMonitoringStatsProviders();
         }
     }
 
     @Override
     public String toString() {
-        return "Grizzly on port " + networkListener.getPort();
+        return "GrizzlyProxy{" +
+                "virtual server=" + vs +
+                ", address=" + address +
+                ", portNumber=" + portNumber +
+                '}';
     }
+
 
     /*
     * Registers a new endpoint (adapter implementation) for a particular
@@ -293,7 +294,9 @@ public class GrizzlyProxy implements NetworkProxy {
                             if (logger.isLoggable(Level.INFO)){
                                 logger.info("Grizzly Framework " + Grizzly.getRawVersion() + " started in: "
                                         + (System.currentTimeMillis() - t1)
-                                        + "ms listening on port " + grizzlyListener.getPort());
+                                        + "ms - bound to [" 
+                                        + grizzlyListener.getListener().getAddress()
+                                        + ':' + grizzlyListener.getPort() + ']');
                             }
 
                             future.setResult(new Result<Thread>(t));
@@ -329,6 +332,11 @@ public class GrizzlyProxy implements NetworkProxy {
     @Override
     public int getPort() {
         return portNumber;
+    }
+
+    @Override
+    public InetAddress getAddress() {
+        return address;
     }
 
     protected void registerMonitoringStatsProviders() {

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2007-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2007-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,6 +38,8 @@ package com.sun.enterprise.v3.services.impl;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -94,9 +96,6 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 @Scoped(Singleton.class)
 public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct, PreDestroy, FutureProvider<Result<Thread>> {
 
-    public static final int ALL_PORTS = Integer.MAX_VALUE;
-
-    
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
 
@@ -137,21 +136,13 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     
     
     /**
-     * Remove the proxy from our list of proxies by port.
-     * @param port number to be removed
-     * @return <tt>true</tt>, if proxy on specified port was removed,
-     *         <tt>false</tt> if no proxy was associated with the port.
+     * Remove the proxy from our list of proxies by listener.
+     * @param listener removes the proxy associated with the specified listener
+     * @return <tt>true</tt>, if proxy removed,
+     *         <tt>false</tt> if no proxy was associated with the specified listener.
      */    
-    public boolean removeNetworkProxy(int port) {
-        NetworkProxy proxy = null;
-        for (NetworkProxy p : proxies) {
-            if (p.getPort() == port) {
-                proxy = p;
-                break;
-            }
-        }
-
-        return removeNetworkProxy(proxy);
+    public boolean removeNetworkProxy(NetworkListener listener) {
+        return (removeNetworkProxy(lookupNetworkProxy(listener)));
     }
 
     
@@ -201,14 +192,26 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      */
     public NetworkProxy lookupNetworkProxy(NetworkListener listener) {
         int listenerPort = -1;
+        InetAddress address = null;
         try {
             listenerPort = Integer.parseInt(listener.getPort());
         } catch (NumberFormatException e) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, e.toString());
+            }
+        }
+
+        try {
+            address = InetAddress.getByName(listener.getAddress());
+        } catch (UnknownHostException uhe) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, uhe.toString());
+            }
         }
 
         if (listenerPort != -1) {
             for (NetworkProxy p : proxies) {
-                if (p.getPort() == listenerPort) {
+                if (p.getPort() == listenerPort && p.getAddress().equals(address)) {
                     return p;
                 }
             }
@@ -235,7 +238,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * Is there any {@link MapperUpdateListener} registered?
      */
     public boolean hasMapperUpdateListener(){
-        return (mapperUpdateListeners.size() > 0? true:false);
+        return (!mapperUpdateListeners.isEmpty());
     }
 
     /**
@@ -456,17 +459,11 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         }
     }
 
-    /*
-    * Registers all proxies
-    */
-    public void registerNetworkProxy() {
-        registerNetworkProxy(ALL_PORTS);
-    }
 
     /*
      * Registers all proxies
      */
-    public void registerNetworkProxy(int port) {
+    public void registerNetworkProxy() {
         for (org.glassfish.api.container.Adapter subAdapter :
             habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
             //@TODO change EndportRegistrationException processing if required
@@ -518,7 +515,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     @Override
     public void registerEndpoint(String contextRoot, Adapter endpointAdapter,
         ApplicationContainer container, String virtualServers) throws EndpointRegistrationException {
-        List<String> virtualServerList = new ArrayList<String>();
+        List<String> virtualServerList;
         if (virtualServers == null) {
             virtualServerList = 
                 config.getHttpService().getNonAdminVirtualServerList();
@@ -542,10 +539,14 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             Adapter endpointAdapter,
             ApplicationContainer container) throws EndpointRegistrationException {
             
-        Collection<String> ports = getPortsFromVirtualServers(vsServers);
-        for (String portStr : ports) {
-            int port = Integer.parseInt(portStr);
-            registerEndpoint(contextRoot, port, vsServers, endpointAdapter, container);
+        Collection<AddressInfo> addressInfos = getAddressInfoFromVirtualServers(vsServers);
+        for (AddressInfo info : addressInfos) {
+            registerEndpoint(contextRoot,
+                             info.address,
+                             info.port,
+                             vsServers,
+                             endpointAdapter,
+                             container);
         }
     }
 
@@ -556,12 +557,13 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      */
     @Override
     public void registerEndpoint(String contextRoot,
+                                 InetAddress address,
                                  int port,
                                  Collection<String> vsServers,
                                  Adapter endpointAdapter,
                                  ApplicationContainer container) throws EndpointRegistrationException {
         for (NetworkProxy proxy : proxies) {
-            if (port == ALL_PORTS || proxy.getPort() == port) {
+            if (proxy.getPort() == port && proxy.getAddress().equals(address)) {
                 proxy.registerEndpoint(contextRoot, vsServers,
                                        endpointAdapter, container);
             }
@@ -570,7 +572,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
 
     /**
-     * Removes the contex-root from our list of endpoints.
+     * Removes the context-root from our list of endpoints.
      */
     @Override
     public void unregisterEndpoint(String contextRoot) throws EndpointRegistrationException {
@@ -578,7 +580,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     }
 
     /**
-     * Removes the contex-root from our list of endpoints.
+     * Removes the context-root from our list of endpoints.
      */
     @Override
     public void unregisterEndpoint(String contextRoot, 
@@ -592,6 +594,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * Probe provider that implements each probe provider method as a 
      * no-op.
      */
+    @SuppressWarnings({"UnusedDeclaration"})
     public static class NoopInvocationHandler implements InvocationHandler {
 
         @Override
@@ -602,16 +605,17 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     }
 
     private void registerAdapter(org.glassfish.api.container.Adapter a) throws EndpointRegistrationException {
-        int port        = a.getListenPort();
-        List<String> vs = a.getVirtualServers();
-        String cr       = a.getContextRoot();
-        this.registerEndpoint(cr, port, vs, a, null);
+        int port            = a.getListenPort();
+        InetAddress address = a.getListenAddress();
+        List<String> vs     = a.getVirtualServers();
+        String cr           = a.getContextRoot();
+        this.registerEndpoint(cr, address, port, vs, a, null);
     }
 
     // get the ports from the http listeners that are associated with 
     // the virtual servers
-    private List<String> getPortsFromVirtualServers(Collection<String> virtualServers) {
-        List<String> ports = new ArrayList<String>();
+    private List<AddressInfo> getAddressInfoFromVirtualServers(Collection<String> virtualServers) {
+        List<AddressInfo> addressInfos = new ArrayList<AddressInfo>();
         List<NetworkListener> networkListenerList = config.getNetworkConfig().getNetworkListeners().getNetworkListener();
 
         for (String vs : virtualServers) {
@@ -629,12 +633,32 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                 for (NetworkListener networkListener : networkListenerList) {
                     if (networkListener.getName().equals(vsNetworkListener) && 
                         Boolean.valueOf(networkListener.getEnabled())) {
-                        ports.add(networkListener.getPort());
+                        addressInfos.add(new AddressInfo(networkListener.getAddress(),
+                                                         networkListener.getPort()));
                         break;
                     }
                 }
             }
         } 
-        return ports;
+        return addressInfos;
     }
+
+
+    // ---------------------------------------------------------- Nested Classes
+
+
+    private static final class AddressInfo {
+
+        private InetAddress address;
+        private final int port;
+
+        private AddressInfo(String address, String port) {
+            this.port = Integer.parseInt(port);
+            try {
+                this.address = InetAddress.getByName(address);
+            } catch (UnknownHostException ignore) {
+            }
+        }
+
+    } // END AddressInfo
 }
