@@ -44,6 +44,7 @@ import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -52,6 +53,7 @@ import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.jvnet.hk2.annotations.Inject;
@@ -96,6 +98,9 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
 
     @Inject
     VersioningService versioningService;
+
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    protected Server server;
 
     public UndeployCommand() {
         origin = Origin.undeploy;
@@ -188,6 +193,11 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                     logger.warning("Module " + name + " not found in configuration");
                 }
                 return;
+            }
+
+            // if this is not the DAS VM, set the origin to undeploy_instance
+            if (!server.getName().equals("server")) {
+                this.origin = Origin.undeploy_instance;
             }
 
             ExtendedDeploymentContext deploymentContext = null;

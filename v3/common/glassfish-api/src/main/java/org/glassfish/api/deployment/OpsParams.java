@@ -56,13 +56,23 @@ public abstract class OpsParams implements CommandParameters {
      * undeploy when a deployed application is removed from the system.
      */
     public enum Origin { 
-        load, deploy, deploy_instance, unload, undeploy;
+        load, deploy, deploy_instance, unload, undeploy, undeploy_instance;
 
         // whether it's part of the deployment, on DAS or on instance
         public boolean isDeploy() {
             if (this == Origin.deploy || this == Origin.deploy_instance) {
                 return true;
             }    
+            else {
+                return false;
+            }
+        }
+
+        // whether it's deploy on DAS
+        public boolean isDeployOnDAS() {
+            if (this == Origin.deploy) {
+                return true;
+            }
             else {
                 return false;
             }
@@ -91,9 +101,19 @@ public abstract class OpsParams implements CommandParameters {
 
         // whether it's undeploy
         public boolean isUndeploy() {
-            if (this == Origin.undeploy) {
+            if (this == Origin.undeploy || this == Origin.undeploy_instance) {
                 return true;
             }    
+            else {
+                return false;
+            }
+        }
+
+        // whether it's undeploy on DAS
+        public boolean isUndeployOnDAS() {
+            if (this == Origin.undeploy) {
+                return true;
+            }
             else {
                 return false;
             }
