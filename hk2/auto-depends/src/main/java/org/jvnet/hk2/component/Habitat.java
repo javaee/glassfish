@@ -38,17 +38,28 @@ package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.CompanionSeed;
 import static com.sun.hk2.component.CompanionSeed.Registerer.createCompanion;
+
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.FactoryWomb;
+
 import static com.sun.hk2.component.InhabitantsFile.CAGE_BUILDER_KEY;
 import com.sun.hk2.component.ScopeInstance;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.FactoryFor;
+import org.jvnet.hk2.component.HabitatListener.EventType;
+import org.jvnet.hk2.component.InhabitantTracker.Callback;
+import org.jvnet.hk2.component.matcher.Constants;
 
 import java.lang.annotation.Annotation;
 import java.util.Map.Entry;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -70,18 +81,48 @@ public class Habitat {
      * Can't use {@link Class} as the key so that we can create index without
      * loading contract types. Once populated upfront, it works as a read-only map.
      */
-    private final MultiMap<String,NamedInhabitant> byContract = new MultiMap<String,NamedInhabitant>();
+    private final MultiMap<String,NamedInhabitant> byContract; 
 
     /**
      * Index by {@link Inhabitant#type()}.
      */
-    private final MultiMap<String,Inhabitant> byType = new MultiMap<String,Inhabitant>();
+    private final MultiMap<String,Inhabitant> byType; 
 
     public final ScopeInstance singletonScope;
 
+    // TODO: toggle to use concurrency controls as the default (or after habitat is initially built)
+    // TODO: Jerome to review performance costs
+    static final boolean CONCURRENCY_CONTROLS_DEFAULT = 
+//      "true".equals(System.getProperty("hk2.concurrency.controls", "true"));
+      Boolean.getBoolean("hk2.concurrency.controls");
+    private final boolean concurrencyControls;
+    final ExecutorService exec;
+    
     public Habitat() {
+      this(null, null);
+    }
 
-        singletonScope = new ScopeInstance("singleton", new HashMap());
+    Habitat(ExecutorService exec, Boolean concurrency_controls) {
+        this.concurrencyControls = 
+            (null == concurrency_controls) 
+                ? CONCURRENCY_CONTROLS_DEFAULT : concurrency_controls;
+        this.byContract = new MultiMap<String,NamedInhabitant>(this.concurrencyControls);
+        this.byType = new MultiMap<String,Inhabitant>(this.concurrencyControls);
+        this.singletonScope = new ScopeInstance("singleton", new HashMap());
+
+        if (null == exec) {
+          exec = Executors.newCachedThreadPool(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable runnable) {
+              Thread t = Executors.defaultThreadFactory().newThread(runnable);
+              t.setDaemon(true);
+              return t;
+            }
+          });
+        }
+        this.exec = exec;
+        // make the listeners available very early in lifecycle
+        addHabitatListener(new SelfListener());
 
         // make the habitat itself available
         add(new ExistingSingletonInhabitant<Habitat>(Habitat.class,this));
@@ -91,8 +132,183 @@ public class Habitat {
         add(new ExistingSingletonInhabitant<CageBuilder.Registerer>(CageBuilder.Registerer.class,
                 new CageBuilder.Registerer(this)));
     }
+    
+    /**
+     * Add a habitat listener with no contract-level filtering.
+     * This API is primarily intended for internal cases within
+     * Hk2.
+     * 
+     * The listener with no contract-level filtering will be 
+     * called for all change events within the habitat pertaining
+     * to inhabitants.
+     *
+     * @see {@link #addHabitatListener(HabitatListener, String...)}
+     *      is recommended for most cases
+     * 
+     * @param listener
+     *      The habitat Listener to be added
+     * 
+     * @since 3.1
+     */
+    public void addHabitatListener(HabitatListener listener) {
+        addHabitatListener(listener, DEFAULT_NAME);
+    }
+    
+    /**
+     * Add a habitat listener with contract-level filtering.
+     * 
+     * The listener will be called based on the set of contract
+     * filters provided.
+     *
+     * @param listener
+     *      The habitat Listener to be added
+     * @param typeNames
+     *      The contracts to filter on; this should be non-null
+     * 
+     * @since 3.1
+     */
+    public void addHabitatListener(HabitatListener listener, String... typeNames) {
+      if (null == typeNames || 0 == typeNames.length) throw new IllegalArgumentException();
+      addHabitatListener(listener, new HashSet<String>(Arrays.asList(typeNames)));
+    }
+    
+    protected void addHabitatListener(HabitatListener listener, Set<String> typeNames) {
+        ExistingSingletonInhabitant<HabitatListener> inhabitant = 
+          new ExistingSingletonInhabitant<HabitatListener>(HabitatListener.class,
+              listener, metaData(typeNames));
+        add(inhabitant);
+  
+        // track listeners by type - support of filtered notification
+        for (String contract : typeNames) {
+          ListenersByTypeInhabitant sameListeners; 
+          synchronized (byContract) {
+              sameListeners = (ListenersByTypeInhabitant)
+                      getInhabitantByContract(ListenersByTypeInhabitant.class.getName(),
+                      contract);
+              if (null == sameListeners) {
+                  sameListeners = new ListenersByTypeInhabitant(contract);
+                  addIndex(sameListeners, ListenersByTypeInhabitant.class.getName(),
+                      contract,
+                      false); // don't send notifications for this type (no particular reason really)
+              }
+          }
+          sameListeners.add(listener);
+        }
+    }
 
+    /**
+     * Remove a habitat listener.
+     * 
+     * @param listener
+     *      The habitat Listener to be removed
+     * @param typeNames
+     *      The contracts to filter on
+     * 
+     * @return true; if the listener was indeed removed
+     * 
+     * @since 3.1
+     */
+    public boolean removeHabitatListener(HabitatListener listener) {
+      List<Inhabitant> list = byType._get(HabitatListener.class.getName());
+      List<Inhabitant> releaseList = new ArrayList<Inhabitant>();
+      Iterator<Inhabitant> iter = list.iterator();
+      while (iter.hasNext()) {
+          Inhabitant existing = iter.next();
+          if (existing.get() == listener) {
+              releaseList.add(existing);
+              if (concurrencyControls) {
+                  list.remove(existing);
+              } else {
+                  iter.remove();
+              }
+          }
+      }
 
+      // need to release the per-listener-contract entries too
+      for (Inhabitant released : releaseList) {
+          MultiMap<String, String> metadata = released.metadata();
+          if (null != metadata) {
+              List<String> filters = metadata.get(Constants.OBJECTCLASS);
+              for (String contract : filters) {
+                  ListenersByTypeInhabitant sameListeners; 
+                  synchronized (byContract) {
+                      sameListeners = (ListenersByTypeInhabitant)
+                              getInhabitantByContract(ListenersByTypeInhabitant.class.getName(),
+                              contract);
+                  }
+                  sameListeners.remove(listener);
+              }                    
+          }
+          
+          released.release();
+          notify(released, EventType.INHABITANT_REMOVED, null, released);
+      }
+      
+      return !releaseList.isEmpty();
+    }
+
+    /**
+     * Convert a set of type names into OBJECTCLASS keys within metadata
+     */
+    private MultiMap<String, String> metaData(Set<String> typeNames) {
+        if (null == typeNames) {
+          return null;
+        }
+        
+        MultiMap<String, String> metadata = new MultiMap<String, String>();
+        for (String typeName : typeNames) {
+          metadata.add(Constants.OBJECTCLASS, typeName);
+        }
+        
+        return metadata;
+    }
+    
+    /**
+     * Registers a dependency on the inhabitant with the given tracker context.
+     * <p>
+     * Once the criteria is met, any callback provided is called.  This callback may
+     * occur asynchronously from the thread initiating the event.
+     * 
+     * @param itc
+     *          The tracking criteria.
+     * @param callback
+     *          Optionally the callback.
+     * @return
+     *          The tracker
+     * @throws ComponentException
+     * 
+     * @since 3.1
+     */
+    public InhabitantTracker track(InhabitantTrackerContext itc,
+            Callback callback) throws ComponentException {
+        if (null == itc) throw new IllegalArgumentException();
+        return new InhabitantTrackerImpl(this, itc, callback);
+    }
+  
+    /**
+     * Returns a future that can be checked asynchronously, and multiple times.
+     * <p>
+     * <b>Implementation Note:</b> The Future that is returned does not behave in
+     * the traditional sense in that it is NOT directly submitted to an
+     * ExecutorService.  Each call to get() or get(timeout) may result in a 
+     * [re]submission to an internally held executor.  This means that a
+     * call to get(...) may return a tracker, and a subsequent call to get(...) may
+     * return null, or vice versa.  This is true until the underlying tracker is
+     * released at which point a tracker is no longer usable.
+     * 
+     * @param itc
+     *          The tracking criteria.
+     * @return
+     *          The tracker
+     * @throws ComponentException
+     * 
+     * @since 3.1
+     */
+    public Future<InhabitantTracker> trackFuture(InhabitantTrackerContext itc) throws ComponentException {
+        if (null == itc) throw new IllegalArgumentException();
+        return new InhabitantTrackerJob(this, itc);
+    }
+  
     /*
         Why initialize/processInhabitantDecorations didn't work:
 
@@ -105,21 +321,23 @@ public class Habitat {
      */
 
     /**
-     * Removes all imhabitants for a particular type
+     * Removes all inhabitants for a particular type
      *
-     * @param type of the compoment
+     * @param type of the component
+     * 
+     * @return true if any inhabitants were removed
      */
-    public void removeAllByType(Class<?> type) {
-
+    public boolean removeAllByType(Class<?> type) {
+        boolean removed = false;
         String name = type.getName();
 
-        // remove all existing inhabitant.
-        synchronized(byType.get(name)) {
-            for (Inhabitant existing : byType.get(name)) {
-                existing.release();
-            }
-            byType.get(name).clear();
+        // remove all existing inhabitants by type
+        List<Inhabitant> list = new ArrayList<Inhabitant>(byType.get(name));
+        for (Inhabitant existing : list) {
+            removed |= remove(existing);
         }
+        
+        return removed;
     }
 
     /**
@@ -151,6 +369,8 @@ public class Habitat {
             // that happens because every CageBuilder implementations are caged by
             // CageBuilder.Registerer.
         }
+        
+        notify(i, EventType.INHABITANT_ADDED, null, null);
     }
 
     /**
@@ -163,18 +383,14 @@ public class Habitat {
      *      in the same index. Can be null for unnamed inhabitants.
      */
     public void addIndex(Inhabitant<?> i, String index, String name) {
-        byContract.add(index,new NamedInhabitant(name,i));
+      addIndex(i, index, name, true);
+    }
 
-        // TODO: do this in the listener
-
-        // for each FactoryFor component, insert inhabitant for components created by the factory
-        if(index.equals(FactoryFor.class.getName())) {
-            FactoryFor ff = i.type().getAnnotation(FactoryFor.class);
-            Class<?> targetClass = ff.value();
-            FactoryWomb target = new FactoryWomb(targetClass, (Inhabitant)i, this, MultiMap.<String,String>emptyMap());
-            add(target);
-            addIndex(target, targetClass.getName(), null);
-        }
+    protected void addIndex(Inhabitant<?> i, String index, String name, boolean notify) {
+      byContract.add(index,new NamedInhabitant(name,i));
+      if (notify) {
+        notify(i, EventType.INHABITANT_INDEX_ADDED, index, name, null, null);
+      }
     }
 
     /**
@@ -185,10 +401,12 @@ public class Habitat {
      */
     public boolean remove(Inhabitant<?> inhabitant) {
         String name = inhabitant.typeName();
-        if (byType.get(name).contains(inhabitant)) {
-            byType.get(name).remove(inhabitant);
+        if (byType.remove(name, inhabitant)) {
+            notify(inhabitant, EventType.INHABITANT_REMOVED, null, null);
+            inhabitant.release();
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**
@@ -199,46 +417,190 @@ public class Habitat {
      * @return true if the removal was successful
      */
     public boolean removeIndex(String index, String name) {
+        boolean removed = false;
         if (byContract.containsKey(index)) {
-            List<NamedInhabitant> contracted = byContract.get(index);
-            for (NamedInhabitant i : contracted) {
+            List<NamedInhabitant> contracted = byContract._get(index);
+            Iterator<NamedInhabitant> iter = contracted.iterator();
+            while (iter.hasNext()) {
+                NamedInhabitant i = iter.next();
+                
                 if ((i.name == null && name == null) ||
                         (i.name != null && i.name.equals(name))) {
+                    if (concurrencyControls) {
+                        removed = contracted.remove(i);
+                        assert(removed);
+                    } else {
+                        iter.remove();
+                    }
+                    removed = true;
+                    notify(i.inhabitant, EventType.INHABITANT_INDEX_REMOVED,
+                        index, name, null, null);
 
                     // remember to remove the components stored under its type
-                    if (byType.get(index).contains(i.inhabitant)) {
-                        byType.get(index).remove(i.inhabitant);
-                    }
-                    return contracted.remove(i);
+                    remove(i.inhabitant);
                 }
             }
         }
-        return false;
+
+        return removed;
     }
 
     /**
      *  Removes a Contracted service
      *
-     *  @param index the contract name
-     * @param service the instance
+     * @param index the contract name
+     * @param serviceOrInhabitant the service instance, or an Inhabitant instance
      */
-    public boolean removeIndex(String index, Object service) {
+    public boolean removeIndex(String index, Object serviceOrInhabitant) {
+        boolean removed = false;
         if (byContract.containsKey(index)) {
-             List<NamedInhabitant> contracted = byContract.get(index);
-             for (NamedInhabitant i : contracted) {
-                 // call to isInstantiated is necessary to avoid loading of services that are not yet loaded
-                 if (i.inhabitant.isInstantiated() && i.inhabitant.get().equals(service)) {
-                    // remember to remove the components stored under its type
-                    if (byType.get(index).contains(i.inhabitant)) {
-                        byType.get(index).remove(i.inhabitant);
-                    }                     
-                     return contracted.remove(i);
+             List<NamedInhabitant> contracted = byContract._get(index);
+             Iterator<NamedInhabitant> iter = contracted.iterator();
+             while (iter.hasNext()) {
+                 NamedInhabitant i = iter.next();
+                 if (matches(i.inhabitant, serviceOrInhabitant)) {
+                     if (concurrencyControls) {
+                         removed = contracted.remove(i);
+                         assert(removed);
+                     } else {
+                         iter.remove();
+                     }
+                     removed = true;
+                     notify(i.inhabitant, EventType.INHABITANT_INDEX_REMOVED,
+                         index, null, service(serviceOrInhabitant), null);
+
+                     // remember to remove the components stored under its type
+                     remove(i.inhabitant);
                  }
              }
          }
-         return false;
+        
+         return removed;
     }
 
+    protected boolean matches(Inhabitant<?> inhabitant, Object serviceOrInhabitant) {
+      boolean matches;
+      if (serviceOrInhabitant instanceof Inhabitant) {
+        matches = (serviceOrInhabitant == inhabitant);
+      } else {
+        // call to isInstantiated is necessary to avoid loading of services that are not yet loaded
+        matches = inhabitant.isInstantiated() && inhabitant.get().equals(serviceOrInhabitant);
+      }
+      return matches;
+    }
+    
+    protected Object service(Object serviceOrInhabitant) {
+      return (serviceOrInhabitant instanceof Inhabitant) 
+        ? ((Inhabitant)serviceOrInhabitant).get() : serviceOrInhabitant;
+    }
+    
+    protected static interface NotifyCall {
+      boolean inhabitantChanged(HabitatListener listener);
+    }
+    
+    /**
+     * Trigger a notification that an inhabitant has changed.
+     * 
+     * @param inhabitant the inhabitant that has changed
+     * @param contracts the contracts associated with the inhabitant
+     */
+    public void notifyInhabitantChanged(Inhabitant<?> inhabitant,
+          String... contracts) {
+      if (null == contracts || 0 == contracts.length) {
+        // generic inhabitant modification (only general listeners will get notification)
+        notify(inhabitant, EventType.INHABITANT_MODIFIED, null, null);
+      } else {
+        // all scoped-listeners will get modification
+        for (String contract : contracts) {
+          notify(inhabitant, EventType.INHABITANT_MODIFIED, contract, null);
+        }
+      }
+    }
+    
+    protected void notify(final Inhabitant<?> inhabitant,
+        final EventType event,
+        final String index,
+        final Inhabitant<HabitatListener> extraListenerToBeNotified) {
+      NotifyCall innerCall = new NotifyCall() {
+        public boolean inhabitantChanged(HabitatListener listener) {
+          return listener.inhabitantChanged(event, Habitat.this, inhabitant);
+        }
+      };
+      notify(innerCall, inhabitant, event, index, extraListenerToBeNotified);
+    }
+
+    protected void notify(final Inhabitant<?> inhabitant,
+        final EventType event,
+        final String index,
+        final String name,
+        final Object service,
+        final Inhabitant<HabitatListener> extraListenerToBeNotified) {
+      NotifyCall innerCall = new NotifyCall() {
+        public boolean inhabitantChanged(HabitatListener listener) {
+          return listener.inhabitantIndexChanged(event, Habitat.this, inhabitant,
+              index, name, service);
+        }
+      };
+      notify(innerCall, inhabitant, event, index, extraListenerToBeNotified);
+    }
+
+    protected void notify(final NotifyCall innerCall,
+        final Inhabitant<?> inhabitant,
+        final EventType event,
+        final String index,
+        final Inhabitant<HabitatListener> extraListenerToBeNotified) {
+      // do scoped listeners first
+      if (null != index) {
+        doNotify(innerCall, inhabitant, event, index, null);
+      }
+      
+      // do general listeners next
+      doNotify(innerCall, inhabitant, event, DEFAULT_NAME, extraListenerToBeNotified);
+    }
+      
+    private void doNotify(final NotifyCall innerCall,
+        final Inhabitant<?> inhabitant,
+        final EventType event,
+        final String index,
+        final Inhabitant<HabitatListener> extraListenerToBeNotified) {
+      final ListenersByTypeInhabitant sameListeners = 
+          (ListenersByTypeInhabitant)getInhabitantByContract(
+              ListenersByTypeInhabitant.class.getName(),
+              index);
+      if (null != sameListeners && !sameListeners.listeners.isEmpty()) {
+        try {
+          exec.execute(new Runnable() {
+            public void run() {
+              Iterator<HabitatListener> iter = sameListeners.listeners.iterator();
+              while (iter.hasNext()) {
+                Object entry = iter.next();
+                HabitatListener listener = 
+                  (entry instanceof HabitatListener) ? 
+                      (HabitatListener)entry :
+                      (HabitatListener)((Inhabitant)entry).get();
+                boolean keepMe = innerCall.inhabitantChanged(listener);
+                if (!keepMe) {
+                  removeHabitatListener(listener);
+                }
+              }
+              
+              // we take the extraListenerToBeNotified because
+              //  (a) we want to have all notifications in the executor, and
+              //  (b) it might trigger an exception that we want to trap
+              if (null != extraListenerToBeNotified) {
+                extraListenerToBeNotified.get().inhabitantChanged(event, Habitat.this, extraListenerToBeNotified);
+              }
+            }
+          });
+        } catch (Exception e){
+          // don't percolate the exception since it may negatively impact processing
+          Logger.getLogger(Habitat.class.getName()).
+            log(Level.WARNING, "exception caught from listener: ", e);
+        }
+      }
+    }
+
+    
     /**
      * Checks if the given type is a contract interface that has some implementations in this {@link Habitat}.
      *
@@ -270,7 +632,11 @@ public class Habitat {
      *      can be empty but never null.
      */
     public <T> Collection<T> getAllByContract(Class<T> contractType) {
-        final List<NamedInhabitant> l = byContract.get(contractType.getName());
+      return getAllByContract(contractType.getName());
+    }
+    
+    public <T> Collection<T> getAllByContract(String contractType) {
+        final List<NamedInhabitant> l = byContract.get(contractType);
         return new AbstractList<T>() {
             public T get(int index) {
                 return (T)l.get(index).inhabitant.get();
@@ -280,6 +646,19 @@ public class Habitat {
                 return l.size();
             }
         };
+    }
+
+    public Collection<Inhabitant<?>> getAllInhabitantsByContract(String contractType) {
+      final List<NamedInhabitant> l = byContract.get(contractType);
+      return new AbstractList<Inhabitant<?>>() {
+          public Inhabitant<?> get(int index) {
+              return l.get(index).inhabitant;
+          }
+
+          public int size() {
+              return l.size();
+          }
+      };
     }
 
     /**
@@ -350,7 +729,6 @@ public class Habitat {
      *      null if no such servce exists.
      */
     public <T> T getComponent(Class<T> contract, String name) throws ComponentException {
-
         if (name!=null && name.length()==0)
             name=null;
         Inhabitant i = getInhabitant(contract, name);
@@ -454,6 +832,17 @@ public class Habitat {
         return (Collection)byType.get(fullyQualifiedClassName);
     }
 
+    /**
+     * Get the first inhabitant by contract
+     * 
+     * @param fullyQualifiedClassName
+     * @return
+     */
+    public Inhabitant<?> getInhabitantByContract(String typeName) {
+      final List<NamedInhabitant> services = byContract._get(typeName);
+      return (null == services || services.isEmpty()) ? null : services.get(0).inhabitant;
+    }
+      
     public Collection<Inhabitant<?>> getInhabitantsByContract(String fullyQualifiedClassName) {
         final List<NamedInhabitant> services = byContract.get(fullyQualifiedClassName);
         return new AbstractList<Inhabitant<?>>() {
@@ -608,9 +997,12 @@ public class Habitat {
      */
     public void release() {
         // TODO: synchronization story?
-        for (Entry<String, List<Inhabitant>> e : byType.entrySet())
-            for (Inhabitant i : e.getValue())
+        for (Entry<String, List<Inhabitant>> e : byType.entrySet()) {
+            for (Inhabitant i : e.getValue()) {
                 i.release();
+                notify(i, EventType.INHABITANT_REMOVED, null, null);
+            }
+        }
     }
 
     private static final class NamedInhabitant {
@@ -625,4 +1017,72 @@ public class Habitat {
             this.inhabitant = inhabitant;
         }
     }
+    
+    final class ListenersByTypeInhabitant 
+          extends ExistingSingletonInhabitant {
+      private final String name;
+      private final CopyOnWriteArrayList<HabitatListener> listeners =
+          new CopyOnWriteArrayList<HabitatListener>();
+      private volatile boolean released;
+
+      protected ListenersByTypeInhabitant(String name) {
+        super(new ExistingSingletonInhabitant(ListenersByTypeInhabitant.class, null));
+        this.name = name;
+      }
+
+      @Override
+      public String toString() {
+        return getClass().getSimpleName() + "(" + name + ")";
+      } 
+
+      public void add(HabitatListener listener) {
+        listeners.add(listener);
+      }
+      
+      public boolean remove(HabitatListener listener) {
+        return listeners.remove(listener);
+      }
+
+      public int size() {
+        return listeners.size();
+      }
+
+      @Override
+      public void release() {
+        if (!released) {
+          released = true;
+          
+          for (HabitatListener listener : listeners) {
+            removeHabitatListener(listener);
+          }
+        }
+        
+        super.release();
+      }
+    }
+
+    private static final class SelfListener implements HabitatListener {
+      public boolean inhabitantChanged(EventType eventType, Habitat habitat,
+          Inhabitant<?> inhabitant) {
+        return true;
+      }
+
+      public boolean inhabitantIndexChanged(EventType eventType, Habitat habitat,
+          Inhabitant<?> i, String index, String name, Object service) {
+
+        // for each FactoryFor component, insert inhabitant for components created by the factory
+        if (index.equals(FactoryFor.class.getName())) {
+            FactoryFor ff = i.type().getAnnotation(FactoryFor.class);
+            Class<?> targetClass = ff.value();
+            FactoryWomb target = new FactoryWomb(targetClass, i, habitat, MultiMap.<String,String>emptyMap());
+            habitat.add(target);
+            habitat.addIndex(target, targetClass.getName(), null);
+        }
+        
+//        System.out.println("Habitat Index Changed: " + eventType + "; " + i + "; index=" + index + "; name=" + name);
+
+        return true;
+      }
+    }
+
 }

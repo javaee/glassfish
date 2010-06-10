@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.Set;
 import java.util.Collection;
 import java.io.Serializable;
@@ -55,6 +56,7 @@ import java.io.Serializable;
  */
 public class MultiMap<K,V> implements Serializable {
     private final Map<K,List<V>> store;
+    private final boolean concurrencyControls;
 
     public final String toString() {
         final StringBuilder builder = new StringBuilder();
@@ -74,18 +76,37 @@ public class MultiMap<K,V> implements Serializable {
     }
     
     /**
-     * Creates an empty multi-map.
+     * Creates an empty multi-map with default concurrency controls
      */
     public MultiMap() {
-        store = new HashMap<K, List<V>>();
+       this(new HashMap<K, List<V>>(), Habitat.CONCURRENCY_CONTROLS_DEFAULT);
     }
 
+    /**
+     * Creates an empty multi-map with option to use concurrency controls.
+     * Concurrency controls applies to the inner List collection held per each key.
+     * There are currently no concurrency controls around the Map portion of the data
+     * structure.
+     */
+    MultiMap(Map<K,List<V>> store) {
+      this(store, Habitat.CONCURRENCY_CONTROLS_DEFAULT);
+    }
+
+    /**
+     * Creates an empty multi-map with option to use concurrency controls
+     */
+    MultiMap(boolean concurrencyControls) {
+      this(new HashMap<K, List<V>>(), concurrencyControls);
+    }
+    
+    
     /**
      * Creates a multi-map backed by the given store.
      * @param store map to copy
      */
-    private MultiMap(Map<K,List<V>> store) {
+    protected MultiMap(Map<K,List<V>> store, boolean concurrencyControls) {
         this.store = store;
+        this.concurrencyControls = concurrencyControls;
     }
 
     /**
@@ -95,9 +116,30 @@ public class MultiMap<K,V> implements Serializable {
     public MultiMap(MultiMap<K,V> base) {
         this();
         for (Entry<K, List<V>> e : base.entrySet())
-            store.put(e.getKey(),new ArrayList<V>(e.getValue()));
+            store.put(e.getKey(), newList(e.getValue()));
     }
 
+    /**
+     * Creates an optionally populated list to be used as an entry in the map.
+     * @param initialVal
+     * @return
+     */
+    protected List<V> newList(Collection<? extends V> initialVals) {
+      if (concurrencyControls) {
+        if (null == initialVals) {
+          return new CopyOnWriteArrayList<V>();
+        } else {
+          return new CopyOnWriteArrayList<V>(initialVals);
+        }
+      } else {
+        if (null == initialVals) {
+          return new ArrayList<V>(1);
+        } else {
+          return new ArrayList<V>(initialVals);
+        }
+      }
+    }
+    
     /**
      * Adds one more key-value pair.
      * @param k key to store the entry under
@@ -105,8 +147,8 @@ public class MultiMap<K,V> implements Serializable {
      */
     public final void add(K k,V v) {
         List<V> l = store.get(k);
-        if(l==null) {
-            l = new ArrayList<V>();
+        if (l==null) {
+            l = newList(null);
             store.put(k,l);
         }
         l.add(v);
@@ -121,11 +163,11 @@ public class MultiMap<K,V> implements Serializable {
      *      Can be null or empty.
      */
     public void set(K k, Collection<? extends V> v) {
-        store.put(k,new ArrayList<V>(v));
+        store.put(k, newList(v));
     }
 
     /**
-     * Replaces all the existing values associated wit hthe key
+     * Replaces all the existing values associated with the key
      * by the given single value.
      *
      * @param k key for the values
@@ -134,7 +176,7 @@ public class MultiMap<K,V> implements Serializable {
      * This is short for <tt>set(k,Collections.singleton(v))</tt>
      */
     public void set(K k, V v) {
-        ArrayList<V> vlist = new ArrayList<V>(1);
+        List<V> vlist = newList(null);
         vlist.add(v);
         store.put(k, vlist);
     }
@@ -147,8 +189,19 @@ public class MultiMap<K,V> implements Serializable {
      */
     public final List<V> get(K k) {
         List<V> l = store.get(k);
-        if(l==null) return Collections.emptyList();
-        return l;
+        if (l==null) return Collections.emptyList();
+        return Collections.unmodifiableList(l);
+    }
+
+    /**
+     * Package private (for getting the raw map for direct manipulation by the habitat)
+     * @param k the key
+     * @return 
+     */
+    final List<V> _get(K k) {
+      List<V> l = store.get(k);
+      if (l==null) return Collections.emptyList();
+      return l;
     }
 
     /**
@@ -161,12 +214,23 @@ public class MultiMap<K,V> implements Serializable {
     }
 
     /**
-     * Removes an key value pair from the map
+     * Removes an key value from the map
      * @param key key to be removed
      * @return the value stored under this key or null if there was none
      */
     public List<V> remove(K key) {
         return store.remove(key);
+    }
+
+    /**
+     * Removes an key value pair from the map
+     * @param key key to be removed
+     * @param entry the entry to be removed from the key'ed list
+     * @return true if there was none that was deleted
+     */
+    public boolean remove(K key, V entry) {
+      List<V> list = store.get(key);
+      return (null == list) ? false : list.remove(entry);
     }
 
     /**
@@ -224,7 +288,7 @@ public class MultiMap<K,V> implements Serializable {
         return store.size();
     }
 
-    private static final  MultiMap EMPTY = new MultiMap(Collections.emptyMap());
+    private static final MultiMap EMPTY = new MultiMap(Collections.emptyMap());
 
     /**
      * Gets the singleton read-only empty multi-map.
@@ -235,4 +299,5 @@ public class MultiMap<K,V> implements Serializable {
     public static <K,V> MultiMap<K,V> emptyMap() {
         return EMPTY;
     }
+
 }
