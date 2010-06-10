@@ -233,11 +233,13 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     class Duck {
         public static boolean isCluster(Server server) { return false; }
         public static boolean isServer(Server server)  { return true; }
-        public static boolean isInstance(Server server) { return !isDas(server); }
+        public static boolean isInstance(Server server) {
+            String name = (server == null) ? null : server.getName();
+            return name != null && !name.equals("server");
+        }
         public static boolean isDas(Server server) {
-            String name = server.getName();
-            // todo find the constant somewhere for "server"!
-            return name != null && name.equals("server");
+            String name = (server == null) ? null : server.getName();
+            return "server".equals(name);
         }
 
         public static Cluster getCluster(Server server) {
