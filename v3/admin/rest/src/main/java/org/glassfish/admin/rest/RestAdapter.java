@@ -69,7 +69,6 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.HttpURLConnection;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -177,7 +176,16 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 report.setMessage(msg);
                 reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE); //service unavailable
                 return;
-        } catch (Exception e) {
+        }
+         catch(IOException e) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                String msg = localStrings.getLocalString("rest.adapter.server.ioexception",
+                        "REST: IO Exception "+e.getLocalizedMessage());
+                report.setMessage(msg);
+                reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE); //service unavailable
+                return;
+        }
+         catch(LoginException e) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             String msg = localStrings.getLocalString("rest.adapter.auth.error",
                     "Error authenticating");
@@ -185,6 +193,16 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             ///report.setActionDescription("Authentication error");
             ///res.setHeader("WWW-Authenticate", "BASIC");
             reportError(res, report, HttpURLConnection.HTTP_UNAUTHORIZED); //authentication error
+            return;
+        } catch (Exception e) {
+            StringWriter result = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(result);
+            e.printStackTrace(printWriter);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            String msg = localStrings.getLocalString("rest.adapter.server.exception",
+                    "REST:  Exception " + result.toString());
+            report.setMessage(msg);
+            reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE); //service unavailable
             return;
         }
         
@@ -199,8 +217,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     }
 
 
-    public boolean authenticate(Request req)
-            throws Exception {
+    public boolean authenticate(Request req) throws LoginException, IOException  {
         String[] up = AdminAdapter.getUserPassword(req);
         String user = up[0];
         String password = up.length > 1 ? up[1] : "";
@@ -287,7 +304,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
 
     private boolean authenticate(GrizzlyRequest req, ActionReport report, GrizzlyResponse res)
-            throws Exception {
+            throws LoginException, IOException {
         boolean authenticated = authenticate(req.getRequest());
         if (!authenticated) {
             String msg = localStrings.getLocalString("rest.adapter.auth.userpassword",
