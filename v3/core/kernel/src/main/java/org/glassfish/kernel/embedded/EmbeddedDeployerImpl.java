@@ -190,29 +190,10 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         if(params.properties != null){
             context.getAppProps().putAll(params.properties);        
         }
-        
-        final ClassLoader cl = context.getClassLoader();
 
-        Collection<Sniffer> sniffers;
-        if (archiveHandler instanceof CompositeHandler) {
-            context.getAppProps().setProperty(ServerTags.IS_COMPOSITE, "true");
-            sniffers = snifferMgr.getCompositeSniffers(context);
-        } else {
-            sniffers = snifferMgr.getSniffers(context.getSource(), cl);
-        }
-        List<Sniffer> finalSniffers = new ArrayList<Sniffer>();
-
-        // now we intersect with the configured sniffers.
-        for (EmbeddedContainer container : server.getContainers()) {
-            for (Sniffer sniffer : container.getSniffers()) {
-                if (sniffers.contains(sniffer)) {
-                    finalSniffers.add(sniffer);            
-                }
-            }
-        }
         ApplicationInfo appInfo = null;
         try {
-            appInfo = deployment.deploy(finalSniffers, context);
+            appInfo = deployment.deploy(context);
         } catch(Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
