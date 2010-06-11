@@ -190,13 +190,13 @@ public class MultiMap<K,V> implements Serializable {
     public final List<V> get(K k) {
         List<V> l = store.get(k);
         if (l==null) return Collections.emptyList();
-        return Collections.unmodifiableList(l);
+        return l;
     }
 
     /**
      * Package private (for getting the raw map for direct manipulation by the habitat)
      * @param k the key
-     * @return 
+     * @return
      */
     final List<V> _get(K k) {
       List<V> l = store.get(k);
