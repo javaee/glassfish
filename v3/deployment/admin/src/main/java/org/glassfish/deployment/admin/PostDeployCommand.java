@@ -47,6 +47,7 @@ import org.glassfish.api.admin.ClusterExecutor;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.Supplemental;
+import org.glassfish.api.admin.FailurePolicy;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.common.util.admin.ParameterMapExtractor;
@@ -61,7 +62,7 @@ import org.jvnet.hk2.component.PerLookup;
  * @author tjquinn
  */
 @Service(name="postdeploy")
-@Supplemental(value="deploy")
+@Supplemental(value="deploy", ifFailure=FailurePolicy.Warn)
 @Scoped(PerLookup.class)
 @Cluster(value={RuntimeType.DAS})
 

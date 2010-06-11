@@ -284,7 +284,12 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
 
             ArrayList<Server> instances = new ArrayList<Server>();
             for (ServerRef sRef : cluster.getServerRef()) {
-                instances.add(domain.getServerNamed(sRef.getRef()));
+                Server svr =  domain.getServerNamed(sRef.getRef());
+                // the instance's domain.xml only has its own server 
+                // element and not other server elements in the cluster 
+                if (svr != null) {
+                    instances.add(domain.getServerNamed(sRef.getRef()));
+                }
             }
             return instances;
         }

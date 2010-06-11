@@ -65,6 +65,7 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.config.serverbeans.Server;
 
 
 /**
@@ -92,6 +93,8 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
     @Inject
     ServerEnvironment env;
 
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    protected Server server;
 
     @Override
     public void execute(AdminCommandContext ctxt) {
@@ -167,8 +170,8 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             report.failure(logger,localStrings.getLocalString(
-                    "errDuringDepl",
-                    "Error during deployment : ") + e.getMessage(),null);
+                    "failToLoadOnInstance",
+                    "Failed to load the application on instance {0} : {1}", server.getName(), e.getMessage()),null);
         } finally {
             try {
                 if (archive != null)  {
@@ -185,7 +188,6 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
                         "Deployment of {0} done is {1} ms",
                         name,
                         (Calendar.getInstance().getTimeInMillis() - operationStartTime)));
-            ctxt.report.setActionExitCode(ExitCode.SUCCESS);
         }
 
     }
