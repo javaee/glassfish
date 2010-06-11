@@ -49,8 +49,8 @@ public interface TargetValidator {
      * of a target instance.
      *
      * @param habitat the habitat where to lookup all the target instances
-     * @param target the target indentifier to check
-     * @return true if target is a valid indentifier of a target instance
+     * @param target the target identifier to check
+     * @return true if target is a valid identifier of a target instance
      */
     public boolean isValid(Habitat habitat, String target);
 

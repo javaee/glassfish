@@ -40,6 +40,7 @@ import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -50,6 +51,23 @@ import java.util.List;
 public class Target {
     @Inject
     private Domain domain;
+
+    @Inject
+    private ServerEnvironment serverEnv;
+
+    /**
+     * Lets caller to know if the caller is in DAS
+     */
+    public boolean isThisDAS() {
+        return serverEnv.isDas();
+    }
+
+    /**
+     * Lets caller to know if the caller is in an instance
+     */
+    public boolean isThisInstance() {
+        return serverEnv.isInstance();
+    }
 
     /**
      * Checks if a given target is cluster or nor

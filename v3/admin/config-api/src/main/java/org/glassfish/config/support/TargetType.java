@@ -36,6 +36,8 @@
  */
 package org.glassfish.config.support;
 
+import java.lang.annotation.*;
+
 /**
  * Target type annotation defines valid target configuration elements for the annotated
  * command type. Valid configuration target are not expressed in terms of configuration
@@ -43,6 +45,9 @@ package org.glassfish.config.support;
  *
  * @author Jerome Dochez
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Target(ElementType.TYPE)
 public @interface TargetType {
 
     /**
@@ -51,7 +56,6 @@ public @interface TargetType {
      *
      * @return the list of valid command target by type
      */
-    CommandTarget[] value() default {CommandTarget.DAS};
-
-    
+    CommandTarget[] value() default {CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER,
+                                        CommandTarget.CONFIG};    
 }

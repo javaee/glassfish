@@ -57,11 +57,5 @@ public enum FailurePolicy {
      * Return an error exit code to the user but do not rollback any successful
      * invocations of the commands.
      */
-    Error,
-    /**
-     * Rollback (assuming all the commands have a @Rollback annotation)
-     * the supplemental and all executed supplemented commands and return
-     * an error code to the user.
-     */
-    Rollback
+    Error
 }

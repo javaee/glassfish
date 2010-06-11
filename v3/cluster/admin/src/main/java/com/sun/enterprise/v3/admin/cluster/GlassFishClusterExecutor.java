@@ -82,6 +82,9 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
     @Inject
     private ServerEnvironment serverEnv;
 
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    protected Server server;
+
     private static final LocalStringManagerImpl strings =
                         new LocalStringManagerImpl(GlassFishClusterExecutor.class);
 
@@ -101,19 +104,17 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
      */
     public ActionReport.ExitCode execute(String commandName, AdminCommand command, AdminCommandContext context, ParameterMap parameters) {
 
-        //Do replication only is this is DAS
-        //TODO : Got to check for default server name and stop replication if target is default server itself.
         String targetName = parameters.getOne("target");
-        if(serverEnv.isDas() && (targetName != null)) {
+        //Do replication only if this is DAS and only if the target is not "server"
+        if(targetName != null && (!server.getName().equals(targetName)) && serverEnv.isDas()) {
             Target target = habitat.getComponent(Target.class);
             List<Server> instancesForReplication = target.getInstances(targetName);
             if(instancesForReplication.size() == 0) {
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
-                aReport.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                aReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.notargets",
-                        "Unable to find instances for target {0}", targetName));
-                //TODO : Undoable command support needed ?
-                return ActionReport.ExitCode.FAILURE;
+                        "Did not find any suitable instances for target {0}; command executed on DAS only", targetName));
+                return ActionReport.ExitCode.SUCCESS;
             }
 
             //TODO : Support for dynamic-reconfig-enabled flag should go here

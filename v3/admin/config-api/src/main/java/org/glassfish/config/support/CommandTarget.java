@@ -36,9 +36,10 @@
  */
 package org.glassfish.config.support;
 
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Servers;
+import com.sun.enterprise.config.serverbeans.*;
 import org.jvnet.hk2.component.Habitat;
+
+import java.util.List;
 
 /**
  * CommandTarget is an enumeration of valid configuration target for a command execution
@@ -49,10 +50,30 @@ public enum CommandTarget implements TargetValidator {
     /**
      * a domain wide configuration change
      */
+    DOMAIN {
+        @Override
+        public boolean isValid(Habitat habitat, String target) {
+            Domain domain = habitat.getComponent(Domain.class);
+            return target==null;
+        }
+
+        @Override
+        public String getDescription() {
+            return "domain";
+        }
+    },
+    /**
+     * configuration change to default server
+     */
     DAS {
         @Override
         public boolean isValid(Habitat habitat, String target) {
-            return target==null;
+            return target.equals("server");
+        }
+
+        @Override
+        public String getDescription() {
+            return "server";
         }
     },
     /**
@@ -63,34 +84,66 @@ public enum CommandTarget implements TargetValidator {
         public boolean isValid(Habitat habitat, String target) {
             Servers servers = habitat.getComponent(Servers.class);
             Server server = servers.getServer(target);
-            // check that server is clustered.
+            List<Cluster> clusters = habitat.getComponent(Domain.class).getClusters().getCluster();
+            for(Cluster c : clusters) {
+                String clCfg = c.getConfigRef();
+                if(clCfg.equals(server.getConfigRef())) {
+                    return true;
+                }
+            }
             return false;
-        }},
+        }
+
+        @Override
+        public String getDescription() {
+            return "Clustered Instance";
+        }
+    },
     /**
      * a standalone instance configuration change
      */
     STANDALONE_INSTANCE {
         @Override
         public boolean isValid(Habitat habitat, String target) {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
-        }},
+            Domain domain = habitat.getComponent(Domain.class);
+            return (domain.getServerNamed(target) != null);
+        }
+
+        @Override
+        public String getDescription() {
+            return "stand alone instance";
+        }
+    },
     /**
      * a config configuration change
      */
     CONFIG {
         @Override
         public boolean isValid(Habitat habitat, String target) {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
-        }},
+            Domain domain = habitat.getComponent(Domain.class);
+            return domain.getConfigNamed(target) != null;
+        }
+
+        @Override
+        public String getDescription() {
+            return "config";
+        }
+    },
     /**
      * a cluster configuration change
      */
     CLUSTER {
         @Override
         public boolean isValid(Habitat habitat, String target) {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
-        }};
+            Domain domain = habitat.getComponent(Domain.class);
+            return domain.getClusterNamed(target) != null;
+        }
 
+        @Override
+        public String getDescription() {
+            return "cluster";
+        }
+    };
 
     @Override
     public boolean isValid(Habitat habitat, String target) {

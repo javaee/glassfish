@@ -61,7 +61,9 @@ import org.glassfish.api.admin.*;
 import org.glassfish.common.util.admin.CommandModelImpl;
 import org.glassfish.common.util.admin.MapInjectionResolver;
 import org.glassfish.common.util.admin.UnacceptableValueException;
+import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.GenericCrudCommand;
+import org.glassfish.config.support.TargetType;
 import org.glassfish.internal.api.*;
 
 import org.jvnet.hk2.annotations.Inject;
@@ -798,6 +800,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 report, inv.inboundPayload(), inv.outboundPayload());
 
         List<RuntimeType> runtimeTypes = new ArrayList<RuntimeType>();
+        CommandTarget[] targetTypesAllowed = null;
         FailurePolicy onFailure = FailurePolicy.Error;
         FailurePolicy onOffline = FailurePolicy.Warn;
         ActionReport.ExitCode finalResult = ActionReport.ExitCode.SUCCESS;
@@ -900,6 +903,18 @@ public class CommandRunnerImpl implements CommandRunner {
                     }
                 }
 
+                // Check if the command allows this target type
+                TargetType tgtTypeAnnotation = command.getClass().getAnnotation(TargetType.class);
+                if(tgtTypeAnnotation != null) {
+                    targetTypesAllowed = tgtTypeAnnotation.value();
+                } else {
+                    targetTypesAllowed = new CommandTarget[4];
+                    targetTypesAllowed[0] = CommandTarget.DAS;
+                    targetTypesAllowed[1] = CommandTarget.STANDALONE_INSTANCE;
+                    targetTypesAllowed[2] = CommandTarget.CLUSTER;
+                    targetTypesAllowed[3] = CommandTarget.CONFIG;
+                }
+                
                 // Check if the target is valid
                 String targetName = parameters.getOne("target");
                 if( (targetName != null) &&
@@ -949,16 +964,19 @@ public class CommandRunnerImpl implements CommandRunner {
                     (serverEnv.isInstance() && runtimeTypes.contains(RuntimeType.INSTANCE)) ) {
                     doCommand(model, command, injectionMgr, context);
                 }
-                //Run Supplemental commands that have to be run after this command on this instance type
-                supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
-                        Supplemental.Timing.After, context, injectionMgr);
-                if(supplementalReturn != ActionReport.ExitCode.SUCCESS) {
-                    finalResult = getReturnValueFor(onFailure);
-                    if(finalResult.equals(ActionReport.ExitCode.FAILURE)) {
-                        report.setActionExitCode(finalResult);
-                        report.setMessage(adminStrings.getLocalString("commandrunner.executor.supplementalcmdfailed",
-                                "A supplemental command failed; cannot proceed further"));
-                        return;
+
+                if(report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+                    //Run Supplemental commands that have to be run after this command on this instance type
+                    supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
+                            Supplemental.Timing.After, context, injectionMgr);
+                    if(supplementalReturn != ActionReport.ExitCode.SUCCESS) {
+                        finalResult = getReturnValueFor(onFailure);
+                        if(finalResult.equals(ActionReport.ExitCode.FAILURE)) {
+                            report.setActionExitCode(finalResult);
+                            report.setMessage(adminStrings.getLocalString("commandrunner.executor.supplementalcmdfailed",
+                                    "A supplemental command failed; cannot proceed further"));
+                            return;
+                        }
                     }
                 }
             } else
