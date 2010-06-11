@@ -38,6 +38,17 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class JavaConfigResource extends TemplateResource {
 
+@Path("generate-jvm-report/")
+public JavaConfigGenerateJvmReportResource getJavaConfigGenerateJvmReportResource() {
+JavaConfigGenerateJvmReportResource resource = resourceContext.getResource(JavaConfigGenerateJvmReportResource.class);
+return resource;
+}
+
+@Override
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"generate-jvm-report", "POST"}};
+}
+
 	@Path("profiler/")
 	public ProfilerResource getProfilerResource() {
 		ProfilerResource resource = resourceContext.getResource(ProfilerResource.class);

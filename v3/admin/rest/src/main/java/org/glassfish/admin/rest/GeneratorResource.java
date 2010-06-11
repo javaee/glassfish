@@ -151,7 +151,10 @@ public class GeneratorResource {
         {"JmsService", "flush-jmsdest", "POST", "flush-jmsdest", "Flush"},
         {"JmsService", "create-jmsdest", "POST", "create-jmsdest", "Create"},
         {"JmsService", "delete-jmsdest", "POST", "delete-jmsdest", "Delete"},
-        {"JmsService", "list-jmsdest", "GET", "list-jmsdest", "JmsDest"}
+        {"JmsService", "list-jmsdest", "GET", "list-jmsdest", "JmsDest"},
+
+        {"TransactionService", "recover-transactions", "POST", "recover-transactions", "Recover"},
+        {"JavaConfig", "generate-jvm-report", "POST", "generate-jvm-report", "Generate Report"}
     };
 
 
@@ -166,7 +169,7 @@ public class GeneratorResource {
         Domain entity = RestService.getDomain();
 
         File loc =
-                new File(System.getProperty("user.home") + "/acvs/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources");
+                new File(System.getProperty("user.home") + "/src/glassfish/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources");
         loc.mkdirs();
         genDir = loc.getAbsolutePath();
 
