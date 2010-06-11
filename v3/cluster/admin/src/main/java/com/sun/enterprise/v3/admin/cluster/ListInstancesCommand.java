@@ -71,6 +71,10 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
     private Configs configs;
     @Param(optional = true, defaultValue = "2000")
     String timeoutInMsecString;
+    @Param(optional = true, defaultValue = "false")
+    boolean standaloneOnly;
+    @Param(optional = true, defaultValue = "false")
+    boolean noStatus;
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
 
     @Override
@@ -103,8 +107,37 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
             return;
         }
 
+        if (noStatus)
+            noStatus(report, serverList);
+        else
+            yesStatus(report, serverList, timeoutInMsec, logger);
+
+        report.setActionExitCode(ExitCode.SUCCESS);
+
+    }
+
+    private void noStatus(ActionReport report, List<Server> serverList) {
+        for (Server server : serverList) {
+            boolean clustered = server.getCluster() != null;
+
+            if (standaloneOnly && clustered)
+                continue;
+
+            String name = server.getName();
+
+            if (!SystemPropertyConstants.DAS_SERVER_NAME.equals(name))
+                report.addSubActionsReport().setMessage(name);
+        }
+    }
+
+    private void yesStatus(ActionReport report, List<Server> serverList, int timeoutInMsec, Logger logger) {
         // Gather a list of InstanceInfo -- one per instance in domain.xml
         for (Server server : serverList) {
+            boolean clustered = server.getCluster() != null;
+
+            if (standaloneOnly && clustered)
+                continue;
+
             String name = server.getName();
 
             // skip ourself
@@ -117,16 +150,10 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
             }
         }
 
-        // report the list
-        StringBuilder sb = new StringBuilder();
-
         if (infos.size() < 1)
-            sb.append(Strings.get("list.instances.none"));
+            report.setMessage(Strings.get("list.instances.none"));
         else
-            sb.append(InstanceInfo.format(infos));
-
-        report.setActionExitCode(ExitCode.SUCCESS);
-        report.setMessage(sb.toString());
+            report.setMessage(InstanceInfo.format(infos));
     }
     private RemoteInstanceCommandHelper helper;
 }
