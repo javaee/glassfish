@@ -168,7 +168,7 @@ public class GSSUPToken {
             }
             name_utf8 = _name_.getBytes("UTF8");
             //password_utf8 = pwdcred.getPassword().getBytes("UTF8");
-            password_utf8 = Utility.convertCharArrayToByteArray("UTF-8", pwdcred.getPassword());
+            password_utf8 = Utility.convertCharArrayToByteArray(pwdcred.getPassword(), "UTF-8");
         } catch (Exception e) {
             _logger.log(Level.SEVERE,"iiop.password_exception",e);
         }
@@ -260,7 +260,7 @@ public class GSSUPToken {
         try {
             username  = new String(name_utf8, "UTF8");
             //userpwd   = new String(password_utf8, "UTF8");
-            userpwd   = Utility.convertByteArrayToCharArray("UTF-8", password_utf8);
+            userpwd   = Utility.convertByteArrayToCharArray(password_utf8, "UTF-8");
 	} catch (Exception e) {
             _logger.log(Level.SEVERE,"iiop.user_password_exception",e);
 	}

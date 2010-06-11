@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.security.auth.realm.jdbc;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.CharacterCodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -443,11 +443,11 @@ public final class JDBCRealm extends DigestRealmBase {
     }
 
     private char[] hashPassword( char[] password)
-            throws UnsupportedEncodingException{
+            throws CharacterCodingException {
         byte[] bytes = null;
         char[] result = null;
         String charSet = getProperty(PARAM_CHARSET);        
-        bytes = Utility.convertCharArrayToByteArray(charSet, password);
+        bytes = Utility.convertCharArrayToByteArray(password, charSet);
         
         if (md != null) {
             synchronized(md) {
@@ -462,7 +462,7 @@ public final class JDBCRealm extends DigestRealmBase {
         } else if (BASE64.equalsIgnoreCase(encoding)) {
             result = base64Encode(bytes).toCharArray();
         } else { // no encoding specified
-            result = Utility.convertByteArrayToCharArray(charSet, bytes);
+            result = Utility.convertByteArrayToCharArray(bytes, charSet);
         }
         return result;
     }

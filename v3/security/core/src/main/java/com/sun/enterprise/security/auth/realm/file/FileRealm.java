@@ -361,7 +361,7 @@ public final class FileRealm extends IASRealm
 
         try {
             
-            ok = SSHA.verify(ud.getSalt(), ud.getHash(), Utility.convertCharArrayToByteArray(Charset.defaultCharset().displayName(), password));
+            ok = SSHA.verify(ud.getSalt(), ud.getHash(), Utility.convertCharArrayToByteArray(password, Charset.defaultCharset().displayName()));
 
         } catch (Exception e) {
             _logger.fine("File authentication failed: "+e.toString());
@@ -974,7 +974,13 @@ public final class FileRealm extends IASRealm
         assert (user != null);
         //Copy the password to another reference before storing it to the
         //instance field.
-        byte[] pwdBytes = Utility.convertCharArrayToByteArray(Charset.defaultCharset().displayName(), pwd);
+        byte[] pwdBytes = null;
+        
+        try {
+            pwdBytes = Utility.convertCharArrayToByteArray(pwd, Charset.defaultCharset().displayName());
+        } catch(Exception ex) {
+            throw new IASSecurityException(ex);
+        }
         
         SecureRandom rng=SharedSecureRandom.get();
         byte[] salt=new byte[SALT_SIZE];

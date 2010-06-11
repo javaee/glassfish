@@ -83,12 +83,12 @@ public class JAASCallbackHandler implements CallbackHandler {
      * @param password Password to be authenticated with
      */
     public JAASCallbackHandler(JAASRealm realm, String username,
-                               String password) {
+                               char[] password) {
 
         super();
         this.realm = realm;
         this.username = username;
-        this.password = password;
+        this.password = ((password != null) ? ((char[])password.clone()) : null);
 
     }
 
@@ -99,7 +99,7 @@ public class JAASCallbackHandler implements CallbackHandler {
     /**
      * The password to be authenticated with.
      */
-    protected String password = null;
+    protected char[] password = null;
 
 
     /**
@@ -138,11 +138,9 @@ public class JAASCallbackHandler implements CallbackHandler {
                     realm.log("Returning username " + username);
                 ((NameCallback) callbacks[i]).setName(username);
             } else if (callbacks[i] instanceof PasswordCallback) {
-                if (realm.getDebug() >= 3)
-                    realm.log("Returning password " + password);
                   final char[] passwordcontents;
                   if (password != null) {
-                      passwordcontents = password.toCharArray();
+                      passwordcontents = (char[])password.clone();
                   } else {
                       passwordcontents = new char[0];
                   }

@@ -84,7 +84,7 @@ public class GenericPrincipal implements Principal {
      * @param name The username of the user represented by this Principal
      * @param password Credentials used to authenticate this user
      */
-    public GenericPrincipal(Realm realm, String name, String password) {
+    public GenericPrincipal(Realm realm, String name, char[] password) {
 
         this(realm, name, password, null);
 
@@ -101,13 +101,13 @@ public class GenericPrincipal implements Principal {
      * @param password Credentials used to authenticate this user
      * @param roles List of roles (must be Strings) possessed by this user
      */
-    public GenericPrincipal(Realm realm, String name, String password,
+    public GenericPrincipal(Realm realm, String name, char[] password,
                             List roles) {
 
         super();
         this.realm = realm;
         this.name = name;
-        this.password = password;
+        this.password = ((password != null)? ((char[])password.clone()) : null);
         if (roles != null) {
             this.roles = new String[roles.size()];
             this.roles = (String[]) roles.toArray(this.roles);
@@ -116,12 +116,12 @@ public class GenericPrincipal implements Principal {
         }
     }
 
-    public GenericPrincipal(String name, String password,
+    public GenericPrincipal(String name, char[] password,
                             List roles) {
 
         super();
         this.name = name;
-        this.password = password;
+        this.password = ((password != null)? ((char[])password.clone()) : null);
         if (roles != null) {
             this.roles = new String[roles.size()];
             this.roles = (String[]) roles.toArray(this.roles);
@@ -147,10 +147,10 @@ public class GenericPrincipal implements Principal {
      * The authentication credentials for the user represented by
      * this Principal.
      */
-    protected String password = null;
+    protected char[] password = null;
 
-    public String getPassword() {
-        return (this.password);
+    public char[] getPassword() {
+        return ((this.password != null)? ((char[])this.password.clone()) : null);
     }
 
 
@@ -203,7 +203,7 @@ public class GenericPrincipal implements Principal {
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("GenericPrincipal[");
+        StringBuilder sb = new StringBuilder("GenericPrincipal[");
         sb.append(this.name);
         sb.append("(");
         for( int i=0;i<roles.length; i++ ) {

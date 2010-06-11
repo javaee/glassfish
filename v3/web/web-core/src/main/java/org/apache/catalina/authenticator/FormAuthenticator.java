@@ -174,8 +174,8 @@ public class FormAuthenticator
                 log.fine("Checking for reauthenticate in session " + session);
             String username =
                 (String) session.getNote(Constants.SESS_USERNAME_NOTE);
-            String password =
-                (String) session.getNote(Constants.SESS_PASSWORD_NOTE);
+            char[] password =
+                (char[]) session.getNote(Constants.SESS_PASSWORD_NOTE);
             if ((username != null) && (password != null)) {
                 if (log.isLoggable(Level.FINE))
                     log.fine("Reauthenticating username '" + username + "'");
@@ -206,7 +206,7 @@ public class FormAuthenticator
                 session.getNote(Constants.FORM_PRINCIPAL_NOTE);
             register(request, response, principal, Constants.FORM_METHOD,
                      (String) session.getNote(Constants.SESS_USERNAME_NOTE),
-                     (String) session.getNote(Constants.SESS_PASSWORD_NOTE));
+                     (char[]) session.getNote(Constants.SESS_PASSWORD_NOTE));
             String ssoId = (String) request.getNote(Constants.REQ_SSOID_NOTE);
             if (ssoId != null)
                 associate(ssoId, session);
@@ -258,7 +258,10 @@ public class FormAuthenticator
         // to the error page if they are not correct
         Realm realm = context.getRealm();
         String username = hreq.getParameter(Constants.FORM_USERNAME);
-        String password = hreq.getParameter(Constants.FORM_PASSWORD);
+        String pwd = hreq.getParameter(Constants.FORM_PASSWORD);
+        char[] password = ((pwd != null)? pwd.toCharArray() : null);
+        pwd = null; // unset the reference
+
         if (log.isLoggable(Level.FINE))
             log.fine("Authenticating username '" + username + "'");
         principal = realm.authenticate(username, password);
@@ -307,7 +310,7 @@ public class FormAuthenticator
             requestURI = hreq.getContextPath() + "/";
             register(request, response, principal, Constants.FORM_METHOD,
                      (String) session.getNote(Constants.SESS_USERNAME_NOTE),
-                     (String) session.getNote(Constants.SESS_PASSWORD_NOTE));
+                     (char[]) session.getNote(Constants.SESS_PASSWORD_NOTE));
             String ssoId = (String) request.getNote(Constants.REQ_SSOID_NOTE);
             if (ssoId != null) {
                 associate(ssoId, session);

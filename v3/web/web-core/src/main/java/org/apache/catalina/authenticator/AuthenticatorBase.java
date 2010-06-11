@@ -884,7 +884,7 @@ public abstract class AuthenticatorBase
      */
     protected void register(HttpRequest request, HttpResponse response,
             Principal principal, String authType,
-            String username, String password) {
+            String username, char[] password) {
         
         if (log.isLoggable(Level.FINE))
             log.fine("Authenticated '" + principal.getName() + "' with type '"

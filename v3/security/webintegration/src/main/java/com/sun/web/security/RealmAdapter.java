@@ -81,6 +81,7 @@ import org.apache.catalina.realm.RealmBase;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.internal.api.ServerContext;
 //import com.sun.enterprise.Switch;
+import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -399,19 +400,9 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      * Authenticates and sets the SecurityContext in the TLS.
      * @return the authenticated principal.
      * @param the user name.
-     * @param the authenticated data.
-     */
-    public Principal authenticate(String username, byte[] authData) {
-        return authenticate(username, new String(authData));
-    }
-
-    /**
-     * Authenticates and sets the SecurityContext in the TLS.
-     * @return the authenticated principal.
-     * @param the user name.
      * @param the password.
      */
-    public Principal authenticate(String username, String password) {
+    public Principal authenticate(String username, char[] password) {
         
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("Tomcat callback for authenticate user/password");
@@ -420,7 +411,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         if (authenticate(username, password, null)) {
             SecurityContext secCtx = SecurityContext.getCurrent();
             assert (secCtx != null); // or auth should've failed
-            return new WebPrincipal(username, password.toCharArray(), secCtx);
+            return new WebPrincipal(username, password, secCtx);
             
         } else {
             return null;
@@ -446,7 +437,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         if (prin.isUsingCertificate()) {
             return authenticate(null, null, prin.getCertificates());
         } else {
-            return authenticate(prin.getName(), new String(prin.getPassword()), null);
+            return authenticate(prin.getName(), prin.getPassword(), null);
         }
     }
 
@@ -457,7 +448,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      * @param the authentication method.
      * @param the authentication data.
      */
-    protected boolean authenticate(String username, String password,
+    protected boolean authenticate(String username, char[] password,
             X509Certificate[] certs) {
 
         SecurityContext.setCurrent(null);
@@ -481,7 +472,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 /*V3:Comment Switch.getSwitch().getCallFlowAgent().addRequestInfo(
                 RequestInfo.REMOTE_USER, username);*/
                 realm_name = _realmName;
-                LoginContextDriver.login(username, password.toCharArray(), realm_name);
+                LoginContextDriver.login(username, password, realm_name);
             }
             success = true;
         } catch (Exception le) {
@@ -658,7 +649,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         return rvalue;
     }
   
-    protected String getPassword(String username) {
+    protected char[] getPassword(String username) {
         throw new IllegalStateException("Should not reach here");
     }
 

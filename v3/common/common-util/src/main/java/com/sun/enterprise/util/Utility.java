@@ -49,6 +49,10 @@ import com.sun.logging.*;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.UnsupportedCharsetException;
 
 /**
  *  Handy class full of static functions.
@@ -441,27 +445,109 @@ public final class Utility {
 
         return envVal;
     }
-    public static char[] convertByteArrayToCharArray(String charset, byte[] byteArray) {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(byteArray);
-        Charset charSet;
-        if (charset == null || "".equals(charset) || !Charset.isSupported(charset)) {
-            charSet = Charset.defaultCharset();
-        } else {
-            charSet = Charset.forName(charset);
+
+    /**
+     * Convert the byte array to char array with respect to given charset.
+     *
+     * @param byteArray
+     * @param charset  null or "" means default charset
+     * @exception CharacterCodingException
+     */
+    public static char[] convertByteArrayToCharArray(byte[] byteArray, String charset)
+            throws CharacterCodingException {
+
+        if (byteArray == null) {
+            return null;
         }
-        CharBuffer charBuffer = charSet.decode(byteBuffer);
-        return charBuffer.array();
+
+        byte[] bArray = (byte[])byteArray.clone();
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bArray);
+        Charset charSet;
+        if (charset == null || "".equals(charset)) {
+            charSet = Charset.defaultCharset();
+        } else if (Charset.isSupported(charset)) {
+            charSet = Charset.forName(charset);
+        } else {
+            CharacterCodingException e = new CharacterCodingException();
+            e.initCause(new UnsupportedCharsetException(charset));
+            throw e;
+        }
+
+        CharsetDecoder decoder = charSet.newDecoder();
+        CharBuffer charBuffer = null;
+        try {
+            charBuffer = decoder.decode(byteBuffer);
+        } catch(CharacterCodingException cce) {
+            throw cce;
+        } catch(Throwable t) {
+            CharacterCodingException e = new CharacterCodingException();
+            e.initCause(t);
+            throw e;
+        }
+        char[] result = (char[])charBuffer.array().clone();
+        clear(byteBuffer);
+        clear(charBuffer);
+
+        return result;
     }
 
-    public static byte[] convertCharArrayToByteArray(String strCharset, char[] charArray) {
-        CharBuffer charBuffer = CharBuffer.wrap(charArray);
-        Charset charSet;
-        if (strCharset == null || "".equals(strCharset) || !Charset.isSupported(strCharset)) {
-            charSet = Charset.defaultCharset();
-        } else {
-            charSet = Charset.forName(strCharset);
+    /**
+     * Convert the char array to byte array with respect to given charset.
+     *
+     * @param charArray
+     * @param strCharset  null or "" means default charset
+     * @exception CharacterCodingException
+     */
+    public static byte[] convertCharArrayToByteArray(char[] charArray, String strCharset)
+            throws CharacterCodingException {
+
+        if (charArray == null) {
+            return null;
         }
-        ByteBuffer byteBuffer = charSet.encode(charBuffer);
-        return byteBuffer.array();
+
+        char[] cArray = (char[])charArray.clone();
+        CharBuffer charBuffer = CharBuffer.wrap(cArray);
+        Charset charSet;
+        if (strCharset == null || "".equals(strCharset)) {
+            charSet = Charset.defaultCharset();
+        } else if (Charset.isSupported(strCharset)) {
+            charSet = Charset.forName(strCharset);
+        } else {
+            CharacterCodingException e = new CharacterCodingException();
+            e.initCause(new UnsupportedCharsetException(strCharset));
+            throw e;
+        }
+
+        CharsetEncoder encoder = charSet.newEncoder();
+        ByteBuffer byteBuffer = null;
+        try {
+            byteBuffer = encoder.encode(charBuffer);
+        } catch(CharacterCodingException cce) {
+            throw cce;
+        } catch(Throwable t) {
+            CharacterCodingException e = new CharacterCodingException();
+            e.initCause(t);
+            throw e;
+        }
+
+        byte[] result = (byte[])byteBuffer.array().clone();
+        clear(byteBuffer);
+        clear(charBuffer);
+
+        return result;
+    }
+
+    private static void clear(ByteBuffer byteBuffer) {
+        byte[] bytes = byteBuffer.array();
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = 0;
+        }
+    }
+
+    private static void clear(CharBuffer charBuffer) {
+        char[] chars = charBuffer.array();
+        for (int i = 0; i < chars.length; i++) {
+            chars[i] = '0';
+        }
     }
 }

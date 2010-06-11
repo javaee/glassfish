@@ -88,7 +88,7 @@ public final class NonLoginAuthenticator
      * A dummy principal that is set to request in authenticate method.
      */
     private final GenericPrincipal NONLOGIN_PRINCIPAL =
-        new GenericPrincipal(NONLOGIN_PRINCIPAL_NAME, (String) null, 
+        new GenericPrincipal(NONLOGIN_PRINCIPAL_NAME, (char[]) null, 
                             (java.util.List) null);
     //END SJSAS 6202703
     

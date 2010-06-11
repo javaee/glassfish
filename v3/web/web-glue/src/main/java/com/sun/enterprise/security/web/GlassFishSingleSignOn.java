@@ -537,7 +537,7 @@ public class GlassFishSingleSignOn
      * @param password Password used to authenticate this user
      */
     protected void register(String ssoId, Principal principal, String authType,
-                            String username, String password,
+                            String username, char[] password,
                             String realmName) {
 
         //S1AS8 6155481 START               

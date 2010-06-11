@@ -77,7 +77,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.CharacterCodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -86,6 +86,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.util.Utility;
 // END SJSWS 6324431
 
 /**
@@ -346,17 +348,17 @@ public abstract class RealmBase
      * @param credentials Password or other credentials to use in
      *  authenticating this username
      */
-    public Principal authenticate(String username, String credentials) {
+    public Principal authenticate(String username, char[] credentials) {
 
-        String serverCredentials = getPassword(username);
+        char[] serverCredentials = getPassword(username);
 
         boolean validated ;
         if ( serverCredentials == null ) {
             validated = false;
         } else if(hasMessageDigest()) {
-            validated = serverCredentials.equalsIgnoreCase(digest(credentials));
+            validated = equalsIgnoreCase(serverCredentials, digest(credentials));
         } else {
-            validated = serverCredentials.equals(credentials);
+            validated = Arrays.equals(serverCredentials, credentials);
         }
         if(! validated ) {
             return null;
@@ -378,49 +380,84 @@ public abstract class RealmBase
      * @param md5a2 Second MD5 digest used to calculate the digest :
      * MD5(Method + ":" + uri)
      */
-    public Principal authenticate(String username, String clientDigest,
+    public Principal authenticate(String username, char[] clientDigest,
                                   String nOnce, String nc, String cnonce,
                                   String qop, String realm,
-                                  String md5a2) {
+                                  char[] md5a2) {
 
-        String md5a1 = getDigest(username, realm);
+        char[] md5a1 = getDigest(username, realm);
         if (md5a1 == null)
             return null;
-        String serverDigestValue = md5a1 + ":" + nOnce + ":" + nc + ":"
-            + cnonce + ":" + qop + ":" + md5a2;
 
-        byte[] valueBytes = null;
-        if(getDigestEncoding() == null) {
-            valueBytes = serverDigestValue.getBytes();
-        } else {
-            try {
-                valueBytes = serverDigestValue.getBytes(getDigestEncoding());
-            } catch (UnsupportedEncodingException uee) {
-                log.log(Level.SEVERE,
-                        "Illegal digestEncoding: " + getDigestEncoding(),
-                        uee);
-                throw new IllegalArgumentException(uee.getMessage());
-            }
+        int nOnceLength = ((nOnce != null) ? nOnce.length() : 0);
+        int ncLength = ((nc != null) ? nc.length() : 0);
+        int cnonceLength = ((cnonce != null) ? cnonce.length() : 0);
+        int qopLength = ((qop != null) ? qop.length() : 0);
+        int md5a2Length = ((md5a2 != null) ? md5a2.length : 0);
+
+        // serverDigestValue = md5a1:nOnce:nc:cnonce:qop:md5a2
+        char[] serverDigestValue = new char[md5a1.length + 1 + 
+            nOnceLength + 1 + ncLength + 1 + cnonceLength + 1 +
+            qopLength + 1 + md5a2Length];
+
+        System.arraycopy(md5a1, 0, serverDigestValue, 0, md5a1.length);
+        int ind = md5a1.length;
+        serverDigestValue[ind++] = ':';
+        if (nOnce != null) {
+            System.arraycopy(nOnce.toCharArray(), 0, serverDigestValue, ind, nOnceLength);
+            ind += nOnceLength;
+        }
+        serverDigestValue[ind++] = ':';
+        if (nc != null) {
+            System.arraycopy(nc.toCharArray(), 0, serverDigestValue, ind, ncLength);
+            ind += ncLength;
+        }
+        serverDigestValue[ind++] = ':';
+        if (cnonce != null) {
+            System.arraycopy(cnonce.toCharArray(), 0, serverDigestValue, ind, cnonceLength);
+            ind += cnonceLength;
+        }
+        serverDigestValue[ind++] = ':';
+        if (qop != null) {
+            System.arraycopy(qop.toCharArray(), 0, serverDigestValue, ind, qopLength);
+            ind += qopLength;
+        }
+        serverDigestValue[ind++] = ':';
+        if (md5a2 != null) {
+            System.arraycopy(md5a2, 0, serverDigestValue, ind, md5a2Length);
         }
 
-        String serverDigest = null;
+        byte[] valueBytes = null;
+
+        try {
+            valueBytes = Utility.convertCharArrayToByteArray(
+                    serverDigestValue, getDigestEncoding());
+        } catch (CharacterCodingException cce) {
+            log.log(Level.SEVERE,
+                    "Illegal digestEncoding: " + getDigestEncoding(),
+                    cce);
+            throw new IllegalArgumentException(cce.getMessage());
+        }
+
+        char[] serverDigest = null;
         // Bugzilla 32137
         synchronized(md5Helper) {
             serverDigest = md5Encoder.encode(md5Helper.digest(valueBytes));
         }
 
         if (log.isLoggable(Level.FINE)) {
-            log.fine("Digest : " + clientDigest + " Username:" + username 
+            log.fine("Username:" + username 
                      + " ClientSigest:" + clientDigest + " nOnce:" + nOnce 
                      + " nc:" + nc + " cnonce:" + cnonce + " qop:" + qop 
                      + " realm:" + realm + "md5a2:" + md5a2 
-                     + " Server digest:" + serverDigest);
+                     + " Server digest:" + String.valueOf(serverDigest));
         }
         
-        if (serverDigest.equals(clientDigest))
+        if (Arrays.equals(serverDigest, clientDigest)) {
             return getPrincipal(username);
-        else
+        } else {
             return null;
+        }
     }
 
 
@@ -1399,7 +1436,7 @@ public abstract class RealmBase
      * @param credentials Password or other credentials to use in
      *  authenticating this username
      */
-    protected String digest(String credentials)  {
+    protected char[] digest(char[] credentials)  {
 
         // If no MessageDigest instance is specified, return unchanged
         if (hasMessageDigest() == false)
@@ -1411,17 +1448,14 @@ public abstract class RealmBase
                 md.reset();
     
                 byte[] bytes = null;
-                if(getDigestEncoding() == null) {
-                    bytes = credentials.getBytes();
-                } else {
-                    try {
-                        bytes = credentials.getBytes(getDigestEncoding());
-                    } catch (UnsupportedEncodingException uee) {
-                        log.log(Level.SEVERE,
-                                "Illegal digestEncoding: " + getDigestEncoding(),
-                                uee);
-                        throw new IllegalArgumentException(uee.getMessage());
-                    }
+                try {
+                    bytes = Utility.convertCharArrayToByteArray(
+                            credentials, getDigestEncoding());
+                } catch(CharacterCodingException cce) {
+                    log.log(Level.SEVERE,
+                            "Illegal digestEncoding: " + getDigestEncoding(),
+                            cce);
+                        throw new IllegalArgumentException(cce.getMessage());
                 }
                 md.update(bytes);
 
@@ -1441,7 +1475,7 @@ public abstract class RealmBase
     /**
      * Return the digest associated with given principal's user name.
      */
-    protected String getDigest(String username, String realmName) {
+    protected char[] getDigest(String username, String realmName) {
         if (md5Helper == null) {
             try {
                 md5Helper = MessageDigest.getInstance("MD5");
@@ -1456,21 +1490,37 @@ public abstract class RealmBase
     		return getPassword(username);
     	}
     	
-        String digestValue = username + ":" + realmName + ":"
-            + getPassword(username);
+        char[] pwd = getPassword(username);
+        int usernameLength = ((username != null) ? username.length() : 0);
+        int realmNameLength = ((realmName != null) ? realmName.length() : 0);
+        int pwdLength = ((pwd != null) ? pwd.length : 0);
+
+        // digestValue = username:realmName:pwd
+        char[] digestValue = new char[usernameLength + 1 + realmNameLength + 1 + pwdLength];
+        int ind = 0;
+        if (username != null) {
+            System.arraycopy(username.toCharArray(), 0, digestValue, 0, usernameLength);
+            ind = usernameLength;
+        }
+        digestValue[ind++] = ':';
+        if (realmName != null) {
+            System.arraycopy(realmName.toCharArray(), 0, digestValue, ind, realmNameLength);
+            ind += realmNameLength;
+        }
+        digestValue[ind++] = ':';
+        if (pwd != null) {
+            System.arraycopy(pwd, 0, digestValue, ind, pwdLength);
+        }
 
         byte[] valueBytes = null;
-        if(getDigestEncoding() == null) {
-            valueBytes = digestValue.getBytes();
-        } else {
-            try {
-                valueBytes = digestValue.getBytes(getDigestEncoding());
-            } catch (UnsupportedEncodingException uee) {
-                log.log(Level.SEVERE,
-                        "Illegal digestEncoding: " + getDigestEncoding(),
-                        uee);
-                throw new IllegalArgumentException(uee.getMessage());
-            }
+        try {
+            valueBytes = Utility.convertCharArrayToByteArray(
+                digestValue, getDigestEncoding());
+        } catch(CharacterCodingException cce) {
+            log.log(Level.SEVERE,
+                    "Illegal digestEncoding: " + getDigestEncoding(),
+                    cce);
+            throw new IllegalArgumentException(cce.getMessage());
         }
 
         byte[] digest = null;
@@ -1493,7 +1543,7 @@ public abstract class RealmBase
     /**
      * Return the password associated with the given principal's user name.
      */
-    protected abstract String getPassword(String username);
+    protected abstract char[] getPassword(String username);
 
 
     /**
@@ -1718,4 +1768,26 @@ public abstract class RealmBase
         throw new UnsupportedOperationException();
     }
 
+
+    private boolean equalsIgnoreCase(char[] arr1, char[] arr2) {
+        if (arr1 == null && arr2 == null) {
+            return true;
+        }
+        if ((arr1 == null && arr2 != null) ||
+                (arr1 != null && arr2 == null) ||
+                (arr1.length != arr2.length)) {
+            return false;
+        }
+        
+        //here, arr1 and arr2 are not null with equal length
+        boolean result = true;
+        for (int i = 0; i < arr1.length; i++) {
+            if (Character.toLowerCase(arr1[i]) != Character.toLowerCase(arr2[i])) {
+                result = false;
+                break;
+            }
+        }
+
+        return result;
+    }
 }

@@ -99,7 +99,7 @@ public final class HexUtils {
 
 
     /**
-     * Convert a String of hexadecimal digits into the corresponding
+     * Convert a char[] of hexadecimal digits into the corresponding
      * byte array by encoding each two hexadecimal digits as a byte.
      *
      * @param digits Hexadecimal digits representation
@@ -108,15 +108,15 @@ public final class HexUtils {
      *  is found, or the input string contains an odd number of hexadecimal
      *  digits
      */
-    public static byte[] convert(String digits) {
+    public static byte[] convert(char[] digits) {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        for (int i = 0; i < digits.length(); i += 2) {
-            char c1 = digits.charAt(i);
-            if ((i+1) >= digits.length())
+        for (int i = 0; i < digits.length; i += 2) {
+            char c1 = digits[i];
+            if ((i+1) >= digits.length)
                 throw new IllegalArgumentException
                     (sm.getString("hexUtil.odd"));
-            char c2 = digits.charAt(i + 1);
+            char c2 = digits[i + 1];
             byte b = 0;
             if ((c1 >= '0') && (c1 <= '9'))
                 b += ((c1 - '0') * 16);
@@ -145,18 +145,18 @@ public final class HexUtils {
 
     /**
      * Convert a byte array into a printable format containing a
-     * String of hexadecimal digit characters (two per byte).
+     * char[] of hexadecimal digit characters (two per byte).
      *
      * @param bytes Byte array representation
      */
-    public static String convert(byte bytes[]) {
+    public static char[] convert(byte bytes[]) {
 
-        StringBuffer sb = new StringBuffer(bytes.length * 2);
+        char[] arr = new char[bytes.length * 2];
         for (int i = 0; i < bytes.length; i++) {
-            sb.append(convertDigit((int) (bytes[i] >> 4)));
-            sb.append(convertDigit((int) (bytes[i] & 0x0f)));
+            arr[2*i] = convertDigit((int) (bytes[i] >> 4));
+            arr[2*i + 1] = convertDigit((int) (bytes[i] & 0x0f));
         }
-        return (sb.toString());
+        return arr;
 
     }
 

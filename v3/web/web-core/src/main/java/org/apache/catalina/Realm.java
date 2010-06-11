@@ -146,7 +146,7 @@ public interface Realm {
      * @param credentials Password or other credentials to use in
      *  authenticating this username
      */
-    public Principal authenticate(String username, String credentials);
+    public Principal authenticate(String username, char[] credentials);
 
 
     /**
@@ -162,10 +162,10 @@ public interface Realm {
      * @param md5a2 Second MD5 digest used to calculate the digest :
      * MD5(Method + ":" + uri)
      */
-    public Principal authenticate(String username, String digest,
+    public Principal authenticate(String username, char[] digest,
                                   String nonce, String nc, String cnonce,
                                   String qop, String realm,
-                                  String md5a2);
+                                  char[] md5a2);
 
 
     /**

@@ -480,7 +480,7 @@ public class SingleSignOn
      * @param password Password used to authenticate this user
      */
     protected void register(String ssoId, Principal principal, String authType,
-                  String username, String password, String realmName) {
+                  String username, char[] password, String realmName) {
 
         if (debug >= 1)
             log("Registering sso id '" + ssoId + "' for user '" +
