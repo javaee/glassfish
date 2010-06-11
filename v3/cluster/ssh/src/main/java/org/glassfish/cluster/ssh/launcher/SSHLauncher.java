@@ -42,7 +42,6 @@ import org.glassfish.cluster.ssh.util.HostVerifier;
 import org.glassfish.cluster.ssh.util.SSHUtil;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.config.serverbeans.Node;
@@ -56,9 +55,6 @@ import java.util.HashMap;
 
 @Service(name="SSHLauncher")
 public class SSHLauncher implements PostConstruct {
-
-    @Inject
-    Habitat habitat;
 
   /**
      * Database of known hosts.
@@ -104,19 +100,29 @@ public class SSHLauncher implements PostConstruct {
     public void postConstruct() {
         nodeMap = new HashMap<String, Node>();
         for (Node node: nodes) {
-            nodeMap.put(node.getName(), node);
+            if (node.getSshConnector() != null) {
+                nodeMap.put(node.getName(), node);
+            }
         }
 
 
     }
 
     public void init(String nodeName) {
+        int port;
+        String host;
+
         Node node = nodeMap.get(nodeName);
-        this.host = node.getHostNode();
         //XXX: Getting the first one right now. Do we really need a list to be
         // returned?
         SshConnector connector = node.getSshConnector().get(0);
-        int port;
+        host = connector.getSshHost();
+        if (SSHUtil.checkString(host) != null) {
+            this.host = host;            
+        } else {
+            this.host = node.getHostNode();
+        }
+
         try {
             port = Integer.parseInt(connector.getSshPort());
         } catch(NumberFormatException nfe) {
@@ -198,14 +204,15 @@ public class SSHLauncher implements PostConstruct {
         return isAuthenticated;
     }
 
-    public void runCommand(String command, OutputStream os) throws IOException, 
-                    InterruptedException 
+    public void runCommand(String command, OutputStream os) throws IOException,
+                                            InterruptedException 
     {
         openConnection();
-        //XXX: Currently have the user specify the OutputStream where
         //the output of running the command. Also right now nodehome is
         //not used. Need to add that in. For now the full command path
         //needs to be specified.
+        //the output of running the command.
+        
         connection.exec(command, os);
 
         // XXX: Should we close connection after each command or cache it
