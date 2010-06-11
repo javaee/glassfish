@@ -88,7 +88,7 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
         int timeoutInMsec;
 
         try {
-            timeoutInMsec = Integer.parseInt(timeoutInMsecString);
+            timeoutInMsec = Integer.parseInt(timeoutmsec);
         }
         catch (Exception e) {
             timeoutInMsec = 2000;
