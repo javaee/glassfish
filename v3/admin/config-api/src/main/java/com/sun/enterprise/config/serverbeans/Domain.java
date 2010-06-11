@@ -51,6 +51,7 @@ import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 import com.sun.enterprise.util.StringUtils;
 
+import javax.validation.constraints.NotNull;
 import java.beans.PropertyVetoException;
 import java.util.*;
 
@@ -138,6 +139,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link Applications }
      */
     @Element
+    @NotNull
     Applications getApplications();
 
     /**

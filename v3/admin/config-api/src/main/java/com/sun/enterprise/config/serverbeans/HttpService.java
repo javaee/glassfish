@@ -51,6 +51,7 @@ import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Attribute;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Configured
@@ -63,6 +64,7 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link AccessLog }
      */
     @Element
+    @NotNull            
     AccessLog getAccessLog();
 
     /**
