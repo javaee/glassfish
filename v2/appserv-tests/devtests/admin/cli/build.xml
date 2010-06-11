@@ -62,7 +62,7 @@
     </path>
     <pathconvert refid="class.path" property="test"/>
 
-    <target name="cli" depends="cluster, instance"/>
+    <target name="cli" depends="instance, cluster"/>
     <target name="cluster">
         <java classname="admin.ClusterTest"  fork="true" classpath="${test}"/>
     </target>
