@@ -488,7 +488,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Server.class);
             final ActionReport report = context.getActionReport();
             Transaction t = Transaction.getTransaction(parent);
-            Cluster cluster = child.getCluster();
+            Cluster cluster = domain.getClusterForInstance(child.getName());
             boolean isStandAlone = cluster == null ? true : false;
 
             if (isStandAlone) { // remove config <instance>-config

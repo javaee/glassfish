@@ -420,6 +420,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     ReferenceContainer getReferenceContainerNamed(String name);
 
     @DuckTyped
+    Cluster getClusterForInstance(String instanceName);
+
+    @DuckTyped
     List<ReferenceContainer> getAllReferenceContainers();
 
     @DuckTyped
@@ -661,6 +664,20 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                 ReferenceContainers.addAll(d.getClusters().getCluster());
             }
             return ReferenceContainers;
+        }
+
+        public static Cluster getClusterForInstance(Domain d,String instanceName){
+            List<Cluster> clusterList = d.getClusters().getCluster();
+            for (Cluster cluster:clusterList) {
+                List<ServerRef> serverRefs =cluster.getServerRef();
+                for (ServerRef serverRef:serverRefs){
+                    if (serverRef.getRef().equals(instanceName)) {
+                        return cluster;
+                    }
+                }
+            }
+            return null;
+
         }
     }
 }
