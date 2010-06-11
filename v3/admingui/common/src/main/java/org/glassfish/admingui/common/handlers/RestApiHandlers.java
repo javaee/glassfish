@@ -54,8 +54,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.*;
+import org.glassfish.admingui.common.util.RestResponse;
 
 public class RestApiHandlers {
     public static final String FORM_ENCODING = "application/x-www-form-urlencoded";
@@ -108,7 +108,7 @@ public class RestApiHandlers {
     public static void getEntityAttrs(HandlerContext handlerCtx) {
         try {
             String endpoint = (String) handlerCtx.getInputValue("endpoint");
-            String entity = get(endpoint);
+            String entity = get(endpoint).getResponseBody();
 
             handlerCtx.setOutputValue("valueMap", getEntityAttrs(entity));
         } catch (Exception ex) {
@@ -293,7 +293,7 @@ public class RestApiHandlers {
         attrs = convertNullValuesToFalse(attrs, convertToFalse);
         attrs = fixKeyNames(attrs);
 
-        return post(endpoint, attrs);
+        return post(endpoint, attrs).getResponseCode();
     }
 
     // This will send an update request.  Currently, this calls post just like the create does,
@@ -304,7 +304,7 @@ public class RestApiHandlers {
         attrs = convertNullValuesToFalse(attrs, convertToFalse);
         attrs = fixKeyNames(attrs);
 
-        return post(endpoint, attrs);
+        return post(endpoint, attrs).getResponseCode();
     }
 
     protected static Map<String, Object> fixKeyNames(Map<String, Object> map) {
@@ -443,11 +443,12 @@ public class RestApiHandlers {
 
         List<Map> childElements = new ArrayList<Map>();
         try {
-            String foo = RestApiHandlers.get(endpoint);
-            List<String> childUrls = getChildResourceList(foo);
+            final RestResponse response = RestApiHandlers.get(endpoint);
+            String parentString = response.getResponseBody();
+            List<String> childUrls = getChildResourceList(parentString);
             for (String childUrl : childUrls) {
-                String bar = RestApiHandlers.get(childUrl);
-                Map<String, String> entity = RestApiHandlers.getEntityAttrs(bar);
+                String childString = RestApiHandlers.get(childUrl).getResponseBody();
+                Map<String, String> entity = RestApiHandlers.getEntityAttrs(childString);
                 HashMap<String, Object> oneRow = new HashMap<String, Object>();
 
                 if (hasSkip && skipList.contains(entity.get(id))) {
@@ -480,18 +481,18 @@ public class RestApiHandlers {
     // Jersey client methods
     //******************************************************************************************************************
 
-    protected static String get(String address) {
-        return JERSEY_CLIENT.resource(address)
+    protected static RestResponse get(String address) {
+        return RestResponse.getRestResponse(JERSEY_CLIENT.resource(address)
                 .accept(RESPONSE_TYPE)
-                .get(String.class);
+                .get(ClientResponse.class));
     }
 
-    protected static int post(String address, Map<String, Object> payload) {
+    protected static RestResponse post(String address, Map<String, Object> payload) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
         MultivaluedMap formData = buildMultivalueMap(payload);
         ClientResponse cr = webResource.post(ClientResponse.class, formData);
         checkStatusForSuccess(cr);
-        return cr.getStatus();
+        return RestResponse.getRestResponse(cr);
     }
 
     // TODO: This will be implemented when the REST API is updated to use PUTs for updates as is planned
@@ -499,11 +500,11 @@ public class RestApiHandlers {
         throw new UnsupportedOperationException();
     }
 
-    protected static int delete(String address, Map<String, Object> payload) {
+    protected static RestResponse delete(String address, Map<String, Object> payload) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
         ClientResponse cr = webResource.queryParams(buildMultivalueMap(payload)).delete(ClientResponse.class);
         checkStatusForSuccess(cr);
-        return cr.getStatus();
+        return RestResponse.getRestResponse(cr);
     }
 
     protected static String options(String address, String responseType) {
