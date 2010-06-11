@@ -55,6 +55,7 @@ import com.sun.grizzly.config.dom.Transport;
 import com.sun.grizzly.config.dom.Transports;
 
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.*;
 import org.glassfish.api.embedded.web.*;
 import org.glassfish.api.embedded.web.config.*;
@@ -73,8 +74,7 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.Embedded;
-import org.apache.catalina.Connector;
-import org.omg.CORBA.DynAnyPackage.*;
+
 
 /**
  * Class representing an embedded web container, which supports the
@@ -373,7 +373,6 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
            }
        }
     }
-   
     
     /**
      * Creates a <tt>Context</tt>, configures it with the given
@@ -393,39 +392,32 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      * @return the new <tt>Context</tt>
      */
     public Context createContext(File docRoot, String contextRoot, 
-            ClassLoader classLoader) {
-        
+            ClassLoader classLoader) {     
+
         if (log.isLoggable(Level.INFO)) {
             log.info("Creating context '" + contextRoot + "' with docBase '" +
                      docRoot.getPath() + "'");
         }
 
-        ContextImpl context = new ContextImpl();
-        context.setDocBase(docRoot.getPath());
-        context.setPath(contextRoot);
-        context.setDirectoryListing(listings);
-        if (classLoader != null) {
-            context.setParentClassLoader(classLoader);
-        } else {
-            context.setParentClassLoader(
-                    Thread.currentThread().getContextClassLoader());
-        }        
-                
-        Realm realm = habitat.getByContract(Realm.class);
-        // XXX RealmAdapter.initializeRealm
-        context.setRealm(realm);
-                
-        ContextConfig config = new ContextConfig();
-        ((Lifecycle) context).addLifecycleListener(config);
-
+        String appName = null;
+        Context context = null;
         try {
-            if (defaultVirtualServer!=null) {
-                defaultVirtualServer.addContext(context, contextRoot);
+            EmbeddedDeployer deployer = habitat.getByContract(EmbeddedDeployer.class);
+            ScatteredArchive.Builder builder = new ScatteredArchive.Builder(contextRoot, docRoot);
+            builder.resources(docRoot);
+            builder.addClassPath(docRoot.toURL());
+            DeployCommandParameters dp = new DeployCommandParameters(docRoot);
+            appName = deployer.deploy(builder.buildWar(), dp);
+            if (!appName.startsWith("/")) {
+                appName = "/"+appName;
             }
         } catch (Exception ex) {
-            log.severe("Couldn't add context "+contextRoot+" to default virtual server");
+            log.severe(ex.getMessage());
         }
-        
+        for (Container vs : engine.findChildren()) {
+            context = (Context) ((VirtualServer)vs).findContext(appName);
+        }
+
         return context;
         
     }
@@ -457,22 +449,24 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             log.info("Creating context with docBase '" + docRoot.getPath() + "'");
         }
 
-        ContextImpl context = new ContextImpl();
-        context.setDocBase(docRoot.getAbsolutePath());
-        context.setDirectoryListing(listings);
-        if (classLoader != null) {
-            context.setParentClassLoader(classLoader);
-        } else {
-            context.setParentClassLoader(
-                    Thread.currentThread().getContextClassLoader());
-        }       
-        
-        Realm realm = habitat.getByContract(Realm.class);
-        //XXX RealmAdapter.initializeRealm
-        context.setRealm(realm);
-        
-        ContextConfig config = new ContextConfig();
-        ((Lifecycle) context).addLifecycleListener(config);
+        String appName = null;
+        Context context = null;
+        try {
+            EmbeddedDeployer deployer = habitat.getByContract(EmbeddedDeployer.class);
+            ScatteredArchive.Builder builder = new ScatteredArchive.Builder("", docRoot);
+            builder.resources(docRoot);
+            builder.addClassPath(docRoot.toURL());
+            DeployCommandParameters dp = new DeployCommandParameters(docRoot);
+            appName = deployer.deploy(builder.buildWar(), dp);
+            if (!appName.startsWith("/")) {
+                appName = "/"+appName;
+            }
+        } catch (Exception ex) {
+            log.severe(ex.getMessage());
+        }
+        for (Container vs : engine.findChildren()) {
+            context = (Context) ((VirtualServer)vs).findContext(appName);
+        }
         
         return context;
         
