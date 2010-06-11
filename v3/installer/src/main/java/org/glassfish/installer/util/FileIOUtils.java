@@ -54,17 +54,17 @@ public class FileIOUtils {
     /**
      * File object manipulated by this class.
      */
-    public File inputFile;
+    protected File inputFile;
     /**
      * Buffer where all string operations related to file contents are done.
      * Mirrors the contents of the file.
      */
-    public ArrayList contentBuffer;
+    protected ArrayList contentBuffer;
     /**
      * Total number of lines in the buffer.
      * Used to track insertion, deletion based on line numbers.
      */
-    public int totalLines;
+    protected int totalLines;
 
     /**
      * Creates a new instance of FileIOUtils.
@@ -116,7 +116,7 @@ public class FileIOUtils {
         for (int loopVar = 0; loopVar < totalLines; loopVar++) {
             contentBuffer.remove(loopVar);
             contentBuffer.add(loopVar,
-                    new StringHelper().substString((StringBuffer) contentBuffer.get(loopVar),
+                    StringUtils.substString((StringBuffer) contentBuffer.get(loopVar),
                     token, newValue));
 
         }
