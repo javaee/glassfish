@@ -154,7 +154,7 @@ public class GeneratorResource {
         {"JmsService", "list-jmsdest", "GET", "list-jmsdest", "JmsDest"},
 
         {"TransactionService", "recover-transactions", "POST", "recover-transactions", "Recover"},
-        {"JavaConfig", "generate-jvm-report", "POST", "generate-jvm-report", "Generate Report"}
+        {"JavaConfig", "generate-jvm-report", "GET", "generate-jvm-report"}
     };
 
 

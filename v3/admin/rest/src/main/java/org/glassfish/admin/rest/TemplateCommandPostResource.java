@@ -57,6 +57,7 @@ import org.glassfish.admin.rest.provider.MethodMetaData;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.admin.rest.provider.CommandResourceGetResult;
+import org.glassfish.admin.rest.provider.StringResult;
 
 
 /**
@@ -99,12 +100,11 @@ public class TemplateCommandPostResource {
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED
     })
-    public Response executeCommand(HashMap<String, String> data) {
+    public StringResult executeCommand(HashMap<String, String> data) {
         try {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error", "Unable to parse the input entity. Please check the syntax.");
-                return resourceUtil.getResponse(400, /*parsing error*/
-                        errorMessage, requestHeaders, uriInfo);
+                throw new WebApplicationException(resourceUtil.getResponse(400, /*parsing error*/ errorMessage, requestHeaders, uriInfo));
             }
 
             if (commandParams != null) {
@@ -118,23 +118,20 @@ public class TemplateCommandPostResource {
             }
 
             resourceUtil.adjustParameters(data);
-
             resourceUtil.purgeEmptyEntries(data);
-
             ActionReport actionReport = resourceUtil.runCommand(commandName, data, RestService.getHabitat());
-
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
+            StringResult results = new StringResult(commandName, resourceUtil.getMessage(actionReport), options());
 
             if (exitCode == ActionReport.ExitCode.SUCCESS) {
-                String successMessage = localStrings.getLocalString("rest.request.success.message",
-                        "{0} of {1} executed successfully.", new Object[]{commandMethod, uriInfo.getAbsolutePath()});
-                return resourceUtil.getResponse(200, /*200 - ok*/
-                        successMessage, requestHeaders, uriInfo);
+                results.setStatusCode(200); /*200 - ok*/
+            } else {
+                results.setStatusCode(400); /*400 - bad request*/
+                results.setIsError(true);
+                results.setErrorMessage(actionReport.getMessage());
             }
 
-            String errorMessage = actionReport.getMessage();
-            return resourceUtil.getResponse(400, /*400 - bad request*/
-                    errorMessage, requestHeaders, uriInfo);
+            return results;
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
@@ -143,7 +140,7 @@ public class TemplateCommandPostResource {
 //Do not care what the Content-Type is.
 
     @POST
-    public Response executeCommand() {
+    public StringResult executeCommand() {
         try {
             return executeCommand(new HashMap<String, String>());
         } catch (Exception e) {
@@ -175,7 +172,7 @@ public class TemplateCommandPostResource {
 //command method metadata
             MethodMetaData methodMetaData = resourceUtil.getMethodMetaData(
                     commandName, commandParams, Constants.MESSAGE_PARAMETER, RestService.getHabitat(), RestService.logger);
-//GET meta data
+//GET metadata
             optionsResult.putMethodMetaData("GET", new MethodMetaData());
             optionsResult.putMethodMetaData(commandMethod, methodMetaData);
         } catch (Exception e) {

@@ -103,10 +103,9 @@ import org.glassfish.api.ActionReport;
             }
 
             ActionReport actionReport = resourceUtil.runCommand(commandName, properties, RestService.getHabitat());
-
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-
             StringResult results = new StringResult(commandName, resourceUtil.getMessage(actionReport), options());
+            
             if (exitCode == ActionReport.ExitCode.SUCCESS) {
                 results.setStatusCode(200); /*200 - ok*/
             } else {
