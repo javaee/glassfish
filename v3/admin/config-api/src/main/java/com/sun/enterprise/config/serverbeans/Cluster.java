@@ -267,10 +267,10 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     boolean isInstance();
 
     class Duck {
-        public static boolean isCluster(Server server) { return true; }
-        public static boolean isServer(Server server)  { return false; }
-        public static boolean isInstance(Server server) { return false; }
-        public static boolean isDas(Server server) { return false; }
+        public static boolean isCluster(Cluster me) { return true; }
+        public static boolean isServer(Cluster me)  { return false; }
+        public static boolean isInstance(Cluster me) { return false; }
+        public static boolean isDas(Cluster me) { return false; }
 
             public static String getReference(Cluster cluster) {
             return cluster.getConfigRef();
