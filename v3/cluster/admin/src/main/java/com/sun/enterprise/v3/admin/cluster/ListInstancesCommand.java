@@ -70,11 +70,11 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
     @Inject
     private Configs configs;
     @Param(optional = true, defaultValue = "2000")
-    String timeoutInMsecString;
+    String timeoutmsec;
     @Param(optional = true, defaultValue = "false")
-    boolean standaloneOnly;
+    boolean standaloneonly;
     @Param(optional = true, defaultValue = "false")
-    boolean noStatus;
+    boolean nostatus;
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
 
     @Override
@@ -107,7 +107,7 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
             return;
         }
 
-        if (noStatus)
+        if (nostatus)
             noStatus(report, serverList);
         else
             yesStatus(report, serverList, timeoutInMsec, logger);
@@ -120,7 +120,7 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
         for (Server server : serverList) {
             boolean clustered = server.getCluster() != null;
 
-            if (standaloneOnly && clustered)
+            if (standaloneonly && clustered)
                 continue;
 
             String name = server.getName();
@@ -135,7 +135,7 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
         for (Server server : serverList) {
             boolean clustered = server.getCluster() != null;
 
-            if (standaloneOnly && clustered)
+            if (standaloneonly && clustered)
                 continue;
 
             String name = server.getName();
