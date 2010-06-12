@@ -68,7 +68,7 @@
 		<class name="test.admin.AdminConsoleTests"/>
 	</classes>
   </test>
-  <test name="web_jspservlet_war">
+  <test name="deploy_upload_test">
     <classes>
        <class name="test.web.jsp.hello.HelloJSPTestNG" />
     </classes>

@@ -44,8 +44,8 @@
     <import file="${ws.root}/gfproject/build-impl.xml"/>   
     <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
     
-    <target name="all" depends="build,deploy,runtest,undeploy,test-upload" />
-    <target name="build-deploy" depends="build,deploy" />
+    <target name="all" depends="build,deploy-upload,runtest,undeploy" />
+    <target name="build-deploy" depends="build,deploy-upload" />
 
     <target name="test-upload">
         <antcall target="deploy-upload"/>
