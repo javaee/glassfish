@@ -37,7 +37,23 @@
 package org.glassfish.ejb.embedded;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
+import javax.ejb.EJBException;
+
+import org.glassfish.api.embedded.ScatteredArchive;
+import org.glassfish.deployment.common.ModuleExploder;
+import com.sun.enterprise.util.io.FileUtils;
+import com.sun.logging.LogDomains;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
 
 /**
  * Wrapper that allows to distinguish between an EJB module and a library reference.
@@ -45,6 +61,11 @@ import java.util.Set;
  * @author Marina Vatkina
  */
 public class DeploymentElement {
+
+    // Use Bundle from another package
+    private static final Logger _logger =
+            LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
+
     private File element;
     private boolean isEJBModule;
 
@@ -84,6 +105,110 @@ public class DeploymentElement {
         for (DeploymentElement module : modules) {
             if (module.isEJBModule()) {
                 ++result;
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * Create deployable application from a Set of DeploymentElements.
+     * @param modules the Set of DeploymentElements.
+     * @return deployable application.
+     */
+    public static Object getOrCreateApplication(Set<DeploymentElement> modules)
+            throws EJBException, IOException {
+        Object result = null;
+        if (modules == null || modules.size() == 0 || !DeploymentElement.hasEJBModule(modules)) {
+            _logger.info("[DeploymentElement] No modules found");
+        } else if (modules.size() == 1) {
+            // Single EJB module
+            result = modules.iterator().next().getElement();
+        } else if (DeploymentElement.countEJBModules(modules) == 1) {
+            // EJB molule with libraries - create ScatteredArchive
+            String aName = null;
+            Collection<URL> archives = new ArrayList<URL>();
+            for (DeploymentElement m : modules) {
+                boolean isEJBModule = m.isEJBModule();
+                File f = m.getElement();
+                String name = f.getName();
+                if (_logger.isLoggable(Level.INFO)) {
+                    _logger.info("[DeploymentElement] adding " + ((isEJBModule)? "EJB module" : "library") + " to ScatteredArchive " + name);
+                }
+    
+                if (isEJBModule) {
+                    // Need to give archive some meaningful name
+                    aName = name;
+                }
+                archives.add(f.toURI().toURL());
+            }
+            ScatteredArchive.Builder saBuilder = new ScatteredArchive.Builder(aName,
+                    Collections.unmodifiableCollection(archives));
+            result = saBuilder.buildJar();
+        } else {
+            // Create a temp dir by creating a temp file first, then
+            // delete the file and create a directory in its place.
+            File resultFile = File.createTempFile("ejb-app", "");
+            File lib = null;
+            if (resultFile.delete() && resultFile.mkdirs()) {
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("[DeploymentElement] temp dir created at " + resultFile.getAbsolutePath());
+                }
+
+                // Create lib dir if there are library entries
+                if (DeploymentElement.hasLibrary(modules)) {
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("[DeploymentElement] lib dir added ... ");
+                    }
+                    lib = new File(resultFile, "lib");
+                }
+
+            } else {
+                throw new EJBException("Not able to create temp dir " + resultFile.getAbsolutePath ());
+            }
+//            resultFile.deleteOnExit();
+
+            // Copy module directories and explode module jars
+            int duplicate_dir_counter = 0;
+            for (DeploymentElement m : modules) {
+                File f = m.getElement();
+                String filename = f.toURI().getSchemeSpecificPart();
+                if (filename.endsWith(File.separator) || filename.endsWith("/")) {
+                    int length = filename.length();
+                    filename = filename.substring(0, length - 1);
+                }
+
+                int lastpart = filename.lastIndexOf(File.separatorChar);
+                if (lastpart == -1) {
+                    lastpart = filename.lastIndexOf('/');
+                }
+                String name = filename.substring(lastpart + 1);
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("[DeploymentElement] Converted file name: " + filename + " to " + name);
+                }
+
+                File base = (m.isEJBModule())? resultFile : lib;
+                if (!f.isDirectory() && m.isEJBModule()) { 
+                    File out = new File(base, FileUtils.makeFriendlyFilename(name));
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("[DeploymentElement] Exploding jar to: " + out);
+                    }
+                    ModuleExploder.explodeJar(f, out);
+                } else {
+                    if (f.isDirectory()) { 
+                        name = name + (m.isEJBModule()? "_jar" : ".jar");
+                    }
+                    File out = new File(base, name);
+                    if (out.exists()) {
+                        out = new File(base, "d__" + ++duplicate_dir_counter + "__" + name);
+                    }
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("[DeploymentElement] Copying element to: " + out);
+                    }
+                    FileUtils.copy(f, out);
+                }
+
+                result = resultFile;
             }
         }
         return result;

@@ -38,14 +38,8 @@ package org.glassfish.ejb.embedded;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URI;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -58,7 +52,6 @@ import javax.transaction.TransactionManager;
 
 import com.sun.logging.LogDomains;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
-import com.sun.enterprise.util.io.FileUtils;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
 import org.glassfish.api.embedded.EmbeddedDeployer;
@@ -66,8 +59,6 @@ import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.ScatteredArchive;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.deployment.common.DeploymentUtils;
-import org.glassfish.deployment.common.ModuleExploder;
 
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
@@ -118,7 +109,7 @@ public class EJBContainerImpl extends EJBContainer {
      */
     void deploy(Map<?, ?> properties, Set<DeploymentElement> modules) throws EJBException {
         try {
-            Object app = getOrCreateApplication(modules);
+            Object app = DeploymentElement.getOrCreateApplication(modules);
             
             if (_logger.isLoggable(Level.INFO)) {
                 _logger.info("[EJBContainerImpl] Deploying app: " + app);
@@ -194,99 +185,6 @@ public class EJBContainerImpl extends EJBContainer {
      */
     boolean isOpen() {
         return state == RUNNING;
-    }
-
-    /** 
-     */
-    private Object getOrCreateApplication(Set<DeploymentElement> modules)
-            throws EJBException, IOException {
-        Object result = null;
-        if (modules == null || modules.size() == 0 || !DeploymentElement.hasEJBModule(modules)) {
-            _logger.info("[EJBContainerImpl] No modules found");
-        } else if (modules.size() == 1) {
-            // Single EJB module
-            result = modules.iterator().next().getElement();
-        } else if (DeploymentElement.countEJBModules(modules) == 1) {
-            // EJB molule with libraries - create ScatteredArchive
-            String aName = null;
-            Collection<URL> archives = new ArrayList<URL>();
-            for (DeploymentElement m : modules) {
-                boolean isEJBModule = m.isEJBModule();
-                File f = m.getElement();
-                String name = f.getName();
-                if (_logger.isLoggable(Level.INFO)) {
-                    _logger.info("[EJBContainerImpl] adding " + ((isEJBModule)? "EJB module" : "library") + " to ScatteredArchive " + name);
-                }
-                
-                if (isEJBModule) {
-                    // Need to give archive some meaningful name
-                    aName = name;
-                }
-                archives.add(f.toURI().toURL());
-            }
-            ScatteredArchive.Builder saBuilder = new ScatteredArchive.Builder(aName,
-                    Collections.unmodifiableCollection(archives));
-            result = saBuilder.buildJar(); 
-        } else {
-            // Create a temp dir by creating a temp file first, then 
-            // delete the file and create a directory in its place.
-            File resultFile = File.createTempFile("ejb-app", "");
-            File lib = null;
-            if (resultFile.delete() && resultFile.mkdirs()) {
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.fine("[EJBContainerImpl] temp dir created at " + resultFile.getAbsolutePath());
-                }
-                
-                // Create lib dir if there are library entries
-                if (DeploymentElement.hasLibrary(modules)) {
-                    if (_logger.isLoggable(Level.FINE)) {
-                        _logger.fine("[EJBContainerImpl] lib dir added ... ");
-                    }
-                    lib = new File(resultFile, "lib");
-                }
-
-            } else {
-                throw new EJBException("Not able to create temp dir " + resultFile.getAbsolutePath ());
-            }
-//            resultFile.deleteOnExit();
-
-            // Copy module directories and explode module jars
-            for (DeploymentElement m : modules) {
-                File f = m.getElement();
-                String filename = f.toURI().getSchemeSpecificPart();
-                if (filename.endsWith(File.separator) || filename.endsWith("/")) {
-                    int length = filename.length();
-                    filename = filename.substring(0, length - 1);
-                }
-
-                int lastpart = filename.lastIndexOf(File.separatorChar);
-                if (lastpart == -1) {
-                    lastpart = filename.lastIndexOf('/');
-                }
-                String name = filename.substring(lastpart + 1);
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.fine("[EJBContainerImpl] Converted file name: " + filename + " to " + name);
-                }
-
-                File base = (m.isEJBModule())? resultFile : lib;
-                if (f.isDirectory() || !m.isEJBModule()) {
-                    File out = new File(base, name + (m.isEJBModule()? "_jar" : ""));
-                    if (_logger.isLoggable(Level.FINE)) {
-                        _logger.fine("[EJBContainerImpl] Copying directory to: " + out);
-                    }
-                    FileUtils.copy(f, out);
-                } else {
-                    File out = new File(base, FileUtils.makeFriendlyFilename(name));
-                    if (_logger.isLoggable(Level.FINE)) {
-                        _logger.fine("[EJBContainerImpl] Exploding jar to: " + out);
-                    }
-                    ModuleExploder.explodeJar(f, out);
-                }
-
-                result = resultFile;
-            }
-        }
-        return result;
     }
 
     private void cleanupTransactions() {
