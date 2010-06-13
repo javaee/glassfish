@@ -117,17 +117,21 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
     }
 
     private void noStatus(ActionReport report, List<Server> serverList) {
-        for (Server server : serverList) {
-            boolean clustered = server.getCluster() != null;
-
-            if (standaloneonly && clustered)
-                continue;
-
-            String name = server.getName();
-
-            if (!SystemPropertyConstants.DAS_SERVER_NAME.equals(name))
-                report.addSubActionsReport().setMessage(name);
+        if (serverList.size() < 1) {
+            report.addSubActionsReport().setMessage(NONE);
         }
+        else
+            for (Server server : serverList) {
+                boolean clustered = server.getCluster() != null;
+
+                if (standaloneonly && clustered)
+                    continue;
+
+                String name = server.getName();
+
+                if (!SystemPropertyConstants.DAS_SERVER_NAME.equals(name))
+                    report.addSubActionsReport().setMessage(name);
+            }
     }
 
     private void yesStatus(ActionReport report, List<Server> serverList, int timeoutInMsec, Logger logger) {
@@ -151,9 +155,16 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
         }
 
         if (infos.size() < 1)
-            report.setMessage(Strings.get("list.instances.none"));
+            report.addSubActionsReport().setMessage(NONE);
         else
-            report.setMessage(InstanceInfo.format(infos));
+            for (InstanceInfo ii : infos) {
+                String s = ii.isRunning() ? RUNNING : NOT_RUNNING;
+                report.addSubActionsReport().setMessage(ii.getName() + " " + s);
+            }
     }
     private RemoteInstanceCommandHelper helper;
+    // these are all not localized because REST etc. depends on them.
+    private static final String NONE = "Nothing to list.";
+    private static final String RUNNING = "running";
+    private static final String NOT_RUNNING = "not running";
 }

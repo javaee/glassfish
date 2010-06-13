@@ -84,6 +84,10 @@ public final class InstanceInfo {
         return state;
     }
 
+    public boolean isRunning() {
+        return running;
+    }
+
     /////////////////////////////////////////////////////////////////////////
     ////////  static formatting stuff below   ///////////////////////////////
     /////////////////////////////////////////////////////////////////////////
@@ -165,6 +169,7 @@ public final class InstanceInfo {
             rac.setConnectTimeout(timeoutInMsec);
             ParameterMap map = new ParameterMap();
             map.set("type", "terse");
+            running = true;
             return rac.executeCommand(map).trim();
         }
         catch (CommandException ex) {
@@ -203,6 +208,7 @@ public final class InstanceInfo {
     private String state;
     private Logger logger;
     private final int timeoutInMsec;
+    private boolean running;
     private static final String NOT_RUNNING = Strings.get("ListInstances.NotRunning");
     private static final String NAME = Strings.get("ListInstances.name");
     private static final String HOST = Strings.get("ListInstances.host");
