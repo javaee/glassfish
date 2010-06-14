@@ -193,6 +193,15 @@ update tool    updatetool 800
             expanded="$boolean{true}"
         />
 
+        <!--  ===================================== Clusters ======================  -->
+
+        <sun:treeNode  id="clusters"
+            text="$resource{i18n.tree.clusters}"
+            url="/common/cluster/clusters.jsf"
+            imageURL="/resource/images/cluster.gif"
+            expanded="$boolean{true}"
+        />
+
          <!--  ===================================== Configurations ======================  -->
 
          <sun:treeNode id="configuration"
