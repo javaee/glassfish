@@ -151,6 +151,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     void setApplications(Applications value) throws PropertyVetoException;
 
     @Element
+    @NotNull
     SystemApplications getSystemApplications();
 
     /**
