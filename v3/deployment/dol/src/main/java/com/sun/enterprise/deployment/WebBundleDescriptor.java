@@ -276,7 +276,7 @@ public class WebBundleDescriptor extends BundleDescriptor
     }
 
     public boolean isEmpty() {
-        return webComponentDescriptors.isEmpty();
+        return (webComponentDescriptors == null || webComponentDescriptors.isEmpty());
     }
 
     /**
