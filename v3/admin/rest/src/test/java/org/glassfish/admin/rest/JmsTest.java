@@ -60,6 +60,7 @@ public class JmsTest extends RestTestBase {
     static final String URL_CREATE_JMS_DEST = BASE_URL + "/configs/config/server-config/jms-service/create-jmsdest";
     static final String URL_DELETE_JMS_DEST = BASE_URL + "/configs/config/server-config/jms-service/delete-jmsdest";
     static final String URL_LIST_JMS_DEST = BASE_URL + "/configs/config/server-config/jms-service/list-jmsdest";
+    static final String URL_FLUSH_JMS_DEST = BASE_URL + "/configs/config/server-config/jms-service/flush-jmsdest";
     static final String URL_PING_JMS = BASE_URL + "/configs/config/server-config/jms-service/jms-ping";
 
     @Test
@@ -211,5 +212,16 @@ public class JmsTest extends RestTestBase {
     public void testJmsPing() {
         Map<String, String> entity = getEntityValues(read(URL_PING_JMS));
         assertTrue(entity.get("value").equals("JMS-ping command executed successfully"));
+    }
+
+    @Test
+    public void testJmsFlush() {
+        Map<String, String> payload = new HashMap<String, String>() {{
+            put("id", "mq.sys.dmq");
+            put("destType", "queue");
+        }};
+
+        ClientResponse response = post(URL_FLUSH_JMS_DEST, payload);
+        assertEquals(200, response.getStatus());
     }
 }
