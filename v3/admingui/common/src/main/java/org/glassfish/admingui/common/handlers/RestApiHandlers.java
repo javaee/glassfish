@@ -153,16 +153,28 @@ public class RestApiHandlers {
     @Handler(id = "gf.restExecuteCommand",
             input = {
                     @HandlerInput(name = "endpoint", type = String.class, required = true),
-                    @HandlerInput(name = "attrs", type = Map.class, required = true)},
+                    @HandlerInput(name = "attrs", type = Map.class, required = true),
+                    @HandlerInput(name = "method", type = String.class, defaultValue = "post")},
             output = {
-                    @HandlerOutput(name = "result", type = Integer.class)})
+                    @HandlerOutput(name = "result", type = Integer.class),
+                    @HandlerOutput(name = "output", type = String.class)
+            })
     public static void restExecuteCommand(HandlerContext handlerCtx) {
         Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
         if (attrs == null) {
             attrs = new HashMap<String, Object>();
         }
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
-        handlerCtx.setOutputValue("result", post(endpoint, attrs));
+        String method = ((String) handlerCtx.getInputValue("method")).toLowerCase();
+        if ("post".equals(method)) {
+            RestResponse response = post(endpoint, attrs);
+            handlerCtx.setOutputValue("result", response.getResponseCode());
+            handlerCtx.setOutputValue("output", response.getResponseBody());
+        } else if ("get".equals(method)) {
+            RestResponse response = get(endpoint, attrs);
+            handlerCtx.setOutputValue("result", response.getResponseCode());
+            handlerCtx.setOutputValue("output", getEntityAttrs(response.getResponseBody()).get("value"));
+        }
     }
 
     /**
@@ -480,14 +492,18 @@ public class RestApiHandlers {
     //******************************************************************************************************************
     // Jersey client methods
     //******************************************************************************************************************
-
-    protected static RestResponse get(String address) {
+    public static RestResponse get(String address) {
+        return get(address, new HashMap<String, Object>());
+    }
+    
+    public static RestResponse get(String address, Map<String, Object> payload) {
         return RestResponse.getRestResponse(JERSEY_CLIENT.resource(address)
+                .queryParams(buildMultivalueMap(payload))
                 .accept(RESPONSE_TYPE)
                 .get(ClientResponse.class));
     }
 
-    protected static RestResponse post(String address, Map<String, Object> payload) {
+    public static RestResponse post(String address, Map<String, Object> payload) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
         MultivaluedMap formData = buildMultivalueMap(payload);
         ClientResponse cr = webResource.post(ClientResponse.class, formData);
@@ -496,24 +512,24 @@ public class RestApiHandlers {
     }
 
     // TODO: This will be implemented when the REST API is updated to use PUTs for updates as is planned
-    protected static String put(String address) {
+    public static String put(String address) {
         throw new UnsupportedOperationException();
     }
 
-    protected static RestResponse delete(String address, Map<String, Object> payload) {
+    public static RestResponse delete(String address, Map<String, Object> payload) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
         ClientResponse cr = webResource.queryParams(buildMultivalueMap(payload)).delete(ClientResponse.class);
         checkStatusForSuccess(cr);
         return RestResponse.getRestResponse(cr);
     }
 
-    protected static String options(String address, String responseType) {
+    public static String options(String address, String responseType) {
         return JERSEY_CLIENT.resource(address)
                 .accept(responseType)
                 .options(String.class);
     }
 
-    protected static void checkStatusForSuccess(ClientResponse cr) {
+    public static void checkStatusForSuccess(ClientResponse cr) {
         int status = cr.getStatus();
         if ((status < 200) || (status > 299)) {
             throw new RuntimeException(cr.toString());
