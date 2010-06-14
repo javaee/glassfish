@@ -87,6 +87,14 @@ public class ClusterTest extends AdminBaseDevTest {
                 "--systemproperties", "foo=bar",
                 "cl4"));
 
+        AsadminReturn ret = asadminWithOutput("get", "clusters.cluster.cl4.system-property.foo.name");
+        boolean success = ret.outAndErr.indexOf("clusters.cluster.cl4.system-property.foo.name=foo") >= 0;
+        report("check-cluster-syspropname", success);
+
+        ret = asadminWithOutput("get", "clusters.cluster.cl4.system-property.foo.value");
+        success = ret.outAndErr.indexOf("clusters.cluster.cl4.system-property.foo.value=bar") >= 0;
+        report("check-cluster-syspropvalue", success);
+
         //evaluate using xpath that there are 3 elements in the domain.xml
 
         o = evalXPath(xpathExpr, XPathConstants.NUMBER);
