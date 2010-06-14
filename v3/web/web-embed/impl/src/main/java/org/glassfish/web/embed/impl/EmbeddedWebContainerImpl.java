@@ -119,11 +119,11 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
     
     private boolean listings;
 
+    private String defaultvs = "server";
+
     private int portNumber;
 
-    private String listenerName = "embedded-listener";
-
-    private String defaultvs = "server";
+    private String listenerName = "embedded-listener";    
 
     private String securityEnabled = "false";
 
@@ -210,13 +210,18 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
                 }
             }, vs);
         } catch (Exception e) {
-            removeListener();
+            removeListener(listenerName);
             e.printStackTrace();
         }
     }
 
     private String getListenerName() {
         int i = 1;
+        // use listenerName set via addWebListener
+        if (!existsListener(listenerName)) {
+            return listenerName;
+        }
+        // use default listener name
         String name = "embedded-listener";
         while (existsListener(name)) {
             name = "embedded-listener-" + i++;
@@ -233,40 +238,32 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         return false;
     }
 
-    private void removeListener() {
+    private void removeListener(String name) {
+        final String listenerName = name;
+
         try {
-            ConfigSupport.apply(new ConfigCode() {
-                public Object run(ConfigBeanProxy[] params) throws PropertyVetoException, TransactionFailure {
-                    final NetworkListeners nt = (NetworkListeners) params[0];
-                    final com.sun.enterprise.config.serverbeans.VirtualServer vs = (com.sun.enterprise.config.serverbeans.VirtualServer) params[1];
-                    final Protocols protocols = (Protocols) params[2];
-                    List<Protocol> protos = protocols.getProtocol();
-                    for (Protocol proto : protos) {
-                        if (proto.getName().equals(listenerName)) {
-                            protos.remove(proto);
-                            break;
-                        }
+
+            NetworkListeners networkListeners = config.getNetworkListeners();
+            final NetworkListener listenerToBeRemoved = config.getNetworkListener(listenerName);
+            if (listenerToBeRemoved == null) {
+                log.severe("Network Listener "+listenerName+" doesn't exist");
+            } else {
+                final com.sun.enterprise.config.serverbeans.VirtualServer virtualServer =
+                        httpService.getVirtualServerByName(
+                        listenerToBeRemoved.findHttpProtocol().getHttp().getDefaultVirtualServer());
+                ConfigSupport.apply(new ConfigCode() {
+                    public Object run(ConfigBeanProxy... params) throws PropertyVetoException {
+                        final NetworkListeners listeners = (NetworkListeners) params[0];
+                        final com.sun.enterprise.config.serverbeans.VirtualServer server =
+                                (com.sun.enterprise.config.serverbeans.VirtualServer) params[1];
+                        listeners.getNetworkListener().remove(listenerToBeRemoved);
+                        server.removeNetworkListener(listenerToBeRemoved.getName());
+                        return listenerToBeRemoved;
                     }
-                    final List<NetworkListener> list = nt.getNetworkListener();
-                    for (NetworkListener listener : list) {
-                        if (listener.getName().equals(listenerName)) {
-                            list.remove(listener);
-                            break;
-                        }
-                    }
-                    String regex = listenerName + ",?";
-                    String lss = vs.getNetworkListeners();
-                    if (lss != null) {
-                        vs.setNetworkListeners(lss.replaceAll(regex, ""));
-                    }
-                    return null;
-                }
-            }, config.getNetworkListeners(),
-                httpService.getVirtualServerByName(defaultvs),
-                config.getProtocols());
-        } catch (TransactionFailure tf) {
-            tf.printStackTrace();
-            throw new RuntimeException(tf);
+                }, networkListeners, virtualServer);
+
+            }
+        } catch (TransactionFailure e) {
         }
     }
     
@@ -552,6 +549,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             log.info("Added connector "+webListener.getId());
         }
 
+        listenerName = webListener.getId();
         try {
             Ports ports = habitat.getComponent(Ports.class);
             Port port = ports.createPort(webListener.getPort());
@@ -611,7 +609,8 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             throw new LifecycleException(new ConfigException("Connector with name '"+
                     webListener.getId()+"' does not exsits"));
         }
-        
+
+        removeListener(webListener.getId());
     }
 
     /**
@@ -642,6 +641,14 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         if (log.isLoggable(Level.INFO)) {
             log.info("Created virtual server "+id+" docroot "+docRoot.getPath()+
                     " networklisteners "+virtualServer.getNetworkListeners());
+        }
+
+        try {
+            for (WebListener listener : webListeners) {
+                addWebListener(listener);
+            }
+        } catch (Exception ex) {
+            log.severe("Couldn't add web listener for virtual server "+id);
         }
 
         return virtualServer;
