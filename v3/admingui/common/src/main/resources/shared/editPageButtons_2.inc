@@ -105,7 +105,9 @@
                 if (#{pageSession.hasPropertyTable}){
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                    if ( !#{pageSession['rest-api']}){
+                        setProxyProperties(objectNameStr="#{pageSession.parentObjectNameStr}/#{pageSession.childType}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                    }
                 }
 
                 if (#{pageSession.additionalSaveHandler}){
@@ -170,7 +172,9 @@
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                        if (!#{pageSession['rest-api']}) {
                         setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                        }
                     }
 
                     //when creating resource, need to create the resource-ref

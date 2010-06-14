@@ -52,7 +52,7 @@
         <sun:property id="poolNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}"  helpText="$resource{i18njdbc.jdbcResource.poolHelp}">
             <sun:dropDown id="PoolName" selected="#{pageSession.valueMap['PoolName']}" labels="$pageSession{jdbcList}"  values="$pageSession{jdbcList}" >
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="amx:pp=/domain,type=resources" type="jdbc-connection-pool" result="#{pageSession.jdbcList}");
+                gf.getChildrenNamesList(parentEndpoint="#{pageSession.parentUrl}", childType="jdbc-connection-pool", result="#{pageSession.jdbcList}");
             />
            </sun:dropDown>
         </sun:property>   
@@ -63,7 +63,7 @@
 
         <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" visible="#{false}" />
-            <sun:checkbox id="enabled" label="$resource{i18n.common.Enabled}" immediate="#{true}" selected="#{pageSession.valueMap2['Enabled']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['Enabled']}" selectedValue="true" />
         </sun:property>
         "<br /><br />
     </sun:propertySheetSection>

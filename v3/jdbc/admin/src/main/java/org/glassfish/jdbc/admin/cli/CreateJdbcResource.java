@@ -67,7 +67,7 @@ public class CreateJdbcResource implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJdbcResource.class);    
 
-    @Param(name="connectionpoolid")
+    @Param(name="connectionpoolid", alias="poolName")
     String connectionPoolId;
 
     @Param(optional=true, defaultValue="true")
