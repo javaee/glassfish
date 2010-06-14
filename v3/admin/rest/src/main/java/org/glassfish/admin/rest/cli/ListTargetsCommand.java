@@ -62,7 +62,7 @@ public class ListTargetsCommand implements AdminCommand {
     @Inject
     com.sun.enterprise.config.serverbeans.Domain domain;
     // this value can be either runtime or os for our demo
-    @Param(primary = true)
+    @Param(primary = true, acceptableValues="das,instance,cluster,server")
     String type;
     public final static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CollectionLeafResource.class);
