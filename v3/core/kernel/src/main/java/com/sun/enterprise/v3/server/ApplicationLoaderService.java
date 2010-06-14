@@ -401,7 +401,9 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         // stop all running applications including user and system applications
         List<Application> allApplications = new ArrayList<Application>();
         allApplications.addAll(applications.getApplications());
-        allApplications.addAll(systemApplications.getApplications());
+        if (systemApplications != null) {
+            allApplications.addAll(systemApplications.getApplications());
+        }
 
         for (Application app : allApplications) {
             ApplicationInfo appInfo = deployment.get(app.getName());
