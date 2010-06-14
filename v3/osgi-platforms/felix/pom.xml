@@ -109,6 +109,13 @@
                                <type>jar</type>
                                <outputDirectory>${glassfish.modulesdir}/autostart/</outputDirectory>
                              </artifactItem>
+                             <artifactItem>
+                               <groupId>org.apache.felix</groupId>
+                               <artifactId>org.apache.felix.bundlerepository</artifactId>
+                               <version>1.6.2</version>
+                               <type>jar</type>
+                               <outputDirectory>${glassfish.modulesdir}/autostart/</outputDirectory>
+                             </artifactItem>
                            </artifactItems>
                          </configuration>
                     </execution>
