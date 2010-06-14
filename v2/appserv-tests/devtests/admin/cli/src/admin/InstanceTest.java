@@ -98,6 +98,7 @@ public class InstanceTest extends AdminBaseDevTest {
 		create();
 		delete();
 		createFail();
+                createSysProps();
 		testNoCreateForStop();
 		createStartStopDelete();
                 createAdminCommand();
@@ -195,6 +196,31 @@ public class InstanceTest extends AdminBaseDevTest {
         }
         report("das-properties-exists-after-create", checkDasProperties());
         asadmin("list-instances");
+    }
+
+    private void createSysProps() {
+        printf("Create local instance with system properties");
+        String iname = "localinstancewithsysprops";
+        report("create-local-instance-sysprops", asadminWithOutput("create-local-instance",
+                "--systemproperties", "prop1=valA:prop2=valB:prop3=valC", iname));
+
+        AsadminReturn ret = asadminWithOutput("get", "servers.server." + iname + ".system-property.prop1.name");
+        boolean success = ret.outAndErr.indexOf("servers.server." + iname + ".system-property.prop1.name=prop1") >= 0;
+        report("create-local-instance-prop1name", success);
+
+        ret = asadminWithOutput("get", "servers.server." + iname + ".system-property.prop1.value");
+        success = ret.outAndErr.indexOf("servers.server." + iname + ".system-property.prop1.value=valA") >= 0;
+        report("create-local-instance-prop1value", success);
+
+        ret = asadminWithOutput("get", "servers.server." + iname + ".system-property.prop3.name");
+        success = ret.outAndErr.indexOf("servers.server." + iname + ".system-property.prop3.name=prop3") >= 0;
+        report("create-local-instance-prop3name", success);
+
+        ret = asadminWithOutput("get", "servers.server." + iname + ".system-property.prop3.value");
+        success = ret.outAndErr.indexOf("servers.server." + iname + ".system-property.prop3.value=valC") >= 0;
+        report("create-local-instance-prop3value", success);
+
+        report("delete-instance-sysprops", asadmin("delete-local-instance", iname));
     }
 
     private void createFail() {
