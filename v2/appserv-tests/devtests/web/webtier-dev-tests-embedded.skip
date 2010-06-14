@@ -29,3 +29,4 @@ virtualServerStateDynamicReconfig
 virtualServerTarget
 virtualServerUpdateHostsDynamicReconfig
 virtualServerUpdateHttpListenersDynamicReconfig
+pipelineQueueFull # this test hangs in embedded
