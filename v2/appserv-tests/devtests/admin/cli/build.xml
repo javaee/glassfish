@@ -73,6 +73,9 @@
             <jvmarg value="-DNUM_TESTS=${num_tests}"/>
         </java>
     </target>
+    <target name="ports">
+        <java classname="admin.PortTests"  fork="true" classpath="${test}"/>
+    </target>
 
     <target name="portsonly" depends="init">
         <record name="admin.output" action="start" />
@@ -83,9 +86,6 @@
         <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
     </target>
 
-    <target name="ports" depends="init">
-        <java classname="admin.PortTests"  fork="true" classpath="${test}"/>
-    </target>
 
     <target name="all" depends="init">
         <record name="admin.output" action="start" />
