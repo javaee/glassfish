@@ -74,6 +74,14 @@
         </java>
     </target>
 
+    <target name="ports" depends="init">
+        <record name="admin.output" action="start" />
+        <java classname="admin.PortTests"  fork="true" classpath="${test}"/>
+        <record name="admin.output" action="stop" />
+        <antcall target="dev-report"/>
+        <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
+    </target>
+
     <target name="all" depends="init">
         <record name="admin.output" action="start" />
         <antcall target="stopDomain"/>
