@@ -158,10 +158,8 @@ public class InstanceTest extends AdminBaseDevTest {
      *
      * typical output as og 6/6/10
     C:\glassfishv3\glassfish\nodeagents\vaio>asadmin list-instances
-    Instance Name   Host                           Admin Port      Current State
-    ---------------|------------------------------|---------------|--------------------
-    i20             vaio                           24848           Uptime: 9 minutes, 36 seconds
-    in_879669       vaio                           24848           Not Running
+    in_879669 not running
+    i20 running
      */
     private boolean isInstanceRunning(String iname) {
         AsadminReturn ret = asadminWithOutput("list-instances");
@@ -170,7 +168,7 @@ public class InstanceTest extends AdminBaseDevTest {
         for (String line : lines) {
             if (line.indexOf(iname) >= 0) {
                 printf("Line from list-instances = " + line);
-                return line.indexOf("Uptime") >= 0;
+                return line.indexOf(iname + " running") >= 0;
             }
         }
         return false;
