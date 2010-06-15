@@ -43,7 +43,6 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.internal.api.ServerContext;
 
-import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -53,7 +52,6 @@ import com.sun.enterprise.config.serverbeans.*;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import javax.management.AttributeList;
 import javax.management.MalformedObjectNameException;
 
 import org.jvnet.hk2.annotations.Service;
@@ -81,7 +79,7 @@ public class FlushJMSDestination extends JMSDestination implements AdminCommand 
 				+ ":type=" + "Destination"
 				+ ",subtype=Config";
 
-        @Param(name="desttype", shortName="T", optional=false)
+        @Param(name="destType", shortName="T", optional=false)
         String destType;
 
         @Param(name="dest_name", primary=true)

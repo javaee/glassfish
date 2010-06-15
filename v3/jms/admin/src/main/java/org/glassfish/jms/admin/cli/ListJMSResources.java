@@ -68,7 +68,7 @@ public class ListJMSResources implements AdminCommand {
     private static final String UNIFIED_CF = "javax.jms.ConnectionFactory";
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListJMSResources.class);
 
-    @Param(name="restype", optional=true)
+    @Param(name="resType", optional=true)
     String resourceType;
 
     @Inject

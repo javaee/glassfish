@@ -74,7 +74,7 @@ public class DeleteJMSDestination extends JMSDestination implements AdminCommand
         static Logger logger = LogDomains.getLogger(ActiveJmsResourceAdapter.class,LogDomains.ADMIN_LOGGER);
         final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteJMSDestination.class);
 
-        @Param(name="desttype", shortName="T", optional=false)
+        @Param(name="destType", shortName="T", optional=false)
         String destType;
 
         @Param(name="dest_name", primary=true)

@@ -63,7 +63,7 @@ import java.util.Enumeration;
 @I18n("create.jms.resource")
 public class CreateJMSResource implements AdminCommand {
 
-    @Param(name="restype")
+    @Param(name="resType")
     String resourceType;
 
     @Param(optional=true, defaultValue="true")

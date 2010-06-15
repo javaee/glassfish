@@ -67,22 +67,22 @@ public class CreateJMSHost implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJMSHost.class);
     //[target target] [mqhost localhost] [mqport 7676] [mquser admin] [mqpassword admin] jms_host_name
 
-    @Param(name="mqhost", defaultValue="localhost")
+    @Param(name="mqHost", alias="host", defaultValue="localhost")
     String mqhost;
 
-    @Param(name="mqport", defaultValue="7676")
+    @Param(name="mqPort", alias="port", defaultValue="7676")
     String mqport;
 
-    @Param(name="mquser", defaultValue="admin")
+    @Param(name="mqUser", alias="adminUserName", defaultValue="admin")
     String mquser;
 
-    @Param(name="mqpassword", defaultValue="admin")
+    @Param(name="mqPassword", alias="adminPassword", defaultValue="admin")
     String mqpassword;
 
     @Param(optional=true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
-    @Param(name="jms_host_name", primary=true)
+    @Param(name="jms_host_name", alias="host", primary=true)
     String jmsHostName;
 
     @Inject

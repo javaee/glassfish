@@ -72,7 +72,7 @@ public class ListJMSDestinations extends JMSDestination implements AdminCommand 
         static Logger logger = LogDomains.getLogger(ListJMSDestinations.class,LogDomains.ADMIN_LOGGER);
         final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJMSDestination.class);
 
-        @Param(name="desttype", optional=true)
+        @Param(name="destType", optional=true)
         String destType;
 
         @Param(name="property", optional=true, separator=':')
