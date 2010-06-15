@@ -47,10 +47,10 @@ import java.util.HashSet;
  * @author Kohsuke Kawaguchi
  */
 @Service
-public class TestCageBuilder implements CageBuilder {
+public class TestCageBuilder<T> implements CageBuilder<T> {
     public final Set<Inhabitant> inhabitants = new HashSet<Inhabitant>();
     
-    public void onEntered(Inhabitant<?> i) {
+    public void onEntered(Inhabitant<T> i) {
         inhabitants.add(i);
     }
 }

@@ -240,10 +240,10 @@ public class ConfigBean extends Dom implements ConfigView {
      * be moved to a factory.
      *
      * @param type the request configuration object type
-     * @return the propertly constructed configuration object
+     * @return the properly constructed configuration object
      */
 
-    ConfigBean allocate(Class<?> type) {
+    public ConfigBean allocate(Class<?> type) {
         return (ConfigBean) document.make(habitat, null, this, document.buildModel(type));
    }
 

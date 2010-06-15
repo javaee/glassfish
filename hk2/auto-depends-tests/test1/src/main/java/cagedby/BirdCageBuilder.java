@@ -47,12 +47,12 @@ import org.jvnet.hk2.component.Inhabitant;
  * @author Jerome Dochez
  */
 @Service
-public class BirdCageBuilder implements CageBuilder  {
+public class BirdCageBuilder implements CageBuilder<Bird>  {
     /**
      * Called when an {@link org.jvnet.hk2.component.Inhabitant} is entered into habitat.
      */
-    public void onEntered(Inhabitant<?> i) {
-        Bird b = (Bird) i.get();
+    public void onEntered(Inhabitant<Bird> i) {
+        Bird b = i.get();
         b.setName("Caged " + b.getName());
         System.out.println(i.get() + " is now locked");        
     }
