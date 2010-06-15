@@ -129,6 +129,7 @@ public class GeneratorResource {
         {"Domain", "get-host-and-port", "GET", "host-port", "HostPort"},
         {"Domain", "list-logger-levels", "GET", "list-logger-levels", "LogLevels"},
         {"Domain", "set-log-level", "POST", "set-log-level", "LogLevel"},
+        {"Domain", "__list-targets", "GET", "list-targets", "List Targets"},
 
         ///{"ListApplication", "deploy"},
         ///{"Application", "redeploy"},
@@ -154,7 +155,11 @@ public class GeneratorResource {
         {"JmsService", "list-jmsdest", "GET", "list-jmsdest", "JmsDest"},
 
         {"TransactionService", "recover-transactions", "POST", "recover-transactions", "Recover"},
-        {"JavaConfig", "generate-jvm-report", "POST", "generate-jvm-report", "Generate Report"}
+        {"JavaConfig", "generate-jvm-report", "POST", "generate-jvm-report", "Generate Report"},
+
+        {"ListAuthRealm", "__list-predefined-authrealm-classnames", "GET", "list-predefined-authrealm-classnames", "List Auth Realms"},
+        {"AuthRealm", "__list-group-names", "GET", "list-group-names", "List Group Names", "realmName=$parent"},
+        {"AuthRealm", "__supports-user-management", "GET", "supports-user-management", "Check Support", "realmName=$parent"}
     };
 
 

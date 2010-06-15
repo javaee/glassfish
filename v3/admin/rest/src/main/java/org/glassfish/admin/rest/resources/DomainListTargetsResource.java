@@ -34,33 +34,16 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import org.glassfish.admin.rest.TemplateListOfResource;
-public class ListAuthRealmResource extends TemplateListOfResource {
 
+//generated code...;
 
-	@Path("{Name}/")
-	public AuthRealmResource getAuthRealmResource(@PathParam("Name") String id) {
-		AuthRealmResource resource = resourceContext.getResource(AuthRealmResource.class);
-		resource.setBeanByKey(entity, id);
-		return resource;
-	}
-
-@Path("list-predefined-authrealm-classnames/")
-public ListAuthRealmListPredefinedAuthrealmClassnamesResource getListAuthRealmListPredefinedAuthrealmClassnamesResource() {
-ListAuthRealmListPredefinedAuthrealmClassnamesResource resource = resourceContext.getResource(ListAuthRealmListPredefinedAuthrealmClassnamesResource.class);
-return resource;
-}
-
-@Override
-public String[][] getCommandResourcesPaths() {
-return new String[][]{{"list-predefined-authrealm-classnames", "GET"}};
-}
-
-
-@Override
-public String getPostCommand() {
-	return "create-auth-realm";
-}
+public class DomainListTargetsResource extends org.glassfish.admin.rest.TemplateCommandGetResource {
+   public DomainListTargetsResource() {
+       super(
+          "DomainListTargets",
+          "__list-targets",
+          "GET",
+          (java.util.HashMap<String, String>) null ,
+          false);
+    }
 }

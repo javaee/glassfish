@@ -56,8 +56,9 @@ public class SupportsUserManagementCommand implements AdminCommand {
 
     @Inject
     com.sun.enterprise.config.serverbeans.Domain domain;
-    @Param()
-    String realname;
+    
+    @Param
+    String realmName;
 
     @Override
     public void execute(AdminCommandContext context) {
@@ -65,7 +66,7 @@ public class SupportsUserManagementCommand implements AdminCommand {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);
 
-        report.setMessage("" + su.supportsUserManagement(realname));
+        report.setMessage("" + su.supportsUserManagement(realmName));
 
     }
 }

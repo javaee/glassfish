@@ -56,9 +56,21 @@ AuthRealmListUsersResource resource = resourceContext.getResource(AuthRealmListU
 return resource;
 }
 
+@Path("list-group-names/")
+public AuthRealmListGroupNamesResource getAuthRealmListGroupNamesResource() {
+AuthRealmListGroupNamesResource resource = resourceContext.getResource(AuthRealmListGroupNamesResource.class);
+return resource;
+}
+
+@Path("supports-user-management/")
+public AuthRealmSupportsUserManagementResource getAuthRealmSupportsUserManagementResource() {
+AuthRealmSupportsUserManagementResource resource = resourceContext.getResource(AuthRealmSupportsUserManagementResource.class);
+return resource;
+}
+
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-user", "POST"}, {"delete-user", "DELETE"}, {"list-users", "GET"}};
+return new String[][]{{"create-user", "POST"}, {"delete-user", "DELETE"}, {"list-users", "GET"}, {"list-group-names", "GET"}, {"supports-user-management", "GET"}};
 }
 
 	@Path("property/")

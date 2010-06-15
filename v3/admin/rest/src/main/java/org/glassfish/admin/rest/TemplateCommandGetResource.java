@@ -48,6 +48,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.jersey.spi.container.ContainerRequest;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
@@ -92,7 +97,7 @@ import org.glassfish.api.ActionReport;
         MediaType.APPLICATION_FORM_URLENCODED})
     public StringResult executeCommand() {
         try {
-            java.util.Properties properties = new java.util.Properties();
+            Properties properties = new Properties();
             if (commandParams != null) {
 //formulate parent-link attribute for this command resource
 //Parent link attribute may or may not be the id/target attribute
@@ -101,6 +106,7 @@ import org.glassfish.api.ActionReport;
                 }
                 properties.putAll(commandParams);
             }
+            addQueryStringToProps(((ContainerRequest) requestHeaders).getQueryParameters(), properties);
 
             ActionReport actionReport = resourceUtil.runCommand(commandName, properties, RestService.getHabitat());
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
@@ -139,4 +145,13 @@ import org.glassfish.api.ActionReport;
 
         return optionsResult;
     }
+
+     protected void addQueryStringToProps(MultivaluedMap<String, String> qs, Properties data) {
+         for (Map.Entry<String, List<String>> entry : qs.entrySet()) {
+             String key = entry.getKey();
+             for (String value : entry.getValue()) {
+                 data.put(key, value); // TODO: Last one wins? Can't imagine we'll see List.size() > 1, but...
+             }
+         }
+     }
 }

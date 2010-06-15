@@ -87,9 +87,15 @@ DomainSetLogLevelResource resource = resourceContext.getResource(DomainSetLogLev
 return resource;
 }
 
+@Path("list-targets/")
+public DomainListTargetsResource getDomainListTargetsResource() {
+DomainListTargetsResource resource = resourceContext.getResource(DomainListTargetsResource.class);
+return resource;
+}
+
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, {"version", "GET"}, {"rotate-log", "POST"}, {"host-port", "GET"}, {"list-logger-levels", "GET"}, {"set-log-level", "POST"}};
+return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, {"version", "GET"}, {"rotate-log", "POST"}, {"host-port", "GET"}, {"list-logger-levels", "GET"}, {"set-log-level", "POST"}, {"list-targets", "GET"}};
 }
 
 	@Path("resources/")

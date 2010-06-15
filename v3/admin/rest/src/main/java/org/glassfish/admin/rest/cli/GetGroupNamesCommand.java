@@ -53,29 +53,26 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "__list-group-names")
 @Scoped(PerLookup.class)
 public class GetGroupNamesCommand implements AdminCommand {
-
-
     @Inject
     com.sun.enterprise.config.serverbeans.Domain domain;
-    @Param()
-    String realname;
-    @Param()
-    String username;
+    
+    @Param
+    String realmName;
+
+    @Param
+    String userName;
 
     @Override
     public void execute(AdminCommandContext context) {
         SecurityUtil su = new SecurityUtil(domain);
-        String[] list = su.getGroupNames(realname,username);
+        String[] list = su.getGroupNames(realmName,userName);
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);
         ActionReport.MessagePart part = report.getTopMessagePart();
 
         for (String s : list) {
-
             ActionReport.MessagePart childPart = part.addChild();
             childPart.setMessage(s);
         }
     }
-
-
 }
