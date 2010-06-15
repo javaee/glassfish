@@ -431,7 +431,7 @@ AS_ADMIN_PASSWORD=${admin.password}
 AS_ADMIN_ADMINPASSWORD=${admin.password}
 AS_ADMIN_MASTERPASSWORD=${master.password}
 </echo>
-  <antcall target="asadmin-common-ignore-fail-no-props">
+  <antcall target="asadmin-common-ignore-fail">
     <param name="admin.command" value="create-file-user" />
     <param name="operand.props"
       value="--user ${admin.user} --passwordfile ${user.password.file} --host ${admin.host} --port ${admin.port} --echo=true --terse=true --groups ${groups} --userpassword ${password} --authrealmname ${authrealmname} --target ${appserver.instance.name} ${user}"/>
@@ -444,7 +444,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <!-- ================================================================ -->
 <target name="delete-user-common" depends="init-common">
 <echo message="Deleting user ${user} in file realm" level="verbose"/>
-  <antcall target="asadmin-common-ignore-fail-no-props">
+  <antcall target="asadmin-common-ignore-fail">
     <param name="admin.command" value="delete-file-user" />
     <param name="operand.props"
       value="${user}"/>
