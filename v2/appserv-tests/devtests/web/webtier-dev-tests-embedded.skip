@@ -30,3 +30,22 @@ virtualServerTarget
 virtualServerUpdateHostsDynamicReconfig
 virtualServerUpdateHttpListenersDynamicReconfig
 pipelineQueueFull # this test hangs in embedded
+# These tests are not applicable to embedded as they use network-config.protocols.protocol.http-listener-1.http 
+authPassthroughGetRemoteAddress
+authPassthroughGetRemoteHost
+authPassthroughGetScheme
+authPassthroughRequestIsSecure
+authPassthroughSendRedirectFromJspWithHttpsServer
+authPassthroughSendRedirectHostRequestHeaderWithoutPort
+authPassthroughSendRedirectWithHttpsServerName
+chunkingDisabled
+cometEcho
+defaultResponseType
+dosSlowClient
+httpConnectorKeepAlive
+keepAliveTimeout
+proxyAuthCert
+proxyKeysize
+redirectPortLoadBalancer
+threadPoolIdleTimeout
+traceEnabled
