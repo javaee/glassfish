@@ -53,6 +53,8 @@ import com.sun.enterprise.deployment.RootDeploymentDescriptor;
  */
 public interface ProviderContainerContractInfo {
 
+    static final String DEFAULT_DS_NAME = "jdbc/__default";
+
     /**
      *
      * @return a class loader that is used to load persistence entities
@@ -122,7 +124,18 @@ public interface ProviderContainerContractInfo {
     void registerEMF(String unitName, String persistenceRootUri, RootDeploymentDescriptor containingBundle, EntityManagerFactory emf);
 
     /**
-     * Returns JTA DataSource override if any
+     * @return JTA DataSource override if any
      */
     String getJTADataSourceOverride();
+
+    /**
+     *
+     * @return default data source name to be used if user has not defined a data source
+     */
+    String getDefaultDataSourceName();
+
+    /**
+     * @return true if weaving is enabled for the current environment false otherwise
+     */
+    boolean isWeavingEnabled();
 }

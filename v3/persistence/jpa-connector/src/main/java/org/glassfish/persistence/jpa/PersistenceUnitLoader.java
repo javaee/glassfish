@@ -39,6 +39,7 @@ package org.glassfish.persistence.jpa;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
+import com.sun.enterprise.util.i18n.StringManager;
 import org.glassfish.persistence.common.Java2DBProcessorHelper;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.ActionReport;
@@ -49,6 +50,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.ValidationMode;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceUnitTransactionType;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
@@ -57,7 +59,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Loads emf correspoding to a PersistenceUnit. Executes java2db if required.
+ * Loads emf corresponding to a PersistenceUnit. Executes java2db if required.
  * @author Mitesh Meswani
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -80,6 +82,8 @@ public class PersistenceUnitLoader {
     // TODO change logger name from DPL_LOGGER to persistence logger
     private static Logger logger = LogDomains.getLogger(PersistenceUnitLoader.class, LogDomains.DPL_LOGGER);
 
+    private static final StringManager localStrings = StringManager.getManager(PersistenceUnitLoader.class);    
+
     /**
      * Integration properties that include Java2DB support
      */
@@ -89,6 +93,9 @@ public class PersistenceUnitLoader {
      * Integration properties for loading PUs for execution
      */
     private static Map<String, String> integrationPropertiesWithoutJava2DB;
+
+    /** EclipseLink property name to enable/disable weaving **/
+    private static final String ECLIPSELINK_WEAVING_PROPERTY = "eclipselink.weaving"; // NOI18N
 
     /** Name of property used to specify validation mode */
     private static final String VALIDATION_MODE_PROPERTY = "javax.persistence.validation.mode";
@@ -139,6 +146,7 @@ public class PersistenceUnitLoader {
 
         checkForDataSourceOverride(pud);
 
+        calculateDefaultDataSource(pud);
 
         PersistenceUnitInfo pInfo = new PersistenceUnitInfoImpl(pud, providerContainerContractInfo);
 
@@ -179,18 +187,19 @@ public class PersistenceUnitLoader {
             java2db = processor.isJava2DbPU(pud);
         }
 
-        Map<String, ?> overrides =  (java2db)? integrationPropertiesWithJava2DB : integrationPropertiesWithoutJava2DB;
+        Map<String, Object> overRides = new HashMap<String, Object>( (java2db)? integrationPropertiesWithJava2DB : integrationPropertiesWithoutJava2DB );
 
         // Check if the persistence unit requires Bean Validation
         ValidationMode validationMode = getValidationMode(pud);
         if(validationMode == ValidationMode.AUTO || validationMode == ValidationMode.CALLBACK ) {
-            // Declare a temp variable to let compiler allow put below.
-            Map<String, Object> tempOverride = new HashMap<String, Object>(overrides);
-            tempOverride.put(VALIDATOR_FACTORY, providerContainerContractInfo.getValidatorFactory());
-            overrides = tempOverride;
+            overRides.put(VALIDATOR_FACTORY, providerContainerContractInfo.getValidatorFactory());
         }
 
-        EntityManagerFactory emf = provider.createContainerEntityManagerFactory(pInfo, overrides);
+        if(!providerContainerContractInfo.isWeavingEnabled()) {
+            overRides.put(ECLIPSELINK_WEAVING_PROPERTY, System.getProperty(ECLIPSELINK_WEAVING_PROPERTY,"false")); // NOI18N
+        }
+
+        EntityManagerFactory emf = provider.createContainerEntityManagerFactory(pInfo, overRides);
 
         if (fineMsgLoggable) {
             logger.logp(Level.FINE, "PersistenceUnitLoader", "loadPU", // NOI18N
@@ -209,7 +218,7 @@ public class PersistenceUnitLoader {
     }
 
     /**
-     * If use provided data source is overridde, update PersistenceUnitDescriptor with it
+     * If use provided data source is overridden, update PersistenceUnitDescriptor with it
      */
     private void checkForDataSourceOverride(PersistenceUnitDescriptor pud) {
         String jtaDataSourceOverride = providerContainerContractInfo.getJTADataSourceOverride();
@@ -218,8 +227,82 @@ public class PersistenceUnitLoader {
         }
     }
 
+    /** Calculate and set the default data source in given <code>pud</code> **/
+    private void calculateDefaultDataSource(PersistenceUnitDescriptor pud) {
+        String jtaDataSourceName = calculateJtaDataSourceName(pud.getTransactionType(), pud.getJtaDataSource(), pud.getNonJtaDataSource(), pud.getName());
+        String nonJtaDataSourceName = calculateNonJtaDataSourceName(pud.getJtaDataSource(), pud.getNonJtaDataSource());
+        pud.setJtaDataSource(jtaDataSourceName);
+        pud.setNonJtaDataSource(nonJtaDataSourceName);
+    }
+
     /**
-     * If the app is using Toplink Essentials as the provider and Toplink Essentials is not available in classpath
+     * @return DataSource Name to be used as JTA data source.
+     */
+    private String calculateJtaDataSourceName(String transactionType, String userSuppliedJTADSName, String userSuppliedNonJTADSName, String puName) {
+        /*
+         * Use DEFAULT_DS_NAME iff user has not specified both jta-ds-name
+         * and non-jta-ds-name; and user has specified transaction-type as JTA.
+         * See Gf issue #1204 as well.
+         */
+        if (PersistenceUnitTransactionType.valueOf(transactionType) != PersistenceUnitTransactionType.JTA) {
+            logger.logp(Level.FINE,
+                    "PersistenceUnitInfoImpl", // NOI18N
+                    "_getJtaDataSource", // NOI18N
+                    "This PU is configured as non-jta, so jta-data-source is null"); // NOI18N
+            return null; // this is a non-jta-data-source
+        }
+        String DSName;
+        if (!isNullOrEmpty(userSuppliedJTADSName)) {
+            DSName = userSuppliedJTADSName; // use user supplied jta-ds-name
+        } else if (isNullOrEmpty(userSuppliedNonJTADSName )) {
+            DSName = providerContainerContractInfo.getDefaultDataSourceName();
+        } else {
+            String msg = localStrings.getString("puinfo.jta-ds-not-configured", // NOI18N
+                    new Object[] {puName});
+            throw new RuntimeException(msg);
+        }
+        logger.logp(Level.FINE, "PersistenceUnitLoaderImpl", // NOI18N
+                "_getJtaDataSource", "JTADSName = {0}", // NOI18N
+                DSName);
+        return DSName;
+    }
+
+    private String calculateNonJtaDataSourceName(String userSuppliedJTADSName, String userSuppliedNonJTADSName ) {
+        /*
+         * If non-JTA name is *not* provided
+         * - use the JTA DS name (if supplied)
+         * If non-JTA name is provided
+         * - use non-JTA DS name
+         * (this is done for ease of use, because user does not have to
+         * explicitly mark a connection pool as non-transactional.
+         * Calling lookupNonTxDataSource() with a resource which is
+         * already configured as non-transactional has no side effects.)
+         * If neither non-JTA nor JTA name is provided
+         * use DEFAULT_DS_NAME.
+         */
+        String DSName;
+        if (!isNullOrEmpty(userSuppliedNonJTADSName)) {
+            DSName = userSuppliedNonJTADSName;
+        } else {
+            if (!isNullOrEmpty(userSuppliedJTADSName)) {
+                DSName = userSuppliedJTADSName;
+            } else {
+                DSName = providerContainerContractInfo.getDefaultDataSourceName();
+            }
+        }
+        logger.logp(Level.FINE,
+                "PersistenceUnitInfoImpl", // NOI18N
+                "_getNonJtaDataSource", "nonJTADSName = {0}", // NOI18N
+                DSName);
+        return DSName;
+    }
+
+    static boolean isNullOrEmpty(String s) {
+        return s == null || s.length() == 0;
+    }
+
+    /**
+     * If the app is using Toplink Essentials as the provider and TopLink Essentials is not available in classpath
      * We try to upgrade the app to use EclipseLink.
      * Change the provider to EclipseLink and translate "toplink.*" properties to "eclipselink.*" properties
      * @param pud
@@ -339,39 +422,20 @@ public class PersistenceUnitLoader {
 
         Map<String, String> props = new HashMap<String, String>();
 
-        final String ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY =
-                "eclipselink.target-server"; // NOI18N
+        final String ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY = "eclipselink.target-server"; // NOI18N
         props.put(ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY,
-                System.getProperty(ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY,
-                        "SunAS9")); // NOI18N
-
-        final String ECLIPSELINK_WEAVING_PROPERTY =
-                "eclipselink.weaving"; // NOI18N
-
-        // Check if we are running in embedded mode. Disable weaving for EclipseLink in such case.
-        if (com.sun.enterprise.security.common.Util.isEmbeddedServer()) { //TODO Implement this check correctly once issue 9320 is fixed
-            props.put(ECLIPSELINK_WEAVING_PROPERTY,
-                    System.getProperty(ECLIPSELINK_WEAVING_PROPERTY,
-                            "false")); // NOI18N
-
-            //TODO Need to check whether weaving in embedded mode is an issue with Hibernate. If yes, property USE_CLASS_ENHANCER seems to disable it
-            // move this if block to bottom adding all properties required by embedded together if hibernate requires this
-        }
+                System.getProperty(ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY, "SunAS9")); // NOI18N
 
         // TopLink specific properties:
         // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=249
-        final String TOPLINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY =
-                "toplink.target-server"; // NOI18N
+        final String TOPLINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY = "toplink.target-server"; // NOI18N
         props.put(TOPLINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY,
-                System.getProperty(TOPLINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY,
-                        "SunAS9")); // NOI18N
+                System.getProperty(TOPLINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY, "SunAS9")); // NOI18N
 
         // Hibernate specific properties:
-        final String HIBERNATE_TRANSACTION_MANAGER_LOOKUP_CLASS_PROPERTY =
-                "hibernate.transaction.manager_lookup_class"; // NOI18N
+        final String HIBERNATE_TRANSACTION_MANAGER_LOOKUP_CLASS_PROPERTY = "hibernate.transaction.manager_lookup_class"; // NOI18N
         props.put(HIBERNATE_TRANSACTION_MANAGER_LOOKUP_CLASS_PROPERTY,
-                System.getProperty(HIBERNATE_TRANSACTION_MANAGER_LOOKUP_CLASS_PROPERTY,
-                        "org.hibernate.transaction.SunONETransactionManagerLookup")); // NOI18N
+                System.getProperty(HIBERNATE_TRANSACTION_MANAGER_LOOKUP_CLASS_PROPERTY, "org.hibernate.transaction.SunONETransactionManagerLookup")); // NOI18N
 
         // use an unmodifiable map as we pass this to provider and we don't
         // provider to change this.
@@ -406,18 +470,14 @@ public class PersistenceUnitLoader {
         // Create map for non-Java2DB case, which is the load or Java2DB is not specified.
         Map<String, String> nonjava2dbProps = new HashMap<String, String>(baseIntegrationProperties);
 
-        final String ECLIPSELINK_DDL_GENERATION_MODE_PROPERTY =
-                "eclipselink.ddl-generation.output-mode"; // NOI18N
+        final String ECLIPSELINK_DDL_GENERATION_MODE_PROPERTY = "eclipselink.ddl-generation.output-mode"; // NOI18N
         nonjava2dbProps.put(ECLIPSELINK_DDL_GENERATION_MODE_PROPERTY,
-                System.getProperty(ECLIPSELINK_DDL_GENERATION_MODE_PROPERTY,
-                        "none")); // NOI18N
+                System.getProperty(ECLIPSELINK_DDL_GENERATION_MODE_PROPERTY, "none")); // NOI18N
 
         // These constants are defined in the entity-persistence module. Redefining them for now.
-        final String TOPLINK_DDL_GENERATION_MODE_PROPERTY =
-                "toplink.ddl-generation.output-mode"; // NOI18N
+        final String TOPLINK_DDL_GENERATION_MODE_PROPERTY = "toplink.ddl-generation.output-mode"; // NOI18N
         nonjava2dbProps.put(TOPLINK_DDL_GENERATION_MODE_PROPERTY,
-                System.getProperty(TOPLINK_DDL_GENERATION_MODE_PROPERTY,
-                        "none")); // NOI18N
+                System.getProperty(TOPLINK_DDL_GENERATION_MODE_PROPERTY, "none")); // NOI18N
 
         // use an unmodifiable map as we pass this to provider and we don't
         // provider to change this.

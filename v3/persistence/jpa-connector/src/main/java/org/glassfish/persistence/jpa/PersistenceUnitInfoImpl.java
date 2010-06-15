@@ -70,17 +70,13 @@ import org.glassfish.deployment.common.DeploymentUtils;
 public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     /* This class is public because it is used in verifier */
 
-    private static final String DEFAULT_PROVIDER_NAME =
-            "org.eclipse.persistence.jpa.PersistenceProvider"; // NOI18N
-
-    private static final String DEFAULT_DS_NAME = "jdbc/__default";  // NOI18N
+    private static final String DEFAULT_PROVIDER_NAME = "org.eclipse.persistence.jpa.PersistenceProvider"; // NOI18N
 
     // We allow the default provider to be specified using -D option.
     private static String defaultProvider;
 
     private static Logger logger = LogDomains.getLogger(PersistenceUnitInfoImpl.class, LogDomains.LOADER_LOGGER);
 
-    //TODO Need to move the relavent strings from the original bundle to somewhere here
     private static final StringManager localStrings = StringManager.getManager(PersistenceUnitInfoImpl.class);
 
     private PersistenceUnitDescriptor persistenceUnitDescriptor;
@@ -102,15 +98,14 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
         this.persistenceUnitDescriptor = persistenceUnitDescriptor;
         this.providerContainerContractInfo = providerContainerContractInfo;
         jarFiles = _getJarFiles();
-        String jtaDataSourceName = _calculateJtaDataSourceName();
-        String nonJtaDataSourceName = _calculateNonJtaDataSourceName();
+        String jtaDataSourceName = persistenceUnitDescriptor.getJtaDataSource();
+        String nonJtaDataSourceName = persistenceUnitDescriptor.getNonJtaDataSource();
         try {
             jtaDataSource = jtaDataSourceName == null ? null : providerContainerContractInfo.lookupDataSource(jtaDataSourceName);
             nonJtaDataSource = nonJtaDataSourceName == null ? null : providerContainerContractInfo.lookupNonTxDataSource(nonJtaDataSourceName);
         } catch (NamingException e) {
 			throw new RuntimeException(e);
 		}
-
     }
 
     // Implementation of PersistenceUnitInfo interface
@@ -251,68 +246,6 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
         return result.toString();
     }
 
-    protected String _calculateJtaDataSourceName() {
-        /*
-         * Use DEFAULT_DS_NAME iff user has not specified both jta-ds-name
-         * and non-jta-ds-name; and user has specified transaction-type as JTA.
-         * See Gf issue #1204 as well.
-         */
-        if (getTransactionType() != PersistenceUnitTransactionType.JTA) {
-            logger.logp(Level.FINE,
-                    "PersistenceUnitInfoImpl", // NOI18N
-                    "_getJtaDataSource", // NOI18N
-                    "This PU is configured as non-jta, so jta-data-source is null"); // NOI18N
-            return null; // this is a non-jta-data-source
-        }
-        String DSName;
-        String userSuppliedJTADSName = persistenceUnitDescriptor.getJtaDataSource();
-        if (!isNullOrEmpty(userSuppliedJTADSName)) {
-            DSName = userSuppliedJTADSName; // use user supplied jta-ds-name
-        } else if (isNullOrEmpty(persistenceUnitDescriptor.getNonJtaDataSource())) {
-            DSName = DEFAULT_DS_NAME;
-        } else {
-            String msg = localStrings.getString("puinfo.jta-ds-not-configured", // NOI18N
-                    new Object[] {persistenceUnitDescriptor.getName()});
-            throw new RuntimeException(msg);
-        }
-        logger.logp(Level.FINE, "PersistenceUnitLoaderImpl", // NOI18N
-                "_getJtaDataSource", "JTADSName = {0}", // NOI18N
-                DSName);
-        return DSName;
-    }
-
-    protected String _calculateNonJtaDataSourceName() {
-        /*
-         * If non-JTA name is *not* provided
-         * - use the JTA DS name (if supplied)
-         * If non-JTA name is provided
-         * - use non-JTA DS name
-         * (this is done for ease of use, because user does not have to
-         * explicitly mark a connection pool as non-transactional.
-         * Calling lookupNonTxDataSource() with a resource which is
-         * already configured as non-transactional has no side effects.)
-         * If neither non-JTA nor JTA name is provided
-         * use DEFAULT_DS_NAME.
-         */
-        String DSName;
-        String userSuppliedNonJTADSName = persistenceUnitDescriptor.getNonJtaDataSource();
-        if (!isNullOrEmpty(userSuppliedNonJTADSName)) {
-            DSName = userSuppliedNonJTADSName;
-        } else {
-            String userSuppliedJTADSName = persistenceUnitDescriptor.getJtaDataSource();
-            if (!isNullOrEmpty(userSuppliedJTADSName)) {
-                DSName = userSuppliedJTADSName;
-            } else {
-                DSName = DEFAULT_DS_NAME;
-            }
-        }
-        logger.logp(Level.FINE,
-                "PersistenceUnitInfoImpl", // NOI18N
-                "_getNonJtaDataSource", "nonJTADSName = {0}", // NOI18N
-                DSName);
-        return DSName;
-    }
-
     private List<URL> _getJarFiles() {
         List<String> jarFileNames = new ArrayList<String>(
                 persistenceUnitDescriptor.getJarFiles());
@@ -429,14 +362,10 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
         return defaultProvider;
     }
 
-    private static boolean isNullOrEmpty(String s) {
-        return s == null || s.length() == 0;
-    }
-
     public static String getPersistenceProviderClassNameForPuDesc(
             PersistenceUnitDescriptor persistenceUnitDescriptor) {
         String provider = persistenceUnitDescriptor.getProvider();
-        if (isNullOrEmpty(provider)) {
+        if (PersistenceUnitLoader.isNullOrEmpty(provider)) {
             provider = getDefaultprovider();
         }
         return provider;

@@ -88,7 +88,6 @@ public class Java2DBProcessorHelper {
      * had been used.
      **/
     private final static String DEFAULT_NAME = "default"; // NOI18N
-    private final static String DEFAULT_RESOURCE_NAME = "jdbc/__default"; // NOI18N
 
     /**
      * Key for storing and retrieving corresponding values.
@@ -383,7 +382,6 @@ public class Java2DBProcessorHelper {
      * Sets jndiName
      */
     public void setJndiName(String jndiName, String bundleName) {
-        jndiName = (jndiName == null) ? DEFAULT_RESOURCE_NAME : jndiName;
         deploymentContextProps.setProperty(RESOURCE_JNDI_NAME + bundleName, jndiName);
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("---> " + RESOURCE_JNDI_NAME + bundleName + " " + jndiName);

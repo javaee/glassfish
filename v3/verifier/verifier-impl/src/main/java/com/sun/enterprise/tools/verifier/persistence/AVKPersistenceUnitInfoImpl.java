@@ -49,6 +49,7 @@ import org.glassfish.persistence.jpa.PersistenceUnitInfoImpl;
 import org.glassfish.persistence.jpa.ProviderContainerContractInfo;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.persistence.jpa.ProviderContainerContractInfoBase;
 
 /**
  * This class implements {@link javax.persistence.spi.PersistenceUnitInfo}
@@ -64,7 +65,7 @@ public class AVKPersistenceUnitInfoImpl extends PersistenceUnitInfoImpl
             PersistenceUnitDescriptor persistenceUnitDescriptor,
             final String applicationLocation,
             final InstrumentableClassLoader classLoader) {
-        super(persistenceUnitDescriptor, new ProviderContainerContractInfo() {
+        super(persistenceUnitDescriptor, new ProviderContainerContractInfoBase(null) {
             public ClassLoader getClassLoader()
             {
                 return (ClassLoader)classLoader;

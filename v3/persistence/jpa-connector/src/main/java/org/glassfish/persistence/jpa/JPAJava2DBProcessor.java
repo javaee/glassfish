@@ -212,7 +212,7 @@ public class JPAJava2DBProcessor {
         helper.setCreateTablesValue(userCreateTables && !ddlMode.equals(DDL_SQL_SCRIPT_GENERATION), 
                 bundle.getName());
 
-        helper.setJndiName(bundle.getJtaDataSource(), bundle.getName()); // XXX FIX-IT for default and other logic
+        helper.setJndiName(bundle.getJtaDataSource(), bundle.getName());
         constructJdbcFileNames(bundle);
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Processing request to create files - create file: " + //NOI18N

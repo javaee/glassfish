@@ -51,14 +51,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.ClassTransformer;
-import javax.sql.DataSource;
 import javax.validation.ValidatorFactory;
 
 import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.persistence.jpa.ProviderContainerContractInfo;
+import org.glassfish.persistence.jpa.ProviderContainerContractInfoBase;
 
 /**
  * Implements the internal GlassFish interface which all persistence provider
@@ -66,12 +64,11 @@ import org.glassfish.persistence.jpa.ProviderContainerContractInfo;
  *
  * @author tjquinn
  */
-public class ProviderContainerContractInfoImpl implements ProviderContainerContractInfo {
+public class ProviderContainerContractInfoImpl extends ProviderContainerContractInfoBase {
 
     private final ACCClassLoader classLoader;
     private final Instrumentation inst;
     private final String applicationLocation;
-    private final ConnectorRuntime connectorRuntime;
 
     private final List<PropertyChangeListener> transformerAdditionListeners =
             new ArrayList<PropertyChangeListener>();
@@ -91,10 +88,10 @@ public class ProviderContainerContractInfoImpl implements ProviderContainerContr
             final Instrumentation inst,
             final String applicationLocation,
             final ConnectorRuntime connectorRuntime) {
+        super(connectorRuntime);
         this.classLoader = classLoader;
         this.inst = inst;
         this.applicationLocation = applicationLocation;
-        this.connectorRuntime = connectorRuntime;
     }
 
     public ClassLoader getClassLoader() {
@@ -116,14 +113,6 @@ public class ProviderContainerContractInfoImpl implements ProviderContainerContr
 
     public String getApplicationLocation() {
         return applicationLocation;
-    }
-
-    public DataSource lookupDataSource(String dataSourceName) throws NamingException {
-        return (DataSource) connectorRuntime.lookupPMResource(dataSourceName, false);
-    }
-
-    public DataSource lookupNonTxDataSource(String dataSourceName) throws NamingException {
-        return (DataSource) connectorRuntime.lookupPMResource(dataSourceName, false);
     }
 
     public ValidatorFactory getValidatorFactory() {
