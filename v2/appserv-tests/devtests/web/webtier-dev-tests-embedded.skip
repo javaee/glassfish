@@ -30,12 +30,13 @@ virtualServerTarget
 virtualServerUpdateHostsDynamicReconfig
 virtualServerUpdateHttpListenersDynamicReconfig
 pipelineQueueFull # this test hangs in embedded
-# These tests are not applicable to embedded as they use network-config.protocols & network-config.network-listeners
+# These tests are not applicable to embedded as they use network-config.protocols, network-config.network-listeners, server.web-container
 authPassthroughGetRemoteAddress
 authPassthroughGetRemoteHost
 authPassthroughGetScheme
 authPassthroughRequestIsSecure
 authPassthroughSendRedirectFromJspWithHttpsServer
+authPassthroughSendRedirectFromJspWithHttpsServerName
 authPassthroughSendRedirectHostRequestHeaderWithoutPort
 authPassthroughSendRedirectWithHttpsServerName
 chunkingDisabled
@@ -54,7 +55,10 @@ proxyAuthCert
 proxyKeysize
 redirectPort
 redirectPortLoadBalancer
+requestDispatcherMaxDepth
 servletSSLRequestAttributes
+sessionIdCustomGenerator
+sessionPropertyEnableCookiesInstanceLevel
 ssl
 sslClientAuthUnprotectedResourceGetClientCert
 sslCookie
@@ -64,3 +68,4 @@ traceEnabled
 virtualServerChangeHttpListenerWebappNoLongerAccessible
 virtualServerModifyHttpListenerPortAccessWebapp
 weldJsfLoginPage
+servlet-3.0/transportProtectedAnnotation
