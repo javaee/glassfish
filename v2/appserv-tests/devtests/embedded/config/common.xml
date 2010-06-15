@@ -385,62 +385,18 @@ Variables Used:
 <!-- Target to execute asadmin commands  -->
 <!-- ================================================================ -->
 <target name="asadmin-common">
-    <antcall target="asadmin-common-regular"/>
-    <antcall target="asadmin-common-embedded"/>
-</target>
-
-<target name="asadmin-common-regular" unless="env.EMBEDDED">
-  <echo message="Doing admin task ${admin.command}" level="verbose"/>
-  <echo message="Operand ${operand.props}"  level="verbose"/>
-  <echo message="asadmin ${admin.command} ${as.props} ${operand.props}"/>
-    <exec executable="${ASADMIN}" failonerror="true">
-        <arg line="${admin.command} ${as.props} ${operand.props}" />        
-    </exec>
-</target>
-
-<target name="asadmin-common-embedded" if="env.EMBEDDED">
   <echo message="Doing admin task ${admin.command} in EMBEDDEDMODE " level="verbose"/>
   <echo message="Operand ${operand.props}"  level="verbose"/>
-  <echo message="asadmin ${admin.command} ${as.props} ${operand.props}"/>
+  <echo message="asadmin ${admin.command} ${operand.props}"/>
   <glassfish-embedded-admin commandLine="${admin.command} ${operand.props}" />
 </target>
 
 <target name="asadmin-common-ignore-fail">
-    <antcall target="asadmin-common-ignore-fail-regular"/>
-    <antcall target="asadmin-common-ignore-fail-embedded"/>
-</target>
-
-<target name="asadmin-common-ignore-fail-regular" unless="env.EMBEDDED">
-  <echo message="Doing admin task ${admin.command} (ignore failures)" 
-      level="verbose"/>
-  <echo message="Operand ${operand.props}"  level="verbose"/>
-  <echo message="asadmin ${admin.command} ${as.props} ${operand.props}"/>
-    <exec executable="${ASADMIN}" failonerror="false">
-        <arg line="${admin.command} ${as.props} ${operand.props}" />        
-    </exec>
-</target>
-
-<target name="asadmin-common-ignore-fail-embedded" if="env.EMBEDDED">
   <echo message="Doing admin task ${admin.command} in EMBEDDEDMODE (ignore failures)"
       level="verbose"/>
   <echo message="Operand ${operand.props}"  level="verbose"/>
   <echo message="asadmin ${admin.command} ${operand.props}"/>
   <glassfish-embedded-admin commandLine="${admin.command} ${operand.props}"/>
-</target>
-
-<target name="asadmin-common-ignore-fail-no-props">
-    <antcall target="asadmin-common-ignore-fail-regular-no-props"/>
-    <antcall target="asadmin-common-ignore-fail-embedded"/>
-</target>
-
-<target name="asadmin-common-ignore-fail-regular-no-props" unless="env.EMBEDDED">
-  <echo message="Doing admin task ${admin.command} (ignore failures)"
-      level="verbose"/>
-  <echo message="Operand ${operand.props}"  level="verbose"/>
-  <echo message="asadmin ${admin.command} ${as.props} ${operand.props}"/>
-    <exec executable="${ASADMIN}" failonerror="false">
-        <arg line="${admin.command} ${as.props} ${operand.props}" />
-    </exec>
 </target>
 
 <!-- Target to execute a batchfile of asadmin commands  -->
@@ -992,10 +948,8 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <echo message="Validate the static check results" level="verbose"/>
 </target>
 
-
 <!-- deploy the applications in AppServ  -->
 <target name="deploy-common" depends="init-common">
-    <antcall target="deploy-common-embedded"/>
     <antcall target="deploy-common-pe"/>
     <antcall target="deploy-common-ee"/>
 </target>       
@@ -1005,25 +959,10 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <antcall target="deploy-verify-common-ee"/>
 </target>       
 
-<target name="deploy-common-embedded" if="env.EMBEDDED">
-        <glassfish-embedded-deploy app="${assemble.dir}/${appname}App.ear" name="${appname}" libraries="${libraries}"/>
-</target>
-
-<target name="deploy-common-pe" depends="init-common" unless="env.EMBEDDED">
-  <property name="deployed.app" value="${assemble.dir}/${appname}App.ear"/>
-   <property name="extra-params" value=""/>
-  <exec executable="${ASADMIN}" failonerror="false">
-    <arg line="deploy"/>
-    <arg line="${as.props}"/>    
-    <arg line="${extra-params}"/>    
-    <arg line="--target ${appserver.instance.name}"/>
-    <arg line="--retrieve ${assemble.dir}"/>
-    <arg line="--libraries ${libraries}"/>
-<!-- deployed.app defaults to ${assemble.dir}/${appname}App.ear defined in properties.xml-->
-    <arg line="${deployed.app}"/>
-  </exec>
+<target name="deploy-common-pe" depends="init-common">
+  <glassfish-embedded-deploy app="${assemble.dir}/${appname}App.ear" name="${appname}" libraries="${libraries}"/>
   <echo message="Deployment on target server ${appserver.instance.name} successful"/>
-   </target>
+</target>
 
 <target name="deploy-common-ee" depends="init-common" if="ee">      
   <echo message="Deploying in EE..."/>
@@ -1085,9 +1024,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <!-- deploy the standalone war in AppServ  -->
 <target name="deploy-war-common">
-<antcall target ="glassfish-embedded-deploy" />
-<antcall target ="deploy-war-commonpe"/>
-<antcall target ="deploy-war-commonee"/>
+    <antcall target ="glassfish-embedded-deploy"/>
 </target>
 
 <taskdef name="glassfish-embedded-deploy" classname="org.glassfish.ant.embedded.tasks.DeployTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar:${env.GF_HOME}/extras/embedded/all/target/glassfish-embedded-all.jar:${env.S1AS_HOME}/modules/ant.jar"/>
@@ -1109,8 +1046,8 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 </target>
 
 <target name="glassfish-embedded-deploy" if="env.EMBEDDED">
-        <echo> === EMBEDDED DEPLOYING === </echo>
-        <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" name="${appname}" libraries="${libraries}"/>
+    <echo> === EMBEDDED DEPLOYING === </echo>
+    <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" name="${appname}" libraries="${libraries}"/>
 </target>
 
 <target name="glassfish-embedded-undeploy" if="env.EMBEDDED">
@@ -1118,77 +1055,12 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <glassfish-embedded-undeploy name="${appname}"/>
 </target>
 
-<target name="deploy-war-commonpe" depends="init-common" unless="ee" if="env.REGULAR">
-  <echo message="Deploying ${assemble.dir}/${appname}-web.war from ${basedir}." 
-      level="verbose"/>
-  <property name="precompilejsp" value="true"/>
-  <property name="force" value="false"/>
-  <exec executable="${ASADMIN}" failonerror="false">
-    <arg line="deploy"/>
-    <arg line="${as.props}"/>
-    <arg line="--contextroot ${contextroot}"/>
-    <arg line="--precompilejsp=${precompilejsp}"/>
-    <arg line="--force=${force}"/>
-    <arg line="--upload=true"/>
-    <arg line="--target ${appserver.instance.name}"/>	
-    <arg line="--libraries ${libraries}"/>
-    <arg line="${assemble.dir}/${appname}-web.war"/>
-  </exec>
-</target> 
-
-<target name="deploy-war-commonee" if="env.REGULAR">
-  <property name="precompilejsp" value="true"/>
-  <property name="force" value="false"/>
-  <exec executable="${ASADMIN}" failonerror="false">
-    <arg line="deploy"/>
-    <arg line="${as.props}"/>
-    <arg line="--type web"/>
-    <arg line="--contextroot ${contextroot}"/>
-    <arg line="--precompilejsp=${precompilejsp}"/>
-    <arg line="--force=${force}"/>
-    <arg line="--upload=true"/>
-    <arg line="--target ${appserver.instance.name}"/>	
-    <arg line="--libraries ${libraries}"/>
-    <arg line="${assemble.dir}/${appname}-web.war"/>
-  </exec>
-</target>
-
 <!-- deploy the standalone war in AppServ without specifying any
      contextroot argument, so that the context-root specified in
      sun-web.xml takes effect
 -->
 <target name="deploy-war-no-context-root" depends="init-common">
-    <antcall target ="deploy-war-no-context-root-pe"/>
-    <antcall target ="deploy-war-no-context-root-ee"/>
-</target>
-
-<target name="deploy-war-no-context-root-pe" unless="ee">
-    <exec executable="${ASADMIN}" failonerror="false">
-    <arg line="deploy"/>
-    <arg line="--user ${admin.user}"/>
-    <arg line="--passwordfile ${admin.password.file}"/>
-    <arg line="--host ${admin.host}"/>
-    <arg line="--port ${admin.port}"/>
-    <arg line="--upload=true"/>
-    <arg line="--target ${appserver.instance.name}"/>
-    <arg line="--libraries ${libraries}"/>
-    <arg line="${assemble.dir}/${appname}-web.war"/>
-    </exec>
-</target>
-
-<target name="deploy-war-no-context-root-ee" if="ee">
-    <exec executable="${ASADMIN}" failonerror="false">
-    <arg line="deploy"/>
-    <arg line="--user ${admin.user}"/>
-    <arg line="--passwordfile ${admin.password.file}"/>
-    <arg line="--host ${admin.host}"/>
-    <arg line="--port ${admin.port}"/>
-    <arg line="--type web"/>
-    <arg line="--upload=true"/>
-    <arg line="--target ${appserver.instance.name}"/>
-    <arg line="--libraries ${libraries}"/>
-    <arg line="${assemble.dir}/${appname}-web.war"/>
-    </exec>
+    <antcall target ="glassfish-embedded-deploy"/>
 </target>
 
 <!-- deploy the standalone jar in AppServ  -->
@@ -1238,22 +1110,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <!--  undeploy the standalone war in AppServ  -->
 <target name="undeploy-war-common" depends="init-common" >
-    <antcall target="undeploy-war-common-regular" />
-    <antcall target="undeploy-war-common-embedded" />
-</target>
-
-<target name="undeploy-war-common-regular" if="env.REGULAR">
-    <echo message="Undeploying warfile ${appname}-web from 
-        ${assemble.dir}/${appname}-web.war from ${basedir}." level="verbose"/>
-  <exec executable="${ASADMIN}" failonerror="false">
-    <arg line="undeploy"/>
-    <arg line="${as.props}"/>
-    <arg line="--target ${appserver.instance.name}"/>	
-    <arg line="${appname}-web"/>
-  </exec>
-</target> 
-
-<target name="undeploy-war-common-embedded" if="env.EMBEDDED">
     <echo message="Undeploying embedded====" />
     <antcall target="glassfish-embedded-undeploy"/>
 </target>
@@ -1277,7 +1133,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <arg line="${appname}-client"/>
   </exec>
 </target>  
-
 
 <!-- run appclient in AppServ  -->
 <target name="runclient-common" depends="init-common">
