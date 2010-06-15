@@ -342,6 +342,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link MonitoringService }
      */
     @Element(required=true)
+    @NotNull
     MonitoringService getMonitoringService();
 
     /**
