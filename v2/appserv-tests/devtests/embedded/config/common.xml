@@ -1073,24 +1073,8 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <!--  undeploy the applications in AppServ  -->
 <target name="undeploy-common" depends="init-common">
-    <antcall target="undeploy-common-regular" />
-    <antcall target="undeploy-war-common-embedded" />
-</target>
-
-<target name="undeploy-common-regular" if="env.REGULAR">
-  <property name="deployedapp.name" value="${appname}App"/>
-  <property name="extra-params" value=""/>
-  <exec executable="${ASADMIN}" failonerror="false">
-    <arg line="undeploy"/>
-    <arg line="${as.props}"/>
-<!--
-<arg line=type ${apptype}/>
--->
-    <arg line="--target ${appserver.instance.name}"/>
-    <arg line="${extra-params}"/>
-<!-- deployedapp.name defaults to {appname}App.declared in properties.xml-->
-    <arg line="${deployedapp.name}"/>
-  </exec>
+    <echo message="Undeploying embedded====" />
+    <antcall target="glassfish-embedded-undeploy"/>
 </target>
 
 <!--  undeploy the standalone war in AppServ  -->
