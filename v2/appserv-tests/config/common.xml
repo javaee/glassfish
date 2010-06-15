@@ -964,6 +964,17 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <echo message="Validate the static check results" level="verbose"/>
 </target>
 
+<target name="deploy-dir" depends="init-common">
+    <echo message="Deploying files: ${assemble.dir}" level="verbose"/>
+        <exec executable="${ASADMIN}" failonerror="false">
+            <arg line="deploy"/>
+            <arg line="${as.props}"/>
+            <arg line="--contextroot ${contextroot}"/>
+            <arg line="--target ${appserver.instance.name}"/>
+            <arg line="--name ${appname}-web"/>
+            <arg line="${assemble.dir}"/>
+        </exec>
+</target>
 
 <!-- deploy the applications in AppServ  -->
 <target name="deploy-common" depends="init-common">
