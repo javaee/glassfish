@@ -219,6 +219,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link Clusters }
      */
     @Element
+    @NotNull
     Clusters getClusters();
 
     /**
