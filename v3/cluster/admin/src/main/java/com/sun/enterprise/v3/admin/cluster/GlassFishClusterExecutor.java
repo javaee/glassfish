@@ -111,8 +111,9 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
         }
         org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
         String targetName = parameters.getOne("target");
-        //Do replication only if this is DAS and only if the target is not "server", the default server
-        if(targetName != null && (!CommandTarget.DAS.isValid(habitat, targetName))) {
+        //Do replication only if this is DAS and only if the target is not "server", the default server or "domain"
+        if(targetName != null && (!CommandTarget.DAS.isValid(habitat, targetName))
+                && (!CommandTarget.DOMAIN.isValid(habitat, targetName))) {
             Target target = habitat.getComponent(Target.class);
             List<Server> instancesForReplication = target.getInstances(targetName);
             if(instancesForReplication.size() == 0) {
@@ -125,8 +126,8 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
 
             //TODO : Support for dynamic-reconfig-enabled flag should go here
 
-            return(replicateCommand(commandName, (clAnnotation == null) ? null : clAnnotation.ifFailure(),
-                    (clAnnotation == null) ? null : clAnnotation.ifOffline(),
+            return(replicateCommand(commandName, (clAnnotation == null) ? FailurePolicy.Error : clAnnotation.ifFailure(),
+                    (clAnnotation == null) ? FailurePolicy.Warn : clAnnotation.ifOffline(),
                     instancesForReplication, context, parameters));
         }
         return ActionReport.ExitCode.SUCCESS;
@@ -149,21 +150,33 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
             List<InstanceCommandExecutor> execList = getInstanceCommandList(commandName,
                                     instancesForReplication, context.getLogger());
             for(InstanceCommandExecutor rac : execList) {
-                //TODO : apply offline policy here
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
                 try {
-                    String result = rac.executeCommand(parameters);
+                    rac.executeCommand(parameters);
                     aReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                     aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandSuccessful",
                             "Command {0} executed successfully on server instance {1}", commandName,
                             rac.getServer().getName()));
                 } catch (CommandException cmdEx) {
-                    ActionReport.ExitCode finalResult = FailurePolicy.applyFailurePolicy(failPolicy,
-                            ActionReport.ExitCode.FAILURE);
+                    ActionReport.ExitCode finalResult;
+                    if(cmdEx.getCause() instanceof java.net.ConnectException) {
+                        finalResult = FailurePolicy.applyFailurePolicy(offlinePolicy, ActionReport.ExitCode.WARNING);
+                        if(!finalResult.equals(ActionReport.ExitCode.FAILURE))
+                            aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.warnoffline",
+                                "WARNING : Instance {0} seems to be offline; Command was not replicated to that instance",
+                                    rac.getServer().getName()));
+                    } else {
+                        finalResult = FailurePolicy.applyFailurePolicy(failPolicy, ActionReport.ExitCode.FAILURE);
+                        if(finalResult.equals(ActionReport.ExitCode.FAILURE))
+                            aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandFailed",
+                                "Command {0} failed on server instance {1} : {2}", commandName, rac.getServer().getName(),
+                                    cmdEx.getMessage()));
+                        else
+                            aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandWanring",
+                                "WARNING : Command {0} did not complete successfully on server instance {1} : {2}",
+                                    commandName, rac.getServer().getName(), cmdEx.getMessage()));
+                    }
                     aReport.setActionExitCode(finalResult);
-                    aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandFailed",
-                            "Command {0} failed on server instance {1} : {2}", commandName, rac.getServer().getName(),
-                            cmdEx.getMessage()));
                     if(returnValue.equals(ActionReport.ExitCode.SUCCESS))
                         returnValue = finalResult;
                 }

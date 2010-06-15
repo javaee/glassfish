@@ -895,25 +895,25 @@ public class CommandRunnerImpl implements CommandRunner {
                 }
 
                 if(serverEnv.isDas()) {
-                    // Check if the command allows this target type; first read the annotation
-                    TargetType tgtTypeAnnotation = command.getClass().getAnnotation(TargetType.class);
-                    if(tgtTypeAnnotation != null) {
-                        for(CommandTarget c : tgtTypeAnnotation.value()) {
-                            targetTypesAllowed.add(c);
-                        }
-                    };
-                    if(targetTypesAllowed.size() == 0) {
-                        targetTypesAllowed.add(CommandTarget.DAS);
-                        targetTypesAllowed.add(CommandTarget.STANDALONE_INSTANCE);
-                        targetTypesAllowed.add(CommandTarget.CLUSTER);
-                        targetTypesAllowed.add(CommandTarget.CONFIG);
-                    }
-
-                    // Check if the target is valid
                     String targetName = parameters.getOne("target");
-                    //Is there a server or a cluster or a config with given name ?
-                    if( (targetName != null) &&
-                        (!CommandTarget.DOMAIN.isValid(habitat, targetName)) &&
+                    if(targetName != null) {
+                        // Check if the command allows this target type; first read the annotation
+                        TargetType tgtTypeAnnotation = command.getClass().getAnnotation(TargetType.class);
+                        if(tgtTypeAnnotation != null) {
+                            for(CommandTarget c : tgtTypeAnnotation.value()) {
+                                targetTypesAllowed.add(c);
+                            }
+                        };
+                        if(targetTypesAllowed.size() == 0) {
+                            targetTypesAllowed.add(CommandTarget.DAS);
+                            targetTypesAllowed.add(CommandTarget.STANDALONE_INSTANCE);
+                            targetTypesAllowed.add(CommandTarget.CLUSTER);
+                            targetTypesAllowed.add(CommandTarget.CONFIG);
+                        }
+
+                        // Check if the target is valid
+                        //Is there a server or a cluster or a config with given name ?
+                        if( (!CommandTarget.DOMAIN.isValid(habitat, targetName)) &&
                         (domain.getServerNamed(targetName) == null) &&
                         (domain.getClusterNamed(targetName) == null) &&
                         (domain.getConfigNamed(targetName) == null) ) {
@@ -921,38 +921,39 @@ public class CommandRunnerImpl implements CommandRunner {
                         report.setMessage(adminStrings.getLocalString("commandrunner.executor.invalidtarget",
                                 "Unable to find a valid target with name {0}", targetName));
                         return;
-                    }
-                    //Does this command allow this target type
-                    boolean isTargetValidType = false;
-                    Iterator<CommandTarget> it = targetTypesAllowed.iterator();
-                    while(it.hasNext()) {
-                        if(it.next().isValid(habitat, targetName)) {
-                            isTargetValidType = true;
-                            break;
                         }
-                    }
-                    if(!isTargetValidType) {
-                        StringBuilder validTypes = new StringBuilder();
-                        it = targetTypesAllowed.iterator();
+                        //Does this command allow this target type
+                        boolean isTargetValidType = false;
+                        Iterator<CommandTarget> it = targetTypesAllowed.iterator();
                         while(it.hasNext()) {
-                            validTypes.append(it.next().getDescription() + " ");
+                            if(it.next().isValid(habitat, targetName)) {
+                                isTargetValidType = true;
+                                break;
+                            }
                         }
-                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                        report.setMessage(adminStrings.getLocalString("commandrunner.executor.invalidtargettype",
-                                "Target {0} is not a supported type. Command {1} supports these types of targets only : {2}",
-                                    targetName, model.getCommandName(),validTypes.toString()));
-                        return;
-                    }
-                    //If target is a clustered instance and the allowed types does not allow operations on clustered
-                    //instance, return error
-                    if( (targetName != null) && (CommandTarget.CLUSTERED_INSTANCE.isValid(habitat, targetName)) &&
-                            (!targetTypesAllowed.contains(CommandTarget.CLUSTERED_INSTANCE))) {
-                        Cluster c = domain.getClusterForInstance(targetName);
-                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                        report.setMessage(adminStrings.getLocalString("commandrunner.executor.instanceopnotallowed",
-                                "The {0} command is not allowed on instance {1} because it is part of cluster {2}",
-                                    model.getCommandName(), targetName, c.getName()));
-                        return;
+                        if(!isTargetValidType) {
+                            StringBuilder validTypes = new StringBuilder();
+                            it = targetTypesAllowed.iterator();
+                            while(it.hasNext()) {
+                                validTypes.append(it.next().getDescription() + " ");
+                            }
+                            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                            report.setMessage(adminStrings.getLocalString("commandrunner.executor.invalidtargettype",
+                                    "Target {0} is not a supported type. Command {1} supports these types of targets only : {2}",
+                                        targetName, model.getCommandName(),validTypes.toString()));
+                            return;
+                        }
+                        //If target is a clustered instance and the allowed types does not allow operations on clustered
+                        //instance, return error
+                        if( (CommandTarget.CLUSTERED_INSTANCE.isValid(habitat, targetName)) &&
+                                (!targetTypesAllowed.contains(CommandTarget.CLUSTERED_INSTANCE))) {
+                            Cluster c = domain.getClusterForInstance(targetName);
+                            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                            report.setMessage(adminStrings.getLocalString("commandrunner.executor.instanceopnotallowed",
+                                    "The {0} command is not allowed on instance {1} because it is part of cluster {2}",
+                                        model.getCommandName(), targetName, c.getName()));
+                            return;
+                        }
                     }
                 }
 
@@ -1015,7 +1016,6 @@ public class CommandRunnerImpl implements CommandRunner {
             return;
         if( (!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) &&
                 (serverEnv.isDas()) &&
-                    (!CommandTarget.DOMAIN.isValid(habitat, parameters.getOne("target"))) &&
                         doReplication) {
             ClusterExecutor executor = null;
             if(model.getClusteringAttributes() != null && model.getClusteringAttributes().executor() != null) {
@@ -1032,7 +1032,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 return;
             }
             report.setActionExitCode(executor.execute(model.getCommandName(), command, context, parameters));
-            if(!report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+            if(report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
                 report.setMessage(adminStrings.getLocalString("commandrunner.executor.errorwhilereplication",
                         "An error occurred during replication"));
             }

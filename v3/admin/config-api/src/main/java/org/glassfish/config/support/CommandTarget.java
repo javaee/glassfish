@@ -53,8 +53,7 @@ public enum CommandTarget implements TargetValidator {
     DOMAIN {
         @Override
         public boolean isValid(Habitat habitat, String target) {
-            Domain domain = habitat.getComponent(Domain.class);
-            return target==null;
+            return target.equals("domain");
         }
 
         @Override

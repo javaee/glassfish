@@ -108,7 +108,7 @@ class ManifestManager implements ResponseManager {
             processOneLevel("", null, response.getMainAtts(), sb);
         }
 
-        if(!response.wasSuccess()) {
+        if(response.wasFailure()) {
             final String cause = response.getCause();
             if(ok(cause)){
                 if (logger.isLoggable(Level.FINER))

@@ -59,6 +59,8 @@ public class AdminCommandResponse {
     public static final String CHILDREN_TYPE = "children-type";
     public static final String EXITCODE = "exit-code";
     public static final String SUCCESS = "Success";
+    public static final String WARNING = "Warning";
+    public static final String FAILURE = "Failure";
     
     public AdminCommandResponse(InputStream inStream) throws IOException {
         Manifest m = new Manifest(inStream);
@@ -78,6 +80,14 @@ public class AdminCommandResponse {
     
     public boolean wasSuccess() {
         return exitCode == 0;
+    }
+
+    public boolean wasWarning() {
+        return exitCode == 1;
+    }
+    
+    public boolean wasFailure() {
+        return exitCode == 2;
     }
 
     public String getCause() {
@@ -148,11 +158,14 @@ public class AdminCommandResponse {
     private void makeMain() {
         mainMessage = mainRaw.get(MESSAGE);
         mainChildrenType = mainRaw.get(CHILDREN_TYPE);
-        
-        if(SUCCESS.equalsIgnoreCase(mainRaw.get(EXITCODE)))
+
+        String exitCodeString = mainRaw.get(EXITCODE);
+        if(SUCCESS.equalsIgnoreCase(exitCodeString))
             exitCode = 0;
-        else
+        else if(WARNING.equalsIgnoreCase(exitCodeString))
             exitCode = 1;
+        else
+            exitCode = 2;
         signature = mainRaw.get("Signature-Version");
         cause = mainRaw.get("cause");
         makeMainKeys();

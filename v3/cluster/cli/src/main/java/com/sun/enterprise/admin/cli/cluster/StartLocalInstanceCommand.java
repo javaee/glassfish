@@ -57,6 +57,7 @@ import com.sun.enterprise.admin.cli.StartServerCommand;
  * Start a local server instance.
  */
 @Service(name = "start-local-instance")
+@Cluster(RuntimeType.DAS)
 @Scoped(PerLookup.class)
 public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
                                         implements StartServerCommand {
