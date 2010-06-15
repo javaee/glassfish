@@ -87,6 +87,7 @@
         <module>admin</module>
         <module>cli</module>
         <module>ssh</module>
+        <module>gms-bootstrap</module>
         <module>gms-adapter</module>
     </modules>
 </project>

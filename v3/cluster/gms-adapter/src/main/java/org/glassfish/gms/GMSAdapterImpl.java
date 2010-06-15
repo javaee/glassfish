@@ -34,24 +34,16 @@
  * holder.
  */
 
-
 package org.glassfish.gms;
 
+import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.Clusters;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.ee.cms.core.*;
 import com.sun.enterprise.ee.cms.impl.client.*;
-
 import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants;
 import com.sun.enterprise.util.SystemPropertyConstants;
-
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-
-import org.glassfish.api.Startup;
-import org.glassfish.api.event.EventTypes;
-import org.glassfish.api.event.Events;
-import org.glassfish.gms.logging.LogDomain;
-
 import java.util.Properties;
 import java.util.Enumeration;
 import java.util.logging.Level;
@@ -59,15 +51,25 @@ import java.util.logging.Logger;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import org.glassfish.api.Startup;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
+import org.glassfish.gms.bootstrap.GMSAdapter;
+import org.glassfish.gms.logging.LogDomain;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * @author Sheetal.Vartak@Sun.COM
  */
-@Service(name="GMSService")
-
-public class GMSService implements PostConstruct, CallBack {
+@Service()
+public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     private static final Logger logger = LogDomain.getLogger(LogDomain.GMS_LOGGER);
+
     private GroupManagementService gms;
 
     private final static String INSTANCE_NAME = "INSTANCE_NAME";
@@ -87,13 +89,29 @@ public class GMSService implements PostConstruct, CallBack {
     @Inject
     Events events;
 
-    public void usage() {
-        logger.log(Level.CONFIG, "The following properties need to be set in order to enable GMS : \n" +
-                "INSTANCE_NAME(server for DAS), CLUSTER_NAME, <MEMBER_TYPE>, <TCPSTARTPORT>, <TCPENDPORT>");
-    }
+    @Inject
+    ServerEnvironment env;
+
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Server server;
+
+    @Inject
+    Habitat habitat;
 
     @Override
     public void postConstruct() {
+        instanceName = env.getInstanceName();
+
+        Cluster cluster = null;
+
+        if (env.isDas()) {
+            // hack: only supporting one cluster for M2
+            Domain domain = habitat.getComponent(Domain.class);
+            cluster = domain.getClusters().getCluster().get(0);
+        } else {
+            cluster = server.getCluster();
+        }
+        clusterName = (cluster == null ? null : cluster.getName());
         try {
             logger.log(Level.CONFIG, "gmsservice.postconstruct");
             initializeGMS();
@@ -106,13 +124,9 @@ public class GMSService implements PostConstruct, CallBack {
 
         logger.setLevel(Level.CONFIG);
 
-        if (instanceName == null && clusterName == null) {
+        if (clusterName == null) {
+            // todo: log something fine here
             return;       //don't enable GMS
-        }
-        if (instanceName == null || clusterName == null) {
-            usage();
-            throw new GMSException("instanceName =  " + instanceName + " clusterName = " + clusterName +
-                    " Please set the appropriate system property INSTANCE_NAME or CLUSTER_NAME to a valid value");
         }
 
         Properties configProps = getSystemProps();   //setting up Shoal defaults
@@ -144,10 +158,14 @@ public class GMSService implements PostConstruct, CallBack {
                 gms.addActionFactory(new FailureSuspectedActionFactoryImpl(this));
 
                 events.register(new org.glassfish.api.event.EventListener() {
+                    @Override
                     public void event(Event event) {
                         if (event.is(EventTypes.SERVER_SHUTDOWN)) {
                             logger.fine("Calling gms.shutdown()...");
                             gms.shutdown(GMSConstants.shutdownType.INSTANCE_SHUTDOWN);
+                        } else if (event.is(EventTypes.SERVER_READY)) {
+                            logger.fine("Ready");
+                            gms.reportJoinedAndReadyState(clusterName);
                         }
                     }
                 });
@@ -211,9 +229,10 @@ public class GMSService implements PostConstruct, CallBack {
     private Properties getSystemProps() {
         
         Properties configProps = new Properties();
-        
 
-        logger.log(Level.FINE, "Is initial host=" + System.getProperty("IS_INITIAL_HOST"));
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "Is initial host=" + System.getProperty("IS_INITIAL_HOST"));
+        }
         configProps.put(INSTANCE_NAME, instanceName);
         configProps.put(CLUSTER_NAME, clusterName);
 
@@ -269,16 +288,19 @@ public class GMSService implements PostConstruct, CallBack {
     }
 
     private void printProps(Properties prop) {
+        if (!logger.isLoggable(Level.CONFIG)) {
+            return;
+        }
 
-        StringBuffer sbuf = new StringBuffer();
+        StringBuilder sbul = new StringBuilder();
         logger.config("Printing all the properties : ");
 
         for (Enumeration en = prop.propertyNames(); en.hasMoreElements();) {
-            String key = (String)en.nextElement();
-            sbuf.append(key + " = " + prop.get(key) + "  ");
+            String key = (String) en.nextElement();
+            sbul.append(key + " = " + prop.get(key) + "  ");
         }
 
-        logger.config(sbuf.toString());
+        logger.config(sbul.toString());
     }
 
     public Startup.Lifecycle getLifecycle() {
@@ -299,4 +321,11 @@ public class GMSService implements PostConstruct, CallBack {
     public void processNotification(Signal signal) {
         logger.log(Level.INFO, "gmsservice.processNotification", signal.getClass().getName());
     }
+
+    // each of the getModule(s) methods are temporary. see class-level comment.
+    @Override
+    public GroupManagementService getModule() {
+        return gms;
+    }
+
 }

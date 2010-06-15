@@ -45,9 +45,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>gms-adapter</artifactId>
+    <artifactId>gms-bootstrap</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Glassfish GMS Module</name>
+    <name>GlassFish GMS Bootstrap Module</name>
     <dependencies>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
@@ -58,16 +58,20 @@
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.cluster</groupId>
-            <artifactId>gms-bootstrap</artifactId>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>config-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- Once the shoal-gms jar has been divided into api and
+             implementation jars, this module will depend only
+             on the api jar.
+        -->
         <dependency>
             <groupId>org.shoal</groupId>
             <artifactId>shoal-gms</artifactId>
