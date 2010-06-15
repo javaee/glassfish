@@ -138,6 +138,8 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
 
         if (dasPropsFile.isFile()) {
             setDasDefaults(dasPropsFile);
+            logger.printMessage(strings.get("Instance.existingDasPropertiesWarning",
+                    programOpts.getHost(), "" + programOpts.getPort(), nodeAgent));
         }
 
         DASHost = programOpts.getHost();
