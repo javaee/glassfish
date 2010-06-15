@@ -8,11 +8,11 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License. You can obtain
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * or glassfish/bootstrap/legal/LICENSE.txr.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txr.
  * Sun designates this particular file as subject to the "Classpath" exception
  * as provided by Sun in the GPL Version 2 section of the License file that
  * accompanied this code.  If applicable, add the following below the License
@@ -33,13 +33,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest;
 
 import java.util.HashSet;
 import java.util.Set;
 import org.jvnet.hk2.annotations.Service;
-
 
 /**
  * Adapter for REST management interface
@@ -53,16 +51,43 @@ public class RestManagementAdapter extends RestAdapter {
         return CONTEXT;
     }
 
-
     @Override
-    protected  Set<Class<?>> getResourcesConfig(){
-         final Set<Class<?>> r = new HashSet<Class<?>>();
+    protected Set<Class<?>> getResourcesConfig() {
+        final Set<Class<?>> r = new HashSet<Class<?>>();
 
         // uncomment if you need to run the generator:
-         r.add(GeneratorResource.class);
+        r.add(GeneratorResource.class);
         r.add(org.glassfish.admin.rest.resources.DomainResource.class);
+
+        //body readers, not in META-INF/services anymore
+        r.add(org.glassfish.admin.rest.provider.FormReader.class);
+        r.add(org.glassfish.admin.rest.provider.JsonHashMapProvider.class);
+        r.add(org.glassfish.admin.rest.provider.XmlHashMapProvider.class);
+
+        //body writers
+        r.add(org.glassfish.admin.rest.provider.GetResultListJsonProvider.class);
+        r.add(org.glassfish.admin.rest.provider.GetResultListXmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.GetResultListHtmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.FormWriter.class);
+        r.add(org.glassfish.admin.rest.provider.GetResultJsonProvider.class);
+        r.add(org.glassfish.admin.rest.provider.GetResultXmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.GetResultHtmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.OptionsResultJsonProvider.class);
+        r.add(org.glassfish.admin.rest.provider.OptionsResultXmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.StringResultJsonProvider.class);
+        r.add(org.glassfish.admin.rest.provider.StringResultXmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.StringResultHtmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.StringListResultJsonProvider.class);
+        r.add(org.glassfish.admin.rest.provider.StringListResultXmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.StringListResultHtmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.CommandResourceGetResultJsonProvider.class);
+        r.add(org.glassfish.admin.rest.provider.CommandResourceGetResultXmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.CommandResourceGetResultHtmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.TreeNodeJsonProvider.class);
+        r.add(org.glassfish.admin.rest.provider.TreeNodeXmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.TreeNodeHtmlProvider.class);
+
         return r;
     }
-
     public static final String CONTEXT = "/management";
 }
