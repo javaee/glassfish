@@ -58,6 +58,7 @@ public class PortTests extends AdminBaseDevTest {
 
     private void runTests() {
         verifyUserSuppliedPortNumbersAreUnique();
+        verifyPortsAreLegal();
         stat.printSummary();
     }
 
@@ -88,10 +89,22 @@ public class PortTests extends AdminBaseDevTest {
                 report("create-instance-" + iname + "-duplicatePortsSpecified" + i + "-" + j, !ret.returnValue);
             }
         }
+    }
+    private void verifyPortsAreLegal() {
+        final int[] nums = new int[]{18080, 18181, 13800, 13700, 17676, 13801, 18686, 14848};
+        String iname = generateInstanceName();
+        nums[3]= -100;
+        report("create-instance-" + iname + "illegalPortsSpecified", !asadmin("create-local-instance", "--systemproperties", assembleEnormousPortsString(nums), iname));
 
-        //iname = generateInstanceName();
-        //AsadminReturn ret = asadminWithOutput("create-local-instance", "--systemproperties", "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18080", iname);
-        //report("Duplicated-Port", ret.outAndErr.indexOf("TransactionFailure:") >= 0);
+        nums[3] = 0;
+        report("create-instance-" + iname + "illegalPortsSpecified", !asadmin("create-local-instance", "--systemproperties", assembleEnormousPortsString(nums), iname));
+
+        nums[3] = 65535;
+        report("create-instance-" + iname + "illegalPortsSpecified", asadmin("create-local-instance", "--systemproperties", assembleEnormousPortsString(nums), iname));
+        report("delete-instance-" + iname + "legalPortsSpecified", asadmin("delete-local-instance", iname));
+
+        nums[3] += 1;
+        report("create-instance-" + iname + "illegalPortsSpecified", !asadmin("create-local-instance", "--systemproperties", assembleEnormousPortsString(nums), iname));
     }
 
     private String assembleEnormousPortsString(int index1, int index2, final int[] nums) {
