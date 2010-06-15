@@ -52,11 +52,7 @@ import com.sun.mirror.util.DeclarationVisitors;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
 import org.jvnet.hk2.annotations.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
+import java.util.*;
 import java.lang.annotation.Annotation;
 
 /**
@@ -244,6 +240,37 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                 env.getMessager().printWarning("Visiting " + d.getSimpleName());
             }
             for (AnnotationMirror am : d.getAnnotationMirrors()) {
+                Multiple multiple = am.getAnnotationType().getDeclaration().getAnnotation(Multiple.class);
+                if (multiple!=null) {
+                    Collection<AnnotationTypeElementDeclaration> members = am.getAnnotationType().getDeclaration().getMethods();
+
+                    AnnotationTypeElementDeclaration valueMember=null;
+                    for (AnnotationTypeElementDeclaration aMember : members) {
+                        if (aMember.getSimpleName().endsWith("value")) {
+                            valueMember = aMember;
+                            break;
+                        }
+                    }
+                    if (valueMember==null) return;
+
+                    AnnotationValue valueVal = am.getElementValues().get(valueMember);
+                    Object annotationValue = valueVal.getValue();
+                    if (annotationValue instanceof Collection) {
+                        Collection<AnnotationValue> values = (Collection<AnnotationValue>) annotationValue;
+                        for (AnnotationValue aVal : values) {
+                            AnnotationMirror aValMirror = (AnnotationMirror) aVal.getValue();
+                            // check if the annotation contained in the multiple declaration is itself annotated
+                            // with InhabitantAnnotation
+                            InhabitantAnnotation ia = aValMirror.getAnnotationType().getDeclaration().getAnnotation(InhabitantAnnotation.class);
+                            if (ia!=null) {
+                                generateInhabitantEntry(d, aValMirror, ia);
+                            }
+                        }
+                    } else {
+                        System.err.println("Ignoring " + am + " which is annotated with @Multiple, yet it's value() method is not collection");                        
+                    }
+                }
+
                 InhabitantAnnotation ia = am.getAnnotationType().getDeclaration().getAnnotation(InhabitantAnnotation.class);
                 if (ia!=null) {
                     generateInhabitantEntry(d, am, ia);

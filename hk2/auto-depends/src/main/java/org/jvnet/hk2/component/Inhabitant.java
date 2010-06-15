@@ -207,7 +207,7 @@ public interface Inhabitant<T> extends Holder<T> {
 
 //
 // methods below here are more or less used for book-keeping purpose by Habitat,
-// and implementations of Inhabitat should implement them just by using
+// and implementations of Inhabitant should implement them just by using
 // AbstractInhabitantImpl
 //
 

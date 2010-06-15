@@ -53,11 +53,11 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 @CagedBy(CageBuilder.Registerer.class)
-public interface CageBuilder {
+public interface CageBuilder<T> {
     /**
      * Called when an {@link Inhabitant} is entered into habitat.
      */
-    void onEntered(Inhabitant<?> i);
+    void onEntered(Inhabitant<T> i);
 
     /**
      * When {@link CageBuilder} enters habitat, look
@@ -72,14 +72,14 @@ public interface CageBuilder {
      * Normal {@link CageBuilder}s register themselves as components,
      * but this one is defined in HK2 so we have to get in by a special means.
      */
-    public static final class Registerer implements CageBuilder {
+    public static final class Registerer<T> implements CageBuilder<T> {
         private final Habitat habitat;
 
         public Registerer(Habitat habitat) {
             this.habitat = habitat;
         }
 
-        public void onEntered(Inhabitant<?> i) {
+        public void onEntered(Inhabitant<T> i) {
             // and if a companion seed is added to something else, make sure
             // existing lead inhabitants will get this as a companion
             assert i.metadata()!=null;

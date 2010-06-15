@@ -47,11 +47,11 @@ import org.jvnet.hk2.annotations.Service;
  * @author Jerome Dochez
  */
 @Service
-public class AnimalCageBuilder implements CageBuilder {
+public class AnimalCageBuilder implements CageBuilder<Animal> {
     /**
      * Called when an {@link org.jvnet.hk2.component.Inhabitant} is entered into habitat.
      */
-    public void onEntered(Inhabitant<?> i) {
+    public void onEntered(Inhabitant<Animal> i) {
         System.out.println("Animal builder got " + i.get());
         if (i.get() instanceof Lion) {
             Lion b = (Lion) i.get();
