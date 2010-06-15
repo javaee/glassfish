@@ -46,6 +46,8 @@ public class WebTest {
     
     private static int count = 0;
     private static int EXPECTED_COUNT = 1;
+    private static final String TEST_NAME = "web-jsp-security";
+
     
     static SimpleReporterAdapter stat=
         new SimpleReporterAdapter("appserv-tests");
@@ -65,14 +67,14 @@ public class WebTest {
             goGet(host, port, contextRoot + "/test.jsp" );
             
             if (count != EXPECTED_COUNT){
-                stat.addStatus("Test UNPREDICTED-FAILURE", stat.FAIL);
+                stat.addStatus(TEST_NAME, stat.FAIL);
             }           
         } catch (Throwable t) {
             System.out.println(t.getMessage());
-            stat.addStatus("Test UNPREDICTED-FAILURE", stat.FAIL);
+            stat.addStatus(TEST_NAME, stat.FAIL);
         }
 
-        stat.printSummary("web/jsp-security---> expect " + EXPECTED_COUNT + " PASS");
+        stat.printSummary(TEST_NAME);
     }
 
     private static void goGet(String host, int port,
@@ -103,9 +105,9 @@ public class WebTest {
                     String status = line.substring(index+2);
                     
                     if (status.equalsIgnoreCase("PASS")){
-                        stat.addStatus("web-jsp-security: " + line.substring(0,index), stat.PASS);
+                        stat.addStatus(TEST_NAME, stat.PASS);
                     } else {
-                        stat.addStatus("web-jsp-security: " + line.substring(0,index), stat.FAIL);                       
+                        stat.addStatus(TEST_NAME, stat.FAIL);                       
                     }
                     count++;
                 } 
