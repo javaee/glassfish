@@ -53,28 +53,85 @@ public class PortTests extends AdminBaseDevTest {
 
     public static void main(String[] args) {
         PortTests tests = new PortTests();
-        tests.justDoIt();
+        tests.runTests();
     }
 
-    private void justDoIt() {
-        String iname = generateInstanceName();
-        report("OK-Port", asadmin("create-local-instance", "--systemproperties", "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181", iname));
-
-
-        // currently broken!!!!
-        report("OK-Port-delete", asadmin("delete-local-instance", iname));
-
-        
-        iname = generateInstanceName();
-        AsadminReturn ret = asadminWithOutput("create-local-instance", "--systemproperties", "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18080", iname);
-        report("Duplicated-Port", ret.outAndErr.indexOf("TransactionFailure:") >= 0);
+    private void runTests() {
+        verifyUserSuppliedPortNumbersAreUnique();
         stat.printSummary();
     }
 
+    private void verifyUserSuppliedPortNumbersAreUnique() {
+        final int[] nums = new int[]{18080, 18181, 13800, 13700, 17676, 13801, 18686, 14848};
+        String ports = assembleEnormousPortsString(nums);
+        String iname = generateInstanceName();
 
-/*
- * --systemproperties HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848 in1
+        report("create-instance-" + iname + "-noPortsSpecified", asadmin("create-local-instance", iname));
+        report("delete-instance-" + iname + "-noPortsSpecified", asadmin("delete-local-instance", iname));
 
- */
+        report("create-instance-" + iname + "-allGoodPortsSpecified", asadmin("create-local-instance", "--systemproperties", ports, iname));
+        report("delete-instance-" + iname + "-allGoodPortsSpecified", asadmin("delete-local-instance", iname));
 
+        for (int i = 0; i < 7; i++) {
+            for (int j = i + 1; j < 8; j++) {
+                ports = assembleEnormousPortsString(i, j, nums);
+                AsadminReturn ret = asadminWithOutput("create-local-instance",
+                        "--systemproperties",
+                        ports,
+                        iname);
+                if (ret.returnValue) {
+                    System.out.println("ERROR -- should have returned failure - it returned success!");
+                    System.out.println(ret.outAndErr);
+                    System.out.println(ports);
+                    System.out.println("**** i,j = " + i + ", " + j);
+                }
+                report("create-instance-" + iname + "-duplicatePortsSpecified" + i + "-" + j, !ret.returnValue);
+            }
+        }
+
+        //iname = generateInstanceName();
+        //AsadminReturn ret = asadminWithOutput("create-local-instance", "--systemproperties", "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18080", iname);
+        //report("Duplicated-Port", ret.outAndErr.indexOf("TransactionFailure:") >= 0);
+    }
+
+    private String assembleEnormousPortsString(int index1, int index2, final int[] nums) {
+        return assembleEnormousPortsString(makeDupes(index1, index2, nums));
+    }
+
+    private int[] makeDupes(int index1, int index2, int[] nums) {
+        int[] copy = new int[8];
+        System.arraycopy(nums, 0, copy, 0, 8);
+        copy[index2] = nums[index1];
+        return copy;
+    }
+
+    private String assembleEnormousPortsString(int[] nums) {
+        if (nums == null || nums.length != 8)
+            throw new IllegalArgumentException();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("HTTP_LISTENER_PORT").append("=" + nums[0]).append(":");
+        sb.append("HTTP_SSL_LISTENER_PORT").append("=" + nums[1]).append(":");
+        sb.append("IIOP_SSL_LISTENER_PORT").append("=" + nums[2]).append(":");
+        sb.append("IIOP_LISTENER_PORT").append("=" + nums[3]).append(":");
+        sb.append("JMX_SYSTEM_CONNECTOR_PORT").append("=" + nums[4]).append(":");
+        sb.append("IIOP_SSL_MUTUALAUTH_PORT").append("=" + nums[5]).append(":");
+        sb.append("JMS_PROVIDER_PORT").append("=" + nums[6]).append(":");
+        sb.append("ASADMIN_LISTENER_PORT").append("=" + nums[7]);
+
+        return sb.toString();
+
+    }
+    /*
+     * --systemproperties HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848 in1
+     * --systemproperties 
+    HTTP_LISTENER_PORT=18080:
+    HTTP_SSL_LISTENER_PORT=18181:
+    IIOP_SSL_LISTENER_PORT=13800:
+    IIOP_LISTENER_PORT=13700:
+    JMX_SYSTEM_CONNECTOR_PORT=17676:
+    IIOP_SSL_MUTUALAUTH_PORT=13801:
+    JMS_PROVIDER_PORT=18686:
+    ASADMIN_LISTENER_PORT=14848
+     */
 }
