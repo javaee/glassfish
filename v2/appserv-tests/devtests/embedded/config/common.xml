@@ -398,7 +398,6 @@ Variables Used:
     </exec>
 </target>
 
-
 <target name="asadmin-common-embedded" if="env.EMBEDDED">
   <echo message="Doing admin task ${admin.command} in EMBEDDEDMODE " level="verbose"/>
   <echo message="Operand ${operand.props}"  level="verbose"/>
@@ -425,10 +424,24 @@ Variables Used:
   <echo message="Doing admin task ${admin.command} in EMBEDDEDMODE (ignore failures)"
       level="verbose"/>
   <echo message="Operand ${operand.props}"  level="verbose"/>
-  <echo message="asadmin ${admin.command} ${as.props} ${operand.props}"/>
+  <echo message="asadmin ${admin.command} ${operand.props}"/>
   <glassfish-embedded-admin commandLine="${admin.command} ${operand.props}"/>
 </target>
 
+<target name="asadmin-common-ignore-fail-no-props">
+    <antcall target="asadmin-common-ignore-fail-regular-no-props"/>
+    <antcall target="asadmin-common-ignore-fail-embedded"/>
+</target>
+
+<target name="asadmin-common-ignore-fail-regular-no-props" unless="env.EMBEDDED">
+  <echo message="Doing admin task ${admin.command} (ignore failures)"
+      level="verbose"/>
+  <echo message="Operand ${operand.props}"  level="verbose"/>
+  <echo message="asadmin ${admin.command} ${as.props} ${operand.props}"/>
+    <exec executable="${ASADMIN}" failonerror="false">
+        <arg line="${admin.command} ${as.props} ${operand.props}" />
+    </exec>
+</target>
 
 <!-- Target to execute a batchfile of asadmin commands  -->
 <!-- ================================================================ -->
@@ -462,14 +475,11 @@ AS_ADMIN_PASSWORD=${admin.password}
 AS_ADMIN_ADMINPASSWORD=${admin.password}
 AS_ADMIN_MASTERPASSWORD=${master.password}
 </echo>
-  <exec executable="${ASADMIN}">
-    <arg line="create-file-user"/>
-    <arg line="--user ${admin.user} --passwordfile ${user.password.file} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
-    <arg line="--groups ${groups}"/>
-    <arg line="--authrealmname ${authrealmname}"/>
-    <arg line="--target ${appserver.instance.name}"/>
-    <arg line="${user}"/>
-  </exec>
+  <antcall target="asadmin-common-ignore-fail-no-props">
+    <param name="admin.command" value="create-file-user" />
+    <param name="operand.props"
+      value="--user ${admin.user} --passwordfile ${user.password.file} --host ${admin.host} --port ${admin.port} --echo=true --terse=true --groups ${groups} --userpassword ${password} --authrealmname ${authrealmname} --target ${appserver.instance.name} ${user}"/>
+  </antcall>
   <delete file="${user.password.file}" failonerror="false"/>
 </target>
      
@@ -478,13 +488,11 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <!-- ================================================================ -->
 <target name="delete-user-common" depends="init-common">
 <echo message="Deleting user ${user} in file realm" level="verbose"/>
-<exec executable="${ASADMIN}">
-  <arg line="delete-file-user"/>
-  <arg line="${as.props}"/>
-  <arg line="--authrealmname ${authrealmname}"/>
-  <arg line="--target ${appserver.instance.name}"/>
-  <arg line="${user}"/>
-</exec>
+  <antcall target="asadmin-common-ignore-fail-no-props">
+    <param name="admin.command" value="delete-file-user" />
+    <param name="operand.props"
+      value="${user}"/>
+  </antcall>
 </target>
 
 <!-- ================================================================ -->
