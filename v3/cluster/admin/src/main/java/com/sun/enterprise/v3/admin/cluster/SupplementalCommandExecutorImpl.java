@@ -87,6 +87,8 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
     public ActionReport.ExitCode execute(String commandName, Supplemental.Timing time,
                                          AdminCommandContext context, InjectionResolver<Param> injector) {
         //TODO : Use the executor service to parallelize this
+        ActionReport.ExitCode finalResult = ActionReport.ExitCode.SUCCESS;
+        ActionReport originalReport = context.getActionReport();
         if(!getSupplementalCommandsList().isEmpty() && getSupplementalCommandsList().containsKey(commandName)) {
             List<SupplementalCommand> cmds = getSupplementalCommandsList().get(commandName);
             for(SupplementalCommand aCmd : cmds) {
@@ -94,18 +96,31 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
                     (serverEnv.isInstance() && aCmd.whereToRun().contains(RuntimeType.INSTANCE)) ) {
                     if( (time.equals(Supplemental.Timing.Before) && aCmd.toBeExecutedBefore()) ||
                         (time.equals(Supplemental.Timing.After) && aCmd.toBeExecutedAfter()) ) {
-                        if(inject(aCmd, injector, context).equals(ActionReport.ExitCode.SUCCESS)) {
-                            aCmd.execute(context);
+                        ActionReport subReport = originalReport.addSubActionsReport();
+                        ActionReport.ExitCode result = FailurePolicy.applyFailurePolicy(aCmd.onFailure(),
+                                inject(aCmd, injector, subReport));
+                        if(!result.equals(ActionReport.ExitCode.SUCCESS)) {
+                            if(finalResult.equals(ActionReport.ExitCode.SUCCESS))
+                                finalResult = result;
+                            continue;
+                        }
+                        context.setActionReport(subReport);
+                        aCmd.execute(context);
+                        if(subReport.hasFailures()) {
+                            result = FailurePolicy.applyFailurePolicy(aCmd.onFailure(), ActionReport.ExitCode.FAILURE);
+                        } else if(subReport.hasWarnings()) {
+                            result = FailurePolicy.applyFailurePolicy(aCmd.onFailure(), ActionReport.ExitCode.WARNING);
+                        }
+                        if(!result.equals(ActionReport.ExitCode.SUCCESS)) {
+                            if(finalResult.equals(ActionReport.ExitCode.SUCCESS))
+                                finalResult = result;
                         }
                     }
                 }
             }
         }
-        if(context.getActionReport().hasFailures())
-            return ActionReport.ExitCode.FAILURE;
-        if(context.getActionReport().hasWarnings())
-            return ActionReport.ExitCode.WARNING;
-        return ActionReport.ExitCode.SUCCESS;
+        context.setActionReport(originalReport);
+        return finalResult;
     }
 
     /**
@@ -141,19 +156,16 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
         return supplementalCommandsMap;
     }
 
-    private ActionReport.ExitCode inject(SupplementalCommand cmd,InjectionResolver<Param> injector,
-                                         AdminCommandContext context) {
+    private ActionReport.ExitCode inject(SupplementalCommand cmd,InjectionResolver<Param> injector, ActionReport subActionReport) {
 
         ActionReport.ExitCode result = ActionReport.ExitCode.SUCCESS;
-        ActionReport report = context.getActionReport();
-
         try {
             new InjectionManager().inject(cmd.command, injector);
         } catch (Exception e) {
             result = ActionReport.ExitCode.FAILURE;
-            report.setActionExitCode(result);
-            report.setMessage(e.getMessage());
-            report.setFailureCause(e);
+            subActionReport.setActionExitCode(result);
+            subActionReport.setMessage(e.getMessage());
+            subActionReport.setFailureCause(e);
         }
         return result;
     }

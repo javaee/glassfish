@@ -59,7 +59,7 @@ public enum CommandTarget implements TargetValidator {
 
         @Override
         public String getDescription() {
-            return "domain";
+            return "Domain";
         }
     },
     /**
@@ -73,7 +73,7 @@ public enum CommandTarget implements TargetValidator {
 
         @Override
         public String getDescription() {
-            return "server";
+            return "Default server";
         }
     },
     /**
@@ -82,16 +82,8 @@ public enum CommandTarget implements TargetValidator {
     CLUSTERED_INSTANCE {
         @Override
         public boolean isValid(Habitat habitat, String target) {
-            Servers servers = habitat.getComponent(Servers.class);
-            Server server = servers.getServer(target);
-            List<Cluster> clusters = habitat.getComponent(Domain.class).getClusters().getCluster();
-            for(Cluster c : clusters) {
-                String clCfg = c.getConfigRef();
-                if(clCfg.equals(server.getConfigRef())) {
-                    return true;
-                }
-            }
-            return false;
+            Domain domain = habitat.getComponent(Domain.class);
+            return (domain.getClusterForInstance(target) != null);
         }
 
         @Override
@@ -111,7 +103,7 @@ public enum CommandTarget implements TargetValidator {
 
         @Override
         public String getDescription() {
-            return "stand alone instance";
+            return "Stand alone instance";
         }
     },
     /**
@@ -126,7 +118,7 @@ public enum CommandTarget implements TargetValidator {
 
         @Override
         public String getDescription() {
-            return "config";
+            return "Config";
         }
     },
     /**
@@ -141,7 +133,7 @@ public enum CommandTarget implements TargetValidator {
 
         @Override
         public String getDescription() {
-            return "cluster";
+            return "Cluster";
         }
     };
 

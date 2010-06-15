@@ -44,6 +44,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
+import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.common.util.admin.CommandModelImpl;
 import org.glassfish.config.support.GenericCrudCommand;
@@ -79,9 +80,6 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
     @Inject
     private Habitat habitat;
 
-    @Inject
-    private ServerEnvironment serverEnv;
-
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
 
@@ -104,9 +102,17 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
      */
     public ActionReport.ExitCode execute(String commandName, AdminCommand command, AdminCommandContext context, ParameterMap parameters) {
 
+        CommandModel model;
+        try {
+            CommandModelProvider c = (CommandModelProvider) command;
+            model = c.getModel();
+        } catch(ClassCastException e) {
+            model = new CommandModelImpl(command.getClass());
+        }
+        org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
         String targetName = parameters.getOne("target");
-        //Do replication only if this is DAS and only if the target is not "server"
-        if(targetName != null && (!server.getName().equals(targetName)) && serverEnv.isDas()) {
+        //Do replication only if this is DAS and only if the target is not "server", the default server
+        if(targetName != null && (!CommandTarget.DAS.isValid(habitat, targetName))) {
             Target target = habitat.getComponent(Target.class);
             List<Server> instancesForReplication = target.getInstances(targetName);
             if(instancesForReplication.size() == 0) {
@@ -119,7 +125,9 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
 
             //TODO : Support for dynamic-reconfig-enabled flag should go here
 
-            return(replicateCommand(commandName, instancesForReplication, context, parameters));
+            return(replicateCommand(commandName, (clAnnotation == null) ? null : clAnnotation.ifFailure(),
+                    (clAnnotation == null) ? null : clAnnotation.ifOffline(),
+                    instancesForReplication, context, parameters));
         }
         return ActionReport.ExitCode.SUCCESS;
     }
@@ -128,6 +136,8 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
      * Replicate a given command on given list of targ
      */
     private ActionReport.ExitCode replicateCommand(String commandName,
+                                                   FailurePolicy failPolicy,
+                                                   FailurePolicy offlinePolicy,
                                                    List<Server> instancesForReplication,
                                                    AdminCommandContext context,
                                                    ParameterMap parameters) {
@@ -139,36 +149,35 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
             List<InstanceCommandExecutor> execList = getInstanceCommandList(commandName,
                                     instancesForReplication, context.getLogger());
             for(InstanceCommandExecutor rac : execList) {
+                //TODO : apply offline policy here
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
                 try {
                     String result = rac.executeCommand(parameters);
                     aReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                     aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandSuccessful",
-                            "Command " + commandName + "executed successfully on server instance " +
-                            rac.getServer().getName() + ";" + result, commandName, rac.getServer().getName()));
-                } catch (CommandException cmdEx) {
-                    aReport.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandFailed",
-                            "Command " + commandName + "failed on server instance " +
-                            rac.getServer().getName() + ":", commandName,
+                            "Command {0} executed successfully on server instance {1}", commandName,
                             rac.getServer().getName()));
-                    aReport.setFailureCause(cmdEx);
-                    if(returnValue.compareTo(ActionReport.ExitCode.SUCCESS)==0)
-                        returnValue = ActionReport.ExitCode.FAILURE;
+                } catch (CommandException cmdEx) {
+                    ActionReport.ExitCode finalResult = FailurePolicy.applyFailurePolicy(failPolicy,
+                            ActionReport.ExitCode.FAILURE);
+                    aReport.setActionExitCode(finalResult);
+                    aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandFailed",
+                            "Command {0} failed on server instance {1} : {2}", commandName, rac.getServer().getName(),
+                            cmdEx.getMessage()));
+                    if(returnValue.equals(ActionReport.ExitCode.SUCCESS))
+                        returnValue = finalResult;
                 }
             }
         } catch (Exception ex) {
             ActionReport aReport = context.getActionReport().addSubActionsReport();
-            aReport.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            ActionReport.ExitCode finalResult = FailurePolicy.applyFailurePolicy(failPolicy,
+                    ActionReport.ExitCode.FAILURE);
+            aReport.setActionExitCode(finalResult);
             aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.replicationfailed",
-                    "Error during command replication; Reason : " + ex.getLocalizedMessage(),
-                    ex.getLocalizedMessage()));
-            aReport.setFailureCause(ex);
-            context.getLogger().severe(strings.getLocalString("glassfish.clusterexecutor.replicationfailed",
-                            "Error during command replication; Reason : " + ex.getLocalizedMessage(),
-                            ex.getLocalizedMessage()));
-            if(returnValue.compareTo(ActionReport.ExitCode.SUCCESS)==0)
-                returnValue = ActionReport.ExitCode.FAILURE;
+                    "Error during command replication : {0}", ex.getMessage()));
+            context.getLogger().severe("Error during command replication; Reason : " +  ex.getLocalizedMessage());
+            if(returnValue.equals(ActionReport.ExitCode.SUCCESS))
+                returnValue = finalResult;
         }
         return returnValue;
     }
