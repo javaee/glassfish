@@ -185,6 +185,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link Configs }
      */
     @Element(required=true)
+    @NotNull
     Configs getConfigs();
 
     /**
@@ -202,6 +203,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link Servers }
      */
     @Element(required=true)
+    @NotNull
     Servers getServers();
 
     /**
