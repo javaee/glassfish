@@ -39,33 +39,9 @@ import org.glassfish.admin.rest.TemplateResource;
 @Path("/domain/")
 public class DomainResource extends org.glassfish.admin.rest.staticresources.GlassFishDomainResource {
 
-@Path("stop/")
-public DomainStopResource getDomainStopResource() {
-DomainStopResource resource = resourceContext.getResource(DomainStopResource.class);
-return resource;
-}
-
-@Path("restart/")
-public DomainRestartResource getDomainRestartResource() {
-DomainRestartResource resource = resourceContext.getResource(DomainRestartResource.class);
-return resource;
-}
-
-@Path("uptime/")
-public DomainUptimeResource getDomainUptimeResource() {
-DomainUptimeResource resource = resourceContext.getResource(DomainUptimeResource.class);
-return resource;
-}
-
-@Path("version/")
-public DomainVersionResource getDomainVersionResource() {
-DomainVersionResource resource = resourceContext.getResource(DomainVersionResource.class);
-return resource;
-}
-
-@Path("rotate-log/")
-public DomainRotateLogResource getDomainRotateLogResource() {
-DomainRotateLogResource resource = resourceContext.getResource(DomainRotateLogResource.class);
+@Path("list-targets/")
+public DomainListTargetsResource getDomainListTargetsResource() {
+DomainListTargetsResource resource = resourceContext.getResource(DomainListTargetsResource.class);
 return resource;
 }
 
@@ -81,21 +57,51 @@ DomainListLoggerLevelsResource resource = resourceContext.getResource(DomainList
 return resource;
 }
 
+@Path("list-instances/")
+public DomainListInstancesResource getDomainListInstancesResource() {
+DomainListInstancesResource resource = resourceContext.getResource(DomainListInstancesResource.class);
+return resource;
+}
+
+@Path("restart/")
+public DomainRestartResource getDomainRestartResource() {
+DomainRestartResource resource = resourceContext.getResource(DomainRestartResource.class);
+return resource;
+}
+
+@Path("rotate-log/")
+public DomainRotateLogResource getDomainRotateLogResource() {
+DomainRotateLogResource resource = resourceContext.getResource(DomainRotateLogResource.class);
+return resource;
+}
+
 @Path("set-log-level/")
 public DomainSetLogLevelResource getDomainSetLogLevelResource() {
 DomainSetLogLevelResource resource = resourceContext.getResource(DomainSetLogLevelResource.class);
 return resource;
 }
 
-@Path("list-targets/")
-public DomainListTargetsResource getDomainListTargetsResource() {
-DomainListTargetsResource resource = resourceContext.getResource(DomainListTargetsResource.class);
+@Path("stop/")
+public DomainStopResource getDomainStopResource() {
+DomainStopResource resource = resourceContext.getResource(DomainStopResource.class);
+return resource;
+}
+
+@Path("uptime/")
+public DomainUptimeResource getDomainUptimeResource() {
+DomainUptimeResource resource = resourceContext.getResource(DomainUptimeResource.class);
+return resource;
+}
+
+@Path("version/")
+public DomainVersionResource getDomainVersionResource() {
+DomainVersionResource resource = resourceContext.getResource(DomainVersionResource.class);
 return resource;
 }
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, {"version", "GET"}, {"rotate-log", "POST"}, {"host-port", "GET"}, {"list-logger-levels", "GET"}, {"set-log-level", "POST"}, {"list-targets", "GET"}};
+return new String[][]{{"list-targets", "GET"}, {"host-port", "GET"}, {"list-logger-levels", "GET"}, {"list-instances", "GET"}, {"restart", "POST"}, {"rotate-log", "POST"}, {"set-log-level", "POST"}, {"stop", "POST"}, {"uptime", "GET"}, {"version", "GET"}};
 }
 
 	@Path("resources/")

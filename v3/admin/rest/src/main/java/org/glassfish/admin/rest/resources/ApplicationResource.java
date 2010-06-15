@@ -38,21 +38,21 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class ApplicationResource extends TemplateResource {
 
-@Path("enable/")
-public ApplicationEnableResource getApplicationEnableResource() {
-ApplicationEnableResource resource = resourceContext.getResource(ApplicationEnableResource.class);
-return resource;
-}
-
 @Path("disable/")
 public ApplicationDisableResource getApplicationDisableResource() {
 ApplicationDisableResource resource = resourceContext.getResource(ApplicationDisableResource.class);
 return resource;
 }
 
+@Path("enable/")
+public ApplicationEnableResource getApplicationEnableResource() {
+ApplicationEnableResource resource = resourceContext.getResource(ApplicationEnableResource.class);
+return resource;
+}
+
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"enable", "POST"}, {"disable", "POST"}};
+return new String[][]{{"disable", "POST"}, {"enable", "POST"}};
 }
 
 	@Path("module/")

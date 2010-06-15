@@ -132,6 +132,7 @@ public class GeneratorResource {
         {"Domain", "__list-targets", "GET", "list-targets", "List Targets"},
         {"Domain", "get-host-and-port", "GET", "host-port", "HostPort"},
         {"Domain", "list-logger-levels", "GET", "list-logger-levels", "LogLevels"},
+        {"Domain", "list-instances", "GET", "list-instances", "List Instances"},
         {"Domain", "restart-domain", "POST", "restart", "Restart"},
         {"Domain", "rotate-log", "POST", "rotate-log", "RotateLog"},
         {"Domain", "set-log-level", "POST", "set-log-level", "LogLevel"},

@@ -38,6 +38,18 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class AuthRealmResource extends TemplateResource {
 
+@Path("list-group-names/")
+public AuthRealmListGroupNamesResource getAuthRealmListGroupNamesResource() {
+AuthRealmListGroupNamesResource resource = resourceContext.getResource(AuthRealmListGroupNamesResource.class);
+return resource;
+}
+
+@Path("supports-user-management/")
+public AuthRealmSupportsUserManagementResource getAuthRealmSupportsUserManagementResource() {
+AuthRealmSupportsUserManagementResource resource = resourceContext.getResource(AuthRealmSupportsUserManagementResource.class);
+return resource;
+}
+
 @Path("create-user/")
 public AuthRealmCreateUserResource getAuthRealmCreateUserResource() {
 AuthRealmCreateUserResource resource = resourceContext.getResource(AuthRealmCreateUserResource.class);
@@ -56,21 +68,9 @@ AuthRealmListUsersResource resource = resourceContext.getResource(AuthRealmListU
 return resource;
 }
 
-@Path("list-group-names/")
-public AuthRealmListGroupNamesResource getAuthRealmListGroupNamesResource() {
-AuthRealmListGroupNamesResource resource = resourceContext.getResource(AuthRealmListGroupNamesResource.class);
-return resource;
-}
-
-@Path("supports-user-management/")
-public AuthRealmSupportsUserManagementResource getAuthRealmSupportsUserManagementResource() {
-AuthRealmSupportsUserManagementResource resource = resourceContext.getResource(AuthRealmSupportsUserManagementResource.class);
-return resource;
-}
-
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-user", "POST"}, {"delete-user", "DELETE"}, {"list-users", "GET"}, {"list-group-names", "GET"}, {"supports-user-management", "GET"}};
+return new String[][]{{"list-group-names", "GET"}, {"supports-user-management", "GET"}, {"create-user", "POST"}, {"delete-user", "DELETE"}, {"list-users", "GET"}};
 }
 
 	@Path("property/")

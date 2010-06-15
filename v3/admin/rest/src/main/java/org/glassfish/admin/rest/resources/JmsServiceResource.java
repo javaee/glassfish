@@ -38,18 +38,6 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class JmsServiceResource extends TemplateResource {
 
-@Path("jms-ping/")
-public JmsServiceJmsPingResource getJmsServiceJmsPingResource() {
-JmsServiceJmsPingResource resource = resourceContext.getResource(JmsServiceJmsPingResource.class);
-return resource;
-}
-
-@Path("flush-jmsdest/")
-public JmsServiceFlushJmsdestResource getJmsServiceFlushJmsdestResource() {
-JmsServiceFlushJmsdestResource resource = resourceContext.getResource(JmsServiceFlushJmsdestResource.class);
-return resource;
-}
-
 @Path("create-jmsdest/")
 public JmsServiceCreateJmsdestResource getJmsServiceCreateJmsdestResource() {
 JmsServiceCreateJmsdestResource resource = resourceContext.getResource(JmsServiceCreateJmsdestResource.class);
@@ -62,6 +50,18 @@ JmsServiceDeleteJmsdestResource resource = resourceContext.getResource(JmsServic
 return resource;
 }
 
+@Path("flush-jmsdest/")
+public JmsServiceFlushJmsdestResource getJmsServiceFlushJmsdestResource() {
+JmsServiceFlushJmsdestResource resource = resourceContext.getResource(JmsServiceFlushJmsdestResource.class);
+return resource;
+}
+
+@Path("jms-ping/")
+public JmsServiceJmsPingResource getJmsServiceJmsPingResource() {
+JmsServiceJmsPingResource resource = resourceContext.getResource(JmsServiceJmsPingResource.class);
+return resource;
+}
+
 @Path("list-jmsdest/")
 public JmsServiceListJmsdestResource getJmsServiceListJmsdestResource() {
 JmsServiceListJmsdestResource resource = resourceContext.getResource(JmsServiceListJmsdestResource.class);
@@ -70,7 +70,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"jms-ping", "GET"}, {"flush-jmsdest", "POST"}, {"create-jmsdest", "POST"}, {"delete-jmsdest", "POST"}, {"list-jmsdest", "GET"}};
+return new String[][]{{"create-jmsdest", "POST"}, {"delete-jmsdest", "POST"}, {"flush-jmsdest", "POST"}, {"jms-ping", "GET"}, {"list-jmsdest", "GET"}};
 }
 
 	@Path("jms-host/")
