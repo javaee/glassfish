@@ -141,4 +141,10 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
             DEBUG = false;
     }
 
+    String generateInstanceName() {
+        String s = "" + System.currentTimeMillis();
+        s = s.substring(4, 10);
+        return "in_" + s;
+    }
+
 }

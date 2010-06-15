@@ -57,7 +57,24 @@ public class PortTests extends AdminBaseDevTest {
     }
 
     private void justDoIt() {
-        report("PHONY TEST", true);
+        String iname = generateInstanceName();
+        report("OK-Port", asadmin("create-local-instance", "--systemproperties", "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181", "qqq_" + iname));
+
+
+        // currently broken!!!!
+        //report("OK-Port-delete", asadmin("delete-local-instance", iname));
+
+        
+        iname = generateInstanceName();
+        AsadminReturn ret = asadminWithOutput("create-local-instance", "--systemproperties", "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18080", iname);
+        report("Duplicated-Port", ret.outAndErr.indexOf("TransactionFailure:") >= 0);
         stat.printSummary();
     }
+
+
+/*
+ * --systemproperties HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848 in1
+
+ */
+
 }

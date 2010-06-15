@@ -349,12 +349,6 @@ public class InstanceTest extends AdminBaseDevTest {
         return dasFile.exists();
     }
 
-    private String generateInstanceName() {
-        String s = "" + System.currentTimeMillis();
-        s = s.substring(4, 10);
-        return "in_" + s;
-    }
-
     /**
      *
      * @param iname
