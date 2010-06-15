@@ -58,11 +58,11 @@ public class PortTests extends AdminBaseDevTest {
 
     private void justDoIt() {
         String iname = generateInstanceName();
-        report("OK-Port", asadmin("create-local-instance", "--systemproperties", "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181", "qqq_" + iname));
+        report("OK-Port", asadmin("create-local-instance", "--systemproperties", "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181", iname));
 
 
         // currently broken!!!!
-        //report("OK-Port-delete", asadmin("delete-local-instance", iname));
+        report("OK-Port-delete", asadmin("delete-local-instance", iname));
 
         
         iname = generateInstanceName();
