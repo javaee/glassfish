@@ -850,9 +850,10 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
 
         String thisUser = (pc == null) ? null : pc.getUserName();
         char[] passwordArray = (pc == null) ? null : pc.getPassword();
+        char[] tmpPasswordArray = (password == null) ? null : password.toCharArray();
 
-        return (isStringEqual(thisUser, user) && 
-                Arrays.equals(passwordArray, password.toCharArray()));
+        return (isStringEqual(thisUser, user) &&
+                Arrays.equals(passwordArray, tmpPasswordArray));
 
     }
 
