@@ -288,6 +288,9 @@ public class RestApiHandlers {
         String options = options(endpoint, "application/xml");
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
+	// FIXME: Add error handling at least to the line below.  If it fails
+	// FIXME: we should log a message as to why and/or w/ the 
+	// FIXME: options.getBytes()
         Document doc = db.parse(new ByteArrayInputStream(options.getBytes()));
         Element root = doc.getDocumentElement();
         NodeList nl = root.getElementsByTagName("messageParameters");
