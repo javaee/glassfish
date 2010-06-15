@@ -948,36 +948,21 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <echo message="Validate the static check results" level="verbose"/>
 </target>
 
+<target name="deploy-dir" depends="init-common">
+    <echo message="Deploying files: ${assemble.dir}" level="verbose"/>
+    <glassfish-embedded-deploy app="${assemble.dir}" name="${appname}-web" libraries="${libraries}"/>
+</target>
+
 <!-- deploy the applications in AppServ  -->
 <target name="deploy-common" depends="init-common">
-    <antcall target="deploy-common-pe"/>
-    <antcall target="deploy-common-ee"/>
-</target>       
+  <glassfish-embedded-deploy app="${assemble.dir}/${appname}App.ear" name="${appname}" libraries="${libraries}"/>
+  <echo message="Deployment on target server ${appserver.instance.name} successful"/>
+</target>
 
 <target name="deploy-verify-common" depends="init-common">
     <antcall target="deploy-verify-common-pe"/>
     <antcall target="deploy-verify-common-ee"/>
 </target>       
-
-<target name="deploy-common-pe" depends="init-common">
-  <glassfish-embedded-deploy app="${assemble.dir}/${appname}App.ear" name="${appname}" libraries="${libraries}"/>
-  <echo message="Deployment on target server ${appserver.instance.name} successful"/>
-</target>
-
-<target name="deploy-common-ee" depends="init-common" if="ee">      
-  <echo message="Deploying in EE..."/>
-  <property name="deployed.app" value="${assemble.dir}/${appname}App.ear"/>
-  <exec executable="${ASADMIN}" failonerror="false">
-    <arg line="deploy"/>
-    <arg line="${as.props}"/>
-    <arg line="--target ${appserver.instance.name}"/>
-    <arg line="--retrieve ${assemble.dir}"/>
-    <arg line="--libraries ${libraries}"/>
-<!-- deployed.app defaults to ${assemble.dir}/${appname}App.ear defined in properties.xml-->
-    <arg line="${deployed.app}"/>
-  </exec>
-  <echo message="Deployment on target server ${appserver.instance.name} successful"/>
-</target>
 
 <target name="deploy-verify-common-pe" depends="init-common" unless="ee">
   <property name="deployed.app" value="${assemble.dir}/${appname}App.ear"/>

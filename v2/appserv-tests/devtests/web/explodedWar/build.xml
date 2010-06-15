@@ -37,6 +37,7 @@
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+<!ENTITY run SYSTEM "./../../../config/run.xml">
 <!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 
@@ -45,6 +46,7 @@
     &commonSetup;
     &commonBuild;
     &testproperties;
+    &run;
 
     <target name="all" depends="build,deploy,run,undeploy,run"/>
 
@@ -83,14 +85,7 @@
     </target> 
     
     <target name="deploy" depends="init-common">
-        <exec executable="${ASADMIN}" failonerror="false">
-            <arg line="deploy"/>
-            <arg line="${as.props}"/>
-            <arg line="--contextroot ${contextroot}"/>
-            <arg line="--target ${appserver.instance.name}"/>	
-            <arg line="--name ${appname}-web"/>
-            <arg line="${assemble.dir}"/>
-        </exec>
+        <antcall target="deploy-dir"/>
     </target>
     
     <target name="run" depends="init-common">
