@@ -85,6 +85,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @throws PropertyVetoException if a listener vetoes the change
      */
     @Param(name="name", primary = true)
+    @Override
     public void setName(String value) throws PropertyVetoException;
 
     /**
@@ -116,7 +117,8 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *
      * @return true | false as a string, null means false
      */
-    @Attribute (defaultValue="true",dataType=Boolean.class,required=true)
+    @Attribute (defaultValue="true", dataType=Boolean.class, required=true)
+    @NotNull
     String getGmsEnabled();
 
     /**
@@ -129,6 +131,73 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     void setGmsEnabled(String value) throws PropertyVetoException;
 
     /**
+     * Gets the value of the gmsMulticastPort property.
+     *
+     * This is the communication port GMS uses to listen for group  events.
+     * This should be a valid port number.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute(defaultValue="2299")
+    @Min(value=2048)
+    @Max(value=49151)
+    @NotNull
+    String getGmsMulticastPort();
+
+    /**
+     * Sets the value of the gmsMulticastPort property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    @Param(name="multicastport", optional=true)
+    void setGmsMulticastPort(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the gmsMulticastAddress property.
+     *
+     * This is the address (only multicast supported) at which GMS will
+     * listen for group events. Must be unique for each cluster.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute(defaultValue="229.9.1.1")
+    @NotNull
+    String getGmsMulticastAddress();
+
+    /**
+     * Sets the value of the gmsMulticastAddress property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    @Param(name="multicastaddress", optional=true)
+    void setGmsMulticastAddress(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the gmsBindInterfaceAddress property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    @NotNull
+    String getGmsBindInterfaceAddress();
+
+    /**
+     * Sets the value of the gmsBindInterfaceAddress property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    void setGmsBindInterfaceAddress(String value) throws PropertyVetoException;
+
+    /**
      * Gets the value of the heartbeatEnabled property.
      *
      * When "heartbeat-enabled" is set to "true", the GMS services will be
@@ -139,7 +208,8 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *
      * @return true | false as a string, null means false
      */
-    @Attribute (defaultValue="true",dataType=Boolean.class)
+    @Deprecated
+    @Attribute
     String getHeartbeatEnabled();
 
     /**
@@ -149,6 +219,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
+    @Deprecated
     void setHeartbeatEnabled(String value) throws PropertyVetoException;
 
     /**
@@ -163,6 +234,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @Attribute
     @Min(value=2048)
     @Max(value=49151)
+    @Deprecated
     String getHeartbeatPort();
 
     /**
@@ -172,6 +244,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
+    @Deprecated
     void setHeartbeatPort(String value) throws PropertyVetoException;
 
     /**
@@ -184,6 +257,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *         {@link String }
      */
     @Attribute
+    @Deprecated
     String getHeartbeatAddress();
 
     /**
@@ -193,6 +267,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
+    @Deprecated
     void setHeartbeatAddress(String value) throws PropertyVetoException;
 
     /**
@@ -228,6 +303,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @Element
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal system props" )
     @Param(name="systemproperties",optional=true)
+    @Override
     List<SystemProperty> getSystemProperty();
 
     /**
@@ -237,6 +313,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @PropertiesDesc(props={})
     @Element
     @Param(name="properties", optional=true)
+    @Override
     List<Property> getProperty();
 
     /**
@@ -244,6 +321,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @return the config-ref attribute
      */
     @DuckTyped
+    @Override
     String getReference();
 
     @DuckTyped
@@ -360,6 +438,10 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 throw new TransactionFailure(localStrings.getLocalString(
                         "cannotAddDuplicate", "There is an instance {0} already present.", instance.getName()));
             }
+
+            instance.setGmsBindInterfaceAddress(String.format(
+                "${GMS-BIND-INTERFACE-ADDRESS-%s}",
+                instance.getName()));
 
             if (configRef==null) {
                 Config config = habitat.getComponent(Config.class, "default-config");
