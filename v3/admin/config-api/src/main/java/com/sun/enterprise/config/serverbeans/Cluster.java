@@ -302,28 +302,28 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         @Param(name="config", optional=true)
         String configRef=null;
 
-        @Param(optional = true)
+        @Param(optional = true,obsolete=true)
         String hosts=null;
 
-        @Param(optional = true)
+        @Param(optional = true,obsolete=true)
         int haagentport=0;
 
-        @Param(optional = true)
+        @Param(optional = true,obsolete=true)
         String haadminpassword=null;
 
-        @Param(optional = true)
+        @Param(optional = true,obsolete=true)
         String haadminpasswordfile=null;
 
-        @Param(optional = true)
+        @Param(optional = true,obsolete=true)
         String devicesize=null;
 
-        @Param(optional = true)
+        @Param(optional = true,obsolete=true)
         String haproperty=null;
 
-        @Param(optional = true)
+        @Param(optional = true,obsolete=true)
         String autohadb=null;
 
-        @Param(optional = true)
+        @Param(optional = true,obsolete=true)
         String portbase=null;
 
         @Inject
