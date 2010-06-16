@@ -47,16 +47,26 @@
         setSessionAttribute(key="javaConfigTab" value="profiler");
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
+        setPageSessionAttribute(key="profilerObjectNameStr", value="amx:pp=/domain/configs/config[server-config]/java-config,type=profiler");
+
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/java-config");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstProfiler.jsf");
         setPageSessionAttribute(key="childType" value="profiler");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteProfiler}");
-        getProfilerAttrs(objectName="#{pageSession.profilerObjectNameStr}" edit="#{pageSession.edit}");
+        setPageSessionAttribute(key="profilerUrl", value="#{pageSession.parentUrl}/java-config/profiler");
+        gf.checkIfEndPointExist(endpoint="#{pageSession.profilerUrl}" edit="#{pageSession.edit}");
+
         if(#{edit}) {
-            getProxyAttrs(objectNameStr="#{pageSession.profilerObjectNameStr}" valueMap="#{pageSession.valueMap}");
+            gf.getEntityAttrs(endpoint="#{pageSession.profilerUrl}", valueMap="#{pageSession.valueMap}");
+            //REST-TODO take care of property table
             getJvmOptionsValues(objectNameStr="#{pageSession.profilerObjectNameStr}"  result=>$attribute{tableList});     
         }
         if(!#{edit}) {
-            getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+            gf.getEntityAttrs(endpoint="#{pageSession.profilerUrl}", valueMap="#{pageSession.valueMap}");
         }
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
     />

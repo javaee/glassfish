@@ -51,9 +51,15 @@
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
             setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
             setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=server-config");
-            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+            
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
+            setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/java-config");
+            setPageSessionAttribute(key="rest-api" value="true");
+            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+            
             setPageSessionAttribute(key="convertToFalseList" value={"DebugEnabled"});
-            setPageSessionAttribute(key="childType" value="java-config");            
+            setPageSessionAttribute(key="childType" value="java-config");
+            //REST-TODO take care of property table
             getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});            
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstJvmGeneral.jsf?configName=#{pageSession.configName}");
             setPageSessionAttribute(key="skipAttrsList", value={"EnvClasspathIgnored" "ServerClasspath" "SystemClasspath" "ClasspathPrefix" "ClasspathSuffix" "NativeLibraryPathPrefix" "NativeLibraryPathSuffix"});
