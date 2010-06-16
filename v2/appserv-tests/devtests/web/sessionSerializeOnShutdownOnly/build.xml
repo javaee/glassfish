@@ -81,12 +81,11 @@
     <target name="redeploy" depends="init-common">
         <echo message="Redeploying ${assemble.dir}/${appname}-web.war from ${basedir}."
               level="verbose"/>
-        <exec executable="${ASADMIN}" failonerror="false">
-            <arg line="redeploy"/>
-            <arg line="${as.props}"/>
-            <arg line="--name=${appname}-web"/>
-            <arg line="${assemble.dir}/${appname}-web.war"/>
-        </exec>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="redeploy" />
+        <param name="operand.props"
+               value="--name=${appname}-web ${assemble.dir}/${appname}-web.war"/>
+      </antcall>
     </target>
 
     <target name="runfirst" depends="init-common, deploy">
