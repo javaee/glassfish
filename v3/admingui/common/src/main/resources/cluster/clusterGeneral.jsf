@@ -53,7 +53,7 @@
         setPageSessionAttribute(key="rest-api" value="true");
 
         gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}", valueMap="#{pageSession.valueMap}");
-        gf.getChildrenNamesList(parentEndpoint="#{pageSession.resourceUrl}", childType="server-ref" id="ref" result="#{pageSession.instanceList}" );
+        gf.getChildrenNamesList(endpoint="#{pageSession.resourceUrl}/server-ref" id="ref" result="#{pageSession.instanceList}" );
         //TODO: determine #instance thats up and #instance that is down
 
         setPageSessionAttribute(key="convertToFalseList" value={"HeartbeatEnabled", "GmsEnabled"} );

@@ -52,7 +52,7 @@
         <sun:property id="poolNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}"  helpText="$resource{i18njdbc.jdbcResource.poolHelp}">
             <sun:dropDown id="PoolName" selected="#{pageSession.valueMap['PoolName']}" labels="$pageSession{jdbcList}"  values="$pageSession{jdbcList}" >
             <!beforeCreate
-                gf.getChildrenNamesList(parentEndpoint="#{pageSession.parentUrl}", childType="jdbc-connection-pool", result="#{pageSession.jdbcList}");
+                gf.getChildrenNamesList(endpoint="#{pageSession.parentUrl}/jdbc-connection-pool", result="#{pageSession.jdbcList}");
             />
            </sun:dropDown>
         </sun:property>   

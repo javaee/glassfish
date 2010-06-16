@@ -284,8 +284,7 @@ public class RestApiHandlers {
 
     @Handler(id = "gf.getChildrenNamesList",
         input = {
-            @HandlerInput(name = "parentEndpoint", type = String.class, required = true),
-            @HandlerInput(name = "childType", type = String.class, required = true),
+            @HandlerInput(name = "endpoint", type = String.class, required = true),
             @HandlerInput(name = "id", type = String.class, defaultValue = "Name")},
         output = {
             @HandlerOutput(name = "result", type = java.util.List.class)
@@ -293,8 +292,7 @@ public class RestApiHandlers {
     public static void getChildrenNamesList(HandlerContext handlerCtx) {
         try {
             handlerCtx.setOutputValue("result",
-                    getChildrenNames((String)handlerCtx.getInputValue("parentEndpoint"),
-                    (String)handlerCtx.getInputValue("childType"),
+                    getChildrenNames((String)handlerCtx.getInputValue("endpoint"),
                     (String)handlerCtx.getInputValue("id")));
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
@@ -536,16 +534,12 @@ public class RestApiHandlers {
      * Given the parent URL and the desired childType, this method will build a List of Strings that
      * contains child entity names.
      *
-     * @param parent
-     * @param childType
+     * @param endpoint
      * @param id
      * @return
      * @throws Exception
      */
-    public static List<String> getChildrenNames(String parent, String childType, String id) throws Exception {
-        String endpoint = parent.endsWith("/") ?
-            parent + childType : parent + "/" + childType;
-
+    public static List<String> getChildrenNames(String endpoint, String id) throws Exception {
         List<String> childElements = new ArrayList<String>();
         try {
             String foo = RestApiHandlers.get(endpoint).getResponseBody();
