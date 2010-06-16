@@ -262,7 +262,7 @@ public class ConfigBean extends Dom implements ConfigView {
 
     /**
      * Returns the lock on this object, only one external view (usually the writeable view) can
-     * acquire the lock ensuring that the objects cannot be concurrentely modified
+     * acquire the lock ensuring that the objects cannot be concurrently modified
      *
      * @return lock instance
      */

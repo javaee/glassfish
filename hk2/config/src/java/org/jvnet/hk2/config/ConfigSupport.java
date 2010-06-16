@@ -607,11 +607,7 @@ public class ConfigSupport {
                 WriteableView writeableChild = (WriteableView) Proxy.getInvocationHandler(child);
                 applyProperties(writeableChild, attributes);
 
-                List<Dom.Child> children = new ArrayList<Dom.Child>();
-                dom.ensureConstraints(children);
-                if (!children.isEmpty()) {
-                    dom.setChildren(children);
-                }
+                dom.addDefaultChildren();
                 dom.register();
 
                 if (runnable!=null) {

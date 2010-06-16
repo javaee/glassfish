@@ -218,9 +218,12 @@ public class ConfigParser {
 
         dom.register();
 
+        if (children==null) {
+            children = new ArrayList<Dom.Child>();
+        }
         dom.ensureConstraints(children);
 
-        if(children!=null)
+        if(!children.isEmpty())
             dom.setChildren(children);
 
         dom.initializationCompleted();
