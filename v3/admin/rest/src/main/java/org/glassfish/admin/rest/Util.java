@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,6 @@ import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-
 /**
  * Utilities class. Extended by ResourceUtil and ProviderUtil utilities. Used by
  * resource and providers.
@@ -49,42 +48,48 @@ import java.net.URLDecoder;
  * @author Rajeshwar Patil
  */
 public class Util {
+    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Util.class);
+
+    private Util() {
+        
+    }
 
     /**
      * Returns name of the resource from UriInfo.
      */
-    public String getResourceName(UriInfo uriInfo) {
-        return upperCaseFirstLetter(
-            eleminateHypen(getName(uriInfo.getPath(), '/')));
+    public static String getResourceName(UriInfo uriInfo) {
+        return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
     }
-
 
     /**
      * Returns name of the resource parent from UriInfo.
      */
-    public String getParentName(UriInfo uriInfo) {
-        if (uriInfo == null) return null;
+    public static String getParentName(UriInfo uriInfo) {
+        if (uriInfo == null) {
+            return null;
+        }
         return getParentName(uriInfo.getPath());
     }
 
-
     /**
      * Returns just the name of the given fully qualified name.
      */
-    public String getName(String typeName) {
+    public static String getName(String typeName) {
         return getName(typeName, '.');
     }
 
-
     /**
      * Returns just the name of the given fully qualified name.
      */
-    public String getName(String typeName, char delimiter) {
-        if ((typeName == null) || ("".equals(typeName))) return typeName;
+    public static String getName(String typeName, char delimiter) {
+        if ((typeName == null) || ("".equals(typeName))) {
+            return typeName;
+        }
 
         //elimiate last char from typeName if its a delimiter
-        if (typeName.length() - 1 == typeName.lastIndexOf(delimiter))
-            typeName = typeName.substring(0, typeName.length()-1);
+        if (typeName.length() - 1 == typeName.lastIndexOf(delimiter)) {
+            typeName = typeName.substring(0, typeName.length() - 1);
+        }
 
         if ((typeName != null) && (typeName.length() > 0)) {
             int index = typeName.lastIndexOf(delimiter);
@@ -95,17 +100,17 @@ public class Util {
         return typeName;
     }
 
-
     /**
      * returns just the parent name of the resource from the resource url.
      */
-    public String getParentName(String url) {
-        if ((url == null) || ("".equals(url))) return url;
+    public static String getParentName(String url) {
+        if ((url == null) || ("".equals(url))) {
+            return url;
+        }
         String name = getName(url, '/');
         int nameIndex = url.indexOf(name);
-        return getName(url.substring(0, nameIndex-1), '/');
+        return getName(url.substring(0, nameIndex - 1), '/');
     }
-
 
     /**
      * Removes any hypens ( - ) from the given string.
@@ -114,18 +119,18 @@ public class Util {
      * @param string the input string
      * @return a <code>String</code> resulted after removing the hypens
      */
-    public String eleminateHypen(String string){
-        if(!(string == null || string.length() <= 0)){
+    public static String eleminateHypen(String string) {
+        if (!(string == null || string.length() <= 0)) {
             int index = string.indexOf('-');
-            while(index != -1){
-                if(index == 0){
+            while (index != -1) {
+                if (index == 0) {
                     string = string.substring(1);
                 } else {
-                    if(index == (string.length() - 1)){
-                        string = string.substring(0,string.length()-1);
+                    if (index == (string.length() - 1)) {
+                        string = string.substring(0, string.length() - 1);
                     } else {
-                        string = string.substring(0,index) +
-                            upperCaseFirstLetter(string.substring(index + 1));
+                        string = string.substring(0, index)
+                                + upperCaseFirstLetter(string.substring(index + 1));
                     }
                 }
                 index = string.indexOf('-');
@@ -134,7 +139,7 @@ public class Util {
         return string;
     }
 
-    public String decode(String string) {
+    public static String decode(String string) {
         String ret = string;
 
         try {
@@ -146,32 +151,30 @@ public class Util {
     }
 
     /**
-    * Converts the first letter of the given string to Uppercase.
-    *
-    * @param string the input string
-    * @return the string with the Uppercase first letter
-    */
-    public String upperCaseFirstLetter(String string)
-    {
-        if(string == null || string.length() <= 0){
+     * Converts the first letter of the given string to Uppercase.
+     *
+     * @param string the input string
+     * @return the string with the Uppercase first letter
+     */
+    public static String upperCaseFirstLetter(String string) {
+        if (string == null || string.length() <= 0) {
             return string;
         }
         return string.substring(0, 1).toUpperCase() + string.substring(1);
     }
 
-
     /**
-    * Returns the html for the given message.
-    *
-    * @param uriInfo the uriInfo context of the request
-    * @return String the html representation of the given message
-    */
-    public String getHtml(String message, UriInfo uriInfo) {
+     * Returns the html for the given message.
+     *
+     * @param uriInfo the uriInfo context of the request
+     * @return String the html representation of the given message
+     */
+    public static String getHtml(String message, UriInfo uriInfo) {
         String result = ProviderUtil.getHtmlHeader();
         String uri = uriInfo.getAbsolutePath().toString();
         String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
         String parentName =
-            upperCaseFirstLetter(eleminateHypen(getParentName(uri)));
+               upperCaseFirstLetter(eleminateHypen(getParentName(uri)));
 
         result = result + "<h1>" + name + "</h1>";
         result = result + message + "<br><br>";
@@ -182,7 +185,6 @@ public class Util {
         return result;
     }
 
-
     /**
      * Constructs a method name from  element's dtd name
      * name for a given prefix.(schema2beans convention)
@@ -191,10 +193,9 @@ public class Util {
      * @param prefix the given prefix
      * @return a method name formed from the given name and the prefix
      */
-    public String methodNameFromDtdName(String elementName, String prefix){
+    public static String methodNameFromDtdName(String elementName, String prefix) {
         return methodNameFromBeanName(eleminateHypen(elementName), prefix);
     }
-
 
     /**
      * Constructs a method name from  element's bean
@@ -204,14 +205,12 @@ public class Util {
      * @param prefix the given prefix
      * @return a method name formed from the given name and the prefix
      */
-    public String methodNameFromBeanName(String elementName, String prefix){
-        if((null == elementName) || (null == prefix) ||
-                (prefix.length() <= 0 )){
+    public static String methodNameFromBeanName(String elementName, String prefix) {
+        if ((null == elementName) || (null == prefix)
+                || (prefix.length() <= 0)) {
             return elementName;
         }
         String methodName = upperCaseFirstLetter(elementName);
         return methodName = prefix + methodName;
     }
-
-    protected final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Util.class);
 }

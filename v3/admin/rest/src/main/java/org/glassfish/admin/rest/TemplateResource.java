@@ -101,7 +101,6 @@ public class TemplateResource {
     protected Dom entity;
     protected Dom parent;
     protected String tagName;
-    private ResourceUtil __resourceUtil;
 
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
 
@@ -114,7 +113,6 @@ public class TemplateResource {
 
     /** Creates a new instance of xxxResource */
     public TemplateResource() {
-        __resourceUtil = new ResourceUtil();
     }
 
     public void setEntity(Dom p) {
@@ -171,11 +169,11 @@ public class TemplateResource {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
                         "Unable to parse the input entity. Please check the syntax.");
-                return __resourceUtil.getResponse(400, /*parsing error*/
+                return ResourceUtil.getResponse(400, /*parsing error*/
                         errorMessage, requestHeaders, uriInfo);
             }
 
-            __resourceUtil.purgeEmptyEntries(data);
+            ResourceUtil.purgeEmptyEntries(data);
 
             //hack-1 : support delete method for html
             //Currently, browsers do not support delete method. For html media,
@@ -194,10 +192,10 @@ public class TemplateResource {
 
             String successMessage = localStrings.getLocalString("rest.resource.update.message",
                     "\"{0}\" updated successfully.", new Object[] {uriInfo.getAbsolutePath()});
-           return __resourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo);
+           return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo);
         } catch (Exception ex) {
             if (ex.getCause() instanceof ValidationException) {
-                return __resourceUtil.getResponse(400, /*400 - bad request*/
+                return ResourceUtil.getResponse(400, /*400 - bad request*/
                     ex.getMessage(), requestHeaders, uriInfo);
             } else {
                 throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
@@ -220,13 +218,13 @@ public class TemplateResource {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
                         "Unable to parse the input entity. Please check the syntax.");
-                return __resourceUtil.getResponse(400, /*parsing error*/
+                return ResourceUtil.getResponse(400, /*parsing error*/
                         errorMessage, requestHeaders, uriInfo);
             }
 
-            __resourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
-            __resourceUtil.purgeEmptyEntries(data);
-            __resourceUtil.adjustParameters(data);
+            ResourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
+            ResourceUtil.purgeEmptyEntries(data);
+            ResourceUtil.adjustParameters(data);
             
             if (data.get("DEFAULT") == null) {
                 addDefaultParameter(data);
@@ -235,7 +233,7 @@ public class TemplateResource {
                 if (!data.get("DEFAULT").equals(resourceName)) {
                     String errorMessage = localStrings.getLocalString("rest.resource.not.deleted",
                             "Resource not deleted. Value of \"name\" should be the name of this resource.");
-                    return __resourceUtil.getResponse(403, /*forbidden*/
+                    return ResourceUtil.getResponse(403, /*forbidden*/
                             errorMessage, requestHeaders, uriInfo);
                 }
             }
@@ -247,7 +245,7 @@ public class TemplateResource {
                 if (exitCode == ActionReport.ExitCode.SUCCESS) {
                     String successMessage = localStrings.getLocalString("rest.resource.delete.message",
                         "\"{0}\" deleted successfully.", new Object[] {uriInfo.getAbsolutePath()});
-                    return __resourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo); //200 - ok
+                    return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo); //200 - ok
                 }
 
                 String errorMessage = actionReport.getMessage();
@@ -258,12 +256,12 @@ public class TemplateResource {
                 } catch (Exception e) {
                 //ignore
                 }*/
-                return __resourceUtil.getResponse(400, errorMessage, requestHeaders, uriInfo); //400 - bad request
+                return ResourceUtil.getResponse(400, errorMessage, requestHeaders, uriInfo); //400 - bad request
             }
 
             String message = localStrings.getLocalString("rest.resource.delete.forbidden",
                 "DELETE on \"{0}\" is forbidden.", new Object[] {uriInfo.getAbsolutePath()});
-            return __resourceUtil.getResponse(403, message, requestHeaders, uriInfo); //403 - forbidden
+            return ResourceUtil.getResponse(403, message, requestHeaders, uriInfo); //403 - forbidden
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
@@ -273,14 +271,14 @@ public class TemplateResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
     public OptionsResult options() {
         OptionsResult optionsResult =
-                new OptionsResult(__resourceUtil.getResourceName(uriInfo));
+                new OptionsResult(Util.getResourceName(uriInfo));
 
         try {
             //GET meta data
             optionsResult.putMethodMetaData("GET", new MethodMetaData());
 
             /////optionsResult.putMethodMetaData("POST", new MethodMetaData());
-            MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
+            MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(
                 (ConfigBean)getEntity());
             postMethodMetaData.setDescription("Update");
             optionsResult.putMethodMetaData("POST", postMethodMetaData);
@@ -289,7 +287,7 @@ public class TemplateResource {
             //DELETE meta data
             String command = getDeleteCommand();
             if (command != null) {
-                MethodMetaData deleteMethodMetaData = __resourceUtil.getMethodMetaData(
+                MethodMetaData deleteMethodMetaData = ResourceUtil.getMethodMetaData(
                         command, RestService.getHabitat(), RestService.logger);
                 //In case of delete operation(command), do not  display/provide id attribute.
                 deleteMethodMetaData.removeParamMetaData("id");
@@ -354,12 +352,11 @@ public class TemplateResource {
                     //Use just the filename without complete path. File creation
                     //in case of remote deployment failing because fo this.
                     String fileName = n.getContentDisposition().getFileName();
-                    ResourceUtil resourceUtil = new ResourceUtil();
                     if (fileName.contains("/")) {
-                        fileName = resourceUtil.getName(fileName, '/');
+                        fileName = Util.getName(fileName, '/');
                     } else {
                         if (fileName.contains("\\")) {
-                            fileName = resourceUtil.getName(fileName, '\\');
+                            fileName = Util.getName(fileName, '\\');
                         }
                     }
 
@@ -443,13 +440,13 @@ public class TemplateResource {
     }
 
     public String getDeleteCommand() {
-        return __resourceUtil.getCommand(RestRedirect.OpType.DELETE, (ConfigBean)getEntity());
+        return ResourceUtil.getCommand(RestRedirect.OpType.DELETE, (ConfigBean)getEntity());
     }
 
     private ActionReport runCommand(String commandName, HashMap<String, String> data) {
 
         if (commandName != null) {
-            return __resourceUtil.runCommand(commandName, data, RestService.getHabitat());//processed
+            return ResourceUtil.runCommand(commandName, data, RestService.getHabitat());//processed
         }
 
         return null;//not processed

@@ -53,6 +53,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.admin.rest.Constants;
+import static org.glassfish.admin.rest.Util.*;
 
 /**
  *

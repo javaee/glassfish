@@ -62,6 +62,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
+import static org.glassfish.admin.rest.Util.*;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.api.admin.CommandModel;
@@ -80,7 +81,23 @@ import org.jvnet.hk2.config.Dom;
  *
  * @author Rajeshwar Patil
  */
-public class ResourceUtil extends Util {
+public class ResourceUtil {
+    //TODO this is copied from org.jvnet.hk2.config.Dom. If we are not able to encapsulate the conversion in Dom, need to make sure that the method convertName is refactored into smaller methods such that trimming of prefixes stops. We will need a promotion of HK2 for this.
+    static final Pattern TOKENIZER;
+    static {
+        String pattern = or(
+                split("x","X"),     // AbcDef -> Abc|Def
+                split("X","Xx"),    // USArmy -> US|Army
+                //split("\\D","\\d"), // SSL2 -> SSL|2
+                split("\\d","\\D")  // SSL2Connector -> SSL|2|Connector
+        );
+        pattern = pattern.replace("x","\\p{Lower}").replace("X","\\p{Upper}");
+        TOKENIZER = Pattern.compile(pattern);
+    }
+
+    private ResourceUtil() {
+        
+    }
 
     /**
      * Adjust the input parameters. In case of POST and DELETE methods, user
@@ -88,7 +105,7 @@ public class ResourceUtil extends Util {
      * object to create or delete). This method is used to rename primary
      * parameter name to DEFAULT irrespective of what user provides.
      */
-    public void adjustParameters(HashMap<String, String> data) {
+    public static void adjustParameters(HashMap<String, String> data) {
         if (data != null) {
             if (!(data.containsKey("DEFAULT"))) {
                 boolean isRenamed = renameParameter(data, "name", "DEFAULT");
@@ -99,14 +116,13 @@ public class ResourceUtil extends Util {
         }
     }
 
-
     /**
      * Adjust the input parameters. In case of POST and DELETE methods, user
      * can provide id or DEFAULT parameter for primary parameter(i.e the
      * object to create or delete). This method is used to rename primary
      * parameter name to DEFAULT irrespective of what user provides.
      */
-    public void defineDefaultParameters(HashMap<String, String> data) {
+    public static void defineDefaultParameters(HashMap<String, String> data) {
         if (data != null) {
             if (!(data.containsKey("DEFAULT"))) {
                 renameParameter(data, "id", "DEFAULT");
@@ -121,7 +137,7 @@ public class ResourceUtil extends Util {
      * @param type the given resource operation
      * @return String the associated command name for the given operation.
      */
-    public String getCommand(RestRedirect.OpType type, ConfigBean configBean) {
+    public static String getCommand(RestRedirect.OpType type, ConfigBean configBean) {
 
         Class<? extends ConfigBeanProxy> cbp = null;
         try {
@@ -144,7 +160,6 @@ public class ResourceUtil extends Util {
         return null;
     }
 
-
     /**
      * Executes the specified __asadmin command.
      * @param commandName the command to execute
@@ -152,7 +167,7 @@ public class ResourceUtil extends Util {
      * @param habitat the habitat
      * @return ActionReport object with command execute status details.
      */
-    public ActionReport runCommand(String commandName,
+    public static ActionReport runCommand(String commandName,
             HashMap<String, String> parameters, Habitat habitat) {
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
         ActionReport ar = habitat.getComponent(ActionReport.class);
@@ -164,7 +179,6 @@ public class ResourceUtil extends Util {
         return ar;
     }
 
-
     /**
     * Executes the specified __asadmin command.
     * @param commandName the command to execute
@@ -172,7 +186,7 @@ public class ResourceUtil extends Util {
     * @param habitat the habitat
     * @return ActionReport object with command execute status details.
     */
-    public ActionReport runCommand(String commandName,
+    public static ActionReport runCommand(String commandName,
            Properties parameters, Habitat habitat) {
        CommandRunner cr = habitat.getComponent(CommandRunner.class);
        ActionReport ar = habitat.getComponent(ActionReport.class);
@@ -184,35 +198,32 @@ public class ResourceUtil extends Util {
        return ar;
     }
 
-
     /**
      * Constructs and returns the resource method meta-data.
-     * @param command the command assocaited with the resource method
+     * @param command the command associated with the resource method
      * @param habitat the habitat
      * @param logger the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public MethodMetaData getMethodMetaData(String command, Habitat habitat,
+    public static MethodMetaData getMethodMetaData(String command, Habitat habitat,
             Logger logger) {
         return getMethodMetaData(command, Constants.MESSAGE_PARAMETER,
                 habitat, logger);
     }
 
-
     /**
      * Constructs and returns the resource method meta-data.
-     * @param command the command assocaited with the resource method
+     * @param command the command associated with the resource method
      * @param parameterType the type of parameter. Possible values are
      *        Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
      * @param habitat the habitat
      * @param logger the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public MethodMetaData getMethodMetaData(String command,
+    public static MethodMetaData getMethodMetaData(String command,
             int pamameterType, Habitat habitat, Logger logger) {
         return getMethodMetaData(command, null, pamameterType, habitat, logger);
     }
-
 
     /**
      * Constructs and returns the resource method meta-data.
@@ -225,7 +236,7 @@ public class ResourceUtil extends Util {
      * @param logger the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public MethodMetaData getMethodMetaData(String command,
+    public static MethodMetaData getMethodMetaData(String command,
             HashMap<String, String> commandParamsToSkip, int parameterType,
                 Habitat habitat, Logger logger) {
         MethodMetaData methodMetaData = new MethodMetaData();
@@ -269,13 +280,12 @@ public class ResourceUtil extends Util {
         return methodMetaData;
     }
 
-
     /**
      * Resolve command parameter value of $parent for the parameter
      * in the given map.
      * @param uriInfo the uri context to extract parent name value.
      */
-    public void resolveParentParamValue(HashMap<String, String> commandParams,
+    public static void resolveParentParamValue(HashMap<String, String> commandParams,
             UriInfo uriInfo) {
 
         String parent = getParentName(uriInfo);
@@ -293,17 +303,15 @@ public class ResourceUtil extends Util {
         }
     }
 
-
     /**
      * Constructs and returns the resource method meta-data. This method is
      * called to get meta-data in case of update method (POST).
      * @param configBean the config bean associated with the resource.
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public MethodMetaData getMethodMetaData(ConfigBean configBean) {
+    public static MethodMetaData getMethodMetaData(ConfigBean configBean) {
         return getMethodMetaData(configBean, Constants.MESSAGE_PARAMETER);
     }
-
 
     /**
      * Constructs and returns the resource method meta-data. This method is
@@ -313,7 +321,7 @@ public class ResourceUtil extends Util {
      *        Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public MethodMetaData getMethodMetaData(ConfigBean configBean, int parameterType) {
+    public static MethodMetaData getMethodMetaData(ConfigBean configBean, int parameterType) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
         if (configBean != null) {
@@ -352,7 +360,7 @@ public class ResourceUtil extends Util {
         return methodMetaData;
     }
 
-    public MethodMetaData getMethodMetaData2(Dom parent, ConfigModel childModel, int parameterType) {
+    public static MethodMetaData getMethodMetaData2(Dom parent, ConfigModel childModel, int parameterType) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
         Class<? extends ConfigBeanProxy> configBeanProxy = null;
@@ -394,7 +402,7 @@ public class ResourceUtil extends Util {
      * @param logger the logger to use
      * @return Collection the meta-data for the parameter of the resource method.
      */
-    public Collection<CommandModel.ParamModel> getParamMetaData(
+    public static Collection<CommandModel.ParamModel> getParamMetaData(
             String commandName, Habitat habitat, Logger logger) {
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
         CommandModel cm = cr.getModel(commandName, logger);
@@ -402,7 +410,6 @@ public class ResourceUtil extends Util {
         //print(params);
         return params;
     }
-
 
     /**
      * Constructs and returns the parameter meta-data.
@@ -413,7 +420,7 @@ public class ResourceUtil extends Util {
      * @param logger the logger to use
      * @return Collection the meta-data for the parameter of the resource method.
      */
-    public Collection<CommandModel.ParamModel> getParamMetaData(
+    public static Collection<CommandModel.ParamModel> getParamMetaData(
             String commandName, Collection<String> commandParamsToSkip,
                 Habitat habitat, Logger logger) {
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
@@ -451,9 +458,8 @@ public class ResourceUtil extends Util {
         return metaData;
     }
 
-
     //removes entries with empty value from the given Map
-    public void purgeEmptyEntries(HashMap<String, String> data) {
+    public static void purgeEmptyEntries(HashMap<String, String> data) {
         Set<String> keys = data.keySet();
         Iterator<String> iterator = keys.iterator();
         String key;
@@ -473,7 +479,7 @@ public class ResourceUtil extends Util {
      * @param requestHeaders request headers of the request
      * @return Response the response object to be returned to the client
      */
-    public Response getResponse(int status, String message,
+    public static Response getResponse(int status, String message,
             HttpHeaders requestHeaders, UriInfo uriInfo){
         if(isBrowser(requestHeaders)) {
             message = getHtml(message, uriInfo);
@@ -481,13 +487,12 @@ public class ResourceUtil extends Util {
         return Response.status(status).entity(message).build();
     }
 
-
     /**
      * Extract the message from the given ActionReport object.
      * @param actionReport the given ActionReport object
      * @return String the extracted output message
      */
-    public String getMessage(ActionReport actionReport) {
+    public static String getMessage(ActionReport actionReport) {
         String message = "";
         if (actionReport != null) {
             message = actionReport.getMessage();
@@ -516,7 +521,7 @@ public class ResourceUtil extends Util {
      *
      * @param data
      */
-    protected void addQueryString(MultivaluedMap<String, String> qs, HashMap<String, String> data) {
+    public static void addQueryString(MultivaluedMap<String, String> qs, HashMap<String, String> data) {
         for (Map.Entry<String, List<String>> entry : qs.entrySet()) {
             String key = entry.getKey();
             for (String value : entry.getValue()) {
@@ -525,7 +530,7 @@ public class ResourceUtil extends Util {
         }
     }
 
-    public void addQueryString(MultivaluedMap<String, String> qs, Properties data) {
+    public static void addQueryString(MultivaluedMap<String, String> qs, Properties data) {
         for (Map.Entry<String, List<String>> entry : qs.entrySet()) {
             String key = entry.getKey();
             for (String value : entry.getValue()) {
@@ -535,7 +540,7 @@ public class ResourceUtil extends Util {
     }
 
     //Construct parameter meta-data from the model
-    private ParameterMetaData getParameterMetaData(CommandModel.ParamModel paramModel) {
+    private static ParameterMetaData getParameterMetaData(CommandModel.ParamModel paramModel) {
         Param param = paramModel.getParam();
         ParameterMetaData parameterMetaData = new ParameterMetaData();
 
@@ -547,9 +552,8 @@ public class ResourceUtil extends Util {
         return parameterMetaData;
     }
 
-
     //Construct parameter meta-data from the attribute annotation
-    private ParameterMetaData getParameterMetaData(Attribute attribute) {
+    private static ParameterMetaData getParameterMetaData(Attribute attribute) {
         ParameterMetaData parameterMetaData = new ParameterMetaData();
         parameterMetaData.putAttribute(Constants.TYPE, getXsdType(attribute.dataType().toString()));
         parameterMetaData.putAttribute(Constants.OPTIONAL, Boolean.toString(!attribute.required()));
@@ -564,9 +568,8 @@ public class ResourceUtil extends Util {
         return parameterMetaData;
     }
 
-
     //rename the given input parameter
-    private boolean renameParameter(HashMap<String, String> data,
+    private static boolean renameParameter(HashMap<String, String> data,
         String parameterToRename, String newName) {
         if ((data.containsKey(parameterToRename))) {
             String value = data.get(parameterToRename);
@@ -577,9 +580,8 @@ public class ResourceUtil extends Util {
         return false;
     }
 
-
     //print given parameter meta-data.
-    private void print(Collection<CommandModel.ParamModel> params) {
+    private static void print(Collection<CommandModel.ParamModel> params) {
         for (CommandModel.ParamModel pm : params) {
             System.out.println("Command Param: " + pm.getName());
             System.out.println("Command Param Type: " + pm.getType());
@@ -588,9 +590,8 @@ public class ResourceUtil extends Util {
         }
     }
 
-
     //returns true only if the request is from browser
-    private boolean isBrowser(HttpHeaders requestHeaders) {
+    private static boolean isBrowser(HttpHeaders requestHeaders) {
         boolean isClientAcceptsHtml = false;
         MediaType media = requestHeaders.getMediaType();
         java.util.List<String> acceptHeaders = 
@@ -613,8 +614,7 @@ public class ResourceUtil extends Util {
         return false;
     }
 
-
-    private String getXsdType(String javaType) {
+    private static String getXsdType(String javaType) {
         if (javaType.indexOf(Constants.JAVA_STRING_TYPE) != -1)
             return Constants.XSD_STRING_TYPE;
         if (javaType.indexOf(Constants.JAVA_BOOLEAN_TYPE) != -1)
@@ -626,8 +626,7 @@ public class ResourceUtil extends Util {
         return javaType;
     }
 
-
-    private String getAttributeMethodName(String attributeName) {
+    private static String getAttributeMethodName(String attributeName) {
         return methodNameFromDtdName(attributeName, "get");
     }
 
@@ -641,7 +640,7 @@ public class ResourceUtil extends Util {
      * one of the parameters of command. The key of this entry is translated to corresponding command param name (2)
      * All the remaining entries from sourceMap as it is.
      */
-    public HashMap<String, String> translateCamelCasedNamesToCommandParamNames(HashMap<String, String> sourceMap, String commandName, Habitat habitat, Logger logger) {
+    public static HashMap<String, String> translateCamelCasedNamesToCommandParamNames(HashMap<String, String> sourceMap, String commandName, Habitat habitat, Logger logger) {
         //TODO after Bills changes to call toLowerCase() this translation might not be required as he will accept camleCased parameters. Remove this code then.
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
         CommandModel cm = cr.getModel(commandName, logger);
@@ -662,8 +661,6 @@ public class ResourceUtil extends Util {
 
     }
 
-    //TODO this is copied from org.jvnet.hk2.config.Dom. If we are not able to encapsulate the conversion in Dom, need to make sure that the method convertName is refactored into smaller methods such that trimming of prefixes stops. We will need a promotion of HK2 for this. 
-    static final Pattern TOKENIZER;
     private static String split(String lookback,String lookahead) {
         return "((?<="+lookback+")(?="+lookahead+"))";
     }
@@ -674,16 +671,6 @@ public class ResourceUtil extends Util {
             buf.append(t);
         }
         return buf.toString();
-    }
-    static {
-        String pattern = or(
-                split("x","X"),     // AbcDef -> Abc|Def
-                split("X","Xx"),    // USArmy -> US|Army
-                //split("\\D","\\d"), // SSL2 -> SSL|2
-                split("\\d","\\D")  // SSL2Connector -> SSL|2|Connector
-        );
-        pattern = pattern.replace("x","\\p{Lower}").replace("X","\\p{Upper}");
-        TOKENIZER = Pattern.compile(pattern);
     }
 
     public static String convertToXMLName(String name) {
@@ -697,7 +684,6 @@ public class ResourceUtil extends Util {
         }
         return buf.toString();
     }
-
 
     /**
      * @return A copy of given <code>sourceData</code> where key of each entry from it is converted to xml name

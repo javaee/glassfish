@@ -77,7 +77,6 @@ import org.jvnet.hk2.config.DomDocument;
  * @author Rajeshwar Patil
  */
 public abstract class TemplateListOfResource {
-
     @Context
     protected HttpHeaders requestHeaders;
 
@@ -93,7 +92,6 @@ public abstract class TemplateListOfResource {
 
     /** Creates a new instance of xxxResource */
     public TemplateListOfResource() {
-        __resourceUtil = new ResourceUtil();
     }
 
 
@@ -143,22 +141,22 @@ public abstract class TemplateListOfResource {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
                         "Unable to parse the input entity. Please check the syntax.");
-                return __resourceUtil.getResponse(400, /*parsing error*/
+                return ResourceUtil.getResponse(400, /*parsing error*/
                         errorMessage, requestHeaders, uriInfo);
             }
 
-            __resourceUtil.purgeEmptyEntries(data);
+            ResourceUtil.purgeEmptyEntries(data);
 
             //Command to execute
             String commandName = getPostCommand();
-            __resourceUtil.adjustParameters(data);
+            ResourceUtil.adjustParameters(data);
             String resourceToCreate = uriInfo.getAbsolutePath() +
                 "/" + data.get("DEFAULT");
 
             if (null != commandName) {
                 // TODO: Not needed anymore?
 //                data = __resourceUtil.translateCamelCasedNamesToCommandParamNames(data,commandName, RestService.getHabitat(), RestService.logger);
-                ActionReport actionReport = __resourceUtil.runCommand(commandName,
+                ActionReport actionReport = ResourceUtil.runCommand(commandName,
                     data, RestService.getHabitat());
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
@@ -166,12 +164,12 @@ public abstract class TemplateListOfResource {
                     String successMessage =
                         localStrings.getLocalString("rest.resource.create.message",
                             "\"{0}\" created successfully.", new Object[] {resourceToCreate});
-                    return __resourceUtil.getResponse(201, //201 - created
+                    return ResourceUtil.getResponse(201, /* 201 - created */
                          successMessage, requestHeaders, uriInfo);
                 }
 
                 String errorMessage = getErrorMessage(data, actionReport);
-                return __resourceUtil.getResponse(400, /*400 - bad request*/
+                return ResourceUtil.getResponse(400, /*400 - bad request*/
                         errorMessage, requestHeaders, uriInfo);
             } else {
                 // create it on the fly without a create CLI command.
@@ -181,7 +179,7 @@ public abstract class TemplateListOfResource {
                 String successMessage =
                         localStrings.getLocalString("rest.resource.create.message",
                         "\"{0}\" created successfully.", new Object[]{resourceToCreate});
-                return __resourceUtil.getResponse(201, //201 - created
+                return ResourceUtil.getResponse(201, //201 - created
                         successMessage, requestHeaders, uriInfo);
 
             }
@@ -220,23 +218,23 @@ public abstract class TemplateListOfResource {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
                         "Unable to parse the input entity. Please check the syntax.");
-                return __resourceUtil.getResponse(400, /*parsing error*/
+                return ResourceUtil.getResponse(400, /*parsing error*/
                         errorMessage, requestHeaders, uriInfo);
             }
 
-            __resourceUtil.purgeEmptyEntries(data);
+            ResourceUtil.purgeEmptyEntries(data);
 
             //Command to execute
             String commandName = getPostCommand();
-            __resourceUtil.defineDefaultParameters(data);
+            ResourceUtil.defineDefaultParameters(data);
 
             if ((resourceToCreate == null) || (resourceToCreate.equals(""))) {
                 String newResourceName = data.get("DEFAULT");
                 if (newResourceName.contains("/")) {
-                    newResourceName = __resourceUtil.getName(newResourceName, '/');
+                    newResourceName = Util.getName(newResourceName, '/');
                 } else {
                     if (newResourceName.contains("\\")) {
-                        newResourceName = __resourceUtil.getName(newResourceName, '\\');
+                        newResourceName = Util.getName(newResourceName, '\\');
                     }
                 }
                 resourceToCreate = uriInfo.getAbsolutePath() +
@@ -247,7 +245,7 @@ public abstract class TemplateListOfResource {
             }
 
             if (null != commandName) {
-                ActionReport actionReport = __resourceUtil.runCommand(commandName,
+                ActionReport actionReport = ResourceUtil.runCommand(commandName,
                     data, RestService.getHabitat());
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
@@ -255,18 +253,18 @@ public abstract class TemplateListOfResource {
                     String successMessage =
                         localStrings.getLocalString("rest.resource.create.message",
                             "\"{0}\" created successfully.", new Object[] {resourceToCreate});
-                    return __resourceUtil.getResponse(201, //201 - created
+                    return ResourceUtil.getResponse(201, //201 - created
                          successMessage, requestHeaders, uriInfo);
                 }
 
                 String errorMessage = getErrorMessage(data, actionReport);
-                return __resourceUtil.getResponse(400, /*400 - bad request*/
+                return ResourceUtil.getResponse(400, /*400 - bad request*/
                     errorMessage, requestHeaders, uriInfo);
             }
             String message =
                 localStrings.getLocalString("rest.resource.post.forbidden",
                     "POST on \"{0}\" is forbidden.", new Object[] {resourceToCreate});
-            return __resourceUtil.getResponse(403, //403 - forbidden
+            return ResourceUtil.getResponse(403, //403 - forbidden
                  message, requestHeaders, uriInfo);
 
         } catch (Exception e) {
@@ -301,7 +299,7 @@ public abstract class TemplateListOfResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
     public OptionsResult options() {
         OptionsResult optionsResult = 
-            new OptionsResult(__resourceUtil.getResourceName(uriInfo));
+            new OptionsResult(Util.getResourceName(uriInfo));
         try {
             //GET meta data
             optionsResult.putMethodMetaData("GET", new MethodMetaData());
@@ -309,10 +307,10 @@ public abstract class TemplateListOfResource {
             //POST meta data
             String command = getPostCommand();
             if (command != null) {
-                MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
+                MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(
                     command, RestService.getHabitat(), RestService.logger);
                 postMethodMetaData.setDescription("Create");
-                if (__resourceUtil.getResourceName(uriInfo).equals("Application")) {
+                if (Util.getResourceName(uriInfo).equals("Application")) {
                     postMethodMetaData.setIsFileUploadOperation(true);
                 }
                 optionsResult.putMethodMetaData("POST", postMethodMetaData);
@@ -327,7 +325,7 @@ public abstract class TemplateListOfResource {
                     if (lcm != null) {
                         for (ConfigModel cmodel : lcm) {
                             if (cmodel.getTagName().equals(tagName)) {
-                                MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData2(parent,
+                                MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData2(parent,
                                         cmodel, Constants.MESSAGE_PARAMETER);
                                 postMethodMetaData.setDescription("Update");
                                 optionsResult.putMethodMetaData("POST", postMethodMetaData);
@@ -335,7 +333,7 @@ public abstract class TemplateListOfResource {
                         }
                     }
                 } else {
-                    MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData2(parent,
+                    MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData2(parent,
                             prop.getModel(), Constants.MESSAGE_PARAMETER);
                     postMethodMetaData.setDescription("Update");
                     optionsResult.putMethodMetaData("POST", postMethodMetaData);
@@ -373,6 +371,4 @@ public abstract class TemplateListOfResource {
         }*/
         return message;
     }
-
-    private ResourceUtil __resourceUtil;
 }

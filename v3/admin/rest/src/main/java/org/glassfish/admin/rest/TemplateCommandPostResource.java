@@ -81,7 +81,6 @@ public class TemplateCommandPostResource {
     private String commandAction;
     private HashMap<String, String> commandParams = null;
     private boolean isLinkedToParent = false;
-    private ResourceUtil resourceUtil = new ResourceUtil();
 
     public TemplateCommandPostResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, HashMap<String, String> m, boolean b) {
         this.resourceName = resourceName;
@@ -104,24 +103,24 @@ public class TemplateCommandPostResource {
         try {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error", "Unable to parse the input entity. Please check the syntax.");
-                throw new WebApplicationException(resourceUtil.getResponse(400, /*parsing error*/ errorMessage, requestHeaders, uriInfo));
+                throw new WebApplicationException(ResourceUtil.getResponse(400, /*parsing error*/ errorMessage, requestHeaders, uriInfo));
             }
 
             if (commandParams != null) {
 //formulate parent-link attribute for this command resource
 //Parent link attribute may or may not be the id/target attribute
                 if (isLinkedToParent) {
-                    resourceUtil.resolveParentParamValue(commandParams, uriInfo);
+                    ResourceUtil.resolveParentParamValue(commandParams, uriInfo);
                 }
 
                 data.putAll(commandParams);
             }
 
-            resourceUtil.adjustParameters(data);
-            resourceUtil.purgeEmptyEntries(data);
-            ActionReport actionReport = resourceUtil.runCommand(commandName, data, RestService.getHabitat());
+            ResourceUtil.adjustParameters(data);
+            ResourceUtil.purgeEmptyEntries(data);
+            ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat());
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-            StringResult results = new StringResult(commandName, resourceUtil.getMessage(actionReport), options());
+            StringResult results = new StringResult(commandName, ResourceUtil.getMessage(actionReport), options());
 
             if (exitCode == ActionReport.ExitCode.SUCCESS) {
                 results.setStatusCode(200); /*200 - ok*/
@@ -170,7 +169,7 @@ public class TemplateCommandPostResource {
         OptionsResult optionsResult = new OptionsResult(resourceName);
         try {
 //command method metadata
-            MethodMetaData methodMetaData = resourceUtil.getMethodMetaData(
+            MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(
                     commandName, commandParams, Constants.MESSAGE_PARAMETER, RestService.getHabitat(), RestService.logger);
 //GET metadata
             optionsResult.putMethodMetaData("GET", new MethodMetaData());

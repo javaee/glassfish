@@ -84,7 +84,6 @@ public abstract class CollectionLeafResource {
 
     /** Creates a new instance of xxxResource */
     public CollectionLeafResource() {
-        __resourceUtil = new ResourceUtil();
     }
 
 
@@ -155,7 +154,7 @@ public abstract class CollectionLeafResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
     public OptionsResult options() {
         OptionsResult optionsResult =
-                new OptionsResult(__resourceUtil.getResourceName(uriInfo));
+                new OptionsResult(Util.getResourceName(uriInfo));
 
         try {
             //GET meta data
@@ -164,7 +163,7 @@ public abstract class CollectionLeafResource {
             //POST meta data
             String postCommand = getPostCommand();
             if (postCommand != null) {
-                MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
+                MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(
                     postCommand, RestService.getHabitat(), RestService.logger);
                 postMethodMetaData.setDescription("Create");
                 optionsResult.putMethodMetaData("POST", postMethodMetaData);
@@ -173,7 +172,7 @@ public abstract class CollectionLeafResource {
             //DELETE meta data
             String deleteCommand = getDeleteCommand();
             if (deleteCommand != null) {
-                MethodMetaData deleteMethodMetaData = __resourceUtil.getMethodMetaData(
+                MethodMetaData deleteMethodMetaData = ResourceUtil.getMethodMetaData(
                         deleteCommand, RestService.getHabitat(), RestService.logger);
                 deleteMethodMetaData.setDescription("Delete");
                 optionsResult.putMethodMetaData("DELETE", deleteMethodMetaData);
@@ -204,8 +203,7 @@ public abstract class CollectionLeafResource {
 
 
     protected String getName() {
-        ResourceUtil resourceUtil = new ResourceUtil();
-        return resourceUtil.getResourceName(uriInfo);
+        return Util.getResourceName(uriInfo);
     }
 
 
@@ -216,17 +214,17 @@ public abstract class CollectionLeafResource {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
                         "Unable to parse the input entity. Please check the syntax.");
-                return __resourceUtil.getResponse(400, /*parsing error*/
+                return ResourceUtil.getResponse(400, /*parsing error*/
                         errorMessage, requestHeaders, uriInfo);
             }
 
-            __resourceUtil.purgeEmptyEntries(data);
-            __resourceUtil.adjustParameters(data);
+            ResourceUtil.purgeEmptyEntries(data);
+            ResourceUtil.adjustParameters(data);
 
             String attributeName = data.get("DEFAULT");
 
             if (null != commandName) {
-                ActionReport actionReport = __resourceUtil.runCommand(commandName,
+                ActionReport actionReport = ResourceUtil.runCommand(commandName,
                     data, RestService.getHabitat());
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
@@ -234,18 +232,18 @@ public abstract class CollectionLeafResource {
                     String successMessage =
                         localStrings.getLocalString(successMsgKey,
                             successMsg, new Object[] {attributeName});
-                    return __resourceUtil.getResponse(200, /*200 - success*/
+                    return ResourceUtil.getResponse(200, /*200 - success*/
                          successMessage, requestHeaders, uriInfo);
                 }
 
                 String errorMessage = getErrorMessage(data, actionReport);
-                return __resourceUtil.getResponse(400, /*400 - bad request*/
+                return ResourceUtil.getResponse(400, /*400 - bad request*/
                     errorMessage, requestHeaders, uriInfo);
             }
             String message =
                 localStrings.getLocalString(operationForbiddenMsgKey, 
                     operationForbiddenMsg, new Object[] {uriInfo.getAbsolutePath()});
-            return __resourceUtil.getResponse(403, /*403 - forbidden*/
+            return ResourceUtil.getResponse(403, /*403 - forbidden*/
                  message, requestHeaders, uriInfo);
 
         } catch (Exception e) {
@@ -270,6 +268,4 @@ public abstract class CollectionLeafResource {
         }*/
         return message;
     }
-
-    private ResourceUtil __resourceUtil;
 }

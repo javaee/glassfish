@@ -77,16 +77,10 @@ public class TemplateCommandGetResource {
     protected UriInfo uriInfo;
 
     private String resourceName;
-
     private String commandName;
-
     private String commandMethod;
-
     private HashMap<String, String> commandParams = null;
-
     private boolean isLinkedToParent = false;
-
-    private ResourceUtil resourceUtil = new ResourceUtil();
 
     public TemplateCommandGetResource(String resourceName, String commandName, String commandMethod,
                                       HashMap<String, String> m, boolean b) {
@@ -110,15 +104,15 @@ public class TemplateCommandGetResource {
 //formulate parent-link attribute for this command resource
 //Parent link attribute may or may not be the id/target attribute
                 if (isLinkedToParent) {
-                    resourceUtil.resolveParentParamValue(commandParams, uriInfo);
+                    ResourceUtil.resolveParentParamValue(commandParams, uriInfo);
                 }
                 properties.putAll(commandParams);
             }
-            resourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), properties);
+            ResourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), properties);
 
-            ActionReport actionReport = resourceUtil.runCommand(commandName, properties, RestService.getHabitat());
+            ActionReport actionReport = ResourceUtil.runCommand(commandName, properties, RestService.getHabitat());
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-            StringResult results = new StringResult(commandName, resourceUtil.getMessage(actionReport), options());
+            StringResult results = new StringResult(commandName, ResourceUtil.getMessage(actionReport), options());
 
             if (exitCode == ActionReport.ExitCode.SUCCESS) {
                 results.setStatusCode(200); /*200 - ok*/
@@ -144,7 +138,7 @@ public class TemplateCommandGetResource {
         OptionsResult optionsResult = new OptionsResult(resourceName);
         try {
 //command method metadata
-            MethodMetaData methodMetaData = resourceUtil.getMethodMetaData(
+            MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(
                     commandName, commandParams, Constants.QUERY_PARAMETER, RestService.getHabitat(), RestService.logger);
             optionsResult.putMethodMetaData(commandMethod, methodMetaData);
         } catch (Exception e) {

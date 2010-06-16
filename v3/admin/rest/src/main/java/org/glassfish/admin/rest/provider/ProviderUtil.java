@@ -57,7 +57,6 @@ import org.jvnet.hk2.config.ConfigBean;
 
 import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.ResourceUtil;
-import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
 import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.external.statistics.Statistic;
@@ -71,7 +70,7 @@ import javax.ws.rs.core.UriInfo;
  * @author Pajeshwar Patil
  * @author Ludovic Champenois ludo@dev.java.net
  */
-public class ProviderUtil extends Util {
+public class ProviderUtil {
 
     /**
      * Produce a string in double quotes with backslash sequences in all the
@@ -152,7 +151,6 @@ public class ProviderUtil extends Util {
         return sb.toString();
     }
 
-
     static protected final String getElementLink(UriInfo uriInfo, String elementName) {
         try {
             elementName = URLEncoder.encode(elementName, "UTF-8");
@@ -165,7 +163,6 @@ public class ProviderUtil extends Util {
             (link + elementName):(link + "/" + elementName);
     }
 
-
     static protected String getStartXmlElement(String name) {
         assert((name != null) && name.length() > 0);
         String result ="<";
@@ -173,7 +170,6 @@ public class ProviderUtil extends Util {
         result = result + ">";
         return result;
     }
-
 
     static protected String getEndXmlElement(String name) {
         assert((name != null) && name.length() > 0);
@@ -183,7 +179,6 @@ public class ProviderUtil extends Util {
         result = result + ">";
         return result;
     }
-
 
     static protected Map getStatistics(Statistic statistic) throws 
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -213,7 +208,6 @@ public class ProviderUtil extends Util {
         return results;
     }
 
-
     static protected Map<String, Object> getStatistic(Statistic statistic) {
         Map<String,Object> statsMap;
         // Most likely we will get the proxy of the StatisticImpl,
@@ -226,7 +220,6 @@ public class ProviderUtil extends Util {
 
         return  statsMap;
     }
-
 
     static protected HashMap<String, String> getStringMap(Map map) {
         HashMap<String, String> stringMap = new HashMap<String, String>();
@@ -246,15 +239,13 @@ public class ProviderUtil extends Util {
         return stringMap;
     }
 
-
     static protected String getHtmlRespresentationForAttributes(ConfigBean proxy, UriInfo uriInfo) {
         StringBuilder result = new StringBuilder();
 
         Set<String> attributes = proxy.model.getAttributeNames();
         System.out.println("attributes: " + attributes);
 
-        ResourceUtil resourceUtil = new ResourceUtil();
-        MethodMetaData methodMetaData = resourceUtil.getMethodMetaData(proxy);
+        MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(proxy);
 
         Set<String> parameters = methodMetaData.parameters();
         Iterator<String> iterator = parameters.iterator();
@@ -281,7 +272,6 @@ public class ProviderUtil extends Util {
 
 //        return result;
     }
-
 
 //    static protected String getHtmlRespresentationsForCommand(String command,
 //            String commandMethod, String commandDisplayName, UriInfo uriInfo) {
@@ -341,7 +331,6 @@ public class ProviderUtil extends Util {
 //        return result;
 //    }
 
-
     static protected String getHtmlRespresentationsForCommand(
             MethodMetaData methodMetaData, String commandMethod,
                 String commandDisplayName, UriInfo uriInfo) {
@@ -391,7 +380,6 @@ public class ProviderUtil extends Util {
         return result;
     }
 
-
     static protected String getHtmlForComponent(String component, String heading,
             String result) {
         if ((component != null) && (component.length() > 0)) {
@@ -401,7 +389,6 @@ public class ProviderUtil extends Util {
         }
         return result;
     }
-
 
     /**
      * Method to get the hint to display in case module monitoring levels are OFF
@@ -417,9 +404,9 @@ public class ProviderUtil extends Util {
             baseUri.getHost() + ":" +  baseUri.getPort() +
                 "/management/domain/configs/config/server-config/monitoring-service/module-monitoring-levels";
 
-        String name = localStrings.getLocalString(
+        String name = Util.localStrings.getLocalString(
             "rest.monitoring.levels.hint.heading", "Hint");
-        String value = localStrings.getLocalString("rest.monitoring.levels.hint.message",
+        String value = Util.localStrings.getLocalString("rest.monitoring.levels.hint.message",
             "Module monitoring levels may be OFF. To set module monitoring levels please visit following url: {0}",
                 new Object[] {monitoringLevelsConfigUrl});
 
@@ -428,7 +415,7 @@ public class ProviderUtil extends Util {
                 "<br><a href=\"" + monitoringLevelsConfigUrl + "\">" +
                     monitoringLevelsConfigUrl + "</a>";
 
-            value = localStrings.getLocalString("rest.monitoring.levels.hint.message",
+            value = Util.localStrings.getLocalString("rest.monitoring.levels.hint.message",
                 "Module monitoring levels may be OFF. To set module monitoring levels please visit following url: {0}",
                     new Object[] {monitoringLevelsConfigUrl});
 
@@ -458,7 +445,6 @@ public class ProviderUtil extends Util {
 //                upperCaseFirstLetter(slashToDash(decode(uri)));
     }
 
-
     static protected String jsonValue(Object value) {
         String result ="";
 
@@ -470,7 +456,6 @@ public class ProviderUtil extends Util {
 
         return result;
     }
-
 
     static public String getHtmlHeader() {
         String result = "<html><head>";
@@ -484,38 +469,31 @@ public class ProviderUtil extends Util {
         return result;
     }
 
-
     static protected String getJsonForMethodMetaData(OptionsResult metaData, String indent) {
         OptionsResultJsonProvider provider = new OptionsResultJsonProvider();
         return provider.getRespresenationForMethodMetaData(metaData, indent);
     }
-
 
     static protected String getXmlForMethodMetaData(OptionsResult metaData, String indent) {
         OptionsResultXmlProvider provider = new OptionsResultXmlProvider();
         return provider.getRespresenationForMethodMetaData(metaData, indent);
     }
 
-
     static protected String getResourcesKey() {
         return "childResources";
     }
-
 
     static protected String getResourceKey() {
         return "childResource";
     }
 
-
     static protected String getMethodsKey() {
         return "methods";
     }
 
-
     static private String getHtmlRespresentationForParameter(String parameter, ParameterMetaData parameterMetaData) {
         return getHtmlRespresentationForParameter(parameter, parameterMetaData, null);
     }
-
 
     static private String getHtmlRespresentationForParameter(String parameter,
             ParameterMetaData parameterMetaData, String parameterValue) {
@@ -600,7 +578,6 @@ public class ProviderUtil extends Util {
         return result;
     }
 
-
     /**
      *  This method converts a string into stringarray, uses the delimeter as the
      *  separator character. If the delimiter is null, uses space as default.
@@ -621,7 +598,6 @@ public class ProviderUtil extends Util {
         }
         return retString;
     }
-
 
     private static String getInternalStyleSheet() {
         String result = "<style type=\"text/css\">";

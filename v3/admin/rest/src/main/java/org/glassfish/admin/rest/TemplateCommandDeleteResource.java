@@ -80,7 +80,6 @@ public class TemplateCommandDeleteResource {
     private String commandAction;
     private HashMap<String, String> commandParams = null;
     private boolean isLinkedToParent = false;
-    private ResourceUtil resourceUtil = new ResourceUtil();
 
     public TemplateCommandDeleteResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, HashMap<String, String> m, boolean b) {
         this.resourceName = resourceName;
@@ -101,8 +100,9 @@ public class TemplateCommandDeleteResource {
     public Response executeCommand(HashMap<String, String> data) {
         try {
             if (data.containsKey("error")) {
-                String errorMessage = localStrings.getLocalString("rest.request.parsing.error", "Unable to parse the input entity. Please check the syntax.");
-                return resourceUtil.getResponse(400, /*parsing error*/
+                String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
+                        "Unable to parse the input entity. Please check the syntax.");
+                return ResourceUtil.getResponse(400, /*parsing error*/
                         errorMessage, requestHeaders, uriInfo);
             }
 
@@ -110,29 +110,29 @@ public class TemplateCommandDeleteResource {
 //formulate parent-link attribute for this command resource
 //Parent link attribute may or may not be the id/target attribute
                 if (isLinkedToParent) {
-                    resourceUtil.resolveParentParamValue(commandParams, uriInfo);
+                    ResourceUtil.resolveParentParamValue(commandParams, uriInfo);
                 }
 
                 data.putAll(commandParams);
             }
 
-            resourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
-            resourceUtil.adjustParameters(data);
-            resourceUtil.purgeEmptyEntries(data);
+            ResourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
+            ResourceUtil.adjustParameters(data);
+            ResourceUtil.purgeEmptyEntries(data);
 
-            ActionReport actionReport = resourceUtil.runCommand(commandName, data, RestService.getHabitat());
+            ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat());
 
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
 
             if (exitCode == ActionReport.ExitCode.SUCCESS) {
                 String successMessage = localStrings.getLocalString("rest.request.success.message",
                         "{0} of {1} executed successfully.", new Object[]{commandMethod, uriInfo.getAbsolutePath()});
-                return resourceUtil.getResponse(200, /*200 - ok*/
+                return ResourceUtil.getResponse(200, /*200 - ok*/
                         successMessage, requestHeaders, uriInfo);
             }
 
             String errorMessage = actionReport.getMessage();
-            return resourceUtil.getResponse(400, /*400 - bad request*/
+            return ResourceUtil.getResponse(400, /*400 - bad request*/
                     errorMessage, requestHeaders, uriInfo);
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
@@ -193,7 +193,7 @@ public class TemplateCommandDeleteResource {
         OptionsResult optionsResult = new OptionsResult(resourceName);
         try {
 //command method metadata
-            MethodMetaData methodMetaData = resourceUtil.getMethodMetaData(
+            MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(
                     commandName, commandParams, Constants.MESSAGE_PARAMETER, RestService.getHabitat(), RestService.logger);
 //GET meta data
             optionsResult.putMethodMetaData("GET", new MethodMetaData());
