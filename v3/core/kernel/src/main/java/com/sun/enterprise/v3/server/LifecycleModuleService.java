@@ -47,6 +47,7 @@ import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.config.serverbeans.Server;
 
 import com.sun.appserv.server.ServerLifecycleException;
 import com.sun.appserv.server.LifecycleListener;
@@ -54,6 +55,7 @@ import com.sun.appserv.server.LifecycleListener;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
 
@@ -78,6 +80,9 @@ public class LifecycleModuleService implements Startup, PreDestroy, PostConstruc
 
     @Inject
     Events events;
+
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Server server;
 
     /**
      * The set of registered LifecycleListeners for event notifications.
@@ -194,7 +199,7 @@ public class LifecycleModuleService implements Startup, PreDestroy, PostConstruc
         // true if enabled in both lifecyle module and in the ref
         return (Boolean.valueOf(enabled) && 
             Boolean.valueOf(ConfigBeansUtilities.getEnabled(
-                "server", name)));
+                server.getName(), name)));
     }
 
     private void resetClassLoader(final ClassLoader c) {

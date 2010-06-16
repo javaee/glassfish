@@ -64,6 +64,8 @@ import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -98,6 +100,7 @@ import org.glassfish.deployment.versioning.VersioningSyntaxException;
 @I18n("deploy.command")
 @Scoped(PerLookup.class)
 @Cluster(value={RuntimeType.DAS})
+@TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class DeployCommand extends DeployCommandParameters implements AdminCommand, EventListener {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);

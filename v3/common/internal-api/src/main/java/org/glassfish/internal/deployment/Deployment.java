@@ -49,6 +49,7 @@ import org.glassfish.internal.data.ModuleInfo;
 import org.glassfish.internal.data.ProgressTracker;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.config.TransactionFailure;
+import com.sun.enterprise.config.serverbeans.Application;
 
 import java.io.IOException;
 import java.io.File;
@@ -195,4 +196,6 @@ public interface Deployment {
     public ApplicationInfo get(String appName);
 
     public List<Sniffer> prepareSniffersForOSGiDeployment(String type, DeploymentContext context);
+
+    public List<Application> getApplicationsForTarget(String target); 
 }

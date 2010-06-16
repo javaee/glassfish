@@ -47,6 +47,8 @@ import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.StateCommandParameters;
 import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.config.serverbeans.*;
@@ -83,6 +85,7 @@ import org.glassfish.deployment.versioning.VersioningSyntaxException;
 @I18n("enable.command")
 @Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @Scoped(PerLookup.class)
+@TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE})
 public class EnableCommand extends StateCommandParameters implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(EnableCommand.class);
@@ -121,11 +124,25 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
         boolean doReplication = false;
         if(Utility.getEnvOrProp("ENABLE_REPLICATION")!=null) {
             doReplication = Boolean.parseBoolean(Utility.getEnvOrProp("ENABLE_REPLICATION"));
-         }
+        }
         if (!doReplication) {
         if (!deployment.isRegistered(name())) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
+        ApplicationRef ref = domain.getApplicationRefInTarget(name(), target);
+        if (ref == null) {
+            report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name(), target));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
+        // keep this when we clean up the doReplication
+        // return if the application is already in enabled state
+        if (Boolean.valueOf(ref.getEnabled())) {
+            logger.fine("The application is already enabled");
             return;
         }
 
@@ -136,12 +153,6 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
             report.failure(logger, e.getMessage());
             return;
         }
-        }
-
-        // return if the application is already in enabled state
-        if (domain.isAppRefEnabledInTarget(name(), target)) {
-            logger.fine("The application is already enabled");
-            return;
         }
 
         if (!domain.isCurrentInstanceMatchingTarget(target, server.getName())) {

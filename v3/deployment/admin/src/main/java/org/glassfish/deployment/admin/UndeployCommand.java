@@ -42,8 +42,9 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -54,6 +55,8 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -81,6 +84,7 @@ import org.glassfish.deployment.versioning.VersioningException;
 @I18n("undeploy.command")
 @Scoped(PerLookup.class)
 @Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class UndeployCommand extends UndeployCommandParameters implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(UndeployCommand.class);
@@ -96,6 +100,9 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
 
     @Inject
     VersioningService versioningService;
+
+    @Inject
+    Domain domain;
 
     public UndeployCommand() {
         origin = Origin.undeploy;
@@ -136,6 +143,14 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 return;
 
             }
+
+            ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
+            if (ref == null) {
+                report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+
             ReadableArchive source = null;
             if (info==null) {
                 // disabled application or application failed to be

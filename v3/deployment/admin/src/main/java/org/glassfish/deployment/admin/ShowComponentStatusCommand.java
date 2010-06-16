@@ -40,15 +40,25 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Service;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.annotations.Inject;
 
 @Service(name="show-component-status")
 @Scoped(PerLookup.class)
+@Cluster(value={RuntimeType.DAS})
+@TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class ShowComponentStatusCommand implements AdminCommand {
 
     @Param(primary=true)
@@ -56,6 +66,15 @@ public class ShowComponentStatusCommand implements AdminCommand {
 
     @Param(optional=true)
     String target = "server";
+
+    @Inject
+    Deployment deployment;
+
+    @Inject
+    Domain domain;
+
+    @Inject
+    Applications applications;
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListAppRefsCommand.class);    
 
@@ -65,16 +84,36 @@ public class ShowComponentStatusCommand implements AdminCommand {
 
         ActionReport.MessagePart part = report.getTopMessagePart();
         part.setMessage(target);
-        ApplicationRef appRef = ConfigBeansUtilities.getApplicationRefInServer(target, name);
-        if (appRef == null) {
+          
+        Application app = applications.getApplication(name);
+        if (app == null) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
-        String status = "enabled";
-        if (!Boolean.valueOf(appRef.getEnabled())) {
-            status = "disabled";
+        String status = "disabled";
+
+        // special target domain
+        if (target.equals("domain")) {
+            if (Boolean.valueOf(app.getEnabled())) {
+                status = "enabled";
+            }
+            report.setMessage(localStrings.getLocalString("component.status","Status of {0} is {1}.", name, status));
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            return;
+        }
+
+        ApplicationRef ref = domain.getApplicationRefInTarget(name, target);
+        if (ref == null) {
+            report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name, target));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
+        if (Boolean.valueOf(app.getEnabled()) && 
+            Boolean.valueOf(ref.getEnabled())) {
+            status = "enabled";
         }
 
         report.setMessage(localStrings.getLocalString("component.status","Status of {0} is {1}.", name, status));

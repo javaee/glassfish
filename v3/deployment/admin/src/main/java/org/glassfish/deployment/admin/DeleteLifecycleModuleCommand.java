@@ -41,8 +41,13 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.internal.deployment.Deployment;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.Cluster;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -58,6 +63,7 @@ import java.util.logging.Level;
 @Service(name="delete-lifecycle-module")
 @I18n("delete.lifecycle.module")
 @Scoped(PerLookup.class)
+@Cluster(value={RuntimeType.DAS})
 public class DeleteLifecycleModuleCommand implements AdminCommand {
 
     @Param(primary=true)
@@ -69,6 +75,9 @@ public class DeleteLifecycleModuleCommand implements AdminCommand {
     @Inject
     Deployment deployment;
 
+    @Inject
+    Domain domain;
+
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteLifecycleModuleCommand.class);
    
     public void execute(AdminCommandContext context) {
@@ -77,8 +86,14 @@ public class DeleteLifecycleModuleCommand implements AdminCommand {
         final Logger logger = context.getLogger();
 
         if (!deployment.isRegistered(name)) {
-            report.setMessage("Lifecycle module with name [" + name + 
-                "] does not exist");
+            report.setMessage(localStrings.getLocalString("lifecycle.notreg","Lifecycle module {0} not registered", name)); 
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
+        ApplicationRef ref = domain.getApplicationRefInTarget(name, target);
+        if (ref == null) {
+            report.setMessage(localStrings.getLocalString("lifecycle.not.referenced.target","Lifecycle module {0} is not referenced by target {1}", name, target));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }

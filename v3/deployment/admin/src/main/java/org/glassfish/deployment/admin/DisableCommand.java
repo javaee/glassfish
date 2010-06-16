@@ -57,6 +57,8 @@ import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -81,7 +83,7 @@ import org.glassfish.deployment.versioning.VersioningException;
 @I18n("disable.command")
 @Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @Scoped(PerLookup.class)
-    
+@TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE})
 public class DisableCommand extends StateCommandParameters implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DisableCommand.class);    
@@ -143,7 +145,13 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
+        }
 
+        ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
+        if (ref == null) {
+            report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         }
 
         if (!domain.isCurrentInstanceMatchingTarget(target, server.getName())) {

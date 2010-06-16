@@ -37,7 +37,6 @@
 package org.glassfish.deployment.admin;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.ActionReport;
@@ -45,6 +44,9 @@ import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -61,10 +63,14 @@ import java.util.Properties;
 @Service(name="list-lifecycle-modules")
 @I18n("list.lifecycle.modules")
 @Scoped(PerLookup.class)
+@Cluster(value={RuntimeType.DAS})
 public class ListLifecycleModulesCommand implements AdminCommand  {
 
+    @Param(primary=true, optional=true)
+    public String target = "server";
+
     @Inject
-    Applications applications;
+    Deployment deployment;
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListLifecycleModulesCommand.class);
    
@@ -73,7 +79,7 @@ public class ListLifecycleModulesCommand implements AdminCommand  {
         ActionReport report = context.getActionReport();
         ActionReport.MessagePart part = report.getTopMessagePart();
 
-        for (Application app : applications.getApplications()) {
+        for (Application app : deployment.getApplicationsForTarget(target)) {
             if (Boolean.valueOf(app.getDeployProperties().getProperty
                 (ServerTags.IS_LIFECYCLE))) {
                 ActionReport.MessagePart childPart = part.addChild();

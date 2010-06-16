@@ -1314,5 +1314,40 @@ public class ApplicationLifecycle implements Deployment {
         }
         return sniffers;
     }
+
+    public List<Application> getApplicationsForTarget(String target) {
+        if (target.equals("domain")) {
+            // special target domain
+            return applications.getApplications();
+        }
+
+        List<Application> apps = new ArrayList<Application>();
+        Server servr = domain.getServerNamed(target);
+        if (servr != null) {
+            // standalone server instance
+            for (ApplicationRef ref : servr.getApplicationRef()) {
+                Application app = applications.getApplication(ref.getRef());
+                if (app != null) {
+                    apps.add(app);
+                }
+            }
+            return apps;
+        }
+
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster != null) {
+             // cluster instances
+            for (Server svr : cluster.getInstances() ) {
+                for (ApplicationRef ref : svr.getApplicationRef()) {
+                    Application app = applications.getApplication(ref.getRef());
+                    if (app != null) {
+                        apps.add(app);
+                    }
+                }
+            }
+            return apps;
+        }
+        return apps;
+    }
 }
 

@@ -47,7 +47,8 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.deployment.versioning.VersioningService;
 import org.glassfish.deployment.versioning.VersioningSyntaxException;
 import org.glassfish.internal.deployment.Deployment;
-
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -75,6 +76,9 @@ public class PreEnableCommand extends StateCommandParameters implements AdminCom
     @Inject
     Deployment deployment;
 
+    @Inject
+    Domain domain;
+
     public void execute(AdminCommandContext context) {
         
         ActionReport report = context.getActionReport();
@@ -83,6 +87,19 @@ public class PreEnableCommand extends StateCommandParameters implements AdminCom
         if (!deployment.isRegistered(name())) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
+        ApplicationRef ref = domain.getApplicationRefInTarget(name(), target);
+        if (ref == null) {
+            report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name(), target));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
+        // return if the application is already in enabled state
+        if (Boolean.valueOf(ref.getEnabled())) {
+            logger.fine("The application is already enabled");
             return;
         }
 

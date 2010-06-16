@@ -42,6 +42,8 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.internal.deployment.Deployment;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Application;
@@ -72,6 +74,7 @@ import java.util.ArrayList;
 @Service(name="list-sub-components")
 @I18n("list.sub.components")
 @Scoped(PerLookup.class)
+@Cluster(value={RuntimeType.DAS})
 public class ListSubComponentsCommand implements AdminCommand {
 
     @Param(primary=true)

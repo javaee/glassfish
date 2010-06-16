@@ -45,6 +45,8 @@ import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.jvnet.hk2.annotations.Inject;
@@ -62,6 +64,7 @@ import java.util.Properties;
  */
 @Service(name="create-lifecycle-module")
 @I18n("create.lifecycle.module")
+@Cluster(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
 public class CreateLifecycleModuleCommand implements AdminCommand {
 
@@ -114,6 +117,7 @@ public class CreateLifecycleModuleCommand implements AdminCommand {
         commandParams.name = name;
         commandParams.enabled = enabled;
         commandParams.description = description;
+        commandParams.target = target;
 
         // create a dummy context to hold params and props
         ExtendedDeploymentContext deploymentContext = new DeploymentContextImpl(report, logger, null, commandParams, null);
