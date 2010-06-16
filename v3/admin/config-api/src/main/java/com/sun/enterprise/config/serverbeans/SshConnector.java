@@ -82,7 +82,7 @@ public interface SshConnector extends ConfigBeanProxy, Injectable {
       * @return possible object is
       *         {@link String }
       */
-     @Attribute(key=true)
+     @Attribute
       String getSshPort();
 
      /**
