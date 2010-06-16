@@ -69,3 +69,8 @@ virtualServerChangeHttpListenerWebappNoLongerAccessible
 virtualServerModifyHttpListenerPortAccessWebapp
 weldJsfLoginPage
 servlet-3.0/transportProtectedAnnotation
+# these tests rely on $S1AS_HOME/domains/domain1/applications directory whereas embedded uses gfembed*/applications
+accessLoggingDynamicReconfig
+contextPathXmlConfig
+contextXmlConfig
+servletRequestGetPathInfoGetPathTranslated
