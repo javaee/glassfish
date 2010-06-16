@@ -62,13 +62,7 @@
     </target>
 
     <target name="deploy" depends="init-common">
-        <exec executable="${ASADMIN}" failonerror="false">
-            <arg line="deploy"/>
-            <arg line="${as.props}"/>
-            <arg line="--upload=true"/>
-            <arg line="--target ${appserver.instance.name}"/>
-            <arg line="jsf-cardemo.war"/>
-        </exec>
+      <antcall target="deploy-war-name"/>
     </target>
     
     <target name="run" depends="init-common">
@@ -84,11 +78,7 @@
     </target>
  
     <target name="undeploy" depends="init-common">
-        <exec executable="${ASADMIN}" failonerror="false">
-            <arg line="undeploy"/>
-            <arg line="${as.props}"/>
-            <arg line="jsf-cardemo"/>
-        </exec>
+        <antcall target="undeploy-war-name"/>
     </target>   
 
     <target name="usage">
