@@ -37,7 +37,6 @@
 package com.sun.enterprise.web.session;
 
 import org.apache.catalina.Globals;
-import org.apache.catalina.util.ServerInfo;
 
 import java.net.URLEncoder;
 
@@ -67,11 +66,6 @@ public final class SessionCookieConfig {
      */
     public SessionCookieConfig() {
         super();
-        String serverInfo = ServerInfo.getPublicServerInfo();
-        if (serverInfo != null && !serverInfo.isEmpty()) {
-            _comment = URLEncoder.encode(serverInfo +
-                " Session Tracking Cookie");
-        }
     }
 
     // ----------------------------------------------------- Instance Variables
