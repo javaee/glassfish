@@ -345,7 +345,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     }
 
     public boolean isEmbedded() {
-        return server!=null;
+        return serverType == RuntimeType.EMBEDDED;
     }
 
     @Override

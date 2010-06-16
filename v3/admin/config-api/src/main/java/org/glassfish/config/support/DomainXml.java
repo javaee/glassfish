@@ -156,7 +156,7 @@ public abstract class DomainXml implements Populator {
         try {
             ServerReaderFilter xsr = null;
 
-            if(env.getRuntimeType() == RuntimeType.DAS)
+            if(env.getRuntimeType() == RuntimeType.DAS || env.getRuntimeType() == RuntimeType.EMBEDDED)
                 xsr = new DasReaderFilter(habitat, domainXml, xif);
             else if(env.getRuntimeType() == RuntimeType.INSTANCE)
                 xsr = new InstanceReaderFilter(env.getInstanceName(), habitat, domainXml, xif);

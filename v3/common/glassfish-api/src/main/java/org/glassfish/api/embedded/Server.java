@@ -305,6 +305,7 @@ public class Server {
         startupContextProps.setProperty("com.sun.aas.installRoot", installRoot);
         System.setProperty("com.sun.aas.instanceRoot", fs.instanceRoot.getAbsolutePath());
         startupContextProps.setProperty("com.sun.aas.instanceRoot", fs.instanceRoot.getAbsolutePath());
+        startupContextProps.setProperty("-type", "EMBEDDED");
         embedded.setContext(new StartupContext(startupContextProps));
         embedded.setContext(this);
         embedded.setLogger(Logger.getAnonymousLogger());
