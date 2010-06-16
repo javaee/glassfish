@@ -76,7 +76,7 @@ public class CreateAdminObject implements AdminCommand {
     @Param(name="classname", optional=true)
     String className;
 
-    @Param(name="raname")
+    @Param(name="raname", alias="resAdapter")
     String raName;
 
     @Param(optional=true, defaultValue="true")

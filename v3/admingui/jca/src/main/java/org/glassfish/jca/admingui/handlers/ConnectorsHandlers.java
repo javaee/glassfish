@@ -305,7 +305,7 @@ public class ConnectorsHandlers {
             resAdapter = (String) currentMap.get("ResAdapter");
             resType = (String) currentMap.get("ResType");
             className = (String) currentMap.get("ClassName");
-            currentMap.putAll(attrMap);
+            attrMap.putAll(currentMap);
         } else {
             if (attrMap != null) {
                 name = (String) attrMap.get("Name");

@@ -65,7 +65,12 @@
     setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=admin-object-resource,name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
     setPageSessionAttribute(key="childType" value="admin-object-resource");
-    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+    //REST related
+    setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+    setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/resources/#{pageSession.childType}/#{pageSession.Name}");
+    setPageSessionAttribute(key="rest-api" value="true");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+    
     setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
     setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
@@ -77,7 +82,11 @@
     setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     setPageSessionAttribute(key="reload" value="#{false}" );
     setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{pageSession.Name}");
-    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
+    //REST related
+    setPageSessionAttribute(key="childType2", value="resource-ref");
+    setPageSessionAttribute(key="selfUrl2", value="#{sessionScope.REST_URL}/servers/server/server/#{pageSession.childType2}/#{pageSession.Name}");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
+    
     setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
     setPageSessionAttribute(key="has2Objects" value="#{true}" );
 
