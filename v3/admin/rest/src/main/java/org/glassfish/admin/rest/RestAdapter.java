@@ -69,7 +69,9 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.HttpURLConnection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
@@ -110,6 +112,11 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     @Inject
     RestService restService;
+
+    private Map<Integer, String> httpStatus = new HashMap<Integer, String>() {{
+        put(404, "Resource not found");
+        put(500, "A server error occured. Please check the server logs.");
+    }};
 
     protected RestAdapter() {
         setAllowEncodedSlash(true);
@@ -167,7 +174,19 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 if (adapter == null) {
                     exposeContext();
                 }
+//                res.setStatus(200);
                 ((GrizzlyAdapter)adapter).service(req, res);
+                int status = res.getStatus();
+                if (status < 200 || status > 299) {
+                    String message = httpStatus.get(status);
+                    if (message == null) {
+                        // i18n
+                        message = "Request returned " + status;
+                    }
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setMessage(message);
+                    reportError(res, report, status);
+                }
             }
         } catch(InterruptedException e) {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -205,15 +224,13 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE); //service unavailable
             return;
         }
-        
-        try {
-            // TODO: this may not be the right status code
-            res.setStatus(200);
-            res.getOutputStream().flush();
-            res.finishResponse();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
+//        try {
+//            res.getOutputStream().flush();
+//            res.finishResponse();
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
 
@@ -385,8 +402,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     }
 
 
-    private void reportError(GrizzlyResponse res, ActionReport report,
-            int statusCode) {
+    private void reportError(GrizzlyResponse res, ActionReport report, int statusCode) {
         try {
             res.setStatus(statusCode);
             res.setContentType(report.getContentType());
