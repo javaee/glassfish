@@ -1,0 +1,134 @@
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+
+ Contributor(s):
+
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.cluster.GeneralTitle}" >
+<!define name="content">
+    <event>
+    <!beforeCreate
+        setSessionAttribute(key="clusterTabs" value="general");
+        getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
+        urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/clusterGeneral.jsf?clusterName=#{pageSession.encodedClusterName}");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/cluster/clusters.jsf");
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/clusters");
+        setPageSessionAttribute(key="childType" value="cluster");
+        setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedClusterName}");
+        setPageSessionAttribute(key="rest-api" value="true");
+
+        gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}", valueMap="#{pageSession.valueMap}");
+        gf.getChildrenNamesList(parentEndpoint="#{pageSession.resourceUrl}", childType="server-ref" id="ref" result="#{pageSession.instanceList}" );
+        //TODO: determine #instance thats up and #instance that is down
+
+        setPageSessionAttribute(key="convertToFalseList" value={"HeartbeatEnabled", "GmsEnabled"} );
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
+    />
+    </event>
+            <sun:form id="propertyForm">
+#include "/common/shared/alertMsg.inc"
+
+    <!-- Page Title -->
+    <sun:title id="propertyContentPage" title="$resource{i18nc.cluster.GeneralTitle}" helpText="$resource{i18nc.cluster.GeneralTitleHelp}">
+    <!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+                    onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+                <!command
+                    gf.updateEntity(endpoint="#{pageSession.resourceUrl}" attrs="#{pageSession.valueMap}"  convertToFalse="#{pageSession.convertToFalseList}");
+                    prepareSuccessfulMsg();
+                    gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                />
+            </sun:button>
+            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
+                <!command
+                    gf.redirect(page="#{parentPage}");
+                />
+            </sun:button>
+        </sun:panelGroup>
+    </facet>
+</sun:title>
+        "<br><br>
+
+    <sun:propertySheet id="propertySheet">
+
+        <!-- Text Field section -->
+        <sun:propertySheetSection id="propertSectionTextField">
+            <sun:property id="clusterNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.cluster.ClusterName}" >
+                <sun:staticText id="clusterName"text="#{encodedClusterName}" />
+            </sun:property>
+            <sun:property id="configNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.common.Configuration}" >
+                <sun:hyperlink id="configlink" text="#{pageSession.valueMap['ConfigRef']}"
+                    url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.valueMap['ConfigRef']}" />
+            </sun:property>
+
+           <sun:property id="hbEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.cluster.Heartbeat}" helpText="$resource{i18nc.cluster.HeartbeatHelp}">
+                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['HeartbeatEnabled']}" selectedValue="true" />
+            </sun:property>
+
+            <sun:property id="gmsEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.cluster.GMS}" helpText="$resource{i18nc.cluster.GMSHelp}">
+                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['GmsEnabled']}" selectedValue="true" />
+            </sun:property>
+
+           <sun:property id="hbPortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.cluster.HeartbeatPort}" helpText="$resource{i18nc.cluster.HeartbeatPortHelp}">
+                <sun:textField id="HbPort"  styleClass="port" columns="$int{15}" text="#{pageSession.valueMap['HeartbeatPort']}"/>
+            </sun:property>
+            <sun:property id="hbAddressProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.cluster.HeartbeatAddress}" helpText="$resource{i18nc.cluster.HeartbeatAddressHelp}">
+                <sun:textField id="HbAddress"  columns="$int{35}" text="#{pageSession.valueMap['HeartbeatAddress']}"/>
+            </sun:property>         
+
+            <sun:property id="instanceStatusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}" >
+                <sun:staticText id="instanceStatusRunning" text="? instance(s) running (TBD)" />
+                "<br />
+                <sun:staticText id="instanceStatusStopped" text="? instance(s) stopped (TBD)" />
+                //<sun:staticText id="instanceStatusRunning"text="#{numRunning}" /> "<br />
+                //<sun:staticText id="instanceStatusStopped"text="#{numStopped}" />
+            </sun:property>
+        </sun:propertySheetSection>
+
+    </sun:propertySheet>
+
+	<sun:hidden id="helpKey" value="$resource{help_common.clusterGeneral}" />
+</sun:form>
+</define>
+</composition>

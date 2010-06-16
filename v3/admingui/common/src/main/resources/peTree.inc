@@ -202,6 +202,15 @@ update tool    updatetool 800
             expanded="$boolean{true}"
         />
 
+        <!--  ===================================== Standalone Instances ======================  -->
+
+        <sun:treeNode  id="standaloneInstances"
+            text="$resource{i18n.tree.standaloneInstances}"
+            url="/common/appServer/standaloneInstances.jsf"
+            imageURL="/resource/images/instance.gif"
+            expanded="$boolean{true}"
+        />
+
          <!--  ===================================== Configurations ======================  -->
 
          <sun:treeNode id="configuration"
