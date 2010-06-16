@@ -64,8 +64,8 @@ public class CreateInstanceCommand implements AdminCommand {
     @Inject
     private CommandRunner cr;
 
-    @Param(name="noderef", optional=true)
-    String nodeRef;
+    @Param(name="node", optional=true)
+    String node;
 
     @Param(name="nodeagent")
     String nodeAgent;
@@ -89,7 +89,7 @@ public class CreateInstanceCommand implements AdminCommand {
 
         CommandInvocation ci = cr.getCommandInvocation("_register-instance", report);
         ParameterMap map = new ParameterMap();
-        map.add("noderef", nodeRef);        
+        map.add("node", node);        
         map.add("nodeagent", nodeAgent);
         map.add("config", configRef);
         map.add("cluster", clusterName);

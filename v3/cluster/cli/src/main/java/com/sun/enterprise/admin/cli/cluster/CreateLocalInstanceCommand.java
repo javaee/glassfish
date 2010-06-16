@@ -177,9 +177,9 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             argsList.add("--nodeagent");
             argsList.add(nodeAgent);
         }
-        if (nodeRef != null) {
-            argsList.add("--noderef");
-            argsList.add(nodeRef);
+        if (node != null) {
+            argsList.add("--node");
+            argsList.add(node);
         }
         if (systemProperties != null) {
             argsList.add("--systemproperties");

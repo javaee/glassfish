@@ -118,11 +118,11 @@ final class RemoteInstanceCommandHelper {
         return null;
     }
 
-    final String getNodeRef(final Server server){
+    final String getNode(final Server server){
 
         if(server == null)
             return null;
-        String node = server.getNodeRef();
+        String node = server.getNode();
 
         if(StringUtils.ok(node))
             return node;

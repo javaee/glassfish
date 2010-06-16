@@ -61,8 +61,8 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     protected String nodeAgent;
     @Param(name = "agentdir", optional = true)
     protected String agentDir;
-    @Param(name = "noderef", optional=true)
-    protected String nodeRef;
+    @Param(name = "node", optional=true)
+    protected String node;
     // subclasses decide whether it's optional, required, or not allowed
     //@Param(name = "instance_name", primary = true, optional = true)
     protected String instanceName;

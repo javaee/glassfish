@@ -146,57 +146,25 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
                 logger.severe(Strings.get("start.instance.noSuchInstance", instanceName));
                 return;
             }                        
-            final String noderef = helper.getNodeRef(instance);
+            final String noderef = helper.getNode(instance);
             if(noderef.equals("noNodeRef")) {
                 logger.severe(Strings.get("start.instance.noSuchNodeRef", noderef));
                 return;
             }
-            RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodes, logger);
-            // check if needs a remote connection
-            if (rch.isRemoteConnectRequired(noderef)) {
-                // this command will run over ssh
-                rch.runCommand(noderef, "start-local-instance", instanceName);
+            if (noderef.equals("localhost")) {
+                logger.info("starting instance on localhost");
+                return;
 
-            }
-
-
-/*            //get the node ref and see if ssh connection is setup if so use it
-
-            Node node = nodeMap.get(noderef);            
-            if (node == null){
-                logger.severe(Strings.get("start.instance.noSuchNodeRef", noderef));
-                return;  
-            }
-            //running on the DAS and have the node ref.  Pass that and the command to RemoteConnection to do the work over SSH
-
-            SshConnector connector = node.getSshConnector();
-            if ( connector != null)  {
-                SSHLauncher sshL=habitat.getComponent(SSHLauncher.class);
-                sshL.init(noderef);
-
-                // create command and params
-                String command = "start-local-instance "+ instanceName;
-                String prefix = "/home/cmott/glassfishv3/glassfish/bin/asadmin ";
-
-                String fullCommand = prefix + command;
-
-                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-
-                sshL.runCommand(fullCommand, outStream);
-                System.out.println(outStream);
             } else {
-                // running locally
-                
+                RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodes, logger);
+                // check if needs a remote connection
+                if (rch.isRemoteConnectRequired(noderef)) {
+                    // this command will run over ssh
+                    rch.runCommand(noderef, "start-local-instance", instanceName);
+
+                }
             }
- */
-        /*
-        }
-        catch (IOException ex) {
-            logger.severe(Strings.get("start.instance.ioError", instanceName));
-        } catch (java.lang.InterruptedException ei){
-            logger.severe(Strings.get("start.instance.interruptError", instanceName));
-        }
-       */
+
     }
     
     @Inject

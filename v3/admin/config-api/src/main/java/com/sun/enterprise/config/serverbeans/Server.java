@@ -127,16 +127,16 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     void setNodeAgentRef(String value) throws PropertyVetoException;
 
      /**
-     * Sets the value of the nodeRef property.
+     * Sets the value of the node property.
      *
      * @param value allowed object is
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name = "noderef", optional = true)
-    void setNodeRef(String value) throws PropertyVetoException;
+    @Param(name = "node", optional = true)
+    void setNode(String value) throws PropertyVetoException;
     /**
-     * Gets the value of the nodeRef property.
+     * Gets the value of the node property.
      *
      * SE/EE only. Specifies name of node agent where server instance is hosted
      *
@@ -144,7 +144,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
-    String getNodeRef();
+    String getNode();
     /**
      * Gets the value of the lbWeight property.
      *
@@ -338,6 +338,10 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
         @Param(name = "cluster", optional = true)
         String clusterName;
+
+        @Param(name="node",optional=true)
+        String node=null;
+
         @Inject
         Domain domain;
         @Inject
@@ -351,7 +355,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             String configRef = instance.getConfigRef();
             Clusters clusters = domain.getClusters();
 
-
+            if(node==null)
+                instance.setNode("localhost");
+            
             handlePorts(instance);
 
             //There should be no cluster/config with the same name as the server
