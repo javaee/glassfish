@@ -60,15 +60,19 @@ public class JdbcConnectionPoolTest extends RestTestBase {
         params.put("name", poolName);
         params.put("datasourceClassname","org.apache.derby.jdbc.ClientDataSource");
         ClientResponse response = create(BASE_JDBC_CP_URL, params);
-        assertEquals(201, response.getStatus());
+        assertTrue(isSuccess(response));
 
         Map<String, String> entity = getEntityValues(read(BASE_JDBC_CP_URL + "/"+poolName));
         assertFalse(entity.size() == 0);
 
         response = delete(BASE_JDBC_CP_URL+"/"+poolName, new HashMap<String, String>());
-        assertEquals(response.getStatus(), 200);
+        assertTrue(isSuccess(response));
 
-        entity = getEntityValues(read(BASE_JDBC_CP_URL + "/"+poolName));
-        assertEquals(entity.size(), 0);
+        try {
+            read(BASE_JDBC_CP_URL + "/"+poolName);
+            fail("Deleted resource should return 404");
+        } catch (Exception e) {
+
+        }
     }
 }

@@ -101,7 +101,7 @@ public class TemplateResource {
     protected Dom entity;
     protected Dom parent;
     protected String tagName;
-    private ResourceUtil resourceUtil = new ResourceUtil();
+    private ResourceUtil __resourceUtil;
 
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
 
@@ -224,11 +224,10 @@ public class TemplateResource {
                         errorMessage, requestHeaders, uriInfo);
             }
 
-            resourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
-
+            __resourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
             __resourceUtil.purgeEmptyEntries(data);
-
             __resourceUtil.adjustParameters(data);
+            
             if (data.get("DEFAULT") == null) {
                 addDefaultParameter(data);
             } else {
@@ -477,7 +476,6 @@ public class TemplateResource {
             return absoluteName;
         }
     }
-    private ResourceUtil __resourceUtil;
 
 
     public void setBeanByKey(List<Dom> parentList,String id) {
