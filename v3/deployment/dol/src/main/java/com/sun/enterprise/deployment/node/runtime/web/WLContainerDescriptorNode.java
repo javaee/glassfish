@@ -36,7 +36,10 @@
 
 package com.sun.enterprise.deployment.node.runtime.web;
 
+import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.web.InitializationParameter;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
 import com.sun.enterprise.deployment.runtime.web.ClassLoader;
@@ -64,7 +67,11 @@ public class WLContainerDescriptorNode extends RuntimeDescriptorNode {
      */
     public void setElementValue(XMLElement element, String value) {
         String name = element.getQName();
-        if (name.equals(RuntimeTagNames.SAVE_SESSIONS_ENABLED)) {
+        if (name.equals(RuntimeTagNames.INDEX_DIRECTORY_ENALBED)) {
+            setDefaultServletInitParam("listings", value);
+        } else if (name.equals(RuntimeTagNames.INDEX_DIRECTORY_SORT_BY)) {
+            setDefaultServletInitParam("sortedBy", value);
+        } else if (name.equals(RuntimeTagNames.SAVE_SESSIONS_ENABLED)) {
             WebBundleDescriptor descriptor = (WebBundleDescriptor)getParentNode().getDescriptor();
             SessionProperties sessionProperties = getSessionProperties(descriptor, true);
             WebProperty webProperty = new WebProperty();
@@ -94,11 +101,28 @@ public class WLContainerDescriptorNode extends RuntimeDescriptorNode {
 
     public Node writeDescriptor(Element root, WebBundleDescriptor webBundleDescriptor) {
         Node containerDescriptorNode = null;
+        WebComponentDescriptor defaultServletDesc =
+                webBundleDescriptor.getWebComponentByCanonicalName("default");
+        InitializationParameter listingsParam = getDefaultServletInitParam(
+                defaultServletDesc, "listings", false);
+        InitializationParameter sortedByParam = getDefaultServletInitParam(
+                defaultServletDesc, "sortedBy", false);
         ClassLoader clBean = webBundleDescriptor.getSunDescriptor().getClassLoader();
         SessionProperties sessionProperties = getSessionProperties(webBundleDescriptor, false);
 
-        if  (clBean != null || sessionProperties != null) {
+        if  (listingsParam != null || sortedByParam != null ||
+                clBean != null || sessionProperties != null) {
             containerDescriptorNode = appendChild(root, RuntimeTagNames.CONTAINER_DESCRIPTOR);
+        }
+
+        if (listingsParam != null) {
+            appendTextChild(containerDescriptorNode,
+                    RuntimeTagNames.INDEX_DIRECTORY_ENALBED, listingsParam.getValue());
+        }
+        
+        if (sortedByParam != null) {
+            appendTextChild(containerDescriptorNode,
+                    RuntimeTagNames.INDEX_DIRECTORY_SORT_BY, sortedByParam.getValue());
         }
 
         if (sessionProperties != null && sessionProperties.sizeWebProperty() > 0) {
@@ -119,6 +143,30 @@ public class WLContainerDescriptorNode extends RuntimeDescriptorNode {
         }
 
         return containerDescriptorNode;
+    }
+
+
+    private void setDefaultServletInitParam(String name, String value) {
+        WebBundleDescriptor descriptor = (WebBundleDescriptor)getParentNode().getDescriptor();
+        WebComponentDescriptor defaultServletDesc =
+                descriptor.getWebComponentByCanonicalName("default");
+        InitializationParameter initParam =
+                getDefaultServletInitParam(defaultServletDesc, name, true);
+        initParam.setValue(value);
+    }
+
+    private InitializationParameter getDefaultServletInitParam(
+            WebComponentDescriptor defaultServletDesc, String name, boolean create) {
+        if (defaultServletDesc == null) {
+            throw new RuntimeException("Default servlet is missing in web descriptors.");
+        }
+        InitializationParameter initParam = defaultServletDesc.getInitializationParameterByName(name);
+        if (initParam == null && create) {
+            initParam = new EnvironmentProperty();
+            defaultServletDesc.addInitializationParameter(initParam);
+            initParam.setName(name);
+        }
+        return initParam;
     }
 
     private SessionProperties getSessionProperties(

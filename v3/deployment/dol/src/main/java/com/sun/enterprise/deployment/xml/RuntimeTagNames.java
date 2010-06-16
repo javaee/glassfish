@@ -318,6 +318,8 @@ public interface RuntimeTagNames extends TagNames {
     // container-descriptor
     public static final String CONTAINER_DESCRIPTOR = "container-descriptor";
     public static final String PREFER_WEB_INF_CLASSES = "prefer-web-inf-classes";
+    public static final String INDEX_DIRECTORY_ENALBED = "index-directory-enabled";
+    public static final String INDEX_DIRECTORY_SORT_BY = "index-directory-sort-by";
     // session-descriptor
     public static final String SESSION_DESCRIPTOR = "session-descriptor";
     public static final String TIMEOUT_SECS = "timeout-secs";
