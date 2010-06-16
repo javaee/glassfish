@@ -88,7 +88,6 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
                                          AdminCommandContext context, InjectionResolver<Param> injector) {
         //TODO : Use the executor service to parallelize this
         ActionReport.ExitCode finalResult = ActionReport.ExitCode.SUCCESS;
-        ActionReport originalReport = context.getActionReport();
         if(!getSupplementalCommandsList().isEmpty() && getSupplementalCommandsList().containsKey(commandName)) {
             List<SupplementalCommand> cmds = getSupplementalCommandsList().get(commandName);
             for(SupplementalCommand aCmd : cmds) {
@@ -96,19 +95,17 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
                     (serverEnv.isInstance() && aCmd.whereToRun().contains(RuntimeType.INSTANCE)) ) {
                     if( (time.equals(Supplemental.Timing.Before) && aCmd.toBeExecutedBefore()) ||
                         (time.equals(Supplemental.Timing.After) && aCmd.toBeExecutedAfter()) ) {
-                        ActionReport subReport = originalReport.addSubActionsReport();
                         ActionReport.ExitCode result = FailurePolicy.applyFailurePolicy(aCmd.onFailure(),
-                                inject(aCmd, injector, subReport));
+                                inject(aCmd, injector, context.getActionReport()));
                         if(!result.equals(ActionReport.ExitCode.SUCCESS)) {
                             if(finalResult.equals(ActionReport.ExitCode.SUCCESS))
                                 finalResult = result;
                             continue;
                         }
-                        context.setActionReport(subReport);
                         aCmd.execute(context);
-                        if(subReport.hasFailures()) {
+                        if(context.getActionReport().hasFailures()) {
                             result = FailurePolicy.applyFailurePolicy(aCmd.onFailure(), ActionReport.ExitCode.FAILURE);
-                        } else if(subReport.hasWarnings()) {
+                        } else if(context.getActionReport().hasWarnings()) {
                             result = FailurePolicy.applyFailurePolicy(aCmd.onFailure(), ActionReport.ExitCode.WARNING);
                         }
                         if(!result.equals(ActionReport.ExitCode.SUCCESS)) {
@@ -119,7 +116,6 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
                 }
             }
         }
-        context.setActionReport(originalReport);
         return finalResult;
     }
 
