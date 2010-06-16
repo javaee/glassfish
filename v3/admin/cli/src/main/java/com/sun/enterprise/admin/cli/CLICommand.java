@@ -244,13 +244,13 @@ public abstract class CLICommand implements PostConstruct {
         logger.printDebugMessage("Validate command options");
         validate();
         if (programOpts.isEcho()) {
-            logger.printMessage(toString());
+            logger.printMessage(echoCommand());
             // In order to avoid echoing commands used intenally to the
             // implementation of *this* command, we turn off echo after
             // having echoed this command.
             programOpts.setEcho(false);
         } else if (logger.isDebug())
-            logger.printDebugMessage(toString());
+            logger.printDebugMessage(echoCommand());
         logger.printDebugMessage("Execute command");
         return executeCommand();
     }
@@ -395,11 +395,16 @@ public abstract class CLICommand implements PostConstruct {
         return commandModel.getParameters();
     }
 
+    @Override
+    public String toString() {
+        return echoCommand();
+    }
+
+
     /**
      * Return a string representing the command line used with this command.
      */
-    @Override
-    public String toString() {
+    private String echoCommand() {
         StringBuilder sb = new StringBuilder();
 
         // first, the program options
