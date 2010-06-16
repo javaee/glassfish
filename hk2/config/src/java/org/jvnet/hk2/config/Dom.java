@@ -147,6 +147,19 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
 
     }
 
+    /**
+     * When a new Dom object is created, ensures that all @NotNull annotated
+     * elements have a value.
+     * 
+     */
+    public void addDefaultChildren() {
+        List<Dom.Child> children = new ArrayList<Dom.Child>();
+        ensureConstraints(children);
+        if (!children.isEmpty()) {
+            setChildren(children);
+        }
+    }
+
     /* package */ void ensureConstraints(List<Child> children) {
         Set<String> nullElements = new HashSet<String>(model.getElementNames());
         nullElements.removeAll(getElementNames());
