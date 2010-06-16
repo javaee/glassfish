@@ -45,13 +45,19 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.File;
 import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.List;
 import java.net.URL;
 import java.net.URLConnection;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
 import org.apache.catalina.Deployer;
 import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.*;
 import org.glassfish.api.embedded.web.*;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
 
 
 /**
@@ -90,6 +96,18 @@ public class EmbeddedWebAPIDefaultStartTest {
     public void testDefaultStart() throws Exception {   
         System.out.println("================ Test Embedded Web API Default Start");
         embedded.start();
+
+        NetworkConfig nc = server.getHabitat().getComponent(NetworkConfig.class);
+        List<NetworkListener> listeners = nc.getNetworkListeners().getNetworkListener();
+        System.out.println("Network listener size after default start " + listeners.size());
+        for (NetworkListener nl : listeners) {
+            System.out.println("Network listener " + nl.getPort());
+        }
+
+        List<WebListener> listenerList = new ArrayList(embedded.getWebListeners());
+        Assert.assertTrue(listenerList.size()==1);
+        for (WebListener listener : embedded.getWebListeners())
+            System.out.println("Web listener "+listener.getId()+listener.getPort());
 
         EmbeddedDeployer deployer = server.getDeployer();
         String p = System.getProperty("buildDir");

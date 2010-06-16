@@ -157,6 +157,10 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
         portNumber = port.getPortNumber();
         listenerName = getListenerName();
+        WebListener webListener = new WebListenerImpl();
+        webListener.setId(listenerName);
+        webListener.setPort(portNumber);
+        listeners.add(webListener);
 
         if (protocol.equals(Port.HTTP_PROTOCOL)) {
             securityEnabled = "false";
@@ -179,15 +183,15 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             }, config.getProtocols());
             ConfigSupport.apply(new ConfigCode() {
                 public Object run(ConfigBeanProxy... params) throws TransactionFailure {
-                    NetworkListeners listeners = (NetworkListeners) params[0];
+                    NetworkListeners nls = (NetworkListeners) params[0];
                     Transports transports = (Transports) params[1];
-                    final NetworkListener listener = listeners.createChild(NetworkListener.class);
+                    final NetworkListener listener = nls.createChild(NetworkListener.class);
                     listener.setName(listenerName);
                     listener.setPort(Integer.toString(portNumber));
                     listener.setProtocol(listenerName);
                     listener.setThreadPool("http-thread-pool");
                     if (listener.findThreadPool() == null) {
-                        final ThreadPool pool = listeners.createChild(ThreadPool.class);
+                        final ThreadPool pool = nls.createChild(ThreadPool.class);
                         pool.setName(listenerName);
                         listener.setThreadPool(listenerName);
                     }
@@ -197,7 +201,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
                         transport.setName(listenerName);
                         listener.setTransport(listenerName);
                     }
-                    listeners.getNetworkListener().add(listener);
+                    nls.getNetworkListener().add(listener);
                     return listener;
                 }
             }, config.getNetworkListeners(), config.getTransports());
@@ -539,7 +543,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             throws ConfigException, LifecycleException {
 
         if (findWebListener(webListener.getId())==null) {
-            listeners.add(webListener);
+            listenerName = webListener.getId();
         } else {
             throw new ConfigException("Connector with name '"+
                     webListener.getId()+"' already exsits");           
