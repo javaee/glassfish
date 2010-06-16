@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Properties;
@@ -50,6 +51,7 @@ import java.util.regex.Pattern;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -505,6 +507,32 @@ public class ResourceUtil extends Util {
         return message;
     }
 
+    /**
+     * <p>This method takes any query string parameters and adds them to the specified map.  This
+     * is used, for example, with the delete operation when cascading deletes are required:</p>
+     * <code style="margin-left: 3em">DELETE http://localhost:4848/.../foo?cascade=true</code>
+     * <p>The reason we need to use query parameters versus "body" variables is the limitation
+     * that HttpURLConnection has in this regard.
+     *
+     * @param data
+     */
+    protected void addQueryString(MultivaluedMap<String, String> qs, HashMap<String, String> data) {
+        for (Map.Entry<String, List<String>> entry : qs.entrySet()) {
+            String key = entry.getKey();
+            for (String value : entry.getValue()) {
+                data.put(key, value); // TODO: Last one wins? Can't imagine we'll see List.size() > 1, but...
+            }
+        }
+    }
+
+    public void addQueryString(MultivaluedMap<String, String> qs, Properties data) {
+        for (Map.Entry<String, List<String>> entry : qs.entrySet()) {
+            String key = entry.getKey();
+            for (String value : entry.getValue()) {
+                data.put(key, value); // TODO: Last one wins? Can't imagine we'll see List.size() > 1, but...
+            }
+        }
+    }
 
     //Construct parameter meta-data from the model
     private ParameterMetaData getParameterMetaData(CommandModel.ParamModel paramModel) {
@@ -683,5 +711,4 @@ public class ResourceUtil extends Util {
         }
         return convertedData;
     }
-
 }

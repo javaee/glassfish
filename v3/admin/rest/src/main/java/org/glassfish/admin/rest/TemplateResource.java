@@ -101,6 +101,7 @@ public class TemplateResource {
     protected Dom entity;
     protected Dom parent;
     protected String tagName;
+    private ResourceUtil resourceUtil = new ResourceUtil();
 
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
 
@@ -204,25 +205,6 @@ public class TemplateResource {
         }
     }
 
-    /**
-     * <p>This method takes any query string parameters and adds them to the specified map.  This
-     * is used, for example, with the delete operation when cascading deletes are required:</p>
-     * <code style="margin-left: 3em">DELETE http://localhost:4848/.../foo?cascade=true</code>
-     * <p>The reason we need to use query parameters versus "body" variables is the limitation
-     * that HttpURLConnection has in this regard.
-     * 
-     * @param data
-     */
-    protected void addQueryStringToMap(HashMap<String, String> data) {
-        MultivaluedMap<String, String> qs = ((ContainerRequest) requestHeaders).getQueryParameters();
-        for (Map.Entry<String, List<String>> entry : qs.entrySet()) {
-            String key = entry.getKey();
-            for (String value : entry.getValue()) {
-                data.put(key, value); // TODO: Last one wins? Can't imagine we'll see List.size() > 1, but...
-            }
-        }
-    }
-
     protected void removeAttributesToBeSkipped(Map<String, String> data) {
         for (String item : attributesToSkip) {
             data.remove(item);
@@ -242,7 +224,7 @@ public class TemplateResource {
                         errorMessage, requestHeaders, uriInfo);
             }
 
-            addQueryStringToMap(data);
+            resourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
 
             __resourceUtil.purgeEmptyEntries(data);
 

@@ -88,6 +88,11 @@ public class RestTestBase {
         return new BigInteger(130, random).toString(16);
     }
 
+    protected boolean isSuccess(ClientResponse response) {
+        int status = response.getStatus();
+        return ((status == 200) || (status == 201));
+    }
+
     protected String get(String address) {
         return client.resource(address).accept(RESPONSE_TYPE).get(String.class);
     }

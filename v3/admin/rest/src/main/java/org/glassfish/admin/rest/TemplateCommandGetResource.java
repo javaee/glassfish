@@ -66,26 +66,34 @@ import org.glassfish.api.ActionReport;
  * that contains the logic for mapped commands RS Resources
  *
  */
- public class TemplateCommandGetResource {
+public class TemplateCommandGetResource {
 
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ResourceUtil.class);
+
     @Context
     protected HttpHeaders requestHeaders;
+
     @Context
     protected UriInfo uriInfo;
+
     private String resourceName;
+
     private String commandName;
+
     private String commandMethod;
+
     private HashMap<String, String> commandParams = null;
+
     private boolean isLinkedToParent = false;
+
     private ResourceUtil resourceUtil = new ResourceUtil();
 
     public TemplateCommandGetResource(String resourceName, String commandName, String commandMethod,
-             HashMap<String, String> m, boolean b) {
+                                      HashMap<String, String> m, boolean b) {
         this.resourceName = resourceName;
         this.commandName = commandName;
         this.commandMethod = commandMethod;
-                this.commandParams = m;
+        this.commandParams = m;
         this.isLinkedToParent = b;
     }
 
@@ -106,12 +114,12 @@ import org.glassfish.api.ActionReport;
                 }
                 properties.putAll(commandParams);
             }
-            addQueryStringToProps(((ContainerRequest) requestHeaders).getQueryParameters(), properties);
+            resourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), properties);
 
             ActionReport actionReport = resourceUtil.runCommand(commandName, properties, RestService.getHabitat());
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
             StringResult results = new StringResult(commandName, resourceUtil.getMessage(actionReport), options());
-            
+
             if (exitCode == ActionReport.ExitCode.SUCCESS) {
                 results.setStatusCode(200); /*200 - ok*/
             } else {
@@ -145,13 +153,4 @@ import org.glassfish.api.ActionReport;
 
         return optionsResult;
     }
-
-     protected void addQueryStringToProps(MultivaluedMap<String, String> qs, Properties data) {
-         for (Map.Entry<String, List<String>> entry : qs.entrySet()) {
-             String key = entry.getKey();
-             for (String value : entry.getValue()) {
-                 data.put(key, value); // TODO: Last one wins? Can't imagine we'll see List.size() > 1, but...
-             }
-         }
-     }
 }

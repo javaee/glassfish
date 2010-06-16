@@ -50,6 +50,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.jersey.spi.container.ContainerRequest;
 import javax.ws.rs.DELETE;
 
 
@@ -115,8 +116,8 @@ public class TemplateCommandDeleteResource {
                 data.putAll(commandParams);
             }
 
+            resourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
             resourceUtil.adjustParameters(data);
-
             resourceUtil.purgeEmptyEntries(data);
 
             ActionReport actionReport = resourceUtil.runCommand(commandName, data, RestService.getHabitat());
