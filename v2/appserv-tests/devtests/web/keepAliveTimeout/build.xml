@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -38,14 +38,13 @@
 <!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
 <!ENTITY run SYSTEM "./../../../config/run.xml">
-<!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 
-<project name="webcontainer_unittest" default="all" basedir=".">
+<project name="keepAliveTimeout" default="all" basedir=".">
 
     &commonSetup;
     &commonBuild;
-    &testproperties;
+    <import file="build-properties.xml"/>
     &run;
 
     <target name="all" depends="setup,run,restore"/>
@@ -54,9 +53,8 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-						 value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.timeout-seconds=5"/>
+						 value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.timeout-seconds=10"/>
         </antcall>
-        <sleep seconds="10"/>
     </target>
 
     <target name="restore" depends="init-common">

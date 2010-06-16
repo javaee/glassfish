@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,11 +35,12 @@
  */
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.util.Date;
 
 import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
@@ -47,10 +48,8 @@ import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 * Unit test for 6273998
 */
 public class WebTest {
-    public static final String TEST_NAME = "keepAliveTimeoutInSeconds";
-    private static final SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests", TEST_NAME);
-
+    public static final String TEST_NAME = "keepAliveTimeout";
+    private static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", TEST_NAME);
     private String host;
     private String port;
     private String contextRoot;
@@ -60,7 +59,7 @@ public class WebTest {
         port = args[1];
         contextRoot = args[2];
     }
-    
+
     public static void main(String[] args) {
         stat.addDescription(TEST_NAME);
         WebTest webTest = new WebTest(args);
@@ -68,8 +67,8 @@ public class WebTest {
         stat.printSummary();
     }
 
-    public void doTest() {     
-        try { 
+    public void doTest() {
+        try {
             invoke();
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, SimpleReporterAdapter.FAIL);
@@ -78,7 +77,6 @@ public class WebTest {
     }
 
     private void invoke() throws Exception {
-         
         Socket sock = new Socket(host, new Integer(port).intValue());
         sock.setSoTimeout(50000);
         OutputStream os = sock.getOutputStream();
@@ -87,35 +85,34 @@ public class WebTest {
         os.write(get.getBytes());
         os.write("Host: localhost\n".getBytes());
         os.write("\n".getBytes());
-
         Thread.sleep(6000);
-        
         InputStream is = sock.getInputStream();
         BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-
         boolean found = false;
         String line = null;
-        int i =0;
-        try{
-            while ((line = bis.readLine()) != null) {
-                System.out.println(i++ + ": " + line);
-                if ("Connection: close".equals(line)
-                        || "connection: close".equals(line)) {
-                    found = true;
+        int i = 0;
+        try {
+            long start = 0;
+            try {
+                while ((line = bis.readLine()) != null) {
+                    start = System.currentTimeMillis();
+                    System.out.println(i++ + ": " + new Date() + " = " + line);
                 }
-                if (found) {
-                    break;
-                }
+            } catch (IOException e) {
             }
-        }catch (SocketTimeoutException t){
-            ;
-        }
-        sock.close();
-
-        if (found) {
-            stat.addStatus(TEST_NAME, SimpleReporterAdapter.PASS);
-        } else {
-            stat.addStatus(TEST_NAME, SimpleReporterAdapter.FAIL);
+            System.out.println("WebTest.invoke: new Date() = " + new Date());
+            long end = System.currentTimeMillis();
+            System.out.println("WebTest.invoke: start = " + start);
+            System.out.println("WebTest.invoke: end = " + end);
+            System.out.println("WebTest.invoke: end - start = " + (end - start));
+            stat.addStatus(TEST_NAME, end - start >= 30000 ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL);
+        } finally {
+            if (sock != null) {
+                sock.close();
+            }
+            if (bis != null) {
+                bis.close();
+            }
         }
     }
 }
