@@ -87,14 +87,6 @@ public class ClusterTest extends AdminBaseDevTest {
                 "--systemproperties", "foo=bar",
                 "cl4"));
 
-        AsadminReturn ret = asadminWithOutput("get", "clusters.cluster.cl4.system-property.foo.name");
-        boolean success = ret.outAndErr.indexOf("clusters.cluster.cl4.system-property.foo.name=foo") >= 0;
-        report("check-cluster-syspropname", success);
-
-        ret = asadminWithOutput("get", "clusters.cluster.cl4.system-property.foo.value");
-        success = ret.outAndErr.indexOf("clusters.cluster.cl4.system-property.foo.value=bar") >= 0;
-        report("check-cluster-syspropvalue", success);
-
         //evaluate using xpath that there are 3 elements in the domain.xml
 
         o = evalXPath(xpathExpr, XPathConstants.NUMBER);
@@ -109,9 +101,50 @@ public class ClusterTest extends AdminBaseDevTest {
         //list-clusters
         report("list-clusters", asadmin("list-clusters"));
         testDeleteClusterWithInstances();
+        testClusterWithObsoleteOptions();
         testEndToEndDemo();
         cleanup();
         stat.printSummary();
+    }
+
+
+    private void testClusterWithObsoleteOptions(){
+        final String cluster = "obscl";
+        final String testName = "obsoleteOpts-";
+        //Create the cluster with all of the obsolete options
+        //That should fail
+        //Also there should be no element added in the domain.xml for the cluster
+
+        //Create cluster with obsolete option --haagentport
+        report(testName +"create-cl1", !asadmin("create-cluster","--haagentport 4567",cluster));  
+        //asadmin get should not return the cluster
+        report(testName +"check-cl1", !asadmin("get", "clusters.cluster."+cluster));
+        //create the cluster with obsolete opts --hosts
+        report (testName +"create-cl2",!asadmin("create-cluster", "--hosts junk",cluster)) ;
+        //asadmin get should not return the cluster
+        report(testName +"check-cl2", !asadmin("get", "clusters.cluster."+cluster));
+        //create the cluster with obsolete opts   --haadminpassword
+        report (testName +"create-cl3",!asadmin("create-cluster", "--haadminpassword junk",cluster)) ;
+        //asadmin get should not return the cluster
+        report(testName +"check-cl3", !asadmin("get", "clusters.cluster."+cluster));
+        //create the cluster with obsolete opts   --haadminpasswordfile
+        report (testName +"create-cl4",!asadmin("create-cluster", "--haadminpasswordfile junk",cluster)) ;
+        //asadmin get should not return the cluster
+        report(testName +"check-cl4", !asadmin("get", "clusters.cluster."+cluster));
+        //create the cluster with obsolete opts   --devicesize
+        report (testName +"create-cl5",!asadmin("create-cluster", "--devicesize 200",cluster)) ;
+        //asadmin get should not return the cluster
+        report(testName +"check-cl5", !asadmin("get", "clusters.cluster."+cluster));
+        //create the cluster with obsolete opts   --haproperty
+        report (testName +"create-cl6",!asadmin("create-cluster", "--haproperty foo",cluster)) ;
+        //asadmin get should not return the cluster
+        report(testName +"check-cl6", !asadmin("get", "clusters.cluster."+cluster));
+         //create the cluster with obsolete opts   --autohadb
+        report (testName +"create-cl7",!asadmin("create-cluster", "--autohadb foo",cluster)) ;
+        //asadmin get should not return the cluster
+        report(testName +"check-cl7", !asadmin("get", "clusters.cluster."+cluster));
+
+
     }
 
     private void  testDeleteClusterWithInstances(){
