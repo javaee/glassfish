@@ -306,7 +306,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         String hosts=null;
 
         @Param(optional = true,obsolete=true)
-        int haagentport=0;
+        String haagentport;
 
         @Param(optional = true,obsolete=true)
         String haadminpassword=null;
@@ -437,7 +437,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             }
 
             if (hosts!=null ||
-                    haagentport!=0 ||
+                    haagentport!=null ||
                     haadminpassword!=null ||
                     haadminpasswordfile!=null ||
                     devicesize!=null ||
@@ -445,8 +445,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                     autohadb!=null ||
                     portbase!=null
                     ) {
-                context.getActionReport().setActionExitCode(ActionReport.ExitCode.WARNING);
-                context.getActionReport().setMessage("Obsolete options used.");
+
+                String msg = localStrings.getLocalString("Cluster.obsoleteOptions","Obsolete options used");
+                throw new TransactionFailure(msg);
             }
         }
     }
