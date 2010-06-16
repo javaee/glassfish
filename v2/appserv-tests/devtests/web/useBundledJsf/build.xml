@@ -49,6 +49,7 @@
     &run;
 
     <target name="all" depends="build,deploy,run,undeploy"/>
+<target name="embedded" depends="startDomain,all"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -62,14 +63,9 @@
     </target>
 
     <target name="deploy" depends="init-common">
-        <exec executable="${ASADMIN}" failonerror="false">
-            <arg line="deploy"/>
-            <arg line="${as.props}"/>
-            <arg line="--upload=true"/>
-            <arg line="--target ${appserver.instance.name}"/>
-            <arg line="simple-usefaces.war"/>
-        </exec>
+      <antcall target="deploy-war-name"/>
     </target>
+
     
     <target name="run" depends="init-common">
         <java classname="WebTest">
@@ -84,11 +80,7 @@
     </target>
  
     <target name="undeploy" depends="init-common">
-        <exec executable="${ASADMIN}" failonerror="false">
-            <arg line="undeploy"/>
-            <arg line="${as.props}"/>
-            <arg line="simple-usefaces"/>
-        </exec>
+      <antcall target="undeploy-war-name"/>
     </target>   
 
     <target name="usage">

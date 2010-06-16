@@ -1007,6 +1007,13 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   </exec>
 </target>    
 
+<target name="deploy-war-name" depends="init-common">
+  <echo message="Deploying ${warname} from ${basedir}."
+      level="verbose"/>
+    <echo> === EMBEDDED DEPLOYING === </echo>
+    <glassfish-embedded-deploy app="${warname}.war" name="${appname}" libraries="${libraries}"/>
+</target>
+
 <!-- deploy the standalone war in AppServ  -->
 <target name="deploy-war-common">
     <antcall target ="glassfish-embedded-deploy"/>
@@ -1070,6 +1077,11 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <arg line="${assemble.dir}/${appname}-client.jar"/>
   </exec>
 </target> 
+
+<target name="undeploy-war-name" depends="init-common">
+    <echo> === Embedded UNDEPLOYING === </echo>
+    <glassfish-embedded-undeploy name="${warname}"/>
+</target>
 
 <!--  undeploy the applications in AppServ  -->
 <target name="undeploy-common" depends="init-common">
