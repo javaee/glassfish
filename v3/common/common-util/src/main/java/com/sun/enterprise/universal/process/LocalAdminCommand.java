@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,24 +32,45 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- *
- */
-
-/*
- * ProcessManagerException.java
- * Any errors in ProcessManager will cause this to be thrown
- * @since JDK 1.4
- * @author bnevins
- * Created on October 28, 2005, 10:08 PM
  */
 package com.sun.enterprise.universal.process;
 
-public class ProcessManagerException extends Exception {
+import com.sun.enterprise.util.SystemPropertyConstants;
+import java.io.File;
+import java.util.*;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.jvnet.hk2.annotations.Inject;
 
-    public ProcessManagerException(Throwable cause) {
-        super(cause);
+/**
+ * Very simple -- run an Asadmin command.  
+ *
+ * @author bnevins
+ */
+public final class LocalAdminCommand {
+
+    public LocalAdminCommand(String command, String... args) {
+        asadmin = new File(SystemPropertyConstants.getAsAdminScriptLocation());
+        cmds.add(asadmin.getAbsolutePath());
+        cmds.add(command);
+
+        if (args != null && args.length > 0)
+            cmds.addAll(Arrays.asList(args));
     }
-    public ProcessManagerException(String message) {
-        super(message);
+
+    public int execute() throws ProcessManagerException {
+        if (!asadmin.canExecute())
+            throw new ProcessManagerException("asadmin is not executable!");
+
+        pm = new ProcessManager(cmds);
+        pm.execute();  // blocks until command is complete
+        return pm.getExitValue();
     }
+
+    public ProcessManager getProcessManager() {
+        return pm;
+    }
+
+    private final File asadmin;
+    private final List<String> cmds = new ArrayList<String>();
+    private ProcessManager pm;
 }
