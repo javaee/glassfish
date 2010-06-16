@@ -1035,6 +1035,38 @@ public class FileUtils {
     }
 
     /**
+     * If the path dir/file does not exist, look for it in the classpath. If found
+     * in classpath, create dir/file.
+     *
+     * @param file - path to look for
+     * @param dir - directory where the path file should exist
+     * @return the File representing dir/file. If that does not exist, return null.
+     * @throws IOException
+     */
+
+    public static File getManagedFile(String file, File dir) throws IOException {
+        File f = new File(dir, file);
+        if (f.exists())
+           return f;
+
+        InputStream is = new BufferedInputStream(Thread.currentThread().getContextClassLoader().getResourceAsStream(file));
+        if (is == null) {
+           return null;
+        }
+
+        f.getParentFile().mkdirs();
+        OutputStream os = new BufferedOutputStream(FileUtils.openFileOutputStream(f));
+        byte buf[] = new byte[10240];
+        int len = 0;
+        while ((len =is.read(buf)) > 0) {
+           os.write(buf, 0, len);
+        }
+        os.close();
+        is.close();
+        return f;
+    }
+
+    /**
      * Represents a unit of work that should be retried, if needed, until it
      * succeeds or the configured retry limit is reached.
      * <p/>
