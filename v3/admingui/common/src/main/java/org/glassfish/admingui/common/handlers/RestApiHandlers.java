@@ -125,7 +125,7 @@ public class RestApiHandlers {
     public static void checkIfEndPointExist(HandlerContext handlerCtx) {
         try {
             String endpoint = (String) handlerCtx.getInputValue("endpoint");
-            String entity = get(endpoint);
+            String entity = get(endpoint).getResponseBody();
             Boolean edit = false;
             Map<String, String> tmp = getEntityAttrs(entity);
             if (tmp.size() != 0) {
