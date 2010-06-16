@@ -125,27 +125,26 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
         if(Utility.getEnvOrProp("ENABLE_REPLICATION")!=null) {
             doReplication = Boolean.parseBoolean(Utility.getEnvOrProp("ENABLE_REPLICATION"));
         }
-        if (!doReplication) {
         if (!deployment.isRegistered(name())) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
-        ApplicationRef ref = domain.getApplicationRefInTarget(name(), target);
-        if (ref == null) {
+        ApplicationRef applicationRef = domain.getApplicationRefInTarget(name(), target);
+        if (applicationRef == null) {
             report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name(), target));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
-        // keep this when we clean up the doReplication
         // return if the application is already in enabled state
-        if (Boolean.valueOf(ref.getEnabled())) {
+        if (Boolean.valueOf(applicationRef.getEnabled())) {
             logger.fine("The application is already enabled");
             return;
         }
 
+        if (!doReplication) {
         // try to disable the enabled version, if exist
         try {
             versioningService.handleDisable(name(),target, report);
