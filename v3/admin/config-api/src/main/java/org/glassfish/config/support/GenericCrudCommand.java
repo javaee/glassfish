@@ -43,6 +43,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandModelProvider;
 import org.glassfish.common.util.admin.ParamTokenizer;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Multiple;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InjectionManager;
@@ -54,6 +55,7 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -151,6 +153,43 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
         } else {
             targetType = (Class<ConfigBeanProxy>) targetMethod.getParameterTypes()[0];
         }
+    }
+
+    protected <T extends Annotation> T getAnnotation(Method target, Class<T> type) {
+
+
+        T annotation = targetMethod.getAnnotation(type);
+        if (annotation==null) {
+            // we need to check for any annotation that has the @Multiple annotation
+            for (Annotation a : targetMethod.getAnnotations()) {
+                Multiple multiple = a.annotationType().getAnnotation(Multiple.class);
+                if (multiple!=null) {
+                    try {
+                        Method m = a.getClass().getMethod("value");
+                        Annotation[] potentials = (Annotation[]) m.invoke(a);
+                        if (potentials!=null) {
+                            for (Annotation potential : potentials) {
+                                if (potential.annotationType().equals(type)) {
+                                    m = potential.getClass().getMethod("value");
+                                    String value = (String) m.invoke(potential);
+                                    if (value.equals(commandName)) {
+                                        return type.cast(potential);
+                                    }
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                }
+            }
+            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                    "GenericCrudCommand.annotation_not_found",
+                    "Cannot find annotation {0} with value {1} on method {2}",
+                    type.getName(), commandName, targetMethod.toString());
+            throw new RuntimeException(msg);
+        }
+        return annotation;
     }
 
     /**

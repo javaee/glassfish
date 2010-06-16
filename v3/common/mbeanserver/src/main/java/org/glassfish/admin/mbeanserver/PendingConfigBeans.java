@@ -65,7 +65,7 @@ is maintained for processing by the AMXConfigLoader, which is lazily loaded.
  * @author llc
  */
 @Service(name = "PendingConfigBeans")
-public class PendingConfigBeans implements CageBuilder, PostConstruct, TransactionListener
+public class PendingConfigBeans implements CageBuilder<ConfigBean>, PostConstruct, TransactionListener
 {
     @Inject
     Transactions transactions;
@@ -110,7 +110,7 @@ public class PendingConfigBeans implements CageBuilder, PostConstruct, Transacti
         return (o instanceof ConfigBean) ? ConfigBean.class.cast(o) : null;
     }
 
-    public void onEntered(final Inhabitant<?> inhabitant)
+    public void onEntered(final Inhabitant<ConfigBean> inhabitant)
     {
         //debug( "PendingConfigBeansNew.onEntered(): " + inhabitant);
 

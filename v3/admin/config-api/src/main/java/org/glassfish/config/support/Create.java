@@ -39,7 +39,6 @@ package org.glassfish.config.support;
 import org.glassfish.api.admin.Cluster;
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.AdminCommand;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

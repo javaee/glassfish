@@ -77,7 +77,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
 
         super.postConstruct();
 
-        create = targetMethod.getAnnotation(Create.class);
+        create = getAnnotation(targetMethod, Create.class);
         resolverType = create.resolver();
         try {
             model = new GenericCommandModel(targetType, create.cluster(), habitat.getComponent(DomDocument.class), commandName, create.resolver(), create.decorator());

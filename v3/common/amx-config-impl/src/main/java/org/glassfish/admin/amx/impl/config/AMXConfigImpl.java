@@ -834,6 +834,8 @@ public class AMXConfigImpl extends AMXImplBase
                 final ConfigBeanJMXSupport spt = ConfigBeanJMXSupportRegistry.getInstance(clazz);
 
                 final ConfigBeanProxy childProxy = parent.allocateProxy(clazz);
+                Dom newBean = Dom.unwrap(childProxy);
+                newBean.addDefaultChildren();
                 addToList( parent, childProxy);
                 final ConfigBean child = (ConfigBean)Dom.unwrap(childProxy);
                 newChildren.add(child);

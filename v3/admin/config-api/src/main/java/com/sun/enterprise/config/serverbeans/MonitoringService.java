@@ -54,11 +54,12 @@ import java.util.logging.Level;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.NotNull;
 
 
 /* @XmlType(name = "", propOrder = {
-    "moduleMonitoringLevels",
-    "property"
+   "moduleMonitoringLevels",
+   "property"
 }) */
 
 @Configured
@@ -71,6 +72,7 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, Property
      *         {@link ModuleMonitoringLevels }
      */
     @Element
+    @NotNull
     public ModuleMonitoringLevels getModuleMonitoringLevels();
 
     /**
