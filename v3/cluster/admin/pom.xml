@@ -127,6 +127,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.cluster</groupId>
+            <artifactId>cluster-ssh</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.tests</groupId>
             <artifactId>utils</artifactId>
             <version>${project.version}</version>

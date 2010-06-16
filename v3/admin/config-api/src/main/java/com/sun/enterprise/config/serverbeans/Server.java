@@ -126,6 +126,25 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Param(name = "nodeagent", optional = true)
     void setNodeAgentRef(String value) throws PropertyVetoException;
 
+     /**
+     * Sets the value of the nodeRef property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    @Param(name = "noderef", optional = true)
+    void setNodeRef(String value) throws PropertyVetoException;
+    /**
+     * Gets the value of the nodeRef property.
+     *
+     * SE/EE only. Specifies name of node agent where server instance is hosted
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    String getNodeRef();
     /**
      * Gets the value of the lbWeight property.
      *

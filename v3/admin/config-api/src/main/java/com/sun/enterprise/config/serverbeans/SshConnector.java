@@ -112,5 +112,7 @@ public interface SshConnector extends ConfigBeanProxy, Injectable {
       void setSshHost(String value) throws PropertyVetoException;
 
      @Element
-     List <SshAuth> getSshAuth();
+    SshAuth getSshAuth();
+
+    void setSshAuth(SshAuth auth);
 }

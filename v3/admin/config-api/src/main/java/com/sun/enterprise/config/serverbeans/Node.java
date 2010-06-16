@@ -92,7 +92,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      */
 
     @Attribute
-    String getHostNode();
+    String getNodeHost();
 
     /**
      * Sets the value of the name property.
@@ -101,8 +101,8 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name="hostnode", optional=true)
-    void setHostNode(String value) throws PropertyVetoException;
+    @Param(name="nodehost", optional=true)
+    void setNodeHost(String value) throws PropertyVetoException;
 
     /**
      * points to a named host.
@@ -111,7 +111,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      */
 
     @Attribute
-    String getHostHome();
+    String getNodeHome();
 
     /**
      * Sets the value of the name property.
@@ -120,18 +120,20 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name="hosthome", optional=true)
-    void setHostHome(String value) throws PropertyVetoException;
-  
+    @Param(name="nodehome", optional=true)
+    void setNodeHome(String value) throws PropertyVetoException;
+
     @Element
-    List <SshConnector> getSshConnector();
+    SshConnector getSshConnector();
+
+    void setSshConnector(SshConnector connector);
 
     @Service
     @Scoped(PerLookup.class)
     class Decorator implements CreationDecorator<Node> {
         @Param(name="sshport",optional=true)
         String sshPort="-1";
-        @Param(name="sshhost",optional=true)
+        @Param(name="sshnodehost",optional=true)
         String sshHost=null;
 
 
@@ -182,9 +184,9 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
                         sshA.setUserName(sshuser);
                     if (sshkeyfile != null)
                         sshA.setKeyfile(sshkeyfile);
-                    sshC.getSshAuth().add(sshA);
+                    sshC.setSshAuth(sshA);
                 }
-                instance.getSshConnector().add(sshC);
+                instance.setSshConnector(sshC);
             }
 
         }

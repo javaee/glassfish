@@ -118,6 +118,18 @@ final class RemoteInstanceCommandHelper {
         return null;
     }
 
+    final String getNodeRef(final Server server){
+
+        if(server == null)
+            return null;
+        String node = server.getNodeRef();
+
+        if(StringUtils.ok(node))
+            return node;
+        else
+            return Strings.get("noNodeRef");
+    }
+
     final int getAdminPort(Server server) {
         String portString = getAdminPortString(server, getConfig(server));
 

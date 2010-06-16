@@ -115,12 +115,13 @@ public class SSHLauncher implements PostConstruct {
         Node node = nodeMap.get(nodeName);
         //XXX: Getting the first one right now. Do we really need a list to be
         // returned?
-        SshConnector connector = node.getSshConnector().get(0);
+        SshConnector connector = node.getSshConnector();
+
         host = connector.getSshHost();
         if (SSHUtil.checkString(host) != null) {
             this.host = host;            
         } else {
-            this.host = node.getHostNode();
+            this.host = node.getNodeHost();
         }
 
         try {
@@ -130,12 +131,18 @@ public class SSHLauncher implements PostConstruct {
         }
         this.port = port == 0 ? 22 : port;
         //XXX: Getting the first one right now. Do we really need a list to be
-        // returned?        
-        SshAuth sshAuth = connector.getSshAuth().get(0);
-        String userName = sshAuth.getUserName();
-        this.userName = SSHUtil.checkString(userName) == null ?
+        // returned?
+        String sshHost = connector.getSshHost();
+        if (sshHost != null)
+            this.host = sshHost;
+        
+        SshAuth sshAuth = connector.getSshAuth();
+        if (sshAuth != null) {
+            String userName = sshAuth.getUserName();
+            this.userName = SSHUtil.checkString(userName) == null ?
                     System.getProperty("user.name") : userName;
-        this.keyFile = sshAuth.getKeyfile();
+            this.keyFile = sshAuth.getKeyfile();
+        }
         // String authType = sshAuth.;
         //this.authType = authType == null ? "key" : authType;
 
@@ -207,7 +214,9 @@ public class SSHLauncher implements PostConstruct {
     public void runCommand(String command, OutputStream os) throws IOException,
                                             InterruptedException 
     {
-        openConnection();
+        if ( !openConnection()) {
+            return;
+        }
         //the output of running the command. Also right now nodehome is
         //not used. Need to add that in. For now the full command path
         //needs to be specified.
