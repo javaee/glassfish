@@ -42,11 +42,6 @@ package admin;
 public class PortTests extends AdminBaseDevTest {
 
     @Override
-    protected String getTestName() {
-        return "Ports Tests";
-    }
-
-    @Override
     protected String getTestDescription() {
         return "Tests Port Selection Algorithms for Instances.";
     }
@@ -57,8 +52,10 @@ public class PortTests extends AdminBaseDevTest {
     }
 
     private void runTests() {
+        startDomain();
         verifyUserSuppliedPortNumbersAreUnique();
         verifyPortsAreLegal();
+        stopDomain();
         stat.printSummary();
     }
 

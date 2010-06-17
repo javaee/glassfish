@@ -62,7 +62,7 @@
     </path>
     <pathconvert refid="class.path" property="test"/>
 
-    <target name="cli" depends="instance, cluster, ports,configs"/>
+    <target name="cli" depends="instance, cluster, ports, configs, sync"/>
     <target name="cluster">
         <java classname="admin.ClusterTest"  fork="true" classpath="${test}"/>
     </target>
@@ -79,6 +79,9 @@
     <target name="configs">
         <java classname="admin.ConfigTests"  fork="true" classpath="${test}"/>
     </target>
+    <target name="sync">
+        <java classname="admin.SyncTest"  fork="true" classpath="${test}"/>
+    </target>
 
     <target name="portsonly" depends="init">
         <record name="admin.output" action="start" />
@@ -89,17 +92,11 @@
         <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
     </target>
 
-
     <target name="all" depends="init">
         <record name="admin.output" action="start" />
-        <antcall target="stopDomain"/>
-        <antcall target="startDomain"/>
         <antcall target="${teststorun}"/>
-        <antcall target="stopDomain"/>
         <record name="admin.output" action="stop" />
-
         <antcall target="dev-report"/>
-
         <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
     </target>
 

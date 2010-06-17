@@ -54,6 +54,11 @@ import java.util.TreeSet;
 public abstract class AdminBaseDevTest extends BaseDevTest {
 
     @Override
+    public String getTestName() {
+        return this.getClass().getName();
+    }
+
+    @Override
     public void report(String name, boolean success) {
         // bnevins june 6 2010
 
@@ -88,6 +93,26 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
     @Override
     public void report(String step, AsadminReturn ret) {
         report(step, ret.returnValue);
+    }
+
+    public void startDomain(String domainname) {
+        report(getTestName() + "-start-domain" + startstops++,
+                asadmin("start-domain", domainname));
+    }
+
+    public void startDomain() {
+        report(getTestName() + "-start-def-domain" + startstops++,
+                asadmin("start-domain"));
+    }
+
+    public void stopDomain(String domainname) {
+        report(getTestName() + "-stop-domain" + startstops++,
+                asadmin("stop-domain", domainname));
+    }
+
+    public void stopDomain() {
+        report(getTestName() + "-stop-def-domain" + startstops++,
+                asadmin("stop-domain"));
     }
 
     /*
@@ -126,6 +151,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
     }
 
     private final SortedSet<String> reportNames = new TreeSet<String>();
+    private int startstops = 0;
     protected final static boolean DEBUG;
     protected final static boolean isHudson = Boolean.parseBoolean(System.getenv("HUDSON"));
     static {

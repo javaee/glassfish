@@ -36,72 +36,36 @@
 package admin;
 
 /**
- * This class adds devtests for copy-config,delete-config, list-configs commands
- * @author Bhakti Mehta
+ *
+ * @author tmueller
  */
-public class ConfigTests extends AdminBaseDevTest {
+public class SyncTest extends AdminBaseDevTest {
 
     @Override
     protected String getTestDescription() {
-        return "Tests Configs using the copy/delete/list config commands.";
+        return "Tests Start-up Synchronization between the DAS and Instances.";
     }
 
     public static void main(String[] args) {
-        new ConfigTests().runTests();
+        new SyncTest().runTests();
     }
 
     private void runTests() {
         startDomain();
-        //This tests a few copy config and delete listconfig options
-        testCopyDeleteListConfig();
-        //This tests additional tests like deleting server-config, default-config
-        testDeleteConfig();
         stopDomain();
         stat.printSummary();
     }
 
-    private void testCopyDeleteListConfig() {
-        //Create cluster, copy its config
-        final String testName = "copyDelConfig-";
-        final String cluster = "ccl";
-        final String destconfig = "destconf";
-        report(testName +"create-cl", asadmin("create-cluster", cluster));
-
-        //copy config using existing config
-        report(testName+"copy-config", asadmin("copy-config",  cluster+"-config",
-                destconfig));
-
-        //check if config is copied
-        report (testName+"get", asadmin("get","configs.config."+
-                destconfig));
-        //check if config is copied   use list-configs
-        AsadminReturn ret = asadminWithOutput("list-configs");
-        report (testName+"list-configs",ret.out.indexOf(destconfig)!=-1 );
-
-        //delete the config  referenced by cluster should throw error
-        report("delete-conf-inuse", !asadmin("delete-config", cluster+"-config"));
-
-        //delete the cluster
-        report("delete-cl1", asadmin("delete-cluster", cluster));
-
-        //delete the config
-        report("delete-config", asadmin("delete-config", destconfig));
-
-        //try to delete nonexistent config should throw error
-        report("delete-config1", !asadmin("delete-config", "junk"));
-
-    }
-
-    private void testDeleteConfig(){
-        final String testName = "deleteConfig";
-
-        //delete default config should throw error
-        report(testName+"default-config", !asadmin("delete-config", "default-config"));
-
-        //delete server-config should throw error
-        report(testName+"server-config", !asadmin("delete-config", "server-config"));
-
-
-    }
-
+    /*
+     * --systemproperties HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848 in1
+     * --systemproperties
+    HTTP_LISTENER_PORT=18080:
+    HTTP_SSL_LISTENER_PORT=18181:
+    IIOP_SSL_LISTENER_PORT=13800:
+    IIOP_LISTENER_PORT=13700:
+    JMX_SYSTEM_CONNECTOR_PORT=17676:
+    IIOP_SSL_MUTUALAUTH_PORT=13801:
+    JMS_PROVIDER_PORT=18686:
+    ASADMIN_LISTENER_PORT=14848
+     */
 }

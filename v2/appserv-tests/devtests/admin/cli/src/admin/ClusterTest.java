@@ -46,12 +46,7 @@ import javax.xml.xpath.XPathConstants;
 public class ClusterTest extends AdminBaseDevTest {
 
     public static void main(String[] args) {
-        new ClusterTest().run();
-    }
-
-    @Override
-    protected String getTestName() {
-        return "cluster";
+        new ClusterTest().runTests();
     }
 
     @Override
@@ -59,7 +54,9 @@ public class ClusterTest extends AdminBaseDevTest {
         return "Unit test for create/delete/list cluster";
     }
 
-    public void run() {
+    public void runTests() {
+        startDomain();
+
         String xpathExpr = "count" + "(" + "/domain/clusters/cluster" + ")";
         double startingNumberOfClusters = 0.0;
         Object o = evalXPath(xpathExpr, XPathConstants.NUMBER);
@@ -112,6 +109,7 @@ public class ClusterTest extends AdminBaseDevTest {
         testClusterWithObsoleteOptions();
         testEndToEndDemo();
         cleanup();
+        stopDomain();
         stat.printSummary();
     }
 

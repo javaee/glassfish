@@ -79,12 +79,7 @@ public class InstanceTest extends AdminBaseDevTest {
     }
 
     public static void main(String[] args) {
-        new InstanceTest().run();
-    }
-
-    @Override
-    protected String getTestName() {
-        return "instance";
+        new InstanceTest().runTests();
     }
 
     @Override
@@ -92,18 +87,20 @@ public class InstanceTest extends AdminBaseDevTest {
         return "Unit test for create/delete/list instance";
     }
 
-    public void run() {
-		testDuplicateReportNames();
-		testNamesWithSpaces();
-		create();
-		delete();
-		createFail();
-                createSysProps();
-		testNoCreateForStop();
-		createStartStopDelete();
-                createAdminCommand();
-                deleteAdminCommand();
-		stat.printSummary();
+    public void runTests() {
+        startDomain();
+        testDuplicateReportNames();
+        testNamesWithSpaces();
+        create();
+        delete();
+        createFail();
+        createSysProps();
+        testNoCreateForStop();
+        createStartStopDelete();
+        createAdminCommand();
+        deleteAdminCommand();
+        stopDomain();
+        stat.printSummary();
     }
 
     private void testNamesWithSpaces() {
