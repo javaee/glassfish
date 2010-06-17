@@ -130,6 +130,10 @@ public class GmsAdapterService implements Startup, PostConstruct {
         return gmsAdapter;
     }
 
+    public boolean isGmsEnabled() {
+        return gmsAdapter != null;
+    }
+
     /* TODO:
      */
     public GMSAdapter getGMSAdapterByName(String clusterName) {
