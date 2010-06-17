@@ -213,7 +213,7 @@ public class PluginHandlers {
 	    if (it.hasNext()) {
 		// Get the first one...
 		IntegrationPoint point = it.next();
-		root = getIntegrationPointParent(root, point);
+		root = getIntegrationPointParent(ctx, root, point);
 
 		// Check to see if IP points to an external URL...
 		if (point.getContent().lastIndexOf("://", 15) != -1) {
@@ -380,9 +380,11 @@ public class PluginHandlers {
 
 		// Optimize for multiple plugins for the same parent
 		parentId = point.getParentId();
+		// Resolve any EL that may be used in identifying the parent ID
+		parentId = (String) ComponentUtil.getInstance(ctx).resolveValue(ctx, null, root, parentId);
 		if ((parentId == null) || !parentId.equals(lastParentId)) {
 		    // New parent (or root -- null)
-		    parent = getIntegrationPointParent(root, point);
+		    parent = getIntegrationPointParent(ctx, root, point);
 		}
 		if (parent == null) {
 		    // Didn't find the one specified!
@@ -415,9 +417,10 @@ public class PluginHandlers {
      *	@param	point	The {@link IntegrationPoint} which is looking for its
      *			parent <code>UIComponent</code>.
      */
-    public static UIComponent getIntegrationPointParent(UIComponent root, IntegrationPoint point) {
+    public static UIComponent getIntegrationPointParent(FacesContext ctx, UIComponent root, IntegrationPoint point) {
 	UIComponent parent = null;
 	String parentId = point.getParentId();
+	parentId = (String) ComponentUtil.getInstance(ctx).resolveValue(ctx, null, root, parentId);
 	if (parentId == null) {
 	    // If not specified, just stick it @ the root
 	    parentId = root.getId();
