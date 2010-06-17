@@ -38,18 +38,15 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Module;
 import com.sun.enterprise.util.StringUtils;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.CommandException;
-import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -58,7 +55,10 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.HashMap;
 import java.io.ByteArrayOutputStream;
-import org.glassfish.api.admin.ServerEnvironment;
+
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.CommandRunner.CommandInvocation;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
@@ -72,16 +72,12 @@ import com.sun.enterprise.config.serverbeans.Node;
 
 
 /**
- * AdminCommand to stop the instance
+ * AdminCommand to start the instance
  * server.
- * Shutdown of an instance.
  * If this is DAS -- we call the instance
- * If this is an instance we commit suicide
+ * If this is an instance we start it
  *
- * note: This command is asynchronous.  We can't return anything so we just
- * log errors and return
-
- * @author Byron Nevins
+ * @author Carla Mott
  */
 @Service(name = "start-instance")
 @Scoped(PerLookup.class)
@@ -93,37 +89,53 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     @Inject
     Node[] nodes;
 
-    //the instance name supplied on the commandline
-    @Param(optional=true)
-    String name;
+    @Inject
+    private CommandRunner cr;
+    @Inject
+    private ServerEnvironment env;
+    @Inject
+    private Servers servers;
+    @Inject
+    private Configs configs;
+    @Inject
+    
+    @Param(optional = true, defaultValue = "true")
+    private Boolean force;
+    @Param(optional = true, primary = true)
+
+    private String instanceName;
+    private Logger logger;
+    private RemoteInstanceCommandHelper helper;
 
     private HashMap<String, Node> nodeMap;
-    
+    private AdminCommandContext ctx;
+    private String noderef;
 
     public void execute(AdminCommandContext context) {
         logger = context.getLogger();
+        this.ctx=context;
+        if(!StringUtils.ok(instanceName)) {
+            logger.severe(Strings.get("start.instance.noInstanceName"));
+            return;
+        }
+        final Server instance = helper.getServer(instanceName);
+        if(instance == null) {
+            logger.severe(Strings.get("start.instance.noSuchInstance", instanceName));
+            return;
+        }
+        noderef = helper.getNode(instance);
+        if(noderef.equals("noNodeRef")) {
+             logger.severe(Strings.get("start.instance.noSuchNodeRef", noderef));
+            return;
+        }
 
-
-        // assuming for now that the same requirements as list instances in terms of running on DAS or instances
         if(env.isDas()) {
             callInstance();
         }
         else if(env.isInstance()) {
-            logger.info(Strings.get("start.instance.init"));
-            Collection<Module> modules = registry.getModules(
-                    "org.glassfish.core.glassfish");
-            if(modules.size() == 1) {
-                final Module mgmtAgentModule = modules.iterator().next();
-                mgmtAgentModule.start();
-            }
-            else {
-                logger.warning(modules.size() + " no of primordial modules found");
-            }
-            if(force) {
-                System.exit(0);
-            }
-        }
-        else {
+            startInstance();
+
+        } else {
             String msg = Strings.get("start.instance.notAnInstanceOrDas",
                     env.getRuntimeType().toString());
             logger.warning(msg);
@@ -135,50 +147,27 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
         helper = new RemoteInstanceCommandHelper(env, servers, configs);
     }
 
+    private void startInstance()  {
+        ActionReport report = ctx.getActionReport();
+
+        CommandRunner.CommandInvocation ci = cr.getCommandInvocation("start-local-instance", report);
+        ParameterMap map = new ParameterMap();
+        map.add("DEFAULT", instanceName);
+        ci.parameters(map);
+        ci.execute();        
+    }
+
     private void callInstance() {
-//        try {
-            if(!StringUtils.ok(instanceName)) {
-                logger.severe(Strings.get("start.instance.noInstanceName"));
-                return;
+        if (noderef.equals("localhost")) {
+            startInstance();
+        } else {
+            RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodes, logger);
+            // check if needs a remote connection
+            if (rch.isRemoteConnectRequired(noderef)) {
+                // this command will run over ssh
+                rch.runCommand(noderef, "start-local-instance", instanceName);
             }
-            final Server instance = helper.getServer(instanceName);
-            if(instance == null) {
-                logger.severe(Strings.get("start.instance.noSuchInstance", instanceName));
-                return;
-            }                        
-            final String noderef = helper.getNode(instance);
-            if(noderef.equals("noNodeRef")) {
-                logger.severe(Strings.get("start.instance.noSuchNodeRef", noderef));
-                return;
-            }
-            if (noderef.equals("localhost")) {
-                logger.info("starting instance on localhost");
-                return;
-
-            } else {
-                RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodes, logger);
-                // check if needs a remote connection
-                if (rch.isRemoteConnectRequired(noderef)) {
-                    // this command will run over ssh
-                    rch.runCommand(noderef, "start-local-instance", instanceName);
-
-                }
-            }
-
+        }
     }
     
-    @Inject
-    private ServerEnvironment env;
-    @Inject
-    private Servers servers;
-    @Inject
-    private Configs configs;
-    @Inject
-    private ModulesRegistry registry;
-    @Param(optional = true, defaultValue = "true")
-    private Boolean force;
-    @Param(optional = true, primary = true)
-    private String instanceName;
-    private Logger logger;
-    private RemoteInstanceCommandHelper helper;
 }
