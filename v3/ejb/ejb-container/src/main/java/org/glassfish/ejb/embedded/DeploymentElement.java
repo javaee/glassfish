@@ -155,6 +155,10 @@ public class DeploymentElement {
                     _logger.fine("[DeploymentElement] temp dir created at " + resultFile.getAbsolutePath());
                 }
 
+                if (System.getProperty(EJBContainerProviderImpl.KEEP_TEMPORARY_FILES) == null) {
+                    resultFile.deleteOnExit();
+                }
+
                 // Create lib dir if there are library entries
                 if (DeploymentElement.hasLibrary(modules)) {
                     if (_logger.isLoggable(Level.FINE)) {
@@ -166,7 +170,6 @@ public class DeploymentElement {
             } else {
                 throw new EJBException("Not able to create temp dir " + resultFile.getAbsolutePath ());
             }
-//            resultFile.deleteOnExit();
 
             // Copy module directories and explode module jars
             int duplicate_dir_counter = 0;

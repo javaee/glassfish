@@ -75,6 +75,8 @@ import com.sun.enterprise.module.bootstrap.Which;
  */
 public class EJBContainerProviderImpl implements EJBContainerProvider {
 
+    static final String KEEP_TEMPORARY_FILES = "org.glassfish.ejb.embedded.keep-temporary-files";
+
     private static final String GF_PROVIDER_NAME = EJBContainerProviderImpl.class.getName();
     private static final String GF_INSTALLATION_ROOT = "org.glassfish.ejb.embedded.glassfish.installation.root";
     private static final String GF_INSTANCE_ROOT = "org.glassfish.ejb.embedded.glassfish.instance.root";

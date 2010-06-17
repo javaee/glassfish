@@ -122,7 +122,10 @@ public class DomainXmlTransformer {
                 _logger.fine("[DomainXmlTransformer] Creating temp domain file: " + out);
             }
 
-            out.deleteOnExit();
+            if (System.getProperty(EJBContainerProviderImpl.KEEP_TEMPORARY_FILES) == null) {
+                out.deleteOnExit();
+            }
+
             fos = new FileOutputStream(out);
             parser = xif.createXMLEventReader(fis);
 
