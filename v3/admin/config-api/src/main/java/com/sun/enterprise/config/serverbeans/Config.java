@@ -257,6 +257,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link MdbContainer }
      */
     @Element(required=true)
+    @NotNull
     MdbContainer getMdbContainer();
 
     /**
