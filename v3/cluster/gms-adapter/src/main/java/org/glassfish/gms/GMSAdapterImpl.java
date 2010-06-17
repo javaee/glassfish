@@ -41,6 +41,7 @@ import com.sun.enterprise.ee.cms.core.*;
 import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.impl.client.*;
 
+import java.util.List;
 import java.util.Properties;
 
 import static com.sun.enterprise.ee.cms.core.ServiceProviderConfigurationKeys.*;
@@ -64,6 +65,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  * @author Sheetal.Vartak@Sun.COM
@@ -103,6 +105,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     @Override
     public void postConstruct() {
+        logger.setLevel(Level.CONFIG);
         Domain domain = habitat.getComponent(Domain.class);
         instanceName = env.getInstanceName();
 
@@ -114,14 +117,20 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         } else {
             cluster = server.getCluster();
         }
+        isDas = env.isDas();
         clusterName = (cluster == null ? null : cluster.getName());
+        clusterConfig = domain.getConfigNamed(clusterName + "-config");
+        if (logger.isLoggable(Level.CONFIG)) {
+            logger.config("clusterName=" + clusterName);
+            logger.config("clusterConfig=" + clusterConfig);
+            logger.config("domaing.getConfigs()=" + domain.getConfigs());
+        }
         try {
             logger.log(Level.CONFIG, "gmsservice.postconstruct");
             initializeGMS();
         } catch (GMSException e) {
             logger.log(Level.WARNING, "gmsexception.occurred", e.getLocalizedMessage());
         }
-        clusterConfig = domain.getConfigs().getConfigByName(clusterName + "-config");
     }
 
     private void initStopGapGMSConfiguration(Properties configProps) {
@@ -140,6 +149,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     
 
     private void readGMSConfigProps(Properties configProps) {
+        configProps.put(MEMBERTYPE_STRING, isDas ? SPECTATOR : CORE);
         for (ServiceProviderConfigurationKeys key : ServiceProviderConfigurationKeys.values()) {
             String keyName = key.toString();
             try {
@@ -193,7 +203,19 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                     break;
 
                 case BIND_INTERFACE_ADDRESS:
-                    // todo
+                    if (cluster != null) {
+                        String value = cluster.getGmsBindInterfaceAddress().trim();
+                        if (value != null && value.length() > 1 && value.charAt(0) != '$') {
+
+                            // todo: remove check for value length greater than 1.
+                            // this value could be anything from IPv4 address, IPv6 address, hostname, network interface name.
+                            // Only supported IPv4 address in gf v2.
+
+                            // todo: handle invalid inputs.  for this case, validate that value can be associated with a network interface on machine.
+                            // need to provide admin feedback when this value is not set correctly.
+                            configProps.put(keyName, value);
+                        }
+                    }
                     break;
 
                 case FAILURE_DETECTION_TCP_RETRANSMIT_TIMEOUT:
@@ -204,23 +226,31 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                     break;
 
                 case MULTICAST_POOLSIZE:
-                    // todo
-                    break;
-
                 case INCOMING_MESSAGE_QUEUE_SIZE :
-                    // todo
-                    break;
+                // case MAX_MESSAGE_LENGTH:    todo uncomment with shoal-gms.jar with this defined is promoted.
+                case FAILURE_DETECTION_TCP_RETRANSMIT_PORT:
 
-                //case MAX_MESSAGE_LENGTH :
-                //    uncomment when new shoal-gms.jar with this new change is put in maven repository
-                //    // todo
-                //    break;
+                    if (clusterConfig != null) {
+                        Property prop = clusterConfig.getGroupManagementService().getProperty(keyName);
+                        String value = prop.getValue().trim();
+                        int positiveint = 0;
+                        try {
+                            positiveint = Integer.getInteger(value);
+                        } catch (Throwable t) {}
+
+                        // todo
+                        if (positiveint > 0) {
+                            configProps.put(keyName, positiveint);
+                        } // todo else log event that invalid value was provided.
+                    }
+                    break;
 
                 // These Shoal GMS configuration parameters are not supported to be set.
                 // Must place here or they will get flagged as not handled.
-                case FAILURE_DETECTION_TCP_RETRANSMIT_PORT:
                 case LOOPBACK:
                     break;
+
+                // end unsupported Shoal GMS configuration parameters.
 
 
                 default:
@@ -231,11 +261,49 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 
             }
         } /* end for loop over ServiceProviderConfigurationKeys */
+
+        // check for Grizzly transport specific properties in GroupManagementService property list and then cluster property list.
+        // cluster property is more specific than group-mangement-service, so allow cluster property to override group-management-service proeprty
+        // if a GrizzlyConfigConstant property is in both list.
+        List<Property> props = null;
+        if (clusterConfig != null) {
+            props = clusterConfig.getGroupManagementService().getProperty();
+            for (Property prop : props) {
+                String name = prop.getName().trim();
+                String value = prop.getValue().trim();
+                logger.config("processing group-management-service property name=" + name + " value= " + value);
+                if (name != null ) {
+                    try {
+                        GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(name);
+                        configProps.put(name, value);
+                    } catch (IllegalArgumentException iae) {
+                        //
+                    }
+                }
+            }
+
+            
+        }
+        if (cluster != null) {
+            props = cluster.getProperty();
+            for (Property prop : props) {
+                String name = prop.getName().trim();
+                String value = prop.getValue().trim();
+                logger.config("processing cluster property name=" + name + " value= " + value);
+                if (name != null ) {
+                    try {
+                        GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(name);
+                        configProps.put(name, value);
+                    } catch (IllegalArgumentException iae) {
+                        //
+                    }
+                }
+            }
+        }
     }
 
     private void initializeGMS() throws GMSException{
 
-        logger.setLevel(Level.CONFIG);
         if (clusterName == null) {
             // todo: log something fine here
             return;       //don't enable GMS
