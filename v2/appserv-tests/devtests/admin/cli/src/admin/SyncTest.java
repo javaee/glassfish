@@ -35,6 +35,10 @@
  */
 package admin;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 /**
  *
  * @author tmueller
@@ -52,20 +56,128 @@ public class SyncTest extends AdminBaseDevTest {
 
     private void runTests() {
         startDomain();
+        testCleanupofStaleFiles();
+        testStartWithDASDown();
         stopDomain();
         stat.printSummary();
     }
 
     /*
-     * --systemproperties HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848 in1
-     * --systemproperties
-    HTTP_LISTENER_PORT=18080:
-    HTTP_SSL_LISTENER_PORT=18181:
-    IIOP_SSL_LISTENER_PORT=13800:
-    IIOP_LISTENER_PORT=13700:
-    JMX_SYSTEM_CONNECTOR_PORT=17676:
-    IIOP_SSL_MUTUALAUTH_PORT=13801:
-    JMS_PROVIDER_PORT=18686:
-    ASADMIN_LISTENER_PORT=14848
+     * This is a test for requirement SYNC-002
      */
+    void testCleanupofStaleFiles() {
+        final String tn = "stalefiles";
+        final String cname = "syncc1";
+        final String i1url = "http://localhost:18080/";
+        final String i1murl = "http://localhost:14848/management/domain/";
+        final String i1name = "synci1";
+
+        // create a cluster and two instances
+        report(tn + "create-cluster", asadmin("create-cluster", cname));
+        report(tn + "create-local-instance1", asadmin("create-local-instance",
+                "--cluster", cname, "--systemproperties",
+                "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:" +
+                "IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:" +
+                "JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848", i1name));
+
+        // deploy an application to the cluster (before instances are started)
+        File webapp = new File("resources", "helloworld.war");
+        report(tn + "deploy", asadmin("deploy", "--target", cname, webapp.getAbsolutePath()));
+
+        // create a file in docroot
+        File foo = new File(getGlassFishHome(), "domains/domain1/docroot/foo.html");
+        try {
+            FileWriter fw = new FileWriter(foo);
+            fw.write("<html><body>Foo file</body></html>");
+            fw.close();
+        }
+        catch (IOException ioe) {
+            report(tn + "file-create", false);
+            ioe.printStackTrace();
+        }
+
+        // start the instance
+        report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
+
+        // check that the instance, the app, and the file are there
+        report(tn + "list-instances", asadmin("list-instances"));
+        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
+        report(tn + "getfoo", matchString("Foo file", getURL(i1url + "foo.html")));
+        report(tn + "getapp1", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+
+        // stop the instance
+        report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
+
+        // undeploy
+        report(tn + "undeploy", asadmin("undeploy", "--target", cname, "helloworld"));
+        foo.delete();
+
+         // start the instance
+        report(tn + "start-local-instance1a", asadmin("start-local-instance", i1name));
+
+        // make sure the app and file are gone
+        report(tn + "get-del-app1", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "get-del-foo", !matchString("Foo file", getURL(i1url + "foo.html")));
+
+        // stop the instance
+        report(tn + "stop-local-instance1a", asadmin("stop-local-instance", i1name));
+
+        // delete the instances and the cluster
+        report(tn + "delete-local-instance1", asadmin("delete-local-instance", i1name));
+        report(tn + "delete-cluster", asadmin("delete-cluster", cname));
+    }
+
+    /*
+     * This is a test for requirement SYNC-003
+     */
+    void testStartWithDASDown() {
+        final String tn = "dasdown";
+        final String cname = "syncc2";
+        final String i1url = "http://localhost:18080/";
+        final String i1murl = "http://localhost:14848/management/domain/";
+        final String i1name = "synci2";
+
+        // create a cluster and two instances
+        report(tn + "create-cluster", asadmin("create-cluster", cname));
+        report(tn + "create-local-instance1", asadmin("create-local-instance",
+                "--cluster", cname, "--systemproperties",
+                "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:" +
+                "IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:" +
+                "JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848", i1name));
+
+        // deploy an application to the cluster (before instances are started)
+        File webapp = new File("resources", "helloworld.war");
+        report(tn + "deploy", asadmin("deploy", "--target", cname, webapp.getAbsolutePath()));
+
+        // start the instance
+        report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
+
+        // check that the instance and the app are there
+        report(tn + "list-instances", asadmin("list-instances"));
+        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
+        report(tn + "getapp1", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+
+        // stop the instance
+        report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
+
+        stopDomain();
+
+         // start the instance
+        report(tn + "start-local-instance1a", asadmin("start-local-instance", i1name));
+
+        // make sure the instance and app are still there
+        report(tn + "getindex1a", matchString("GlassFish Enterprise Server", getURL(i1url)));
+        report(tn + "getapp1a", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+
+        // stop the instance
+        report(tn + "stop-local-instance1a", asadmin("stop-local-instance", i1name));
+
+        startDomain();
+
+        // delete the instances and the cluster
+        report(tn + "undeploy", asadmin("undeploy", "--target", cname, "helloworld"));
+        report(tn + "delete-local-instance1", asadmin("delete-local-instance", i1name));
+        report(tn + "delete-cluster", asadmin("delete-cluster", cname));
+    }
+
 }
