@@ -48,6 +48,7 @@ import junit.framework.Assert;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
@@ -59,8 +60,8 @@ import org.jvnet.hk2.junit.Hk2Runner;
  *
  * @author Jerome Dochez
  */
-@RunWith(Hk2Runner.class)
-//@Ignore
+//@RunWith(Hk2Runner.class)
+@Ignore
 public class CommandRunnerTest {
 
     @Inject
