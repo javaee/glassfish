@@ -71,42 +71,42 @@ public class GeneratorResource {
     protected String genDir;
 
     private static String MappingConfigBeansToPOSTCommands[][] = {
-        {"ListApplication", "deploy"},
         {"Application", "redeploy"},
+        {"JavaConfig", "create-profiler"},
         {"ListAdminObjectResource", "create-admin-object"},
-        {"ListCustomResource", "create-custom-resource"},
-        {"ListJdbcResource", "create-jdbc-resource"},
-        {"ListJdbcConnectionPool", "create-jdbc-connection-pool"},
-        {"ListConnectorResource", "create-connector-resource"},
-        {"ListExternalJndiResource","create-jndi-resource"},
-        {"ListMailResource", "create-javamail-resource"},
-        {"ListWorkSecurityMap", "create-connector-work-security-map"},
-        {"ListExternalJndiResource", "create-jndi-resource"},
-        {"ListResourceAdapterConfig", "create-resource-adapter-config"},
-        {"ListConnectorConnectionPool", "create-connector-connection-pool"},
-        {"ListAuthRealm", "create-auth-realm"},
+        {"ListApplication", "deploy"},
         {"ListAuditModule", "create-audit-module"},
+        {"ListAuthRealm", "create-auth-realm"},
+        {"ListCluster", "create-cluster"} ,
+        {"ListConnectorConnectionPool", "create-connector-connection-pool"},
+        {"ListConnectorResource", "create-connector-resource"},
+        {"ListCustomResource", "create-custom-resource"},
+        {"ListExternalJndiResource", "create-jndi-resource"},
+        {"ListExternalJndiResource","create-jndi-resource"},
         {"ListHttpListener", "create-http-listener"},
         {"ListIiopListener", "create-iiop-listener"},
-        {"ListNetworkListener", "create-network-listener"},
-        {"ListTransport", "create-transport"},
-        {"ListProtocol", "create-protocol"},
+        {"ListJdbcConnectionPool", "create-jdbc-connection-pool"},
+        {"ListJdbcResource", "create-jdbc-resource"},
         {"ListJmsHost", "create-jms-host"},
+        {"ListMailResource", "create-javamail-resource"},
         {"ListMessageSecurityConfig", "create-message-security-provider"},
-        {"JavaConfig", "create-profiler"},
+        {"ListNetworkListener", "create-network-listener"},
+        {"ListProtocol", "create-protocol"},
+        {"ListResourceAdapterConfig", "create-resource-adapter-config"},
         {"ListResourceRef", "create-resource-ref"},
         {"ListSystemProperty", "create-system-properties"},
+        {"ListThreadPool", "create-threadpool"},
+        {"ListTransport", "create-transport"},
         {"ListVirtualServer", "create-virtual-server"},
-	{"ListCluster", "create-cluster"} ,
-        {"ListThreadPool", "create-threadpool"}
+        {"ListWorkSecurityMap", "create-connector-work-security-map"}
      };
 
 
     private static String MappingConfigBeansToDELETECommands[][] = {
-        {"Transport", "delete-transport"},
-        {"ThreadPool", "delete-threadpool"},
         {"NetworkListener", "delete-network-listener"},
-        {"Protocol", "delete-protocol"}
+        {"Protocol", "delete-protocol"},
+        {"Transport", "delete-transport"},
+        {"Transport", "delete-transport"}
     };
 
 
