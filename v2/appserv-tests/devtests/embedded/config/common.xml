@@ -434,7 +434,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <antcall target="asadmin-common-ignore-fail">
     <param name="admin.command" value="create-file-user" />
     <param name="operand.props"
-      value="--user ${admin.user} --passwordfile ${user.password.file} --host ${admin.host} --port ${admin.port} --echo=true --terse=true --groups ${groups} --userpassword ${password} --authrealmname ${authrealmname} --target ${appserver.instance.name} ${user}"/>
+      value="--user ${admin.user} --passwordfile ${user.password.file} --host ${admin.host} --port ${admin.port} --echo=true --terse=true --groups ${groups} --userpassword ${password} --authrealmname ${authrealmname} --AS_ADMIN_USERPASSWORD="" --target ${appserver.instance.name} ${user}"/>
   </antcall>
   <delete file="${user.password.file}" failonerror="false"/>
 </target>
