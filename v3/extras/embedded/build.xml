@@ -88,9 +88,6 @@ own identifying information: Portions Copyright [yyyy]
 
         <rejar destfile="${finaljar}" duplicate="preserve" >
             <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
-            <manifest>
-                <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
-            </manifest>
         </rejar>
     </target>
 
@@ -107,7 +104,12 @@ own identifying information: Portions Copyright [yyyy]
      </target>
 
     <target name="jar">
-	<jar destfile="${finaljar}" basedir="${rootdir}/temp" />
+	<jar destfile="${finaljar}" basedir="${rootdir}/temp" >
+           <manifest>
+                <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
+            </manifest>
+	</jar>
+
     </target>
 
     <target name="addRars" if="includeRars">
