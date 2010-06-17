@@ -53,6 +53,7 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Injectable;
 import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.ReferenceContainer;
 
 import java.beans.PropertyVetoException;
@@ -309,8 +310,13 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     /**
      *	Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
      */
-    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
-    @PropertiesDesc(props={})
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Complete PropertyDesc for legal props" )
+    @PropertiesDesc(props={
+        @PropertyDesc(name="TCPSTARTPORT", defaultValue = "9090",
+            description = "GMS listener port range start value"),
+        @PropertyDesc(name="TCPENDPORT", defaultValue = "9120",
+            description = "GMS listener port range end value")
+    })
     @Element
     @Param(name="properties", optional=true)
     @Override
@@ -439,9 +445,20 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                         "cannotAddDuplicate", "There is an instance {0} already present.", instance.getName()));
             }
 
+            final String instanceName = instance.getName();
             instance.setGmsBindInterfaceAddress(String.format(
                 "${GMS-BIND-INTERFACE-ADDRESS-%s}",
-                instance.getName()));
+                instanceName));
+
+            Property tcpStartPort = instance.createChild(Property.class);
+            tcpStartPort.setName("TCPSTARTPORT");
+            tcpStartPort.setValue(String.format("${TCPSTARTPORT-%s}", instanceName));
+            instance.getProperty().add(tcpStartPort);
+            
+            Property tcpEndPort = instance.createChild(Property.class);
+            tcpEndPort.setName("TCPENDPORT");
+            tcpEndPort.setValue(String.format("${TCPENDPORT-%s}", instanceName));
+            instance.getProperty().add(tcpEndPort);
 
             if (configRef==null) {
                 Config config = habitat.getComponent(Config.class, "default-config");
