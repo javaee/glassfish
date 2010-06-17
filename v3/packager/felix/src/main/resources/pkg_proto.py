@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
+# Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,7 @@ pkg = {
                       },
     "dirtrees"      : { "glassfish/modules" : {},
                         "glassfish/osgi/felix/bin" : {},
+                        "glassfish/osgi/felix/conf" : {},
                       },
     "files"         : { "glassfish/osgi/felix/conf/config.properties" : { "preserve" : "renamenew"},
                         "glassfish/osgi/felix/conf/system.properties" : { "preserve" : "renamenew"},
