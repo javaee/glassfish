@@ -51,6 +51,11 @@ import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
+import org.glassfish.deployment.versioning.VersioningException;
+import org.glassfish.deployment.versioning.VersioningService;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.annotations.Inject;
@@ -76,48 +81,69 @@ public class ShowComponentStatusCommand implements AdminCommand {
     @Inject
     Applications applications;
 
+    @Inject
+    VersioningService versioningService;
+
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListAppRefsCommand.class);    
 
     public void execute(AdminCommandContext context) {
         
         final ActionReport report = context.getActionReport();
+        final Logger logger = context.getLogger();
 
         ActionReport.MessagePart part = report.getTopMessagePart();
         part.setMessage(target);
-          
-        Application app = applications.getApplication(name);
-        if (app == null) {
-            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+
+        // retrieve matched version(s) if exist
+        List<String> matchedVersions = null;
+        try {
+            matchedVersions = versioningService.getMatchedVersions(name, target);
+        } catch (VersioningException e) {
+            report.failure(logger, e.getMessage());
             return;
-        }
+         }
 
-        String status = "disabled";
+         // for each matched version
+        Iterator it = matchedVersions.iterator();
 
-        // special target domain
-        if (target.equals("domain")) {
-            if (Boolean.valueOf(app.getEnabled())) {
+        while(it.hasNext()){
+            String appName = (String)it.next();
+            Application app = applications.getApplication(appName);
+            
+            if (app == null) {
+                report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+
+            String status = "disabled";
+
+            // special target domain
+            if (target.equals("domain")) {
+                if (Boolean.valueOf(app.getEnabled())) {
+                    status = "enabled";
+                }
+                report.setMessage(localStrings.getLocalString("component.status","Status of {0} is {1}.", appName, status));
+                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                return;
+            }
+
+            ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
+            if (ref == null) {
+                report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+
+            if (Boolean.valueOf(app.getEnabled()) &&
+                Boolean.valueOf(ref.getEnabled())) {
                 status = "enabled";
             }
-            report.setMessage(localStrings.getLocalString("component.status","Status of {0} is {1}.", name, status));
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-            return;
+            
+            ActionReport.MessagePart childPart = part.addChild();
+            String message = localStrings.getLocalString("component.status","Status of {0} is {1}.", appName, status);
+            childPart.setMessage(message);
         }
-
-        ApplicationRef ref = domain.getApplicationRefInTarget(name, target);
-        if (ref == null) {
-            report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name, target));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
-        if (Boolean.valueOf(app.getEnabled()) && 
-            Boolean.valueOf(ref.getEnabled())) {
-            status = "enabled";
-        }
-
-        report.setMessage(localStrings.getLocalString("component.status","Status of {0} is {1}.", name, status));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
-
 }

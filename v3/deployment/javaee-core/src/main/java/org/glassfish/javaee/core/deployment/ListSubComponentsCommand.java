@@ -67,6 +67,8 @@ import org.jvnet.hk2.component.PerLookup;
 import java.util.List;
 import java.util.Collection;
 import java.util.ArrayList;
+import org.glassfish.deployment.versioning.VersioningService;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
 
 /**
  * list-sub-components command
@@ -90,6 +92,9 @@ public class ListSubComponentsCommand implements AdminCommand {
     public ApplicationRegistry appRegistry;
 
     @Inject
+    private VersioningService versioningService;
+
+    @Inject
     public Deployment deployment;
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListSubComponentsCommand.class);    
@@ -103,6 +108,14 @@ public class ListSubComponentsCommand implements AdminCommand {
         String applicationName = modulename; 
         if (appname != null) {
             applicationName = appname;
+        }
+
+        try {
+            versioningService.getIdentifier(applicationName);
+        } catch (VersioningSyntaxException ex) {
+            report.setMessage(ex.getLocalizedMessage());
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         }
 
         if (!deployment.isRegistered(applicationName)) {

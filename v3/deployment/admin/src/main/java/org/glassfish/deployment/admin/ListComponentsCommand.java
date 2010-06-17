@@ -76,6 +76,9 @@ public class ListComponentsCommand  implements AdminCommand {
     @Param(primary=true, optional=true)
     public String target = "server";
 
+    @Param(optional=true, defaultValue="false", shortName="v")
+    public Boolean verbose = false;
+
     @Inject
     protected Domain domain;
 
@@ -99,8 +102,12 @@ public class ListComponentsCommand  implements AdminCommand {
                 if (app.getObjectType().equals("user")) {
                     if (type==null || isApplicationOfThisType(app, type)) {
                         ActionReport.MessagePart childPart = part.addChild();
-                        childPart.setMessage(app.getName() + " " +
-                                             getAppSnifferEngines(app, true));
+                        String message = app.getName() + " "
+                                    + getAppSnifferEngines(app, true);
+                        if( verbose ){
+                            message += getVerboseStatus(app);
+                        }
+                        childPart.setMessage(message);
                         numOfApplications++;
                     }
                 }
@@ -111,6 +118,19 @@ public class ListComponentsCommand  implements AdminCommand {
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
+
+    private String getVerboseStatus(Application app) {
+       String message = "";
+       ApplicationRef ref = domain.getApplicationRefInTarget(app.getName(), target);
+       boolean isVersionEnabled = Boolean.valueOf(ref.getEnabled());
+       if ( isVersionEnabled ) {
+           message = localStrings.getLocalString("list.applications.verbose.enabled", "(enabled)");
+       } else {
+           message = localStrings.getLocalString("list.applications.verbose.disabled", "(disabled)");
+       }
+       return message;
+   }
+
 
         /**
          * check the type of application by comparing the sniffer engine.

@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.deployment.versioning;
 
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -68,13 +67,10 @@ public class VersioningService {
 
     private static final LocalStringManagerImpl LOCALSTRINGS =
             new LocalStringManagerImpl(VersioningService.class);
-
     @Inject
     private CommandRunner commandRunner;
-
     @Inject
-    private Domain domain; 
-    
+    private Domain domain;
     static final String REPOSITORY_DASH = "-";
     public static final String EXPRESSION_SEPARATOR = ":";
     public static final String EXPRESSION_WILDCARD = "*";
@@ -84,7 +80,7 @@ public class VersioningService {
      * with versioning rules (version identifier / expression) or not.
      *
      * If the application name is using versioning rules, the method will split
-     * the application names with the semi-colon character and retrieve the
+     * the application names with the colon character and retrieve the
      * untagged name from the first token.
      *
      * Else the given application name is an untagged name.
@@ -97,18 +93,18 @@ public class VersioningService {
     public final String getUntaggedName(String appName)
             throws VersioningSyntaxException {
 
-        int semiColonIndex = appName.indexOf(EXPRESSION_SEPARATOR);
+        int colonIndex = appName.indexOf(EXPRESSION_SEPARATOR);
         // if versioned
-        if (semiColonIndex != -1) {
+        if (colonIndex != -1) {
 
-            // if appName is ending with a semi-colon
-            if (semiColonIndex == (appName.length() - 1)) {
+            // if appName is ending with a colon
+            if (colonIndex == (appName.length() - 1)) {
                 throw new VersioningSyntaxException(
                         LOCALSTRINGS.getLocalString("invalid.appname",
-                        "excepted version identifier after semi-colon: {0}",
+                        "excepted version identifier after colon: {0}",
                         appName));
             }
-            return appName.substring(0, semiColonIndex);
+            return appName.substring(0, colonIndex);
         }
         // not versioned
         return appName;
@@ -118,7 +114,7 @@ public class VersioningService {
      * Extract the version identifier / expression for a given application name
      * that complies with versioning rules.
      *
-     * The method splits the application name with the semi-colon character
+     * The method splits the application name with the colon character
      * and retrieve the 2nd token.
      *
      * @param appName the application name
@@ -129,25 +125,36 @@ public class VersioningService {
     public final String getExpression(String appName)
             throws VersioningSyntaxException {
 
-        int semiColonIndex = appName.indexOf(EXPRESSION_SEPARATOR);
+        int colonIndex = appName.indexOf(EXPRESSION_SEPARATOR);
         // if versioned
-        if (semiColonIndex != -1) {
-            if (semiColonIndex != appName.lastIndexOf(EXPRESSION_SEPARATOR)) {
-                throw new VersioningSyntaxException(
-                        LOCALSTRINGS.getLocalString("invalid.expression",
-                        "semi-colon cannot be used twice in version expression/identifier: {0}",
-                        appName));
-            }
-            if (semiColonIndex == (appName.length() - 1)) {
+        if (colonIndex != -1) {
+//            if (colonIndex != appName.lastIndexOf(EXPRESSION_SEPARATOR)) {
+//                throw new VersioningSyntaxException(
+//                        LOCALSTRINGS.getLocalString("invalid.expression",
+//                        "colon cannot be used twice in version expression/identifier: {0}",
+//                        appName));
+//            }
+            if (colonIndex == (appName.length() - 1)) {
                 throw new VersioningSyntaxException(
                         LOCALSTRINGS.getLocalString("invalid.appName",
-                        "excepted version expression/identifier after semi-colon: {0}",
+                        "excepted version expression/identifier after colon: {0}",
                         appName));
             }
-            return appName.substring(semiColonIndex + 1, appName.length());
+            return appName.substring(colonIndex + 1, appName.length());
         }
         // not versioned
         return null;
+    }
+
+    public final String getIdentifier(String appName)
+            throws VersioningSyntaxException {
+        String expression = getExpression(appName);
+        if (expression != null && expression.contains(EXPRESSION_WILDCARD)) {
+            throw new VersioningSyntaxException(
+                    LOCALSTRINGS.getLocalString("versioning.service.wildcard.not.allowed",
+                    "Wildcard character(s) are not allowed in a version identifier."));
+        }
+        return expression;
     }
 
     /**
@@ -162,7 +169,7 @@ public class VersioningService {
      */
     public List<String> getVersions(String untaggedName,
             List<ApplicationRef> allApplicationRefs) {
-        
+
         List<String> allVersions = new ArrayList<String>();
         Iterator<ApplicationRef> it = allApplicationRefs.iterator();
 
@@ -170,8 +177,8 @@ public class VersioningService {
             ApplicationRef ref = it.next();
 
             // if a tagged version or untagged version of the app
-            if (ref.getRef().startsWith(untaggedName+EXPRESSION_SEPARATOR) ||
-                    ref.getRef().equals(untaggedName)) {
+            if (ref.getRef().startsWith(untaggedName + EXPRESSION_SEPARATOR)
+                    || ref.getRef().equals(untaggedName)) {
                 allVersions.add(ref.getRef());
             }
         }
@@ -189,9 +196,9 @@ public class VersioningService {
      * @return all the version(s) of the given application
      */
     public List<String> getAllversions(String untaggedName, String target) {
-        List<ApplicationRef> allApplicationRefs = 
-            domain.getApplicationRefsInTarget(target);
-        return getVersions(untaggedName,allApplicationRefs);
+        List<ApplicationRef> allApplicationRefs =
+                domain.getApplicationRefsInTarget(target);
+        return getVersions(untaggedName, allApplicationRefs);
     }
 
     /**
@@ -208,7 +215,7 @@ public class VersioningService {
 
         String untaggedName = getUntaggedName(name);
         List<String> allVersions = getAllversions(untaggedName, target);
-        
+
         if (allVersions != null) {
             Iterator it = allVersions.iterator();
 
@@ -217,7 +224,7 @@ public class VersioningService {
 
                 // if a version of the app is enabled
                 ApplicationRef ref = domain.getApplicationRefInTarget(
-                    app, target);
+                        app, target);
                 if (ref != null && Boolean.valueOf(ref.getEnabled())) {
                     return app;
                 }
@@ -245,7 +252,7 @@ public class VersioningService {
         }
 
         String expressionVersion = getExpression(appName);
-        List<String> matchedVersions = new ArrayList<String>(listVersion);
+        //List<String> matchedVersions = new ArrayList<String>(listVersion);
 
         // if using an untagged version
         if (expressionVersion == null) {
@@ -255,9 +262,9 @@ public class VersioningService {
                         listVersion.indexOf(appName) + 1);
             } else {
                 throw new VersioningException(
-                    LOCALSTRINGS.getLocalString("version.notreg",
-                    "version {0} not registered",
-                    appName));
+                        LOCALSTRINGS.getLocalString("version.notreg",
+                        "version {0} not registered",
+                        appName));
             }
         }
 
@@ -269,45 +276,53 @@ public class VersioningService {
                         listVersion.indexOf(appName) + 1);
             } else {
                 throw new VersioningException(
-                    LOCALSTRINGS.getLocalString("version.notreg",
-                    "Version {0} not registered",
-                    appName));
+                        LOCALSTRINGS.getLocalString("version.notreg",
+                        "Version {0} not registered",
+                        appName));
             }
         }
 
         StringTokenizer st = new StringTokenizer(expressionVersion,
                 EXPRESSION_WILDCARD);
         String lastToken = null;
+        List<String> matchedVersions = new ArrayList<String>(listVersion);
 
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
-            Iterator it = new ArrayList<String>(matchedVersions).iterator();
+            Iterator it = listVersion.iterator();
 
             while (it.hasNext()) {
                 String app = (String) it.next();
-                String expression = getExpression(app);
+                String identifier = getExpression(app);
 
-                // get the position of the last token in the expression
-                int tokenCursor = 0;
+                // get the position of the last token in the current identifier
+                int lastTokenIndex = -1;
                 if (lastToken != null) {
-                    tokenCursor = expression.indexOf(lastToken) + 1;
+                    lastTokenIndex = identifier.indexOf(lastToken);
                 }
-
-                // expression is null for untagged version
-                // if token not found the version is not matching the expression
-                if (expression == null
-                        || expression.indexOf(token, tokenCursor) == -1) {
-                    // remove unmatched version
+                // matching expression on the current identifier
+                if (identifier != null) {
+                    if ( expressionVersion.startsWith(token)
+                            && ! identifier.startsWith(token) ) {
+                        matchedVersions.remove(app);
+                    } else if ( expressionVersion.endsWith(token)
+                            && !identifier.endsWith(token) ) {
+                        matchedVersions.remove(app);
+                    } else if ( !identifier.contains(token.subSequence(0, token.length() - 1))
+                            || identifier.indexOf(token) <= lastTokenIndex ) {
+                        matchedVersions.remove(app);
+                    }
+                } else {
                     matchedVersions.remove(app);
                 }
+
             }
             lastToken = token;
         }
-
         // returns matched version(s)
         return matchedVersions;
     }
-
+    
     /**
      * Process the expression matching operation of the given application name.
      *
@@ -323,15 +338,15 @@ public class VersioningService {
         String untagged = getUntaggedName(name);
         List<String> allVersions = getAllversions(untagged, target);
 
-        if(allVersions.size() == 0) {
-             return Collections.EMPTY_LIST;
+        if (allVersions.size() == 0) {
+            return Collections.EMPTY_LIST;
         }
-        
+
         return matchExpression(allVersions, name);
     }
 
     /**
-     * Replaces the semi-colon with a dash in the given application name.
+     * Replaces the colon with a dash in the given application name.
      *
      * @param appName
      * @return return a valid repository name
@@ -372,8 +387,8 @@ public class VersioningService {
         String enabledVersion = getEnabledVersion(appName, target);
 
         // invoke disable if the currently enabled version is not itself
-        if(enabledVersion != null &&
-                  !enabledVersion.equals(appName)){
+        if (enabledVersion != null
+                && !enabledVersion.equals(appName)) {
             final ParameterMap parameters = new ParameterMap();
             parameters.add("DEFAULT", enabledVersion);
             parameters.add("target", target);
