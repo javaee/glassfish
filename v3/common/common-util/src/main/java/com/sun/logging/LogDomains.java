@@ -231,7 +231,7 @@ public class LogDomains
 	public static final String PROCESS_LAUNCHER_LOGGER = DOMAIN_ROOT + "enterprise.tools.launcher";
 
     /** GMS Logger */
-    public static final String GMS_LOGGER = DOMAIN_ROOT +"ee.enterprise.system.gms";
+    public static final String GMS_LOGGER = DOMAIN_ROOT +"org.glassfish.gms";
     
     /** AMX Logger */
     public static final String AMX_LOGGER = DOMAIN_ROOT +"enterprise.system.AMX";

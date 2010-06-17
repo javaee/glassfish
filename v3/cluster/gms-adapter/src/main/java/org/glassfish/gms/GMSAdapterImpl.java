@@ -40,6 +40,7 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.ee.cms.core.*;
 import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.impl.client.*;
+import com.sun.logging.LogDomains;
 
 import java.util.List;
 import java.util.Properties;
@@ -60,7 +61,6 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.gms.bootstrap.GMSAdapter;
-import org.glassfish.gms.logging.LogDomain;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -73,7 +73,8 @@ import org.jvnet.hk2.config.types.Property;
 @Service()
 public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
-    private static final Logger logger = LogDomain.getLogger(LogDomain.GMS_LOGGER);
+    private static final Logger logger =
+        LogDomains.getLogger(GMSAdapterImpl.class, LogDomains.GMS_LOGGER);
 
     private GroupManagementService gms;
 
@@ -106,19 +107,25 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     @Override
     public void postConstruct() {
         logger.setLevel(Level.CONFIG);
+        logger.log(Level.CONFIG, "gmsservice.postconstruct");
+
         Domain domain = habitat.getComponent(Domain.class);
         instanceName = env.getInstanceName();
 
-        Cluster cluster = null;
-
-        if (env.isDas()) {
+        isDas = env.isDas();
+        if (isDas) {
             // hack: only supporting one cluster for M2
             cluster = domain.getClusters().getCluster().get(0);
         } else {
             cluster = server.getCluster();
         }
-        isDas = env.isDas();
-        clusterName = (cluster == null ? null : cluster.getName());
+
+        if (cluster == null) {
+            logger.log(Level.WARNING, "gmsservice.nocluster.warning");
+            return;       //don't enable GMS
+        }
+
+        clusterName = cluster.getName();
         clusterConfig = domain.getConfigNamed(clusterName + "-config");
         if (logger.isLoggable(Level.CONFIG)) {
             logger.config("clusterName=" + clusterName);
@@ -126,7 +133,6 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             logger.config("domaing.getConfigs()=" + domain.getConfigs());
         }
         try {
-            logger.log(Level.CONFIG, "gmsservice.postconstruct");
             initializeGMS();
         } catch (GMSException e) {
             logger.log(Level.WARNING, "gmsexception.occurred", e.getLocalizedMessage());
@@ -254,7 +260,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
 
                 default:
-                    // todo: log message that a Shoal GMS property is not being handled.
+//                    logger.log();
                     break;
             }  /* end switch over ServiceProviderConfigurationKeys enum */
             } catch (Throwable t) {
@@ -303,17 +309,9 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     }
 
     private void initializeGMS() throws GMSException{
-
-        if (clusterName == null) {
-            // todo: log something fine here
-            return;       //don't enable GMS
-        }
-
         Properties configProps = new Properties();
         initStopGapGMSConfiguration(configProps);
-        //readGMSConfigProps(configProps);
-
-
+//        readGMSConfigProps(configProps);
         
         printProps(configProps);
 
@@ -464,15 +462,11 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             return;
         }
 
-        StringBuilder sbul = new StringBuilder();
-        logger.config("Printing all the properties : ");
-
-        for (Enumeration en = prop.propertyNames(); en.hasMoreElements();) {
-            String key = (String) en.nextElement();
-            sbul.append(key + " = " + prop.get(key) + "  ");
+        StringBuilder sb = new StringBuilder();
+        for (String key : prop.stringPropertyNames()) {
+            sb.append(key).append(" = ").append(prop.get(key)).append("  ");
         }
-
-        logger.config(sbul.toString());
+        logger.log(Level.CONFIG, "gmsservice.print.properties", sb.toString());
     }
 
     public Startup.Lifecycle getLifecycle() {
