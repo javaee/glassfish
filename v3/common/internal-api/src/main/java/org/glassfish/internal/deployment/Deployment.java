@@ -49,6 +49,7 @@ import org.glassfish.internal.data.ModuleInfo;
 import org.glassfish.internal.data.ProgressTracker;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.Transaction;
 import com.sun.enterprise.config.serverbeans.Application;
 
 import java.io.IOException;
@@ -173,8 +174,11 @@ public interface Deployment {
 
     public void undeploy(String appName, ExtendedDeploymentContext context);
 
+    public Transaction prepareAppConfigChanges(final DeploymentContext context)
+        throws TransactionFailure;
+
     public void registerAppInDomainXML(final ApplicationInfo
-        applicationInfo, final DeploymentContext context)
+        applicationInfo, final DeploymentContext context, Transaction t)
         throws TransactionFailure;
 
     public void unregisterAppFromDomainXML(final String appName, 

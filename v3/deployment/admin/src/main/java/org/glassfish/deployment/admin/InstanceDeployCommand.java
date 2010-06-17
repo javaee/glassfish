@@ -61,6 +61,7 @@ import org.glassfish.api.ActionReport.ExitCode;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.Transaction;
 
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -148,6 +149,8 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
                 renameOrCopyFileParam(generatedpolicydir, deploymentContext.getScratchDir("policy"), logger);
             }
 
+            Transaction t = deployment.prepareAppConfigChanges(deploymentContext);
+
             ApplicationInfo appInfo;
             if (type==null) {
                 appInfo = deployment.deploy(deploymentContext);
@@ -158,7 +161,7 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 try {
                     // register application information in domain.xml
-                    deployment.registerAppInDomainXML(appInfo, deploymentContext);
+                    deployment.registerAppInDomainXML(appInfo, deploymentContext, t);
                 } catch (Exception e) {
                     // roll back the deployment and re-throw the exception
                     deployment.undeploy(name, deploymentContext);

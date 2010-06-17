@@ -75,11 +75,13 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Transaction;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.RetryableException;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
@@ -147,7 +149,8 @@ public class ApplicationLifecycle implements Deployment {
 
     protected Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ApplicationLifecycle.class);      
-
+    final private static String APPLICATION_ELEMENT_NAME = "application";
+    
     protected <T extends Container, U extends ApplicationContainer> Deployer<T, U> getDeployer(EngineInfo<T, U> engineInfo) {
         return engineInfo.getDeployer();
     }
@@ -831,66 +834,106 @@ public class ApplicationLifecycle implements Deployment {
         info = null;
     }
 
-    // register application information in domain.xml
-    public void registerAppInDomainXML(final ApplicationInfo
-        applicationInfo, final DeploymentContext context)
+    // prepare application config change for later registering
+    // in the domain.xml
+    public Transaction prepareAppConfigChanges(final DeploymentContext context)
         throws TransactionFailure {
         final Properties appProps = context.getAppProps();
         final DeployCommandParameters deployParams = context.getCommandParameters(DeployCommandParameters.class);
-        ConfigSupport.apply(new SingleConfigCode() {
-            public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
-                // get the transaction
-                Transaction t = Transaction.getTransaction(param);
-                if (t!=null) {
-                    Applications apps = ((Domain)param).getApplications(); 
-                    ConfigBeanProxy apps_w = t.enroll(apps);
-                    // adding the application element
-                    Application app = apps_w.createChild(Application.class);
-                    setAppAttributes(app, deployParams, appProps);
-                    ((Applications)apps_w).getModules().add(app);
-                    if (applicationInfo != null) {
-                        applicationInfo.save(app);
-                    }
 
-                    Server servr = ((Domain)param).getServerNamed(deployParams.target); 
-                    if (servr != null) {
-                        // adding the application-ref element to the standalone
-                        // server instance
-                        ConfigBeanProxy servr_w = t.enroll(servr);
-                        // adding the application-ref element to the standalone
-                        // server instance
-                        ApplicationRef appRef = servr_w.createChild(ApplicationRef.class);
-                        setAppRefAttributes(appRef, deployParams);
-                        ((Server)servr_w).getApplicationRef().add(appRef);
-                    }
+        Transaction t = new Transaction();
 
-                    Cluster cluster = ((Domain)param).getClusterNamed(deployParams.target); 
-                    if (cluster != null) {
-                        // adding the application-ref element to the cluster
-                        // and instances
-                        ConfigBeanProxy cluster_w = t.enroll(cluster);
-                        ApplicationRef appRef = cluster_w.createChild(ApplicationRef.class);
-                        setAppRefAttributes(appRef, deployParams);
-                        ((Cluster)cluster_w).getApplicationRef().add(appRef);
+        try {
+            // prepare the application element
+            ConfigBean newBean = ((ConfigBean)ConfigBean.unwrap(applications)).allocate(Application.class);
+            Application app = newBean.createProxy();
+            Application app_w = t.enroll(app);
+            setInitialAppAttributes(app_w, deployParams, appProps);
+            context.addTransientAppMetaData(APPLICATION_ELEMENT_NAME, app_w);
+        } catch(TransactionFailure e) {
+            t.rollback();
+            throw e;
+        } catch (Exception e) {
+            t.rollback();
+            throw new TransactionFailure(e.getMessage(), e);
+        }
 
-                        for (Server svr : cluster.getInstances() ) {
-                            ConfigBeanProxy svr_w = t.enroll(svr);
-                            ApplicationRef appRef2 = svr_w.createChild(ApplicationRef.class);
-                            setAppRefAttributes(appRef2, deployParams);
-                            ((Server)svr_w).getApplicationRef().add(appRef2);
-                        }
+        return t;
+    }
+
+    // register application information in domain.xml
+    public void registerAppInDomainXML(final ApplicationInfo
+        applicationInfo, final DeploymentContext context, Transaction t)
+        throws TransactionFailure {
+        final Properties appProps = context.getAppProps();
+        final DeployCommandParameters deployParams = context.getCommandParameters(DeployCommandParameters.class);
+        Application app_w = context.getTransientAppMetaData(
+            APPLICATION_ELEMENT_NAME, Application.class);
+        if (t != null && app_w != null) {
+            try {
+                // adding the application element
+                setRestAppAttributes(app_w, appProps);
+                Applications apps_w = t.enroll(applications);
+                apps_w.getModules().add(app_w);
+                if (applicationInfo != null) {
+                    applicationInfo.save(app_w);
+                }
+
+                Server servr = domain.getServerNamed(deployParams.target); 
+                if (servr != null) {
+                    // adding the application-ref element to the standalone
+                    // server instance
+                    ConfigBeanProxy servr_w = t.enroll(servr);
+                    // adding the application-ref element to the standalone
+                    // server instance
+                    ApplicationRef appRef = servr_w.createChild(ApplicationRef.class);
+                    setAppRefAttributes(appRef, deployParams);
+                    ((Server)servr_w).getApplicationRef().add(appRef);
+                }
+
+                Cluster cluster = domain.getClusterNamed(deployParams.target); 
+                if (cluster != null) {
+                    // adding the application-ref element to the cluster
+                    // and instances
+                    ConfigBeanProxy cluster_w = t.enroll(cluster);
+                    ApplicationRef appRef = cluster_w.createChild(ApplicationRef.class);
+                    setAppRefAttributes(appRef, deployParams);
+                    ((Cluster)cluster_w).getApplicationRef().add(appRef);
+
+                    for (Server svr : cluster.getInstances() ) {
+                        ConfigBeanProxy svr_w = t.enroll(svr);
+                        ApplicationRef appRef2 = svr_w.createChild(ApplicationRef.class);
+                        setAppRefAttributes(appRef2, deployParams);
+                        ((Server)svr_w).getApplicationRef().add(appRef2);
                     }
                 }
-                return Boolean.TRUE;
+            } catch(TransactionFailure e) {
+                t.rollback();
+                throw e;
+            } catch (Exception e) {
+                t.rollback();
+                throw new TransactionFailure(e.getMessage(), e);
             }
 
-        }, domain);
+            try {
+                t.commit();
+            } catch (RetryableException e) {
+                System.out.println("Retryable...");
+                // TODO : do something meaninful here
+                t.rollback();
+            } catch (TransactionFailure e) {
+                t.rollback();
+                throw e;
+            }
+        }
     }
 
 
-    private void setAppAttributes(Application app, 
+    // application attributes that are set in the beginning of the deployment
+    // that will not be changed in the course of the deployment
+    private void setInitialAppAttributes(Application app, 
         DeployCommandParameters deployParams, Properties appProps)
-        throws PropertyVetoException, TransactionFailure {
+        throws PropertyVetoException {
         // various attributes
         app.setName(deployParams.name);
         if (deployParams.libraries != null) {
@@ -900,10 +943,6 @@ public class ApplicationLifecycle implements Deployment {
             app.setDescription(deployParams.description);
         }
 
-        if (appProps.getProperty(ServerTags.CONTEXT_ROOT) != null) {
-            app.setContextRoot(appProps.getProperty(
-                ServerTags.CONTEXT_ROOT));
-        }
         if (appProps.getProperty(ServerTags.LOCATION) != null) {
                     app.setLocation(appProps.getProperty(
                 ServerTags.LOCATION));
@@ -911,7 +950,7 @@ public class ApplicationLifecycle implements Deployment {
             app.setEnabled(String.valueOf(true));
         } else {
             // this is not a regular javaee module 
-                    app.setEnabled(deployParams.enabled.toString());
+            app.setEnabled(deployParams.enabled.toString());
         }
         if (appProps.getProperty(ServerTags.OBJECT_TYPE) != null) {
             app.setObjectType(appProps.getProperty(
@@ -922,8 +961,18 @@ public class ApplicationLifecycle implements Deployment {
             app.setDirectoryDeployed(appProps.getProperty(
                 ServerTags.DIRECTORY_DEPLOYED));
         }
+    }
 
 
+    // set the rest of the application attributes at the end of the
+    // deployment
+    private void setRestAppAttributes(Application app, Properties appProps)
+        throws PropertyVetoException, TransactionFailure {
+        // context-root element
+        if (appProps.getProperty(ServerTags.CONTEXT_ROOT) != null) {
+            app.setContextRoot(appProps.getProperty(
+                ServerTags.CONTEXT_ROOT));
+        }
         // property element
         // trim the properties that have been written as attributes
         // the rest properties will be written as property element

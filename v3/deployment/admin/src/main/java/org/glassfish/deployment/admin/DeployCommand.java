@@ -71,6 +71,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.Transaction;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -284,6 +285,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             savedAppConfig.store(appProps);
 
+            Transaction t = deployment.prepareAppConfigChanges(deploymentContext);
+
             ApplicationInfo appInfo;
             if (type==null) {
                 appInfo = deployment.deploy(deploymentContext);
@@ -299,7 +302,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                     prepareParametersForSupplementalCommand(suppInfo,
                              deploymentContext);
                     // register application information in domain.xml
-                    deployment.registerAppInDomainXML(appInfo, deploymentContext);
+                    deployment.registerAppInDomainXML(appInfo, deploymentContext, t);
                 } catch (Exception e) {
                     // roll back the deployment and re-throw the exception
                     deployment.undeploy(name, deploymentContext);
