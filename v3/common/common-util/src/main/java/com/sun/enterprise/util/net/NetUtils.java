@@ -61,6 +61,8 @@
  */
 package com.sun.enterprise.util.net;
 
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.net.*;
 import java.util.*;
 import java.io.*;
@@ -83,6 +85,101 @@ public class NetUtils {
     private NetUtils() {
     }
     public static final int MAX_PORT = 65535;
+
+    /////////////  BEGIN  Newer methods added June 2010 ////////////////////
+    public static boolean hostIsLocalJUNK_THROW_ME_AWAY(String hostname) {
+        // come on JDK!  Why is this so #$@% difficult!?!
+        // if you can think of something better -- go for it!!!
+        InetAddress[] hostAddresses;
+        List<InetAddress> localAddresses = new ArrayList<InetAddress>();
+
+        try {
+            hostAddresses = InetAddress.getAllByName(hostname);
+            InetAddress[] loc1 = InetAddress.getAllByName("localhost");
+            InetAddress[] loc2 = InetAddress.getAllByName(getCanonicalHostName());
+
+            if(loc1 != null)
+                for(InetAddress ia : loc1)
+                    localAddresses.add(ia);
+
+            if(loc2 != null)
+                for(InetAddress ia : loc2)
+                    localAddresses.add(ia);
+
+            if(localAddresses.size() <= 0)
+                return false;
+
+            if(hostAddresses == null || hostAddresses.length <= 0)
+                return false;
+        }
+        catch (UnknownHostException ex) {
+            // if the host is unknown then it certainly is not local by our definition
+            return false;
+        }
+
+        // if any hostAddress matches any localAddress -- then the host is local...
+
+        for(InetAddress ha : hostAddresses)
+            for(InetAddress la : localAddresses)
+                if(la.equals(ha))
+                    return true;
+        return false;
+    }
+    public static boolean IsThisHostLocal(String hostname) {
+        // come on JDK!  Why is this so #$@% difficult!?!
+        // if you can think of something better -- go for it!!!
+        // use IP addresses because one hostname can have more than one IP address!
+        List<String> host_ips = new ArrayList<String>();
+        List<String> local_ips = new ArrayList<String>();
+        String myCanonicalHostName = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
+
+        try {
+            if(!StringUtils.ok(myCanonicalHostName))
+                myCanonicalHostName = getCanonicalHostName();
+
+            InetAddress[] adds = InetAddress.getAllByName(hostname);
+
+            if(adds == null || adds.length <= 0)
+                return false;
+
+            for(InetAddress ia : adds)
+                host_ips.add(ia.getHostAddress());
+
+            adds = InetAddress.getAllByName(myCanonicalHostName);
+            for(int i = 0; adds != null && i < adds.length; i++ ) {
+                String ip = adds[i].getHostAddress();
+                if(!local_ips.contains(ip))
+                    local_ips.add(ip);
+            }
+
+            adds = InetAddress.getAllByName("localhost");
+            for(int i = 0; adds != null && i < adds.length; i++ ) {
+                String ip = adds[i].getHostAddress();
+                if(!local_ips.contains(ip))
+                    local_ips.add(ip);
+            }
+
+            adds = InetAddress.getAllByName(null);
+            for(int i = 0; adds != null && i < adds.length; i++ ) {
+                String ip = adds[i].getHostAddress();
+                if(!local_ips.contains(ip))
+                    local_ips.add(ip);
+            }
+        }
+        catch (UnknownHostException ex) {
+            return false;
+        }
+
+        // if any hostAddress matches any localAddress -- then the host is local...
+
+        for(String hip : host_ips)
+            for(String lip : local_ips)
+                if(hip.equals(lip))
+                    return true;
+        
+            return false;
+    }
+    /////////////  END  Newer methods added June 2010 ////////////////////
 
     static public Socket getClientSocket(final String host, final int port, final int msecTimeout) {
         class SocketFetcher implements Runnable {
