@@ -116,9 +116,10 @@ public class DeploymentElement {
      * @param modules the Set of DeploymentElements.
      * @return deployable application.
      */
-    public static Object getOrCreateApplication(Set<DeploymentElement> modules)
+    public static ResultApplication getOrCreateApplication(Set<DeploymentElement> modules)
             throws EJBException, IOException {
         Object result = null;
+        boolean deleteOnExit = false;
         if (modules == null || modules.size() == 0 || !DeploymentElement.hasEJBModule(modules)) {
             _logger.info("[DeploymentElement] No modules found");
         } else if (modules.size() == 1) {
@@ -155,10 +156,6 @@ public class DeploymentElement {
                     _logger.fine("[DeploymentElement] temp dir created at " + resultFile.getAbsolutePath());
                 }
 
-                if (System.getProperty(EJBContainerProviderImpl.KEEP_TEMPORARY_FILES) == null) {
-                    resultFile.deleteOnExit();
-                }
-
                 // Create lib dir if there are library entries
                 if (DeploymentElement.hasLibrary(modules)) {
                     if (_logger.isLoggable(Level.FINE)) {
@@ -169,6 +166,10 @@ public class DeploymentElement {
 
             } else {
                 throw new EJBException("Not able to create temp dir " + resultFile.getAbsolutePath ());
+            }
+
+            if (System.getProperty(EJBContainerProviderImpl.KEEP_TEMPORARY_FILES) == null) {
+                 deleteOnExit = true;
             }
 
             // Copy module directories and explode module jars
@@ -214,7 +215,29 @@ public class DeploymentElement {
                 result = resultFile;
             }
         }
-        return result;
+        return new ResultApplication(result, deleteOnExit);
+    }
+
+    protected static class ResultApplication {
+        private boolean deleteOnExit = false;
+        private Object app = null;
+
+        ResultApplication (Object app) {
+            this.app = app;
+        }
+
+        ResultApplication (Object app, boolean deleteOnExit) {
+            this.app = app;
+            this.deleteOnExit = deleteOnExit;
+        }
+
+        Object getApplication() {
+            return app;
+        }
+
+        boolean deleteOnExit() {
+            return deleteOnExit;
+        }
     }
 
 }

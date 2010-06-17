@@ -326,7 +326,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                                 }
                             }
                             // Not OK - skip it
-System.err.println("... skipping... " + file.getName());
+                            _logger.info("... skipping... " + file.getName());
                             return true;
                         }
                     }

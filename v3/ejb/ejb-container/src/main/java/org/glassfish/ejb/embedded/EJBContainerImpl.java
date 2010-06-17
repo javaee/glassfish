@@ -53,6 +53,7 @@ import javax.transaction.TransactionManager;
 import com.sun.logging.LogDomains;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.enterprise.util.io.FileUtils;
 
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.embedded.LifecycleException;
@@ -86,6 +87,7 @@ public class EJBContainerImpl extends EJBContainer {
 
     private volatile int state = STARTING;
     private Cleanup cleanup = null;
+    private DeploymentElement.ResultApplication res_app;
 
     private final static int STARTING = 0;
     private final static int RUNNING = 1;
@@ -109,7 +111,8 @@ public class EJBContainerImpl extends EJBContainer {
      */
     void deploy(Map<?, ?> properties, Set<DeploymentElement> modules) throws EJBException {
         try {
-            Object app = DeploymentElement.getOrCreateApplication(modules);
+            res_app = DeploymentElement.getOrCreateApplication(modules);
+            Object app = res_app.getApplication();
             
             if (_logger.isLoggable(Level.INFO)) {
                 _logger.info("[EJBContainerImpl] Deploying app: " + app);
@@ -177,6 +180,13 @@ public class EJBContainerImpl extends EJBContainer {
         cleanupTransactions();
         cleanupConnectorRuntime();
         undeploy();
+        if (res_app.deleteOnExit()) {
+            try {
+                FileUtils.whack((File)res_app.getApplication());
+            } catch (Exception e) {
+                _logger.log(Level.WARNING, "Error in removing temp file", e);
+            }
+        }
         stop();
     }
 
