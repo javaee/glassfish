@@ -49,6 +49,7 @@ import org.glassfish.internal.api.Globals;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.v3.server.ExecutorServiceFactory;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import com.sun.ejb.base.sfsb.util.EJBServerConfigLookup;
 import org.glassfish.api.admin.ProcessEnvironment;
@@ -438,11 +439,15 @@ public class EjbContainerUtilImpl
                 _logger.log (Level.INFO, "Loading EJBTimerService. Please wait.");
 
                 File root = serverContext.getInstallRoot();
-                File app = new File(root,
-                        "lib/install/applications/" + 
-                        EjbContainerUtil.TIMER_SERVICE_APP_NAME + ".war");
+                File app = null;
+                try {
+                    app = FileUtils.getManagedFile(EjbContainerUtil.TIMER_SERVICE_APP_NAME + ".war",
+                            new File(root, "lib/install/applications/"));
+                } catch (Exception e) {
+                    _logger.log (Level.WARNING, "Caught unexpected exception", e);
+                }
 
-                if (!app.exists()) {
+                if (app == null || !app.exists()) {
                     _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: " +
                             "required WAR file (" + 
                             EjbContainerUtil.TIMER_SERVICE_APP_NAME + ".war) is not installed");
