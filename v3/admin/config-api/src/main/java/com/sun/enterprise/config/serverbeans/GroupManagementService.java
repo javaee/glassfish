@@ -52,6 +52,7 @@ import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  * group-management-service(GMS) is an in-process service that provides cluster
@@ -62,11 +63,11 @@ import javax.validation.constraints.Min;
  * plugs-in group communication technologies which rely on a configurable stack
  * of protocols. Each of these protocols has properties that can be changed for
  * a given network and deployment topology. These relevant configurable
- * protocols are: fd-protocol enables its members to periodically monitor other
- * group members to determine their availability in the group. merge-protocol is
- * used to reunite subgroups that formed as a result of network partition after
- * such a partition has healed. ping-protocol is used for discovery of group &
- * its members. vs-protocol verifies suspect instances by adding a verification
+ * protocols are: failure-detection enables its members to periodically monitor other
+ * group members to determine their availability in the group.
+ * group-discovery is used for discovery of group &
+ * its members. failure-detection.verify-failure-timeout-in-millis
+ * verifies suspect instances by adding a verification
  * layer to mark a failure suspicion as a confirmed failure.
  * 
  */
@@ -76,8 +77,56 @@ import javax.validation.constraints.Min;
 }) */
 
 @Configured
+@SuppressWarnings({"deprecation"})
 public interface GroupManagementService extends ConfigBeanProxy, Injectable, PropertyBag {
 
+    /**
+     * Gets the value of the groupManagementService property.
+     *
+     * @return possible object is
+     *         {@link GroupManagementService }
+     * @since glassfish v3.1
+     */
+    @Element //(required=true)
+    @NotNull
+    FailureDetection getFailureDetection();
+
+    /**
+     * Sets the value of the failureDetection property
+     *
+     * @param value allowed object is
+     *              {@link FailureDetection }
+     * @since glassfish v3.1
+     */
+    void setFailureDetection(FailureDetection value) throws PropertyVetoException;
+
+
+    /**
+     * Gets the value of the groupDiscoveryTimeoutInMillis property.
+     *
+     * Amount of time in milliseconds that GMS waits for discovery of other
+     * members in this group. Must be a positive integer.
+     *
+     * @return possible object is
+     *         {@link String }
+     * @since glassfish v3.1
+     */
+    @Attribute (defaultValue="5000")
+    @Min(value=1000)
+    @Max(value=120000)    
+    String getGroupDiscoveryTimeoutInMillis();
+
+    /**
+     * Sets the value of the groupDiscoveryTimeoutInMillis property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @since glassfish v3.1
+     */
+    void setGroupDiscoveryTimeoutInMillis(String value) throws PropertyVetoException;
+
+    
+    
     /**
      * Gets the value of the fdProtocolMaxTries property.
      *
@@ -86,18 +135,32 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      * 
      * @return possible object is
      *         {@link String }
+     * @deprecate
+     * Replaced by {@link FailureDetection.getMaxMissedHeartbeats()}.
      */
-    @Attribute (defaultValue="3")
-    @Min(value=1)        
-    String getFdProtocolMaxTries();
-
+    /* 
+     * Moved to FailureDetection in v3.1.
+     * V2 
+     */
+     @Deprecated
+     @Attribute
+     //@Attribute (defaultValue="3")
+     //@Min(value=1)
+     String getFdProtocolMaxTries();
+   
     /**
      * Sets the value of the fdProtocolMaxTries property.
      *
      * @param value allowed object is
      *              {@link String }
+     * @deprecate 
+     * Replaced by {@link FailureDetection.setMaxMissedHeartbeats(String)}
      */
-    void setFdProtocolMaxTries(String value) throws PropertyVetoException;
+    /* 
+     * Moved to FailureDetection in v3.1.
+     */ 
+     void setFdProtocolMaxTries(String value) throws PropertyVetoException;
+    
 
     /**
      * Gets the value of the fdProtocolTimeoutInMillis property.
@@ -107,19 +170,32 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *
      * @return possible object is
      *         {@link String }
+     * @deprecate
+     * Replaced by {@link FailureDetection.getHeartbeatFrequency()}.
      */
-    @Attribute (defaultValue="2000")
-    @Min(value=1000)
-    @Max(value=120000)
-    String getFdProtocolTimeoutInMillis();
+    /* 
+     * Moved to FailureDetection in v3.1.
+     */
+     @Attribute
+     @Deprecated
+     //@Attribute (defaultValue="2000")
+     //@Min(value=1000)
+     //@Max(value=120000)
+     String getFdProtocolTimeoutInMillis();
 
     /**
      * Sets the value of the fdProtocolTimeoutInMillis property.
      *
      * @param value allowed object is
      *              {@link String }
+     * @deprecate
+     * Replaced by {@link FailureDetection.setHeartbeatFrequency(String)}.
+     */
+    /* 
+     * Moved to FailureDetection in v3.1.
      */
     void setFdProtocolTimeoutInMillis(String value) throws PropertyVetoException;
+    
 
     /**
      * Gets the value of the mergeProtocolMaxIntervalInMillis property.
@@ -129,10 +205,13 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *
      * @return possible object is
      *         {@link String }
+     * @deprecate
      */
-    @Attribute (defaultValue="10000")
-    @Min(value=10000)
-    @Max(value=15000)    
+    //@Attribute (defaultValue="10000")
+    @Deprecated
+    @Attribute
+    //@Min(value=10000)
+    //@Max(value=15000)
     String getMergeProtocolMaxIntervalInMillis();
 
     /**
@@ -140,7 +219,9 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *
      * @param value allowed object is
      *              {@link String }
+     * @deprecate
      */
+    /* Not needed by gms in v3.1, was not used in v2. */
     void setMergeProtocolMaxIntervalInMillis(String value) throws PropertyVetoException;
 
     /**
@@ -151,10 +232,14 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *
      * @return possible object is
      *         {@link String }
+     * @deprecate
      */
-    @Attribute (defaultValue="5000")
-    @Min(value=1000)
-    @Max(value=10000)
+    /* Not needed by gms in v3.1, was not used in v2. Remove default value.*/
+    @Deprecated
+    @Attribute
+    //@Attribute (defaultValue="5000")
+    //@Min(value=1000)
+    //@Max(value=10000)
     String getMergeProtocolMinIntervalInMillis();
 
     /**
@@ -162,6 +247,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *
      * @param value allowed object is
      *              {@link String }
+     * @deprecate
      */
     void setMergeProtocolMinIntervalInMillis(String value) throws PropertyVetoException;
 
@@ -173,7 +259,11 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *
      * @return possible object is
      *         {@link String }
+     * @deprecate
+     * @see #getGroupDiscoveryTimeoutInMillis()
      */
+    /* renamed in v3.1 */
+    @Deprecated
     @Attribute (defaultValue="5000")
     @Min(value=1000)
     @Max(value=120000)    
@@ -184,7 +274,10 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *
      * @param value allowed object is
      *              {@link String }
+     * @deprecate
+     * @see #setGroupDiscoveryTimeoutInMillis(String)
      */
+    /* renamed in v3.1 to GroupDiscoveryTimeoutInMillis */
     void setPingProtocolTimeoutInMillis(String value) throws PropertyVetoException;
 
     /**
@@ -195,10 +288,18 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *
      * @return possible object is
      *         {@link String }
+     * @deprecate
+     * Replaced by {@link FailureDetection.getVerifyFailureWaittimeInMillis()}.
      */
-    @Attribute (defaultValue="1500")
-    @Min(value=1500)
-    @Max(value=120000)
+    /* 
+     * Moved to FailureDetection in v3.1.
+     * V2 
+     */
+    @Deprecated
+    @Attribute
+    //@Attribute (defaultValue="1500")
+    //@Min(value=1500)
+    //@Max(value=120000)
     String getVsProtocolTimeoutInMillis();
 
     /**
@@ -206,10 +307,14 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *
      * @param value allowed object is
      *              {@link String }
+     * @deprecate
+     * Replaced by {@link FailureDetection.setVerifyFailureWaittimeInMillis(String)}.
+     */
+    /* Moved to FailureDetection in v3.1
      */
     void setVsProtocolTimeoutInMillis(String value) throws PropertyVetoException;
     
-    
+
     /**
     	Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
      */

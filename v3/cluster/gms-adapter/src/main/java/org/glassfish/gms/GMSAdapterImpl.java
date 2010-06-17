@@ -36,12 +36,15 @@
 
 package org.glassfish.gms;
 
-import com.sun.enterprise.config.serverbeans.Cluster;
-import com.sun.enterprise.config.serverbeans.Clusters;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.ee.cms.core.*;
+import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.impl.client.*;
+
+import java.util.Properties;
+
+import static com.sun.enterprise.ee.cms.core.ServiceProviderConfigurationKeys.*;
+
 import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.Properties;
@@ -79,12 +82,12 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     private final static String SPECTATOR = "SPECTATOR";
     private final static String MEMBERTYPE_STRING = "MEMBER_TYPE";
 
-    // bobby: want to get these from config
-    private String instanceName = System.getProperty(INSTANCE_NAME);
-    private String clusterName = System.getProperty(CLUSTER_NAME);
-    
-    private String INSTANCE_PROPS_FILE_LOCATION = "/clusters/" + clusterName + "/" + instanceName + ".properties";
-    private String CLUSTER_PROPS_FILE_LOCATION = "/clusters/" + clusterName + "/cluster.properties";
+    // all set in postConstruct
+    private String instanceName = null;
+    private boolean isDas = false;
+    private Cluster cluster = null;
+    private String clusterName = null;
+    private Config clusterConfig = null;
 
     @Inject
     Events events;
@@ -100,13 +103,13 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     @Override
     public void postConstruct() {
+        Domain domain = habitat.getComponent(Domain.class);
         instanceName = env.getInstanceName();
 
         Cluster cluster = null;
 
         if (env.isDas()) {
             // hack: only supporting one cluster for M2
-            Domain domain = habitat.getComponent(Domain.class);
             cluster = domain.getClusters().getCluster().get(0);
         } else {
             cluster = server.getCluster();
@@ -118,21 +121,14 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         } catch (GMSException e) {
             logger.log(Level.WARNING, "gmsexception.occurred", e.getLocalizedMessage());
         }
+        clusterConfig = domain.getConfigs().getConfigByName(clusterName + "-config");
     }
 
-    private void initializeGMS() throws GMSException{
+    private void initStopGapGMSConfiguration(Properties configProps) {
+        getSystemProps(configProps);   //setting up Shoal defaults
+        readFromPropsFile(configProps);
 
-        logger.setLevel(Level.CONFIG);
-
-        if (clusterName == null) {
-            // todo: log something fine here
-            return;       //don't enable GMS
-        }
-
-        Properties configProps = getSystemProps();   //setting up Shoal defaults
-
-        configProps = readFromPropsFile(configProps);
-
+        // trim white space from keys and values.  Was needed for java property files, unsure whether needed when getting from domain.xml
         for (Enumeration property = configProps.propertyNames(); property.hasMoreElements();) {
             String key = (String) property.nextElement();
             String value = configProps.getProperty(key);
@@ -140,6 +136,116 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 configProps.setProperty(key.trim(), value.trim());
             }
         }
+    }
+    
+
+    private void readGMSConfigProps(Properties configProps) {
+        for (ServiceProviderConfigurationKeys key : ServiceProviderConfigurationKeys.values()) {
+            String keyName = key.toString();
+            try {
+            switch (key) {
+                case MULTICASTADDRESS:
+                    if (cluster != null) {
+                        configProps.put(keyName, cluster.getGmsMulticastAddress());
+                    }
+                    break;
+
+                case MULTICASTPORT:
+                    if (cluster != null) {
+                        configProps.put(keyName, cluster.getGmsMulticastPort());
+                    }
+                    break;
+
+                case FAILURE_DETECTION_TIMEOUT:
+                    if (clusterConfig != null) {
+                        String  value = clusterConfig.getGroupManagementService().getFailureDetection().getHeartbeatFrequencyInMillis();
+                        configProps.put(keyName, value);
+                    }
+                    break;
+
+                case FAILURE_DETECTION_RETRIES:
+                    if (clusterConfig != null) {
+                        String  value = clusterConfig.getGroupManagementService().getFailureDetection().getMaxMissedHeartbeats();
+                        configProps.put(keyName, value);
+                    }
+                    break;
+
+                case FAILURE_VERIFICATION_TIMEOUT:
+                    if (clusterConfig != null) {
+                        String  value = clusterConfig.getGroupManagementService().getFailureDetection().getVerifyFailureWaittimeInMillis();
+                        configProps.put(keyName, value);
+                    }
+                    break;
+
+                case DISCOVERY_TIMEOUT:
+                    if (clusterConfig != null) {
+                        String  value = clusterConfig.getGroupManagementService().getGroupDiscoveryTimeoutInMillis();
+                        configProps.put(keyName, value);
+                    }
+                    break;
+
+                case IS_BOOTSTRAPPING_NODE:
+                    configProps.put(keyName, isDas ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+                    break;
+
+                case VIRTUAL_MULTICAST_URI_LIST:
+                    // todo
+                    break;
+
+                case BIND_INTERFACE_ADDRESS:
+                    // todo
+                    break;
+
+                case FAILURE_DETECTION_TCP_RETRANSMIT_TIMEOUT:
+                    if (clusterConfig != null) {
+                        String  value = clusterConfig.getGroupManagementService().getFailureDetection().getVerifyFailureConnectTimeoutInMillis();
+                        configProps.put(keyName, value);
+                    }
+                    break;
+
+                case MULTICAST_POOLSIZE:
+                    // todo
+                    break;
+
+                case INCOMING_MESSAGE_QUEUE_SIZE :
+                    // todo
+                    break;
+
+                //case MAX_MESSAGE_LENGTH :
+                //    uncomment when new shoal-gms.jar with this new change is put in maven repository
+                //    // todo
+                //    break;
+
+                // These Shoal GMS configuration parameters are not supported to be set.
+                // Must place here or they will get flagged as not handled.
+                case FAILURE_DETECTION_TCP_RETRANSMIT_PORT:
+                case LOOPBACK:
+                    break;
+
+
+                default:
+                    // todo: log message that a Shoal GMS property is not being handled.
+                    break;
+            }  /* end switch over ServiceProviderConfigurationKeys enum */
+            } catch (Throwable t) {
+                
+            }
+        } /* end for loop over ServiceProviderConfigurationKeys */
+    }
+
+    private void initializeGMS() throws GMSException{
+
+        logger.setLevel(Level.CONFIG);
+        if (clusterName == null) {
+            // todo: log something fine here
+            return;       //don't enable GMS
+        }
+
+        Properties configProps = new Properties();
+        initStopGapGMSConfiguration(configProps);
+        //readGMSConfigProps(configProps);
+
+
         
         printProps(configProps);
 
@@ -184,6 +290,9 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     }
 
     private Properties readFromPropsFile(Properties configProps) {
+        final String INSTANCE_PROPS_FILE_LOCATION = "/clusters/" + clusterName + "/" + instanceName + ".properties";
+        final String CLUSTER_PROPS_FILE_LOCATION = "/clusters/" + clusterName + "/cluster.properties";
+
         //load default properties
 
         String install_location= System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
@@ -221,14 +330,9 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             logger.log(Level.WARNING, "Exception while trying to load the properties file.Using GMS default properties", ioe.getLocalizedMessage());
             return configProps;
         }
-        //trim the spaces from the name-value pairs
-
-
     }
 
-    private Properties getSystemProps() {
-        
-        Properties configProps = new Properties();
+    private Properties getSystemProps(Properties configProps) {
 
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "Is initial host=" + System.getProperty("IS_INITIAL_HOST"));
