@@ -37,24 +37,27 @@ package org.glassfish.admin.rest;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import org.junit.BeforeClass;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import com.sun.jersey.multipart.FormDataMultiPart;
+import com.sun.jersey.multipart.file.FileDataBodyPart;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import org.junit.BeforeClass;
+
 import java.math.BigInteger;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 public class RestTestBase {
 
@@ -101,6 +104,20 @@ public class RestTestBase {
         return client.resource(address).post(ClientResponse.class, buildMultivalueMap(payload));
     }
 
+    protected ClientResponse postWithUpload(String address, Map<String, Object> payload) {
+        FormDataMultiPart form = new FormDataMultiPart();
+        for (Map.Entry<String, Object> entry : payload.entrySet()) {
+//            MediaType mediaType = (entry.getValue() instanceof File) ? MediaType.MULTIPART_FORM_DATA_TYPE : MediaType.TEXT_PLAIN_TYPE;
+//            form.field(entry.getKey(), entry.getValue(), mediaType);
+            if ((entry.getValue() instanceof File)) {
+                form.getBodyParts().add((new FileDataBodyPart(entry.getKey(), (File)entry.getValue())));
+            } else {
+                form.field(entry.getKey(), entry.getValue(), MediaType.TEXT_PLAIN_TYPE);
+            }
+        }
+        return client.resource(address).type(MediaType.MULTIPART_FORM_DATA).post(ClientResponse.class, form);
+    }
+
     protected ClientResponse create(String address, Map<String, String> payload) {
         return post(address, payload);
     }
@@ -113,6 +130,10 @@ public class RestTestBase {
         // For now... :(
         return create(address, payload);
         //return client.resource(address).put(ClientResponse.class, buildMultivalueMap(payload));
+    }
+
+    protected ClientResponse delete(String address) {
+        return delete(address, new HashMap<String, String>());
     }
 
     protected ClientResponse delete(String address, Map<String, String> payload) {
@@ -135,7 +156,10 @@ public class RestTestBase {
                 Document doc = db.parse(new ByteArrayInputStream(xml.getBytes()));
                 Element root = doc.getDocumentElement();
                 NamedNodeMap nnm = root.getAttributes();
-                for (int i = 0; i < nnm.getLength(); i++) {
+
+
+                for (int i = 0; i
+                        < nnm.getLength(); i++) {
                     Node attr = nnm.item(i);
                     String name = attr.getNodeName();
                     String value = attr.getNodeValue();
@@ -165,31 +189,3 @@ public class RestTestBase {
         }
     }
 }
-/*
-private HttpURLConnection getConnection(String address, String responseType) throws MalformedURLException, IOException {
-URL url = new URL(address);
-HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-conn.setRequestProperty("Accept", responseType);
-return conn;
-}
-
-protected String options1(String address, String responseType) {
-StringBuilder sb = new StringBuilder();
-try {
-HttpURLConnection conn = getConnection(address, responseType);
-conn.setDoOutput(true);
-conn.setRequestMethod("OPTIONS");
-BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-String inputLine;
-
-while ((inputLine = in.readLine()) != null) {
-sb.append(inputLine);
-}
-in.close();
-} catch (Exception ex) {
-ex.printStackTrace();
-}
-
-return sb.toString();
-}
- */
