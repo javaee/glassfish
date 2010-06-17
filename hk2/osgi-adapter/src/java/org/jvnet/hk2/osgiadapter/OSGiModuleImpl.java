@@ -559,3 +559,4 @@ public final class OSGiModuleImpl implements Module {
         return false;
     }
 }
+

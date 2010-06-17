@@ -1,0 +1,2 @@
+Bundle-Activator: org.glassfish.hk2.osgiresourcelocator.Activator
+Bundle-ActivationPolicy: lazy
