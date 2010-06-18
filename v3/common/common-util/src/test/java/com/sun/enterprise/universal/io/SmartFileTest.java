@@ -34,7 +34,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.universal.io;
 
 import com.sun.enterprise.util.OS;
@@ -76,10 +75,11 @@ public class SmartFileTest {
      */
     @Test
     public void sanitize() {
-        for(String path : FILENAMES) {
+        for (String path : FILENAMES) {
             System.out.println(path + " --> " + SmartFile.sanitize(path));
         }
     }
+
     /**
      * Test of sanitizePaths method, of class SmartFile.
      */
@@ -90,10 +90,10 @@ public class SmartFileTest {
         // where are we now?
         String here = SmartFile.sanitize(".");
 
-        String cp1before = "/a/b/c" + sep + "qqq"+ sep + "qqq"+ sep + "qqq"+ sep + "qqq"+ sep + "qqq"+ sep + "./././qqq/./." + sep + "z/e";
+        String cp1before = "/a/b/c" + sep + "qqq" + sep + "qqq" + sep + "qqq" + sep + "qqq" + sep + "qqq" + sep + "./././qqq/./." + sep + "z/e";
         String cp1expected = "/a/b/c" + sep + here + "/qqq" + sep + here + "/z/e";
 
-        if(sep.equals(";")) {
+        if (sep.equals(";")) {
             // Windows -- drive letter is needed...
             String drive = here.substring(0, 2);
             cp1expected = drive + "/a/b/c;" + here + "/qqq;" + here + "/z/e";
@@ -111,32 +111,31 @@ public class SmartFileTest {
         System.out.println("Expected: " + cp1expected);
         System.out.println("***************************************************");
 
-	// All the QL and devtests are very unstable right now.
-	// I'll uncomment this later whn things are rock solid.
+        // All the QL and devtests are very unstable right now.
+        // I'll uncomment this later whn things are rock solid.
         //assertEquals(cp1expected, SmartFile.sanitizePaths(cp1before));
     }
+
     /**
      * Test of sanitizePaths method, of class SmartFile.
      */
     @Test
     public void sanitizePaths2() {
         String sep = File.pathSeparator;
-        if(OS.isWindows()) {
-            String badPaths="c:/xyz;\"c:\\a b\";c:\\foo";
+        if (OS.isWindows()) {
+            String badPaths = "c:/xyz;\"c:\\a b\";c:\\foo";
             String convert = SmartFile.sanitizePaths(badPaths);
             String expect = "C:/xyz;C:/a b;C:/foo";
             assertEquals(convert, expect);
         }
         else {
-            String badPaths="/xyz:\"/a b\":/foo";
+            String badPaths = "/xyz:\"/a b\":/foo";
             String convert = SmartFile.sanitizePaths(badPaths);
             String expect = "/xyz:/a b:/foo";
             assertEquals(convert, expect);
         }
     }
-
-    private static final String[] FILENAMES = new String[]
-    {
+    private static final String[] FILENAMES = new String[]{
         "c:/",
         "c:",
         "",
@@ -148,7 +147,6 @@ public class SmartFileTest {
         //"\\\\foo\\goo\\hoo",
         "x/y/../../../..",
         "/x/y/../../../..",
-		"/./../.././../",
-		"/::::/x/yy",
-    };
+        "/./../.././../",
+        "/::::/x/yy",};
 }
