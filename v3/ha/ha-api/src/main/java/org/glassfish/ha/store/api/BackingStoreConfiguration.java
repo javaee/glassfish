@@ -78,11 +78,15 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
 
     private Map<String, Object> vendorSpecificSettings = new HashMap<String, Object>();
 
+    private ClassLoader classLoader;
+
+    private boolean startGroupService;
+
     public String getClusterName() {
         return clusterName;
     }
 
-    public BackingStoreConfiguration setClusterName(String clusterName) {
+    public BackingStoreConfiguration<K, V> setClusterName(String clusterName) {
         this.clusterName = clusterName;
         return this;
     }
@@ -91,7 +95,7 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return instanceName;
     }
 
-    public BackingStoreConfiguration setInstanceName(String instanceName) {
+    public BackingStoreConfiguration<K, V> setInstanceName(String instanceName) {
         this.instanceName = instanceName;
         return this;
     }
@@ -100,7 +104,7 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return storeName;
     }
 
-    public BackingStoreConfiguration setStoreName(String storeName) {
+    public BackingStoreConfiguration<K, V> setStoreName(String storeName) {
         this.storeName = storeName;
         return this;
     }
@@ -109,7 +113,7 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return shortUniqueName;
     }
 
-    public BackingStoreConfiguration setShortUniqueName(String shortUniqueName) {
+    public BackingStoreConfiguration<K, V> setShortUniqueName(String shortUniqueName) {
         this.shortUniqueName = shortUniqueName;
         return this;
     }
@@ -118,7 +122,7 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return storeType;
     }
 
-    public BackingStoreConfiguration setStoreType(String storeType) {
+    public BackingStoreConfiguration<K, V> setStoreType(String storeType) {
         this.storeType = storeType;
         return this;
     }
@@ -127,7 +131,7 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return maxIdleTimeInSeconds;
     }
 
-    public BackingStoreConfiguration setMaxIdleTimeInSeconds(long maxIdleTimeInSeconds) {
+    public BackingStoreConfiguration<K, V> setMaxIdleTimeInSeconds(long maxIdleTimeInSeconds) {
         this.maxIdleTimeInSeconds = maxIdleTimeInSeconds;
         return this;
     }
@@ -136,7 +140,7 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return relaxVersionCheck;
     }
 
-    public BackingStoreConfiguration setRelaxVersionCheck(String relaxVersionCheck) {
+    public BackingStoreConfiguration<K, V> setRelaxVersionCheck(String relaxVersionCheck) {
         this.relaxVersionCheck = relaxVersionCheck;
         return this;
     }
@@ -145,7 +149,7 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return maxLoadWaitTimeInSeconds;
     }
 
-    public BackingStoreConfiguration setMaxLoadWaitTimeInSeconds(long maxLoadWaitTimeInSeconds) {
+    public BackingStoreConfiguration<K, V> setMaxLoadWaitTimeInSeconds(long maxLoadWaitTimeInSeconds) {
         this.maxLoadWaitTimeInSeconds = maxLoadWaitTimeInSeconds;
         return this;
     }
@@ -154,7 +158,7 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return baseDirectory;
     }
 
-    public BackingStoreConfiguration setBaseDirectory(File baseDirectory) {
+    public BackingStoreConfiguration<K, V> setBaseDirectory(File baseDirectory) {
         this.baseDirectory = baseDirectory;
         return this;
     }
@@ -163,7 +167,7 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return keyClazz;
     }
 
-    public BackingStoreConfiguration setKeyClazz(Class<K> kClazz) {
+    public BackingStoreConfiguration<K, V> setKeyClazz(Class<K> kClazz) {
         this.keyClazz = kClazz;
         return this;
     }
@@ -172,7 +176,7 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return valueClazz;
     }
 
-    public BackingStoreConfiguration setValueClazz(Class<V> vClazz) {
+    public BackingStoreConfiguration<K, V> setValueClazz(Class<V> vClazz) {
         this.valueClazz = vClazz;
         return this;
     }
@@ -181,7 +185,7 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return synchronousSave;
     }
 
-    public BackingStoreConfiguration setSynchronousSave(boolean synchronousSave) {
+    public BackingStoreConfiguration<K, V> setSynchronousSave(boolean synchronousSave) {
         this.synchronousSave = synchronousSave;
         return this;
     }
@@ -190,7 +194,7 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return typicalPayloadSizeInKiloBytes;
     }
 
-    public BackingStoreConfiguration setTypicalPayloadSizeInKiloBytes(long typicalPayloadSizeInKiloBytes) {
+    public BackingStoreConfiguration<K, V> setTypicalPayloadSizeInKiloBytes(long typicalPayloadSizeInKiloBytes) {
         this.typicalPayloadSizeInKiloBytes = typicalPayloadSizeInKiloBytes;
         return this;
     }
@@ -199,13 +203,31 @@ public class BackingStoreConfiguration<K extends Serializable, V extends Seriali
         return logger;
     }
 
-    public BackingStoreConfiguration setLogger(Logger logger) {
+    public BackingStoreConfiguration<K, V> setLogger(Logger logger) {
         this.logger = logger;
         return this;
     }
 
     public Map<String, Object> getVendorSpecificSettings() {
         return vendorSpecificSettings;
+    }
+
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    public BackingStoreConfiguration<K, V> setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+        return this;
+    }
+
+    public boolean getStartGroupService() {
+        return startGroupService;
+    }
+
+    public BackingStoreConfiguration<K, V> setStartGroupService(boolean startGroupService) {
+        this.startGroupService = startGroupService;
+        return this;
     }
 
     @Override
