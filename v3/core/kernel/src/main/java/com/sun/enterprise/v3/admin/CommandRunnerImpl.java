@@ -904,11 +904,22 @@ public class CommandRunnerImpl implements CommandRunner {
                                 targetTypesAllowed.add(c);
                             }
                         };
+                        //If not @TargetType, default it
                         if(targetTypesAllowed.size() == 0) {
                             targetTypesAllowed.add(CommandTarget.DAS);
                             targetTypesAllowed.add(CommandTarget.STANDALONE_INSTANCE);
                             targetTypesAllowed.add(CommandTarget.CLUSTER);
                             targetTypesAllowed.add(CommandTarget.CONFIG);
+                        }
+
+                        // If the target is "server" and the command is not marked for DAS,
+                        // add DAS to RuntimeTypes; This is important because those class of CLIs that
+                        // do not always have to be run on DAS followed by applicable instances
+                        // will have @Cluster(RuntimeType.INSTANCE) and they have to be run on DAS
+                        // ONLY if the target is "server"
+                        if(CommandTarget.DAS.isValid(habitat, targetName) &&
+                                !runtimeTypes.contains(RuntimeType.DAS)) {
+                            runtimeTypes.add(RuntimeType.DAS);
                         }
 
                         // Check if the target is valid
