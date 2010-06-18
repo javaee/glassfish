@@ -211,10 +211,8 @@ public class SmartFile {
                 else if (elem.equals("..")) {
                     elems.remove(i);
 
-                    // special case -- path is something like "/foo/../../.."
-                    // just return the convertial path...
-                    if (i <= 0)
-                        return;
+                    if (i <= 0) // ignore leading ".."
+                        break;
 
                     elems.remove(i - 1);
                     break;

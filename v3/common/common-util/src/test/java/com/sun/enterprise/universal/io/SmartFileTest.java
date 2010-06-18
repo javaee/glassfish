@@ -135,6 +135,25 @@ public class SmartFileTest {
             assertEquals(convert, expect);
         }
     }
+
+    @Test
+    public void edgeCase() {
+        if(OS.isWindows())
+            return;
+        
+        String fn = "/../../../../../../../../foo";
+        assertEquals(SmartFile.sanitize(fn), "/foo");
+        fn = "/../foo";
+        assertEquals(SmartFile.sanitize(fn), "/foo");
+
+        fn = "/foo/../foo";
+        assertEquals(SmartFile.sanitize(fn), "/foo");
+
+        fn = "/foo/../../foo";
+        assertEquals(SmartFile.sanitize(fn), "/foo");
+    }
+
+
     private static final String[] FILENAMES = new String[]{
         "c:/",
         "c:",
