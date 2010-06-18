@@ -34,7 +34,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.universal.io;
 
 import com.sun.enterprise.universal.StringUtils;
@@ -61,16 +60,15 @@ import java.util.logging.Logger;
  * elements from the path.
  * @author bnevins
  */
-
 public class SmartFile {
+
     /**
      * Sanitize a File object -- remove all relative path portions, i.e. dots
      * e.g. "/xxx/yyy/././././../yyy"  --> /xxx/yyy on UNIX, perhaps C:/xxx/yyy on Windows
      * @param f The file to sanitize
      * @return THe sanitized File
      */
-    public static File sanitize(File f)
-    {
+    public static File sanitize(File f) {
         SmartFile sf = new SmartFile(f);
         return new File(sf.path);
     }
@@ -91,14 +89,14 @@ public class SmartFile {
         SmartFile sf = new SmartFile(filename);
         return sf.path;
     }
+
     /**
      * Sanitize a "Classpath-like" list of Paths.
      * @param pathsString A string of paths, each separated by File.pathSeparator
      * @return The sanitized paths
      */
-
     public static String sanitizePaths(String pathsString) {
-        if(!ok(pathsString))
+        if (!ok(pathsString))
             return pathsString;
 
         try {
@@ -107,25 +105,25 @@ public class SmartFile {
             Set<String> pathsSet = new HashSet<String>();
             List<String> pathsList = new LinkedList<String>();
 
-            for(int i = 0; i < paths.length; i++) {
+            for (int i = 0; i < paths.length; i++) {
                 String path = paths[i];
 
                 // ignore empty path elements.  E.g. "c:/foo;;;;;;;" should become "C:/foo"
                 // not "c:/foo;thisdir;thisdir;thisdir etc"
-                if(!ok(path))
+                if (!ok(path))
                     continue;
 
                 // pathsSet is only here for removing duplicates.  We need the
                 // List to maintain the original order!
                 path = SmartFile.sanitize(path);
 
-                if(pathsSet.add(path))
+                if (pathsSet.add(path))
                     pathsList.add(path);
             }
 
             boolean firstElement = true;
-            for(String path : pathsList) {
-                if(firstElement)
+            for (String path : pathsList) {
+                if (firstElement)
                     firstElement = false;
                 else
                     sb.append(File.pathSeparator);
@@ -134,19 +132,20 @@ public class SmartFile {
             }
             return sb.toString();
         }
-        catch(Exception e) {
+        catch (Exception e) {
             return pathsString;
         }
     }
-    
+
     private SmartFile(File f) {
-        if(f == null)
+        if (f == null)
             throw new NullPointerException();
-        
+
         convert(f.getAbsolutePath());
     }
+
     private SmartFile(String s) {
-        if(s == null)
+        if (s == null)
             throw new NullPointerException();
 
         // note that "" is a valid filename
@@ -156,12 +155,12 @@ public class SmartFile {
     }
 
     private void convert(String oldPath) {
-        if(GFLauncherUtils.isWindows())
+        if (GFLauncherUtils.isWindows())
             convertWindows(oldPath);
         else
             convertNix(oldPath);
     }
-    
+
     /*
      * There is no symlink issue with getCanonical vs getAbsolute
      * so we do it the EASY way here...
@@ -169,65 +168,66 @@ public class SmartFile {
     private void convertWindows(String oldPath) {
         try {
             path = new File(oldPath).getCanonicalPath();
-            if(!path.startsWith("\\")) // network address...
+            if (!path.startsWith("\\")) // network address...
                 path = path.replace('\\', '/');
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             // what to do?  This has never happened to me and I use File I/O
             //** a lot **
             path = oldPath.replace('\\', '/');
         }
     }
-    
+
     private void convertNix(String oldPath) {
         // guarantee -- the beginning will not have "." or ".." 
         // (because of getAbsolutePath()...)
         String[] elemsArray = oldPath.split(SLASH);
         List<String> elems = new ArrayList<String>();
-        
-        for(String s : elemsArray) {
+
+        for (String s : elemsArray) {
             elems.add(s);
         }
-            
+
         path = SLASH;
-        
+
         // remove empty elems
-            for(Iterator<String> it = elems.iterator(); it.hasNext(); ) {
-                String elem = it.next();
-                if(elem.length() <= 0) {
-                    it.remove();
+        for (Iterator<String> it = elems.iterator(); it.hasNext();) {
+            String elem = it.next();
+            if (elem.length() <= 0) {
+                it.remove();
             }
         }
-        
+
         // replace dots
-        
-        while(hasDots(elems)) {
-            for(int i = 0; i < elems.size(); i++) {
+
+        while (hasDots(elems)) {
+            for (int i = 0; i < elems.size(); i++) {
                 String elem = elems.get(i);
 
-                if(elem.equals(".")) {
+                if (elem.equals(".")) {
                     elems.remove(i);
                     break;
                 }
-                else if(elem.equals("..")) {
+                else if (elem.equals("..")) {
                     elems.remove(i);
-                    
+
                     // special case -- path is something like "/foo/../../.."
                     // just return the convertial path...
-                    if(i <= 0)
+                    if (i <= 0)
                         return;
-                    
-                    elems.remove(i-1);
+
+                    elems.remove(i - 1);
                     break;
                 }
             }
         }
 
         // now all the dots are gone.
-        for(String s : elems) {
+        for (String s : elems) {
             path += s + SLASH;
         }
         // get rid of trailing slash
-        if(path.length() > 1)
+        if (path.length() > 1)
             path = path.substring(0, path.length() - 1);
     }
 
@@ -238,7 +238,6 @@ public class SmartFile {
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
-
     private String path;
     private static final String SLASH = "/";
 }
