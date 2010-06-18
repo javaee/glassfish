@@ -48,7 +48,12 @@
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/web-container/session-config,type=session-manager");
         setPageSessionAttribute(key="childType" value="manager-properties");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/web-container/session-config/session-manager,type=manager-properties");
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/web-container/session-config/session-manager");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/manager-properties");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        //REST-TODO take care of property table
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/webContainerManager.jsf?configName=#{pageSession.configName}");
         //set the following for including buttons.inc
