@@ -114,7 +114,7 @@ public class CreateInstanceCommand implements AdminCommand {
         ci.parameters(map);
         ci.execute();
 
-        if (node.equals("localhost")) {
+        if (node == null || node.equals("localhost")) {
             LocalAdminCommand lac = new LocalAdminCommand("_create-instance-filesystem",instance);
             try {
                  int status = lac.execute();
