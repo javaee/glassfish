@@ -156,8 +156,9 @@ public abstract class TemplateListOfResource {
             if (null != commandName) {
                 // TODO: Not needed anymore?
 //                data = __resourceUtil.translateCamelCasedNamesToCommandParamNames(data,commandName, RestService.getHabitat(), RestService.logger);
+            String typeOfResult = requestHeaders.getAcceptableMediaTypes().get(0).getSubtype();
                 ActionReport actionReport = ResourceUtil.runCommand(commandName,
-                    data, RestService.getHabitat());
+                    data, RestService.getHabitat(),typeOfResult);
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode == ActionReport.ExitCode.SUCCESS) {
@@ -245,8 +246,10 @@ public abstract class TemplateListOfResource {
             }
 
             if (null != commandName) {
+                            String typeOfResult = requestHeaders.getAcceptableMediaTypes().get(0).getSubtype();
+
                 ActionReport actionReport = ResourceUtil.runCommand(commandName,
-                    data, RestService.getHabitat());
+                    data, RestService.getHabitat(),typeOfResult);
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode == ActionReport.ExitCode.SUCCESS) {

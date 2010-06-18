@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,10 +35,13 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -51,18 +54,18 @@ import javax.ws.rs.WebApplicationException;
 import static org.glassfish.admin.rest.Util.*;
 
 /**
- * @author Rajeshwar Patil
+ * @author Ludovic Champenois
  */
 @Provider
 @Produces(MediaType.TEXT_HTML)
-public class StringResultHtmlProvider extends ProviderUtil
-        implements MessageBodyWriter<StringResult> {
+public class ActionReportResultHtmlProvider extends ProviderUtil
+        implements MessageBodyWriter<ActionReportResult> {
 
     @Context
     protected UriInfo uriInfo;
 
     @Override
-    public long getSize(final StringResult proxy, final Class<?> type, final Type genericType,
+    public long getSize(final ActionReportResult proxy, final Class<?> type, final Type genericType,
                 final Annotation[] annotations, final MediaType mediaType) {
         return -1;
     }
@@ -72,7 +75,7 @@ public class StringResultHtmlProvider extends ProviderUtil
     public boolean isWriteable(final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType) {
         try {
-            if (Class.forName("org.glassfish.admin.rest.provider.StringResult").equals(genericType)) {
+            if (Class.forName("org.glassfish.admin.rest.provider.ActionReportResult").equals(genericType)) {
                 return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
             }
         } catch (java.lang.ClassNotFoundException e) {
@@ -83,7 +86,7 @@ public class StringResultHtmlProvider extends ProviderUtil
 
 
     @Override
-    public void writeTo(final StringResult proxy, final Class<?> type, final Type genericType,
+    public void writeTo(final ActionReportResult proxy, final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType,
             final MultivaluedMap<String, Object> httpHeaders,
             final OutputStream entityStream) throws IOException, WebApplicationException {
@@ -91,7 +94,7 @@ public class StringResultHtmlProvider extends ProviderUtil
     }
 
 
-    private String getHtml(StringResult proxy) {
+    private String getHtml(ActionReportResult proxy) {
         String result = getHtmlHeader();
         String uri = uriInfo.getAbsolutePath().toString();
         String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
@@ -105,7 +108,14 @@ public class StringResultHtmlProvider extends ProviderUtil
             result = result + proxy.getErrorMessage() + "<br>";
         } else {
             result = result + "<h2>" + parentName + " - " + name + "</h2>";
-            result = result + proxy.getMessage() + "<br>";
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+            try {
+                proxy.getActionReport().writeReport(baos);
+                result = result + baos.toString() + "<br>";
+
+            } catch (IOException ex) {
+                Logger.getLogger(ActionReportResultHtmlProvider.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         result = "<div>" + result + "</div>" + "<br>";
 

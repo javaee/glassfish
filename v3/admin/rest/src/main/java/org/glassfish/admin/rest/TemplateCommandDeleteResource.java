@@ -37,25 +37,19 @@ package org.glassfish.admin.rest;
 
 import java.util.HashMap;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
-import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.jersey.spi.container.ContainerRequest;
 import javax.ws.rs.DELETE;
+import org.glassfish.admin.rest.provider.CommandResourceGetResult;
 
 
-import org.glassfish.admin.rest.provider.OptionsResult;
-import org.glassfish.admin.rest.provider.MethodMetaData;
 
 import org.glassfish.api.ActionReport;
 
@@ -66,30 +60,11 @@ import org.glassfish.api.ActionReport;
  * that contains the logic for mapped commands RS Resources
  *
  */
-public class TemplateCommandDeleteResource {
-
-    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ResourceUtil.class);
-    @Context
-    protected HttpHeaders requestHeaders;
-    @Context
-    protected UriInfo uriInfo;
-    private String resourceName;
-    private String commandName;
-    private String commandDisplayName;
-    private String commandMethod;
-    private String commandAction;
-    private HashMap<String, String> commandParams = null;
-    private boolean isLinkedToParent = false;
+public class TemplateCommandDeleteResource extends TemplateExecCommand{
 
     public TemplateCommandDeleteResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, HashMap<String, String> m, boolean b) {
-        this.resourceName = resourceName;
-        this.commandName = commandName;
-        this.commandMethod = commandMethod;
-        this.commandAction = commandAction;
-        this.commandDisplayName = commandDisplayName;
-        this.commandParams = m;
-        this.isLinkedToParent = b;
-
+        super ( resourceName,  commandName,  commandMethod,commandAction,commandDisplayName,  m,  b);
+        parameterType = Constants.MESSAGE_PARAMETER;
     }
 
     @DELETE
@@ -119,9 +94,9 @@ public class TemplateCommandDeleteResource {
             ResourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
             ResourceUtil.adjustParameters(data);
             ResourceUtil.purgeEmptyEntries(data);
+                        String typeOfResult = requestHeaders.getAcceptableMediaTypes().get(0).getSubtype();
 
-            ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat());
-
+            ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),typeOfResult);
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
 
             if (exitCode == ActionReport.ExitCode.SUCCESS) {
@@ -176,32 +151,12 @@ public class TemplateCommandDeleteResource {
         MediaType.TEXT_HTML,
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML})
-    public org.glassfish.admin.rest.provider.CommandResourceGetResult get() {
+    public CommandResourceGetResult get() {
         try {
-            return new org.glassfish.admin.rest.provider.CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, commandAction, options());
+            return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, commandAction, options());
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @OPTIONS
-    @Produces({
-        MediaType.APPLICATION_JSON,
-        MediaType.TEXT_HTML,
-        MediaType.APPLICATION_XML})
-    public OptionsResult options() {
-        OptionsResult optionsResult = new OptionsResult(resourceName);
-        try {
-//command method metadata
-            MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(
-                    commandName, commandParams, Constants.MESSAGE_PARAMETER, RestService.getHabitat(), RestService.logger);
-//GET meta data
-            optionsResult.putMethodMetaData("GET", new MethodMetaData());
-            optionsResult.putMethodMetaData(commandMethod, methodMetaData);
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-
-        return optionsResult;
-    }
 }

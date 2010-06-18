@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,21 +35,23 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.glassfish.api.ActionReport;
+
 
 /**
  * Response information object. Returned on call to GET methods on command
  * resources. Information used by provider to generate the appropriate output.
  *
- * @author Rajeshwar Patil
+ * @author Ludovic Champenois
  */
-public class StringResult extends Result {
+public class ActionReportResult extends Result {
 
     /**
      * Constructor
      */
-    public StringResult(String name, String message,  OptionsResult metaData) {
+    public ActionReportResult(String name, ActionReport r,  OptionsResult metaData) {
         __name = name;
-        __message = message;
+        __message = r;
         __metaData = metaData;
     }
 
@@ -57,7 +59,7 @@ public class StringResult extends Result {
     /**
      * Returns the result string this object represents
      */
-    public String getMessage() {
+    public ActionReport getActionReport() {
         return __message;
     }
 
@@ -70,6 +72,6 @@ public class StringResult extends Result {
     }
 
 
-    String __message;
+    ActionReport __message;
     OptionsResult __metaData;
 }

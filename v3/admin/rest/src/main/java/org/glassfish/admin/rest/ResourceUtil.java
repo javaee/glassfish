@@ -168,9 +168,9 @@ public class ResourceUtil {
      * @return ActionReport object with command execute status details.
      */
     public static ActionReport runCommand(String commandName,
-            HashMap<String, String> parameters, Habitat habitat) {
+            HashMap<String, String> parameters, Habitat habitat, String resultType) {
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
-        ActionReport ar = habitat.getComponent(ActionReport.class);
+        ActionReport ar = habitat.getComponent(ActionReport.class,resultType);
         ParameterMap p = new ParameterMap();
         for (Map.Entry<String,String> entry : parameters.entrySet())
             p.set(entry.getKey(), entry.getValue());
@@ -187,9 +187,9 @@ public class ResourceUtil {
     * @return ActionReport object with command execute status details.
     */
     public static ActionReport runCommand(String commandName,
-           Properties parameters, Habitat habitat) {
+           Properties parameters, Habitat habitat, String typeOfResult) {
        CommandRunner cr = habitat.getComponent(CommandRunner.class);
-       ActionReport ar = habitat.getComponent(ActionReport.class);
+       ActionReport ar = habitat.getComponent(ActionReport.class, typeOfResult);
         ParameterMap p = new ParameterMap();
         for (String prop : parameters.stringPropertyNames())
             p.set(prop, parameters.getProperty(prop));
@@ -487,30 +487,7 @@ public class ResourceUtil {
         return Response.status(status).entity(message).build();
     }
 
-    /**
-     * Extract the message from the given ActionReport object.
-     * @param actionReport the given ActionReport object
-     * @return String the extracted output message
-     */
-    public static String getMessage(ActionReport actionReport) {
-        String message = "";
-        if (actionReport != null) {
-            message = actionReport.getMessage();
-            if (message == null) {
-                message = "";
-                boolean first = true;
-                for (MessagePart mp : actionReport.getTopMessagePart().getChildren()) {
-                    if (!first) {
-                        message = message + ", ";
-                    }
-                    message = message + mp.getMessage();
-                    first = false;
-                }
-            }
-        }
 
-        return message;
-    }
 
     /**
      * <p>This method takes any query string parameters and adds them to the specified map.  This

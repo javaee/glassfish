@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.io.IOException;
@@ -49,22 +50,20 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
-import org.glassfish.admin.rest.Constants;
-
 
 /**
- * @author Rajeshwar Patil
+ * @author Ludovic Champenois
  */
 @Provider
-@Produces(MediaType.APPLICATION_XML)
-public class StringResultXmlProvider extends ProviderUtil implements
-        MessageBodyWriter<StringResult> {
+@Produces(MediaType.APPLICATION_JSON)
+public class ActionReportResultJsonProvider extends ProviderUtil
+        implements MessageBodyWriter<ActionReportResult> {
 
      @Context
      protected UriInfo uriInfo;
 
      @Override
-     public long getSize(final StringResult proxy, final Class<?> type, final Type genericType,
+     public long getSize(final ActionReportResult proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
           return -1;
      }
@@ -74,8 +73,8 @@ public class StringResultXmlProvider extends ProviderUtil implements
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
          try {
-             if (Class.forName("org.glassfish.admin.rest.provider.StringResult").equals(genericType)) {
-                 return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
+             if (Class.forName("org.glassfish.admin.rest.provider.ActionReportResult").equals(genericType)) {
+                 return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
              }
          } catch (java.lang.ClassNotFoundException e) {
              return false;
@@ -85,47 +84,27 @@ public class StringResultXmlProvider extends ProviderUtil implements
 
 
      @Override
-     public void writeTo(final StringResult proxy, final Class<?> type, final Type genericType,
+     public void writeTo(final ActionReportResult proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,
                final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getXml(proxy).getBytes());
+         entityStream.write(getJson(proxy).getBytes());
      }
 
 
-     private String getXml(StringResult proxy) {
-        String result;
-        String indent = Constants.INDENT;
-        result ="<" ;
+     private String getJson(ActionReportResult proxy) {
+        String result="";
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+            try {
+                proxy.getActionReport().writeReport(baos);
+                result = result + baos.toString() ;
 
-         final String typeKey = getTypeKey(proxy.getName());
-         result = result + typeKey;
-        String attribute;
-        if (proxy.isError()) {
-            attribute = getAttribute("error", proxy.getErrorMessage());
-        } else {
-            attribute = getAttribute("value", proxy.getMessage());
-        }
+            } catch (IOException ex) {
+                //Logger.getLogger(ActionReportResultHtmlProvider.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
-        if ((attribute != null) && (attribute.length() > 1)) {
-            result = result + " ";
-            result = result + attribute;
-        }
-        result = result + ">";
 
-        result = result + "\n\n" + indent;
-        result = result + "<" + getMethodsKey() + ">";
-        result = result + getXmlForMethodMetaData(proxy.getMetaData(),
-            indent + Constants.INDENT);
-        result = result + "\n" + indent + "</" + getMethodsKey() + ">";
-
-        result = result + "\n\n" + "</" + typeKey + ">";
         return result;
     }
 
-    private String getAttribute(String name, String value) {
-        String result ="";
-        result = result + name + "=" + quote(value);
-        return result;
-    }
 }

@@ -446,7 +446,9 @@ public class TemplateResource {
     private ActionReport runCommand(String commandName, HashMap<String, String> data) {
 
         if (commandName != null) {
-            return ResourceUtil.runCommand(commandName, data, RestService.getHabitat());//processed
+                        String typeOfResult = requestHeaders.getAcceptableMediaTypes().get(0).getSubtype();
+
+            return ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),typeOfResult);//processed
         }
 
         return null;//not processed

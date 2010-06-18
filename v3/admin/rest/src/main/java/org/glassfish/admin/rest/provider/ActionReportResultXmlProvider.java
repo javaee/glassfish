@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.io.IOException;
@@ -49,75 +50,56 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
-import org.glassfish.admin.rest.Constants;
-
 /**
- * @author Rajeshwar Patil
+ * @author Ludovic Champenois
  */
 @Provider
-@Produces(MediaType.APPLICATION_JSON)
-public class StringResultJsonProvider extends ProviderUtil
-        implements MessageBodyWriter<StringResult> {
+@Produces(MediaType.APPLICATION_XML)
+public class ActionReportResultXmlProvider extends ProviderUtil implements
+        MessageBodyWriter<ActionReportResult> {
 
-     @Context
-     protected UriInfo uriInfo;
+    @Context
+    protected UriInfo uriInfo;
 
-     @Override
-     public long getSize(final StringResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
-     }
-
-
-     @Override
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         try {
-             if (Class.forName("org.glassfish.admin.rest.provider.StringResult").equals(genericType)) {
-                 return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
-             }
-         } catch (java.lang.ClassNotFoundException e) {
-             return false;
-         }
-         return false;
-     }
-
-
-     @Override
-     public void writeTo(final StringResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getJson(proxy).getBytes());
-     }
-
-
-     private String getJson(StringResult proxy) {
-        String result;
-        String indent = Constants.INDENT;
-        result ="{" ;
-
-        result = result + quote(getTypeKey(proxy.getName())) + ":{";
-        if (proxy.isError()) {
-            result = result + getAttribute("error", proxy.getErrorMessage());
-        } else {
-           result = result + getAttribute("value", proxy.getMessage());
-        }
-        result = result + "},";
-
-        result = result + "\n\n" + indent;
-        result = result + quote(getMethodsKey()) + ":{";
-        result = result + getJsonForMethodMetaData(proxy.getMetaData(),
-            indent + Constants.INDENT);
-        result = result + "\n" + indent + "}";
-
-        result = result + "\n\n" + "}";
-        return result;
+    @Override
+    public long getSize(final ActionReportResult proxy, final Class<?> type, final Type genericType,
+            final Annotation[] annotations, final MediaType mediaType) {
+        return -1;
     }
 
-    private String getAttribute(String name, String value) {
-        String result ="";
-        result = result + quote(name) + " : " + quote(value);
+    @Override
+    public boolean isWriteable(final Class<?> type, final Type genericType,
+            final Annotation[] annotations, final MediaType mediaType) {
+        try {
+            if (Class.forName("org.glassfish.admin.rest.provider.ActionReportResult").equals(genericType)) {
+                return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
+            }
+        } catch (java.lang.ClassNotFoundException e) {
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public void writeTo(final ActionReportResult proxy, final Class<?> type, final Type genericType,
+            final Annotation[] annotations, final MediaType mediaType,
+            final MultivaluedMap<String, Object> httpHeaders,
+            final OutputStream entityStream) throws IOException, WebApplicationException {
+        entityStream.write(getXml(proxy).getBytes());
+    }
+
+    private String getXml(ActionReportResult proxy) {
+        String result = "";
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+        try {
+            proxy.getActionReport().writeReport(baos);
+            result = result + baos.toString();
+
+        } catch (IOException ex) {
+            //Logger.getLogger(ActionReportResultHtmlProvider.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         return result;
     }
 }

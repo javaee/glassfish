@@ -37,26 +37,16 @@ package org.glassfish.admin.rest;
 
 import java.util.HashMap;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
-import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.jersey.spi.container.ContainerRequest;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import javax.ws.rs.core.MultivaluedMap;
 
-import org.glassfish.admin.rest.provider.OptionsResult;
-import org.glassfish.admin.rest.provider.MethodMetaData;
-import org.glassfish.admin.rest.provider.StringResult;
+import org.glassfish.admin.rest.provider.ActionReportResult;
 import org.glassfish.api.ActionReport;
 
 /**
@@ -66,29 +56,13 @@ import org.glassfish.api.ActionReport;
  * that contains the logic for mapped commands RS Resources
  *
  */
-public class TemplateCommandGetResource {
-
-    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ResourceUtil.class);
-
-    @Context
-    protected HttpHeaders requestHeaders;
-
-    @Context
-    protected UriInfo uriInfo;
-
-    private String resourceName;
-    private String commandName;
-    private String commandMethod;
-    private HashMap<String, String> commandParams = null;
-    private boolean isLinkedToParent = false;
+public class TemplateCommandGetResource extends TemplateExecCommand{
 
     public TemplateCommandGetResource(String resourceName, String commandName, String commandMethod,
                                       HashMap<String, String> m, boolean b) {
-        this.resourceName = resourceName;
-        this.commandName = commandName;
-        this.commandMethod = commandMethod;
-        this.commandParams = m;
-        this.isLinkedToParent = b;
+
+        super ( resourceName,  commandName,  commandMethod,"","",  m,  b);
+        parameterType= Constants.QUERY_PARAMETER;
     }
 
     @GET
@@ -97,7 +71,7 @@ public class TemplateCommandGetResource {
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
-    public StringResult executeCommand() {
+    public ActionReportResult executeCommand() {
         try {
             Properties properties = new Properties();
             if (commandParams != null) {
@@ -109,11 +83,11 @@ public class TemplateCommandGetResource {
                 properties.putAll(commandParams);
             }
             ResourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), properties);
+            String typeOfResult = requestHeaders.getAcceptableMediaTypes().get(0).getSubtype();
 
-            ActionReport actionReport = ResourceUtil.runCommand(commandName, properties, RestService.getHabitat());
+            ActionReport actionReport = ResourceUtil.runCommand(commandName, properties, RestService.getHabitat(),typeOfResult);
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-            StringResult results = new StringResult(commandName, ResourceUtil.getMessage(actionReport), options());
-
+            ActionReportResult results = new ActionReportResult(commandName, actionReport, options());
             if (exitCode == ActionReport.ExitCode.SUCCESS) {
                 results.setStatusCode(200); /*200 - ok*/
             } else {
@@ -129,22 +103,4 @@ public class TemplateCommandGetResource {
         }
     }
 
-    @OPTIONS
-    @Produces({
-        MediaType.APPLICATION_JSON,
-        MediaType.TEXT_HTML,
-        MediaType.APPLICATION_XML})
-    public OptionsResult options() {
-        OptionsResult optionsResult = new OptionsResult(resourceName);
-        try {
-//command method metadata
-            MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(
-                    commandName, commandParams, Constants.QUERY_PARAMETER, RestService.getHabitat(), RestService.logger);
-            optionsResult.putMethodMetaData(commandMethod, methodMetaData);
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-
-        return optionsResult;
-    }
 }
