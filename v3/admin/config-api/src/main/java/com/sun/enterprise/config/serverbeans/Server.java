@@ -354,7 +354,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             Cluster ourCluster = null;
             Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Server.class);
-            Transaction t = Transaction.getTransaction(instance);
+            Transaction tx = Transaction.getTransaction(instance);
             String configRef = instance.getConfigRef();
             Clusters clusters = domain.getClusters();
 
@@ -405,8 +405,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 }
 
                 if (cluster != null) {
-                    if (t != null) {
-                        Cluster c = t.enroll(cluster);
+                    if (tx != null) {
+                        Cluster c = tx.enroll(cluster);
                         ServerRef newServerRef = c.createChild(ServerRef.class);
                         newServerRef.setRef(instanceName);
                         c.getServerRef().add(newServerRef);
@@ -467,10 +467,10 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     // no big deal - just ignore
                 }
 
-                if (t != null) {
+                if (tx != null) {
                     Configs configs = domain.getConfigs();
-                    Configs writableConfigs = t.enroll(configs);
-                    Config writableConfigCopy = t.enroll(configCopy);
+                    Configs writableConfigs = tx.enroll(configs);
+                    Config writableConfigCopy = tx.enroll(configCopy);
                     writableConfigCopy.setName(configName);
                     writableConfigs.getConfig().add(writableConfigCopy);
                 }
@@ -503,24 +503,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             }
             PortManager pm = new PortManager(ourCluster, ourConfig, domain, instance);
             pm.process(); // might throw
-
-            // TEMPORARY  REMOVE June 21, 2010
-            // TEMPORARY  REMOVE June 21, 2010
-            // TEMPORARY  REMOVE June 21, 2010
-            // TEMPORARY  REMOVE June 21, 2010
-            // TEMPORARY  REMOVE June 21, 2010
-            // TEMPORARY  REMOVE June 21, 2010
-            // TEMPORARY  REMOVE June 21, 2010
-            if("bnevins".equals(System.getProperty("user.name")))
-                    System.out.println(pm);
-            // TEMPORARY  REMOVE June 21, 2010
-            // TEMPORARY  REMOVE June 21, 2010
-            // TEMPORARY  REMOVE June 21, 2010
-            // TEMPORARY  REMOVE June 21, 2010
-            // TEMPORARY  REMOVE June 21, 2010
-            // TEMPORARY  REMOVE June 21, 2010
-            // TEMPORARY  REMOVE June 21, 2010
-
         } // This brace ends this huge method
     } // this brace ends the class
 

@@ -39,9 +39,11 @@ import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.net.*;
+import java.beans.PropertyVetoException;
 import java.util.*;
 import org.jvnet.hk2.config.TransactionFailure;
 
@@ -108,12 +110,32 @@ public final class PortManager {
             // we have a list of all possible conflicting server ports.
             // let's find some unused ports and reassign the variables inside
             // the ServerPorts class
-            reassignPorts();
+            Map<String, Integer> reassigned = reassignPorts();
+            Set<Map.Entry<String, Integer>> entries = reassigned.entrySet();
 
+
+            List<SystemProperty> sps = newServer.getSystemProperty();
+
+            for (Map.Entry<String, Integer> entry : entries) {
+                String name = entry.getKey();
+                int port = entry.getValue();
+                changeSystemProperty(sps, name, "" + port); // do not want commas in the int!
+            }
         }
         catch (Exception e) {
             throw new TransactionFailure(e.toString(), e);
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("PortManager Dump:");
+
+        for (ServerPorts sp : serversOnHost)
+            sb.append(sp).append('\n');
+
+        sb.append("All Ports in all other servers on same host: " + allPorts);
+        return sb.toString();
     }
 
     private void createServerList() {
@@ -145,18 +167,68 @@ public final class PortManager {
         return NetUtils.isEqual(server.getNodeAgentRef(), host);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("PortManager Dump:");
+    private Map<String, Integer> reassignPorts() throws TransactionFailure {
+        // inefficient, probably a slicker way to do it.  Not worth the effort
+        // there are at most 8 items...
 
-        for (ServerPorts sp : serversOnHost)
-            sb.append(sp).append('\n');
+        Map<String, Integer> portProps = newServerPorts.getMap();
+        Map<String, Integer> changedPortProps = new HashMap<String, Integer>();
+        Set<Map.Entry<String, Integer>> entries = portProps.entrySet();
 
-        sb.append("All Ports in all other servers on same host: " + allPorts);
-        return sb.toString();
+        for (Map.Entry<String, Integer> entry : entries) {
+            String name = entry.getKey();
+            Integer num = entry.getValue();
+            Integer newNum = reassignPort(num);
+
+            if (!newNum.equals(num))
+                changedPortProps.put(name, newNum);
+        }
+        return changedPortProps;
     }
 
-    private void reassignPorts() {
+    private Integer reassignPort(Integer num) throws TransactionFailure {
+        int max = num + 100;
+
+        while (num < max) {
+            num = getNextUnassignedPort(num);
+
+            if (isPortFree(num))
+                return num;
+            else
+                ++num;
+        }
+        throw new TransactionFailure(Strings.get("PortManager.noFreePort"));
+    }
+
+    private Integer getNextUnassignedPort(Integer num) throws TransactionFailure {
+        int max = num + 50;   // to avoid infinite loop
+
+        for (int inum = num; inum < max; inum++) {
+            if (!allPorts.contains(inum))
+                return inum;
+        }
+        throw new TransactionFailure(Strings.get("PortManager.noFreePort"));
+    }
+
+    private void changeSystemProperty(List<SystemProperty> sps, String name, String port) throws PropertyVetoException, TransactionFailure {
+        for(SystemProperty sp : sps) {
+            if(name.equals(sp.getName())) {
+                sp.setValue(port);
+                return;
+            }
+        }
+        // does not exist -- let's add one!
+        SystemProperty sp = newServer.createChild(SystemProperty.class);
+        sp.setName(name);
+        sp.setValue(port);
+        sps.add(sp);
+    }
+
+    private boolean isPortFree(int num) {
+        if (isLocal)
+            return NetUtils.isPortFree(num);
+
+        return NetUtils.isPortFree(host, num);
     }
 
     private void createAllPortsList() {
@@ -169,7 +241,7 @@ public final class PortManager {
                 if (!allPorts.contains(i))
                     allPorts.add(i);
         }
-        
+
         Collections.sort(allPorts);
     }
     private final String serverName;
@@ -182,4 +254,5 @@ public final class PortManager {
     private final List<ServerPorts> serversOnHost;
     private final ServerPorts newServerPorts;
     private final boolean checkLivePorts = true;
+
 }
