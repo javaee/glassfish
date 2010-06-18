@@ -40,7 +40,7 @@
                 id="corba_container"
                 type="org.glassfish.admingui:navNode" 
                 priority="650"
-                parentId="configuration" 
+                parentId="#{configName}" 
                 content="pluginTreeNodeCorba.jsf"
         />
 

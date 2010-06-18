@@ -5,7 +5,7 @@
                 id="jts_node"
                 type="org.glassfish.admingui:navNode" 
                 priority="400"
-                parentId="configuration" 
+                parentId="#{configName}" 
                 content="pluginTreeNodeJts.jsf"
         />
 

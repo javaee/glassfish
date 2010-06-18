@@ -38,7 +38,7 @@
 
 <sun:treeNode id="connectorService"
     text="$resource{i18njca.tree.connectorService}"
-    url="/jca/connectorService.jsf?configName=#{configName}"
+    url="/jca/connectorService.jsf?configName=${configName}"
     imageURL="/resource/jca/images/connector.png"
     >
     <!beforeCreate

@@ -1,7 +1,7 @@
 <gf:navNode id="jmsConfiguration"
 	    label="$resource{i18n.tree.javaMessageService}"
 	    toolTip="$resource{i18n.tree.javaMessageService}"
-            url="#{request.contextPath}/jms/jmsService.jsf?configName=server-config"
+            url="#{request.contextPath}/jms/jmsService.jsf?configName=${configName}"
 	    icon="#{request.contextPath}/resource/images/jms.gif">
     <dynamicTreeNode id="jmsHosts"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
@@ -10,12 +10,12 @@
         attributeName="name"
         childImageURL="/resource/jms/images/canister.gif"
         childExpanded="$boolean{false}"
-        childURL="/jms/jmsHostEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+        childURL="/jms/jmsHostEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
         text="$resource{i18n.tree.jmsHosts}"
-        url="#{request.contextPath}/jms/jmsHosts.jsf?configName=#{configName}"
+        url="#{request.contextPath}/jms/jmsHosts.jsf?configName=${configName}"
         >
         <!facet image>
-            <sun:iconHyperlink icon="TREE_FOLDER" url="#{request.contextPath}/jms/jmsHosts.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}"
+            <sun:iconHyperlink icon="TREE_FOLDER" url="#{request.contextPath}/jms/jmsHosts.jsf?configName=${configName}" border="0" immediate="true"
                 alt="$resource{i18n.tree.jmsHosts}"/>
         </facet>
     </dynamicTreeNode>
@@ -23,6 +23,6 @@
     <gf:navNode id="jmsPhysDest"
                 label="$resource{i18n.tree.physicalDestinations}"
                 icon="#{request.contextPath}/resource/jms/images/tree_folder.gif"
-                url="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf">
+                url="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf?configName=${configName}">
     </gf:navNode>
 </gf:navNode>

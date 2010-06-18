@@ -38,7 +38,7 @@
 <sun:treeNode 
     id="ejbContainer" 
     text="$resource{i18n.tree.ejbContainer}"
-    url="/ejb-lite/configuration/ejbContainerGeneral.jsf?#{configName}"
+    url="/ejb-lite/configuration/ejbContainerGeneral.jsf?${configName}"
     imageURL="/resource/ejb-lite/images/container.gif"
 />
 

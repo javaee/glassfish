@@ -60,8 +60,10 @@ update tool    updatetool 800
 
 <event>
     <!beforeCreate
-	#getConfigNameOfTarget(target="server" configName=>$page{configName});
-	setPageSessionAttribute(key="configName" value="server-config");
+	#getConfigNameOfTarget(target="server" configName=>$attribute{configName});
+	// FIXME: "server-config" should not be hard-coded, it should be
+	// FIXME: the 0th element of this config list
+	setAttribute(key="configName" value="server-config");
     />
 </event>
  
@@ -151,15 +153,15 @@ update tool    updatetool 800
             objectName="amx:pp=/domain,type=applications"
             text="$resource{i18n.tree.applications}"
             url="/common/applications/applications.jsf"
-            expanded="$boolean{false}"
+            expanded="false"
             attributeName="name"
             childImageURL="/resource/images/webModule.gif"
-            childExpanded="$boolean{false}"
+            childExpanded="false"
             childURL="/common/applications/applicationEdit.jsf?appName=#{$this{valueBinding}.text}"
         >
             <!facet image>
                 <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/applications.jsf" alt="$resource{i18n.tree.applications}"
-                    border="$int{0}" immediate="$boolean{true}" />
+                    border="$int{0}" immediate="true" />
             </facet>
             <!filterTree filterOutLifecycle() />
         </dynamicTreeNode>
@@ -170,15 +172,15 @@ update tool    updatetool 800
             objectName="amx:pp=/domain,type=applications"
             text="$resource{i18n.tree.lifecycle}"
             url="/common/applications/lifecycles.jsf"
-            expanded="$boolean{false}"
+            expanded="false"
             attributeName="name"
             childImageURL="/resource/images/webModule.gif"
-            childExpanded="$boolean{false}"
+            childExpanded="false"
             childURL="/common/applications/lifecycleEdit.jsf?appName=#{$this{valueBinding}.text}"
         >
             <!facet image>
                 <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/lifecycles.jsf"
-                    alt="$resource{i18n.tree.lifecycle}" border="$int{0}" immediate="$boolean{true}" />
+                    alt="$resource{i18n.tree.lifecycle}" border="$int{0}" immediate="true" />
             </facet>
             <!filterTree filterOutNonLifecycle() />
         </dynamicTreeNode>
@@ -190,7 +192,7 @@ update tool    updatetool 800
             text="$resource{i18n.tree.resources}"
             url="/common/resourceNode/resources.jsf"
             imageURL="/resource/images/resources.gif"
-            expanded="$boolean{true}"
+            expanded="true"
         />
 
         <!--  ===================================== Clusters ======================  -->
@@ -199,7 +201,7 @@ update tool    updatetool 800
             text="$resource{i18n.tree.clusters}"
             url="/common/cluster/clusters.jsf"
             imageURL="/resource/images/cluster.gif"
-            expanded="$boolean{true}"
+            expanded="true"
         />
 
         <!--  ===================================== Standalone Instances ======================  -->
@@ -208,22 +210,39 @@ update tool    updatetool 800
             text="$resource{i18n.tree.standaloneInstances}"
             url="/common/appServer/standaloneInstances.jsf"
             imageURL="/resource/images/instance.gif"
-            expanded="$boolean{true}"
+            expanded="true"
         />
 
          <!--  ===================================== Configurations ======================  -->
-
-         <sun:treeNode id="configuration"
-            text="$resource{i18n.tree.configuration}"
-            url="/common/configuration/configuration.jsf?configName=server-config"
-            imageURL="/resource/images/configurations.gif"
-            expanded="$boolean{true}"
-        />
+        <sun:treeNode id="configurations"
+		text="$resource{i18n.tree.configurations}"
+// FIXME: Should be configurations.jsf
+		url="/common/configuration/configuration.jsf"
+		imageURL="/resource/images/configurations.gif"
+		expanded="true">
+	    <!afterCreate
+		setAttribute(key="configsTreeNode" value="$this{component}");
+	    />
+	    <sun:treeNode id="${configName}" 
+		    text="${configName}"
+		    url="/configuration/configuration.jsf?configName=${configName}"
+		    imageURL="/resource/common/images/configurations.gif"
+		    expanded="false">
+		<!afterCreate
+		    setAttribute(key="configTreeNodeLE" value="$this{layoutElement}");
+		/>
+	    </sun:treeNode>
+	</sun:treeNode>
     </sun:tree>
     <event>
 	<!afterCreate
-	    getUIComponent(clientId="#{pageSession.treeId}"  component=>$attribute{component});
-	    includeIntegrations(type="org.glassfish.admingui:navNode" root="#{requestScope.component}");
+	    includeIntegrations(type="org.glassfish.admingui:navNode" root="#{pageSession.treeId}");
+// FIXME: JSFT 2.0.3 is needed for this loop... we also need to pull the actual config list instead of hard-coding it!!
+	    //foreach(var="configName" list={"default-config" "my-config"}) {
+	    foreach(var="configName" list={}) {
+		buildUIComponentTree(layoutElement="$attribute{configTreeNodeLE}" parent="$attribute{configsTreeNode}");
+		includeIntegrations(type="org.glassfish.admingui:navNode" root="#{pageSession.treeId}");
+	    }
 	/>
     </event>
   </sun:form>

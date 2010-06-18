@@ -39,23 +39,23 @@
 <sun:treeNode
     id="networkConfig"
     text="$resource{i18n_web.tree.grizzly.networkConfig}"
-    url="/web/grizzly/networkConfig.jsf?configName=server-config"
+    url="/web/grizzly/networkConfig.jsf?configName=${configName}"
     imageURL="/resource/web/images/httpservice.gif"
     >
 
     <dynamicTreeNode id="networkListeners"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:pp=/domain/configs/config[$pageSession{configName}]/network-config,type=network-listeners"
+        objectName="amx:pp=/domain/configs/config[${configName}]/network-config,type=network-listeners"
         useV3AMX="true"
         attributeName="name"
         childImageURL="/resource/web/images/http.gif"
         childExpanded="$boolean{false}"
-        childURL="/web/grizzly/networkListenerEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+        childURL="/web/grizzly/networkListenerEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
         text="$resource{i18n_web.tree.grizzly.networkListeners}"
-        url="/web/grizzly/networkListeners.jsf?configName=#{configName}"
+        url="/web/grizzly/networkListeners.jsf?configName=${configName}"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/networkListeners.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n_web.tree.grizzly.networkListeners}"/>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/networkListeners.jsf?configName=${configName}" border="0" immediate="true" alt="$resource{i18n_web.tree.grizzly.networkListeners}"/>
         </facet>
         <!beforeCreate
             setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
@@ -64,17 +64,17 @@
 
     <dynamicTreeNode id="protocols"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:pp=/domain/configs/config[$pageSession{configName}]/network-config,type=protocols"
+        objectName="amx:pp=/domain/configs/config[${configName}]/network-config,type=protocols"
         useV3AMX="true"
         attributeName="name"
         childImageURL="/resource/web/images/http.gif"
         childExpanded="$boolean{false}"
-        childURL="/web/grizzly/protocolEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+        childURL="/web/grizzly/protocolEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
         text="$resource{i18n_web.tree.grizzly.protocols}"
-        url="/web/grizzly/protocols.jsf?configName=#{configName}"
+        url="/web/grizzly/protocols.jsf?configName=${configName}"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/protocols.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n_web.tree.grizzly.protocols}"/>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/protocols.jsf?configName=${configName}" border="0" immediate="true" alt="$resource{i18n_web.tree.grizzly.protocols}"/>
         </facet>
         <!beforeCreate
             setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
@@ -88,12 +88,12 @@
         attributeName="name"
         childImageURL="/resource/web/images/http.gif"
         childExpanded="$boolean{false}"
-        childURL="/web/grizzly/transportEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+        childURL="/web/grizzly/transportEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
         text="$resource{i18n_web.tree.grizzly.transports}"
-        url="/web/grizzly/transports.jsf?configName=#{configName}"
+        url="/web/grizzly/transports.jsf?configName=${configName}"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/transports.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n_web.tree.grizzly.transports}"/>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/transports.jsf?configName=${configName}" border="0" immediate="true" alt="$resource{i18n_web.tree.grizzly.transports}"/>
         </facet>
         <!beforeCreate
             setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");

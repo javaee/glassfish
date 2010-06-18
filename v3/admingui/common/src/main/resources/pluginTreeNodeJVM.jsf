@@ -40,7 +40,7 @@
 //java-config
 <sun:treeNode id="jvmSettings"
     text="$resource{i18n.tree.jvmSettings}"
-    url="/common/javaConfig/serverInstJvmGeneral.jsf?configName=#{configName}"
+    url="/common/javaConfig/serverInstJvmGeneral.jsf?configName=${configName}"
     imageURL="/resource/images/jvm.gif"
 />
 

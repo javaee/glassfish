@@ -38,7 +38,7 @@
 <sun:treeNode
     id="httpService"
     text="$resource{i18n_web.tree.httpService}"
-    url="/web/configuration/accessLog.jsf?configName=server-config"
+    url="/web/configuration/accessLog.jsf?configName=${configName}"
     imageURL="/resource/web/images/httpservice.gif"
     >
     <!beforeCreate

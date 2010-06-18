@@ -37,7 +37,7 @@
 <sun:treeNode
     id="jruby"
     text="$resource{i18n_jruby.tree.jrubyContainer}"
-    url="/jruby/jrubyContainer.jsf?configName=#{configName}"
+    url="/jruby/jrubyContainer.jsf?configName=${configName}"
     imageURL="/resource/jruby/images/jruby.gif"
     >
     <!beforeCreate

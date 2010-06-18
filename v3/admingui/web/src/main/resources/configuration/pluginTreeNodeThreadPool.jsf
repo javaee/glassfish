@@ -38,16 +38,16 @@
 
 <dynamicTreeNode id="threadPools"
     treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-    objectName="amx:pp=/domain/configs/config[$pageSession{configName}],type=thread-pools"
+    objectName="amx:pp=/domain/configs/config[${configName}],type=thread-pools"
     attributeName="name"
     childImageURL="/resource/web/images/threadPool.gif"
     childExpanded="$boolean{false}"
-    childURL="/web/configuration/threadPoolEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+    childURL="/web/configuration/threadPoolEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
     text="$resource{i18n_web.tree.threadPools}"
-    url="/web/configuration/threadPools.jsf?configName=#{configName}"
+    url="/web/configuration/threadPools.jsf?configName=${configName}"
     >
     <!facet image>
-        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/threadPools.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/threadPools.jsf?configName=${configName}" border="0" immediate="true" />
     </facet>
     <!beforeCreate
         setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");

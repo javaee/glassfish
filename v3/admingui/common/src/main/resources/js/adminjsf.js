@@ -2433,6 +2433,12 @@ admingui.ajax = {
 	var recurse = true;
         //console.log("nodeName = " + node.nodeName);
         if (node.nodeName == 'A') {
+	    // FIXME: For exteral URLs, we should not replace... however, we
+	    // FIXME: may want to ensure they have a _blank target.  May need
+	    // FIXME: to compare the host to see if a URL is an external URL
+	    // FIXME: b/c M$ makes it hard to determine relative URLs, and full
+	    // FIXME: URLs to the same host "might" want be valid for
+	    // FIXME: replacement.
             if (!admingui.ajax._isTreeNodeControl(node) && (node.target == '')) { //  && (typeof node.onclick != 'function'))
                 var shouldReplace = true;
                 if ((typeof node.onclick == 'function') && (node.id.indexOf("treeForm:tree") == -1)) {
@@ -2718,7 +2724,9 @@ admingui.woodstock = {
 
     commonTaskHandler : function(treeNode, targetUrl) {
         admingui.ajax.loadPage({url: targetUrl});
-        admingui.nav.selectTreeNodeById(treeNode);
+	if ((treeNode != null) && (treeNode != '')) {
+	    admingui.nav.selectTreeNodeById(treeNode);
+	}
         return false;
     }
 }

@@ -5,7 +5,7 @@
                 id="ejb-lite_container"
                 type="org.glassfish.admingui:navNode" 
                 priority="250"
-                parentId="configuration" 
+                parentId="#{configName}" 
                 content="PluginTreeNodeEjbLite.jsf"
         />
         

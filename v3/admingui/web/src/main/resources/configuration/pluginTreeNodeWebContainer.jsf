@@ -38,7 +38,7 @@
 <sun:treeNode
     id="webContainer"
     text="$resource{i18n_web.tree.webContainer}"
-    url="/web/configuration/webContainerGeneral.jsf?configName=server-config"
+    url="/web/configuration/webContainerGeneral.jsf?configName=${configName}"
     imageURL="/resource/web/images/container.gif"
 >
     <!beforeCreate
