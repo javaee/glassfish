@@ -76,10 +76,8 @@ public class NetUtilsTest {
     @Test
     public void testHostIsLocal() {
         System.out.println("hostIsLocal Test");
-        String randomish = "" + System.nanoTime();
-        randomish = randomish.substring(randomish.length() - 4);
 
-        String[] hostnames = new String[]{null, "", "unlikely_name_" + randomish, "oracle.com", "localhost", NetUtils.getHostName()};
+        String[] hostnames = new String[]{null, "", unlikelyName, "oracle.com", "localhost", NetUtils.getHostName()};
         boolean[] expected = new boolean[]{true, true, false, false, true, true};
 
         for (int i = 0; i < hostnames.length; i++) {
@@ -88,5 +86,53 @@ public class NetUtilsTest {
             boolean result = NetUtils.IsThisHostLocal(hostname);
             assertEquals("hostname: " + hostname + ", result: " + result, expResult, result);
         }
+    }
+
+    /**
+     * Test equals
+     */
+    @Test
+    public void testEquals() {
+        assertTrue(NetUtils.isEqual(null, null));
+        assertTrue(NetUtils.isEqual(null, ""));
+        assertTrue(NetUtils.isEqual("", ""));
+        assertTrue(NetUtils.isEqual("localhost", "localhost"));
+        assertFalse(NetUtils.isEqual(null, "localhost"));
+        assertTrue(NetUtils.isEqual("localhost", "localhost"));
+        assertTrue(NetUtils.isEqual("www.oracle.com", "www.oracle.com"));
+        assertFalse(NetUtils.isEqual("oracle.com", "google.com"));
+        // since neither one can be resolved -- they are NOT the same, by definition
+        assertFalse(NetUtils.isEqual(unlikelyName, unlikelyName));
+
+
+    }
+
+    @Test
+    public void testEqualsSpecial() {
+        // in case I forget to set SPECIAL to false!
+        if (SPECIAL && "bnevins".equals(System.getProperty("user.name"))) {
+            String x1 = "unix"; // in my hosts file
+            String x2 = "improvident.sfbay";
+            String x3 = "improvident.sfbay.sun.com";
+            String x4 = "improvident.sfbay.sun"; // this is garbage
+            assertTrue(NetUtils.isEqual(x1, x2));
+            assertTrue(NetUtils.isEqual(x1, x3));
+            assertTrue(NetUtils.isEqual(x2, x3));
+            assertTrue(NetUtils.isEqual(x1, x1));
+            assertTrue(NetUtils.isEqual(x2, x2));
+            assertTrue(NetUtils.isEqual(x3, x3));
+            assertFalse(NetUtils.isEqual(x4, x4));
+            assertFalse(NetUtils.isEqual(x1, x4));
+            assertFalse(NetUtils.isEqual(x2, x4));
+            assertFalse(NetUtils.isEqual(x3, x4));
+        }
+    }
+    private static final String unlikelyName;
+    private static final boolean SPECIAL = false;
+
+    static {
+        String s = "" + System.nanoTime();
+        s = s.substring(s.length() - 4);
+        unlikelyName = "unlikely_name_" + s;
     }
 }

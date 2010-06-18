@@ -87,44 +87,6 @@ public class NetUtils {
     public static final int MAX_PORT = 65535;
 
     /////////////  BEGIN  Newer methods added June 2010 ////////////////////
-    public static boolean hostIsLocalJUNK_THROW_ME_AWAY(String hostname) {
-        // come on JDK!  Why is this so #$@% difficult!?!
-        // if you can think of something better -- go for it!!!
-        InetAddress[] hostAddresses;
-        List<InetAddress> localAddresses = new ArrayList<InetAddress>();
-
-        try {
-            hostAddresses = InetAddress.getAllByName(hostname);
-            InetAddress[] loc1 = InetAddress.getAllByName("localhost");
-            InetAddress[] loc2 = InetAddress.getAllByName(getCanonicalHostName());
-
-            if(loc1 != null)
-                for(InetAddress ia : loc1)
-                    localAddresses.add(ia);
-
-            if(loc2 != null)
-                for(InetAddress ia : loc2)
-                    localAddresses.add(ia);
-
-            if(localAddresses.size() <= 0)
-                return false;
-
-            if(hostAddresses == null || hostAddresses.length <= 0)
-                return false;
-        }
-        catch (UnknownHostException ex) {
-            // if the host is unknown then it certainly is not local by our definition
-            return false;
-        }
-
-        // if any hostAddress matches any localAddress -- then the host is local...
-
-        for(InetAddress ha : hostAddresses)
-            for(InetAddress la : localAddresses)
-                if(la.equals(ha))
-                    return true;
-        return false;
-    }
     public static boolean IsThisHostLocal(String hostname) {
         // come on JDK!  Why is this so #$@% difficult!?!
         // if you can think of something better -- go for it!!!
@@ -179,6 +141,62 @@ public class NetUtils {
         
             return false;
     }
+
+    /**
+     * Painfully thorough error-handling.  Some would say over-engineered but I 
+     * plan on never looking at this code again!
+     * @param host1
+     * @param host2
+     * @return
+     */
+    static public boolean isEqual(String host1, String host2) {
+        List<String> host1_ips = new ArrayList<String>();
+        List<String> host2_ips = new ArrayList<String>();
+
+        try {
+            if(!StringUtils.ok(host1) && !StringUtils.ok(host2))
+                return true; // edge case ==> both are null or empty
+
+            if(!StringUtils.ok(host1) || !StringUtils.ok(host2))
+                return false; // just one of them is null or empty 
+
+            InetAddress[] adds1 = InetAddress.getAllByName(host1);
+            InetAddress[] adds2 = InetAddress.getAllByName(host2);
+
+            boolean adds1Empty = false; // readability.  You'll see why below!
+            boolean adds2Empty = false; 
+            
+            if(adds1 == null || adds1.length <= 0)
+                adds1Empty = true;
+
+            if(adds2 == null || adds2.length <= 0)
+                adds2Empty = true;
+
+            // I told you!
+            if(adds1Empty && adds2Empty) // both
+                return true;
+            
+            if(adds1Empty || adds2Empty) // one but not the other
+                return false;
+            
+            for(InetAddress ia : adds1)
+                host1_ips.add(ia.getHostAddress());
+
+            for(InetAddress ia : adds2)
+                host2_ips.add(ia.getHostAddress());
+
+            for(String h1ip : host1_ips)
+                for(String h2ip : host2_ips)
+                    if(h1ip.equals(h2ip))
+                        return true;
+        
+            return false;
+        }
+        catch (UnknownHostException ex) {
+            return false;
+        }
+    }
+
     /////////////  END  Newer methods added June 2010 ////////////////////
 
     static public Socket getClientSocket(final String host, final int port, final int msecTimeout) {
