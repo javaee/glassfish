@@ -154,6 +154,8 @@ delete-jms-host R
 list-jms-hosts R
 stop-instance R
 list-instances R
+start-cluster R
+stop-cluster R
 backup-domain L
 restore-domain L
 list-backups L
