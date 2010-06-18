@@ -155,16 +155,11 @@ logger.setLevel(Level.FINEST);
             if (servers != null)
                 server = servers.getServer(sr.instance);
             if (server == null) {
-                // XXX - switch this once create-instance is working
-                /*
                 report.setActionExitCode(ExitCode.FAILURE);
                 report.setMessage(
                         strings.getLocalString("sync.unknown.instance",
                             "Unknown server instance: {0}", sr.instance));
                 return;
-                */
-                logger.fine("SynchronizeFiles: instance unknown: " + sr.instance);
-                server = servers.getServer("server");
             }
 
             // handle the request appropriately based on the directory
@@ -197,11 +192,14 @@ logger.setLevel(Level.FINEST);
         }
     }
 
-    // XXX - should be in a resource file
+    /*
+     * Content moved to src/main/resources/META-INF/config-files
+     *
     private String[] configFiles = {
         "domain.xml",
         "admin-keyfile",
         "cacerts.jks",
+        "client-jnlp-config.properties",
         "default-web.xml",
         "domain-passwords",
         "keyfile",
@@ -213,6 +211,7 @@ logger.setLevel(Level.FINEST);
         "wss-server-config-1.0.xml",
         "wss-server-config-2.0.xml"
     };
+    */
 
     /**
      * Synchronize files in the config directory.
@@ -271,12 +270,21 @@ logger.setLevel(Level.FINEST);
         try {
             File configDir = env.getConfigDirPath();
             File f = new File(configDir, "config-files");
-            // if the file doesn't exist, use a build-in default
+            // if the file doesn't exist, use a built-in default
             // XXX - convert this into a resource in the jar file
-            if (!f.exists())
-                return new LinkedHashSet<String>(Arrays.asList(configFiles));
-            in = new BufferedReader(new InputStreamReader(
+            if (f.exists())
+                in = new BufferedReader(new InputStreamReader(
                                                 new FileInputStream(f)));
+            else {
+                InputStream res =
+                    getClass().getResourceAsStream("/META-INF/config-files");
+                if (res != null)
+                    in = new BufferedReader(new InputStreamReader(res));
+                /*
+                else
+                    return new LinkedHashSet<String>(Arrays.asList(configFiles));
+                */
+            }
             String line;
             while ((line = in.readLine()) != null) {
                 if (line.startsWith("#"))

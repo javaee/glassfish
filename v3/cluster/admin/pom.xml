@@ -60,6 +60,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.1</include>
+                    <include>**/config-files</include>
                 </includes>
             </resource>
           </resources>
