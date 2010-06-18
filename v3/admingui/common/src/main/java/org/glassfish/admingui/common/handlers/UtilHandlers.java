@@ -47,12 +47,11 @@ package org.glassfish.admingui.common.handlers;
 
 import org.glassfish.admingui.common.util.GuiUtil;
 
-import javax.faces.component.UIViewRoot;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.LayoutDefinitionManager;
-//import com.sun.jsftemplating.layout.LayoutViewHandler;
+import com.sun.jsftemplating.layout.LayoutViewHandler;
 import com.sun.jsftemplating.layout.ViewRootUtil;
 import com.sun.jsftemplating.layout.descriptors.LayoutElement;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
@@ -74,6 +73,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import javax.faces.context.FacesContext;
+import javax.faces.component.UIViewRoot;
+
 
 /**
  *
@@ -143,12 +146,19 @@ public class UtilHandlers {
 	    @HandlerOutput(name="content", type=String.class)})
     public static void serveResource(HandlerContext ctx) throws java.io.IOException {
 	/*
-	  JSF 2.0 impl sets the writer before the render response phase (in
-	  apply request values).  So we can't control the output of an Ajax
-	  request. :(  Therefor the following is commented out.
+	  JSF 2.0 impl used to set the writer before the render response phase
+	  (in apply request values).  So we couldn't control the output of an
+	  Ajax request. :(  Therefor the following is commented out.  On
+	  10/6/2009 rlubke fixed this, we need to adjust the JS to handle a
+	  direct response then this can be enabled.
 	 
-	    LayoutViewHandler.serveResource(
-		ctx.getFacesContext(), (String) ctx.getInputValue("path"));
+	    FacesContext facesCtx = ctx.getFacesContext();
+	    UIViewRoot root = new UIViewRoot();
+	    root.setRenderKitId("dummy");
+	    facesCtx.setViewRoot(root);
+
+	    LayoutViewHandler.serveResource(facesCtx,
+		(String) ctx.getInputValue("path"));
 	 */
 	String path = (String) ctx.getInputValue("path");
 	int idx = path.lastIndexOf("://");
@@ -621,6 +631,42 @@ public class UtilHandlers {
 		    }
 		}
         return false;
+    }
+
+    /**
+     *	<p> This handler provides the foreach loop functionality.  You should
+     *	    specify a request attribute 'var' that will be used as the key for
+     *	    storing each token in the list.  You can then retreive each value
+     *	    as the loop iterates by requesting the request scoped attribute
+     *	    keyed by the value you suplied for 'var'.  You must also specify
+     *	    the <code>List&lt;Object&gt;</code> to iterate over.</p>
+     */
+    @Handler(id="foreach",
+	input={
+	    @HandlerInput(name="var", type=String.class, required=false, defaultValue="idx"),
+	    @HandlerInput(name="list", type=List.class, required=true) })
+    public static boolean foreach(HandlerContext handlerCtx) {
+	String var = (String) handlerCtx.getInputValue("var");
+	List<Object> list = (List<Object>) handlerCtx.getInputValue("list");
+
+	List<com.sun.jsftemplating.layout.descriptors.handler.Handler> handlers =
+            handlerCtx.getHandler().getChildHandlers();
+        if (handlers.size() > 0) {
+            // We have child handlers in the loop... execute while we iterate
+            LayoutElement elt = handlerCtx.getLayoutElement();
+            Map<String, Object> requestMap = handlerCtx.getFacesContext().
+                    getExternalContext().getRequestMap();
+	    for (Object obj : list) {
+                requestMap.put(var, obj);
+
+                // Ignore whats returned by the handler... we need to return
+                // false anyway to prevent children from being executed again
+                elt.dispatchHandlers(handlerCtx, handlers);
+	    }
+        }
+
+        // This will prevent the child handlers from executing again
+	return false;
     }
 
     @Handler(id = "convertStrToBoolean",
