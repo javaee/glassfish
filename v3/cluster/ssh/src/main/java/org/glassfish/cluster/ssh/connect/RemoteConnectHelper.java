@@ -94,7 +94,7 @@ public class RemoteConnectHelper  {
     }
     // need to get the command options that were specified too
 
-    public void runCommand(String noderef, String cmd, String instanceName ){
+    public int runCommand(String noderef, String cmd, String instanceName ){
 
         //get the node ref and see if ssh connection is setup if so use it
         try{
@@ -102,11 +102,13 @@ public class RemoteConnectHelper  {
         Node node = nodeMap.get(noderef);
         if (node == null){
             logger.severe("remote.connect.noSuchNodeRef"+ noderef);
-            return;
+            return 0;
         }
             String nodeHome = node.getNodeHome();
-            if( nodeHome == null)   // what can we assume here?
-                    return;
+            if( nodeHome == null) {  // what can we assume here?
+                logger.severe("remote.connect.noNodeHome"+noderef);
+                return 0;
+            }
             SshConnector connector = node.getSshConnector();
             if ( connector != null)  {
                 SSHLauncher sshL=habitat.getComponent(SSHLauncher.class);
@@ -121,16 +123,20 @@ public class RemoteConnectHelper  {
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
                 sshL.runCommand(fullCommand, outStream);
-                System.out.println(outStream);
-            } else {
-                return;
+                String results = outStream.toString();
+                if (results.endsWith("successfully."))
+                    return 1;
+                else
+                    return 0;
+            } 
 
-            }
         }catch (IOException ex) {
+            logger.severe("remote.connect.ioexception"+ cmd);
         } catch (java.lang.InterruptedException ei){
+            logger.severe("remote.connect.interrupt"+ cmd);
         }
 
-
+        return 0;
     }
 
 

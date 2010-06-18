@@ -58,8 +58,6 @@ import java.util.HashMap;
 import java.io.ByteArrayOutputStream;
 
 import com.sun.enterprise.universal.process.LocalAdminCommand;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.component.PerLookup;
@@ -155,15 +153,6 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
         } catch (ProcessManagerException ex) {
             
         }
-        /*
-        ActionReport report = ctx.getActionReport();
-
-        CommandRunner.CommandInvocation ci = cr.getCommandInvocation("start-local-instance", report);
-        ParameterMap map = new ParameterMap();
-        map.add("DEFAULT", instanceName);
-        ci.parameters(map);
-        ci.execute();
-               */
     }
 
     private void callInstance() {
@@ -174,7 +163,14 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             // check if needs a remote connection
             if (rch.isRemoteConnectRequired(noderef)) {
                 // this command will run over ssh
-                rch.runCommand(noderef, "start-local-instance", instanceName);
+                int status = rch.runCommand(noderef, "start-local-instance", instanceName);
+                if (status != 1){
+                    ActionReport report = ctx.getActionReport();
+                    String msg = Strings.get("start.instance.failed", instanceName);
+                    logger.warning(msg);
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setMessage(msg);
+                }
             }
         }
     }

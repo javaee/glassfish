@@ -172,12 +172,13 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
             Logger logger = LogDomains.getLogger(Node.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Node.class);
             SshConnector sshC = instance.createChild(SshConnector.class);
-            if (sshPort != "-1" || sshHost != null) {
-                if (sshPort != "-1")
-                    sshC.setSshPort(sshPort);
-                if (sshHost != null)
-                    sshC.setSshHost(sshHost);
-            }
+            if (sshPort != "-1" )
+                sshC.setSshPort(sshPort);
+            else
+                sshC.setSshPort("22");
+            if (sshHost != null)
+                sshC.setSshHost(sshHost);
+            
             if (sshuser != null || sshkeyfile != null) {
                 SshAuth sshA = sshC.createChild(SshAuth.class);
                 if (sshuser != null)

@@ -95,10 +95,12 @@ public class CreateInstanceCommand implements AdminCommand {
     private String instance;
 
     private Logger logger;
+    private AdminCommandContext ctx;
 
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
+        ctx = context;
         logger= context.logger;
         
         CommandInvocation ci = cr.getCommandInvocation("_register-instance", report);
@@ -117,7 +119,10 @@ public class CreateInstanceCommand implements AdminCommand {
             try {
                  int status = lac.execute();
             }   catch (ProcessManagerException ex)  {
-                
+                String msg = Strings.get("create.instance.failed", instance);
+                logger.warning(msg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);                
             }
 
         } else {
@@ -131,7 +136,15 @@ public class CreateInstanceCommand implements AdminCommand {
             // check if needs a remote connection
             if (rch.isRemoteConnectRequired(node)) {
                 // this command will run over ssh
-                rch.runCommand(node, "_create-instance-filesystem", instance);
+                int status = rch.runCommand(node, "_create-instance-filesystem", instance);
+                if (status != 1){
+                    ActionReport report = ctx.getActionReport();
+                    String msg = Strings.get("create.instance.failed", instance);
+                    logger.warning(msg);
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setMessage(msg);
+                }
+
             }
     }
 }
