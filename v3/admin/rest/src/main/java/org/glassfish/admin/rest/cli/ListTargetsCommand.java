@@ -99,7 +99,7 @@ public class ListTargetsCommand implements AdminCommand {
                     numOfTargets++;                }
             } else {
                 report.setActionExitCode(ExitCode.FAILURE);
-                report.setMessage("operand should be either 'das' or 'server' or 'intance' or 'cluster'");
+                report.setMessage("operand should be either 'das' or 'server' or 'instance' or 'cluster'");
                 return;
             }
         }
