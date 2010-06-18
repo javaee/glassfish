@@ -501,8 +501,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     instance.getApplicationRef().add(newAppRef);
                 }
             }
-            PortManager pm = new PortManager(ourCluster, ourConfig, domain, instance);
-            pm.process(); // might throw
+            //PortManager pm = new PortManager(ourCluster, ourConfig, domain, instance);
+            //pm.process(); // might throw
         } // This brace ends this huge method
     } // this brace ends the class
 
