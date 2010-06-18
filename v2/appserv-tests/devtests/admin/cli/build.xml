@@ -62,7 +62,7 @@
     </path>
     <pathconvert refid="class.path" property="test"/>
 
-    <target name="cli" depends="instance, cluster, ports, configs, sync"/>
+    <target name="cli" depends="instance, cluster, ports, configs, sync, domain"/>
     <target name="cluster">
         <java classname="admin.ClusterTest"  fork="true" classpath="${test}"/>
     </target>
@@ -81,6 +81,9 @@
     </target>
     <target name="sync">
         <java classname="admin.SyncTest"  fork="true" classpath="${test}"/>
+    </target>
+    <target name="domain">
+         <java classname="admin.DomainTest"  fork="true" classpath="${test}"/>
     </target>
 
     <target name="portsonly" depends="init">
