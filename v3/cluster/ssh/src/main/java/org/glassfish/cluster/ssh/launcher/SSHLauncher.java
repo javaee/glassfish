@@ -137,12 +137,17 @@ public class SSHLauncher implements PostConstruct {
             this.host = sshHost;
         
         SshAuth sshAuth = connector.getSshAuth();
+        String userName = null;
         if (sshAuth != null) {
-            String userName = sshAuth.getUserName();
-            this.userName = SSHUtil.checkString(userName) == null ?
-                    System.getProperty("user.name") : userName;
-            this.keyFile = sshAuth.getKeyfile();
+            userName = sshAuth.getUserName();
+            this.keyFile = sshAuth.getKeyfile();            
         }
+
+        this.userName = SSHUtil.checkString(userName) == null ?
+                    System.getProperty("user.name") : userName;
+
+
+
         // String authType = sshAuth.;
         //this.authType = authType == null ? "key" : authType;
 
