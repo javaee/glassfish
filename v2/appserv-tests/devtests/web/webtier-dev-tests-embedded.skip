@@ -99,3 +99,7 @@ servlet-3.0/webFragmentWithLoginConfig
 servlet-3.0/webFragmentWithLoginConfigOverrided
 singleSignOnCookieSecure
 singleSignOnHttpServiceDynamicReconfig
+# monitoring is not supported in embedded
+monitorHttpService
+monitorServletInstance
+monitorWebRequest
