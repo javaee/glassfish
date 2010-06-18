@@ -87,6 +87,8 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
                 WLContainerDescriptorNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.SESSION_DESCRIPTOR),
                 WLSessionDescriptorNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.JSP_DESCRIPTOR),
+                WLJspDescriptorNode.class);
     }
     
     /**
@@ -165,6 +167,10 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         // session-descriptor
         WLSessionDescriptorNode sessionDescriptorNode = new WLSessionDescriptorNode();
         sessionDescriptorNode.writeDescriptor(root, bundleDescriptor);
+
+        // jsp-descriptor
+        WLJspDescriptorNode jspDescriptorNode = new WLJspDescriptorNode();
+        jspDescriptorNode.writeDescriptor(root, bundleDescriptor);
 
         return root;
     }

@@ -336,4 +336,25 @@ public interface RuntimeTagNames extends TagNames {
     public static final String URL_REWRITING_ENABLED = "url-rewriting-enabled";
     public static final String PERSISTENT_STORE_DIR = "persistent-store-dir";
     public static final String SAVE_SESSIONS_ENABLED = "save-sessions-enabled";
+
+    // jsp-descriptor
+    public static final String JSP_DESCRIPTOR = "jsp-descriptor";
+    public static final String KEEPGENERATED = "keepgenerated";
+    public static final String PACKAGE_PREFIX = "package-prefix";
+    public static final String SUPER_CLASS = "super-class";
+    public static final String PAGE_CHECK_SECONDS = "page-check-seconds";
+    public static final String PRECOMPILE = "precompile";
+    public static final String PRECOMPILE_CONTINUE = "precompile-continue";
+    public static final String VERBOSE = "verbose";
+    public static final String WORKING_DIR = "working-dir";
+    public static final String PRINT_NULLS = "print-nulls";
+    public static final String BACKWARD_COMPATIBLE = "backward-compatible";
+    public static final String ENCODING = "encoding";
+    public static final String EXACT_MAPPING = "exact-mapping";
+    public static final String DEFAULT_FILE_NAME = "default-file-name";
+    public static final String RTEXPRVALUE_JSP_PARAM_NAME = "rtexprvalue-jsp-param-name";
+    public static final String DEBUG = "debug";
+    public static final String COMPRESS_HTML_TEMPLATE = "compress-html-template";
+    public static final String OPTIMIZE_JAVA_EXPRESSION = "optimize-java-expression";
+    public static final String RESOURCE_PROVIDER_CLASS = "resource-provider-class";
 }
