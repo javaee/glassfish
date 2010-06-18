@@ -21,15 +21,15 @@
 # example, grizzly version would look like 1.8.2-0,0. 
 
 glassfish_version="3.1,0-@BUILD_ID@"
-felix_version="2.0.2,0-0"
+felix_version="3.0.1,0-0"
 javadb_version="10.5.3.0,0-0"
-corba_version="3.0.0,0-41"
+corba_version="3.1.0,0-1"
 jsf_version="2.0.2,0-10"
 grizzly_version="1.9.19,0-0"
 metro_version="2.1,0-5"
 javahelp_version="2.0.2,0-0"
 
 #description
-glassfish_description="GlassFish v3 Application Server"
-glassfish_description_long="GlassFish v3 is an application server created using modular, lightweight, extensible architecture built on OSGi.  It is the first implementation of Java EE 6 standard and is a great developer platform, starts fast, is easy to use and has extensions to support dynamic languages like jRuby. "
+glassfish_description="GlassFish Application Server"
+glassfish_description_long="GlassFish is an application server created using modular, lightweight, extensible architecture built on OSGi.  It is the first implementation of Java EE 6 standard and is a great developer platform, starts fast, is easy to use and has extensions to support dynamic languages like jRuby. "
 glassfish_info_classification="Application Servers"
