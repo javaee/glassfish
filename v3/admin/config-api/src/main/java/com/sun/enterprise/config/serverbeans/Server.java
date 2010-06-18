@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import com.sun.enterprise.config.util.PortUtils;
+import com.sun.enterprise.config.util.PortManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
@@ -344,8 +344,12 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
         @Inject
         Domain domain;
+
         @Inject
         private ServerEnvironment env;
+
+        @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
+        private Server das;
 
         @Override
         public void decorate(AdminCommandContext context, Server instance) throws TransactionFailure, PropertyVetoException {
@@ -357,8 +361,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
             if(node==null)
                 instance.setNode("localhost");
-            
-            handlePorts(instance);
+
+            PortManager pm = new PortManager(das, domain, instance);
+            pm.justDoIt(); // might throw
 
             //There should be no cluster/config with the same name as the server
             if (((clusters != null && domain.getClusterNamed(instance.getName()) != null))
@@ -497,12 +502,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     instance.getApplicationRef().add(newAppRef);
                 }
             }
-        }
-        private void handlePorts(Server instance) throws TransactionFailure {
-            String err = PortUtils.checkInternalConsistency(instance);
-
-            if(err != null)
-                throw new TransactionFailure(err);
         }
     }
 
