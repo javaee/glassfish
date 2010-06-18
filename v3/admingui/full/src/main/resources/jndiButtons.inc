@@ -43,12 +43,12 @@
                 updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['ResType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
                 mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")   
                 if(#{pageSession.hasPropertySheet}){
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                    gf.updateEntity(endpoint="#{pageSession.selfUrl}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}"
                     );
                     if(#{pageSession.has2Objects}){
-                        saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}"  attrs="#{pageSession.valueMap2}"
+                        gf.updateEntity(endpoint="#{pageSession.selfUrl2}"  attrs="#{pageSession.valueMap2}"
                             skipAttrs="#{pageSession.skipAttrsList2}"
                             convertToFalse="#{pageSession.convertToFalseList2}"
                         );
@@ -57,6 +57,7 @@
                 if (#{pageSession.hasPropertyTable}){
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    //REST - TO DO
                     setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                 }
                 prepareSuccessfulMsg();
@@ -68,23 +69,17 @@
                 <!command
                     updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['ResType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
                     mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")   
-                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+                    gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"
-                        result => $attribute{objStr});
-
-                    //when creating resource, need to create the resource-ref
-                    if (#{pageSession.createResourceRef}){
-                        mapPut(map="#{pageSession.valueMap2}" key="ref" value="#{pageSession.valueMap['Name']}")
-                        createProxy(parentObjectNameStr="amx:pp=/domain/servers,type=server,name=server" childType="resource-ref"
-                            attrs="#{pageSession.valueMap2}"
-                            convertToFalse={"Enabled"} );
-                    }
-
+                        result => $attribute{resultEndPoint});
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                        //REST - TO DO
+                        if (!#{pageSession['rest-api']}) {
+                            setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                        }
                     }
                     gf.redirect(page="#{parentPage}")
                 />
