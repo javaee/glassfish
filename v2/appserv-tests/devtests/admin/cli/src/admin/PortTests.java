@@ -92,9 +92,11 @@ public class PortTests extends AdminBaseDevTest {
         String iname = generateInstanceName();
         nums[3]= -100;
         report("create-instance-" + iname + "illegalPortsSpecified", !asadmin("create-local-instance", "--systemproperties", assembleEnormousPortsString(nums), iname));
+        report("delete-instance-" + iname + "legalPortsSpecified", !asadmin("delete-local-instance", iname));
 
         nums[3] = 0;
-        report("create-instance-" + iname + "illegalPortsSpecified", !asadmin("create-local-instance", "--systemproperties", assembleEnormousPortsString(nums), iname));
+        report("create-instance-" + iname + "illegalPortsSpecified", asadmin("create-local-instance", "--systemproperties", assembleEnormousPortsString(nums), iname));
+        report("delete-instance-" + iname + "legalPortsSpecified", asadmin("delete-local-instance", iname));
 
         nums[3] = 65535;
         report("create-instance-" + iname + "illegalPortsSpecified", asadmin("create-local-instance", "--systemproperties", assembleEnormousPortsString(nums), iname));
@@ -102,6 +104,7 @@ public class PortTests extends AdminBaseDevTest {
 
         nums[3] += 1;
         report("create-instance-" + iname + "illegalPortsSpecified", !asadmin("create-local-instance", "--systemproperties", assembleEnormousPortsString(nums), iname));
+        report("delete-instance-" + iname + "legalPortsSpecified", !asadmin("delete-local-instance", iname));
     }
 
     private String assembleEnormousPortsString(int index1, int index2, final int[] nums) {
