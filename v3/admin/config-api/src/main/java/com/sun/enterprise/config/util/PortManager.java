@@ -35,6 +35,8 @@
  */
 package com.sun.enterprise.config.util;
 
+import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.ObjectAnalyzer;
@@ -50,25 +52,24 @@ import org.jvnet.hk2.config.TransactionFailure;
  */
 public final class PortManager {
 
-    public PortManager(Server theDas, Domain theDomain, Server theNewServer) throws TransactionFailure {
+    public PortManager(Cluster cluster, Config config, Domain theDomain, Server theNewServer) throws TransactionFailure {
         try {
             if (theNewServer == null || theDomain == null)
                 throw new TransactionFailure(Strings.get("internal.error", "null argument in PortManager constructor"));
 
-            dasName = theDas.getName();
-
-            if (!StringUtils.ok(dasName))
-                throw new TransactionFailure(Strings.get("internal.error", "null or empty DAS name."));
-
             newServer = theNewServer;
-            this.domain = theDomain;
+            domain = theDomain;
             serverName = newServer.getName();
             host = newServer.getNodeAgentRef();
+            allPorts = new ArrayList<Integer>();
+            newServerPorts = new ServerPorts(cluster, config, domain, newServer);
 
             if (!StringUtils.ok(host))
                 throw new TransactionFailure(Strings.get("PortManager.noHost", serverName));
 
             isLocal = NetUtils.IsThisHostLocal(host);
+
+
             allServers = domain.getServers().getServer();
 
             // why all this nonsense?  ConcurrentModificationException!!!
@@ -89,15 +90,26 @@ public final class PortManager {
         }
     }
 
-    public void justDoIt() throws TransactionFailure {
+    public void process() throws TransactionFailure {
         try {
+            // if there are no port system-property's -- no point in going on!
+            if (newServerPorts.getMap().isEmpty())
+                return; // all done!
+
             // make sure user-supplied props are not flaky
             PortUtils.checkInternalConsistency(newServer);
 
+            // create a list of ALL servers running on the same machine
             createServerList();
-        }
-        catch (TransactionFailure tf) {
-            throw tf;
+
+            // create a sorted list of every port on every other server on the same machine.
+            createAllPortsList();
+
+            // we have a list of all possible conflicting server ports.
+            // let's find some unused ports and reassign the variables inside
+            // the ServerPorts class
+            reassignPorts();
+
         }
         catch (Exception e) {
             throw new TransactionFailure(e.toString(), e);
@@ -137,18 +149,37 @@ public final class PortManager {
     public String toString() {
         StringBuilder sb = new StringBuilder("PortManager Dump:");
 
-        for(ServerPorts sp : serversOnHost)
+        for (ServerPorts sp : serversOnHost)
             sb.append(sp).append('\n');
 
+        sb.append("All Ports in all other servers on same host: " + allPorts);
         return sb.toString();
     }
 
+    private void reassignPorts() {
+    }
+
+    private void createAllPortsList() {
+
+        for (ServerPorts sp : serversOnHost) {
+            Collection<Integer> ii = sp.getMap().values();
+
+            // do not want duplicates!!
+            for (Integer i : ii)
+                if (!allPorts.contains(i))
+                    allPorts.add(i);
+        }
+        
+        Collections.sort(allPorts);
+    }
     private final String serverName;
     private final Server newServer;
-    private final String dasName;
     private final boolean isLocal;
     private final Domain domain;
     private final String host;
+    private final List<Integer> allPorts;
     private final List<Server> allServers;
     private final List<ServerPorts> serversOnHost;
+    private final ServerPorts newServerPorts;
+    private final boolean checkLivePorts = true;
 }

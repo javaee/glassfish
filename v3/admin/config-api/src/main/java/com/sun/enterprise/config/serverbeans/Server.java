@@ -348,11 +348,10 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         @Inject
         private ServerEnvironment env;
 
-        @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
-        private Server das;
-
         @Override
         public void decorate(AdminCommandContext context, Server instance) throws TransactionFailure, PropertyVetoException {
+            Config ourConfig = null;
+            Cluster ourCluster = null;
             Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Server.class);
             Transaction t = Transaction.getTransaction(instance);
@@ -361,10 +360,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
             if(node==null)
                 instance.setNode("localhost");
-
-            PortManager pm = new PortManager(das, domain, instance);
-            pm.justDoIt(); // might throw
-
             //There should be no cluster/config with the same name as the server
             if (((clusters != null && domain.getClusterNamed(instance.getName()) != null))
                     || (domain.getConfigNamed(instance.getName()) != null)) {
@@ -383,8 +378,11 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 if (clusters != null) {
                     for (Cluster cluster : clusters.getCluster()) {
                         if (cluster != null && clusterName.equals(cluster.getName())) {
-                            instance.setConfigRef(cluster.getConfigRef());
+                            ourCluster = cluster;
+                            String configName = cluster.getConfigRef();
+                            instance.setConfigRef(configName);
                             clusterExists = true;
+                            ourConfig = domain.getConfigNamed(configName);
                             break;
                         }
                     }
@@ -423,6 +421,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     throw new TransactionFailure(localStrings.getLocalString(
                             "noSuchConfig", "Configuration {0} does not exist.", configRef));
                 }
+                ourConfig = specifiedConfig;
                 try {
                     File configConfigDir = new File(env.getConfigDirPath(), specifiedConfig.getName());
                     new File(configConfigDir, "docroot").mkdirs();
@@ -456,7 +455,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                             e.toString(), e));
                     throw new TransactionFailure(e.toString(), e);
                 }
-
+                ourConfig = configCopy;
 
                 final String configName = instance.getName() + "-config";
                 instance.setConfigRef(configName);
@@ -502,8 +501,28 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     instance.getApplicationRef().add(newAppRef);
                 }
             }
-        }
-    }
+            PortManager pm = new PortManager(ourCluster, ourConfig, domain, instance);
+            pm.process(); // might throw
+
+            // TEMPORARY  REMOVE June 21, 2010
+            // TEMPORARY  REMOVE June 21, 2010
+            // TEMPORARY  REMOVE June 21, 2010
+            // TEMPORARY  REMOVE June 21, 2010
+            // TEMPORARY  REMOVE June 21, 2010
+            // TEMPORARY  REMOVE June 21, 2010
+            // TEMPORARY  REMOVE June 21, 2010
+            if("bnevins".equals(System.getProperty("user.name")))
+                    System.out.println(pm);
+            // TEMPORARY  REMOVE June 21, 2010
+            // TEMPORARY  REMOVE June 21, 2010
+            // TEMPORARY  REMOVE June 21, 2010
+            // TEMPORARY  REMOVE June 21, 2010
+            // TEMPORARY  REMOVE June 21, 2010
+            // TEMPORARY  REMOVE June 21, 2010
+            // TEMPORARY  REMOVE June 21, 2010
+
+        } // This brace ends this huge method
+    } // this brace ends the class
 
     @Service
     @Scoped(PerLookup.class)

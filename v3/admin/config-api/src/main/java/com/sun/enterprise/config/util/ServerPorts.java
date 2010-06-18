@@ -49,6 +49,7 @@ import static com.sun.enterprise.config.util.PortConstants.PORTSLIST;
  * Simple pkg-priv class for keeping the system-properties of a Server handy.
  * We add the Port Props in the correct order
  * Order of precedence from LOW to HIGH ==
+ * (0) domain
  * (1) cluster
  * (2) config
  * (3) server
@@ -59,19 +60,43 @@ import static com.sun.enterprise.config.util.PortConstants.PORTSLIST;
  */
 class ServerPorts {
 
+    // The new server is in the middle of its creation transaction which makes
+    // things trickier -- its config, for instance, might not be in the domains
+    //list of configs yet.
+    // So we send everything in explicitly from the Transaction...
+    ServerPorts(Cluster cluster, Config config, Domain domain, Server theServer) {
+        initialize(cluster, config, domain, theServer);
+    }
+
+    // this constructor is for use for pre-existing servers.
     ServerPorts(Domain domain, Server theServer) {
-        List<SystemProperty> propList;
         Cluster cluster = null;
         Config config = null;
-        server = theServer;
 
-        if (server.isInstance())
-            cluster = domain.getClusterForInstance(server.getName());
+        if (theServer.isInstance())
+            cluster = domain.getClusterForInstance(theServer.getName());
 
-        String configName = server.getConfigRef();
+        String configName = theServer.getConfigRef();
 
         if (StringUtils.ok(configName))
             config = domain.getConfigNamed(configName);
+
+        initialize(cluster, config, domain, theServer);
+    }
+
+    Map<String, Integer> getMap() {
+        return props;
+    }
+
+    //////////////////////  all private below   //////////////////////////
+
+    private void initialize(Cluster cluster, Config config, Domain domain, Server theServer) {
+        List<SystemProperty> propList;
+        server = theServer;
+
+        // 0. domain
+        propList = domain.getSystemProperty();
+        addAll(propList);
 
         // 1. cluster
         if (cluster != null) {
@@ -124,6 +149,6 @@ class ServerPorts {
         sb.append("Properties: ").append(props).append('\n');
         return sb.toString();
     }
-    private final Server server;
+    private Server server;
     private final Map<String, Integer> props = new HashMap<String, Integer>();
 }
