@@ -45,6 +45,10 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -55,6 +59,8 @@ import java.util.logging.Level;
 
 
 @Service(name = "unfreeze-transaction-service")
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE, CommandTarget.CONFIG})
+@Cluster(RuntimeType.INSTANCE)
 @Scoped(PerLookup.class)
 @I18n("unfreeze.transaction.service")
 public class UnFreezeTransactionService implements AdminCommand {
@@ -63,7 +69,7 @@ public class UnFreezeTransactionService implements AdminCommand {
             StringManager.getManager(UnFreezeTransactionService.class);
 
     private static final Logger logger =
-            LogDomains.getLogger(UnFreezeTransactionService.class, LogDomains.TRANSACTION_LOGGER);
+            LogDomains.getLogger(UnFreezeTransactionService.class, LogDomains.JTA_LOGGER);
 
     @Param(optional = true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;

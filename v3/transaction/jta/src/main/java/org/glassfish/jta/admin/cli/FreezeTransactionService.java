@@ -45,6 +45,10 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -55,6 +59,8 @@ import java.util.logging.Level;
 
 
 @Service(name = "freeze-transaction-service")
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE, CommandTarget.CONFIG})
+@Cluster(RuntimeType.INSTANCE)
 @Scoped(PerLookup.class)
 @I18n("freeze.transaction.service")
 public class FreezeTransactionService implements AdminCommand {
@@ -63,7 +69,7 @@ public class FreezeTransactionService implements AdminCommand {
             StringManager.getManager(FreezeTransactionService.class);
 
     private static final Logger logger =
-            LogDomains.getLogger(FreezeTransactionService.class, LogDomains.TRANSACTION_LOGGER);
+            LogDomains.getLogger(FreezeTransactionService.class, LogDomains.JTA_LOGGER);
 
     @Param(optional = true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
@@ -81,8 +87,8 @@ public class FreezeTransactionService implements AdminCommand {
 
         try {
             if (transactionMgr.isFrozen()) {
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.fine("Transaction is already frozen.");
+                if (logger.isLoggable(Level.INFO)) {
+                    logger.info("Transaction is already frozen.");
                 }
                 return;
             } else {
