@@ -38,6 +38,7 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.util.StringUtils;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,6 +57,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.io.ByteArrayOutputStream;
 
+import com.sun.enterprise.universal.process.LocalAdminCommand;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.glassfish.api.admin.ParameterMap;
@@ -97,7 +99,6 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     private Servers servers;
     @Inject
     private Configs configs;
-    @Inject
     
     @Param(optional = true, defaultValue = "true")
     private Boolean force;
@@ -148,13 +149,21 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     }
 
     private void startInstance()  {
+        LocalAdminCommand lac = new LocalAdminCommand("start-local-instance",instanceName);
+        try {
+            int status = lac.execute();
+        } catch (ProcessManagerException ex) {
+            
+        }
+        /*
         ActionReport report = ctx.getActionReport();
 
         CommandRunner.CommandInvocation ci = cr.getCommandInvocation("start-local-instance", report);
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", instanceName);
         ci.parameters(map);
-        ci.execute();        
+        ci.execute();
+               */
     }
 
     private void callInstance() {

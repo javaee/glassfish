@@ -113,7 +113,7 @@ public class RemoteConnectHelper  {
                 sshL.init(noderef);
 
                 // create command and params
-                String command = "start-local-instance "+ instanceName;
+                String command = cmd +" "+ instanceName;
                 String prefix = nodeHome +"/bin/asadmin ";
 
                 String fullCommand = prefix + command;

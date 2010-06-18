@@ -36,7 +36,10 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.universal.process.ProcessManagerException;
 import org.glassfish.api.ActionReport;
+import com.sun.enterprise.universal.process.LocalAdminCommand;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
@@ -46,8 +49,11 @@ import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.cluster.ssh.launcher.SSHLauncher;
+import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+import java.util.logging.Logger;
 
 /**
  * Remote AdminCommand to create an instance.  This command is run only on DAS.
@@ -63,6 +69,12 @@ import org.jvnet.hk2.component.*;
 public class CreateInstanceCommand implements AdminCommand {
     @Inject
     private CommandRunner cr;
+    
+    @Inject
+    Habitat habitat;
+
+    @Inject
+    Node[] nodes;
 
     @Param(name="node", optional=true)
     String node;
@@ -82,11 +94,13 @@ public class CreateInstanceCommand implements AdminCommand {
     @Param(name = "instance_name", primary = true)
     private String instance;
 
+    private Logger logger;
 
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
-
+        logger= context.logger;
+        
         CommandInvocation ci = cr.getCommandInvocation("_register-instance", report);
         ParameterMap map = new ParameterMap();
         map.add("node", node);        
@@ -97,5 +111,27 @@ public class CreateInstanceCommand implements AdminCommand {
         map.add("DEFAULT", instance);
         ci.parameters(map);
         ci.execute();
+
+        if (node.equals("localhost")) {
+            LocalAdminCommand lac = new LocalAdminCommand("_create-instance-filesystem",instance);
+            try {
+                 int status = lac.execute();
+            }   catch (ProcessManagerException ex)  {
+                
+            }
+
+        } else {
+            createInstanceRemote();
+        }
+        
+    }
+
+    private void createInstanceRemote() {
+            RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodes, logger);
+            // check if needs a remote connection
+            if (rch.isRemoteConnectRequired(node)) {
+                // this command will run over ssh
+                rch.runCommand(node, "_create-instance-filesystem", instance);
+            }
     }
 }
