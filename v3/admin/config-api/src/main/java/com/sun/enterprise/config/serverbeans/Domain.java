@@ -421,6 +421,12 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     boolean isAppRefEnabledInTarget(String appName, String target);
 
     @DuckTyped
+    List<String> getAllReferencedTargetsForApplication(String appName);
+
+    @DuckTyped
+    List<String> getAllTargets();
+
+    @DuckTyped
     ReferenceContainer getReferenceContainerNamed(String name);
 
     @DuckTyped
@@ -628,6 +634,35 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
             }
             return false;
         }
+
+        public static List<String> getAllTargets(Domain d) {
+            List<String> targets = new ArrayList<String>();
+            // only add non-clustered servers as the cluster 
+            // targets will be separately added
+            for (Server server : d.getServers().getServer()) {
+                if (server.getCluster() == null) {
+                    targets.add(server.getName());
+                }
+            }
+            if (d.getClusters() != null) {
+                for (Cluster cluster : d.getClusters().getCluster()) {
+                    targets.add(cluster.getName());
+                }
+            }
+            return targets;
+        }
+
+        public static List<String> getAllReferencedTargetsForApplication(
+            Domain me, String appName) {
+            List<String> referencedTargets = new ArrayList<String>();
+            for (String target : me.getAllTargets()) {
+                if (me.getApplicationRefInTarget(appName, target) != null) {
+                    referencedTargets.add(target);
+                }
+            }
+            return referencedTargets;
+        }
+
 
          public static ReferenceContainer getReferenceContainerNamed(Domain d, String name) {
             // Clusters and Servers are ReferenceContainers

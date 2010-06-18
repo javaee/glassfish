@@ -234,7 +234,9 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 isDirectoryDeployed = Boolean.valueOf(application.getDirectoryDeployed());
             }
 
-            if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+            // we should try to unregister the application for both success
+            // and warning case
+            if (!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
                 // so far I am doing this after the unload, maybe this should be moved before...
                 try {
                     // remove the "application" element
@@ -253,7 +255,6 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                     }
                 }
 
-                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             } // else a message should have been provided.
         }
     }

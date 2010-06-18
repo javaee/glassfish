@@ -121,6 +121,10 @@ public class ListComponentsCommand  implements AdminCommand {
 
     private String getVerboseStatus(Application app) {
        String message = "";
+       if (target.equals("domain")) {
+           // ignore --verbose for target domain 
+           return message;
+       }
        ApplicationRef ref = domain.getApplicationRefInTarget(app.getName(), target);
        boolean isVersionEnabled = Boolean.valueOf(ref.getEnabled());
        if ( isVersionEnabled ) {

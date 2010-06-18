@@ -45,9 +45,11 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
+import org.glassfish.common.util.admin.ParameterMapExtractor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import org.jvnet.hk2.annotations.Service;
@@ -55,6 +57,8 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.annotations.Scoped;
 import java.util.Properties;
+import java.util.Collection;
+import java.util.ArrayList;
 import java.io.File;
 
 /**
@@ -86,6 +90,9 @@ public class ReDeployCommand extends DeployCommandParameters implements AdminCom
     //define this variable to skip parameter valadation.
     //Param validation will be done when referening deploy command.
     boolean skipParamValidation = true;
+
+    private final Collection<String> excludedDeployCommandParamNames =
+            initExcludedDeployCommandParamNames();
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ReDeployCommand.class);
     
@@ -99,10 +106,20 @@ public class ReDeployCommand extends DeployCommandParameters implements AdminCom
         if (!validateParameters(name, report)) {
             return;
         }
-        force = true;
+        final ParameterMap paramMap;
+        final ParameterMapExtractor extractor = new ParameterMapExtractor(this);
+        try {
+            paramMap = extractor.extract(excludedDeployCommandParamNames);
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        paramMap.set("force", String.valueOf(true));
 
         CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("deploy", report);
-        inv.parameters(this).inbound(context.getInboundPayload()).outbound(context.getOutboundPayload()).execute();
+        inv.parameters(paramMap).inbound(context.getInboundPayload()).outbound(context.getOutboundPayload()).execute();
     }
 
         /**
@@ -145,4 +162,11 @@ public class ReDeployCommand extends DeployCommandParameters implements AdminCom
         }
         return true;
     }
+
+    private Collection<String> initExcludedDeployCommandParamNames() {
+        final Collection<String> result = new ArrayList<String>();
+        result.add("force");
+        return result;
+    }
+
 }
