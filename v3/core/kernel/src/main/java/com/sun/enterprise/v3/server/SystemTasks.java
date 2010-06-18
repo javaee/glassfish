@@ -37,6 +37,7 @@
 
 package com.sun.enterprise.v3.server;
 
+import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -163,17 +164,26 @@ public class SystemTasks implements Init, PostConstruct {
     private void setSystemPropertiesFromDomainXml() {
         // precedence order from high to low
         // 0. server
-        // 1. server-config
-        // 2. domain
+        // 1. cluster
+        // 2. <server>-config or <cluster>-config
+        // 3. domain
         // so we need to add System Properties in *reverse order* to get the
         // right precedence.
 
         List<SystemProperty> domainSPList = domain.getSystemProperty();
         List<SystemProperty> configSPList = getConfigSystemProperties();
+        Cluster cluster = server.getCluster();
+        List<SystemProperty> clusterSPList = null;
+        if (cluster != null) {
+            clusterSPList = cluster.getSystemProperty();
+        }
         List<SystemProperty> serverSPList = server.getSystemProperty();
 
         setSystemProperties(domainSPList);
         setSystemProperties(configSPList);
+        if (clusterSPList != null) {
+            setSystemProperties(clusterSPList);
+        }
         setSystemProperties(serverSPList);
     }
 
