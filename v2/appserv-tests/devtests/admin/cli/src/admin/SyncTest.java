@@ -38,6 +38,7 @@ package admin;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
 
 /**
  *
@@ -45,6 +46,19 @@ import java.io.IOException;
  */
 public class SyncTest extends AdminBaseDevTest {
 
+    SyncTest() {
+        String host0 = null;
+        try {
+            host0 = InetAddress.getLocalHost().getHostName();
+        }
+        catch (Exception e) {
+            host0 = "localhost";
+        }
+        host = host0;
+        System.out.println("Host= " + host);
+        instancesHome = new File(new File(getGlassFishHome(), "nodeagents"), host);
+
+    }
     @Override
     protected String getTestDescription() {
         return "Tests Start-up Synchronization between the DAS and Instances.";
@@ -72,7 +86,7 @@ public class SyncTest extends AdminBaseDevTest {
         final String i1murl = "http://localhost:14848/management/domain/";
         final String i1name = "synci1";
 
-        // create a cluster and two instances
+        // create a cluster and an instance
         report(tn + "create-cluster", asadmin("create-cluster", cname));
         report(tn + "create-local-instance1", asadmin("create-local-instance",
                 "--cluster", cname, "--systemproperties",
@@ -80,10 +94,12 @@ public class SyncTest extends AdminBaseDevTest {
                 "IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:" +
                 "JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848", i1name));
 
-        // deploy an application to the cluster (before instances are started)
-        File webapp = new File("resources", "helloworld.war");
-        report(tn + "deploy", asadmin("deploy", "--target", cname, webapp.getAbsolutePath()));
-
+        // deploy an application to the cluster (before the instance is started)
+        /*
+         File webapp = new File("resources", "helloworld.war");
+        report(tn + "deploy", asadmin("deploy", "--target", cname,
+                "--name", "helloworld1", webapp.getAbsolutePath()));
+        */
         // create a file in docroot
         File foo = new File(getGlassFishHome(), "domains/domain1/docroot/foo.html");
         try {
@@ -103,20 +119,20 @@ public class SyncTest extends AdminBaseDevTest {
         report(tn + "list-instances", asadmin("list-instances"));
         report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
         report(tn + "getfoo", matchString("Foo file", getURL(i1url + "foo.html")));
-        report(tn + "getapp1", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        //report(tn + "getapp1", matchString("Hello", getURL(i1url + "helloworld1/hi.jsp")));
 
         // stop the instance
         report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
 
         // undeploy
-        report(tn + "undeploy", asadmin("undeploy", "--target", cname, "helloworld"));
+        //report(tn + "undeploy", asadmin("undeploy", "--target", cname, "helloworld1"));
         foo.delete();
 
          // start the instance
         report(tn + "start-local-instance1a", asadmin("start-local-instance", i1name));
 
         // make sure the app and file are gone
-        report(tn + "get-del-app1", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        //report(tn + "get-del-app1", !matchString("Hello", getURL(i1url + "helloworld1/hi.jsp")));
         report(tn + "get-del-foo", !matchString("Foo file", getURL(i1url + "foo.html")));
 
         // stop the instance
@@ -137,7 +153,7 @@ public class SyncTest extends AdminBaseDevTest {
         final String i1murl = "http://localhost:14848/management/domain/";
         final String i1name = "synci2";
 
-        // create a cluster and two instances
+        // create a cluster an instance
         report(tn + "create-cluster", asadmin("create-cluster", cname));
         report(tn + "create-local-instance1", asadmin("create-local-instance",
                 "--cluster", cname, "--systemproperties",
@@ -145,9 +161,12 @@ public class SyncTest extends AdminBaseDevTest {
                 "IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:" +
                 "JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848", i1name));
 
-        // deploy an application to the cluster (before instances are started)
+        // deploy an application to the cluster (before instance is started)
+        /*
         File webapp = new File("resources", "helloworld.war");
-        report(tn + "deploy", asadmin("deploy", "--target", cname, webapp.getAbsolutePath()));
+         report(tn + "deploy", asadmin("deploy", "--target", cname,
+                "--name", "helloworld2", webapp.getAbsolutePath()));
+        */
 
         // start the instance
         report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
@@ -155,7 +174,7 @@ public class SyncTest extends AdminBaseDevTest {
         // check that the instance and the app are there
         report(tn + "list-instances", asadmin("list-instances"));
         report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
-        report(tn + "getapp1", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        //report(tn + "getapp1", matchString("Hello", getURL(i1url + "helloworld2/hi.jsp")));
 
         // stop the instance
         report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
@@ -167,7 +186,7 @@ public class SyncTest extends AdminBaseDevTest {
 
         // make sure the instance and app are still there
         report(tn + "getindex1a", matchString("GlassFish Enterprise Server", getURL(i1url)));
-        report(tn + "getapp1a", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        //report(tn + "getapp1a", matchString("Hello", getURL(i1url + "helloworld2/hi.jsp")));
 
         // stop the instance
         report(tn + "stop-local-instance1a", asadmin("stop-local-instance", i1name));
@@ -175,9 +194,72 @@ public class SyncTest extends AdminBaseDevTest {
         startDomain();
 
         // delete the instances and the cluster
-        report(tn + "undeploy", asadmin("undeploy", "--target", cname, "helloworld"));
+        //report(tn + "undeploy", asadmin("undeploy", "--target", cname, "helloworld2"));
         report(tn + "delete-local-instance1", asadmin("delete-local-instance", i1name));
         report(tn + "delete-cluster", asadmin("delete-cluster", cname));
     }
+
+    void testFullSync() {
+        final String tn = "fullsync";
+        final String cname = "syncc3";
+        final String i1url = "http://localhost:18080/";
+        final String i1murl = "http://localhost:14848/management/domain/";
+        final String i1name = "synci3";
+
+        // create a cluster and an instance
+        report(tn + "create-cluster", asadmin("create-cluster", cname));
+        report(tn + "create-local-instance1", asadmin("create-local-instance",
+                "--cluster", cname, "--systemproperties",
+                "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:" +
+                "IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:" +
+                "JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848", i1name));
+
+        // create a file in docroot
+        File foo = new File(getGlassFishHome(), "domains/domain1/docroot/foo.html");
+        try {
+            FileWriter fw = new FileWriter(foo);
+            fw.write("<html><body>Foo file</body></html>");
+            fw.close();
+        }
+        catch (IOException ioe) {
+            report(tn + "file-create", false);
+            ioe.printStackTrace();
+        }
+
+        // start the instance
+        report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
+
+        // check that the instance and the file are there
+        report(tn + "list-instances", asadmin("list-instances"));
+        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
+        report(tn + "getfoo", matchString("Foo file", getURL(i1url + "foo.html")));
+
+        // stop the instance
+        report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
+
+        // delete the file from the instance
+        File fooOnInstance = new File(instancesHome, i1name + "/docroot/foo.html");
+        report(tn + "instance-file-exists", fooOnInstance.exists());
+        fooOnInstance.delete();
+        report(tn + "del-instance-file", !fooOnInstance.exists());
+
+         // start the instance with --fullsync
+        report(tn + "start-local-instance1a", asadmin("start-local-instance", "--syncfull=true", i1name));
+
+        // make sure the file is back
+        report(tn + "getfoo1", matchString("Foo file", getURL(i1url + "foo.html")));
+        report(tn + "instance-file-exists2", fooOnInstance.exists());
+
+        // stop the instance
+        report(tn + "stop-local-instance1b", asadmin("stop-local-instance", i1name));
+
+        // delete the instances and the cluster
+        report(tn + "delete-local-instance1", asadmin("delete-local-instance", i1name));
+        report(tn + "delete-cluster", asadmin("delete-cluster", cname));
+        foo.delete();
+    }
+
+    private final String host;
+    private final File instancesHome;
 
 }
