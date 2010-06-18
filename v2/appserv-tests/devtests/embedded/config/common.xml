@@ -1011,7 +1011,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <echo message="Deploying ${warname} from ${basedir}."
       level="verbose"/>
     <echo> === EMBEDDED DEPLOYING ${warname} from ${basedir}</echo>
-    <glassfish-embedded-deploy app="${warname}.war"/>
+    <glassfish-embedded-deploy app="${basedir}/${warname}.war"/>
 </target>
 
 <!-- deploy the standalone war in AppServ  -->
