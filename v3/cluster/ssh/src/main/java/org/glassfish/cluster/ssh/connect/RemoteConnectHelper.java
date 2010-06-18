@@ -120,11 +120,11 @@ public class RemoteConnectHelper  {
 
                 String fullCommand = prefix + command;
 
-                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                ByteArrayOutputStream outStream = new ByteArrayOutputStream(10000);
 
                 sshL.runCommand(fullCommand, outStream);
                 String results = outStream.toString();
-                if (results.endsWith("successfully."))
+                if (results.trim().endsWith("successfully."))
                     return 1;
                 else
                     return 0;
@@ -136,7 +136,7 @@ public class RemoteConnectHelper  {
             logger.severe("remote.connect.interrupt"+ cmd);
         }
 
-        return 0;
+        return 1;
     }
 
 
