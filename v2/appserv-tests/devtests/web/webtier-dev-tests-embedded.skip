@@ -80,3 +80,22 @@ jspCustomTaglibJarInsideEarWithManifestClassPath
 jspCustomTaglibJarInsideEarWithoutManifestClassPath
 jspInWebappWithBundledXercesImpl
 virtualServerEarWrappedDefaultWebModuleRestart
+# not applicable to embedded
+index
+# File login issue 12290
+jsp-security
+changeSessionIdOnAuthentication
+formLoginAccessSessionOnResumedRequest
+formLoginJSecurityCheckDirectAccess
+programmaticLogin
+servlet-3.0/authAnnotationInheritance
+servlet-3.0/authAnnotations
+servlet-3.0/loginLogout
+servlet-3.0/xmlOverrideAuthAnnotations
+sessionDestroyedDuringUndeploy
+virtualServerAuthRealmProperty
+servlet-3.0/servletContextCreateServletWithServletSecurity
+servlet-3.0/webFragmentWithLoginConfig
+servlet-3.0/webFragmentWithLoginConfigOverrided
+singleSignOnCookieSecure
+singleSignOnHttpServiceDynamicReconfig
