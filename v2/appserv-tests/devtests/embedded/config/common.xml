@@ -950,12 +950,12 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <target name="deploy-dir" depends="init-common">
     <echo message="Deploying files: ${assemble.dir}" level="verbose"/>
-    <glassfish-embedded-deploy app="${assemble.dir}" contextroot="${contextroot}" name="${appname}-web"/>
+    <glassfish-embedded-deploy app="${assemble.dir}" name="${appname}-web" libraries="${libraries}"/>
 </target>
 
 <!-- deploy the applications in AppServ  -->
 <target name="deploy-common" depends="init-common">
-  <glassfish-embedded-deploy app="${assemble.dir}/${appname}App.ear" libraries="${libraries}"/>
+  <glassfish-embedded-deploy app="${assemble.dir}/${appname}App.ear" name="${appname}" libraries="${libraries}"/>
   <echo message="Deployment on target server ${appserver.instance.name} successful"/>
 </target>
 
@@ -1012,8 +1012,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
       level="verbose"/>
     <echo> === EMBEDDED DEPLOYING ${warname} from ${basedir}</echo>
     <glassfish-embedded-deploy app="${basedir}/${warname}.war"/>
-    <property name="force" value="false"/>
-    <glassfish-embedded-deploy app="${basedir}/${warname}.war" contextroot="{contextroot}" libraries="${libraries}" precompilejsp="${precompilejsp}" force="${force}"/>
 </target>
 
 <!-- deploy the standalone war in AppServ  -->
@@ -1041,9 +1039,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <target name="glassfish-embedded-deploy" if="env.EMBEDDED">
     <echo> === EMBEDDED DEPLOYING === </echo>
-    <property name="precompilejsp" value="true"/>
-    <property name="force" value="false"/>
-    <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" contextroot="{contextroot}" libraries="${libraries}" precompilejsp="${precompilejsp}" force="${force}"/>
+    <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" name="${appname}" libraries="${libraries}"/>
 </target>
 
 <target name="glassfish-embedded-undeploy" if="env.EMBEDDED">
@@ -1056,8 +1052,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
      sun-web.xml takes effect
 -->
 <target name="deploy-war-no-context-root" depends="init-common">
-    <echo> === EMBEDDED DEPLOYING === </echo>
-    <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" libraries="${libraries}"/>
+    <antcall target ="glassfish-embedded-deploy"/>
 </target>
 
 <!-- deploy the standalone jar in AppServ  -->
