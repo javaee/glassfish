@@ -1,6 +1,6 @@
 <!DOCTYPE project [
-  <!ENTITY common SYSTEM "file:../../../../config/common.xml">
-  <!ENTITY testcommon SYSTEM "file:../../../../config/properties.xml">
+  <!ENTITY common SYSTEM "../../../../config/common.xml">
+  <!ENTITY testcommon SYSTEM "../../../../config/properties.xml">
 ]>
 <!-- 
  /*
