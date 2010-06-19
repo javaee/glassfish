@@ -47,7 +47,6 @@ import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.grizzly.util.http.Cookie;
-import com.sun.logging.LogDomains;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -76,7 +75,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.ServerContext;
 
@@ -87,7 +85,6 @@ import org.glassfish.internal.api.ServerContext;
  */
 public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, PostConstruct, EventListener {
 
-    public final static Logger logger = LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER);
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RestAdapter.class);
 
     @Inject
@@ -342,25 +339,34 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
 
     private ActionReport getClientActionReport(String requestURI, GrizzlyRequest req) {
+
+
         ActionReport report=null;
 
-        String userAgent = req.getHeader("User-Agent");
-        if (userAgent!=null)
-            report = habitat.getComponent(ActionReport.class, userAgent.substring(userAgent.indexOf('/')+1));
-        if (report==null) {
-            String accept = req.getHeader("Accept");
-            if (accept!=null) {
-                StringTokenizer st = new StringTokenizer(accept, ",");
-                while (report==null && st.hasMoreElements()) {
-                    final String scheme=st.nextToken();
-                    report = habitat.getComponent(ActionReport.class, scheme.substring(scheme.indexOf('/')+1));
+        // first we look at the command extension (ie list-applications.[json | html | mf]
+        if (requestURI.indexOf('.')!=-1) {
+            String qualifier = requestURI.substring(requestURI.indexOf('.')+1);
+            report = habitat.getComponent(ActionReport.class, qualifier);
+        } else {
+            String userAgent = req.getHeader("User-Agent");
+            if (userAgent!=null)
+                report = habitat.getComponent(ActionReport.class, userAgent.substring(userAgent.indexOf('/')+1));
+            if (report==null) {
+                String accept = req.getHeader("Accept");
+                if (accept!=null) {
+                    StringTokenizer st = new StringTokenizer(accept, ",");
+                    while (report==null && st.hasMoreElements()) {
+                        final String scheme=st.nextToken();
+                        report = habitat.getComponent(ActionReport.class, scheme.substring(scheme.indexOf('/')+1));
+                    }
                 }
             }
         }
         if (report==null) {
             // get the default one.
-            report = habitat.getComponent(ActionReport.class);
+            report = habitat.getComponent(ActionReport.class, "html");
         }
+        report.setActionDescription("REST");
         return report;
     }
 
