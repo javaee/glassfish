@@ -37,6 +37,7 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.universal.process.ProcessManagerException;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.universal.process.LocalAdminCommand;
@@ -67,6 +68,11 @@ import java.util.logging.Logger;
 @Scoped(PerLookup.class)
 @Cluster({RuntimeType.DAS})
 public class CreateInstanceCommand implements AdminCommand {
+
+    private static final String DEFAULT_NODE = "localhost";
+    private static final String LOCAL_HOST = "localhost";
+    private static final String NL = System.getProperty("line.separator");
+
     @Inject
     private CommandRunner cr;
     
@@ -74,12 +80,15 @@ public class CreateInstanceCommand implements AdminCommand {
     Habitat habitat;
 
     @Inject
-    Node[] nodes;
+    Node[] nodeList;
 
-    @Param(name="node", optional=true)
+    @Inject
+    private Nodes nodes;
+
+    @Param(name="node", optional=true, defaultValue=DEFAULT_NODE)
     String node;
 
-    @Param(name="nodeagent")
+    @Param(name="nodeagent", optional=true)
     String nodeAgent;
 
     @Param(name = "config", optional=true)
@@ -97,11 +106,30 @@ public class CreateInstanceCommand implements AdminCommand {
     private Logger logger;
     private AdminCommandContext ctx;
 
+
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         ctx = context;
-        logger= context.logger;
+        logger = context.logger;
+
+        if (nodes.getNode(node) == null) {
+            String msg = Strings.get("noSuchNode", node);
+            logger.warning(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
+        }
+
+        // XXX dipol
+        // We are transitioning from nodeAgent to node. Some parts of the code
+        // still assume the server's node-agent-ref to be the hostname for the
+        // host the server is on. If --nodeagent was not specified we use the
+        // hostname from the node.
+        // At some point we need to come back and remove all the nodeagent stuf
+        if (nodeAgent == null || nodeAgent.length() == 0) {
+            nodeAgent = getHostFromNodeName(node);
+        }
         
         CommandInvocation ci = cr.getCommandInvocation("_register-instance", report);
         ParameterMap map = new ParameterMap();
@@ -114,37 +142,75 @@ public class CreateInstanceCommand implements AdminCommand {
         ci.parameters(map);
         ci.execute();
 
-        if (node == null || node.equals("localhost")) {
+        String msg;
+
+        if (node == null || node.equals(LOCAL_HOST)) {
             LocalAdminCommand lac = new LocalAdminCommand("_create-instance-filesystem",instance);
+            msg = Strings.get("creatingInstance", instance, LOCAL_HOST);
+            logger.info(msg);
             try {
                  int status = lac.execute();
             }   catch (ProcessManagerException ex)  {
-                String msg = Strings.get("create.instance.failed", instance);
+                msg = Strings.get("create.instance.failed", instance);
                 logger.warning(msg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(msg);                
             }
 
         } else {
+            msg = Strings.get("creatingInstance", instance, node);
+            logger.info(msg);
             createInstanceRemote();
         }
         
     }
 
+    /**
+     * Given a node name return the node's host name
+     * @param nodeName  name of node
+     * @return  node's host name, or "localhost" if can't find the host name
+     */
+    private String getHostFromNodeName(String nodeName) {
+
+        Node theNode = nodes.getNode(nodeName);
+
+        if (theNode == null) {
+            return LOCAL_HOST;
+        }
+        String hostName = theNode.getNodeHost();
+        if (hostName == null || hostName.length() == 0) {
+            return LOCAL_HOST;
+        }
+        return hostName;
+    }
+
     private void createInstanceRemote() {
-            RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodes, logger);
+            RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodeList, logger);
+            ActionReport report = ctx.getActionReport();
             // check if needs a remote connection
             if (rch.isRemoteConnectRequired(node)) {
                 // this command will run over ssh
-                int status = rch.runCommand(node, "_create-instance-filesystem", instance);
+                StringBuilder output = new StringBuilder();
+                int status = rch.runCommand(node, "_create-instance-filesystem",
+                        instance, output);
+                if (output.length() > 0) {
+                    logger.info(output.toString());
+                }
                 if (status != 1){
-                    ActionReport report = ctx.getActionReport();
                     String msg = Strings.get("create.instance.failed", instance);
                     logger.warning(msg);
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(msg);
+                    report.setMessage(output.toString() + NL + msg);
                 }
-
+            } else {
+                // Could not reach the node via SSH
+                String msg = Strings.get("mustRunLocal",
+                        getHostFromNodeName(node), node,
+                        "asadmin create-local-instance --filesystemonly " + instance);
+                logger.warning(msg);
+                report.setActionExitCode(ActionReport.ExitCode.WARNING);
+                report.setMessage(msg);
             }
     }
+
 }

@@ -51,6 +51,8 @@ import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.util.SystemPropertyConstants;
+
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import java.io.ByteArrayOutputStream;
 
@@ -94,7 +96,8 @@ public class RemoteConnectHelper  {
     }
     // need to get the command options that were specified too
 
-    public int runCommand(String noderef, String cmd, String instanceName ){
+    public int runCommand(String noderef, String cmd, String instanceName,
+            StringBuilder outputString ){
 
         //get the node ref and see if ssh connection is setup if so use it
         try{
@@ -115,8 +118,17 @@ public class RemoteConnectHelper  {
                 sshL.init(noderef);
 
                 // create command and params
-                String command = cmd +" "+ instanceName;
-                String prefix = nodeHome +"/bin/asadmin ";
+                String dasHost = System.getProperty(
+                    SystemPropertyConstants.HOST_NAME_PROPERTY);
+                // XXX Hack. Need to get real admin port
+                String dasPort = "4848";
+                String command = cmd + " " + instanceName;
+
+                // We always pass the DAS host and port to the asadmin
+                // command we are running because some local commands like
+                // _create-instance-filesystem use them
+                String prefix = nodeHome +"/bin/asadmin " +
+                        " --host " + dasHost + " --port " + dasPort + " ";
 
                 String fullCommand = prefix + command;
 
@@ -124,6 +136,8 @@ public class RemoteConnectHelper  {
 
                 sshL.runCommand(fullCommand, outStream);
                 String results = outStream.toString();
+                outputString.append(results);
+                // XXX sshL.runCommand() needs to return a status
                 if (results.trim().endsWith("successfully."))
                     return 1;
                 else
@@ -138,6 +152,5 @@ public class RemoteConnectHelper  {
 
         return 1;
     }
-
-
 }
+

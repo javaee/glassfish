@@ -149,19 +149,20 @@ class ClusterCommandHelper {
             msg = command + " " + server.getName();
             logger.info(msg);
             if (verbose) {
-                output.append(msg + NL);
+                output.append(msg).append(NL);
             }
+            report.setActionExitCode(ExitCode.SUCCESS);
             invocation.execute();
             if (report.getActionExitCode() != ExitCode.SUCCESS) {
                 // Bummer, the command had an error. Log and save output
                 failureOccurred = true;
-                failedServerNames.append(server.getName());
+                failedServerNames.append(server.getName()).append(" ");
                 msg = report.getMessage();
                 logger.severe(msg);
-                output.append(msg + NL);
+                output.append(msg).append(NL);
             } else {
                 // Command worked. Note that too.
-                succeededServerNames.append(server.getName() + " ");
+                succeededServerNames.append(server.getName()).append(" ");
             }
         }
 

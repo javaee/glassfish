@@ -41,6 +41,7 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.DuckTyped;
 
 import java.util.List;
 
@@ -62,4 +63,27 @@ public interface Nodes extends ConfigBeanProxy, Injectable {
 //    @Delete(value="delete-node", resolver= TypeAndNameResolver.class, decorator=Node.DeleteDecorator.class)
     @Listing(value="list-nodes")
     public List<Node> getNode();
+
+    /**
+     * Return the node with the given name, or null if no such node exists.
+     *
+     * @param   name    the name of the node
+     * @return          the Node object, or null if no such node
+     */
+    @DuckTyped
+    public Node getNode(String name);
+
+    class Duck {
+        public static Node getNode(Nodes nodes, String name) {
+            if (name == null || nodes == null) {
+                return null;
+            }
+            for (Node node : nodes.getNode()) {
+                if (node.getName().equals(name)) {
+                    return node;
+                }
+            }
+            return null;
+        }
+    }
 }

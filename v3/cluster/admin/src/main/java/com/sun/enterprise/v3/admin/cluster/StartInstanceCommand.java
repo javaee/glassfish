@@ -110,6 +110,8 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     private AdminCommandContext ctx;
     private String noderef;
 
+    private static final String NL = System.getProperty("line.separator");
+
     public void execute(AdminCommandContext context) {
         logger = context.getLogger();
         this.ctx=context;
@@ -163,13 +165,18 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             // check if needs a remote connection
             if (rch.isRemoteConnectRequired(noderef)) {
                 // this command will run over ssh
-                int status = rch.runCommand(noderef, "start-local-instance", instanceName);
+                StringBuilder output = new StringBuilder();
+                int status = rch.runCommand(noderef, "start-local-instance",
+                        instanceName, output);
+                if (output.length() > 0) {
+                    logger.info(output.toString());
+                }
                 if (status != 1){
                     ActionReport report = ctx.getActionReport();
                     String msg = Strings.get("start.instance.failed", instanceName);
                     logger.warning(msg);
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(msg);
+                    report.setMessage(output + NL + msg);
                 }
             }
         }
