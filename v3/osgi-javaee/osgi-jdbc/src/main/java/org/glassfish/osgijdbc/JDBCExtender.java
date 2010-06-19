@@ -57,7 +57,6 @@ public class JDBCExtender implements Extender, SynchronousBundleListener {
 
     private Set<DataSourceFactoryImpl> dataSourceFactories = new HashSet<DataSourceFactoryImpl>();
     private Habitat habitat;
-    private GlassFishResourceProviderService rps;
 
 
     private static final Logger logger = Logger.getLogger(
@@ -72,13 +71,10 @@ public class JDBCExtender implements Extender, SynchronousBundleListener {
         habitat = Globals.getDefaultHabitat();
         bundleContext.addBundleListener(this);
         addURLHandler();
-        rps = new GlassFishResourceProviderService(habitat, bundleContext);
-        rps.registerJdbcResources();
         debug("completed start()");
     }
 
     public void stop() {
-        rps.unRegisterJdbcResources();
         removeURLHandler();
         for (DataSourceFactoryImpl dsfi : dataSourceFactories) {
             dsfi.preDestroy();
@@ -106,6 +102,7 @@ public class JDBCExtender implements Extender, SynchronousBundleListener {
     private void removeURLHandler() {
         if (urlHandlerService != null) {
             urlHandlerService.unregister();
+            urlHandlerService = null;
         }
     }
 
