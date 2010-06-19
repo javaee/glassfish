@@ -160,7 +160,7 @@ public class CreateJavaMailResource implements AdminCommand {
                 }
             } 
         }
-
+        //TODO use JavaMailResourceManager ?
         try {
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
