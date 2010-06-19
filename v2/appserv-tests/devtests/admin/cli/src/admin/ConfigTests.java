@@ -35,6 +35,14 @@
  */
 package admin;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+import org.w3c.dom.Document;
+
 /**
  * This class adds devtests for copy-config,delete-config, list-configs commands
  * @author Bhakti Mehta
@@ -52,14 +60,16 @@ public class ConfigTests extends AdminBaseDevTest {
 
     private void runTests() {
         startDomain();
-        //This tests a few copy config and delete listconfig options
         testCopyDeleteListConfig();
-        //This tests additional tests like deleting server-config, default-config
         testDeleteConfig();
+        testConcurrentConfigAccess();
         stopDomain();
         stat.printSummary();
     }
 
+    /*
+     * This tests a few copy config and delete listconfig options
+     */
     private void testCopyDeleteListConfig() {
         //Create cluster, copy its config
         final String testName = "copyDelConfig-";
@@ -89,9 +99,11 @@ public class ConfigTests extends AdminBaseDevTest {
 
         //try to delete nonexistent config should throw error
         report("delete-config1", !asadmin("delete-config", "junk"));
-
     }
 
+    /*
+     * This tests additional tests like deleting server-config, default-config
+     */
     private void testDeleteConfig(){
         final String testName = "deleteConfig";
 
@@ -100,8 +112,96 @@ public class ConfigTests extends AdminBaseDevTest {
 
         //delete server-config should throw error
         report(testName+"server-config", !asadmin("delete-config", "server-config"));
-
-
     }
 
+    /*
+     * This tests that the configuration can be modified by multiple asadmin
+     * command concurrently without corrupting the domain.xml or missing any
+     * updates.
+     */
+    class AsadminThread extends Thread {
+        String cmd;
+        String arg;
+        boolean result;
+        public AsadminThread(String cmd, String arg) {
+            this.cmd = cmd;
+            this.arg = arg;
+        }
+        @Override
+        public void run() {
+            result = asadmin(cmd, arg);
+        }
+    }
+    static private interface ArgGen {
+        public String gen(int i);
+    }
+    private boolean runNCommands(String testName, int num, String cmd, ArgGen arg) {
+        AsadminThread threads[] = new AsadminThread[num];
+        // create the threads
+        for (int i = 0; i < num; i++) {
+            threads[i] = new AsadminThread(cmd, arg.gen(i));
+        }
+        // run them
+        for (Thread t : threads) t.start();
+        // wait for them to complete
+        boolean result = true;
+        try {
+            for (int i = 0; i < num; i++) {
+                threads[i].join();
+                report(testName + i, threads[i].result);
+                result &= threads[i].result;
+            }
+
+        }
+        catch (InterruptedException ie) {
+            ie.printStackTrace();
+            return false;
+        }
+        return result;
+    }
+
+    /*
+     * Check to see if num system-properties are either there (if there is true)
+     * or not there in the DAS domain.xml.
+     */
+    private boolean checkForProps(int num, boolean there) {
+        try {
+            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+            domFactory.setNamespaceAware(true); // never forget this!
+            DocumentBuilder builder = domFactory.newDocumentBuilder();
+            Document doc = builder.parse(getDASDomainXML());
+            XPathFactory factory = XPathFactory.newInstance();
+            XPath xpath = factory.newXPath();
+            boolean pass = true;
+            for (int i = 0; i < num; i++) {
+                String xpathExpr = "//system-property[@name='foo" + i + "']/attribute::value";
+                XPathExpression xexpr = xpath.compile(xpathExpr);
+                Object o = xexpr.evaluate(doc, XPathConstants.STRING);
+                String expect = there ? "bar" + i : "";
+                pass &= o instanceof String && expect.equals((String)o);
+            }
+            return pass;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    private void testConcurrentConfigAccess() {
+        String tn = "concurrent-";
+        int num = 10;
+        // create num system properties at the same time
+        report(tn + "createprops", runNCommands(tn + "set-", num, "create-system-properties",
+                new ArgGen() { public String gen(int i) { return "foo" + i + "=bar" + i; }}));
+
+        // check that the properties were created properly
+        report(tn + "allwritten", checkForProps(num, true));
+
+        // delete the properties
+        report(tn + "delprops", runNCommands(tn + "del-", num, "delete-system-property",
+                new ArgGen() { public String gen(int i) { return "foo" + i; }}));
+
+        // check that the properties were deleted properly
+        report(tn + "alldeleted", checkForProps(num, false));
+    }
 }
