@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -149,9 +149,6 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name = "associateWithThread",  optional=true, defaultValue="false")
     Boolean associatewiththread;
 
-    //@Param(optional=true, defaultValue="1")
-    //String associatewiththreadconnectionscount;
-
     @Param(name = "driverClassname",  optional=true)
     String driverclassname;
     
@@ -239,7 +236,6 @@ public class CreateJdbcConnectionPool implements AdminCommand {
         attrList.put(ResourceConstants.LAZY_CONNECTION_ASSOCIATION, lazyconnectionassociation.toString());
         attrList.put(ResourceConstants.LAZY_CONNECTION_ENLISTMENT, lazyconnectionenlistment.toString());
         attrList.put(ResourceConstants.ASSOCIATE_WITH_THREAD, associatewiththread.toString());
-        //attrList.put(ResourceConstants.ASSOCIATE_WITH_THREAD_CONNECTIONS_COUNT, associatewiththreadconnectionscount);
         attrList.put(ResourceConstants.MATCH_CONNECTIONS, matchconnections.toString());
         attrList.put(ResourceConstants.MAX_CONNECTION_USAGE_COUNT, maxconnectionusagecount);
         attrList.put(ResourceConstants.PING, ping.toString());
@@ -251,7 +247,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
 
         try {
             JDBCConnectionPoolManager connPoolMgr = new JDBCConnectionPoolManager();
-            rs = connPoolMgr.create(resources, attrList, properties, targetServer);
+            rs = connPoolMgr.create(resources, attrList, properties, targetServer, true);
         } catch(Exception e) {
             String actual = e.getMessage();
             String def = "JDBC connection pool: {0} could not be created, reason: {1}";

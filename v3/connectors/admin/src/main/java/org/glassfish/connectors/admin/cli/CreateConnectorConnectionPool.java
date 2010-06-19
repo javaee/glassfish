@@ -77,7 +77,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Param(name="raname")
     String raname;
 
-    @Param(name="connectiondefinition")
+    @Param(name="connectiondefinition", alias="connectiondefinitionname")
     String connectiondefinition;
 
     @Param(name="steadypoolsize", optional=true)
@@ -205,7 +205,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
 
         try {
             ConnectorConnectionPoolManager connPoolMgr = habitat.getComponent(ConnectorConnectionPoolManager.class);
-            rs = connPoolMgr.create(resources, attrList, properties, targetServer);
+            rs = connPoolMgr.create(resources, attrList, properties, targetServer, true);
         } catch(Exception e) {
             Logger.getLogger(CreateConnectorConnectionPool.class.getName()).log(Level.SEVERE,
                     "Unable to create connector connection pool " + poolname, e);

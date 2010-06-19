@@ -51,6 +51,7 @@ import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.beans.PropertyVetoException;
 
@@ -73,89 +74,105 @@ public class CustomResourceManager implements ResourceManager {
         return ServerTags.CUSTOM_RESOURCE;
     }
 
-    public ResourceStatus create(Resources resources, HashMap attrList, final Properties props, Server targetServer)
-            throws Exception {
-        jndiName = (String) attrList.get(JNDI_NAME);
-        resType =  (String) attrList.get(RES_TYPE);
-        factoryClass = (String) attrList.get(FACTORY_CLASS);
-        enabled = (String) attrList.get(ENABLED);
-        description = (String) attrList.get(DESCRIPTION);
+    public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
+                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
+        setAttributes(attributes);
 
         if (resType == null) {
             String msg = localStrings.getLocalString(
                     "create.custom.resource.noResType",
                     "No type defined for Custom Resource.");
-            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-            return status;
+            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
 
         if (factoryClass == null) {
             String msg = localStrings.getLocalString(
                     "create.custom.resource.noFactoryClassName",
                     "No Factory class name defined for Custom Resource.");
-            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-            return status;
+            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
 
         // ensure we don't already have one of this name
         for (Resource resource : resources.getResources()) {
-            if (resource instanceof CustomResource) {
-                if (((CustomResource) resource).getJndiName().equals(jndiName))
-                {
+            if (resource instanceof BindableResource) {
+                if (((BindableResource) resource).getJndiName().equals(jndiName)) {
                     String msg = localStrings.getLocalString(
                             "create.custom.resource.duplicate",
                             "A Custom Resource named {0} already exists.",
                             jndiName);
-                    ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-                    return status;
+                    return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
                 }
             }
         }
 
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+        if (requiresNewTransaction) {
+            try {
+                ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
-                public Object run(Resources param) throws PropertyVetoException,
-                        TransactionFailure {
+                    public Object run(Resources param) throws PropertyVetoException,
+                            TransactionFailure {
 
-                    CustomResource newResource =
-                            param.createChild(CustomResource.class);
-                    newResource.setJndiName(jndiName);
-                    newResource.setFactoryClass(factoryClass);
-                    newResource.setResType(resType);
-                    newResource.setEnabled(enabled.toString());
-                    if (description != null) {
-                        newResource.setDescription(description);
+                        return createResource(param, properties);
                     }
-                    if (props != null) {
-                        for (java.util.Map.Entry e : props.entrySet()) {
-                            Property prop = newResource.createChild(
-                                    Property.class);
-                            prop.setName((String) e.getKey());
-                            prop.setValue((String) e.getValue());
-                            newResource.getProperty().add(prop);
-                        }
-                    }
-                    param.getResources().add(newResource);
-                    return newResource;
+                }, resources);
+
+                if (!targetServer.isResourceRefExists(jndiName)) {
+                    targetServer.createResourceRef(enabled, jndiName);
                 }
-            }, resources);
-
-            if (!targetServer.isResourceRefExists(jndiName)) {
-                targetServer.createResourceRef(enabled.toString(), jndiName);
+            } catch (TransactionFailure tfe) {
+                String msg = localStrings.getLocalString(
+                        "create.custom.resource.fail",
+                        "Unable to create custom resource {0}.", jndiName) +
+                        " " + tfe.getLocalizedMessage();
+                return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
             }
-            String msg = localStrings.getLocalString(
-                    "create.admin.object.success",
-                    "Administered object {0} created.", jndiName);
-            ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, msg, true);
-            return status;
-        } catch (TransactionFailure tfe) {
-            String msg = localStrings.getLocalString(
-                    "create.admin.object.fail",
-                    "Unable to create administered object {0}.", jndiName) +
-                    " " + tfe.getLocalizedMessage();
-            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-            return status;
+        } else {
+            createResource(resources, properties);
         }
+
+        String msg = localStrings.getLocalString(
+                "create.custom.resource.success",
+                "Custom Resource {0} created.", jndiName);
+        return new ResourceStatus(ResourceStatus.SUCCESS, msg, true);
+    }
+
+    private void setAttributes(HashMap attrList) {
+        jndiName = (String) attrList.get(JNDI_NAME);
+        resType =  (String) attrList.get(RES_TYPE);
+        factoryClass = (String) attrList.get(FACTORY_CLASS);
+        enabled = (String) attrList.get(ENABLED);
+        description = (String) attrList.get(DESCRIPTION);
+    }
+
+    private Object createResource(Resources param, Properties properties) throws PropertyVetoException, TransactionFailure {
+        CustomResource newResource = createConfigBean(param, properties);
+        param.getResources().add(newResource);
+        return newResource;
+    }
+
+    private CustomResource createConfigBean(Resources param, Properties properties) throws PropertyVetoException,
+            TransactionFailure {
+        CustomResource newResource = param.createChild(CustomResource.class);
+        newResource.setJndiName(jndiName);
+        newResource.setFactoryClass(factoryClass);
+        newResource.setResType(resType);
+        newResource.setEnabled(enabled.toString());
+        if (description != null) {
+            newResource.setDescription(description);
+        }
+        if (properties != null) {
+            for (Map.Entry e : properties.entrySet()) {
+                Property prop = newResource.createChild(Property.class);
+                prop.setName((String) e.getKey());
+                prop.setValue((String) e.getValue());
+                newResource.getProperty().add(prop);
+            }
+        }
+        return newResource;
+    }
+
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception{
+        setAttributes(attributes);
+        return createConfigBean(resources, properties);
     }
 }

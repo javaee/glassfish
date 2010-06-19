@@ -126,7 +126,7 @@ public class CreateAdminObject implements AdminCommand {
 
         try {
             AdminObjectManager adminObjMgr = habitat.getComponent(AdminObjectManager.class);
-            rs = adminObjMgr.create(resources, attrList, properties, targetServer);
+            rs = adminObjMgr.create(resources, attrList, properties, targetServer, true);
         } catch(Exception e) {
             Logger.getLogger(CreateAdminObject.class.getName()).log(Level.SEVERE,
                     "Something went wrong in create-admin-object", e);

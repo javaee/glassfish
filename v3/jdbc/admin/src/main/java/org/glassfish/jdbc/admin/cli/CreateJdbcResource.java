@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -111,7 +111,7 @@ public class CreateJdbcResource implements AdminCommand {
         ResourceStatus rs;
  
         try {
-            rs = jdbcMgr.create(resources, attrList, properties, targetServer);
+            rs = jdbcMgr.create(resources, attrList, properties, targetServer, true);
         } catch(Exception e) {
             report.setMessage(localStrings.getLocalString("create.jdbc.resource.failed",
                     "JDBC resource {0} creation failed", jndiName));

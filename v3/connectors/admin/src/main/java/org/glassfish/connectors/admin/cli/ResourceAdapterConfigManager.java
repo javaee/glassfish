@@ -88,10 +88,10 @@ public class ResourceAdapterConfigManager implements ResourceManager {
         return ServerTags.RESOURCE_ADAPTER_CONFIG;
     }
 
-    public ResourceStatus create(Resources resources, HashMap attrList, 
-                                    final Properties props, Server targetServer) 
-                                    throws Exception {
-        setParams(attrList);
+    public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
+                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
+
+        setParams(attributes);
         
         if (raName == null) {
             String msg = localStrings.getLocalString("create.resource.adapter.confignoRAName",
@@ -108,41 +108,26 @@ public class ResourceAdapterConfigManager implements ResourceManager {
                 }
             }
         }
-            
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-
-                    ResourceAdapterConfig newResource = param.createChild(ResourceAdapterConfig.class);
-                    newResource.setResourceAdapterName(raName);
-                    if(threadPoolIds != null) {
-                        newResource.setThreadPoolIds(threadPoolIds);
+        if (requiresNewTransaction) {
+            try {
+                ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                    public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                        ResourceAdapterConfig newResource = createConfigBean(param, properties);
+                        param.getResources().add(newResource);
+                        return newResource;
                     }
-                    newResource.setObjectType(objectType);
-                    if (name != null) {
-                        newResource.setName(name);
-                    }
-                    if (props != null) {
-                        for ( Map.Entry e : props.entrySet()) {
-                            Property prop = newResource.createChild(Property.class);
-                            prop.setName((String)e.getKey());
-                            prop.setValue((String)e.getValue());
-                            newResource.getProperty().add(prop);
-                        }
-                    }
-                    param.getResources().add(newResource);
-                    return newResource;
-                }
-            }, resources);
+                }, resources);
 
-        } catch(TransactionFailure tfe) {
-            Logger.getLogger(ResourceAdapterConfigManager.class.getName()).log(Level.SEVERE,
-                    "TransactionFailure: create-resource-adapter-config", tfe);
-            String msg = localStrings.getLocalString("create.resource.adapter.config.fail",
-                            "Unable to create resource adapter config", raName) +
-                            " " + tfe.getLocalizedMessage();
-            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+            } catch (TransactionFailure tfe) {
+                Logger.getLogger(ResourceAdapterConfigManager.class.getName()).log(Level.SEVERE,
+                        "TransactionFailure: create-resource-adapter-config", tfe);
+                String msg = localStrings.getLocalString("create.resource.adapter.config.fail",
+                        "Unable to create resource adapter config", raName) +
+                        " " + tfe.getLocalizedMessage();
+                return new ResourceStatus(ResourceStatus.FAILURE, msg);
+            }
+        } else {
+            createConfigBean(resources, properties);
         }
 
         String msg = localStrings.getLocalString(
@@ -152,10 +137,36 @@ public class ResourceAdapterConfigManager implements ResourceManager {
          
     }
 
-    public void setParams(HashMap attrList) {
-        raName = (String) attrList.get(RESOURCE_ADAPTER_CONFIG_NAME);
-        name = (String) attrList.get("name");
-        threadPoolIds = (String) attrList.get(THREAD_POOL_IDS);
-        objectType = (String) attrList.get(ServerTags.OBJECT_TYPE);
+    private ResourceAdapterConfig createConfigBean(Resources param, Properties properties) throws PropertyVetoException,
+            TransactionFailure {
+        ResourceAdapterConfig newResource = param.createChild(ResourceAdapterConfig.class);
+        newResource.setResourceAdapterName(raName);
+        if(threadPoolIds != null) {
+            newResource.setThreadPoolIds(threadPoolIds);
+        }
+        newResource.setObjectType(objectType);
+        if (name != null) {
+            newResource.setName(name);
+        }
+        if (properties != null) {
+            for ( Map.Entry e : properties.entrySet()) {
+                Property prop = newResource.createChild(Property.class);
+                prop.setName((String)e.getKey());
+                prop.setValue((String)e.getValue());
+                newResource.getProperty().add(prop);
+            }
+        }
+        return newResource;
+    }
+
+    public void setParams(HashMap attributes) {
+        raName = (String) attributes.get(RESOURCE_ADAPTER_CONFIG_NAME);
+        name = (String) attributes.get("name");
+        threadPoolIds = (String) attributes.get(THREAD_POOL_IDS);
+        objectType = (String) attributes.get(ServerTags.OBJECT_TYPE);
+    }
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception{
+        setParams(attributes);
+        return createConfigBean(resources, properties);
     }
 }

@@ -35,11 +35,6 @@
  * holder.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.glassfish.jdbc.admin.cli;
 
 import java.beans.PropertyVetoException;
@@ -68,17 +63,16 @@ import org.glassfish.admin.cli.resources.ResourceManager;
 
 
 /**
- *
- * @author PRASHANTH ABBAGANI
+ * @author Prashanth Abbagani
  */
-@Service (name=ServerTags.JDBC_CONNECTION_POOL)
+@Service(name = ServerTags.JDBC_CONNECTION_POOL)
 @I18n("add.resources")
-public class JDBCConnectionPoolManager implements ResourceManager{
+public class JDBCConnectionPoolManager implements ResourceManager {
 
     private static final String DESCRIPTION = ServerTags.DESCRIPTION;
 
-    final private static LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(JDBCConnectionPoolManager.class);    
+    final private static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(JDBCConnectionPoolManager.class);
 
     private String datasourceclassname = null;
     private String restype = null;
@@ -108,7 +102,6 @@ public class JDBCConnectionPoolManager implements ResourceManager{
     private String lazyConnectionEnlistment = Boolean.FALSE.toString();
     private String lazyConnectionAssociation = Boolean.FALSE.toString();
     private String associateWithThread = Boolean.FALSE.toString();
-    //private String associatewiththreadconnectionscount = "1";
     private String matchConnections = Boolean.FALSE.toString();
     private String maxConnectionUsageCount = "0";
     private String ping = Boolean.FALSE.toString();
@@ -117,7 +110,7 @@ public class JDBCConnectionPoolManager implements ResourceManager{
     private String wrapJDBCObjects = Boolean.TRUE.toString();
 
     private String description = null;
-    private String jdbcconnectionpoolid = null; 
+    private String jdbcconnectionpoolid = null;
 
     public JDBCConnectionPoolManager() {
     }
@@ -126,146 +119,130 @@ public class JDBCConnectionPoolManager implements ResourceManager{
         return ServerTags.JDBC_CONNECTION_POOL;
     }
 
-    public ResourceStatus create(Resources resources, HashMap attrList, 
-                                    final Properties props, Server targetServer) 
-                                    throws Exception {
-        setParams(attrList);
+    public ResourceStatus create(Resources resources, final HashMap attributes,
+                                 final Properties properties, Server targetServer, boolean requiresNewTransaction)
+            throws Exception {
+        setAttributes(attributes);
         if (jdbcconnectionpoolid == null) {
             String msg = localStrings.getLocalString("add.resources.noJdbcConnectionPoolId",
-                            "No pool name defined for JDBC Connection pool.");
+                    "No pool name defined for JDBC Connection pool.");
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
         // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            /*if (resource instanceof BindableResource) {
-                if (((BindableResource) resource).getJndiName().equals(jdbcconnectionpoolid)) {
-                    String msg = localStrings.getLocalString("create.jdbc.connection.pool.duplicate",
-                            "A resource {0} already exists.", jdbcconnectionpoolid);
-                    return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-                }
-            } else*/ if (resource instanceof JdbcConnectionPool) {
-                if (((ResourcePool) resource).getName().equals(jdbcconnectionpoolid)) {
-                    String msg = localStrings.getLocalString("create.jdbc.connection.pool.duplicate",
-                            "A resource {0} already exists.", jdbcconnectionpoolid);
-                    return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-                }
+        for (ResourcePool pool : resources.getResources(ResourcePool.class)) {
+            if (pool.getName().equals(jdbcconnectionpoolid)) {
+                String msg = localStrings.getLocalString("create.jdbc.connection.pool.duplicate",
+                        "A resource {0} already exists.", jdbcconnectionpoolid);
+                return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
             }
         }
 
-        if (this.validationmethod.equals("table") 
+        if (this.validationmethod.equals("table")
                 && this.isconnectvalidatereq.equals(Boolean.TRUE.toString())
                 && this.validationtable == null) {
             String msg = localStrings.getLocalString("create.jdbc.connection.pool.validationtable_required",
                     "--validationtable is required if --validationmethod=table " +
-                    "and --isconnectvalidatereq=true.");
+                            "and --isconnectvalidatereq=true.");
             return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
 
-            
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+        if (requiresNewTransaction) {
+            try {
+                ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                        return createResource(param, properties);
+                    }
+                }, resources);
 
-                    JdbcConnectionPool newResource = param.createChild(JdbcConnectionPool.class);
-                    newResource.setWrapJdbcObjects(wrapJDBCObjects);
-                    if (validationtable != null)
-                        newResource.setValidationTableName(
-                                        validationtable);
-                    newResource.setValidateAtmostOncePeriodInSeconds(
-                                    validateAtmostOncePeriod);
-                    if (isolationlevel != null)
-                        newResource.setTransactionIsolationLevel(isolationlevel);
-                    newResource.setSteadyPoolSize(steadypoolsize);
-                    newResource.setStatementTimeoutInSeconds(
-                                    statementTimeout);
-                    if (restype != null)
-                        newResource.setResType(restype);
-                    newResource.setPoolResizeQuantity(poolresize);
-                    newResource.setNonTransactionalConnections(
-                                    nontransactionalconnections);
-                    newResource.setMaxWaitTimeInMillis(maxwait);
-                    newResource.setMaxPoolSize(maxpoolsize);
-                    newResource.setMaxConnectionUsageCount(
-                                    maxConnectionUsageCount);
-                    newResource.setMatchConnections(matchConnections);
-                    newResource.setLazyConnectionEnlistment(
-                                    lazyConnectionEnlistment);
-                    newResource.setLazyConnectionAssociation(
-                                    lazyConnectionAssociation);
-                    newResource.setIsIsolationLevelGuaranteed(
-                                    isisolationguaranteed);
-                    newResource.setIsConnectionValidationRequired(
-                                    isconnectvalidatereq);
-                    newResource.setIdleTimeoutInSeconds(idletimeout);
-                    newResource.setFailAllConnections(failconnection);
-                    if (datasourceclassname != null)
-                        newResource.setDatasourceClassname(
-                                        datasourceclassname);
-                    newResource.setConnectionValidationMethod(
-                                    validationmethod);
-                    newResource.setConnectionLeakTimeoutInSeconds(
-                                    connectionLeakTimeout);
-                    newResource.setConnectionLeakReclaim(
-                                    connectionLeakReclaim);
-                    newResource.setConnectionCreationRetryIntervalInSeconds(
-                                    connectionCreationRetryInterval);
-                    newResource.setConnectionCreationRetryAttempts(
-                                    connectionCreationRetryAttempts);
-                    newResource.setAssociateWithThread(
-                                    associateWithThread);
-                    newResource.setAllowNonComponentCallers(
-                                    allownoncomponentcallers);
-                    newResource.setStatementCacheSize(statementcachesize);
-                    if (validationclassname != null) {
-                        newResource.setValidationClassname(validationclassname);
-                    }
-                    newResource.setInitSql(initsql);
-                    if (sqltracelisteners != null) {
-                        newResource.setSqlTraceListeners(sqltracelisteners);
-                    }
-                    //newResource.setAssociationsWithThreadConnectionsCount(associatewiththreadconnectionscount);
-                    newResource.setPooling(pooling);
-                    newResource.setPing(ping);
-                    if (driverclassname != null) {
-                        newResource.setDriverClassname(driverclassname);
-                    }
-                    
-                    if (description != null) {
-                        newResource.setDescription(description);
-                    }
-                    newResource.setName(jdbcconnectionpoolid);
-                    if (props != null) {
-                        for ( Map.Entry e : props.entrySet()) {
-                            Property prop = newResource.createChild(Property.class);
-                            prop.setName((String)e.getKey());
-                            prop.setValue((String)e.getValue());
-                            newResource.getProperty().add(prop);
-                        }
-                    }
-                    param.getResources().add(newResource);                    
-                    return newResource;
-                }
-            }, resources);
-
-        } catch(TransactionFailure tfe) {
-            String msg = localStrings.getLocalString(
-                  "create.jdbc.connection.pool.fail", "JDBC connection pool {0} create failed: {1}",
-                jdbcconnectionpoolid, tfe.getMessage());
-            return new ResourceStatus(ResourceStatus.FAILURE, msg);
-        } /*catch(PropertyVetoException pve) {
-            return (localStrings.getLocalString("create.jdbc.resource.fail", "{0} create failed ", id));
-        }*/
-
+            } catch (TransactionFailure tfe) {
+                String msg = localStrings.getLocalString(
+                        "create.jdbc.connection.pool.fail", "JDBC connection pool {0} create failed: {1}",
+                        jdbcconnectionpoolid, tfe.getMessage());
+                return new ResourceStatus(ResourceStatus.FAILURE, msg);
+            }
+        } else {
+            createResource(resources, properties);
+        }
         String msg = localStrings.getLocalString(
-                "create.jdbc.connection.pool.success", "JDBC connection pool {0} created successfully", 
+                "create.jdbc.connection.pool.success", "JDBC connection pool {0} created successfully",
                 jdbcconnectionpoolid);
         return new ResourceStatus(ResourceStatus.SUCCESS, msg);
-        
-        
     }
 
-    public void setParams(HashMap attrList) {
+    private JdbcConnectionPool createResource(Resources param, Properties properties) throws PropertyVetoException,
+            TransactionFailure {
+        JdbcConnectionPool newResource = getJdbcConnectionPool(param, properties);
+        param.getResources().add(newResource);
+        return newResource;
+    }
+
+    private JdbcConnectionPool getJdbcConnectionPool(Resources param, Properties properties) throws PropertyVetoException,
+            TransactionFailure {
+        JdbcConnectionPool newResource = param.createChild(JdbcConnectionPool.class);
+        newResource.setWrapJdbcObjects(wrapJDBCObjects);
+        if (validationtable != null)
+            newResource.setValidationTableName(validationtable);
+        newResource.setValidateAtmostOncePeriodInSeconds(validateAtmostOncePeriod);
+        if (isolationlevel != null) {
+            newResource.setTransactionIsolationLevel(isolationlevel);
+        }
+        newResource.setSteadyPoolSize(steadypoolsize);
+        newResource.setStatementTimeoutInSeconds(statementTimeout);
+        if (restype != null) {
+            newResource.setResType(restype);
+        }
+        newResource.setPoolResizeQuantity(poolresize);
+        newResource.setNonTransactionalConnections(nontransactionalconnections);
+        newResource.setMaxWaitTimeInMillis(maxwait);
+        newResource.setMaxPoolSize(maxpoolsize);
+        newResource.setMaxConnectionUsageCount(maxConnectionUsageCount);
+        newResource.setMatchConnections(matchConnections);
+        newResource.setLazyConnectionEnlistment(lazyConnectionEnlistment);
+        newResource.setLazyConnectionAssociation(lazyConnectionAssociation);
+        newResource.setIsIsolationLevelGuaranteed(isisolationguaranteed);
+        newResource.setIsConnectionValidationRequired(isconnectvalidatereq);
+        newResource.setIdleTimeoutInSeconds(idletimeout);
+        newResource.setFailAllConnections(failconnection);
+        if (datasourceclassname != null) {
+            newResource.setDatasourceClassname(datasourceclassname);
+        }
+        newResource.setConnectionValidationMethod(validationmethod);
+        newResource.setConnectionLeakTimeoutInSeconds(connectionLeakTimeout);
+        newResource.setConnectionLeakReclaim(connectionLeakReclaim);
+        newResource.setConnectionCreationRetryIntervalInSeconds(connectionCreationRetryInterval);
+        newResource.setConnectionCreationRetryAttempts(connectionCreationRetryAttempts);
+        newResource.setAssociateWithThread(associateWithThread);
+        newResource.setAllowNonComponentCallers(allownoncomponentcallers);
+        newResource.setStatementCacheSize(statementcachesize);
+        if (validationclassname != null) {
+            newResource.setValidationClassname(validationclassname);
+        }
+        newResource.setInitSql(initsql);
+        if (sqltracelisteners != null) {
+            newResource.setSqlTraceListeners(sqltracelisteners);
+        }
+        newResource.setPooling(pooling);
+        newResource.setPing(ping);
+        if (driverclassname != null) {
+            newResource.setDriverClassname(driverclassname);
+        }
+        if (description != null) {
+            newResource.setDescription(description);
+        }
+        newResource.setName(jdbcconnectionpoolid);
+        if (properties != null) {
+            for (Map.Entry e : properties.entrySet()) {
+                Property prop = newResource.createChild(Property.class);
+                prop.setName((String) e.getKey());
+                prop.setValue((String) e.getValue());
+                newResource.getProperty().add(prop);
+            }
+        }
+        return newResource;
+    }
+
+    public void setAttributes(HashMap attrList) {
         datasourceclassname = (String) attrList.get(DATASOURCE_CLASS);
         restype = (String) attrList.get(RES_TYPE);
         steadypoolsize = (String) attrList.get(STEADY_POOL_SIZE);
@@ -299,19 +276,18 @@ public class JDBCConnectionPoolManager implements ResourceManager{
         validationclassname = (String) attrList.get(VALIDATION_CLASSNAME);
         initsql = (String) attrList.get(INIT_SQL);
         sqltracelisteners = (String) attrList.get(SQL_TRACE_LISTENERS);
-        //associatewiththreadconnectionscount = (String) attrList.get(ASSOCIATE_WITH_THREAD_CONNECTIONS_COUNT);
         pooling = (String) attrList.get(POOLING);
         ping = (String) attrList.get(PING);
         driverclassname = (String) attrList.get(DRIVER_CLASSNAME);
     }
-    
-    public ResourceStatus delete (Server[] servers, Resources resources, 
-            final JdbcConnectionPool[] connPools, final String cascade, 
-            final String jdbcconnectionpoolid) throws Exception {
-        
+
+    public ResourceStatus delete(Server[] servers, Resources resources,
+                                 final JdbcConnectionPool[] connPools, final String cascade,
+                                 final String jdbcconnectionpoolid) throws Exception {
+
         if (jdbcconnectionpoolid == null) {
             String msg = localStrings.getLocalString("jdbcConnPool.resource.noJndiName",
-                            "No id defined for JDBC Connection pool.");
+                    "No id defined for JDBC Connection pool.");
             ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
             return status;
         }
@@ -325,20 +301,20 @@ public class JDBCConnectionPoolManager implements ResourceManager{
         }
 
         try {
-            
+
             // if cascade=true delete all the resources associated with this pool 
             // if cascade=false don't delete this connection pool if a resource is referencing it
-            Object obj = deleteAssociatedResources(servers, resources, 
+            Object obj = deleteAssociatedResources(servers, resources,
                     Boolean.parseBoolean(cascade), jdbcconnectionpoolid);
             if (obj instanceof Integer &&
-                    ((Integer)obj).intValue() == ResourceStatus.FAILURE) {
+                    (Integer) obj == ResourceStatus.FAILURE) {
                 String msg = localStrings.getLocalString(
-                    "delete.jdbc.connection.pool.pool_in_use", 
-                    "JDBC Connection pool {0} delete failed ", jdbcconnectionpoolid);
+                        "delete.jdbc.connection.pool.pool_in_use",
+                        "JDBC Connection pool {0} delete failed ", jdbcconnectionpoolid);
                 ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
                 return status;
             }
-            
+
             // delete jdbc connection pool
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
@@ -351,15 +327,15 @@ public class JDBCConnectionPoolManager implements ResourceManager{
                     return null;
                 }
             }, resources) == null) {
-                String msg = localStrings.getLocalString("delete.jdbc.connection.pool.notfound", 
-                                "A JDBC connection pool named {0} does not exist.", jdbcconnectionpoolid);
+                String msg = localStrings.getLocalString("delete.jdbc.connection.pool.notfound",
+                        "A JDBC connection pool named {0} does not exist.", jdbcconnectionpoolid);
                 ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
                 return status;
             }
-            
-        } catch(TransactionFailure tfe) {
+
+        } catch (TransactionFailure tfe) {
             String msg = tfe.getMessage() != null ? tfe.getMessage() :
-                localStrings.getLocalString("jdbcConnPool.resource.deletionFailed", 
+                    localStrings.getLocalString("jdbcConnPool.resource.deletionFailed",
                             "JDBC Connection pool {0} delete failed ", jdbcconnectionpoolid);
             ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
             status.setException(tfe);
@@ -371,21 +347,21 @@ public class JDBCConnectionPoolManager implements ResourceManager{
         ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, msg);
         return status;
     }
-    
+
     public ArrayList list(JdbcConnectionPool[] connPools) {
         ArrayList<String> list = new ArrayList();
         for (JdbcConnectionPool cp : connPools) {
             list.add(cp.getName());
         }
         return list;
-    } 
-    
-    private boolean isResourceExists(Resources resources, String jdbcconnectionpoolid) {
-        
+    }
+
+    private boolean isResourceExists(Resources resources, String jdbcConnectionPoolID) {
+
         // ensure we don't already have one of this name
         for (Resource resource : resources.getResources()) {
             if (resource instanceof JdbcConnectionPool) {
-                if (((JdbcConnectionPool) resource).getName().equals(jdbcconnectionpoolid)) {
+                if (((JdbcConnectionPool) resource).getName().equals(jdbcConnectionPoolID)) {
                     return true;
                 }
             }
@@ -393,19 +369,18 @@ public class JDBCConnectionPoolManager implements ResourceManager{
 
         return false;
     }
-    
-    private Object deleteAssociatedResources(final Server[] servers, Resources resources, 
-            final boolean cascade, final String connPoolId) throws TransactionFailure {
-        
+
+    private Object deleteAssociatedResources(final Server[] servers, Resources resources,
+                                             final boolean cascade, final String connectionPoolID) throws TransactionFailure {
         return ConfigSupport.apply(new SingleConfigCode<Resources>() {
             public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                 Resource res = null;
                 for (Resource resource : param.getResources()) {
                     if (resource instanceof JdbcResource) {
-                        if (((JdbcResource)resource).getPoolName().equals(connPoolId)) {
+                        if (((JdbcResource) resource).getPoolName().equals(connectionPoolID)) {
                             if (cascade) {
                                 // delete resource-refs
-                                deleteResourceRefs(servers, ((JdbcResource)resource).getJndiName());
+                                deleteResourceRefs(servers, ((JdbcResource) resource).getJndiName());
                                 res = resource;
                                 break;
                             } else {
@@ -413,23 +388,26 @@ public class JDBCConnectionPoolManager implements ResourceManager{
                             }
                         }
                     }
-                 }
-                 // delete jdbc-resource
-                 if (res != null) {
-                     param.getResources().remove(res);
-                 }
-                 return null;
+                }
+                // delete jdbc-resource
+                if (res != null) {
+                    param.getResources().remove(res);
+                }
+                return null;
             }
         }, resources);
-        
+
     }
-    
-    private void deleteResourceRefs(Server[] servers, final String refName) 
+
+    private void deleteResourceRefs(Server[] servers, final String refName)
             throws TransactionFailure {
-        
         for (Server server : servers) {
-           server.deleteResourceRef(refName);
+            server.deleteResourceRef(refName);
         }
-        
+    }
+
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception {
+        setAttributes(attributes);
+        return getJdbcConnectionPool(resources, properties);
     }
 }

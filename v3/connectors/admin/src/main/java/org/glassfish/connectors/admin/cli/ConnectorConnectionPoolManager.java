@@ -47,6 +47,8 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Properties;
+
+import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -58,16 +60,10 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 import static org.glassfish.resource.common.ResourceConstants.*;
 import org.glassfish.resource.common.ResourceStatus;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
+
 import static com.sun.appserv.connectors.internal.api.ConnectorConstants.*;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.ResourcePool;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.admin.cli.resources.ResourceManager;
 
@@ -79,7 +75,7 @@ import org.glassfish.admin.cli.resources.ResourceManager;
 @Service (name=ServerTags.CONNECTOR_CONNECTION_POOL)
 @Scoped(PerLookup.class)
 @I18n("create.connector.connection.pool")
-public class ConnectorConnectionPoolManager implements ResourceManager{
+public class ConnectorConnectionPoolManager implements ResourceManager {
 
     @Inject
     Applications applications;
@@ -125,10 +121,10 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
         return ServerTags.CONNECTOR_CONNECTION_POOL;
     }
 
-    public ResourceStatus create(Resources resources, HashMap attrList, 
-                                    final Properties props, Server targetServer) 
-                                    throws Exception {
-        setParams(attrList);
+    public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
+                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
+
+        setParams(attributes);
         
         if (poolname == null) {
             String msg = localStrings.getLocalString("create.connector.connection.pool.noJndiName",
@@ -137,13 +133,7 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
         }
         // ensure we don't already have one of this name
         for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
-            /*if (resource instanceof BindableResource) {
-                if (((BindableResource) resource).getJndiName().equals(poolname)) {
-                    String msg = localStrings.getLocalString("create.connector.connection.pool.duplicate",
-                            "A resource named {0} already exists.", poolname);
-                    return new ResourceStatus(ResourceStatus.FAILURE, msg);
-                }
-            } else*/ if (resource instanceof ConnectorConnectionPool) {
+            if (resource instanceof ConnectorConnectionPool) {
                 if (((ResourcePool) resource).getName().equals(poolname)) {
                     String msg = localStrings.getLocalString("create.connector.connection.pool.duplicate",
                             "A resource named {0} already exists.", poolname);
@@ -159,7 +149,7 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
         }
 
         try {
-            ResourceStatus status = validateCnctorConnPoolAttrList(raname, connectiondefinition);
+            ResourceStatus status = validateConnectorConnPoolAttributes(raname, connectiondefinition);
             if (status.getStatus() == ResourceStatus.FAILURE) {
                 return status;
             }
@@ -172,81 +162,95 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
                   raname) + " " + cre.getLocalizedMessage();
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
-            
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-
-                    ConnectorConnectionPool newResource = param.createChild(ConnectorConnectionPool.class);
-
-                    newResource.setResourceAdapterName(raname);
-                    newResource.setConnectionDefinitionName(connectiondefinition);
-                    newResource.setValidateAtmostOncePeriodInSeconds(
-                                    validateAtmostOncePeriod);
-                    newResource.setSteadyPoolSize(steadypoolsize);
-                    newResource.setPoolResizeQuantity(poolresize);
-                    newResource.setMaxWaitTimeInMillis(maxwait);
-                    newResource.setMaxPoolSize(maxpoolsize);
-                    newResource.setMaxConnectionUsageCount(
-                                    maxConnectionUsageCount);
-                    newResource.setMatchConnections(matchConnections);
-                    newResource.setLazyConnectionEnlistment(
-                                    lazyConnectionEnlistment);
-                    newResource.setLazyConnectionAssociation(
-                                    lazyConnectionAssociation);
-                    newResource.setIsConnectionValidationRequired(
-                                    isconnectvalidatereq);
-                    newResource.setIdleTimeoutInSeconds(idletimeout);
-                    newResource.setFailAllConnections(failconnection);
-                    newResource.setConnectionLeakTimeoutInSeconds(
-                                    connectionLeakTimeout);
-                    newResource.setConnectionLeakReclaim(
-                                    connectionLeakReclaim);
-                    newResource.setConnectionCreationRetryIntervalInSeconds(
-                                    connectionCreationRetryInterval);
-                    newResource.setConnectionCreationRetryAttempts(
-                                    connectionCreationRetryAttempts);
-                    newResource.setAssociateWithThread(
-                                    associateWithThread);
-                    newResource.setPooling(pooling);
-                    newResource.setPing(ping);
-                    if (transactionSupport != null) {
-                        newResource.setTransactionSupport(transactionSupport);
+        if (requiresNewTransaction) {
+            try {
+                ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                    public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                        ConnectorConnectionPool newResource = createConfigBean(param, properties);
+                        param.getResources().add(newResource);
+                        return newResource;
                     }
-                    if (description != null) {
-                        newResource.setDescription(description);
-                    }
-                    newResource.setName(poolname);
-                    if (props != null) {
-                        for ( java.util.Map.Entry e : props.entrySet()) {
-                            Property prop = newResource.createChild(Property.class);
-                            prop.setName((String)e.getKey());
-                            prop.setValue((String)e.getValue());
-                            newResource.getProperty().add(prop);
-                        }
-                    }
-                    param.getResources().add(newResource);                    
-                    return newResource;
-                }
-            }, resources);
+                }, resources);
 
-        } catch(TransactionFailure tfe) {
-            Logger.getLogger(ConnectorConnectionPoolManager.class.getName()).log(Level.SEVERE,
-                    "create-connector-connection-pool failed", tfe);
-            String msg = localStrings.getLocalString(
-                  "create.connector.connection.pool.fail", "Connector connection pool {0} create failed: {1}",
-                poolname) + " " + tfe.getLocalizedMessage();
-            return new ResourceStatus(ResourceStatus.FAILURE, msg);
-        } /*catch(PropertyVetoException pve) {
-            return (localStrings.getLocalString("create.jdbc.resource.fail", "{0} create failed ", id));
-        }*/
+            } catch (TransactionFailure tfe) {
+                Logger.getLogger(ConnectorConnectionPoolManager.class.getName()).log(Level.SEVERE,
+                        "create-connector-connection-pool failed", tfe);
+                String msg = localStrings.getLocalString(
+                        "create.connector.connection.pool.fail", "Connector connection pool {0} create failed: {1}",
+                        poolname) + " " + tfe.getLocalizedMessage();
+                return new ResourceStatus(ResourceStatus.FAILURE, msg);
+            }
+        } else {
+            createResource(resources, properties);
+        }
 
         String msg = localStrings.getLocalString(
                 "create.connector.connection.pool.success", "Connector connection pool {0} created successfully",
                 poolname);
         return new ResourceStatus(ResourceStatus.SUCCESS, msg);
          
+    }
+
+    private ConnectorConnectionPool createResource(Resources param, Properties properties) throws PropertyVetoException,
+            TransactionFailure {
+        ConnectorConnectionPool newResource = createConfigBean(param, properties);
+        param.getResources().add(newResource);
+        return newResource;
+    }
+
+
+    private ConnectorConnectionPool createConfigBean(Resources param, Properties properties) throws PropertyVetoException,
+            TransactionFailure {
+        ConnectorConnectionPool newResource = param.createChild(ConnectorConnectionPool.class);
+
+        newResource.setResourceAdapterName(raname);
+        newResource.setConnectionDefinitionName(connectiondefinition);
+        newResource.setValidateAtmostOncePeriodInSeconds(
+                        validateAtmostOncePeriod);
+        newResource.setSteadyPoolSize(steadypoolsize);
+        newResource.setPoolResizeQuantity(poolresize);
+        newResource.setMaxWaitTimeInMillis(maxwait);
+        newResource.setMaxPoolSize(maxpoolsize);
+        newResource.setMaxConnectionUsageCount(
+                        maxConnectionUsageCount);
+        newResource.setMatchConnections(matchConnections);
+        newResource.setLazyConnectionEnlistment(
+                        lazyConnectionEnlistment);
+        newResource.setLazyConnectionAssociation(
+                        lazyConnectionAssociation);
+        newResource.setIsConnectionValidationRequired(
+                        isconnectvalidatereq);
+        newResource.setIdleTimeoutInSeconds(idletimeout);
+        newResource.setFailAllConnections(failconnection);
+        newResource.setConnectionLeakTimeoutInSeconds(
+                        connectionLeakTimeout);
+        newResource.setConnectionLeakReclaim(
+                        connectionLeakReclaim);
+        newResource.setConnectionCreationRetryIntervalInSeconds(
+                        connectionCreationRetryInterval);
+        newResource.setConnectionCreationRetryAttempts(
+                        connectionCreationRetryAttempts);
+        newResource.setAssociateWithThread(
+                        associateWithThread);
+        newResource.setPooling(pooling);
+        newResource.setPing(ping);
+        if (transactionSupport != null) {
+            newResource.setTransactionSupport(transactionSupport);
+        }
+        if (description != null) {
+            newResource.setDescription(description);
+        }
+        newResource.setName(poolname);
+        if (properties != null) {
+            for ( java.util.Map.Entry e : properties.entrySet()) {
+                Property prop = newResource.createChild(Property.class);
+                prop.setName((String)e.getKey());
+                prop.setValue((String)e.getValue());
+                newResource.getProperty().add(prop);
+            }
+        }
+        return newResource;
     }
 
     public void setParams(HashMap attrList) {
@@ -276,7 +280,7 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
         transactionSupport = (String) attrList.get(CONN_TRANSACTION_SUPPORT);
     }
     
-    private ResourceStatus validateCnctorConnPoolAttrList(String raName, String connDef)
+    private ResourceStatus validateConnectorConnPoolAttributes(String raName, String connDef)
             throws ConnectorRuntimeException {
         ResourceStatus status = isValidRAName(raName);
         if(status.getStatus() == ResourceStatus.SUCCESS) {
@@ -340,5 +344,9 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
             }
         }
         return false;
+    }
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception{
+        setParams(attributes);
+        return createConfigBean(resources, properties);
     }
 }

@@ -36,6 +36,7 @@
 
 package org.glassfish.admin.cli.resources;
 
+import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import java.util.HashMap;
@@ -44,18 +45,40 @@ import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
- *
- * @author PRASHANTH ABBAGANI
+ * Contract for all ResourceManagers
  * 
- * interface for all the ResourceManagers
+ * @author Prashanth Abbagani
  */
 @Contract
 public interface ResourceManager {
-    ResourceStatus create( Resources resources,
-                                       HashMap   attrList,
-                                       Properties      props,
-                                       Server          targetServer)
-        throws Exception;
 
+    /**
+     * creates the resource as a child to the <i>resources</i> provided
+     * @param resources parent for the resource to be created
+     * @param attributes resource configuration
+     * @param properties properties
+     * @param targetServer target
+     * @param requiresNewTransaction indicates whether the resource need to be created under a new transaction
+     * @return ResourceStatus indicating the status of resource creation
+     * @throws Exception when unable to create the resource
+     */
+    ResourceStatus create(Resources resources, HashMap attributes, Properties properties, Server targetServer,
+                           boolean requiresNewTransaction) throws Exception;
+
+    /**
+     * creates config-bean equivalent for the resource configuration provided as attributes and properties<br>
+     * Does not persist the configuration<br>
+     * @param resources parent for the resource to be created
+     * @param attributes attributes of the resource
+     * @param properties properties of the resource
+     * @return Config-Bean equivalent of the resource
+     * @throws Exception when unable to create config-bean-equivalent 
+     */
+    Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception;
+
+    /**
+     * returns the resource-type
+     * @return resource-type
+     */
     String getResourceType();
 }

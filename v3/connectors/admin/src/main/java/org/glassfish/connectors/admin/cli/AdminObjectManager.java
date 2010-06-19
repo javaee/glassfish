@@ -81,7 +81,7 @@ import org.glassfish.admin.cli.resources.ResourceManager;
 @Service (name=ServerTags.ADMIN_OBJECT_RESOURCE)
 @Scoped(PerLookup.class)
 @I18n("create.admin.object")
-public class AdminObjectManager implements ResourceManager{
+public class AdminObjectManager implements ResourceManager {
 
     @Inject
     Applications applications;
@@ -108,10 +108,10 @@ public class AdminObjectManager implements ResourceManager{
         return ServerTags.ADMIN_OBJECT_RESOURCE;
     }
 
-    public ResourceStatus create(Resources resources, HashMap attrList, 
-                                    final Properties props, Server targetServer) 
-                                    throws Exception {
-        setParams(attrList);
+    public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
+                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
+
+        setAttributes(attributes);
         
         if (jndiName == null) {
             String msg = localStrings.getLocalString("create.admin.object.noJndiName",
@@ -138,45 +138,30 @@ public class AdminObjectManager implements ResourceManager{
         if (status.getStatus() == ResourceStatus.FAILURE) {
             return status;
         }
-            
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+        if (requiresNewTransaction) {
+            try {
+                ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
-                    AdminObjectResource newResource = param.createChild(AdminObjectResource.class);
-                    newResource.setJndiName(jndiName);
-                    if (description != null) {
-                        newResource.setDescription(description);
+                    public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                        return createResource(param, properties);
                     }
-                    newResource.setResAdapter(raName);
-                    newResource.setResType(resType);
-                    newResource.setClassName(className);
-                    newResource.setEnabled(enabled.toString());
-                    if (props != null) {
-                        for ( Map.Entry e : props.entrySet()) {
-                            Property prop = newResource.createChild(Property.class);
-                            prop.setName((String)e.getKey());
-                            prop.setValue((String)e.getValue());
-                            newResource.getProperty().add(prop);
-                        }
-                    }
-                    param.getResources().add(newResource);
-                    return newResource;
+                }, resources);
+
+                if (!targetServer.isResourceRefExists(jndiName)) {
+                    targetServer.createResourceRef(enabled.toString(), jndiName);
                 }
-            }, resources);
 
-            if (!targetServer.isResourceRefExists( jndiName)) {
-                targetServer.createResourceRef( enabled.toString(), jndiName);
+            } catch (TransactionFailure tfe) {
+                Logger.getLogger(AdminObjectManager.class.getName()).log(Level.SEVERE,
+                        "Unabled to create administered object", tfe);
+                String msg = localStrings.getLocalString("create.admin.object.fail",
+                        "Unable to create administered object {0}.", jndiName) +
+                        " " + tfe.getLocalizedMessage();
+                return new ResourceStatus(ResourceStatus.FAILURE, msg);
             }
-
-        } catch(TransactionFailure tfe) {
-            Logger.getLogger(AdminObjectManager.class.getName()).log(Level.SEVERE,
-                    "Unabled to create administered object", tfe);
-            String msg = localStrings.getLocalString("create.admin.object.fail",
-                            "Unable to create administered object {0}.", jndiName) +
-                            " " + tfe.getLocalizedMessage();
-            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        } else {
+            createResource(resources, properties);
         }
 
         String msg = localStrings.getLocalString(
@@ -186,7 +171,36 @@ public class AdminObjectManager implements ResourceManager{
          
     }
 
-    public void setParams(HashMap attrList) {
+    private AdminObjectResource createResource(Resources param, Properties props) throws PropertyVetoException,
+            TransactionFailure  {
+        AdminObjectResource newResource = createConfigBean(param, props);
+        param.getResources().add(newResource);
+        return newResource;
+    }
+
+    private AdminObjectResource createConfigBean(Resources param, Properties props) throws PropertyVetoException,
+            TransactionFailure {
+        AdminObjectResource newResource = param.createChild(AdminObjectResource.class);
+        newResource.setJndiName(jndiName);
+        if (description != null) {
+            newResource.setDescription(description);
+        }
+        newResource.setResAdapter(raName);
+        newResource.setResType(resType);
+        newResource.setClassName(className);
+        newResource.setEnabled(enabled);
+        if (props != null) {
+            for ( Map.Entry e : props.entrySet()) {
+                Property prop = newResource.createChild(Property.class);
+                prop.setName((String)e.getKey());
+                prop.setValue((String)e.getValue());
+                newResource.getProperty().add(prop);
+            }
+        }
+        return newResource;
+    }
+
+    public void setAttributes(HashMap attrList) {
         resType = (String) attrList.get(RES_TYPE);
         className = (String)attrList.get(ADMIN_OBJECT_CLASS_NAME);
         enabled = (String) attrList.get(ENABLED);
@@ -303,5 +317,9 @@ public class AdminObjectManager implements ResourceManager{
         }
 
         return status;
+    }
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception{
+        setAttributes(attributes);
+        return createConfigBean(resources, properties);
     }
 }

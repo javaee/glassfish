@@ -55,7 +55,7 @@ import java.util.Properties;
 import java.beans.PropertyVetoException;
 
 
-@Service(name= ServerTags.MAIL_RESOURCE)
+@Service(name = ServerTags.MAIL_RESOURCE)
 @I18n("add.resources")
 public class JavaMailResourceManager implements ResourceManager {
 
@@ -79,29 +79,26 @@ public class JavaMailResourceManager implements ResourceManager {
         return ServerTags.MAIL_RESOURCE;
     }
 
-    public ResourceStatus create(Resources resources, HashMap attrList, final Properties props, Server targetServer)
-            throws Exception {
-        setParams(attrList);
-        
+    public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
+                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
+        setAttributes(attributes);
+
         if (mailHost == null) {
             String msg = localStrings.getLocalString("create.mail.resource.noHostName",
-                            "No host name defined for Mail Resource.");
-            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-            return status;
+                    "No host name defined for Mail Resource.");
+            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
 
         if (mailUser == null) {
             String msg = localStrings.getLocalString("create.mail.resource.noUserName",
-                            "No user name defined for Mail Resource.");
-            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-            return status;
+                    "No user name defined for Mail Resource.");
+            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
 
         if (fromAddress == null) {
             String msg = localStrings.getLocalString("create.mail.resource.noFrom",
-                            "From not defined for Mail Resource.");
-            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-            return status;
+                    "From not defined for Mail Resource.");
+            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
 
 
@@ -109,12 +106,11 @@ public class JavaMailResourceManager implements ResourceManager {
         for (Resource resource : resources.getResources()) {
             if (resource instanceof BindableResource) {
                 if (((BindableResource) resource).getJndiName().equals(jndiName)) {
-                   String msg = localStrings.getLocalString(
+                    String msg = localStrings.getLocalString(
                             "create.mail.resource.duplicate.1",
                             "A Mail Resource named {0} already exists.",
                             jndiName);
-                    ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-                    return status;
+                    return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
                 }
             }
         }
@@ -124,58 +120,57 @@ public class JavaMailResourceManager implements ResourceManager {
 
                 public Object run(Resources param) throws PropertyVetoException,
                         TransactionFailure {
-
-                    MailResource newResource = param.createChild(
-                            MailResource.class);
-                    newResource.setJndiName(jndiName);
-                    newResource.setFrom(fromAddress);
-                    newResource.setUser(mailUser);
-                    newResource.setHost(mailHost);
-                    newResource.setEnabled(enabled.toString());
-                    newResource.setStoreProtocol(storeProtocol);
-                    newResource.setStoreProtocolClass(storeProtocolClass);
-                    newResource.setTransportProtocol(transportProtocol);
-                    newResource.setTransportProtocolClass(
-                            transportProtocolClass);
-                    newResource.setDebug(debug.toString());
-                    if (description != null) {
-                        newResource.setDescription(description);
-                    }
-                    if (props != null) {
-                        for ( java.util.Map.Entry e : props.entrySet()) {
-                            Property prop = newResource.createChild(
-                                    Property.class);
-                            prop.setName((String)e.getKey());
-                            prop.setValue((String)e.getValue());
-                            newResource.getProperty().add(prop);
-                        }
-                    }
+                    MailResource newResource = createConfigBean(param, properties);
                     param.getResources().add(newResource);
                     return newResource;
                 }
             }, resources);
 
-            if (!targetServer.isResourceRefExists( jndiName)) {
-                targetServer.createResourceRef( enabled.toString(), jndiName);
+            if (!targetServer.isResourceRefExists(jndiName)) {
+                targetServer.createResourceRef(enabled, jndiName);
             }
             String msg = localStrings.getLocalString(
                     "create.mail.resource.success",
                     "Mail Resource {0} created.", jndiName);
-            ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, msg, true);
-            return status;
-        } catch(TransactionFailure tfe) {
+            return new ResourceStatus(ResourceStatus.SUCCESS, msg, true);
+        } catch (TransactionFailure tfe) {
             String msg = localStrings.getLocalString("" +
                     "create.mail.resource.fail",
                     "Unable to create Mail Resource {0}.", jndiName) +
                     " " + tfe.getLocalizedMessage();
-            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-            return status;
+            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
-
-
     }
 
-    private void setParams(HashMap attrList) {
+    private MailResource createConfigBean(Resources param, Properties props) throws PropertyVetoException,
+            TransactionFailure {
+        MailResource newResource = param.createChild(MailResource.class);
+        newResource.setJndiName(jndiName);
+        newResource.setFrom(fromAddress);
+        newResource.setUser(mailUser);
+        newResource.setHost(mailHost);
+        newResource.setEnabled(enabled);
+        newResource.setStoreProtocol(storeProtocol);
+        newResource.setStoreProtocolClass(storeProtocolClass);
+        newResource.setTransportProtocol(transportProtocol);
+        newResource.setTransportProtocolClass(
+                transportProtocolClass);
+        newResource.setDebug(debug);
+        if (description != null) {
+            newResource.setDescription(description);
+        }
+        if (props != null) {
+            for (java.util.Map.Entry e : props.entrySet()) {
+                Property prop = newResource.createChild(Property.class);
+                prop.setName((String) e.getKey());
+                prop.setValue((String) e.getValue());
+                newResource.getProperty().add(prop);
+            }
+        }
+        return newResource;
+    }
+
+    private void setAttributes(HashMap attrList) {
         jndiName = (String) attrList.get(JNDI_NAME);
         mailHost = (String) attrList.get(MAIL_HOST);
         mailUser = (String) attrList.get(MAIL_USER);
@@ -187,5 +182,10 @@ public class JavaMailResourceManager implements ResourceManager {
         debug = (String) attrList.get(MAIL_DEBUG);
         enabled = (String) attrList.get(ENABLED);
         description = (String) attrList.get(DESCRIPTION);
+    }
+
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception {
+        setAttributes(attributes);
+        return createConfigBean(resources, properties);
     }
 }

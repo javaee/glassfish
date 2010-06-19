@@ -71,9 +71,10 @@ public class ConnectorWorkSecurityMapResourceManager implements ResourceManager 
         return ResourceConstants.WORK_SECURITY_MAP;
     }
 
-    public ResourceStatus create(Resources resources, HashMap attrList, Properties props, Server targetServer)
-            throws Exception {
-        setParams(attrList);
+    public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
+                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
+
+        setAttributes(attributes);
 
         if (mapName == null) {
             String msg = localStrings.getLocalString(
@@ -118,49 +119,64 @@ public class ConnectorWorkSecurityMapResourceManager implements ResourceManager 
                 }
             }
         }
+        if (requiresNewTransaction) {
+            try {
+                ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                    public Object run(Resources param) throws PropertyVetoException,
+                            TransactionFailure {
 
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
-                public Object run(Resources param) throws PropertyVetoException,
-                        TransactionFailure {
-
-                    WorkSecurityMap workSecurityMap =
-                            param.createChild(WorkSecurityMap.class);
-                    workSecurityMap.setName(mapName);
-                    workSecurityMap.setResourceAdapterName(raName);
-                    if (principalsMap != null) {
-                        for (Map.Entry e : principalsMap.entrySet()) {
-                            PrincipalMap principalMap = workSecurityMap.createChild(PrincipalMap.class);
-                            principalMap.setEisPrincipal((String) e.getKey());
-                            principalMap.setMappedPrincipal((String) e.getValue());
-                            workSecurityMap.getPrincipalMap().add(principalMap);
-                        }
-                    } else if (groupsMap != null) {
-                        for (Map.Entry e : groupsMap.entrySet()) {
-                            GroupMap groupMap = workSecurityMap.createChild(GroupMap.class);
-                            groupMap.setEisGroup((String) e.getKey());
-                            groupMap.setMappedGroup((String) e.getValue());
-                            workSecurityMap.getGroupMap().add(groupMap);
-                        }
+                        WorkSecurityMap workSecurityMap = createResource(param, properties);
+                        return workSecurityMap;
                     }
-                    param.getResources().add(workSecurityMap);
-                    return workSecurityMap;
-                }
-            }, resources);
-            String msg = localStrings.getLocalString(
-                    "create.work.security.map.success",
-                    "Work security map {0} created.", mapName);
-            return new ResourceStatus(ResourceStatus.SUCCESS, msg, true);
-        } catch (TransactionFailure tfe) {
-            String msg = localStrings.getLocalString(
-                    "create.connector.work.security.map.fail",
-                    "Unable to create connector work security map {0}.", mapName) +
-                    " " + tfe.getLocalizedMessage();
-            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
+                }, resources);
+            } catch (TransactionFailure tfe) {
+                String msg = localStrings.getLocalString(
+                        "create.connector.work.security.map.fail",
+                        "Unable to create connector work security map {0}.", mapName) +
+                        " " + tfe.getLocalizedMessage();
+                return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
+            }
+        } else {
+            createResource(resources, properties);
         }
+        String msg = localStrings.getLocalString(
+                "create.work.security.map.success",
+                "Work security map {0} created.", mapName);
+        return new ResourceStatus(ResourceStatus.SUCCESS, msg, true);
     }
 
-    private void setParams(HashMap attrList) {
+    private WorkSecurityMap createConfigBean(Resources param) throws PropertyVetoException, TransactionFailure {
+        WorkSecurityMap workSecurityMap =
+                param.createChild(WorkSecurityMap.class);
+        workSecurityMap.setName(mapName);
+        workSecurityMap.setResourceAdapterName(raName);
+        if (principalsMap != null) {
+            for (Map.Entry e : principalsMap.entrySet()) {
+                PrincipalMap principalMap = workSecurityMap.createChild(PrincipalMap.class);
+                principalMap.setEisPrincipal((String) e.getKey());
+                principalMap.setMappedPrincipal((String) e.getValue());
+                workSecurityMap.getPrincipalMap().add(principalMap);
+            }
+        } else if (groupsMap != null) {
+            for (Map.Entry e : groupsMap.entrySet()) {
+                GroupMap groupMap = workSecurityMap.createChild(GroupMap.class);
+                groupMap.setEisGroup((String) e.getKey());
+                groupMap.setMappedGroup((String) e.getValue());
+                workSecurityMap.getGroupMap().add(groupMap);
+            }
+        }
+        return workSecurityMap;
+    }
+
+    private WorkSecurityMap createResource(Resources param, Properties props) throws PropertyVetoException,
+            TransactionFailure {
+        WorkSecurityMap newResource = createConfigBean(param);
+        param.getResources().add(newResource);
+        return newResource;
+    }
+
+
+    private void setAttributes(HashMap attrList) {
         raName = (String) attrList.get(ResourceConstants.WORK_SECURITY_MAP_RA_NAME);
         mapName = (String) attrList.get(ResourceConstants.WORK_SECURITY_MAP_NAME);
         description = (String) attrList.get(ResourceConstants.CONNECTOR_CONN_DESCRIPTION);
@@ -168,5 +184,10 @@ public class ConnectorWorkSecurityMapResourceManager implements ResourceManager 
         groupsMap = (Properties) attrList.get(ResourceConstants.WORK_SECURITY_MAP_GROUP_MAP);
     }
 
-
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception{
+        setAttributes(attributes);
+        //TODO ASR no use of props ?
+        //return createConfigBean(resources, props);
+        return createConfigBean(resources);        
+    }
 }
