@@ -2,8 +2,8 @@
 
 
 <!DOCTYPE project [
-<!ENTITY eeSetup SYSTEM "file:./../config/ee-common.xml">
-<!ENTITY eeProperties SYSTEM "file:./../config/ee-properties.xml">
+<!ENTITY eeSetup SYSTEM "./../config/ee-common.xml">
+<!ENTITY eeProperties SYSTEM "./../config/ee-properties.xml">
 ]>
 
 <project name="reconfig" default="usage" basedir=".">

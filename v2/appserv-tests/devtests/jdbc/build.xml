@@ -2,13 +2,13 @@
 
 
 <!DOCTYPE project [
-        <!ENTITY commonSetup SYSTEM "file:./../../config/properties.xml">
-        <!ENTITY commonBuild SYSTEM "file:./../../config/common.xml">
-        <!ENTITY jdbcCommon SYSTEM "file:./JdbcCommon.xml">
-        <!ENTITY jdbcCommonProperties SYSTEM "file:./JdbcCommon.properties">
-        <!ENTITY reporting   SYSTEM "file:./report.xml">
-        <!ENTITY eeCommon SYSTEM "file:./config/ee-common.xml">
-        <!ENTITY eeCommonProperties SYSTEM "file:./config/ee-properties.xml">
+        <!ENTITY commonSetup SYSTEM "./../../config/properties.xml">
+        <!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+        <!ENTITY jdbcCommon SYSTEM "./JdbcCommon.xml">
+        <!ENTITY jdbcCommonProperties SYSTEM "./JdbcCommon.properties">
+        <!ENTITY reporting   SYSTEM "./report.xml">
+        <!ENTITY eeCommon SYSTEM "./config/ee-common.xml">
+        <!ENTITY eeCommonProperties SYSTEM "./config/ee-properties.xml">
         ]>
 
 <project name="jdbc" default="usage" basedir=".">

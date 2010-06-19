@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-        <!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
-        <!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
-        <!ENTITY testproperties SYSTEM "file:./build.properties">
-        <!ENTITY run SYSTEM "file:./../../../config/run.xml">
-        <!ENTITY eeSetup SYSTEM "file:./../config/ee-common.xml">
-        <!ENTITY eeProperties SYSTEM "file:./../config/ee-properties.xml">
+        <!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
+        <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+        <!ENTITY testproperties SYSTEM "./build.properties">
+        <!ENTITY run SYSTEM "./../../../config/run.xml">
+        <!ENTITY eeSetup SYSTEM "./../config/ee-common.xml">
+        <!ENTITY eeProperties SYSTEM "./../config/ee-properties.xml">
         ]>
 
 <project name="mix" default="usage" basedir=".">

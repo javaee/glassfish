@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
 <!DOCTYPE project[
-    <!ENTITY commonSetup SYSTEM "file:./../../../config/common.xml">
-    <!ENTITY commonBuild SYSTEM "file:./../../../config/properties.xml">
-    <!ENTITY testProperties SYSTEM "file:./build.properties">
+    <!ENTITY commonSetup SYSTEM "./../../../config/common.xml">
+    <!ENTITY commonBuild SYSTEM "./../../../config/properties.xml">
+    <!ENTITY testProperties SYSTEM "./build.properties">
 ]>
 
 <project name="nonacc" basedir="." default="usage">

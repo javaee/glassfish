@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "file:./../../../config/common.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../../config/properties.xml">
-<!ENTITY jdbcCommon SYSTEM "file:./../JdbcCommon.xml">
-<!ENTITY jdbcCommonProps SYSTEM "file:./../JdbcCommon.properties">
-<!ENTITY testproperties SYSTEM "file:./build.properties">
+<!ENTITY commonSetup SYSTEM "./../../../config/common.xml">
+<!ENTITY commonBuild SYSTEM "./../../../config/properties.xml">
+<!ENTITY jdbcCommon SYSTEM "./../JdbcCommon.xml">
+<!ENTITY jdbcCommonProps SYSTEM "./../JdbcCommon.properties">
+<!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 
 <project name="EnvEntryScope" basedir="." default="usage">
