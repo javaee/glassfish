@@ -1013,7 +1013,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <echo> === EMBEDDED DEPLOYING ${warname} from ${basedir}</echo>
     <glassfish-embedded-deploy app="${basedir}/${warname}.war"/>
     <property name="force" value="false"/>
-    <glassfish-embedded-deploy app="${basedir}/${warname}.war" contextroot="{contextroot}" libraries="${libraries} precompilejsp="${precompilejsp}" force="${force}"/>
+    <glassfish-embedded-deploy app="${basedir}/${warname}.war" contextroot="{contextroot}" libraries="${libraries}" precompilejsp="${precompilejsp}" force="${force}"/>
 </target>
 
 <!-- deploy the standalone war in AppServ  -->
@@ -1043,7 +1043,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <echo> === EMBEDDED DEPLOYING === </echo>
     <property name="precompilejsp" value="true"/>
     <property name="force" value="false"/>
-    <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" contextroot="{contextroot} libraries="${libraries} precompilejsp="${precompilejsp}" force="${force}"/>
+    <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" contextroot="{contextroot}" libraries="${libraries}" precompilejsp="${precompilejsp}" force="${force}"/>
 </target>
 
 <target name="glassfish-embedded-undeploy" if="env.EMBEDDED">
