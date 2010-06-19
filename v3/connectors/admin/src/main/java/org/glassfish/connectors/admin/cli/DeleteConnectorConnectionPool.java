@@ -119,9 +119,9 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
             // if cascade=true delete all the resources associated with this pool
             // if cascade=false don't delete this connection pool if a resource is referencing it
             Object obj = deleteAssociatedResources(servers, resources,
-                    cascade.booleanValue(), poolname);
+                    cascade, poolname);
             if (obj instanceof Integer &&
-                    ((Integer)obj).intValue() == ResourceStatus.FAILURE) {
+                    (Integer) obj == ResourceStatus.FAILURE) {
                 report.setMessage(localStrings.getLocalString(
                     "delete.connector.connection.pool.pool_in_use",
                     "Some connector resources are referencing connection pool {0}. Use 'cascade' option to delete them as well.", poolname));
@@ -191,12 +191,12 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
                                 res = resource;
                                 break;
                             } else {
-                                return Integer.valueOf(ResourceStatus.FAILURE);
+                                return ResourceStatus.FAILURE;
                             }
                         }
                     }
                  }
-                 // delete jdbc-resource
+                 // delete connector-resource
                  if (res != null) {
                      param.getResources().remove(res);
                  }

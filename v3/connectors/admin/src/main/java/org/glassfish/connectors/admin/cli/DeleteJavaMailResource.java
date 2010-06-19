@@ -104,7 +104,7 @@ public class DeleteJavaMailResource implements AdminCommand {
         }
 
         try {
-            // delete admin-object-resource
+            // delete java-mail-resource
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException,
                         TransactionFailure {
