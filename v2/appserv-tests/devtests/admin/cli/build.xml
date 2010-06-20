@@ -86,6 +86,13 @@
          <java classname="admin.DomainTest"  fork="true" classpath="${test}"/>
     </target>
 
+    <target name="run-backup-tests">
+        <record name="backup.output" action="start" />
+        <antcall target="cleanAS"/>
+        <java classname="admin.BackupCommandsTest"  fork="true" classpath="${test}"/>
+        <record name="admin.output" action="stop" />
+    </target>
+
     <target name="portsonly" depends="init">
         <record name="admin.output" action="start" />
         <java classname="admin.PortTests"  fork="true" classpath="${test}"/>
