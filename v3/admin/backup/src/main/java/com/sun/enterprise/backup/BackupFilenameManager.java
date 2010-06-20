@@ -43,6 +43,8 @@
 package com.sun.enterprise.backup;
 
 import java.io.*;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 /**
  * Manage filenames to select for backups.
@@ -50,9 +52,10 @@ import java.io.*;
  */
 class BackupFilenameManager
 {
-	BackupFilenameManager(File backupDir) throws BackupException
+	BackupFilenameManager(File backupDir, String domainName) throws BackupException
 	{
 		this.dir = backupDir;
+                this.domainName = domainName;
 		findZips();
 		findLatest();
 	}
@@ -65,9 +68,17 @@ class BackupFilenameManager
 		
 		if(latestVersion != null)
 			newVersionNum = latestVersion.num + 1;
-	
+
+                // Generate a file name of form domain1_2010_06_11_v0001.zip
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd");
+                Date date = new Date();
+                String fname = domainName + "_" + formatter.format(date) + "_v";
 		String suffix = padWithLeadingZeroes(newVersionNum);
-		return new File(dir, Constants.BACKUP_FILENAME_ROOT + suffix + ".zip");
+
+                desc = domainName + " backup created on "
+                            + formatter.format(date) + " by user "
+                            + System.getProperty(Constants.PROPS_USER_NAME);
+		return new File(dir, fname + suffix + ".zip");
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -146,9 +157,18 @@ class BackupFilenameManager
 		
 		throw new BackupException("Latest version >= 100,000.  Delete some backup files.");
 	}
-	
+
+        /*
+         * Return description string
+         *
+         */
+        public String getCustomizedDescription() {
+            return desc;
+        }
+        
 	///////////////////////////////////////////////////////////////////////////
 
+       
 	private static class ZipFileAndNumber
 	{
 		private ZipFileAndNumber(File zip)
@@ -159,7 +179,7 @@ class BackupFilenameManager
 			if(isValid())
 			{
 				
-				fname = fname.substring(Constants.BACKUP_FILENAME_ROOT.length(), fname.length() - 4);
+				fname = fname.substring(fname.lastIndexOf("_v")+2, fname.length() - 4);
 				try
 				{
 					num = Integer.parseInt(fname);
@@ -181,19 +201,19 @@ class BackupFilenameManager
 		{
 			Status status = new Status();
 			long time = status.getInternalTimestamp(zip);
-			
-			return time > 0 && zip.getName().startsWith(Constants.BACKUP_FILENAME_ROOT);
+			return time > 0;
 		}
-		
+                                
 		private File	zip;
 		private int		num = -1;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
 
-	private File				dir;
+	private File			dir;
+        private String                  domainName;
+        private String                  desc;
 	private	ZipFileAndNumber[]	zipsAndNumbers;
-	private	int[]				numbers;
 	private ZipFileAndNumber	latestVersion;
 	
 	///////////////////////////////////////////////////////////////////////////////
@@ -204,7 +224,7 @@ class BackupFilenameManager
 		try
 		{
 			File f = new File("c:/tmp/test");
-			BackupFilenameManager mgr = new BackupFilenameManager(f);
+			BackupFilenameManager mgr = new BackupFilenameManager(f, "foo");
 			File fnew = mgr.next();
 			System.out.println("Next backup file: " + fnew);
 			File fold = mgr.latest();

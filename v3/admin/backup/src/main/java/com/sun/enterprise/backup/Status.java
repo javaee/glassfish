@@ -47,6 +47,8 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.*;
 
+import com.sun.appserv.server.util.Version;
+
 /**
  *
  * @author  Byron Nevins
@@ -236,6 +238,7 @@ class Status
 		props.setProperty(Constants.PROPS_DOMAIN_NAME,	request.domainName);
 		props.setProperty(Constants.PROPS_DESCRIPTION,	request.description);
 		props.setProperty(Constants.PROPS_TIMESTAMP_HUMAN,	new Date(request.timestamp).toString());
+                props.setProperty(Constants.PROPS_VERSION,	Version.getFullVersion());
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -266,6 +269,8 @@ class Status
 			sb.append(StringHelper.get(pre + Constants.PROPS_DOMAIN_NAME, props.getProperty(Constants.PROPS_DOMAIN_NAME)));
 			sb.append("\n");
 			sb.append(StringHelper.get(pre + Constants.PROPS_USER_NAME, props.getProperty(Constants.PROPS_USER_NAME)));
+                        sb.append("\n");
+			sb.append(StringHelper.get(pre + Constants.PROPS_VERSION, props.getProperty(Constants.PROPS_VERSION)));
 		}
 
 		return sb.toString();

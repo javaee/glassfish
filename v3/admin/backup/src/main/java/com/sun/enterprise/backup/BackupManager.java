@@ -38,8 +38,6 @@ package com.sun.enterprise.backup;
 
 import com.sun.enterprise.backup.util.*;
 import java.io.*;
-import java.util.*;
-
 
 /**
  *
@@ -100,10 +98,12 @@ public class BackupManager extends BackupRestoreManager
 		if(!FileUtils.safeIsDirectory(backupDir))
 			throw new BackupException("backup-res.NoBackupDirCantCreate", backupDir);
 
-		String ts = "" + request.timestamp + ".zip";
-		BackupFilenameManager bfmgr = new BackupFilenameManager(backupDir);
-		request.backupFile = bfmgr.next();
-		//request.backupFile = new File(backupDir, ts);
+		BackupFilenameManager bfmgr = new BackupFilenameManager(backupDir, request.domainName);
+		request.backupFile = bfmgr.next();        
+
+                // get customized description if user hasn't specified one
+                if(request.description == null || request.description.length() <= 0)
+		    request.description = bfmgr.getCustomizedDescription();
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////

@@ -72,6 +72,9 @@ public final class RestoreDomainCommand extends BackupCommands {
     @Param(name = "filename", optional = true)
     private String backupFilename;
 
+    @Param(name="force", optional = true, defaultValue = "false")
+    private boolean force;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(BackupDomainCommand.class);
 
@@ -80,8 +83,16 @@ public final class RestoreDomainCommand extends BackupCommands {
     @Override
     protected void validate()
             throws CommandException {
-        super.validate();
         
+        if (backupFilename == null && domainName == null) {
+            if (!force) {
+                throw new CommandException(strings.get("UseForceOption"));
+            }
+            // this will properly initialize the domain dir
+            // see LocalDomainCommand.initDomain())
+            super.validate();
+        }
+
         checkOptions();
 
         if (DASUtils.pingDASQuietly(programOpts, env)) {
@@ -122,12 +133,13 @@ public final class RestoreDomainCommand extends BackupCommands {
     private void initRequest() {
         
         if (backupFilename == null)
-            request = new BackupRequest(domainDirParam, domainName, desc);
+            request = new BackupRequest(domainDirParam, domainName, null);
         else
-            request = new BackupRequest(domainDirParam, domainName, desc,
+            request = new BackupRequest(domainDirParam, domainName, null,
                                         backupFilename);
         request.setTerse(programOpts.isTerse());
         request.setVerbose(verbose);
+        request.setForce(force);
     }
 
     @Override

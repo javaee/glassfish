@@ -43,7 +43,6 @@
 package com.sun.enterprise.backup;
 
 import java.io.*;
-import java.util.*;
 
 import com.sun.enterprise.backup.util.ObjectAnalyzer;
 import com.sun.enterprise.backup.util.FileUtils;
@@ -118,7 +117,13 @@ public class BackupRequest
 	{
 		description = desc;
 	}
-	
+
+        ///////////////////////////////////////////////////////////////////////////
+
+	public void setForce(boolean f)
+	{
+		force = f;
+	}
 	///////////////////////////////////////////////////////////////////////////
 	////////////     Variables     ////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////
@@ -144,5 +149,6 @@ public class BackupRequest
 	File	backupDir;
 	boolean	terse	= false;
 	boolean	verbose	= false;
+        boolean force = false;
 }
 

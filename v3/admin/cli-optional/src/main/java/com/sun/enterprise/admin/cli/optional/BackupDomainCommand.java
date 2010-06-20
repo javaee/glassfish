@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.admin.cli.optional;
 
+import java.io.*;
+
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.DASUtils;
 import com.sun.enterprise.util.ObjectAnalyzer;
@@ -44,7 +46,7 @@ import com.sun.enterprise.backup.BackupManager;
 import com.sun.enterprise.backup.BackupWarningException;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-
+import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 
@@ -63,21 +65,33 @@ import org.jvnet.hk2.component.*;
 @Scoped(PerLookup.class)
 public final class BackupDomainCommand extends BackupCommands {
 
+    @Param(name = "description", optional = true)
+    String description;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(BackupDomainCommand.class);
 
     @Override
     protected void validate()
             throws CommandException {
-        super.validate();
+        // only if domain name is not specified, it should try to find one
+        if (domainName == null)
+            super.validate();
         
         checkOptions();
+
+        File domainFile = new File(new File(domainDirParam), domainName);
+
+        if (!isWritableDirectory(domainFile)) {
+            throw new CommandException(
+                strings.get("InvalidDirectory", domainFile.getPath()));
+        }
 
         if (DASUtils.pingDASQuietly(programOpts, env)) {
             throw new CommandException(
                 strings.get("DomainIsNotStopped", domainName));
         }
-
+        setDescription(description);
         prepareRequest();
         initializeLogger();     // in case program options changed
     }

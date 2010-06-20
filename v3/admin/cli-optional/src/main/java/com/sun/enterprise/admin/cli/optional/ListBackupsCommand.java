@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.admin.cli.optional;
 
+import java.io.*;
+
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.backup.BackupException;
@@ -61,8 +63,18 @@ public final class ListBackupsCommand extends BackupCommands {
     @Override
     protected void validate()
             throws CommandException {
-        super.validate();
+        // only if domain name is not specified, it should try to find one
+        if (domainName == null)
+            super.validate();
+
         checkOptions();
+
+        File domainFile = new File(new File(domainDirParam), domainName);
+
+        if (!isWritableDirectory(domainFile)) {
+            throw new CommandException(
+                strings.get("InvalidDirectory", domainFile.getPath()));
+        }
         prepareRequest();
         initializeLogger();     // in case program options changed
     }

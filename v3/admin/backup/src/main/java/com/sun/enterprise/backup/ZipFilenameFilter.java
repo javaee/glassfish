@@ -55,8 +55,6 @@ class ZipFilenameFilter implements FilenameFilter
 {
 	public boolean accept(File dir, String name)
 	{
-		return 
-			name.toLowerCase().endsWith(".zip") && 
-			name.startsWith(Constants.BACKUP_FILENAME_ROOT);
+		return name.toLowerCase().endsWith(".zip");
 	}
 }

@@ -38,7 +38,6 @@ package com.sun.enterprise.backup;
 
 import com.sun.enterprise.backup.util.*;
 import java.io.*;
-import java.util.*;
 
 /**
  * Baseclass for BackupManager and RestoreManager.  Common code between the two goes
@@ -71,18 +70,13 @@ abstract class BackupRestoreManager
 		
 		// add a timestamp
 		request.timestamp = System.currentTimeMillis();
-		
-		if(request.description == null || request.description.length() <= 0)
-			request.description = "" + request.timestamp;
+                
 		// validate domains dir
 		if(request.domainsDir == null || !FileUtils.safeIsDirectory(request.domainsDir))
 			throw new BackupException("backup-res.NoDomainsDir", request.domainsDir);
-		
-		// validate the domain-name
-		if(!StringUtils.ok(request.domainName))
-			throw new BackupException("backup-res.InternalError", "No domain-name was specified");
-
-		request.domainDir = new File(request.domainsDir, request.domainName);
+				
+		if (request.domainName != null)
+                    request.domainDir = new File(request.domainsDir, request.domainName);
 		
 		LoggerHelper.setLevel(request);
 	}

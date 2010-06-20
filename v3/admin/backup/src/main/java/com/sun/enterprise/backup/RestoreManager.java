@@ -38,7 +38,6 @@ package com.sun.enterprise.backup;
 
 import com.sun.enterprise.backup.util.*;
 import java.io.*;
-import java.util.*;
 
 /**
  *
@@ -80,11 +79,12 @@ public class RestoreManager extends BackupRestoreManager
 	
 	///////////////////////////////////////////////////////////////////////////////
 
+        @Override
 	void init() throws BackupException
 	{
 		super.init();
 
-		if(request.backupFile == null)
+                if(request.backupFile == null)
 			initWithNoSpecifiedBackupFile();
 		else
 			initWithSpecifiedBackupFile();
@@ -100,6 +100,19 @@ public class RestoreManager extends BackupRestoreManager
 		if(request.backupFile.length() <= 0)
 			throw new BackupException("backup-res.CorruptBackupFile", request.backupFile);
 
+                if (request.domainName == null) {
+
+                    if (!request.force) {
+                        throw new BackupException("backup-res.UseForceOption");
+                    }
+
+                    Status status = new Status();
+                    status.read(request.backupFile);
+                    request.domainName = status.getDomainName();
+
+                    request.domainDir = new File(request.domainsDir, request.domainName);
+                }
+                
 		if(!FileUtils.safeIsDirectory(request.domainDir))
 			request.domainDir.mkdirs();
 
@@ -130,7 +143,7 @@ public class RestoreManager extends BackupRestoreManager
 		if(!FileUtils.safeIsDirectory(backupDir))
 			throw new BackupException("backup-res.NoBackupDir", backupDir);
 
-		BackupFilenameManager bfmgr = new BackupFilenameManager(backupDir);
+		BackupFilenameManager bfmgr = new BackupFilenameManager(backupDir, request.domainName);
 		request.backupFile = bfmgr.latest();
 		
 		//request.backupFile = getNewestZip(backupDir);
@@ -292,17 +305,16 @@ public class RestoreManager extends BackupRestoreManager
 		String buDomainName = status.getDomainName();
 		
 		if(buDomainName == null)
-        {
-            //this means the backup zip is bad...
-			throw new BackupException(StringHelper.get("backup-res.CorruptBackupFile", request.backupFile));
-        }
-        else if(!request.domainName.equals(buDomainName))
-        {
-            System.out.println(StringHelper.get("backup-res.DomainNameDifferentWarning", buDomainName, request.domainName));
-
-            //LoggerHelper.warning(StringHelper.get("backup-res.DomainNameDifferentWarning", buDomainName, request.domainName));
-            //throw new BackupException(StringHelper.get("backup-res.DomainNameDifferent", buDomainName, request.domainName));
-        }
+                {
+                    //this means the backup zip is bad...
+                    throw new BackupException(StringHelper.get("backup-res.CorruptBackupFile", request.backupFile));
+                }
+                else if(!request.domainName.equals(buDomainName))
+                {
+                    if (!request.force) {
+                        throw new BackupException(StringHelper.get("backup-res.DomainNameDifferentWarning", buDomainName, request.domainName));
+                    }
+                }
 	}
 
 	///////////////////////////////////////////////////////////////////////////////

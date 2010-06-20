@@ -42,9 +42,10 @@ import org.glassfish.api.admin.*;
 import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.util.ObjectAnalyzer;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.backup.BackupRequest;
+
+import com.sun.enterprise.util.io.DomainDirs;
 
 /**
  * This is a local command for backing-up domains.
@@ -67,24 +68,30 @@ public abstract class BackupCommands extends LocalDomainCommand {
 
     @Param(name = "verbose", optional = true)
     boolean verbose;
-
-    @Param(name = "description", optional = true)
-    String desc;
-
+ 
     @Param(name = "domain_name", primary = true, optional = true)
     String domainName;
+
+    private String desc = null;
 
      /**
      * A method that checks the options and operand that the user supplied.
      * These tests are slightly different for different CLI commands
      */
-    protected void checkOptions() throws CommandValidationException {
+    protected void checkOptions() throws CommandException {
         if (verbose && programOpts.isTerse())
             throw new CommandValidationException(
                 strings.get("NoVerboseAndTerseAtTheSameTime"));
 
-        if (domainDirParam == null || domainDirParam.length() <= 0)
-            domainDirParam = getDomainsDir().getPath();
+        if (domainDirParam == null || domainDirParam.length() <= 0) {
+            
+            try {
+            
+                domainDirParam = DomainDirs.getDefaultDomainsDir().getPath();
+            } catch (IOException ioe) {
+                throw new CommandException(ioe.getMessage());
+            }
+        }
 
         File domainsDirFile = new File(domainDirParam);
 
@@ -98,16 +105,14 @@ public abstract class BackupCommands extends LocalDomainCommand {
         
         if (domainName == null)
             domainName = getDomainName();
-         
-        File domainFile = new File(domainsDirFile, domainName);
 
-        if (!domainFile.isDirectory() || !domainFile.canWrite()) {
-            throw new CommandValidationException(
-                strings.get("InvalidDirectory", domainFile.getPath()));
-        }
     }
 
-   protected void prepareRequest() {
+    protected void setDescription(String d) {
+        desc = d;
+    }
+    
+    protected void prepareRequest() {
 
         request = new BackupRequest(domainDirParam, domainName, desc);
 
@@ -115,6 +120,17 @@ public abstract class BackupCommands extends LocalDomainCommand {
         request.setVerbose(verbose);
     }
  
+    /*
+     * Method to check if the file is writable directory
+     */
+    protected boolean isWritableDirectory(File domainFile) {
+        boolean result = false;
+        if (domainFile.isDirectory() || domainFile.canWrite()) {
+            result = true;
+        }
+        return result;
+    }
+
     @Override
     public String toString() {
         return super.toString() + "\n" + ObjectAnalyzer.toString(this);

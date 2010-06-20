@@ -51,7 +51,6 @@ public interface Constants
 	final static String			loggingResourceBundle		= "com.sun.enterprise.backup.LocalStrings";
 	final static String			exceptionResourceBundle		= "/com/sun/enterprise/backup/LocalStrings.properties";
 	final static String			BACKUP_DIR					= "backups";
-	final static String			BACKUP_FILENAME_ROOT		= "GlassFish_backup_v";
 	final static String			PROPS_USER_NAME				= "user.name";
 	final static String			PROPS_TIMESTAMP_MSEC		= "timestamp.msec";
 	final static String			PROPS_TIMESTAMP_HUMAN		= "timestamp.human";
@@ -61,5 +60,6 @@ public interface Constants
 	final static String			PROPS_BACKUP_FILE			= "backup.file";
 	final static String			PROPS_DESCRIPTION			= "description";
 	final static String			PROPS_HEADER				= "Backup Status";
+        final static String                     PROPS_VERSION                   = "version";
 	final static String			PROPS_FILENAME				= "backup.properties";
 }
