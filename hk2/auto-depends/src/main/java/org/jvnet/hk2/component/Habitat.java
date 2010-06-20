@@ -483,8 +483,8 @@ public class Habitat {
       if (serviceOrInhabitant instanceof Inhabitant) {
         matches = (serviceOrInhabitant == inhabitant);
       } else {
-        // call to isInstantiated is necessary to avoid loading of services that are not yet loaded
-        matches = inhabitant.isInstantiated() && inhabitant.get().equals(serviceOrInhabitant);
+        // call to isInstantiated is necessary to avoid loading of services that are not yet loaded.
+        matches = inhabitant.isInstantiated() && inhabitant.get()==serviceOrInhabitant;
       }
       return matches;
     }
