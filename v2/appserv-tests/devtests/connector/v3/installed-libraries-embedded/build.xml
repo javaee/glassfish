@@ -201,7 +201,7 @@
         <antcall target="install-library"/>
         <antcall target="create-ra-config"/>
         <antcall target="deploy-common">
-         <param  name="extra-params" value="--libraries jdbc.jar"/>
+         <param  name="libraries" value="jdbc.jar"/>
         </antcall>
     </target>
 
