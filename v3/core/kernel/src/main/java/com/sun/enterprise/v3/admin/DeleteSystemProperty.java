@@ -53,6 +53,7 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.types.Property;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
@@ -77,8 +78,8 @@ public class DeleteSystemProperty implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteSystemProperty.class);
 
-    @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    @Param(optional=true, defaultValue=SystemPropertyConstants.DAS_SERVER_NAME)
+    String target;
 
     @Param(name="property_name", primary=true)
     String propName;
@@ -95,14 +96,23 @@ public class DeleteSystemProperty implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         SystemPropertyBag spb;
-        if ("domain".equals(target))
+        Property domainProp = domain.getProperty("administrative.domain.name");
+        String domainName = domainProp.getValue();
+        if ("domain".equals(target) || target.equals(domainName)) {
             spb = domain;
-        else
-            spb = domain.getServerNamed(target); //this is ok for now  (config is not a target as far as v3 FCS is concerned -- take it up later)
+        } else {
+            spb = domain.getConfigNamed(target);
+            if (spb == null) {
+                spb = domain.getClusterNamed(target);
+            }
+            if (spb == null) {
+                spb = domain.getServerNamed(target);
+            }
+        }
         if (spb == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             String msg = localStrings.getLocalString("invalid.target.sys.props",
-                    "Invalid target:{0}. Valid targets are ''domain'' and a server named ''server'' (default).", target);
+                    "Invalid target:{0}. Valid targets types are domain, config, cluster, default server, clustered instance, stand alone instance", target);
             report.setMessage(msg);
             return;
         }
@@ -151,7 +161,13 @@ public class DeleteSystemProperty implements AdminCommand {
         SystemPropertyBag bag = domain;
         if (bag.containsProperty(propName))
             defs++;
-        bag = domain.getServerNamed(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME); //this is deliberate, as V3 has single server
+        bag = domain.getServerNamed(target);
+        if (bag != null && bag.containsProperty(propName))
+            defs++;
+        bag = domain.getConfigNamed(target);
+        if (bag != null && bag.containsProperty(propName))
+            defs++;
+        bag = domain.getClusterNamed(target);
         if (bag != null && bag.containsProperty(propName))
             defs++;
         return defs;

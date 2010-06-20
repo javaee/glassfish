@@ -36,24 +36,22 @@
 
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.SystemPropertyBag;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.List;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * List System Properties Command
@@ -72,17 +70,11 @@ public class ListSystemProperties implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListSystemProperties.class);
 
-    @Inject
-    private ServerEnvironment env;
-
-    @Param(optional=true, primary=true)
+    @Param(optional=true, primary=true, defaultValue=SystemPropertyConstants.DAS_SERVER_NAME)
     String target;
 
     @Inject
     Domain domain;
-
-    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    private Server server;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -94,18 +86,24 @@ public class ListSystemProperties implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         SystemPropertyBag spb;
+        Property domainProp = domain.getProperty("administrative.domain.name");
+        String domainName = domainProp.getValue();
 
-        if(target == null || target.length() <= 0)
-            spb = server;
-        else if ("domain".equals(target))
+        if ("domain".equals(target) || target.equals(domainName)) {
             spb = domain;
-        else
-            spb = domain.getServerNamed(target); //this is ok for now  (config is not a target as far as v3 FCS is concerned -- take it up later)
-
+        } else {
+            spb = domain.getConfigNamed(target);
+            if (spb == null) {
+                spb = domain.getClusterNamed(target);
+            }
+            if (spb == null) {
+                spb = domain.getServerNamed(target);
+            }
+        }
         if (spb == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             String msg = localStrings.getLocalString("invalid.target.sys.props",
-                    "Invalid target:{0}. Valid targets are ''domain'' and a server named ''server'' (default).", target);
+                    "Invalid target:{0}. Valid targets types are domain, config, cluster, default server, clustered instance, stand alone instance", target);
             report.setMessage(msg);
             return;
         }

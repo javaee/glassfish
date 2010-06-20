@@ -47,7 +47,6 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SystemPropertyBag;
@@ -56,6 +55,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
 import java.util.Properties;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  * Create System Properties Command
@@ -77,8 +77,8 @@ public class CreateSystemProperties implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateSystemProperties.class);
     
-    @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    @Param(optional=true, defaultValue=SystemPropertyConstants.DAS_SERVER_NAME)
+    String target;
 
     @Param(name="name_value", primary=true, separator=':')
     Properties properties;
@@ -96,14 +96,23 @@ public class CreateSystemProperties implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         SystemPropertyBag spb;
-        if ("domain".equals(target))
+        Property domainProp = domain.getProperty("administrative.domain.name");
+        String domainName = domainProp.getValue();
+        if ("domain".equals(target) || target.equals(domainName)) {
             spb = domain;
-        else
-            spb = domain.getServerNamed(target); //this is ok for now  (config is not a target as far as v3 FCS is concerned -- take it up later)
+        } else {
+            spb = domain.getConfigNamed(target);
+            if (spb == null) {
+                spb = domain.getClusterNamed(target);
+            }
+            if (spb == null) {
+                spb = domain.getServerNamed(target);
+            }
+        }
         if (spb == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             String msg = localStrings.getLocalString("invalid.target.sys.props",
-                    "Invalid target:{0}. Valid targets are ''domain'' and a server named ''server'' (default).", target);
+                    "Invalid target:{0}. Valid targets types are domain, config, cluster, default server, clustered instance, stand alone instance", target);
             report.setMessage(msg);
             return;
         }
