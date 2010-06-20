@@ -198,6 +198,7 @@ public class RestApiHandlers {
         }
     }
 
+
     /**
      *
      * REST-based version of createProxy
@@ -263,10 +264,18 @@ public class RestApiHandlers {
         }
     }
 
+
+    /*
+     * Return List<Map<String, String>> which is for displaying as table in a the page.
+     * If a skipList is specified,  any child whose id is specified in the skipList will not be included.
+     * If a includeList is specifed,  any child whose id is NOT specified in the includeList will NOT be included.
+     */
     @Handler(id = "gf.getChildList",
         input = {
             @HandlerInput(name = "parentEndpoint", type = String.class, required = true),
             @HandlerInput(name = "childType", type = String.class, required = true),
+            @HandlerInput(name = "skipList", type = List.class, required = false),
+            @HandlerInput(name = "includeList", type = List.class, required = false),
             @HandlerInput(name = "id", type = String.class, defaultValue = "Name")},
         output = {
             @HandlerOutput(name = "result", type = java.util.List.class)
@@ -275,7 +284,9 @@ public class RestApiHandlers {
         try {
             handlerCtx.setOutputValue("result",
                     buildChildEntityList((String)handlerCtx.getInputValue("parentEndpoint"),
-                    (String)handlerCtx.getInputValue("childType"), null,
+                    (String)handlerCtx.getInputValue("childType"),
+                    (List)handlerCtx.getInputValue("skipList"),
+                    (List)handlerCtx.getInputValue("includeList"),
                     (String)handlerCtx.getInputValue("id")));
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
@@ -482,17 +493,12 @@ public class RestApiHandlers {
      * @return
      * @throws Exception
      */
-    public static List<Map> buildChildEntityList(String parent, String childType, List skipList, String id) throws Exception {
-        String endpoint = parent.endsWith("/") ?
-            parent + childType : parent + "/" + childType;
-        boolean hasSkip = true;
-        if (skipList == null ){
-            hasSkip = false;
-        }
-        boolean convert = false;
-        if (childType.equals("property")){
-            convert = true;
-        }
+    public static List<Map> buildChildEntityList(String parent, String childType, List skipList, List includeList, String id) throws Exception {
+        
+        String endpoint = parent.endsWith("/") ?  parent + childType : parent + "/" + childType;
+        boolean hasSkip =(skipList == null) ? false : true;
+        boolean hasInclude =(includeList == null) ? false : true;
+        boolean convert = childType.equals("property") ? true : false ;
 
         List<Map> childElements = new ArrayList<Map>();
         try {
@@ -505,6 +511,10 @@ public class RestApiHandlers {
                 HashMap<String, Object> oneRow = new HashMap<String, Object>();
 
                 if (hasSkip && skipList.contains(entity.get(id))) {
+                    continue;
+                }
+
+                if (hasInclude && (!includeList.contains(entity.get(id)))) {
                     continue;
                 }
 
