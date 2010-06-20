@@ -66,6 +66,7 @@
     />
     </event>
             <sun:form id="propertyForm">
+#include "/common/cluster/clusterTabs.inc"
 #include "/common/shared/alertMsg.inc"
 
     <!-- Page Title -->
@@ -102,20 +103,20 @@
                     url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.valueMap['ConfigRef']}" />
             </sun:property>
 
-           <sun:property id="hbEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.cluster.Heartbeat}" helpText="$resource{i18nc.cluster.HeartbeatHelp}">
-                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['HeartbeatEnabled']}" selectedValue="true" />
-            </sun:property>
-
             <sun:property id="gmsEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.cluster.GMS}" helpText="$resource{i18nc.cluster.GMSHelp}">
                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['GmsEnabled']}" selectedValue="true" />
             </sun:property>
 
-           <sun:property id="hbPortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.cluster.HeartbeatPort}" helpText="$resource{i18nc.cluster.HeartbeatPortHelp}">
-                <sun:textField id="HbPort"  styleClass="port" columns="$int{15}" text="#{pageSession.valueMap['HeartbeatPort']}"/>
+           <sun:property id="gmsMulticastPort"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.cluster.gmsMulticastPort}" helpText="$resource{i18nc.cluster.gmsMulticastPortHelp}">
+                <sun:textField id="gmsMulticastPort"  styleClass="port" columns="$int{60}" text="#{pageSession.valueMap['GmsMulticastPort']}"/>
             </sun:property>
-            <sun:property id="hbAddressProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.cluster.HeartbeatAddress}" helpText="$resource{i18nc.cluster.HeartbeatAddressHelp}">
-                <sun:textField id="HbAddress"  columns="$int{35}" text="#{pageSession.valueMap['HeartbeatAddress']}"/>
-            </sun:property>         
+            <sun:property id="gmsMulticastAddress"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.cluster.gmsMulticastAddress}" helpText="$resource{i18nc.cluster.gmsMulticastAddressHelp}">
+                <sun:textField id="gmsMulticastAddress"  columns="$int{60}" text="#{pageSession.valueMap['GmsMulticastAddress']}"/>
+            </sun:property>
+
+            <sun:property id="GmsBindInterfaceAddress"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.cluster.gmsBindInterfaceAddress}" helpText="$resource{i18nc.cluster.gmsBindInterfaceAddressHelp}">
+                <sun:textField id="GmsBindInterfaceAddress"  columns="$int{60}" text="#{pageSession.valueMap['GmsBindInterfaceAddress']}"/>
+            </sun:property>
 
             <sun:property id="instanceStatusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}" >
                 <sun:staticText id="instanceStatusRunning" text="? instance(s) running (TBD)" />

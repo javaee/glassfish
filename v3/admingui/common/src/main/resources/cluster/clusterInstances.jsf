@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -33,14 +33,14 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- appserver/instances.jsf -->
+<!-- cluster/instances.jsf -->
 
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"
-    guiTitle="$resource{i18nc.standaloneInstances.PageTitle}"
+    guiTitle="$resource{i18nc.cluster.InstancesTitle}"
     guiTemplateOnLoad="admingui.nav.refreshTree();"
 >
 
@@ -49,24 +49,31 @@
 <!define name="content">
     <event>
     <!beforeCreate
+        setSessionAttribute(key="clusterTabs" value="clusterInst");
+        getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
+        urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteInstances}");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/appServer/standaloneInstances.jsf");
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/appServer/standaloneInstanceEdit.jsf");
-        setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.standaloneInstances.TableTitle}");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/appServer/standaloneInstanceNew.jsf");
-        setPageSessionAttribute(key="clusterList" value="#{false}" )
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/cluster/clusterInstances.jsf");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/cluster/clusterInstancesEdit.jsf");
+        setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.clusterInstances.TableTitle}");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/cluster/clusterInstanceNew.jsf");
+        setPageSessionAttribute(key="clusterList" value="#{true}" )
         setPageSessionAttribute(key="parentUrl" value="#{sessionScope.REST_URL}/servers");
         setPageSessionAttribute(key="childType" value="server");
-        //REST-TODO: if there is API to get standalone instance, do that. We just show ALL instances now. bug.
-        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
+        setPageSessionAttribute(key="serverRefsEndpoint" value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}/server-ref");
+        gf.getChildrenNamesList(endpoint="#{pageSession.serverRefsEndpoint}", id="Ref", result="#{pageSession.serverRefList}");
+        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", includeList="#{pageSession.serverRefList}", result="#{requestScope.listOfRows}");
     />
     
     </event>
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":instances");</script>
 <sun:form id="propertyForm">
+
+#include "/common/cluster/clusterTabs.inc"
 #include "/common/shared/alertMsg.inc"
-<sun:title id="propertyContentPage" title="$resource{i18nc.standaloneInstances.PageTitle}"
-                 helpText="$resource{i18nc.standaloneInstances.PageTitleHelp}" >
+
+<sun:title id="propertyContentPage" title="$resource{i18nc.cluster.InstancesTitle}"
+                 helpText="$resource{i18nc.cluster.InstancesTitleHelp}" >
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" text="$resource{i18n.button.Save}" disabled="true" >
@@ -85,7 +92,7 @@
 
 #include "/common/appServer/instancesTable.inc"
 
-<sun:hidden id="helpKey" value="$resource{help_common.standaloneInstances}" />
+<sun:hidden id="helpKey" value="$resource{help_common.clusterInstances}" />
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 
