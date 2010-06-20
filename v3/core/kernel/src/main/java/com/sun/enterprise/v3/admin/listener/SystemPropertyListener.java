@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,10 +35,13 @@
  */
 package com.sun.enterprise.v3.admin.listener;
 
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.PostConstruct;
+import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -97,6 +100,9 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
     @Inject
     private volatile Domain domain; //note: this should be current, and does contain the already modified values!
     
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Server server;
+
     @Override
     public void postConstruct() {
     }
@@ -109,8 +115,13 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
                 if (changedType == SystemProperty.class && type == TYPE.ADD) {  //create-system-properties
                     SystemProperty sp = (SystemProperty) changedInstance;
-                    if (sp.getParent() instanceof Domain) {
+                    ConfigBeanProxy proxy = sp.getParent();
+                    if (proxy instanceof Domain) {
                         return addToDomain(sp);
+                    } else if (proxy instanceof Config) {
+                        return addToConfig(sp);
+                    } else if (proxy instanceof Cluster) {
+                        return addToCluster(sp);
                     } else {
                         //this has to be instance of Server
                         return addToServer(sp);
@@ -118,8 +129,13 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
                 }
                 if (changedType == SystemProperty.class && type == TYPE.REMOVE) { //delete-system-property
                     SystemProperty sp = (SystemProperty) changedInstance;
-                    if (sp.getParent() instanceof Domain) {
+                    ConfigBeanProxy proxy = sp.getParent();
+                    if (proxy instanceof Domain) {
                         return removeFromDomain(sp);
+                    } else if (proxy instanceof Config) {
+                        return removeFromConfig(sp);
+                    } else if (proxy instanceof Cluster) {
+                        return removeFromCluster(sp);
                     } else {
                         //this has to be instance of Server
                         return removeFromServer(sp);
@@ -127,8 +143,13 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
                 }
                 if (changedType == SystemProperty.class && type == TYPE.CHANGE) { //set on the dotted name e.g. servers.server.server.system-property.foo.value
                     SystemProperty sp = (SystemProperty) changedInstance;
-                    if (sp.getParent() instanceof Domain) {
+                    ConfigBeanProxy proxy = sp.getParent();
+                    if (proxy instanceof Domain) {
                         return addToDomain(sp);
+                    } else if (proxy instanceof Config) {
+                        return addToConfig(sp);
+                    } else if (proxy instanceof Cluster) {
+                        return addToCluster(sp);
                     } else {
                         //this has to be instance of Server
                         return addToServer(sp);
@@ -144,9 +165,21 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
         return null; //processed
     }
 
-    private NotProcessed removeFromDomain(SystemProperty sp) {
+    private NotProcessed removeFromCluster(SystemProperty sp) {
         if(!serverHas(sp))
             System.clearProperty(sp.getName()); //if server overrides it anyway, this should be a noop
+        return null; //processed
+    }
+
+    private NotProcessed removeFromConfig(SystemProperty sp) {
+        if(!serverHas(sp)&& !clusterHas(sp))
+            System.clearProperty(sp.getName()); //if server or cluster overrides it anyway, this should be a noop
+        return null; //processed
+    }
+
+    private NotProcessed removeFromDomain(SystemProperty sp) {
+        if(!serverHas(sp)&& !clusterHas(sp) && !configHas(sp))
+            System.clearProperty(sp.getName()); //if server, cluster, or config overrides it anyway, this should be a noop
         return null; //processed
     }
 
@@ -155,15 +188,46 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
         return null; //processed
     }
 
-    private NotProcessed addToDomain(SystemProperty sp) {
+    private NotProcessed addToCluster(SystemProperty sp) {
         if (!serverHas(sp))
             System.setProperty(sp.getName(), sp.getValue()); //if server overrides it anyway, this should be a noop
         return null; //processed
     }
 
+    private NotProcessed addToConfig(SystemProperty sp) {
+        if (!serverHas(sp) && !clusterHas(sp))
+            System.setProperty(sp.getName(), sp.getValue()); //if server or cluster overrides it anyway, this should be a noop
+        return null; //processed
+    }
+
+    private NotProcessed addToDomain(SystemProperty sp) {
+        if (!serverHas(sp) && !clusterHas(sp) && !configHas(sp))
+            System.setProperty(sp.getName(), sp.getValue()); //if server, cluster, or config overrides it anyway, this should be a noop
+        return null; //processed
+    }
+
     private boolean serverHas(SystemProperty sp) {
-        Server s = domain.getServerNamed(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME);
-        List<SystemProperty> ssps = s.getSystemProperty();
+        List<SystemProperty> ssps = server.getSystemProperty();
+        return hasSystemProperty(ssps, sp);
+    }
+
+    private boolean configHas(SystemProperty sp) {
+        Config c = domain.getConfigNamed(server.getConfigRef());
+        List<SystemProperty> ssps = c.getSystemProperty();
+        return hasSystemProperty(ssps, sp);
+    }
+
+    private boolean clusterHas(SystemProperty sp) {
+        Cluster c = domain.getClusterForInstance(server.getName());
+        if (c != null) {
+            List<SystemProperty> ssps = c.getSystemProperty();
+            return hasSystemProperty(ssps, sp);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean hasSystemProperty(List<SystemProperty> ssps, SystemProperty sp) {
         if (ssps != null) {
             for (SystemProperty candidate : ssps) {
                 if (candidate.getName().equals(sp.getName()))
