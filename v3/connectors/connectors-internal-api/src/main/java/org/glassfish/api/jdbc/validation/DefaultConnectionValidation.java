@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,17 +33,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.api.jdbc.validation;
 
+import com.sun.logging.LogDomains;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.glassfish.api.jdbc.ConnectionValidation;
+
 /**
- * Provide custom implementation of connection validation for mysql dbvendor.
- * 
- * Provides a custom connection validation 
- * mechanism for MySQL dbVendor if custom-validation is chosen as the 
- * connection-validation-method.
+ * Default connection validation mechanism used by common database vendors to
+ * perform connection validation.
  * 
  * @author Shalini M
  */
-public class MySQLConnectionValidation extends DefaultConnectionValidation {
+public class DefaultConnectionValidation implements ConnectionValidation {
+    private String SQL = "SELECT '1'";
+
+    /**
+     * Check for validity of <code>java.sql.Connection</code>
+     *
+     * @param con       <code>java.sql.Connection</code>to be validated
+     * @throws SQLException if the connection is not valid
+     */
+    public boolean isConnectionValid(Connection con) {
+        boolean isValid = false;
+        Statement stmt = null;
+        try {
+            stmt = con.createStatement();
+            isValid = stmt.execute(SQL);
+        } catch (SQLException sqle) {
+            isValid = false;
+            Logger.getLogger(LogDomains.RSR_LOGGER).log(Level.INFO,
+                    "connection_validation_exception", sqle.getMessage());
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (Exception ex) {
+                }
+            }
+        }
+        return isValid;
+    }
 }
