@@ -211,6 +211,15 @@ update tool    updatetool 800
             url="/common/appServer/standaloneInstances.jsf"
             imageURL="/resource/images/instance.gif"
             expanded="true"
+        >
+        </sun:treeNode>
+        <!--  ===================================== Nodes ======================  -->
+
+        <sun:treeNode  id="nodes"
+            text="$resource{i18nc.tree.nodes}"
+            url="/common/node/nodes.jsf"
+            imageURL="/resource/images/nodes.gif"
+            expanded="true"
         />
 
          <!--  ===================================== Configurations ======================  -->
