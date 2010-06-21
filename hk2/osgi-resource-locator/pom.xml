@@ -45,7 +45,7 @@
     </parent>
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>osgi-resource-locator</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>OSGi resource locator bundle - used by legacy JDK bundles</name>
     <description> See http://wiki.glassfish.java.net/Wiki.jsp?page=JdkSpiOsgi for more information</description>
     <!-- We don't use packaging type bundle as it requires us to 
@@ -53,9 +53,8 @@
          with hk2-jar packaging type -->
     <packaging>jar</packaging>
     <scm>
-      <connection>scm:svn:https://hk2.dev.java.net/svn/hk2/tags/osgi-resource-locator-1.0.0</connection>
-      <developerConnection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/tags/osgi-resource-locator-1.0.0</developerConnection>
-  </scm>
+      <connection>scm:svn:https://hk2.dev.java.net/svn/hk2/trunk/hk2/osgi-resource-locator</connection>
+    </scm>
     <build>
         <plugins>
             <plugin>
