@@ -40,6 +40,8 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -72,6 +74,8 @@ import org.jvnet.hk2.config.types.Property;
  */
 @Service(name="create-system-properties")
 @Scoped(PerLookup.class)
+@TargetType(value={CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE,
+CommandTarget.CONFIG, CommandTarget.DAS, CommandTarget.DOMAIN, CommandTarget.STANDALONE_INSTANCE})
 @I18n("create.system.properties")
 public class CreateSystemProperties implements AdminCommand {
     
