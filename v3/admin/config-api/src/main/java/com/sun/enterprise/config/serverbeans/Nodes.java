@@ -60,7 +60,7 @@ public interface Nodes extends ConfigBeanProxy, Injectable {
       */
     @Element
     @Create(value="create-node-ssh", decorator=Node.Decorator.class )
-//    @Delete(value="delete-node", resolver= TypeAndNameResolver.class, decorator=Node.DeleteDecorator.class)
+    @Delete(value="delete-node-ssh", resolver= TypeAndNameResolver.class, decorator=Node.DeleteDecorator.class)
     @Listing(value="list-nodes")
     public List<Node> getNode();
 

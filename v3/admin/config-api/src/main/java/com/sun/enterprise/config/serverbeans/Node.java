@@ -37,6 +37,7 @@
 package com.sun.enterprise.config.serverbeans;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -188,6 +189,58 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
                 sshC.setSshAuth(sshA);
             }
             instance.setSshConnector(sshC);
+        }
+    }
+
+        @Service
+    @Scoped(PerLookup.class)
+    class DeleteDecorator implements DeletionDecorator<Nodes, Node> {
+        @Inject
+        private Domain domain;
+
+        @Inject
+        Nodes nodes;
+
+        @Inject
+        Servers servers;
+
+        @Inject
+        private ServerEnvironment env;
+
+        @Override
+        public void decorate(AdminCommandContext context, Nodes parent, Node child) throws
+                PropertyVetoException, TransactionFailure{
+            Logger logger = LogDomains.getLogger(Node.class, LogDomains.ADMIN_LOGGER);
+            LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Node.class);
+            final ActionReport report = context.getActionReport();
+            String nodeName = child.getName();
+            
+            if (nodeName.equals("localhost"))  { // can't delete localhost node
+                final String msg = localStrings.getLocalString(
+                 "Node.localhost",
+                 "Cannot remove Node {0}. ",child.getName() );
+                 logger.log(Level.SEVERE, msg);
+                return;
+            }
+
+            List<Node> nodeList = nodes.getNode();
+            List<Server> serverList=servers.getServer();
+            //check if node is referenced in an instance
+            if (serverList.size() > 0) {
+                for (Server server: serverList){
+                    if (nodeName.equals(server.getNode())){
+                       final String msg = localStrings.getLocalString(
+                        "Node.referencedByInstance",
+                        "Node {0} referenced in server instance {1}.  Remove instance before removing node."
+                        ,child.getName() ,server.getName() );
+                        logger.log(Level.SEVERE, msg);
+                        return;
+                    }
+                }
+            }
+
+            nodeList.remove(child);
+
         }
     }
 
