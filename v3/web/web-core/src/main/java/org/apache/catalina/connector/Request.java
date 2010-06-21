@@ -1870,7 +1870,7 @@ public class Request
     @Override
     public void login(final String username, final String password)
             throws ServletException {
-        login(username, password.toCharArray());
+        login(username, ((password != null) ? password.toCharArray() : null));
     }
 
     public void login(final String username, final char[] password)
