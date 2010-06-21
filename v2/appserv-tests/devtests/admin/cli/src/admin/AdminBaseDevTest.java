@@ -95,22 +95,22 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         report(step, ret.returnValue);
     }
 
-    public void startDomain(String domainname) {
+    void startDomain(String domainname) {
         report(getTestName() + "-start-domain" + startstops++,
                 asadmin("start-domain", domainname));
     }
 
-    public void startDomain() {
+    void startDomain() {
         report(getTestName() + "-start-def-domain" + startstops++,
                 asadmin("start-domain"));
     }
 
-    public void stopDomain(String domainname) {
+    void stopDomain(String domainname) {
         report(getTestName() + "-stop-domain" + startstops++,
                 asadmin("stop-domain", domainname));
     }
 
-    public void stopDomain() {
+    void stopDomain() {
         report(getTestName() + "-stop-def-domain" + startstops++,
                 asadmin("stop-domain"));
     }
@@ -172,5 +172,4 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         s = s.substring(4, 10);
         return "in_" + s;
     }
-
 }

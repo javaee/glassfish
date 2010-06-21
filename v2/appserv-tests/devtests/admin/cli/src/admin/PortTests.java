@@ -52,10 +52,10 @@ public class PortTests extends AdminBaseDevTest {
     }
 
     private void runTests() {
-        startDomain();
-        verifyUserSuppliedPortNumbersAreUnique();
+        //startDomain();
+        //verifyUserSuppliedPortNumbersAreUnique();
         verifyPortsAreLegal();
-        stopDomain();
+        //stopDomain();
         stat.printSummary();
     }
 
@@ -107,6 +107,9 @@ public class PortTests extends AdminBaseDevTest {
         report("delete-instance-" + iname + "legalPortsSpecified", !asadmin("delete-local-instance", iname));
     }
 
+    private void testConflictResolution() {
+
+    }
     private String assembleEnormousPortsString(int index1, int index2, final int[] nums) {
         return assembleEnormousPortsString(makeDupes(index1, index2, nums));
     }
