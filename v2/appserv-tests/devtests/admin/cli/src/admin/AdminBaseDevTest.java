@@ -51,7 +51,7 @@ import java.net.URLConnection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public abstract class AdminBaseDevTest extends BaseDevTest {
+abstract class AdminBaseDevTest extends BaseDevTest {
 
     @Override
     public String getTestName() {
@@ -172,4 +172,6 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         s = s.substring(4, 10);
         return "in_" + s;
     }
+
+
 }
