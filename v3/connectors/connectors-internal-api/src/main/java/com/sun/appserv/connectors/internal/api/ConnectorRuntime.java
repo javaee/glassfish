@@ -573,7 +573,23 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @return set of implementation class names for the dbvendor.
      */
     public Set<String> getJdbcDriverClassNames(String dbVendor, String resType);
-    
+
+    /**
+     *
+     * Fetch the DataSource/Driver implementation class names for a particular
+     * dbVendor and resource type. A pre-defined datasource or driver <br>
+     * classname is returned by this method by default for common database
+     * vendors. When introspect is true, classnames
+     * are got by introspection of the jdbc driver jar.
+     * @param dbVendor database vendor name
+     * @param resType resource-type
+     * @param introspect
+     * (javax.sql.DataSource/javax.sql.ConnectionPoolDataSource/javax.sql.XADataSource/java.sql.Driver)
+     * @return set of implementation class names for the dbvendor.
+     */
+    public Set<String> getJdbcDriverClassNames(String dbVendor, String resType,
+            boolean introspect);
+
     /**
      * Get Validation class names list for the database vendor that the jdbc 
      * connection pool refers to. This is used for custom connection validation.

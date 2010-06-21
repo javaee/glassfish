@@ -544,6 +544,47 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
     }
 
     /**
+     * Obtain Jdbc driver implementation class names for a particular
+     * dbVendor and resource type. This is used by the administration console
+     * to list the driver-classname or datasource-classname fields based on the
+     * resType provided.
+     * The classnames retrieved are introspected from jdbc driver jar or
+     * got from the pre-defined list based on the introspect flag.
+     * @param dbVendor
+     * @param resType one of javax.sql.DataSource, javax.sql.ConnectionPoolDataSource,
+     * javax.sql.XADataSource, java.sql.Driver.
+     * @param introspect introspect or quick select from list
+     * @return a map containing a JDBC_DRIVER_CLASS_NAMES_KEY with a set of
+     * datasource/driver class names. If JDBC_DRIVER_CLASS_NAMES_KEY is null, an
+     * exception has occured and REASON_FAILED_KEY would give the reason
+     * why getting datasource/driver classnames failed.
+     */
+    public Map<String, Object> getJdbcDriverClassNames(final String dbVendor,
+                                                       final String resType,
+                                                       final boolean introspect)
+    {
+        final Map<String, Object> result = new HashMap<String, Object>();
+
+        try
+        {
+            final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
+            final Set<String> implClassNames = connRuntime.getJdbcDriverClassNames(dbVendor, resType, introspect);
+            result.put(ConnectorRuntimeAPIProvider.JDBC_DRIVER_CLASS_NAMES_KEY, implClassNames);
+        }
+        catch (ComponentException e)
+        {
+            result.put(ConnectorRuntimeAPIProvider.JDBC_DRIVER_CLASS_NAMES_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
+        }
+        catch (Exception e)
+        {
+            result.put(ConnectorRuntimeAPIProvider.JDBC_DRIVER_CLASS_NAMES_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
+        }
+        return result;
+    }
+
+    /**
      * Ping JDBC Connection Pool and return status.
      * 
      * This API is used for the Ping button in the administration console. Ping

@@ -1186,6 +1186,21 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     /**
+     * Get jdbc driver implementation class names list for the dbVendor and
+     * resource type supplied. If introspect is true, classnames are got from
+     * introspection of the jdbc driver jar. Else a pre-defined list is used to
+     * retrieve the class names.
+     * @param dbVendor
+     * @param resType
+     * @param introspect
+     * @return all jdbc driver implementation class names
+     */
+    public Set<String> getJdbcDriverClassNames(String dbVendor, String resType,
+            boolean introspect) {
+        return driverLoader.getJdbcDriverClassNames(dbVendor, resType, introspect);
+    }
+
+    /**
      * returns the bean validator that can be used to validate various connector bean artifacts
      * (ResourceAdapter, ManagedConnetionFactory, AdministeredObject, ActivationSpec)
      * @return ConnectorBeanValidator

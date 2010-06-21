@@ -244,6 +244,17 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
                                                        @Param(name = "resType") String resType);
 
     /**
+     * Obtain Jdbc driver implementation class names.
+     * @see #JDBC_DRIVER_CLASS_NAMES_KEY
+     * @see #REASON_FAILED_KEY
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("Get Jdbc driver implementation class names")
+    public Map<String, Object> getJdbcDriverClassNames(@Param(name = "dbVendor") String dbVendor,
+                                                       @Param(name = "resType") String resType,
+                                                       @Param(name = "introspect") boolean introspect);
+
+    /**
      * Ping the ConnectionPool and return status.
      * @see #PING_CONNECTION_POOL_KEY
      * @see #REASON_FAILED_KEY
