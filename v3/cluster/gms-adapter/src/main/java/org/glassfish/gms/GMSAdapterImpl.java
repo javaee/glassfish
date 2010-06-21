@@ -75,6 +75,9 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     private static final Logger logger =
         LogDomains.getLogger(GMSAdapterImpl.class, LogDomains.GMS_LOGGER);
+    private static final String BEGINS_WITH = "^";
+    private static final String GMS_PROPERTY_PREFIX = "GMS_";
+    private static final String GMS_PROPERTY_PREFIX_REGEXP = BEGINS_WITH + GMS_PROPERTY_PREFIX;
 
     private GroupManagementService gms;
 
@@ -239,6 +242,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                     if (clusterConfig != null) {
                         Property prop = clusterConfig.getGroupManagementService().getProperty(keyName);
                         String value = prop.getValue().trim();
+                        configProps.put(keyName, value);
+                        /*
                         int positiveint = 0;
                         try {
                             positiveint = Integer.getInteger(value);
@@ -248,6 +253,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                         if (positiveint > 0) {
                             configProps.put(keyName, positiveint);
                         } // todo else log event that invalid value was provided.
+                        */
                     }
                     break;
 
@@ -264,7 +270,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                     break;
             }  /* end switch over ServiceProviderConfigurationKeys enum */
             } catch (Throwable t) {
-                
+                // todo log message that failure occurred processing keyName value.    
             }
         } /* end for loop over ServiceProviderConfigurationKeys */
 
@@ -278,12 +284,17 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 String name = prop.getName().trim();
                 String value = prop.getValue().trim();
                 logger.config("processing group-management-service property name=" + name + " value= " + value);
-                if (name != null ) {
+                  if (value.startsWith("${")) {
+                    logger.config("skipping group-management-service property name=" + name + " since value is unresolved symbolic token="+ value);
+                } else if (name != null ) {
                     try {
+                        logger.config("processing group-management-service property name=" + name + " value= " + value);
+                        if (name.startsWith(GMS_PROPERTY_PREFIX)) {
+                            name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
+                        }
                         GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(name);
                         configProps.put(name, value);
                     } catch (IllegalArgumentException iae) {
-                        //
                     }
                 }
             }
@@ -296,12 +307,25 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 String name = prop.getName().trim();
                 String value = prop.getValue().trim();
                 logger.config("processing cluster property name=" + name + " value= " + value);
-                if (name != null ) {
+                if (value.startsWith("${")) {
+                    logger.config("skipping cluster property name=" + name + " since value is unresolved symbolic token="+ value);
+                } else if (name != null ) {
                     try {
-                        GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(name);
-                        configProps.put(name, value);
+                        if (name.startsWith(GMS_PROPERTY_PREFIX)) {
+                            name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
+                        }
+                        if (name.compareTo("LISTENER_PORT") == 0 ) {
+
+                            // special case mapping.  Glassfish Cluster property GMS_LISTENER_PORT maps to Grizzly Config Constants TCPSTARTPORT and TCPENDPORT.
+                            configProps.put(GrizzlyConfigConstants.TCPSTARTPORT.toString(), value);
+                            configProps.put(GrizzlyConfigConstants.TCPENDPORT.toString(), value);
+                         } else {
+                            // handle normal case.  one to one mapping.
+                            GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(name);
+                            configProps.put(name, value);
+                        }
                     } catch (IllegalArgumentException iae) {
-                        //
+
                     }
                 }
             }
@@ -310,8 +334,13 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     private void initializeGMS() throws GMSException{
         Properties configProps = new Properties();
-        initStopGapGMSConfiguration(configProps);
-//        readGMSConfigProps(configProps);
+
+        // todo  delete once readGMSConfigProps() confirmed to replace this functionality for certain.
+        // pre-M2 stop-gap gms configuration read GMS configuration from java property files, one per instance and cluster.
+        //initStopGapGMSConfiguration(configProps);
+
+        // read GMS configuration from domain.xml
+        readGMSConfigProps(configProps);
         
         printProps(configProps);
 
