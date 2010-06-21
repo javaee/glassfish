@@ -29,6 +29,18 @@
         <version>2.0-alpha-3</version>
         <extensions>true</extensions>
       </plugin>
+      <plugin>
+            <artifactId>maven-clean-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>auto-clean</id>
+                    <phase>initialize</phase>
+                    <goals>
+                        <goal>clean</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
     </plugins>
   </build>
   <distributionManagement>
