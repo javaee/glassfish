@@ -54,6 +54,7 @@
     <packaging>jar</packaging>
     <scm>
       <connection>scm:svn:https://hk2.dev.java.net/svn/hk2/trunk/hk2/osgi-resource-locator</connection>
+      <developerConnection>scm:svn:scm:svn:https://hk2.dev.java.net/svn/hk2/trunk/hk2/osgi-resource-locator</developerConnection>             
     </scm>
     <build>
         <plugins>
