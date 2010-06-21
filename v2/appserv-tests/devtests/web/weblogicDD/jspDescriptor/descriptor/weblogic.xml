@@ -1,0 +1,7 @@
+<weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app">
+  <jsp-descriptor>
+      <working-dir>/tmp/wl</working-dir>
+      <compress-html-template>true</compress-html-template>
+      <keepgenerated>true</keepgenerated>
+  </jsp-descriptor>
+</weblogic-web-app>
