@@ -896,75 +896,77 @@ public class CommandRunnerImpl implements CommandRunner {
 
                 if(serverEnv.isDas()) {
                     String targetName = parameters.getOne("target");
-                    if(targetName != null) {
-                        // Check if the command allows this target type; first read the annotation
-                        TargetType tgtTypeAnnotation = command.getClass().getAnnotation(TargetType.class);
-                        if(tgtTypeAnnotation != null) {
-                            for(CommandTarget c : tgtTypeAnnotation.value()) {
-                                targetTypesAllowed.add(c);
-                            }
-                        };
-                        //If not @TargetType, default it
-                        if(targetTypesAllowed.size() == 0) {
-                            targetTypesAllowed.add(CommandTarget.DAS);
-                            targetTypesAllowed.add(CommandTarget.STANDALONE_INSTANCE);
-                            targetTypesAllowed.add(CommandTarget.CLUSTER);
-                            targetTypesAllowed.add(CommandTarget.CONFIG);
-                        }
 
-                        // If the target is "server" and the command is not marked for DAS,
-                        // add DAS to RuntimeTypes; This is important because those class of CLIs that
-                        // do not always have to be run on DAS followed by applicable instances
-                        // will have @Cluster(RuntimeType.INSTANCE) and they have to be run on DAS
-                        // ONLY if the target is "server"
-                        if(CommandTarget.DAS.isValid(habitat, targetName) &&
-                                !runtimeTypes.contains(RuntimeType.DAS)) {
-                            runtimeTypes.add(RuntimeType.DAS);
-                        }
+                    if(targetName == null)
+                        targetName = "server";
 
-                        // Check if the target is valid
-                        //Is there a server or a cluster or a config with given name ?
-                        if( (!CommandTarget.DOMAIN.isValid(habitat, targetName)) &&
-                        (domain.getServerNamed(targetName) == null) &&
-                        (domain.getClusterNamed(targetName) == null) &&
-                        (domain.getConfigNamed(targetName) == null) ) {
+                    // Check if the command allows this target type; first read the annotation
+                    TargetType tgtTypeAnnotation = command.getClass().getAnnotation(TargetType.class);
+                    if(tgtTypeAnnotation != null) {
+                        for(CommandTarget c : tgtTypeAnnotation.value()) {
+                            targetTypesAllowed.add(c);
+                        }
+                    };
+                    //If not @TargetType, default it
+                    if(targetTypesAllowed.size() == 0) {
+                        targetTypesAllowed.add(CommandTarget.DAS);
+                        targetTypesAllowed.add(CommandTarget.STANDALONE_INSTANCE);
+                        targetTypesAllowed.add(CommandTarget.CLUSTER);
+                        targetTypesAllowed.add(CommandTarget.CONFIG);
+                    }
+
+                    // If the target is "server" and the command is not marked for DAS,
+                    // add DAS to RuntimeTypes; This is important because those class of CLIs that
+                    // do not always have to be run on DAS followed by applicable instances
+                    // will have @Cluster(RuntimeType.INSTANCE) and they have to be run on DAS
+                    // ONLY if the target is "server"
+                    if(CommandTarget.DAS.isValid(habitat, targetName) &&
+                            !runtimeTypes.contains(RuntimeType.DAS)) {
+                        runtimeTypes.add(RuntimeType.DAS);
+                    }
+
+                    // Check if the target is valid
+                    //Is there a server or a cluster or a config with given name ?
+                    if( (!CommandTarget.DOMAIN.isValid(habitat, targetName)) &&
+                            (domain.getServerNamed(targetName) == null) &&
+                                (domain.getClusterNamed(targetName) == null) &&
+                                (domain.getConfigNamed(targetName) == null) ) {
                         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                         report.setMessage(adminStrings.getLocalString("commandrunner.executor.invalidtarget",
-                                "Unable to find a valid target with name {0}", targetName));
+                            "Unable to find a valid target with name {0}", targetName));
                         return;
+                    }
+                    //Does this command allow this target type
+                    boolean isTargetValidType = false;
+                    Iterator<CommandTarget> it = targetTypesAllowed.iterator();
+                    while(it.hasNext()) {
+                        if(it.next().isValid(habitat, targetName)) {
+                            isTargetValidType = true;
+                            break;
                         }
-                        //Does this command allow this target type
-                        boolean isTargetValidType = false;
-                        Iterator<CommandTarget> it = targetTypesAllowed.iterator();
+                    }
+                    if(!isTargetValidType) {
+                        StringBuilder validTypes = new StringBuilder();
+                        it = targetTypesAllowed.iterator();
                         while(it.hasNext()) {
-                            if(it.next().isValid(habitat, targetName)) {
-                                isTargetValidType = true;
-                                break;
-                            }
+                            validTypes.append(it.next().getDescription() + " ");
                         }
-                        if(!isTargetValidType) {
-                            StringBuilder validTypes = new StringBuilder();
-                            it = targetTypesAllowed.iterator();
-                            while(it.hasNext()) {
-                                validTypes.append(it.next().getDescription() + " ");
-                            }
-                            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                            report.setMessage(adminStrings.getLocalString("commandrunner.executor.invalidtargettype",
-                                    "Target {0} is not a supported type. Command {1} supports these types of targets only : {2}",
-                                        targetName, model.getCommandName(),validTypes.toString()));
-                            return;
-                        }
-                        //If target is a clustered instance and the allowed types does not allow operations on clustered
-                        //instance, return error
-                        if( (CommandTarget.CLUSTERED_INSTANCE.isValid(habitat, targetName)) &&
-                                (!targetTypesAllowed.contains(CommandTarget.CLUSTERED_INSTANCE))) {
-                            Cluster c = domain.getClusterForInstance(targetName);
-                            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                            report.setMessage(adminStrings.getLocalString("commandrunner.executor.instanceopnotallowed",
-                                    "The {0} command is not allowed on instance {1} because it is part of cluster {2}",
-                                        model.getCommandName(), targetName, c.getName()));
-                            return;
-                        }
+                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                        report.setMessage(adminStrings.getLocalString("commandrunner.executor.invalidtargettype",
+                                "Target {0} is not a supported type. Command {1} supports these types of targets only : {2}",
+                                    targetName, model.getCommandName(),validTypes.toString()));
+                        return;
+                    }
+                    //If target is a clustered instance and the allowed types does not allow operations on clustered
+                    //instance, return error
+                    if( (CommandTarget.CLUSTERED_INSTANCE.isValid(habitat, targetName)) &&
+                            (!targetTypesAllowed.contains(CommandTarget.CLUSTERED_INSTANCE))) {
+                        Cluster c = domain.getClusterForInstance(targetName);
+                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                        report.setMessage(adminStrings.getLocalString("commandrunner.executor.instanceopnotallowed",
+                                "The {0} command is not allowed on instance {1} because it is part of cluster {2}",
+                                    model.getCommandName(), targetName, c.getName()));
+                        return;
                     }
                 }
 

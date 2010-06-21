@@ -111,8 +111,10 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
         }
         org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
         String targetName = parameters.getOne("target");
+        if(targetName == null)
+                targetName = "server";
         //Do replication only if this is DAS and only if the target is not "server", the default server or "domain"
-        if(targetName != null && (!CommandTarget.DAS.isValid(habitat, targetName))
+        if((!CommandTarget.DAS.isValid(habitat, targetName))
                 && (!CommandTarget.DOMAIN.isValid(habitat, targetName))) {
             Target target = habitat.getComponent(Target.class);
             List<Server> instancesForReplication = target.getInstances(targetName);

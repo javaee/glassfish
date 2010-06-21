@@ -36,13 +36,12 @@
  */
 package com.sun.enterprise.admin.util;
 
-import com.sun.enterprise.config.serverbeans.Cluster;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +53,9 @@ public class Target {
 
     @Inject
     private ServerEnvironment serverEnv;
+
+    @Inject
+    Habitat habitat;
 
     /**
      * Lets caller to know if the caller is in DAS
@@ -75,7 +77,7 @@ public class Target {
      * @return true if the target represents a cluster; false otherwise
      */
     public boolean isCluster(String targetName) {
-        return (domain.getServerNamed(targetName) == null);
+        return (domain.getClusterNamed(targetName) != null);
     }
 
     /**
@@ -84,15 +86,7 @@ public class Target {
      * @return Cluster element that represents the cluster
      */
     public Cluster getCluster(String targetName) {
-        if(!isCluster(targetName))
-            return null;
-        List<Cluster> clList = domain.getClusters().getCluster();
-        for(Cluster cl : clList) {
-            if(targetName.equals(cl.getName())) {
-                return cl;
-            }
-        }
-        return null;
+        return domain.getClusterNamed(targetName);
     }
 
     /**
@@ -114,14 +108,7 @@ public class Target {
      * @return Cluster element to which this instance below
      */
     public Cluster getClusterForInstance(String targetName) {
-        if(isCluster(targetName))
-            return getCluster(targetName);
-        String instanceCfgRef = domain.getServerNamed(targetName).getConfigRef();
-        for(Cluster c : domain.getClusters().getCluster()) {
-            if(c.getConfigRef().equals(instanceCfgRef))
-                return c;
-        }
-        return null;
+        return domain.getClusterForInstance(targetName);
     }
 
     /**
@@ -133,19 +120,26 @@ public class Target {
      */
     public List<Server> getInstances(String targetName) {
         List<Server> instances = new ArrayList<Server>();
-        //TODO : Target can be a config or a domain; handle that here
-        if(domain.getServerNamed(targetName) != null) {
+        if(CommandTarget.DOMAIN.isValid(habitat, targetName))
+            return instances;
+        if(CommandTarget.DAS.isValid(habitat, targetName))
+            return instances;
+        if(CommandTarget.STANDALONE_INSTANCE.isValid(habitat, targetName)) {
             instances.add(domain.getServerNamed(targetName));
-        } else {
-            //TODO : Is this the way to get instances ? Cant we use some DuckType methods in config beans ?
-            Cluster cluster = getCluster(targetName);
-            if(cluster != null) {
-                String clusterConfigName = cluster.getConfigRef();
-                List<Server> svrList = domain.getServers().getServer();
-                for(Server svr : svrList) {
-                    if(clusterConfigName.equals(svr.getConfigRef())) {
-                        instances.add(svr);
-                    }
+        }
+        if(CommandTarget.CLUSTER.isValid(habitat, targetName)) {
+            instances = getCluster(targetName).getInstances();
+        }
+        if(CommandTarget.CONFIG.isValid(habitat, targetName)) {
+            List<String> targets = domain.getAllTargets();
+            for(String aTarget : targets) {
+                if(CommandTarget.CLUSTER.isValid(habitat, aTarget) &&
+                        getCluster(aTarget).getConfigRef().equals(targetName)) {
+                    instances.addAll(getCluster(aTarget).getInstances());
+                }
+                if(CommandTarget.STANDALONE_INSTANCE.isValid(habitat, aTarget) &&
+                        domain.getServerNamed(aTarget).getConfigRef().equals(targetName)) {
+                    instances.add(domain.getServerNamed(aTarget));
                 }
             }
         }
