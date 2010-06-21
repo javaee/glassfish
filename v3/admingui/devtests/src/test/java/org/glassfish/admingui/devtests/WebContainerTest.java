@@ -60,7 +60,7 @@ public class WebContainerTest extends BaseSeleniumTestClass {
         final String value = generateRandomString();
         final String description = "Description for " + property;
         
-		clickAndWait("treeForm:tree:configuration:webContainer:webContainer_link", TAB_GENERAL_PROPERTIES);
+		clickAndWait("treeForm:tree:configurations:server-config:webContainer:webContainer_link", TAB_GENERAL_PROPERTIES);
         
         int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton");
 
@@ -77,7 +77,7 @@ public class WebContainerTest extends BaseSeleniumTestClass {
 
     @Test
     public void testSessionProperties() {
-        clickAndWait("treeForm:tree:configuration:webContainer:webContainer_link", TAB_GENERAL_PROPERTIES);
+        clickAndWait("treeForm:tree:configurations:server-config:webContainer:webContainer_link", TAB_GENERAL_PROPERTIES);
         clickAndWait("form1:webContainerTabs:sessionTab", TAB_SESSION_PROPERTIES);
 
         int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton");
@@ -106,7 +106,7 @@ public class WebContainerTest extends BaseSeleniumTestClass {
         final String maxSessions = Integer.toString(generateRandomNumber(1000));
         final String sessFileName = generateRandomString();
 
-        clickAndWait("treeForm:tree:configuration:webContainer:webContainer_link", TAB_GENERAL_PROPERTIES);
+        clickAndWait("treeForm:tree:configurations:server-config:webContainer:webContainer_link", TAB_GENERAL_PROPERTIES);
 
         clickAndWait("form1:webContainerTabs:managerTab", TAB_MANAGER_PROPERTIES);
 
@@ -133,7 +133,7 @@ public class WebContainerTest extends BaseSeleniumTestClass {
     public void testStoreProperties() {
         final String directory = generateRandomString();
 
-        clickAndWait("treeForm:tree:configuration:webContainer:webContainer_link", TAB_GENERAL_PROPERTIES);
+        clickAndWait("treeForm:tree:configurations:server-config:webContainer:webContainer_link", TAB_GENERAL_PROPERTIES);
 
         clickAndWait("form1:webContainerTabs:storeTab", TAB_STORE_PROPERTIES);
 

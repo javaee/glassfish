@@ -50,7 +50,7 @@ public class ThreadPools extends BaseSeleniumTestClass {
     public void testAddThreadPool() {
         final String threadPoolName = "testThreadPool"+generateRandomString();
 
-        clickAndWait("treeForm:tree:configuration:threadPools:threadPools_link", TRIGGER_THREAD_POOLS);
+        clickAndWait("treeForm:tree:configurations:server-config:threadPools:threadPools_link", TRIGGER_THREAD_POOLS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_THREAD_POOL);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:nameProp:nameText", threadPoolName);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:max:max", "8192");

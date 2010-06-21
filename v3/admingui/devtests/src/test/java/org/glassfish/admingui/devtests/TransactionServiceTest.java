@@ -56,7 +56,7 @@ public class TransactionServiceTest extends BaseSeleniumTestClass {
         final String retry = Integer.toString(generateRandomNumber(600));
         final String keypoint = Integer.toString(generateRandomNumber(65535));
 
-        clickAndWait("treeForm:tree:configuration:transactionService:transactionService_link", TRIGGER_TRANSACTION_SERVICE);
+        clickAndWait("treeForm:tree:configurations:server-config:transactionService:transactionService_link", TRIGGER_TRANSACTION_SERVICE);
         selenium.check("propertyForm:propertySheet:propertSectionTextField:onRestartProp:enabled");
         selenium.type("propertyForm:propertySheet:propertSectionTextField:timeoutProp:Timeout", timeout);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:retryProp:Retry", retry);
@@ -70,7 +70,7 @@ public class TransactionServiceTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
         clickAndWait("treeForm:tree:ct", "Please Register");
 
-        clickAndWait("treeForm:tree:configuration:transactionService:transactionService_link", TRIGGER_TRANSACTION_SERVICE);
+        clickAndWait("treeForm:tree:configurations:server-config:transactionService:transactionService_link", TRIGGER_TRANSACTION_SERVICE);
         assertEquals("on", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:onRestartProp:enabled"));
         assertEquals(timeout, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:timeoutProp:Timeout"));
         assertEquals(retry, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:retryProp:Retry"));

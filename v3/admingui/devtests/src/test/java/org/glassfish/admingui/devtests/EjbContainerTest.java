@@ -52,7 +52,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         final String poolResize = Integer.toString(generateRandomNumber(64));
         final String timeout = Integer.toString(generateRandomNumber(600));
 
-        clickAndWait("treeForm:tree:configuration:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
+        clickAndWait("treeForm:tree:configurations:server-config:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
 
         selenium.click("form1:propertySheet:generalPropertySection:commitOptionProp:optC");
         selenium.type("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize", minSize);
@@ -81,7 +81,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         final String poolResize = Integer.toString(generateRandomNumber(64));
         final String timeout = Integer.toString(generateRandomNumber(600));
 
-        clickAndWait("treeForm:tree:configuration:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
+        clickAndWait("treeForm:tree:configurations:server-config:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
 
         selenium.type("form1:propertySheet:propertySectionTextField:MinSizeProp:MinSize", minSize);
@@ -95,7 +95,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
 
-        clickAndWait("treeForm:tree:configuration:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
+        clickAndWait("treeForm:tree:configurations:server-config:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
 
         assertEquals(minSize, selenium.getValue("form1:propertySheet:propertySectionTextField:MinSizeProp:MinSize"));
@@ -112,7 +112,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         final String redeliveryInterval = Integer.toString(generateRandomNumber(20000));
         final String timerDatasource = "jndi/" + generateRandomString();
 
-        clickAndWait("treeForm:tree:configuration:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
+        clickAndWait("treeForm:tree:configurations:server-config:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:ejbTimerTab", TAB_EJB_TIMER_SERVICE);
 
         selenium.type("form1:propertySheet:propertySectionTextField:MinDeliveryProp:MinDelivery", minDelivery);
@@ -142,7 +142,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
     public void testEjbSettingsDefault() {
 
         //Go to EJB Settings page, enter some random value
-        clickAndWait("treeForm:tree:configuration:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
+        clickAndWait("treeForm:tree:configurations:server-config:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
         selenium.click("form1:propertySheet:generalPropertySection:commitOptionProp:optC");
         selenium.type("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize", "2");
         selenium.type("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize", "34");

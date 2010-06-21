@@ -55,7 +55,7 @@ public class AdminServiceTest extends BaseSeleniumTestClass {
     @Test
     public void testEditJmxConntector() {
         String address = generateRandomNumber(255)+"."+generateRandomNumber(255)+"."+generateRandomNumber(255)+"."+generateRandomNumber(255);
-        clickAndWait("treeForm:tree:configuration:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
+        clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
         selenium.check("form1:propertySheet:propertySheetSection:SecurityProp:Security");
         selenium.type("form1:propertySheet:propertySheetSection:AddressProp:Address", address);
         int count = addTableRow("form1:basicTable","form1:basicTable:topActionsGroup1:addSharedTableButton");
@@ -64,7 +64,7 @@ public class AdminServiceTest extends BaseSeleniumTestClass {
         selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
         clickAndWait("form1:jmxConnectorTab:jmxSSLEdit", TRIGGER_SSL);
-        clickAndWait("treeForm:tree:configuration:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
+        clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
         assertEquals(address, selenium.getValue("form1:propertySheet:propertySheetSection:AddressProp:Address"));
         assertTableRowCount("form1:basicTable", count);
     }
@@ -75,7 +75,7 @@ public class AdminServiceTest extends BaseSeleniumTestClass {
         final String keystore = "keystore"+generateRandomString()+".jks";
         final String maxCertLength = Integer.toString(generateRandomNumber(10));
 
-        clickAndWait("treeForm:tree:configuration:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
+        clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
         clickAndWait("form1:jmxConnectorTab:jmxSSLEdit", TRIGGER_SSL);
 
         selenium.uncheck("propertyForm:propertySheet:propertySheetSection:SSL3Prop:SSL3");
@@ -92,7 +92,7 @@ public class AdminServiceTest extends BaseSeleniumTestClass {
         } else {
             clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
         }
-        clickAndWait("treeForm:tree:configuration:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
+        clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
         clickAndWait("form1:jmxConnectorTab:jmxSSLEdit", TRIGGER_SSL);
 
         assertEquals("off", selenium.getValue("propertyForm:propertySheet:propertySheetSection:SSL3Prop:SSL3"));

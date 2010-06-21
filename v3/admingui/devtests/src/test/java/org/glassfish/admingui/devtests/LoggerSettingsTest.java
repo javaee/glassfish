@@ -50,7 +50,7 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         final String rotationTimeLimit = Integer.toString(generateRandomNumber());
         final String flushFrequency = Integer.toString(generateRandomNumber());
 
-        clickAndWait("treeForm:tree:configuration:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
+        clickAndWait("treeForm:tree:configurations:server-config:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
         selenium.click("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled");
         String enabled = selenium.getValue("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled");
         selenium.type("form1:general:sheetSection:FileRotationLimitProp:FileRotationLimit", rotationLimit);
@@ -60,7 +60,7 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
 
         clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
 
-        clickAndWait("treeForm:tree:configuration:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
+        clickAndWait("treeForm:tree:configurations:server-config:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
         assertEquals(enabled, selenium.getValue("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled"));
         assertEquals(rotationLimit, selenium.getValue("form1:general:sheetSection:FileRotationLimitProp:FileRotationLimit"));
         assertEquals(rotationTimeLimit, selenium.getValue("form1:general:sheetSection:FileRotationTimeLimitProp:FileRotationTimeLimit"));

@@ -49,7 +49,7 @@ import static org.junit.Assert.assertEquals;
 public class MonitoringTest extends BaseSeleniumTestClass {
     @Test
     public void testMonitoring() {
-		selenium.click("treeForm:tree:configuration:monitor:monitor_link");
+		selenium.click("treeForm:tree:configurations:server-config:monitor:monitor_link");
 //		verifyTrue(selenium.isTextPresent("Enable monitoring for a component or service by selecting either LOW or HIGH. To use the Administration Console for monitoring, Monitoring Service and Monitoring MBeans must both be enabled."));
 //		selenium.click("form1:propertySheet:propertSectionTextField:monServiceProp:sun_checkbox130");
 //		selenium.click("form1:propertySheet:propertSectionTextField:monMbeansProp:sun_checkbox131");

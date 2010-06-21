@@ -63,7 +63,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         final String realmName = "TestRealm" + generateRandomString();
         final String contextName = "Context" + generateRandomString();
 
-        clickAndWait("treeForm:tree:configuration:security:realms:realms_link", TRIGGER_SECURITY_REALMS);
+        clickAndWait("treeForm:tree:configurations:server-config:security:realms:realms_link", TRIGGER_SECURITY_REALMS);
         clickAndWait("propertyForm:realmsTable:topActionsGroup1:newButton", "Create a new security realm.");
         selenium.type("form1:propertySheet:propertySectionTextField:NameTextProp:NameText", realmName);
         selenium.select("form1:propertySheet:propertySectionTextField:cp:Classname", "label=com.sun.enterprise.security.auth.realm.file.FileRealm");
@@ -80,7 +80,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         final String userId = "user" + generateRandomString();
         final String password = "password" + generateRandomString();
 
-        clickAndWait("treeForm:tree:configuration:security:realms:realms_link", TRIGGER_SECURITY_REALMS);
+        clickAndWait("treeForm:tree:configurations:server-config:security:realms:realms_link", TRIGGER_SECURITY_REALMS);
         clickAndWait(getLinkIdByLinkText("propertyForm:realmsTable", "file"), TRIGGER_EDIT_REALM);
 
         clickAndWait("form1:propertyContentPage:manageUsersButton", TRIGGER_FILE_USERS);
@@ -100,7 +100,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         final String auditModuleName = "auditModule" + generateRandomString();
         final String className = "org.glassfish.NonexistentModule";
 
-        clickAndWait("treeForm:tree:configuration:security:auditModules:auditModules_link", TRIGGER_AUDIT_MODULES);
+        clickAndWait("treeForm:tree:configurations:server-config:security:auditModules:auditModules_link", TRIGGER_AUDIT_MODULES);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_AUDIT_MODULE);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", auditModuleName);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:classNameProp:ClassName", className);
@@ -127,7 +127,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         final String policyConfig = "com.example.Foo";
         final String policyProvider = "com.example.Foo";
 
-        clickAndWait("treeForm:tree:configuration:security:jaccProviders:jaccProviders_link", TRIGGER_JACC_PROVIDERS);
+        clickAndWait("treeForm:tree:configurations:server-config:security:jaccProviders:jaccProviders_link", TRIGGER_JACC_PROVIDERS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_JACC_PROVIDER);
 
         selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", providerName);
@@ -159,7 +159,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         final String className = "com.example.Foo";
         final String LAYER_NAME = "HttpServlet";
 
-        clickAndWait("treeForm:tree:configuration:security:messageSecurity:messageSecurity_link", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
+        clickAndWait("treeForm:tree:configurations:server-config:security:messageSecurity:messageSecurity_link", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
 
         // Clean up, just in case...
         if (selenium.isTextPresent(LAYER_NAME)) {
@@ -187,7 +187,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         assertEquals(className, selenium.getValue("propertyForm:propertySheet:providerConfSection:ClassNameProp:ClassName"));
         assertTableRowCount("propertyForm:basicTable", count);
 
-        clickAndWait("treeForm:tree:configuration:security:messageSecurity:messageSecurity_link", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
+        clickAndWait("treeForm:tree:configurations:server-config:security:messageSecurity:messageSecurity_link", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
         deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", LAYER_NAME);
     }
 }

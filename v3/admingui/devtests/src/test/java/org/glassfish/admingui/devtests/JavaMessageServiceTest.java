@@ -56,7 +56,7 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         final String interval = Integer.toString(generateRandomNumber(10));
         final String attempts = Integer.toString(generateRandomNumber(10));
 
-        clickAndWait("treeForm:tree:configuration:jmsConfiguration:jmsConfiguration_link", TRIGGER_JMS_SERVICE);
+        clickAndWait("treeForm:tree:configurations:server-config:jmsConfiguration:jmsConfiguration_link", TRIGGER_JMS_SERVICE);
         selenium.type("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:timeoutProp:Timeout", timeout);
         selenium.type("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:intervalProp:Interval", interval);
         selenium.type("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:attemptsProp:Attempts", attempts);
@@ -67,8 +67,8 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:propertyContentPage:basicTable:rowGroup1:0:col3:col1St", "value");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
 
-        clickAndWait("treeForm:tree:configuration:jmsConfiguration:jmsHosts:jmsHosts_link", TRIGGER_JMS_HOSTS);
-        clickAndWait("treeForm:tree:configuration:jmsConfiguration:jmsConfiguration_link", TRIGGER_JMS_SERVICE);
+        clickAndWait("treeForm:tree:configurations:server-config:jmsConfiguration:jmsHosts:jmsHosts_link", TRIGGER_JMS_HOSTS);
+        clickAndWait("treeForm:tree:configurations:server-config:jmsConfiguration:jmsConfiguration_link", TRIGGER_JMS_SERVICE);
 
         assertEquals(timeout, selenium.getValue("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:timeoutProp:Timeout"));
         assertEquals(interval, selenium.getValue("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:intervalProp:Interval"));
@@ -81,7 +81,7 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         String hostText = "host"+generateRandomString();
         String host = "somemachine"+generateRandomNumber(1000);
 
-        clickAndWait("treeForm:tree:configuration:jmsConfiguration:jmsHosts:jmsHosts_link", TRIGGER_JMS_HOSTS);
+        clickAndWait("treeForm:tree:configurations:server-config:jmsConfiguration:jmsHosts:jmsHosts_link", TRIGGER_JMS_HOSTS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_JMS_HOST);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:JmsHostTextProp:JmsHostText", hostText);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:HostProp:Host", host);
@@ -102,7 +102,7 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         final String maxProducers = Integer.toString(generateRandomNumber(500));
         final String consumerFlowLimit = Integer.toString(generateRandomNumber(5000));
 
-        clickAndWait("treeForm:tree:configuration:jmsConfiguration:jmsPhysDest:jmsPhysDest_link", TRIGGER_JMS_PHYSICAL_DESTINATIONS);
+        clickAndWait("treeForm:tree:configurations:server-config:jmsConfiguration:jmsPhysDest:jmsPhysDest_link", TRIGGER_JMS_PHYSICAL_DESTINATIONS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_JMS_PHYSICAL_DESTINATION);
 
         selenium.type("jmsPhysDestForm:propertySheet:propertSectionTextField:NameTextProp:NameText", name);

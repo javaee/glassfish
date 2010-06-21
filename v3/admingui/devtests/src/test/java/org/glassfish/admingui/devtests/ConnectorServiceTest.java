@@ -52,7 +52,7 @@ public class ConnectorServiceTest extends BaseSeleniumTestClass {
 
     @Test
     public void testConnectorService() {
-        clickAndWait("treeForm:tree:configuration:connectorService:connectorService_link", TRIGGER_CONNECTOR_SERVICE);
+        clickAndWait("treeForm:tree:configurations:server-config:connectorService:connectorService_link", TRIGGER_CONNECTOR_SERVICE);
 
         String policy = "derived";
         if (selenium.getValue("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy").equals(policy)) {
@@ -64,7 +64,7 @@ public class ConnectorServiceTest extends BaseSeleniumTestClass {
         selenium.select("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy", "label="+policy);
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
         clickAndWait("treeForm:tree:ct", "Please Register");
-        clickAndWait("treeForm:tree:configuration:connectorService:connectorService_link", TRIGGER_CONNECTOR_SERVICE);
+        clickAndWait("treeForm:tree:configurations:server-config:connectorService:connectorService_link", TRIGGER_CONNECTOR_SERVICE);
         assertEquals(timeout, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:timeout:tiimeout"));
         assertEquals(policy, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy"));
 

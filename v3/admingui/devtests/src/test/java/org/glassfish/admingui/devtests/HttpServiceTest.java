@@ -51,7 +51,7 @@ public class HttpServiceTest extends BaseSeleniumTestClass {
         final String bufferSize = Integer.toString(generateRandomNumber(65536));
         final String logWriteInterval = Integer.toString(generateRandomNumber(600));
 
-        clickAndWait("treeForm:tree:configuration:httpService:httpService_link", TRIGGER_HTTP_SERVICE);
+        clickAndWait("treeForm:tree:configurations:server-config:httpService:httpService_link", TRIGGER_HTTP_SERVICE);
         selenium.check("form1:propertySheet:http:acLog:ssoEnabled");
         selenium.check("form1:propertySheet:accessLog:acLog:accessLoggingEnabled");
         selenium.type("form1:propertySheet:accessLog:intervalProp:Interval", interval);
@@ -65,7 +65,7 @@ public class HttpServiceTest extends BaseSeleniumTestClass {
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
         
         clickAndWait("treeForm:tree:ct", "Please Register");
-        clickAndWait("treeForm:tree:configuration:httpService:httpService_link", TRIGGER_HTTP_SERVICE);
+        clickAndWait("treeForm:tree:configurations:server-config:httpService:httpService_link", TRIGGER_HTTP_SERVICE);
         assertEquals("on", selenium.getValue("form1:propertySheet:http:acLog:ssoEnabled"));
         assertTrue(selenium.isTextPresent(TRIGGER_HTTP_SERVICE));
         assertEquals(interval, selenium.getValue("form1:propertySheet:accessLog:intervalProp:Interval"));
