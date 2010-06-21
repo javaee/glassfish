@@ -217,6 +217,9 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
             
             try{
                 AMXConfigProxy  amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(_objectName));
+		if (amx == null) {
+		    throw new RuntimeException("Unable to get AMXConigProxy for '" + _objectName + "'!");
+		}
                 if (_amxChildType == null || _amxChildType.equals("")){
                     ObjectName[] children = amx.getChildren();
                     _children = new ArrayList();
