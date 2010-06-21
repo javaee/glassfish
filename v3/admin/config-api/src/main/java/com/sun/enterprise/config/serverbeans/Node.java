@@ -220,8 +220,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
                  "Node.localhost",
                  "Cannot remove Node {0}. ",child.getName() );
                  logger.log(Level.SEVERE, msg);
-                return;
-            }
+                throw new TransactionFailure(msg);            }
 
             List<Node> nodeList = nodes.getNode();
             List<Server> serverList=servers.getServer();
@@ -234,7 +233,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
                         "Node {0} referenced in server instance {1}.  Remove instance before removing node."
                         ,child.getName() ,server.getName() );
                         logger.log(Level.SEVERE, msg);
-                        return;
+                        throw new TransactionFailure(msg);
                     }
                 }
             }
