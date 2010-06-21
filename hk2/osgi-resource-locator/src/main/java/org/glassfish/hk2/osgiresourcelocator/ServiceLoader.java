@@ -74,20 +74,44 @@ public abstract class ServiceLoader {
 
     /**
      * This method returns null if this class is not initialized yet.
+     *
      * @param serviceClass Type of service requested
      * @param <T>
-     * @return
+     * @return provider instances for the given service type
      */
     public static <T> Iterable<? extends T> lookupProviderInstances(Class<T> serviceClass) {
         if (_me == null) return null;
         return _me.lookupProviderInstances1(serviceClass);
     }
 
-    public static <T> Iterable<Class<? extends T>> lookupProviderClasses(Class<T> serviceClass) {
+    /**
+     * Calling this method is equivalent to calling {@link #lookupProviderClasses(Class, boolean)} with a true argument.
+     * @see #lookupProviderClasses(Class, boolean)
+     */
+    public static <T> Iterable<Class> lookupProviderClasses(Class<T> serviceClass) {
+        return lookupProviderClasses(serviceClass, true);
+    }
+
+    /**
+     * Returns classes found in META-INF/services/serviceClass.getName() in OSGi bundles. This method searches for
+     * such named resources in every OSGi bundle. For every resource found, it assumes that the file contains
+     * a class name. It loads the class name mentioned in that file using the bundle containing the resource.
+     * If onlyCompatible argument is true, it returns the class only if the loaded class is assignment compatible
+     * with the service class.
+     *
+     * WARNING: Be extra careful while invoking this method with a false argument. It can result in ClassCastException
+     * in your code. Only for special cases like JAXBContext, this method need to be called with false argument.
+     *
+     * @param serviceClass type of service requested
+     * @param onlyCompatible indicates if only compatible classes to be returned.
+     * @param <T>
+     * @return classes corresponding to entries in META-INF/services file for the service class.
+     */
+    public static <T> Iterable<Class> lookupProviderClasses(Class<T> serviceClass, boolean onlyCompatible) {
         if (_me == null) return null;
-        return _me.lookupProviderClasses1(serviceClass);
+        return _me.lookupProviderClasses1(serviceClass, onlyCompatible);
     }
 
     /*package*/ abstract <T> Iterable<? extends T> lookupProviderInstances1(Class<T> serviceType);
-    /*package*/ abstract <T> Iterable<Class<? extends T>> lookupProviderClasses1(Class<T> serviceType);
+    /*package*/ abstract <T> Iterable<Class> lookupProviderClasses1(Class<T> serviceType, boolean onlyCompatible);
 }
