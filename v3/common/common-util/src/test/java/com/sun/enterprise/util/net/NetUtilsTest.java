@@ -49,6 +49,27 @@ import static org.junit.Assert.*;
  *
  * @author bnevins
  */
+
+/*
+ *
+Tim Quinn reported the following problem with these tests, June 18, 2010
+nslookup unlikely_name_1000
+Server: 192.168.2.1
+Address: 192.168.2.1#53
+
+Non-authoritative answer:
+Name: unlikely_name_1000
+Address: 208.68.139.38
+
+
+I think this is because my ISP, Comcast, tries to be helpful to browser users
+who look for non-existent stuff.  It causes this problem, though, for any
+look-up that depends on an error response.
+
+Might need to disable that test because other ISPs do this too.
+
+MY (Byron Nevins) Response -- move the test into the "special" tests...
+ */
 public class NetUtilsTest {
 
     public NetUtilsTest() {
@@ -102,7 +123,6 @@ public class NetUtilsTest {
         assertTrue(NetUtils.isEqual("www.oracle.com", "www.oracle.com"));
         assertFalse(NetUtils.isEqual("oracle.com", "google.com"));
         // since neither one can be resolved -- they are NOT the same, by definition
-        assertFalse(NetUtils.isEqual(unlikelyName, unlikelyName));
 
 
     }
@@ -125,8 +145,10 @@ public class NetUtilsTest {
             assertFalse(NetUtils.isEqual(x1, x4));
             assertFalse(NetUtils.isEqual(x2, x4));
             assertFalse(NetUtils.isEqual(x3, x4));
+            assertFalse(NetUtils.isEqual(unlikelyName, unlikelyName));
         }
     }
+    
     private static final String unlikelyName;
     private static final boolean SPECIAL = false;
 
@@ -135,4 +157,6 @@ public class NetUtilsTest {
         s = s.substring(s.length() - 4);
         unlikelyName = "unlikely_name_" + s;
     }
+
+
 }
