@@ -92,9 +92,6 @@ public class ListSubComponentsCommand implements AdminCommand {
     public ApplicationRegistry appRegistry;
 
     @Inject
-    private VersioningService versioningService;
-
-    @Inject
     public Deployment deployment;
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListSubComponentsCommand.class);    
@@ -111,7 +108,7 @@ public class ListSubComponentsCommand implements AdminCommand {
         }
 
         try {
-            versioningService.getExpression(applicationName);
+            VersioningService.checkIdentifier(applicationName);
         } catch (VersioningSyntaxException ex) {
             report.setMessage(ex.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
