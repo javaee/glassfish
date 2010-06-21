@@ -117,7 +117,7 @@
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
         <trilead-ssh2.version>build212-hudson-5</trilead-ssh2.version>
-        <product.name>GlassFish</product.name>
+        <product.name>GlassFish Server Open Source Edition</product.name>
         <abbrev_product_name>glassfish</abbrev_product_name>
         <version_prefix></version_prefix>
         <major_version>3</major_version>
