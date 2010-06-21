@@ -49,11 +49,12 @@ import java.util.Random;
 import static org.junit.Assert.assertEquals;
 
 public class BaseSeleniumTestClass {
-    protected static Selenium selenium;
-    protected static int TIMEOUT = 120;
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
     public static final String MSG_NEW_VALUES_SAVED = "New values successfully saved.";
     public static final String TRIGGER_COMMON_TASKS = "Please Register";
+    public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
+    protected static Selenium selenium;
+    protected static int TIMEOUT = 120;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -74,7 +75,7 @@ public class BaseSeleniumTestClass {
 
     @Before
     public void reset() {
-        clickAndWait("treeForm:tree:registration:registration_link", "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more");
+        clickAndWait("treeForm:tree:registration:registration_link", TRIGGER_REGISTRATION_PAGE);
     }
 
     protected String generateRandomString() {
