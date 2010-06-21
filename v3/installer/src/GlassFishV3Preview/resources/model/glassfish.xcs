@@ -90,6 +90,47 @@ import org.openinstaller.provider.conf.ConfigHelper;
         </actions>
         </prop>
 
+       <prop oor:name="CREATE_SERVICE" oor:type="xs:boolean">
+          <value/>
+          <info>
+            <desc xml:lang="en-US">Create service or not</desc>
+          </info>
+        <actions>
+        </actions>
+        </prop>
+
+       <prop oor:name="SERVICE_NAME" oor:type="xs:string" oor:transient="true">
+         <value>domain1Service.exe</value>
+          <info>
+            <desc xml:lang="en-US">Name of the service</desc>
+          </info>
+        <actions>
+          <onSet><![CDATA[
+import java.lang.String;
+import java.util.List;
+import org.openinstaller.provider.conf.ConfigHelper;
+
+	boolean createService  = ConfigHelper.getValue("glassfish.Administration.CREATE_SERVICE");
+if (createService)  {
+       String enteredValue = (String)thisProperty.getUnconfirmedValue();
+        if ((enteredValue == null) || enteredValue.equals("")) {
+            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
+        }
+   }
+          ]]></onSet>
+        </actions>
+        </prop>
+
+       <prop oor:name="SERVICE_PROPS" oor:type="xs:string" oor:transient="true">
+         <value/>
+          <info>
+            <desc xml:lang="en-US">Service properties</desc>
+          </info>
+        <actions>
+        </actions>
+        </prop>
+
          <prop oor:name="A_INSTALL_HOME" oor:type="xs:string" oor:transient="true">
            <value if:eval=":[InstallHome.directory:INSTALL_HOME]"></value>
            <info>

@@ -87,6 +87,56 @@
           </apt:visual>
         </apt:property>
 
+    <apt:property apt:name="CREATE_SERVICE" apt:label=""
+         apt:dataPath="Administration.CREATE_SERVICE"
+         apt:type="xs:boolean">
+       <apt:prop-value>false</apt:prop-value>
+       <apt:visual>
+          <apt:checkBox apt:labelPost="$ADMIN_SERVICE_CHOICE_TEXT" apt:toolTip="$ADMIN_SERVICE_CHOICE_TOOL_TIP"/>
+       </apt:visual>
+       <apt:scriptHandler apt:scriptLanguage="beanshell" >
+          <apt:scriptCode><![CDATA[
+             theAL = new ActionListener() {
+               actionPerformed(e) {
+                 option = wizard.getComponentByName(content, "CREATE_SERVICE");
+                 serviceName = wizard.getComponentByName(content, "SERVICE_NAME");
+                 serviceProps = wizard.getComponentByName(content, "SERVICE_PROPS");
+                 if(option.isSelected()) {
+		// Currently service related entries are enabled only on w2k and solaris.
+     		if (System.getProperty("os.name").toLowerCase().startsWith("sunos") || System.getProperty("os.name").toLowerCase().startsWith("windows")) 
+                   serviceName.setEnabled(true);
+
+		// Service properties text field is applicable only or solaris. 
+     			if (System.getProperty("os.name").toLowerCase().startsWith("sunos")) 
+                   		serviceProps.setEnabled(true);
+                 }
+                 else {
+                   serviceName.setEnabled(false);
+                   serviceProps.setEnabled(false);
+                 }
+               }
+             };
+             return theAL;
+           ]]></apt:scriptCode>
+         </apt:scriptHandler>
+        </apt:property>
+
+        <apt:property apt:name="SERVICE_NAME" apt:label="$ADMIN_SERVICE_NAME_TEXT"
+                      apt:dataPath="Administration.SERVICE_NAME"
+                      apt:type="xs:string">
+          <apt:visual>
+            <apt:textField apt:toolTip="$ADMIN_SERVICE_NAME_TOOL_TIP"/>
+          </apt:visual>
+        </apt:property>
+
+        <apt:property apt:name="SERVICE_PROPS" apt:label="$ADMIN_SERVICE_PROPS_TEXT"
+                      apt:dataPath="Administration.SERVICE_PROPS"
+                      apt:type="xs:string">
+          <apt:visual>
+            <apt:password apt:toolTip="$ADMIN_SERVICE_PROPS_TOOL_TIP"/>
+          </apt:visual>
+        </apt:property>
+
 	</apt:section>
       <apt:scriptHandler apt:scriptLanguage="beanshell">
 	<apt:scriptCode><![CDATA[
@@ -302,10 +352,20 @@ run() {
  		List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
 		activeModes.add("IS_AIX");
      }
+     serviceName = wizard.getComponentByName(content, "SERVICE_NAME");
+     serviceProps = wizard.getComponentByName(content, "SERVICE_PROPS");
+     serviceOption = wizard.getComponentByName(content, "CREATE_SERVICE");
 
+     if (System.getProperty("os.name").toLowerCase().startsWith("sunos") || System.getProperty("os.name").toLowerCase().startsWith("windows")) 
+                   serviceOption.setEnabled(true);
+	else
+		  serviceOption.setEnabled(false);
+     serviceName.setEnabled(false);
+     serviceProps.setEnabled(false);
       wizard.enableNext(true);
       wizard.enableCancel(true);
       wizard.enableBack(true);
+
       
      
       List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");

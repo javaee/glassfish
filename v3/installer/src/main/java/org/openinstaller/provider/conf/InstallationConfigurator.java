@@ -71,6 +71,9 @@ private final String altRootDir;
 private final String xcsFilePath;
 private final String installDir;
 private String adminPort;
+private String serviceName;
+private String serviceProperties;
+private String createService;
 
 private int gWaitCount = 0;
 private String productError = null;
@@ -96,7 +99,9 @@ static {
 
 
 
-
+/* A big fat chunk of Code, to be completely thrown away after MS2, to be
+ * rewritten and refactored.
+ */
 public InstallationConfigurator(final String aProductName, final String aAltRootDir,
      final String aXCSFilePath, final String aInstallDir) {
 
@@ -104,6 +109,8 @@ public InstallationConfigurator(final String aProductName, final String aAltRoot
     altRootDir = aAltRootDir;
     xcsFilePath = aXCSFilePath;
     installDir = aInstallDir;
+    serviceName = "domain1Service.exe";
+    serviceProperties = null;
 
     
 }
@@ -118,19 +125,40 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
             LOGGER.log(Level.INFO, "Configuring GlassFish");
 	    // Store admin port to be used for short cut creation.
 	    adminPort = aSheet.getProperty("Administration.ADMIN_PORT");
+            createService = aSheet.getProperty("Administration.CREATE_SERVICE");
+
             configSuccessful = configureGlassfish(
                 installDir,
 		adminPort,
                 aSheet.getProperty("Administration.HTTP_PORT"),
                 aSheet.getProperty("Administration.ADMIN_USER"),
                 aSheet.getProperty("Administration.ADMIN_PASSWORD"));
-		
+
+        // Create a OS service if user chooses to do do.
+          if (createService.equalsIgnoreCase("true")) {
+
+                // If running on windows get only the service Name
+                if (System.getProperty("os.name").indexOf("Windows") != -1)
+                serviceName = aSheet.getProperty("Administration.SERVICE_NAME");
+
+                // If running on Solaris get service name and properties.
+                if(System.getProperty("os.name").indexOf("SunOS") != -1) {
+                    serviceName = aSheet.getProperty("Administration.SERVICE_NAME");
+                    serviceProperties = aSheet.getProperty("Administration.SERVICE_PROPS");
+                }
+                // Now create the service.
+                createDomainService();
+
+            } // End do only if the service is to be created.
+
+
+
 	String folderName = 
 		(String)TemplateProcessor.getInstance().getFromDataModel("PRODUCT_NAME");
     	if (System.getProperty("os.name").indexOf("Windows") !=-1 ) {
         	LOGGER.log(Level.INFO, "Creating shortcuts under Folder :<" + folderName + ">");
-		createServerShortCuts(folderName); 
-	}
+		createServerShortCuts(folderName);
+            }
 	}
 
         if (productName.equals(UPDATETOOL_PRODUCT_NAME)) {
@@ -1009,5 +1037,67 @@ public void createServerShortCuts(String folderName) {
 			"Administration Console",
 			"http://localhost:" + adminPort);
 }
+
+    /* Creates the service for the installer created default domain(domain1).
+     * Wrapper for "asadmin create-service" command.
+     * Currently support is available only for Windows and Solaris platforms.
+     * @return boolean true if successful, false otherwise
+     */
+    private boolean createDomainService() throws InvalidArgumentException {
+
+        boolean retStatus = true;
+        ExecuteCommand asadminExecuteCommand = null;
+
+        if (System.getProperty("os.name").indexOf("Windows") != -1) {
+            asadminExecuteCommand = new ExecuteCommand(
+                    new String[]{
+                        installDir + "\\glassfish\\bin\\asadmin.bat",
+                        "create-service",
+                        "--name", serviceName,
+                        "domain1"});
+        } else {
+            // Check to see if the service Properties are customized.
+            // if not just create the service without --serviceProperties
+            if (serviceProperties != null && serviceProperties.trim().length() > 0) {
+                asadminExecuteCommand = new ExecuteCommand(
+                        new String[]{
+                            installDir + "/glassfish/bin/asadmin",
+                            "create-service",
+                            "--name", serviceName,
+                            "--serviceproperties", serviceProperties,
+                            "domain1"});
+            } else {
+                asadminExecuteCommand = new ExecuteCommand(
+                        new String[]{
+                            installDir + "/glassfish/bin/asadmin",
+                            "create-service",
+                            "--name", serviceName,
+                            "domain1"});
+            }
+        }
+
+        LOGGER.log(Level.INFO, "Creating GlassFish domain Service");
+        LOGGER.log(Level.INFO, "Service name:" + serviceName);
+
+        asadminExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
+        asadminExecuteCommand.setCollectOutput(true);
+
+        try {
+            asadminExecuteCommand.execute();
+
+            LOGGER.log(Level.INFO, "asadmin create-service output: " + asadminExecuteCommand.getAllOutput());
+
+            productError = asadminExecuteCommand.getErrors();
+            if (productError != null && productError.trim().length() > 0) {
+                retStatus = false;
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, "Possible errors/warnings, asadmin output: " + asadminExecuteCommand.getAllOutput());
+            LOGGER.log(Level.INFO, "Related Exception message: " + e.getMessage());
+            retStatus = false;
+        }
+        return retStatus;
+
+    }
 
 }

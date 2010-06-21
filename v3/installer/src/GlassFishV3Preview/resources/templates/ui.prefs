@@ -426,6 +426,14 @@ ADMIN_PORT_TOOL_TIP=Enter the Administration Port
 HTTP_PORT_TOOL_TIP=Enter the HTTP Listener Port
 ADMIN_USER_TOOL_TIP=Enter the Administrator Username
 ADMIN_PASSWORD_TOOL_TIP=Enter the Administrator Password
+ADMIN_SERVICE_CHOICE_TOOL_TIP=Select this option to create a OS service for the default domain(domain1).
+ADMIN_SERVICE_CHOICE_TEXT=Create OS service for domain1
+ADMIN_SERVICE_NAME_TEXT=Service Name
+ADMIN_SERVICE_NAME_TOOL_TIP=Name of the service to be created, default is domain1Service.exe
+ADMIN_SERVICE_PROPS_TEXT=Service Properties
+ADMIN_SERVICE_PROPS_TOOL_TIP=Colon(:) separated list of service properties
+
+
 
 
 
