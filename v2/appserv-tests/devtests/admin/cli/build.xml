@@ -62,7 +62,7 @@
     </path>
     <pathconvert refid="class.path" property="test"/>
 
-    <target name="cli" depends="instance, cluster, ports, configs, sync, domain, backup, tokens"/>
+    <target name="cli" depends="ports, instance, cluster, configs, sync, domain, backup, tokens"/>
     <target name="cluster">
         <java classname="admin.ClusterTest"  fork="true" classpath="${test}"/>
     </target>
@@ -73,7 +73,7 @@
             <jvmarg value="-DNUM_TESTS=${num_tests}"/>
         </java>
     </target>
-    <target name="ports">
+    <target name="ports" depends="build">
         <java classname="admin.PortTests"  fork="true" classpath="${test}"/>
     </target>
     <target name="configs">
