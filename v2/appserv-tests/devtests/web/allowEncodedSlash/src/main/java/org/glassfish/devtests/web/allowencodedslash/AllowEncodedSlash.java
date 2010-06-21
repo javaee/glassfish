@@ -79,8 +79,7 @@ public class AllowEncodedSlash extends BaseDevTest {
     private void fetch(final String adminPort, final int expectedCode, final int count) throws IOException {
         HttpURLConnection connection = null;
         try {
-            connection = (HttpURLConnection) new URL("http://localhost:" + adminPort + "/management/domain/resources/"
-                + "admin-object-resource/jndi%2F22cfdcfc9cb295cc014726566d40e7a67").openConnection();
+            connection = (HttpURLConnection) new URL("http://localhost:" + adminPort + "/management/domain/resources/jdbc-resource/jdbc%2F__TimerPool.xml").openConnection();
             report("response-" + expectedCode + "-try-" + count, expectedCode == connection.getResponseCode());
         } finally {
             if(connection != null) {
