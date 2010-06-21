@@ -52,12 +52,10 @@ public class WebTest {
     private static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", TEST_NAME);
     private String host;
     private String port;
-    private String contextRoot;
 
     public WebTest(String[] args) {
         host = args[0];
         port = args[1];
-        contextRoot = args[2];
     }
 
     public static void main(String[] args) {
@@ -77,35 +75,28 @@ public class WebTest {
     }
 
     private void invoke() throws Exception {
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        sock.setSoTimeout(50000);
-        OutputStream os = sock.getOutputStream();
-        String get = "GET /index.html HTTP/1.1\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        os.write("Host: localhost\n".getBytes());
-        os.write("\n".getBytes());
-        Thread.sleep(6000);
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-        boolean found = false;
-        String line = null;
-        int i = 0;
+        Socket sock = new Socket(host, new Integer(port));
+        BufferedReader bis = null;
         try {
+            sock.setSoTimeout(50000);
+            OutputStream os = sock.getOutputStream();
+            String get = "GET /index.html HTTP/1.1\n";
+            os.write(get.getBytes());
+            os.write("Host: localhost\n".getBytes());
+            os.write("\n".getBytes());
+            Thread.sleep(6000);
+            InputStream is = sock.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
             long start = 0;
             try {
-                while ((line = bis.readLine()) != null) {
+                while (bis.readLine() != null) {
                     start = System.currentTimeMillis();
-                    System.out.println(i++ + ": " + new Date() + " = " + line);
                 }
             } catch (IOException e) {
             }
-            System.out.println("WebTest.invoke: new Date() = " + new Date());
             long end = System.currentTimeMillis();
-            System.out.println("WebTest.invoke: start = " + start);
-            System.out.println("WebTest.invoke: end = " + end);
             System.out.println("WebTest.invoke: end - start = " + (end - start));
-            stat.addStatus(TEST_NAME, end - start >= 30000 ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL);
+            stat.addStatus(TEST_NAME, end - start >= 10000 ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL);
         } finally {
             if (sock != null) {
                 sock.close();

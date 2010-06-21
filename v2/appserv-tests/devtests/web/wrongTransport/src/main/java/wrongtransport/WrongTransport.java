@@ -125,8 +125,6 @@ public class WrongTransport extends BaseDevTest {
             "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol=http-listener-1"));
         report("delete-pu-protocol", asadmin("delete-protocol",
             "pu-protocol"));
-//        report("delete-admin-listener-http", asadmin("delete-protocol",
-//            "admin-listener-http"));
         report("delete-http-redirect", asadmin("delete-protocol",
             "http-redirect"));
     }

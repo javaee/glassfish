@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,57 +42,45 @@ import java.net.Socket;
 
 import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
-public class WebTest
-{
-    
+public class WebTest {
     private static int count = 0;
     private static final int EXPECTED_COUNT = 1;
-    
     static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", "keep-alive");
 
     public static void main(String args[]) {
         // The stat reporter writes out the test info and results
         // into the top-level quicklook directory during a run.
-      
         stat.addDescription("Standalone keepAlive war test");
-
         String host = args[0];
         String portS = args[1];
         String contextRoot = args[2];
-
         int port = new Integer(portS);
         String name;
-        
         try {
-            goGet(host, port, "KeepAlive", contextRoot + "/test.jsp" );
-            
+            goGet(host, port, "KeepAlive", contextRoot + "/test.jsp");
+
         } catch (Throwable t) {
         } finally {
-            if (count != EXPECTED_COUNT){
+            if (count != EXPECTED_COUNT) {
                 stat.addStatus("web-keepAlive", SimpleReporterAdapter.FAIL);
-            }           
+            }
         }
-
-        stat.printSummary("web/keepAlive ---> expect 1 PASS");
+        stat.printSummary();
     }
 
     private static void goGet(String host, int port,
-                              String result, String contextPath)
-         throws Exception
-    {
+        String result, String contextPath)
+        throws Exception {
         Socket s = new Socket(host, port);
         OutputStream os = s.getOutputStream();
-
         System.out.println("GET " + contextPath + " HTTP/1.0");
         System.out.println("Connection: keep-alive");
         os.write(("GET " + contextPath + " HTTP/1.0\n").getBytes());
         os.write("Connection: keep-alive\n".getBytes());
         os.write("\n".getBytes());
-        
         InputStream is = s.getInputStream();
         BufferedReader bis = new BufferedReader(new InputStreamReader(is));
         String line = null;
-
         int tripCount = 0;
         try {
             while ((line = bis.readLine()) != null) {
@@ -100,13 +88,13 @@ public class WebTest
                 int index = line.indexOf("Connection:");
                 if (index >= 0) {
                     index = line.indexOf(":");
-                    String state = line.substring(index+1).trim();
+                    String state = line.substring(index + 1).trim();
                     if ("keep-alive".equalsIgnoreCase(state)) {
-							  System.out.println("found keep-alive");
+                        System.out.println("found keep-alive");
                         stat.addStatus("web-keepalive ", SimpleReporterAdapter.PASS);
                         count++;
                     }
-                } 
+                }
                 if (line.contains("KeepAlive:end")) {
                     if (++tripCount == 1) {
                         System.out.println("GET " + contextPath + " HTTP/1.0");
@@ -114,8 +102,8 @@ public class WebTest
                     }
                 }
             }
-        } catch( Exception ex){
-            ex.printStackTrace();   
+        } catch (Exception ex) {
+            ex.printStackTrace();
             throw new Exception("Test UNPREDICTED-FAILURE");
         }
     }

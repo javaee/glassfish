@@ -85,6 +85,13 @@ public class PortUnificationTest extends BaseDevTest {
             final String content = getContent(new URL("http://localhost:" + port).openConnection());
             report("http-read", content.contains("<h1>Your server is now running</h1>"));
             report("dummy-read", "Dummy-Protocol-Response".equals(getDummyProtocolContent("localhost")));
+
+            AsadminReturn aReturn = asadminWithOutput("list-protocol-filters", "pu-dummy-protocol");
+            report("list-protocol-filters", aReturn.out.contains("dummy-filter"));
+
+            aReturn = asadminWithOutput("list-protocol-finders", "pu-protocol");
+            report("list-protocol-finders", aReturn.out.contains("http-finder") && aReturn.out.contains("dummy-finder"));
+
             report("disable-listener", asadmin("set",
                 "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"));
             report("reset-listener", asadmin("set",

@@ -5,7 +5,7 @@ skip() {
     echo Parsing ${FILE}
     cat ${FILE} | while read LINE
     do
-        NAME=`echo $LINE | sed -e 's/[   ].*//'`
+        NAME=`echo $LINE | sed -e 's/[# ].*//'`
         if [ -d "${NAME}" ]
         then
             echo excluding \"${NAME}\"
