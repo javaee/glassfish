@@ -88,22 +88,23 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
         }
     }
 
-    /*package*/ <T> Iterable<? extends T> lookupProviderInstances1(Class<T> serviceClass) {
+    /*package*/ <T> Iterable<? extends T> lookupProviderInstances1(Class<T> serviceClass, ProviderFactory<T> factory) {
+        if (factory == null) {
+            factory = new DefaultFactory<T>();
+        }
         List<T> providers = new ArrayList<T>();
-        for (Class<? extends T> c : lookupProviderClasses1(serviceClass)) {
+        for (Class c : lookupProviderClasses1(serviceClass, false)) {
             try {
-                providers.add(c.newInstance());
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+                providers.add(factory.make(c, serviceClass));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return providers;
     }
 
-    /*package*/ <T> Iterable<Class<? extends T>> lookupProviderClasses1(Class<T> serviceClass) {
-        List<Class<? extends T>> providerClasses = new ArrayList<Class<? extends T>>();
+    /*package*/ <T> Iterable<Class> lookupProviderClasses1(Class<T> serviceClass, boolean onlyCompatible) {
+        List<Class> providerClasses = new ArrayList<Class>();
         rwLock.readLock().lock();
         try {
             final String serviceName = serviceClass.getName();
@@ -120,10 +121,12 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
                 for (String providerName : providerNames) {
                     try {
                         final Class providerClass = bundle.loadClass(providerName);
-                        if (serviceClass.isAssignableFrom(providerClass)) {
-                            providerClasses.add(providerClass);
-                        } else {
-                            System.out.println("Bundle " + bundle + " provided service " + providerClass + " is not compatible with " + serviceClass);
+                        if (onlyCompatible) {
+                            if (serviceClass.isAssignableFrom(providerClass)) {
+                                providerClasses.add(providerClass);
+                            } else {
+                                System.out.println("Bundle " + bundle + " provided service " + providerClass + " is not compatible with " + serviceClass);
+                            }
                         }
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
@@ -205,7 +208,7 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
                 while (entries.hasMoreElements()) {
                     String entry = entries.nextElement();
                     String serviceName = entry.substring(SERVICE_LOCATION.length() + 1);
-                    InputStream is = null;
+                    InputStream is;
                     final URL url = bundle.getEntry(entry);
                     try {
                         is = url.openStream();
@@ -296,4 +299,12 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
         }
     }
 
+    private static class DefaultFactory<T> implements ProviderFactory<T> {
+        public T make(Class providerClass, Class<T> serviceClass) throws Exception {
+            if (serviceClass.isAssignableFrom(providerClass)) {
+                return (T)providerClass.newInstance();
+            }
+            return null;
+        }
+    }
 }
