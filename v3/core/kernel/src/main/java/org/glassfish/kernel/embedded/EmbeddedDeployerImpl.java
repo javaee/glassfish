@@ -199,7 +199,8 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         }
         if (appInfo!=null) {
             boolean isDirectory = new File(archive.getURI().getPath()).isDirectory();
-            EmbeddedDeployedInfo info = new EmbeddedDeployedInfo(appInfo, context.getModulePropsMap(), isDirectory);
+            EmbeddedDeployedInfo info = new EmbeddedDeployedInfo(appInfo, context.getModulePropsMap(), context.getAppProps(),
+                    isDirectory);
             deployedApps.put(appInfo.getName(), info);
             return appInfo.getName();
         }
@@ -244,6 +245,7 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
                     deploymentContext.getModuleProps().putAll(module.getModuleProps());
                 }
                 deploymentContext.setModulePropsMap(info.map);
+                deploymentContext.getAppProps().putAll(info.appProps);
             }
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Cannot create context for undeployment ", e);
@@ -279,10 +281,14 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         final ApplicationInfo appInfo;
         final Map<String, Properties> map;
         final boolean isDirectory;
+        Properties appProps;
 
-        public EmbeddedDeployedInfo(ApplicationInfo appInfo, Map<String, Properties> map, boolean isDirectory) {
+
+        public EmbeddedDeployedInfo(ApplicationInfo appInfo, Map<String, Properties> map, Properties appProps,
+                boolean isDirectory) {
             this.appInfo = appInfo;
             this.map = map;
+            this.appProps = appProps;
             this.isDirectory = isDirectory;
         }
     }
