@@ -241,6 +241,14 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
                     if (clusterConfig != null) {
                         Property prop = clusterConfig.getGroupManagementService().getProperty(keyName);
+                        if (prop == null) {
+                            if (logger.isLoggable(Level.FINE)) {
+                                logger.fine(String.format(
+                                    "No config property found for %s",
+                                    keyName));
+                            }
+                            break;
+                        }
                         String value = prop.getValue().trim();
                         configProps.put(keyName, value);
                         /*
@@ -270,7 +278,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                     break;
             }  /* end switch over ServiceProviderConfigurationKeys enum */
             } catch (Throwable t) {
-                // todo log message that failure occurred processing keyName value.    
+                logger.log(Level.WARNING,
+                    "gmsexception.processing.config.props", t);
             }
         } /* end for loop over ServiceProviderConfigurationKeys */
 
