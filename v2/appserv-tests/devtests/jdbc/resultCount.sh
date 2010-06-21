@@ -17,3 +17,15 @@ echo "FAILED = ${FAILED}"
 echo "DID NOT RUN = ${DNR}"
 echo "------------------------"
 
+echo "************************">>$APS_HOME/devtests/jdbc/count.txt;
+date>>$APS_HOME/devtests/jdbc/count.txt;
+echo "-----------------------">>$APS_HOME/devtests/jdbc/count.txt;
+echo "PASSED=   $PASSED">>$APS_HOME/devtests/jdbc/count.txt;
+echo "------------  =========">>$APS_HOME/devtests/jdbc/count.txt;
+echo "FAILED=   $FAILED">>$APS_HOME/devtests/jdbc/count.txt;
+echo "------------  =========">>$APS_HOME/devtests/jdbc/count.txt;
+echo "DID NOT RUN=   $DNR">>$APS_HOME/devtests/jdbc/count.txt;
+echo "------------  =========">>$APS_HOME/devtests/jdbc/count.txt;
+echo "Total Expected=$TOTAL">>$APS_HOME/devtests/jdbc/count.txt;
+echo "************************">>$APS_HOME/devtests/jdbc/count.txt;
+
