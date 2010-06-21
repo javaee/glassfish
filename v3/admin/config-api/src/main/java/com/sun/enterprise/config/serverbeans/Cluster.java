@@ -153,7 +153,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name="multicastport", optional=true)
+    @Param(name="multicastport", optional=true, alias="heartbeatport")
     void setGmsMulticastPort(String value) throws PropertyVetoException;
 
     /**
@@ -176,7 +176,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name="multicastaddress", optional=true)
+    @Param(name="multicastaddress", optional=true, alias="heartbeataddress")
     void setGmsMulticastAddress(String value) throws PropertyVetoException;
 
     /**
@@ -186,7 +186,6 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *         {@link String }
      */
     @Attribute
-    @NotNull
     String getGmsBindInterfaceAddress();
 
     /**
