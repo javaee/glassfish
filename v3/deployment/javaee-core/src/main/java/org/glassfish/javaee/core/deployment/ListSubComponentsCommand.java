@@ -111,7 +111,7 @@ public class ListSubComponentsCommand implements AdminCommand {
         }
 
         try {
-            versioningService.getIdentifier(applicationName);
+            versioningService.getExpression(applicationName);
         } catch (VersioningSyntaxException ex) {
             report.setMessage(ex.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
