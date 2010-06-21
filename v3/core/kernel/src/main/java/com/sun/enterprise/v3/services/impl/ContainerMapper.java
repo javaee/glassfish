@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2007-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2007-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,9 +59,9 @@ import com.sun.grizzly.util.http.HttpRequestURIDecoder;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.grizzly.util.http.mapper.MappingData;
 import com.sun.grizzly.util.http.MimeType;
-import com.sun.grizzly.util.http.mapper.AlternateDocBase;
+
 import java.io.IOException;
-import java.util.List;
+
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.internal.grizzly.V3Mapper;
@@ -81,7 +81,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
     private Mapper mapper;
     private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
     private String defaultHostName = "server";
-    private final UDecoder urlDecoder = new UDecoder();
+    private final UDecoder urlDecoder;
     private final Habitat habitat;
     private final GrizzlyService grizzlyService;
     protected final static int MAPPING_DATA = 12;
@@ -96,10 +96,11 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
      */
     private boolean mapMultipleAdapter = false;
 
-    public ContainerMapper(GrizzlyService grizzlyService, GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
-        this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
-        this.grizzlyService = grizzlyService;
-        this.habitat = grizzlyService.habitat;
+    public ContainerMapper(GrizzlyService service, GrizzlyEmbeddedHttp embeddedHttp) {
+        grizzlyEmbeddedHttp = embeddedHttp;
+        urlDecoder = embeddedHttp.getUrlDecoder();
+        grizzlyService = service;
+        habitat = service.habitat;
         logger = GrizzlyEmbeddedHttp.logger();
 
         version = System.getProperty("product.name");
@@ -281,7 +282,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
                     for (String pattern : sniffer.getURLPatterns()) {
                         for (String host: grizzlyService.hosts ){
                             mapper.addWrapper(host,ROOT, pattern,c,
-                                    ("*.jsp".equals(pattern) || "*.jspx".equals(pattern)) ? true:false);
+                                "*.jsp".equals(pattern) || "*.jspx".equals(pattern));
                         }
                     }
                     return;

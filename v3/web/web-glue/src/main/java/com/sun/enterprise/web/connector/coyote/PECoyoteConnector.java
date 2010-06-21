@@ -965,44 +965,38 @@ public class PECoyoteConnector extends Connector {
     /*
      * Configures this connector for modjk.
      */
-    public void configureJKProperties() {
+    public void configureJKProperties(final NetworkListener listener) {
 
-        String propertiesURL = System.getProperty(
-            "com.sun.enterprise.web.connector.enableJK.propertyFile");
-
-        if (propertiesURL == null) {
+        File propertiesFile   = new File(listener.getJkConfigurationFile());
+        if (!propertiesFile.exists()) {
+            propertiesFile   = new File(System.getProperty("com.sun.enterprise.web.connector.enableJK.propertyFile"));
+        }
+        if (!propertiesFile.exists()) {
             if (_logger.isLoggable(Level.FINEST)) {
-                _logger.finest("com.sun.enterprise.web.connector.enableJK.propertyFile not defined");
+                _logger.finest("jk properties configuration file not defined");
             }
             return;
         } 
 
         if (_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("Loading glassfish-jk.properties from " +
-                           propertiesURL);
+            _logger.finest("Loading glassfish-jk.properties from " + propertiesFile.getAbsolutePath());
         }
-
-        File propertiesFile   = new File(propertiesURL);
         if ( !propertiesFile.exists() ) {
-            String msg = _rb.getString("pewebcontainer.missingJKProperties");
-            msg = MessageFormat.format(msg, propertiesURL);
-            _logger.log(Level.WARNING, msg);
+            _logger.log(Level.WARNING, MessageFormat.format(_rb.getString("pewebcontainer.missingJKProperties"),
+                propertiesFile.getAbsolutePath()));
             return;
         }
 
         Properties properties = null;
+
         InputStream is = null;
- 
         try {
-            FileInputStream fis = new FileInputStream(propertiesFile);
-            is = new BufferedInputStream(fis);
+            is = new BufferedInputStream(new FileInputStream(propertiesFile));
             properties = new Properties();
             properties.load(is);
 
         } catch (Exception ex) {
-            String msg = _rb.getString("pewebcontainer.configureJK");
-            msg = MessageFormat.format(msg, getPort());
-            _logger.log(Level.SEVERE, msg, ex);
+            _logger.log(Level.SEVERE, MessageFormat.format(_rb.getString("pewebcontainer.configureJK"), getPort()), ex);
         } finally {
             if (is != null) {
                 try {

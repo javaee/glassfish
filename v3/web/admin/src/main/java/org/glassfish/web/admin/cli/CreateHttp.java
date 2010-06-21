@@ -35,8 +35,6 @@
  */
 package org.glassfish.web.admin.cli;
 
-import java.util.List;
-
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -79,7 +77,7 @@ public class CreateHttp implements AdminCommand {
         new LocalStringManagerImpl(CreateHttp.class);
     @Param(name = "protocolname", primary = true)
     String protocolName;
-    @Param(name = "request-timeout-seconds", defaultValue = "30", optional = true)
+    @Param(name = "request-timeout-seconds", optional = true)
     String requestTimeoutSeconds;
     @Param(name = "timeout-seconds", defaultValue = "30", optional = true)
     String timeoutSeconds;

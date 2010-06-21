@@ -33,20 +33,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.web.admin.cli;
-
-import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.Protocol;
-import com.sun.grizzly.config.dom.Protocols;
+import com.sun.grizzly.config.dom.ProtocolChain;
+import com.sun.grizzly.config.dom.ProtocolFilter;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -56,103 +52,41 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
 
 /**
- * Delete Protocol command
- * 
+ * List protocol filters command
  */
-@Service(name="delete-protocol")
+@Service(name = "list-protocol-filters")
 @Scoped(PerLookup.class)
-@I18n("delete.protocol")
-public class DeleteProtocol implements AdminCommand {
-    
-    final private static LocalStringManagerImpl localStrings =
-        new LocalStringManagerImpl(DeleteProtocol.class);
-
-    @Param(name="protocolname", primary=true)
-    String protocolName;
-    
+@I18n("list.protocol.filters")
+public class ListProtocolFilters implements AdminCommand {
+    final private static LocalStringManagerImpl localStrings
+        = new LocalStringManagerImpl(ListProtocolFilters.class);
     @Param(name = "target", optional = true, defaultValue = "server")
     String target;
-
-    Protocol protocol = null;
-    
+    @Param(name = "protocol", primary=true)
+    String protocolName;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
-
-    @Inject
-    Habitat habitat;
-    
     @Inject
     Domain domain;
 
-    /**
-     * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
-     *
-     * @param context information
-     */
     public void execute(AdminCommandContext context) {
         Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
+        if (targetServer != null) {
             config = domain.getConfigNamed(targetServer.getConfigRef());
         }
         Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
+        if (cluster != null) {
             config = domain.getConfigNamed(cluster.getConfigRef());
         }
-        ActionReport report = context.getActionReport();
-
-        NetworkConfig networkConfig = config.getNetworkConfig();
-        Protocols protocols = networkConfig.getProtocols();
-
-        try {
-            protocol = protocols.findProtocol(protocolName);
-
-            if (protocol == null) {
-                report.setMessage(localStrings.getLocalString(
-                    "delete.protocol.notexists", "{0} protocol doesn't exist",
-                    protocolName));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
-
-            // check if the protocol to be deleted is being used by
-            // any network listener
-
-            List<NetworkListener> nwlsnrList = protocol.findNetworkListeners();
-            for (NetworkListener nwlsnr : nwlsnrList) {
-                if (protocol.getName().equals(nwlsnr.getProtocol())) {
-                    report.setMessage(localStrings.getLocalString(
-                        "delete.protocol.beingused", 
-                        "{0} protocol is being used in the network listener {1}",
-                        protocolName, nwlsnr.getName()));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
-                }
-            }
-
-            ConfigSupport.apply(new SingleConfigCode<Protocols>() {
-                public Object run(Protocols param) {
-                    param.getProtocol().remove(protocol);
-                    return protocol;
-                }
-            }, protocols);
-            
-        } catch(TransactionFailure e) {
-            report.setMessage(localStrings.getLocalString(
-                "delete.protocol.fail", "Deletion of Protocol {0} failed",
-                protocolName) + "  " + e.getLocalizedMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
-            return;
+        final ActionReport report = context.getActionReport();
+        Protocol protocol = config.getNetworkConfig().getProtocols().findProtocol(protocolName);
+        final ProtocolChain chain = protocol.getProtocolChainInstanceHandler().getProtocolChain();
+        for (ProtocolFilter filter : chain.getProtocolFilter()) {
+            report.getTopMessagePart().addChild().setMessage(filter.getName());
         }
-
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }

@@ -898,8 +898,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }   
         } else {
             port = Integer.parseInt(listener.getPort());                
-            isSecure = Boolean.valueOf(
-                            listener.findHttpProtocol().getSecurityEnabled());
+            isSecure = Boolean.valueOf(listener.findHttpProtocol().getSecurityEnabled());
             address = listener.getAddress();
         }
             
@@ -920,7 +919,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         jkConnector = (WebConnector) _embedded.createConnector(address,
                                                                 port, "ajp");
-        jkConnector.configureJKProperties();
+        jkConnector.configureJKProperties(listener);
 
         String defaultHost = "server";
         String jkConnectorName = "jk-connector";
