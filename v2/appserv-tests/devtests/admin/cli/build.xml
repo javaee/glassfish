@@ -62,7 +62,7 @@
     </path>
     <pathconvert refid="class.path" property="test"/>
 
-    <target name="cli" depends="instance, cluster, ports, configs, sync, domain"/>
+    <target name="cli" depends="instance, cluster, ports, configs, sync, domain, backup"/>
     <target name="cluster">
         <java classname="admin.ClusterTest"  fork="true" classpath="${test}"/>
     </target>
@@ -85,12 +85,9 @@
     <target name="domain">
          <java classname="admin.DomainTest"  fork="true" classpath="${test}"/>
     </target>
-
-    <target name="run-backup-tests">
-        <record name="backup.output" action="start" />
+    <target name="backup">
         <antcall target="cleanAS"/>
         <java classname="admin.BackupCommandsTest"  fork="true" classpath="${test}"/>
-        <record name="admin.output" action="stop" />
     </target>
 
     <target name="portsonly" depends="init">
