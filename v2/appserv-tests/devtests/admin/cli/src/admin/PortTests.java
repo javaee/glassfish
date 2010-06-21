@@ -52,9 +52,15 @@ public class PortTests extends AdminBaseDevTest {
     }
 
     private void runTests() {
+        testConflictResolution();
+        stat.printSummary();
+    }
+
+    private void runTestsX() {
         startDomain();
         verifyUserSuppliedPortNumbersAreUnique();
         verifyPortsAreLegal();
+        testConflictResolution();
         stopDomain();
         stat.printSummary();
     }
@@ -87,10 +93,11 @@ public class PortTests extends AdminBaseDevTest {
             }
         }
     }
+
     private void verifyPortsAreLegal() {
         final int[] nums = new int[]{18080, 18181, 13800, 13700, 17676, 13801, 18686, 14848};
         String iname = generateInstanceName();
-        nums[3]= -100;
+        nums[3] = -100;
         report("create-instance-" + iname + "illegalPortsSpecified", !asadmin("create-local-instance", "--systemproperties", assembleEnormousPortsString(nums), iname));
         report("delete-instance-" + iname + "legalPortsSpecified", !asadmin("delete-local-instance", iname));
 
@@ -108,8 +115,56 @@ public class PortTests extends AdminBaseDevTest {
     }
 
     private void testConflictResolution() {
-        //
+        verifyCleanSlate();
+        buildup();
+
+        // check that the first instance is using the port that we expect
+        report("i1-uses-24848", getMatches(
+                "configs.config.i1-config.system-property.ASADMIN_LISTENER_PORT.value",
+                "24848"));
+
+        report("instance-doesnt-use-22222", !getMatches(
+                "configs.config.i1-config.system-property.ASADMIN_LISTENER_PORT.value",
+                "22222"));
+
+        // the **config** has 24848
+        report("i2-config-uses-24848", getMatches(
+                "configs.config.i2-config.system-property.ASADMIN_LISTENER_PORT.value",
+                "24848"));
+
+        checkAndReportPort("i2", 24849);
+        checkAndReportPort("i3", 24850);
+        // clog up port 24851.  i4 should automatically go to 24852
+        report("Started-Fake-Server-Daemon-24851", true);
+        runFakeServerDaemon(24851);
+        report("create-i4", asadminWithOutput("create-local-instance", "i4"));
+        checkAndReportPort("i4", 24852);
+        report("delete-i4", asadmin("delete-local-instance", "i4"));
+
+        teardown();
+        verifyCleanSlate();
     }
+
+    private void verifyCleanSlate() {
+        // we are depending on there being ZERO instances and clusters!
+        report("there-must-be-no-pre-existing-clusters", verifyNoClusters());
+        report("there-must-be-no-pre-existing-instances", verifyNoInstances());
+    }
+
+    private void buildup() {
+        report("create-cluster", asadmin("create-cluster", "c1"));
+        report("create-i1", asadmin("create-local-instance", "i1"));
+        report("create-i2", asadminWithOutput("create-local-instance", "i2"));
+        report("create-i3", asadminWithOutput("create-local-instance", "i3"));
+    }
+
+    private void teardown() {
+        report("delete-i3", asadmin("delete-local-instance", "i3"));
+        report("delete-i2", asadmin("delete-local-instance", "i2"));
+        report("delete-i1", asadmin("delete-local-instance", "i1"));
+        report("delete-cluster", asadmin("delete-cluster", "c1"));
+    }
+
     private String assembleEnormousPortsString(int index1, int index2, final int[] nums) {
         return assembleEnormousPortsString(makeDupes(index1, index2, nums));
     }
@@ -138,16 +193,39 @@ public class PortTests extends AdminBaseDevTest {
         return sb.toString();
 
     }
-    /*
-     * --systemproperties HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848 in1
-     * --systemproperties 
-    HTTP_LISTENER_PORT=18080:
-    HTTP_SSL_LISTENER_PORT=18181:
-    IIOP_SSL_LISTENER_PORT=13800:
-    IIOP_LISTENER_PORT=13700:
-    JMX_SYSTEM_CONNECTOR_PORT=17676:
-    IIOP_SSL_MUTUALAUTH_PORT=13801:
-    JMS_PROVIDER_PORT=18686:
-    ASADMIN_LISTENER_PORT=14848
-     */
+
+    private void checkAndReportPort(String instance, int port) {
+        report(instance + "-server-element-uses-" + port, getMatches(
+                "servers.server." + instance + ".system-property.ASADMIN_LISTENER_PORT.value",
+                "" + port));
+    }
 }
+
+/*
+ * --systemproperties HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848 in1
+ * --systemproperties
+HTTP_LISTENER_PORT=18080:
+HTTP_SSL_LISTENER_PORT=18181:
+IIOP_SSL_LISTENER_PORT=13800:
+IIOP_LISTENER_PORT=13700:
+JMX_SYSTEM_CONNECTOR_PORT=17676:
+IIOP_SSL_MUTUALAUTH_PORT=13801:
+JMS_PROVIDER_PORT=18686:
+ASADMIN_LISTENER_PORT=14848
+configs.config.i1-config.system-property.ASADMIN_LISTENER_PORT.name=ASADMIN_LISTENER_PORT
+configs.config.i1-config.system-property.ASADMIN_LISTENER_PORT.value=24848
+configs.config.i1-config.system-property.HTTP_LISTENER_PORT.name=HTTP_LISTENER_PORT
+configs.config.i1-config.system-property.HTTP_LISTENER_PORT.value=28080
+configs.config.i1-config.system-property.HTTP_SSL_LISTENER_PORT.name=HTTP_SSL_LISTENER_PORT
+configs.config.i1-config.system-property.HTTP_SSL_LISTENER_PORT.value=28181
+configs.config.i1-config.system-property.IIOP_LISTENER_PORT.name=IIOP_LISTENER_PORT
+configs.config.i1-config.system-property.IIOP_LISTENER_PORT.value=23700
+configs.config.i1-config.system-property.IIOP_SSL_LISTENER_PORT.name=IIOP_SSL_LISTENER_PORT
+configs.config.i1-config.system-property.IIOP_SSL_LISTENER_PORT.value=23820
+configs.config.i1-config.system-property.IIOP_SSL_MUTUALAUTH_PORT.name=IIOP_SSL_MUTUALAUTH_PORT
+configs.config.i1-config.system-property.IIOP_SSL_MUTUALAUTH_PORT.value=23920
+configs.config.i1-config.system-property.JMS_PROVIDER_PORT.name=JMS_PROVIDER_PORT
+configs.config.i1-config.system-property.JMS_PROVIDER_PORT.value=27676
+configs.config.i1-config.system-property.JMX_SYSTEM_CONNECTOR_PORT.name=JMX_SYSTEM_CONNECTOR_PORT
+configs.config.i1-config.system-property.JMX_SYSTEM_CONNECTOR_PORT.value=28686
+ */

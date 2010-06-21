@@ -42,7 +42,7 @@ import java.net.*;
  *
  * @author bnevins
  */
-public class FakeServer{
+class FakeServer implements Runnable{
 
     public static void main(String[] args) {
         int port = -1;
@@ -54,9 +54,15 @@ public class FakeServer{
             System.exit(1);
         }
         FakeServer fakeServer = new FakeServer(port);
+        fakeServer.run();
     }
 
+
     FakeServer(int port) {
+        this.port = port;
+    }
+
+    public void run() {
         try {
             while (true) {
                 ServerSocket listener = new ServerSocket(port);
@@ -67,5 +73,7 @@ public class FakeServer{
             System.out.println("IOException: " + ioe);
             ioe.printStackTrace();
         }
+
     }
+    private final int port;
 }

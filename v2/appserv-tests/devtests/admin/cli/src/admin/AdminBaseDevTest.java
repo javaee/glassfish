@@ -87,6 +87,9 @@ abstract class AdminBaseDevTest extends BaseDevTest {
                     + ") and replaced with: " + name2);
         }
 
+        int numpads = 60 - name2.length();
+            name2 += DASHES.substring(0, numpads);
+        
         super.report(name2, success);
     }
 
@@ -223,7 +226,15 @@ abstract class AdminBaseDevTest extends BaseDevTest {
         return(match.equals(ret));
     }
 
+    public static void runFakeServerDaemon(int port) {
+        Thread t = new Thread(new FakeServer(port), "FakeServerListeningOn: " + port);
+        t.setDaemon(true);
+        t.start();
+    }
+
     final boolean ok(String s) {
         return s!= null && s.length() > 0;
     }
+    private static final String DASHES =
+"-------------------------------------------------------------------------------";
 }
