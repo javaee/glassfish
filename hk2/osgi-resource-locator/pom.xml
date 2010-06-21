@@ -39,14 +39,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.sun.enterprise</groupId>
-        <artifactId>hk2-parent</artifactId>
-        <version>1.0.25</version>
+        <groupId>org.glassfish</groupId>
+        <artifactId>pom</artifactId>
+        <version>8</version>
     </parent>
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>osgi-resource-locator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>OSGi Utilities</name>
+    <name>OSGi resource locator bundle - used by legacy JDK bundles</name>
     <description> See http://wiki.glassfish.java.net/Wiki.jsp?page=JdkSpiOsgi for more information</description>
     <!-- We don't use packaging type bundle as it requires us to 
          set extension=true for bundle-plugin and that in turn interfers
@@ -56,8 +56,6 @@
       <connection>scm:svn:https://hk2.dev.java.net/svn/hk2/trunk/hk2/osgi-resource-locator</connection>
     </scm>
     <build>
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -74,6 +72,15 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.1.0</version>
+                <configuration>
+                    <instructions>
+                        <!-- Read all the configuration from osgi.bundle file, if it exists.
+                             See Felix-699 to find out why we use ${basedir}.
+                        -->
+                        <_include>-${basedir}/osgi.bundle</_include>
+                    </instructions>
+                </configuration>
                 <executions>
                    <execution>
                       <id>bundle-manifest</id>
