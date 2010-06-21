@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
+# Copyright 2010 Sun Microsystems, Inc. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -40,46 +40,14 @@ import imp
 conf = imp.load_source("pkg_conf", "../pkg_conf.py")
 
 pkg = {
-    "name"          : "glassfish-web-profile",
-    "version"       : conf.glassfish_version,
+    "name"          : "shoal",
+    "version"       : conf.shoal_version,
     "attributes"    : {
-                        "pkg.summary" : "GlassFish Web Profile",
-                        "pkg.description" : "GlassFish Web Profile Metapackage.  "+conf.glassfish_description_long,
+                        "pkg.summary" : "Shoal for GlassFish",
+                        "pkg.description" : "Shoal dynamic clustering framework for GlassFish. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
-    "depends"       : { 
-	                "pkg:/javadb-common" : {"type" : "require" },
-			"pkg:/javadb-core" : {"type" : "require" },
-			"pkg:/javadb-client" : {"type" : "require" },
-			"pkg:/pkg-java" : {"type" : "require" },
-			"pkg:/felix" : {"type" : "require" },
-			"pkg:/glassfish-hk2" : {"type" : "require" },
-		 	"pkg:/glassfish-grizzly" : {"type" : "require" },
-			"pkg:/glassfish-nucleus" : {"type" : "require" },
-			"pkg:/glassfish-grizzly-full" : {"type" : "require" },
-			"pkg:/glassfish-scripting" : {"type" : "require" },
-			"pkg:/glassfish-common" : {"type" : "require" },
-			"pkg:/shoal" : {"type" : "require" },
-			"pkg:/glassfish-cluster" : {"type" : "require" },
-			"pkg:/glassfish-ha" : {"type" : "require" },
-			"pkg:/glassfish-javahelp" : {"type" : "require" },
-			"pkg:/glassfish-upgrade" : {"type" : "require" },
-			"pkg:/glassfish-registration" : {"type" : "require" },
-			"pkg:/jersey" : {"type" : "require" },
-			"pkg:/glassfish-management" : {"type" : "require" },
-			"pkg:/glassfish-jca" : {"type" : "require" },
-			"pkg:/glassfish-jpa" : {"type" : "require" },
-			"pkg:/glassfish-jta" : {"type" : "require" },
-			"pkg:/glassfish-corba-base" : {"type" : "require" },
-			"pkg:/glassfish-jts" : {"type" : "require" },
-			"pkg:/glassfish-ejb-lite" : {"type" : "require" },
-			"pkg:/glassfish-jsf" : {"type" : "require" },
-			"pkg:/glassfish-web" : {"type" : "require" },
-			"pkg:/glassfish-jcdi" : {"type" : "require" },
-			"pkg:/glassfish-jdbc" : {"type" : "require" },
-			"pkg:/glassfish-gui" : {"type" : "require" },
-			"pkg:/glassfish-web-incorporation" : {"type" : "require" },
-                      },
+    "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},
                       },

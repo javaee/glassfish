@@ -44,10 +44,10 @@
         <version>3.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>glassfish-cluster</artifactId>
-    <name>Glassfish Clustering Package</name>
+    <artifactId>shoal</artifactId>
+    <name>Shoal Package</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish Clustering package</description>
+    <description>This pom describes how to assemble the Shoal package</description>
 
     <build>
         <plugins>
@@ -73,29 +73,8 @@
         -->       
 
           <dependency>
-              <groupId>org.glassfish.cluster</groupId>
-              <artifactId>cluster-cli</artifactId>
-              <version>${project.version}</version>
-          </dependency>
-          <dependency>
-              <groupId>org.glassfish.cluster</groupId>
-              <artifactId>cluster-admin</artifactId>
-              <version>${project.version}</version>
-          </dependency>
-          <dependency>
-              <groupId>org.glassfish.cluster</groupId>
-              <artifactId>cluster-common</artifactId>
-              <version>${project.version}</version>
-          </dependency>
-          <dependency>
-              <groupId>org.glassfish.cluster</groupId>
-              <artifactId>gms-bootstrap</artifactId>
-              <version>${project.version}</version>
-          </dependency>
-          <dependency>
-              <groupId>org.glassfish.cluster</groupId>
-              <artifactId>gms-adapter</artifactId>
-              <version>${project.version}</version>
+              <groupId>org.shoal</groupId>
+              <artifactId>shoal-gms</artifactId>
           </dependency>
 
     	<!-- now, listing package dependencies so that their content
@@ -104,7 +83,7 @@
 
   	<dependency>        
            <groupId>org.glassfish.packager</groupId>
-           <artifactId>shoal</artifactId>
+           <artifactId>glassfish-common-tmp</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
    	</dependency>  
