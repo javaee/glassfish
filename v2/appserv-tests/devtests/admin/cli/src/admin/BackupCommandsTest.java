@@ -64,7 +64,7 @@ public class BackupCommandsTest extends AdminBaseDevTest {
     }
 
     @Override
-    protected String getTestName() {
+    public String getTestName() {
         return "DAS backup and recovery";
     }
 
