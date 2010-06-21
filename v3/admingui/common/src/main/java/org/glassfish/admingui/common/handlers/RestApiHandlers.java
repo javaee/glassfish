@@ -48,13 +48,11 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import javax.ws.rs.core.MultivaluedMap;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.*;
+import org.glassfish.admingui.common.util.MiscUtil;
 import org.glassfish.admingui.common.util.RestResponse;
 
 public class RestApiHandlers {
@@ -178,7 +176,8 @@ public class RestApiHandlers {
                     @HandlerInput(name = "method", type = String.class, defaultValue = "post")},
             output = {
                     @HandlerOutput(name = "result", type = Integer.class),
-                    @HandlerOutput(name = "output", type = String.class)
+                    @HandlerOutput(name = "output", type = String.class),
+                    @HandlerOutput(name = "messageParts", type = List.class)
             })
     public static void restExecuteCommand(HandlerContext handlerCtx) {
         Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
@@ -187,14 +186,20 @@ public class RestApiHandlers {
         }
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         String method = ((String) handlerCtx.getInputValue("method")).toLowerCase();
+        // TODO: Should these be handled differently? curl tests seem to say no...
+        RestResponse response = null;
         if ("post".equals(method)) {
-            RestResponse response = post(endpoint, attrs);
+            response = post(endpoint, attrs);
+        } else if ("get".equals(method)) {
+            response = get(endpoint, attrs);
+        }
+
+        if (response == null) {
+            GuiUtil.handleError(handlerCtx, "An invalid method was passed to " + handlerCtx.getHandlerDefinition().getId() + ": " + method);
+        } else {
             handlerCtx.setOutputValue("result", response.getResponseCode());
             handlerCtx.setOutputValue("output", response.getResponseBody());
-        } else if ("get".equals(method)) {
-            RestResponse response = get(endpoint, attrs);
-            handlerCtx.setOutputValue("result", response.getResponseCode());
-            handlerCtx.setOutputValue("output", getEntityAttrs(response.getResponseBody()).get("value"));
+            handlerCtx.setOutputValue("messageParts", response.getMessageParts());
         }
     }
 
@@ -221,10 +226,10 @@ public class RestApiHandlers {
         }
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
 
-        int status = sendUpdateRequest(endpoint, attrs, (List) handlerCtx.getInputValue("skipAttrs"),
+        RestResponse response = sendUpdateRequest(endpoint, attrs, (List) handlerCtx.getInputValue("skipAttrs"),
                 (List) handlerCtx.getInputValue("onlyUseAttrs"), (List) handlerCtx.getInputValue("convertToFalse"));
 
-        if ((status != 200) && (status != 201)) {
+        if (!response.isSuccess()) {
             GuiUtil.getLogger().severe("CreateProxy failed.  parent=" + endpoint + "; attrs =" + attrs);
             GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
             return;
@@ -316,12 +321,7 @@ public class RestApiHandlers {
         Map<String, String> defaultValues = new HashMap<String, String>();
 
         String options = options(endpoint, "application/xml");
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-	// FIXME: Add error handling at least to the line below.  If it fails
-	// FIXME: we should log a message as to why and/or w/ the 
-	// FIXME: options.getBytes()
-        Document doc = db.parse(new ByteArrayInputStream(options.getBytes()));
+        Document doc = MiscUtil.getDocument(options);
         Element root = doc.getDocumentElement();
         NodeList nl = root.getElementsByTagName("messageParameters");
         if (nl.getLength() > 0) {
@@ -362,13 +362,13 @@ public class RestApiHandlers {
 
     // This will send an update request.  Currently, this calls post just like the create does,
     // but the REST API will be modified to use PUT for updates, a more correct use of HTTP
-    public static int sendUpdateRequest(String endpoint, Map<String, Object> attrs, List<String> skipAttrs, List<String> onlyUseAttrs, List<String> convertToFalse) {
+    public static RestResponse sendUpdateRequest(String endpoint, Map<String, Object> attrs, List<String> skipAttrs, List<String> onlyUseAttrs, List<String> convertToFalse) {
         removeSpecifiedAttrs(attrs, skipAttrs);
         attrs = buildUseOnlyAttrMap(attrs, onlyUseAttrs);
         attrs = convertNullValuesToFalse(attrs, convertToFalse);
         attrs = fixKeyNames(attrs);
 
-        return post(endpoint, attrs).getResponseCode();
+        return post(endpoint, attrs);
     }
 
     protected static Map<String, Object> fixKeyNames(Map<String, Object> map) {
@@ -434,9 +434,7 @@ public class RestApiHandlers {
     public static Map<String, String> getEntityAttrs(String entity) {
         Map<String, String> attrs = new HashMap<String, String>();
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(new ByteArrayInputStream(entity.getBytes()));
+            Document doc = MiscUtil.getDocument(entity);
             Element root = doc.getDocumentElement();
             NamedNodeMap nnm = root.getAttributes();
             for (int i = 0; i < nnm.getLength(); i++) {
@@ -465,9 +463,7 @@ public class RestApiHandlers {
 
     public static List<String> getChildResourceList(String document) throws SAXException, IOException, ParserConfigurationException {
         List<String> children = new ArrayList<String>();
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(new ByteArrayInputStream(document.getBytes()));
+        Document doc = MiscUtil.getDocument(document);
         Element root = doc.getDocumentElement();
         NodeList nl = root.getElementsByTagName("childResource");
         if (nl.getLength() > 0) {

@@ -36,6 +36,12 @@
 package org.glassfish.admingui.common.util;
 
 import com.sun.jersey.api.client.ClientResponse;
+import java.util.ArrayList;
+import java.util.List;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -47,6 +53,32 @@ public abstract class RestResponse {
 
     public static RestResponse getRestResponse(ClientResponse response) {
         return new JerseyRestResponse(response);
+    }
+
+    public boolean isSuccess() {
+        int status = getResponseCode();
+        return (status >= 200) && (status <= 299);
+    }
+
+    public List<String> getMessageParts() {
+        Document document = MiscUtil.getDocument(getResponseBody());
+        List<String> parts = null;
+
+        Element root = document.getDocumentElement();
+        NodeList nl = root.getElementsByTagName("message-part");
+        if (nl.getLength() > 0) {
+            parts = new ArrayList<String>();
+            Node child;
+            for (int i = 0; i < nl.getLength(); i++) {
+                child = nl.item(i);
+                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                    parts.add(((Element) child).getAttribute("message"));
+                }
+            }
+        }
+
+
+        return parts;
     }
 }
 

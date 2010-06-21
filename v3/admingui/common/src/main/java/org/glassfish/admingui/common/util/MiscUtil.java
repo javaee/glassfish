@@ -36,8 +36,15 @@
 
 package org.glassfish.admingui.common.util;
 
+import java.io.ByteArrayInputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
 
 /**
  *
@@ -62,6 +69,18 @@ public class MiscUtil {
         ve.setValue(facesContext.getELContext(), value);
 
         return ve;
+    }
+
+    public static Document getDocument(String input) {
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(new ByteArrayInputStream(input.getBytes()));
+            return doc;
+        } catch (Exception ex) {
+            GuiUtil.handleError(null, ex.getMessage() + ": " + input);
+            return null;
+        }
     }
     
 }

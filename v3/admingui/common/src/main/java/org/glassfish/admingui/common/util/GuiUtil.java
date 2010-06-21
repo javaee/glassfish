@@ -361,7 +361,7 @@ public class GuiUtil {
      * If type is not specified, it will be "information" by default.
      */
     public static void prepareAlert(HandlerContext handlerCtx, String type, String summary, String detail) {
-        Map attrMap = handlerCtx.getFacesContext().getExternalContext().getRequestMap();
+        Map attrMap = FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
         if (isEmpty(type)) {
             attrMap.put("alertType", "information");
         } else if (!(type.equals("information") || type.equals("success") ||
