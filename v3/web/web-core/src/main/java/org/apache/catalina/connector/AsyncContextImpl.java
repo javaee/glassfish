@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -67,7 +68,7 @@ public class AsyncContextImpl implements AsyncContext {
 
     // Thread pool for async dispatches
     private static final ExecutorService pool =
-        Executors.newCachedThreadPool();
+        Executors.newCachedThreadPool(new AsyncPoolThreadFactory());
 
     private static final StringManager STRING_MANAGER =
         StringManager.getManager(Constants.Package);
@@ -485,5 +486,26 @@ public class AsyncContextImpl implements AsyncContext {
             return response;
         }
     }
+
+
+    private static final class AsyncPoolThreadFactory implements ThreadFactory {
+
+        private final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
+        private final AtomicInteger counter = new AtomicInteger(0);
+
+
+        // ------------------------------------------ Methods from ThreadFactory
+
+
+        @Override
+        public Thread newThread(Runnable r) {
+
+            final Thread t = defaultFactory.newThread(r);
+            t.setName("glassfish-web-async-thread-" + counter.incrementAndGet());
+            return t;
+
+        }
+
+    } // END AsyncPoolThreadFactory
 
 }
