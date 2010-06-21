@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 /**
  * AdminBaseDevTest is a base class for administration CLI dev tests.
  *
@@ -69,6 +68,7 @@ abstract class AdminBaseDevTest extends BaseDevTest {
 
         // another issue is hacking off strings after a space.  Makes no sense to me!!
 
+        name = getClass().getName() + "_" + name;
         String name2 = name.replace(' ', '_');
         if (!name2.equals(name)) {
             System.out.println("Found spaces in the name.  Replaced with underscore. "
@@ -115,6 +115,22 @@ abstract class AdminBaseDevTest extends BaseDevTest {
                 asadmin("stop-domain"));
     }
 
+    final boolean verifyNoClusters() {
+        AsadminReturn ret = asadminWithOutput("list-clusters");
+        String s = (ret.out == null) ? "" : ret.out.trim();
+
+        System.out.println("WARNING!!!!  Work-around for ISSUE 12320 !!!!!!!!");
+
+        // hack -- if there are no clusters than there is no output
+        return s.toLowerCase().endsWith("list-clusters");
+    }
+
+    final boolean verifyNoInstances() {
+        AsadminReturn ret = asadminWithOutput("list-instances");
+        String s = (ret.out == null) ? "" : ret.out.trim();
+        return s.toLowerCase().indexOf("nothing to list") >= 0;
+    }
+
     /*
      * Returns true if String b contains String a.
      */
@@ -149,11 +165,11 @@ abstract class AdminBaseDevTest extends BaseDevTest {
             System.out.printf("**** DEBUG MESSAGE ****  " + fmt + "\n", args);
         }
     }
-
     private final SortedSet<String> reportNames = new TreeSet<String>();
     private int startstops = 0;
     protected final static boolean DEBUG;
     protected final static boolean isHudson = Boolean.parseBoolean(System.getenv("HUDSON"));
+
     static {
         String name = System.getProperty("user.name");
 
@@ -173,5 +189,41 @@ abstract class AdminBaseDevTest extends BaseDevTest {
         return "in_" + s;
     }
 
+    String get(String what) {
+        // note that the returned string is full of junk -- namely the HUGE asadmin
+        // command is prepended to the output.
+        // the "get" key will appear TWICE!!!!!!  Once for the echo of the command itself
+        // and once for the output of the command.
 
+        AsadminReturn ret = asadminWithOutput("get", what);
+        if(!ret.returnValue)
+            return null;
+
+        int index = ret.outAndErr.lastIndexOf(what);
+        int len = ret.outAndErr.length();
+
+        if (index < 0 || len - index <=2)
+            return null;
+
+        // e.g. "asadmin blah foo=xyz  len==20, index==13,  start at index=17
+        // which is index+lenofget-string+1
+        int valueIndex = index + what.length() + 1;
+        return ret.outAndErr.substring(index + what.length() + 1).trim();
+    }
+
+    final boolean getMatches(String what, String match) {
+        String ret = get(what);
+
+        if(!ok(match) && !ok(ret))
+            return true;
+
+        if(!ok(match) || !ok(ret))
+            return false;
+
+        return(match.equals(ret));
+    }
+
+    final boolean ok(String s) {
+        return s!= null && s.length() > 0;
+    }
 }
