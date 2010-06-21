@@ -161,19 +161,42 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
     }
 
     private NotProcessed removeFromServer(SystemProperty sp) {
-        System.clearProperty(sp.getName());
+        SystemProperty sysProp = getClusterSystemProperty(sp.getName());
+        if (sysProp == null)
+            sysProp = getConfigSystemProperty(sp.getName());
+        if (sysProp == null)
+            sysProp = getDomainSystemProperty(sp.getName());
+        if (sysProp == null) {
+            System.clearProperty(sp.getName());
+        } else {
+            System.setProperty(sysProp.getName(), sysProp.getValue());
+        }
         return null; //processed
     }
 
     private NotProcessed removeFromCluster(SystemProperty sp) {
-        if(!serverHas(sp))
-            System.clearProperty(sp.getName()); //if server overrides it anyway, this should be a noop
+        SystemProperty sysProp = getConfigSystemProperty(sp.getName());
+        if (sysProp == null)
+            sysProp = getDomainSystemProperty(sp.getName());
+        if (sysProp == null) {
+            if (!serverHas(sp))
+                System.clearProperty(sp.getName()); //if server overrides it anyway, this should be a noop
+        } else {
+            if (!serverHas(sp))
+                System.setProperty(sysProp.getName(), sysProp.getValue());
+        }
         return null; //processed
     }
 
     private NotProcessed removeFromConfig(SystemProperty sp) {
-        if(!serverHas(sp)&& !clusterHas(sp))
-            System.clearProperty(sp.getName()); //if server or cluster overrides it anyway, this should be a noop
+        SystemProperty sysProp = getDomainSystemProperty(sp.getName());
+        if (sysProp == null) {
+            if (!serverHas(sp) && !clusterHas(sp))
+                System.clearProperty(sp.getName()); //if server overrides it anyway, this should be a noop
+        } else {
+            if (!serverHas(sp) && !clusterHas(sp))
+                System.setProperty(sysProp.getName(), sysProp.getValue());
+        }
         return null; //processed
     }
 
@@ -225,6 +248,46 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
         } else {
             return false;
         }
+    }
+
+    private SystemProperty getClusterSystemProperty(String spName) {
+        Cluster c = domain.getClusterForInstance(server.getName());
+        if (c != null) {
+            List<SystemProperty> ssps = c.getSystemProperty();
+            if (ssps != null) {
+                for (SystemProperty sp : ssps) {
+                    if (sp.getName().equals(spName))
+                        return sp;
+                }
+            }
+        }
+        return null;
+    }
+
+    private SystemProperty getConfigSystemProperty(String spName) {
+        Config c = domain.getConfigNamed(server.getConfigRef());
+        if (c != null) {
+            List<SystemProperty> ssps = c.getSystemProperty();
+            if (ssps != null) {
+                for (SystemProperty sp : ssps) {
+                    if (sp.getName().equals(spName))
+                        return sp;
+                }
+            }
+        }
+        return null;
+    }
+
+    private SystemProperty getDomainSystemProperty(String spName) {
+        List<SystemProperty> ssps = domain.getSystemProperty();
+        if (ssps != null) {
+            for (SystemProperty sp : ssps) {
+                if (sp.getName().equals(spName)) {
+                    return sp;
+                }
+            }
+        }
+        return null;
     }
 
     private boolean hasSystemProperty(List<SystemProperty> ssps, SystemProperty sp) {
