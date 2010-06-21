@@ -65,7 +65,6 @@ public class VersioningServiceTest {
      */
     @Test
     public void testGetUntaggedName() throws VersioningSyntaxException {
-        VersioningService instance = new VersioningService();
 
         // test an application name that contains a version expression
         // application name : foo:RC-*
@@ -73,7 +72,7 @@ public class VersioningServiceTest {
                 + VersioningService.EXPRESSION_SEPARATOR + "RC-"
                 + VersioningService.EXPRESSION_WILDCARD;
 
-        String result = instance.getUntaggedName(expression);
+        String result = VersioningService.getUntaggedName(expression);
         assertEquals(APPLICATION_NAME, result);
 
         // test an application name that contains a version identifier
@@ -81,14 +80,14 @@ public class VersioningServiceTest {
         expression = APPLICATION_NAME
                 + VersioningService.EXPRESSION_SEPARATOR + "RC-1.0.0";
 
-        result = instance.getUntaggedName(expression);
+        result = VersioningService.getUntaggedName(expression);
         assertEquals(APPLICATION_NAME, result);
 
         // test an application name that is an untagged version name
         // application name : foo
         expression = APPLICATION_NAME;
 
-        result = instance.getUntaggedName(expression);
+        result = VersioningService.getUntaggedName(expression);
         assertEquals(APPLICATION_NAME, result);
 
         // test an application name containing a critical pattern
@@ -96,7 +95,7 @@ public class VersioningServiceTest {
         expression = APPLICATION_NAME + VersioningService.EXPRESSION_SEPARATOR;
 
         try {
-            result = instance.getUntaggedName(expression);
+            result = VersioningService.getUntaggedName(expression);
             fail("the getUntagged method did not throw a VersioningSyntaxException");
         }
         catch(VersioningSyntaxException e){}
@@ -113,7 +112,6 @@ public class VersioningServiceTest {
      */
     @Test
     public void testGetExpression() throws VersioningSyntaxException {
-        VersioningService instance = new VersioningService();
 
         // test an application name containing a critical pattern
         // application name : foo:
@@ -121,7 +119,7 @@ public class VersioningServiceTest {
                 + VersioningService.EXPRESSION_SEPARATOR;
 
         try {
-            String result = instance.getExpression(expression);
+            String result = VersioningService.getExpression(expression);
             fail("the getExpression method did not throw a VersioningSyntaxException");
         } catch (VersioningSyntaxException e) {}
 
@@ -134,7 +132,7 @@ public class VersioningServiceTest {
                 + "0.0";
 
         try {
-            String result = instance.getExpression(expression);
+            String result = VersioningService.getExpression(expression);
             //fail("the getExpression method did not throw a VersioningSyntaxException");
         } catch (VersioningSyntaxException e) {}
     }
@@ -145,9 +143,7 @@ public class VersioningServiceTest {
      * Check the extraction of a set of version(s) from a set of applications.
      */
     @Test
-    public void testGetVersions() {
-        VersioningService instance = new VersioningService();
-
+    public void testGetVersions() throws VersioningException {
         // the set of applications
         List<ApplicationRef> listApplications = new ArrayList<ApplicationRef>();
         listApplications.add(new ApplicationRefTest(APPLICATION_NAME));
@@ -174,7 +170,7 @@ public class VersioningServiceTest {
         expResult.add(APPLICATION_NAME+
                 VersioningService.EXPRESSION_SEPARATOR+"RC-1.0.0");
 
-        List result = instance.getVersions(APPLICATION_NAME, listApplications);
+        List result = VersioningService.getVersions(APPLICATION_NAME, listApplications);
         assertEquals(expResult, result);
     }
     
@@ -189,8 +185,6 @@ public class VersioningServiceTest {
      */
     @Test
     public void testMatchExpression() throws VersioningException {
-        VersioningService instance = new VersioningService();
-
         // the set of all foo versions
         List<String> listVersion = new ArrayList<String>();
         // ALPHA versions
@@ -248,7 +242,7 @@ public class VersioningServiceTest {
                 + VersioningService.EXPRESSION_SEPARATOR
                 + VersioningService.EXPRESSION_WILDCARD;
 
-        List result = instance.matchExpression(listVersion, expression);
+        List result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // -----------------------------
@@ -264,7 +258,7 @@ public class VersioningServiceTest {
                 + VersioningService.EXPRESSION_WILDCARD
                 + VersioningService.EXPRESSION_WILDCARD;
 
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // *****************************************************
@@ -292,7 +286,7 @@ public class VersioningServiceTest {
                 + VersioningService.EXPRESSION_SEPARATOR + "RC"
                 + VersioningService.EXPRESSION_WILDCARD;
 
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // --------------------------
@@ -304,7 +298,7 @@ public class VersioningServiceTest {
                 + VersioningService.EXPRESSION_WILDCARD + "RC"
                 + VersioningService.EXPRESSION_WILDCARD;
 
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // -------------------------------
@@ -320,7 +314,7 @@ public class VersioningServiceTest {
                 + VersioningService.EXPRESSION_WILDCARD
                 + VersioningService.EXPRESSION_WILDCARD;
 
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // ********************************************************
@@ -342,7 +336,7 @@ public class VersioningServiceTest {
                 + VersioningService.EXPRESSION_SEPARATOR
                 + VersioningService.EXPRESSION_WILDCARD + "-1.0.2";
 
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // ----------------------------------
@@ -357,7 +351,7 @@ public class VersioningServiceTest {
                 + VersioningService.EXPRESSION_WILDCARD
                 + VersioningService.EXPRESSION_WILDCARD;
 
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // ----------------------------------
@@ -375,7 +369,7 @@ public class VersioningServiceTest {
                 + VersioningService.EXPRESSION_WILDCARD
                 + VersioningService.EXPRESSION_WILDCARD;
 
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // **************************************
@@ -392,7 +386,7 @@ public class VersioningServiceTest {
         expression = APPLICATION_NAME
                 + VersioningService.EXPRESSION_SEPARATOR + "ALPHA-1.0.2";
 
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // *****************************************
@@ -415,37 +409,37 @@ public class VersioningServiceTest {
         
         expression = APPLICATION_NAME
                 + VersioningService.EXPRESSION_SEPARATOR + "a*";
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(result.size(), 3);
 
         expression = APPLICATION_NAME
                 + VersioningService.EXPRESSION_SEPARATOR + "*a";
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(result.size(), 0);
 
         expression = APPLICATION_NAME
                 + VersioningService.EXPRESSION_SEPARATOR + "a****1";
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(result.size(), 1);
 
         expression = APPLICATION_NAME
                 + VersioningService.EXPRESSION_SEPARATOR + "*-*";
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(result.size(), 6);
 
         expression = APPLICATION_NAME
                 + VersioningService.EXPRESSION_SEPARATOR + "*-4";
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(result.size(), 1);
 
         expression = APPLICATION_NAME
                 + VersioningService.EXPRESSION_SEPARATOR + "b*";
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(result.size(), 1);
 
         expression = APPLICATION_NAME
                 + VersioningService.EXPRESSION_SEPARATOR + "b*";
-        result = instance.matchExpression(listVersion, expression);
+        result = VersioningService.matchExpression(listVersion, expression);
         assertEquals(result.size(), 1);
     }
 
@@ -455,18 +449,21 @@ public class VersioningServiceTest {
      */
     @Test
     public void testGetIdentifier() throws VersioningException {
-        VersioningService instance = new VersioningService();
         // *****************************************
         // check for getIdentifier with and without '*'
         // *****************************************
         String versionIdentifier = "BETA-1";
         String appName = "foo" + VersioningService.EXPRESSION_SEPARATOR + versionIdentifier;
-        String identifier = instance.getIdentifier(appName);
-        assertEquals(versionIdentifier, identifier);
+        try{
+            VersioningService.checkIdentifier(appName);
+        } catch (VersioningSyntaxException e){
+            fail(e.getMessage());
+        }
+
         String versionExpression = "BETA-*";
         appName = "foo" + VersioningService.EXPRESSION_SEPARATOR + versionExpression;
         try {
-            instance.getIdentifier(appName);
+            VersioningService.checkIdentifier(appName);
             fail("the getIdentifier method should not accept version with '*' in it.");
         } catch (VersioningException e) {}
      }
@@ -476,7 +473,6 @@ public class VersioningServiceTest {
      */
     @Test
     public void testGetRepositoryName() throws VersioningSyntaxException {
-        VersioningService instance = new VersioningService();
         String versionIdentifier = "RC-1.0.0";
 
         // application name foo:RC-1.0.0
@@ -488,7 +484,7 @@ public class VersioningServiceTest {
                 + VersioningService.REPOSITORY_DASH
                 + versionIdentifier;
 
-        String result = instance.getRepositoryName(appName);
+        String result = VersioningService.getRepositoryName(appName);
         assertEquals(expectedResult, result);
     }
 

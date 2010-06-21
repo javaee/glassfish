@@ -142,9 +142,6 @@ public class ApplicationLifecycle implements Deployment {
     Events events;
 
     @Inject
-    VersioningService versioningService;
-
-    @Inject
     ConfigSupport configSupport;
 
     protected Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
@@ -1228,7 +1225,7 @@ public class ApplicationLifecycle implements Deployment {
 
             String repositoryBitName = copy.params().name();
             try {
-                repositoryBitName = versioningService.getRepositoryName(repositoryBitName);
+                repositoryBitName = VersioningService.getRepositoryName(repositoryBitName);
             } catch (VersioningSyntaxException e) {
                 ActionReport report = copy.report();
                 report.setMessage(e.getMessage());

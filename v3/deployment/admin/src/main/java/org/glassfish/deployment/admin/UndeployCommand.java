@@ -128,6 +128,14 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
             return;
         }
 
+        // if matched list is empty and no VersioningException thrown,
+        // this is an unversioned behavior and the given application is not registered
+        if(matchedVersions.isEmpty()){
+            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
         // for each matched version
         Iterator it = matchedVersions.iterator();
         while (it.hasNext()) {

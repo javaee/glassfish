@@ -85,18 +85,14 @@ public class GetClientStubsCommand implements AdminCommand {
     @Param(primary=true)
     private String localDir;
 
-    @Inject
-    VersioningService versioningService;
-
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
         try {
-            versioningService.getIdentifier(appname);
+            VersioningService.checkIdentifier(appname);
         } catch (VersioningSyntaxException ex) {
-            report.setMessage(ex.getLocalizedMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.failure(logger,ex.getMessage());
             return;
         }
 

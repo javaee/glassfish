@@ -67,6 +67,8 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.deployment.versioning.VersioningService;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
 
 /**
  * Objects of this type encapsulate the data and behaviour of a J2EE
@@ -660,6 +662,11 @@ public class Application extends BundleDescriptor
      * @return the EE app name of this application
      */
     public String getAppName() {
+        try {
+            return VersioningService.getUntaggedName(appName);
+        } catch (VersioningSyntaxException ex) {
+            Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return appName;
     }
 

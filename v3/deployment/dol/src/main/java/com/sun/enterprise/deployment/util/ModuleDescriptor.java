@@ -45,6 +45,10 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.glassfish.deployment.versioning.VersioningService;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
 
 /**
  * This class describes a module information for an applicaiton module
@@ -185,10 +189,17 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
      * @return the module of this application
      */
     public String getModuleName() {
+        String name = moduleName;
+        try{
         if (moduleName == null) {
-            return DeploymentUtils.getDefaultEEName(path);
+                name = VersioningService.getUntaggedName(DeploymentUtils.getDefaultEEName(path));
+            } else{
+                name = VersioningService.getUntaggedName(moduleName);
         }
-        return moduleName;
+        } catch (VersioningSyntaxException ex) {
+            Logger.getLogger(ModuleDescriptor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return name;
     }
 
     /**
