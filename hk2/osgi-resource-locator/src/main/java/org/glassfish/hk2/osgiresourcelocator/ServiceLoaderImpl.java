@@ -90,7 +90,7 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
 
     /*package*/ <T> Iterable<? extends T> lookupProviderInstances1(Class<T> serviceClass) {
         List<T> providers = new ArrayList<T>();
-        for (Class<? extends T> c : lookupProviderClasses1(serviceClass, true)) {
+        for (Class<? extends T> c : lookupProviderClasses1(serviceClass)) {
             try {
                 providers.add(c.newInstance());
             } catch (InstantiationException e) {
@@ -102,8 +102,8 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
         return providers;
     }
 
-    /*package*/ <T> Iterable<Class> lookupProviderClasses1(Class<T> serviceClass, boolean onlyCompatible) {
-        List<Class> providerClasses = new ArrayList<Class>();
+    /*package*/ <T> Iterable<Class<? extends T>> lookupProviderClasses1(Class<T> serviceClass) {
+        List<Class<? extends T>> providerClasses = new ArrayList<Class<? extends T>>();
         rwLock.readLock().lock();
         try {
             final String serviceName = serviceClass.getName();
@@ -120,12 +120,10 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
                 for (String providerName : providerNames) {
                     try {
                         final Class providerClass = bundle.loadClass(providerName);
-                        if (onlyCompatible) {
-                            if (serviceClass.isAssignableFrom(providerClass)) {
-                                providerClasses.add(providerClass);
-                            } else {
-//                                System.out.println("Bundle " + bundle + " provided service " + providerClass + " is not compatible with " + serviceClass);
-                            }
+                        if (serviceClass.isAssignableFrom(providerClass)) {
+                            providerClasses.add(providerClass);
+                        } else {
+                            System.out.println("Bundle " + bundle + " provided service " + providerClass + " is not compatible with " + serviceClass);
                         }
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
@@ -212,7 +210,7 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
                     try {
                         is = url.openStream();
                         List<String> providerNames = load(is);
-//                        System.out.println("Bundle = " + bundle + ", serviceName = " + serviceName + ", providerNames = " + providerNames);
+                        System.out.println("Bundle = " + bundle + ", serviceName = " + serviceName + ", providerNames = " + providerNames);
                         providers.put(serviceName, providerNames);
                     } catch (IOException e) {
                     }
