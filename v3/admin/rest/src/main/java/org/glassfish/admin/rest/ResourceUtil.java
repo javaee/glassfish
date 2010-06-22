@@ -191,8 +191,9 @@ public class ResourceUtil {
        CommandRunner cr = habitat.getComponent(CommandRunner.class);
        ActionReport ar = habitat.getComponent(ActionReport.class, typeOfResult);
         ParameterMap p = new ParameterMap();
-        for (String prop : parameters.stringPropertyNames())
+        for (String prop : parameters.stringPropertyNames()) {
             p.set(prop, parameters.getProperty(prop));
+        }
 
        cr.getCommandInvocation(commandName, ar).parameters(p).execute();
        return ar;

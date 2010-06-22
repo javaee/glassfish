@@ -38,6 +38,12 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class GroupManagementServiceResource extends TemplateResource {
 
+	@Path("failure-detection/")
+	public FailureDetectionResource getFailureDetectionResource() {
+		FailureDetectionResource resource = resourceContext.getResource(FailureDetectionResource.class);
+		resource.setParentAndTagName(getEntity() , "failure-detection");
+		return resource;
+	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);

@@ -39,8 +39,8 @@ import org.glassfish.admin.rest.TemplateResource;
 public class SshConnectorResource extends TemplateResource {
 
 	@Path("ssh-auth/")
-	public ListSshAuthResource getSshAuthResource() {
-		ListSshAuthResource resource = resourceContext.getResource(ListSshAuthResource.class);
+	public SshAuthResource getSshAuthResource() {
+		SshAuthResource resource = resourceContext.getResource(SshAuthResource.class);
 		resource.setParentAndTagName(getEntity() , "ssh-auth");
 		return resource;
 	}

@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.rest;
 
+import java.util.List;
 import com.sun.jersey.api.client.ClientResponse;
 import org.junit.Test;
 
@@ -198,20 +199,21 @@ public class JmsTest extends RestTestBase {
 
         // Test creation. There's no CLI for editing a JMS destination, so we query
         // the broker for the newly created destination to make sure it knows about it
-        Map<String, String> entity = getEntityValues(read(URL_LIST_JMS_DEST));
-        assertTrue(entity.get("value").contains(jmsDestName));
+        List<String> list = getCommandResults(read(URL_LIST_JMS_DEST));
+        assertTrue(list.contains(jmsDestName));
 
         // Test deletion
         response = post(URL_DELETE_JMS_DEST, newDest); // You POST to commands
         assertEquals(200, response.getStatus());
-        entity = getEntityValues(read(URL_LIST_JMS_DEST));
-        assertFalse(entity.get("value").contains(jmsDestName));
+        list = getCommandResults(read(URL_LIST_JMS_DEST));
+        assertFalse(list.contains(jmsDestName));
     }
 
     @Test
     public void testJmsPing() {
-        Map<String, String> entity = getEntityValues(read(URL_PING_JMS));
-        assertTrue(entity.get("value").equals("JMS-ping command executed successfully"));
+        List<String> results = getCommandResults(read(URL_PING_JMS));
+        System.out.println(results);
+        assertTrue(results.contains("JMS-ping command executed successfully"));
     }
 
     @Test

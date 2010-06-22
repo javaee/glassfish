@@ -36,6 +36,7 @@
 
 package org.glassfish.admin.rest;
 
+import java.util.List;
 import com.sun.jersey.api.client.ClientResponse;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,15 +53,16 @@ public class AuthRealmTest extends RestTestBase {
     public static final String URL_AUTH_REALM_CLASS_NAMES = BASE_URL + "/configs/config/server-config/security-service/auth-realm/list-predefined-authrealm-classnames";
     @Test
     public void testListGroupNames() {
-        Map<String, String> values = getEntityValues(get(URL_LIST_GROUP_NAMES));
-        String[] groups = values.get("value").split(",");
-        assertTrue(groups.length == 1);
+        String result = get(URL_LIST_GROUP_NAMES);
+        List<String> groups = getCommandResults(result);
+        assertTrue(groups.size() == 2);
     }
 
     @Test
     public void testSupportsUserManagement() {
-        Map<String, String> values = getEntityValues(get(URL_SUPPORTS_USER_MANAGEMENT));
-        assertEquals("true", values.get("value"));
+        String result = get(URL_SUPPORTS_USER_MANAGEMENT);
+        List<String> groups = getCommandResults(result);
+        assertEquals("true", groups.get(0));
     }
 
     @Test
@@ -74,26 +76,24 @@ public class AuthRealmTest extends RestTestBase {
         ClientResponse response = create(URL_CREATE_USER, newUser);
         assertTrue(isSuccess(response));
 
-        Map<String, String> values = getEntityValues(get(URL_LIST_FILE_USERS));
-        assertTrue(values.get("value").contains(userName));
+        List<String> values = getCommandResults(get(URL_LIST_FILE_USERS));
+        assertTrue(values.contains(userName));
 
         response = delete(URL_DELETE_USER, newUser);
         assertTrue(isSuccess(response));
 
-        values = getEntityValues(get(URL_LIST_FILE_USERS));
-        assertFalse(values.get("value").contains(userName));
+        values = getCommandResults(get(URL_LIST_FILE_USERS));
+        assertFalse(values.contains(userName));
     }
 
     @Test
     public void testListAuthRealmClassNames() {
-        Map<String, String> entity = getEntityValues(get(URL_AUTH_REALM_CLASS_NAMES));
-        final String classNameList = entity.get("value");
-        String[] classNames = classNameList.split(", ");
+        List<String> classNameList = getCommandResults(get(URL_AUTH_REALM_CLASS_NAMES));
         // Overkill? Too fragile?
-        assertTrue(classNameList.contains("CertificateRealm"));
-        assertTrue(classNameList.contains("JDBCRealm"));
-        assertTrue(classNameList.contains("FileRealm"));
-        assertTrue(classNameList.contains("PamRealm"));
-        assertTrue(classNameList.contains("LDAPRealm"));
+        assertTrue(classNameList.contains("com.sun.enterprise.security.auth.realm.certificate.CertificateRealm"));
+        assertTrue(classNameList.contains("com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"));
+        assertTrue(classNameList.contains("com.sun.enterprise.security.auth.realm.file.FileRealm"));
+        assertTrue(classNameList.contains("com.sun.enterprise.security.auth.realm.pam.PamRealm"));
+        assertTrue(classNameList.contains("com.sun.enterprise.security.auth.realm.ldap.LDAPRealm"));
     }
 }

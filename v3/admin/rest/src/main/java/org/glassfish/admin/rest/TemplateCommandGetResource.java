@@ -84,6 +84,9 @@ public class TemplateCommandGetResource extends TemplateExecCommand{
             }
             ResourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), properties);
             String typeOfResult = requestHeaders.getAcceptableMediaTypes().get(0).getSubtype();
+            if ("*".equals(typeOfResult)) {
+                typeOfResult = "html";
+            }
 
             ActionReport actionReport = ResourceUtil.runCommand(commandName, properties, RestService.getHabitat(),typeOfResult);
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();

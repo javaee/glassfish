@@ -45,8 +45,8 @@ public class NodeResource extends TemplateResource {
 		return resource;
 	}
 	@Path("ssh-connector/")
-	public ListSshConnectorResource getSshConnectorResource() {
-		ListSshConnectorResource resource = resourceContext.getResource(ListSshConnectorResource.class);
+	public SshConnectorResource getSshConnectorResource() {
+		SshConnectorResource resource = resourceContext.getResource(SshConnectorResource.class);
 		resource.setParentAndTagName(getEntity() , "ssh-connector");
 		return resource;
 	}

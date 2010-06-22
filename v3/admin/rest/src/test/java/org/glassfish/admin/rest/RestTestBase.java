@@ -48,7 +48,9 @@ import java.math.BigInteger;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -58,6 +60,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class RestTestBase {
 
@@ -107,8 +110,6 @@ public class RestTestBase {
     protected ClientResponse postWithUpload(String address, Map<String, Object> payload) {
         FormDataMultiPart form = new FormDataMultiPart();
         for (Map.Entry<String, Object> entry : payload.entrySet()) {
-//            MediaType mediaType = (entry.getValue() instanceof File) ? MediaType.MULTIPART_FORM_DATA_TYPE : MediaType.TEXT_PLAIN_TYPE;
-//            form.field(entry.getKey(), entry.getValue(), mediaType);
             if ((entry.getValue() instanceof File)) {
                 form.getBodyParts().add((new FileDataBodyPart(entry.getKey(), (File)entry.getValue())));
             } else {
@@ -151,15 +152,11 @@ public class RestTestBase {
 
         if ((xml != null) && !xml.isEmpty()) {
             try {
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                Document doc = db.parse(new ByteArrayInputStream(xml.getBytes()));
+                Document doc = getDocument(xml);
                 Element root = doc.getDocumentElement();
                 NamedNodeMap nnm = root.getAttributes();
 
-
-                for (int i = 0; i
-                        < nnm.getLength(); i++) {
+                for (int i = 0; i < nnm.getLength(); i++) {
                     Node attr = nnm.item(i);
                     String name = attr.getNodeName();
                     String value = attr.getNodeValue();
@@ -170,6 +167,37 @@ public class RestTestBase {
             }
         }
         return map;
+    }
+
+    protected List<String> getCommandResults(String xml) {
+        List<String> results = new ArrayList<String>();
+        Document document = getDocument(xml);
+
+        Element root = document.getDocumentElement();
+        NodeList nl = root.getElementsByTagName("message-part");
+        if (nl.getLength() > 0) {
+            Node child;
+            for (int i = 0; i < nl.getLength(); i++) {
+                child = nl.item(i);
+                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                    results.add(((Element) child).getAttribute("message"));
+                }
+            }
+        }
+
+        return results;
+    }
+
+    public Document getDocument(String input) {
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(new ByteArrayInputStream(input.getBytes()));
+            return doc;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
     private MultivaluedMap buildMultivalueMap(Map<String, String> payload) {
