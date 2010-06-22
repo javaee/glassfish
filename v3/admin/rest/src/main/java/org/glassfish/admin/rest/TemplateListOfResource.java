@@ -96,7 +96,7 @@ public abstract class TemplateListOfResource {
 
 
     @GET
-    @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public GetResultList get(@QueryParam("expandLevel")
             @DefaultValue("1") int expandLevel) {
 

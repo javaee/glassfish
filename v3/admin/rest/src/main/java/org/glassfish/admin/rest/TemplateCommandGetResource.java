@@ -67,7 +67,7 @@ public class TemplateCommandGetResource extends TemplateExecCommand{
 
     @GET
     @Produces({
-        MediaType.TEXT_HTML,
+        "text/html;qs=2",
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})

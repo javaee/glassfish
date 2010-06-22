@@ -75,7 +75,7 @@ public class LazyJerseyInit {
         ResourceConfig rc = new DefaultResourceConfig(classes);
         rc.getMediaTypeMappings().put("xml", MediaType.APPLICATION_XML_TYPE);
         rc.getMediaTypeMappings().put("json", MediaType.APPLICATION_JSON_TYPE);
-      //not working for now  rc.getMediaTypeMappings().put("html", MediaType.TEXT_HTML_TYPE);
+        rc.getMediaTypeMappings().put("html", MediaType.TEXT_HTML_TYPE);
 
         //Use common classloader. Jersey artifacts are not visible through
         //module classloader

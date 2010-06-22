@@ -143,7 +143,7 @@ public class TemplateResource {
     }
 
     @GET
-    @Produces({MediaType.TEXT_HTML,
+    @Produces({"text/html;qs=2",
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public GetResult get(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
