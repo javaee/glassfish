@@ -329,13 +329,13 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
             Class validationClass = Thread.currentThread().getContextClassLoader().loadClass(validationClassName);
             ConnectionValidation valClass = (ConnectionValidation) validationClass.newInstance();
             isValid = valClass.isConnectionValid(con);
-            if(!isValid) {
-                _logger.log(Level.INFO, "jdbc.exc_custom_validation", validationClassName);
-                throw new ResourceException("Custom validation detected invalid connection");
-            }
         } catch (Exception e) {
             _logger.log(Level.INFO, "jdbc.exc_custom_validation", validationClassName);
             throw new ResourceException(e);
+        }
+        if (!isValid) {
+            _logger.log(Level.INFO, "jdbc.exc_custom_validation", validationClassName);
+            throw new ResourceException("Custom validation detected invalid connection");
         }
     }
 

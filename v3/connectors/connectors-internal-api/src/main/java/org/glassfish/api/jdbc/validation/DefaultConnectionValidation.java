@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,8 +66,8 @@ public class DefaultConnectionValidation implements ConnectionValidation {
             isValid = stmt.execute(SQL);
         } catch (SQLException sqle) {
             isValid = false;
-            Logger.getLogger(LogDomains.RSR_LOGGER).log(Level.INFO,
-                    "connection_validation_exception", sqle.getMessage());
+            Logger.getLogger(LogDomains.RSR_LOGGER).log(Level.FINEST,
+                    "connection_validation_exception", sqle);
         } finally {
             if (stmt != null) {
                 try {
