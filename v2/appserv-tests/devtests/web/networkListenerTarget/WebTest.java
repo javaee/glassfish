@@ -72,15 +72,15 @@ public class WebTest {
                int responseCode=  urlConnection.getResponseCode();
                System.out.println("Response code: " + responseCode + " Expected code: 200"); 
                if (urlConnection.getResponseCode() != 200){
-                    stat.addStatus("virtualServerTarget", stat.FAIL);
+                    stat.addStatus("networkListenerTarget", stat.FAIL);
                } else {
-                    stat.addStatus("virtualServerTarget", stat.PASS);
+                    stat.addStatus("networkListenerTarget", stat.PASS);
                }
             }
-            stat.printSummary("web/virtualServerTarget");
+            stat.printSummary("web/networkListenerTarget");
         }catch(Exception ex){
             ex.printStackTrace();
-            stat.addStatus("virtualServerTarget", stat.FAIL);
+            stat.addStatus("networkListenerTarget", stat.FAIL);
         }
     }
 }

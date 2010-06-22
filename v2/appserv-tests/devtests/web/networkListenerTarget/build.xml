@@ -110,7 +110,7 @@
       <antcall target="asadmin-common-ignore-fail">
         <param name="admin.command" value="create-virtual-server" />
         <param name="operand.props"
-               value="--target c1 c1-server"/>
+               value="--hosts ${http.host} --target c1 c1-server"/>
       </antcall>
     </target>
 

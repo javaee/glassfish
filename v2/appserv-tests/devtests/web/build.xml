@@ -509,6 +509,11 @@
         <ant dir="weblogicDD/sessionPreserveAcrossRedeployDeclarative" target="all"/>
     </target>
 
+    <target name="clustering" depends="init-report">
+        <ant dir="networkListenerTarget" target="all"/>
+        <ant dir="virtualServerTarget" target="all"/>
+    </target>
+
     <target name="init-report" unless="report.inited">
         <property name="report.inited" value="true"/>
         <antcall target="init"/>
@@ -528,7 +533,7 @@
         <echo message="#################################################"/>
     </target>
 
-    <target name="all" depends="init,init-report,comet,el,http-connector,jsp,security,servlet,taglib,web-container,weblogicDD,finish-report"/>
+    <target name="all" depends="init,init-report,comet,el,http-connector,jsp,security,servlet,taglib,web-container,weblogicDD,clustering,finish-report"/>
     <target name="embedded-all" depends="embedded-setup,all"/>
 
     <target name="embedded-setup">
