@@ -426,6 +426,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     }
 
     /*
+
      * Set Availability related properties
      * If EE: If JMS availability true set availability properties
      * If shared hadb : get HADB CCP information and set accordingly
@@ -1109,8 +1110,15 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     }
 
     private String getClusterName() throws Exception {
-        return "default-cluster";
-        //todo: need to resolve clustername
+
+        ServerContext serverctx = Globals.get(ServerContext.class);
+        String instanceName = serverctx.getInstanceName();
+
+        Domain domain = Globals.get(Domain.class);
+        Server server = domain.getServerNamed(instanceName);
+
+        return server.getCluster() != null? server.getCluster().getName(): null;
+
                 /*ClusterHelper.getClusterForInstance(this.serverContxt.
                        .getConfigContext(),
                         serverContxt.getInstanceName()).getName();*/
@@ -1297,9 +1305,9 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     private void setJmsServiceProperties(JmsService service) throws
                                          ConnectorRuntimeException {
         JmsRaUtil jmsraUtil = new JmsRaUtil(service);
-    jmsraUtil.setupAddressList();
-    urlList = jmsraUtil.getUrlList();
-    addressList = urlList.toString();
+        jmsraUtil.setupAddressList();
+        urlList = jmsraUtil.getUrlList();
+        addressList = urlList.toString();
         ConnectorDescriptor cd = super.getDescriptor();
         setConnectionURL(service, urlList);
 
@@ -1565,7 +1573,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
            }
         }
               }
-              ConnectorConfigProperty  addressProp3 = new ConnectorConfigProperty  (                                    ADDRESSLIST, brokerurl,"Address List",
+              ConnectorConfigProperty  addressProp3 = new ConnectorConfigProperty  (ADDRESSLIST, brokerurl,"Address List",
                             "java.lang.String");
           HashSet addressProp = new HashSet();
         addressProp.add(addressProp3);
