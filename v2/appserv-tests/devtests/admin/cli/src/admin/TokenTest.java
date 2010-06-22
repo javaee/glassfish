@@ -78,7 +78,7 @@ public class TokenTest extends AdminBaseDevTest {
 
         report("delete-system-property-server", asadmin("delete-system-property", "jenport"));
         ret = asadminWithOutput("get-host-and-port", "--virtualserver", "jenvs");
-        success = ret.outAndErr.indexOf("2020") >= 0;
+        success = ret.outAndErr.indexOf("1010") >= 0;
         report("port-change-delete-server-sysprop", success);
 
         // Commented out until 12318 is fixed
