@@ -161,7 +161,7 @@
         <v3-docs.version>3.0-b08</v3-docs.version>
         <l10n.version>3.0-b73</l10n.version>
         <asm.version>3.1</asm.version>
-        <shoal.version>1.5</shoal.version>
+        <shoal.version>1.5.2</shoal.version>
     </properties>
 
 
@@ -1334,15 +1334,25 @@
                 <version>${asm.version}</version>
             </dependency>
 	    <dependency>
-              <groupId>org.jvnet.hudson</groupId>
-              <artifactId>trilead-ssh2</artifactId>
-              <version>${trilead-ssh2.version}</version>
+                <groupId>org.jvnet.hudson</groupId>
+                <artifactId>trilead-ssh2</artifactId>
+                <version>${trilead-ssh2.version}</version>
 	    </dependency>
-        <dependency>
-            <groupId>org.shoal</groupId>
-            <artifactId>shoal-gms</artifactId>
-            <version>${shoal.version}</version>
-        </dependency>
+            <dependency>
+                <groupId>org.shoal</groupId>
+                <artifactId>shoal-gms</artifactId>
+                <version>${shoal.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.shoal</groupId>
+                <artifactId>shoal-backing-store</artifactId>
+                <version>${shoal.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.shoal</groupId>
+                <artifactId>shoal-cache</artifactId>
+                <version>${shoal.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>

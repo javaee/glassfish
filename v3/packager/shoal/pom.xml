@@ -76,6 +76,14 @@
               <groupId>org.shoal</groupId>
               <artifactId>shoal-gms</artifactId>
           </dependency>
+          <dependency>
+              <groupId>org.shoal</groupId>
+              <artifactId>shoal-backing-store</artifactId>
+          </dependency>
+          <dependency>
+              <groupId>org.shoal</groupId>
+              <artifactId>shoal-cache</artifactId>
+          </dependency>
 
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
