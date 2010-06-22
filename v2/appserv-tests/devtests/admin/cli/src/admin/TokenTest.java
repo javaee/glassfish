@@ -66,8 +66,8 @@ public class TokenTest extends AdminBaseDevTest {
         boolean success = ret.outAndErr.indexOf("1010") >= 0;
         report("port-set-create-domain-sysprop", success);
 
-        // Commented out until 12318 is fixed
-        //report("create-system-properties-config", asadmin("create-system-properties", "--target", "server-config", "jenport=2020"));
+        // Commented out until 12318, 12330 is fixed
+        //report("create-system-properties-config-ISSUE-12330", asadmin("create-system-properties", "--target", "server-config", "jenport=2020"));
         //ret = asadminWithOutput("get-host-and-port", "--virtualserver", "jenvs");
         //success = ret.outAndErr.indexOf("2020") >= 0;
         //report("port-change-create-config-sysprop-ISSUE-12318", success);
@@ -79,11 +79,11 @@ public class TokenTest extends AdminBaseDevTest {
 
         report("delete-system-property-server", asadmin("delete-system-property", "jenport"));
         ret = asadminWithOutput("get-host-and-port", "--virtualserver", "jenvs");
-        success = ret.outAndErr.indexOf("1010") >= 0;
+        success = ret.outAndErr.indexOf("1010") >= 0; //Change back to 2020 when 12330 is fixed
         report("port-change-delete-server-sysprop", success);
 
-        // Commented out until 12318 is fixed
-        //report("delete-system-property-config", asadmin("delete-system-property","--target", "server-config", "jenport"));
+        // Commented out until 12318, 12330 is fixed
+        //report("delete-system-property-config-ISSUE-12330", asadmin("delete-system-property","--target", "server-config", "jenport"));
         //ret = asadminWithOutput("get-host-and-port", "--virtualserver", "jenvs");
         //success = ret.outAndErr.indexOf("1010") >= 0;
         //report("port-change-delete-config-sysprop-ISSUE-12318", success);
