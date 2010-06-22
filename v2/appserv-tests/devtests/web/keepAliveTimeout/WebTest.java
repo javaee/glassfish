@@ -84,15 +84,10 @@ public class WebTest {
             os.write(get.getBytes());
             os.write("Host: localhost\n".getBytes());
             os.write("\n".getBytes());
-            Thread.sleep(6000);
             InputStream is = sock.getInputStream();
             bis = new BufferedReader(new InputStreamReader(is));
-            long start = 0;
-            try {
-                while (bis.readLine() != null) {
-                    start = System.currentTimeMillis();
-                }
-            } catch (IOException e) {
+            long start = System.currentTimeMillis();
+            while (bis.readLine() != null) {
             }
             long end = System.currentTimeMillis();
             System.out.println("WebTest.invoke: end - start = " + (end - start));

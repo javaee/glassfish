@@ -2,8 +2,6 @@ asadminDeletes # test uses BaseDevTest
 defaultContentType # test uses BaseDevTest
 fileDownloadTimeout # test uses BaseDevTest
 httpCompression # test uses BaseDevTest
-keepAliveTimeout  # redoing these tests
-keepAliveTimeoutSSL  # redoing these tests
 portUnification # test uses BaseDevTest
 servlet-3.0/servletContainerInitializer/sharedLibWithWars # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=12091 is fixed
 sslServerName # test uses BaseDevTest

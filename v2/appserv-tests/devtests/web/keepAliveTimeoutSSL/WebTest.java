@@ -79,10 +79,9 @@ public class WebTest {
             writer.write("Host: localhost" + '\n' + '\n');
             writer.flush();
             reader = new BufferedReader(new InputStreamReader(sslsocket.getInputStream()));
-            long start = 0;
+            long start = System.currentTimeMillis();
             try {
                 while (reader.readLine() != null) {
-                    start = System.currentTimeMillis();
                 }
             } catch (IOException e) {
             }
