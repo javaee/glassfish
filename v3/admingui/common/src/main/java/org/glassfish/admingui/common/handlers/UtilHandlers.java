@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -259,11 +259,37 @@ public class UtilHandlers {
         List list = (List)handlerCtx.getInputValue("list");
         Integer index = (Integer)handlerCtx.getInputValue("index");
         if (index == null)
-            list.add(handlerCtx.getInputValue("value"));
+                list.add(handlerCtx.getInputValue("value"));
         else{
             list.add(index, handlerCtx.getInputValue("value"));
         }
     }
+
+
+    /**
+     * <p> Combine 2 lists <code>List</code> by adding the object in the 2nd list to the first list</p>
+     * <p> Input value: "list" -- Type: <code>java.util.List</code>
+     * <p> Input value: "list2" -- Type: <code>java.util.List</code>
+     *
+     * @param handlerCtx The HandlerContext
+     */
+
+    @Handler(id="gf.listCombine",
+    	input={
+            @HandlerInput(name="list", type=List.class, required=true),
+            @HandlerInput(name="list2", type=List.class, required=true)
+        }
+    )
+    public static void listCombine(HandlerContext handlerCtx) {
+        List list = (List)handlerCtx.getInputValue("list");
+        List list2 = (List)handlerCtx.getInputValue("list2");
+        for(Object one : list2) {
+                list.add(one);
+        }
+    }
+
+    
+
 
     /**
      *	<p> Compare if 2 objects is equal </p>

@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -33,35 +33,23 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- uploadComponent.inc -->
 
-<sun:propertySheet id="sheet1" requiredFields="true">
+<!-- shared/commonAddRemove.inc -->
 
-#include "/common/applications/fileComponent.jsf"
-
-    <sun:propertySheetSection>
-        <sun:property id="type" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.TypeLabel}"  visible="#{true}" >
-            <sun:dropDown id="appType" selected="#{pageSession.appType}" required="#{true}" value="" labels="$attribute{labels}" values="$attribute{values}"
-                onChange="javascript:admingui.deploy.showPropertySheet(this.value, window, '#{appNameId}', '#{contextRootId}', '#{sessionScope.appTypeString}' )" >
-                <!beforeCreate
-                    getContentOfIntegrationPoints(type="org.glassfish.admingui:appTypeDropdown" labels="#{requestScope.labels}" values="#{requestScope.values}" );
-                    listAdd(list="#{requestScope.labels}" value="",  index="0");
-                    listAdd(list="#{requestScope.values}" value=""  index="0" );
-                    convertListToCommaString(list="#{requestScope.values}" commaString="#{sessionScope.appTypeString}");
-                />
-                <!afterCreate
-                    getClientId(component="$this{component}" clientId=>$page{typeId});
-                />
-            </sun:dropDown>
-            <!afterCreate
-                getClientId(component="$this{component}" clientId=>$page{dropDownProp});
-            />
-        </sun:property>
-    </sun:propertySheetSection>
-</sun:propertySheet>
-<event>
-    <!afterCreate
-        getUIComponent(clientId="#{formId}"  component=>$attribute{component})
-        includeIntegrations(type="org.glassfish.admingui:uploadPropertySheet" );
-    />
-</event>
+<sun:addRemove 
+    id="commonAddRemove"
+	selectAll="$boolean{true}" 
+	items="#{pageSession.availableTargets}"
+	selected="#{pageSession.selectedTargets}"
+	availableItemsLabel="$resource{i18n.manageTargets.AvailableTargets}:"
+	selectedItemsLabel="$resource{i18n.manageTargets.SelectedTargets}:">
+	<!beforeCreate
+	    getClientId(component="$this{component}" clientId="#{pageSession.commonAddRemoveId}");
+	/>
+	<!facet selectedLabel>
+	    <sun:label id="commonAddRemove_selectedLabel" 
+		text="$resource{i18n.manageTargets.SelectedTargets}:"
+		for="#{commonAddRemoveId}:commonAddRemove_selected"
+		styleClass="AddRmvLbl2_sun4"/>
+	</facet>
+</sun:addRemove>

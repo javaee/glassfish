@@ -41,9 +41,16 @@
         setPageSessionAttribute(key="displayVS" value="#{true}");
         setPageSessionAttribute(key="chooseType" value="#{true}");
         setPageSessionAttribute(key="listPageLink" value="common/applications/applications.jsf");
-        getRequestValue(key="cancelPage" default="#{listPageLink}" value=>$page{cancelPage});
+        getRequestValue(key="cancelPage" default="#{listPageLink}" value="#{pageSession.cancelPage}");
         setPageSessionAttribute(key="enabled" value="#{true}");
         createMap(result="#{pageSession.deployMap}")
+        //if( $session{supportCluster}) {
+            setPageSessionAttribute(key="targetList" value={"server"} );
+            gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/clusters/cluster", result="#{requestScope.clusterList}");
+            gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.clusterList}");
+            gf.convertListToOptionArray(list="#{pageSession.targetList}", optionArray="#{pageSession.availableTargets}");
+            setPageSessionAttribute(key="selectedTargets" value=["server"] );
+        //}
     />
     </event>
     <sun:form id="form">
@@ -59,9 +66,9 @@
             </facet>
         </sun:title>
 #include "/common/applications/uploadComponent.jsf"
+#include "/common/shared/targetSectionForCreate.inc"
         "<br/>
 //#include "/common/shared/propertyDescTable.inc"
-        "<br/>
         <sun:title id="title2">
             <!facet pageButtonsBottom>
                 <sun:panelGroup id="bottomButtons">

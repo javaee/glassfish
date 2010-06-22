@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- uploadComponent.inc -->
+<!-- applications/fileComponent.jsf -->
 
 <sun:propertySheetSection id="section1" >
 <sun:property id="prop1" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.location}">                           
