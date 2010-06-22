@@ -181,11 +181,26 @@ public class StatefulContainerBuilder
         String persistenceStoreType =
                 ejbConfigLookup.getPersistenceStoreType();
 
+        //Workaround till we figure out if the app itself is ha enabled or not
+        boolean haEnabled = false;
+        try {
+            String haSysProp = System.getProperty("com.sun.ejb.container.ha.enabled", "false");
+            haEnabled = Boolean.valueOf(haSysProp);
+            if (haEnabled) {
+                String ejbContainerAvailability = availabilityService.getEjbContainerAvailability().getAvailabilityEnabled();
+                haEnabled = Boolean.valueOf(ejbContainerAvailability);
+                if (haEnabled) {
+                    persistenceStoreType = "replicated";
+                }
+            }
+        } catch (Throwable th) {
+        }
+
+
         BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, persistenceStoreType);
-        Properties env = new Properties();
 
         BackingStoreConfiguration<Serializable, SFSBBeanState> conf = new BackingStoreConfiguration<Serializable, SFSBBeanState>();
-        String storeName = ejbDescriptor.getName() + "-" + getContainer().getComponentId() + "-" + "BackingStore";
+        String storeName = ejbDescriptor.getName() + "BackingStore";
 
         String subDirName = "";
 
@@ -206,9 +221,12 @@ public class StatefulContainerBuilder
                 .setKeyClazz(Serializable.class)
                 .setValueClazz(SFSBBeanState.class);
 
-        this.backingStore = factory == null ? null : factory.createBackingStore(conf);
+        if (factory == null) {
+            factory = habitat.getComponent(BackingStoreFactory.class, "noop");
+        }
+        this.backingStore = factory.createBackingStore(conf);
         _logger.log(Level.WARNING, "StatefulContainerbuilder instantiated store: " +
-            backingStore.getClass().getName() + " ==> " + conf.getStoreName());
+            backingStore + "; ha-enabled: " + haEnabled + " ==> " + conf);
     }
 
     private void buildCache() {
