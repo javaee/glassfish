@@ -679,7 +679,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             } else {
                 // try to read from the legacy sun deployment descriptor
                 if (is2 != null && sunConfDD != null) {
-                    logger.log(Level.WARNING, "sun.configdd.deprecate",
+                    logger.log(Level.FINE, "sun.configdd.deprecate",
                         new Object[] { 
                         sunConfDD.getDeploymentDescriptorPath(),
                         archive.getURI().getSchemeSpecificPart(),
