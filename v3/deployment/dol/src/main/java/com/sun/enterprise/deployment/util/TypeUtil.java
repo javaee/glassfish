@@ -40,6 +40,8 @@ import com.sun.enterprise.deployment.FieldDescriptor;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.*;
 
 /**
@@ -427,18 +429,21 @@ public class TypeUtil {
      *
      */
     public static boolean sameParamTypes(Method m1, Method m2) {
-
         boolean same = false;
 
-        Class[] pm1 = m1.getParameterTypes();
-        Class[] pm2 = m2.getParameterTypes();
-        
-        if( (pm1.length == pm2.length) ) {
+        Type[] gpm1 = m1.getGenericParameterTypes();
+        Type[] gpm2 = m2.getGenericParameterTypes();
+
+        if ((gpm1.length == gpm2.length)) {
             same = true;
-            for(int i = 0; i < pm1.length; i++) {
-                if( pm1[i] != pm2[i] ) {
-                    same = false;
-                    break;
+            for (int i = 0; i < gpm1.length; i++) {
+                if (!gpm1[i].equals(gpm2[i])) {
+                    if (gpm1[i] instanceof TypeVariable || gpm2[i] instanceof TypeVariable) {
+                        continue;
+                    } else {
+                        same = false;
+                        break;
+                    }
                 }
             }
         }
@@ -455,18 +460,38 @@ public class TypeUtil {
      *
      */
     public static boolean sameMethodSignature(Method m1, Method m2) {
-
         boolean same = false;
-
-        Class[] pm1 = m1.getParameterTypes();
-        Class[] pm2 = m2.getParameterTypes();
         
-        if( (m1.getName().equals(m2.getName())) &&
-            (m1.getReturnType() == m2.getReturnType()) ) {
-            same = sameParamTypes(m1, m2);
+        if(m1.getName().equals(m2.getName())) {
+            same = sameParamTypes(m1, m2) && sameReturnTypes(m1, m2);
         }
 
         return same;
+    }
+
+    /**
+     * Compares the return types of 2 methods.
+     * @param m1 method 1
+     * @param m2 method 2
+     * @return true if the return types of the 2 methods are the same, or if
+     * one of them is instance of java.lang.reflect.TypeVariable.
+     */
+    private static boolean sameReturnTypes(Method m1, Method m2) {
+        if(m1.getReturnType().equals(m2.getReturnType())) {
+            return true;
+        }
+        
+        Type grt1 = m1.getGenericReturnType();
+        Type grt2 = m2.getGenericReturnType();
+
+        if(grt1.equals(grt2)) {
+            return true;
+        }
+        if(grt1 instanceof TypeVariable || grt2 instanceof TypeVariable) {
+            return true;
+        }
+
+        return false;
     }
 
     public static Vector getPossibleCmpCmrFields(ClassLoader cl,
