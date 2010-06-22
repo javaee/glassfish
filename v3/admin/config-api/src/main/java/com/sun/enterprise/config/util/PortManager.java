@@ -212,8 +212,8 @@ public final class PortManager {
     }
 
     private void changeSystemProperty(List<SystemProperty> sps, String name, String port) throws PropertyVetoException, TransactionFailure {
-        for(SystemProperty sp : sps) {
-            if(name.equals(sp.getName())) {
+        for (SystemProperty sp : sps) {
+            if (name.equals(sp.getName())) {
                 sp.setValue(port);
                 return;
             }
@@ -255,23 +255,5 @@ public final class PortManager {
     private final List<ServerPorts> serversOnHost;
     private final ServerPorts newServerPorts;
     private final boolean checkLivePorts = true;
-    private static final int MAX_PORT_TRIES;
-    private static final int DEFAULT_MAX_PORT_TRIES = 1100;
-    
-    static {
-        int tmp = DEFAULT_MAX_PORT_TRIES;
-
-        try {
-            tmp = Integer.parseInt(Utility.getEnvOrProp("MAX_PORT_TRIES"));
-        }
-        catch(Exception e) {
-            // ignore
-        }
-
-        if(tmp <= 0 || tmp > 10000)
-            tmp = DEFAULT_MAX_PORT_TRIES;
-
-        MAX_PORT_TRIES = tmp;
-    }
-
+    private static final int MAX_PORT_TRIES = 1100;
 }
