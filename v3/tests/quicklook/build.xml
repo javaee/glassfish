@@ -167,6 +167,7 @@
     <target name="build-deploy">
         <record name="build.output" action="start"/>
         <echo message="ANT PROJECT ${ant.project.name}"/>
+        <ant dir="rest" target="build"/>
         <ant dir="amx" target="build"/>
         <ant dir="admin" target="build"/>
         <ant dir="admincli" target="build"/>
