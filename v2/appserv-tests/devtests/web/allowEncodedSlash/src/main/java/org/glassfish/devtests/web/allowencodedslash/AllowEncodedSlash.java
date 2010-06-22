@@ -59,12 +59,11 @@ public class AllowEncodedSlash extends BaseDevTest {
     public void run() throws IOException {
         String adminPort = antProp("admin.port");
         try {
+            setAllowed(false);
             fetch(adminPort, 500, 1);
+        } finally {
             setAllowed(true);
             fetch(adminPort, 200, 1);
-        } finally {
-            setAllowed(false);
-            fetch(adminPort, 500, 2);
             stat.printSummary();
         }
     }
