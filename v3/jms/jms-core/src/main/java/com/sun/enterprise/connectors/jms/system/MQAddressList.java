@@ -136,7 +136,8 @@ public class MQAddressList {
         }
     }
     public String getNodeAgentHostName(final Server as) throws Exception{
-        Domain domain = Globals.get(Domain.class);
+        return as.getNodeAgentRef();
+        /*Domain domain = Globals.get(Domain.class);
         NodeAgents nodeAgents = domain.getNodeAgents();
         List nodeAgentsList = nodeAgents.getNodeAgent();
         NodeAgent agent = null;
@@ -157,7 +158,7 @@ public class MQAddressList {
          final String naHost = connector.getPropertyValue(AdminConstants.HOST_PROPERTY_NAME);//NodeAgentHelper.getNodeAgentSystemConnector(domainCC, na.getName()).getElementPropertyByName(IAdminConstants.HOST_PROPERTY_NAME).getValue();
          return ( naHost );
         }
-        return null;
+        return null;     */
     }
 
      public JmxConnector getNodeAgentSystemConnector(NodeAgent controller)throws Exception
@@ -257,13 +258,16 @@ public class MQAddressList {
         //Cluster cluster = ClusterHelper.getClusterByName(configContext, clusterName);
 
         //Now fetch the server instances in the cluster.
-        List serverRefs = cluster.getServerRef();
+        List servers = cluster.getInstances();
 
-        Server[] result = new Server[serverRefs.size()];
-        Domain domain = Globals.get(Domain.class);
 
-        for (int i = 0; i <  serverRefs.size(); i++) {
-            result[i] = domain.getServerNamed(((ServerRef)serverRefs.get(i)).getRef());
+       // List serverRefs = cluster.getServerRef();
+
+        Server[] result = new Server[servers.size()];
+       // Domain domain = Globals.get(Domain.class);
+
+        for (int i = 0; i <  servers.size(); i++) {
+            result[i] = (Server) servers.get(i); //.getServerNamed(((ServerRef)serverRefs.get(i)).getRef());
 
           //  try {
             //} catch (ConfigException ex) {
@@ -277,8 +281,8 @@ public class MQAddressList {
     private boolean isDAS(String targetName)  {
         if (isAConfig(targetName)) {
             return false;
-        }//todo: V3 need to fix this
-        return  true;//ServerHelper.isDAS(getAdminConfigContext(), targetName);
+        }
+        return getServerByName(targetName).isDas();
     }
 
     private boolean isAConfig(String targetName)  {
@@ -385,9 +389,9 @@ public class MQAddressList {
     }
 
     private boolean isServerInCluster (Cluster cluster, String instanceName){
-        List serverRef = cluster.getServerRef();
-        for (int i=0; i < serverRef.size(); i++){
-            if(instanceName.equals(serverRef.get(i)))
+        List instances = cluster.getInstances();
+        for (int i=0; i < instances.size(); i++){
+            if(instanceName.equals(((Server)instances.get(i)).getName()))
                 return true;
         }
         return false;
@@ -523,8 +527,47 @@ public class MQAddressList {
 
     private JmsHost getResolvedJmsHost(Server as) throws Exception{
         logFine("getResolvedJmsHost " + as);
-        //todo: Only required for cluster support. Commenting this out for now. 
-        return null; //getResolvedJmsHost(as);
+        final JmsService jmsService     = Globals.get(JmsService.class);
+        JmsHost jmsHost                 = null;
+        if (JMSServiceType.LOCAL.toString().equals(jmsService.getType())	|| JMSServiceType.EMBEDDED.toString().equals(jmsService.getType())) {
+            jmsHost = getDefaultJmsHost(jmsService);
+        }
+        return ( jmsHost );
+
+       // return null; //getResolvedJmsHost(as);
+    }
+
+     private JmsHost getResolvedLocalJmsHostInServer(final Server server)  {
+        Domain domain = Globals.get(Domain.class);
+        Configs configs =  domain.getConfigs();
+        List lConfigs = configs.getConfig();
+        Config config = null;
+        String configref = server.getConfigRef();
+        for (int i =0; i < lConfigs.size(); i++){
+            if (configref.equals(((Config)lConfigs.get(i)).getName()))
+                    config = (Config)lConfigs.get(i);
+        }
+        if (config != null)
+        {
+            JmsService jmsService = config.getJmsService();
+            JmsHost jmsHost = null;
+             if (JMSServiceType.LOCAL.toString().equals(jmsService.getType())	|| JMSServiceType.EMBEDDED.toString().equals(jmsService.getType())) {
+            jmsHost = getDefaultJmsHost(jmsService);
+            }
+            return ( jmsHost );
+
+        }
+         return null;
+     }
+
+    private JmsHost getDefaultJmsHost(JmsService jmsService){
+        String defaultJmsHost=   jmsService.getDefaultJmsHost();
+        List jmsHosts = jmsService.getJmsHost();
+        for (int i=0; i <jmsHosts.size(); i++)
+               if (defaultJmsHost.equals(((JmsHost)jmsHosts.get(i)).getName()))
+                      return (JmsHost)jmsHosts.get(i);
+
+        return null;
     }
 
     private boolean isClustered() throws ConnectorRuntimeException {
@@ -555,4 +598,12 @@ public class MQAddressList {
             return 0;
         }
     }
+    enum JMSServiceType {
+        LOCAL,
+        REMOTE,
+        EMBEDDED
+    }
+
+
 }
+
