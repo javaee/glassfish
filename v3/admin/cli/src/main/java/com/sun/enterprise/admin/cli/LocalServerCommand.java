@@ -295,10 +295,79 @@ public abstract class LocalServerCommand extends CLICommand {
             return isRunning(programOpts.getHost(), // remote case
                     programOpts.getPort());
     }
+    /**
+     * Wait for the server to restart.
+     */
+    protected final void waitForRestart(long uptimeOldServer) throws CommandException {
+        long end = CLIConstants.WAIT_FOR_DAS_TIME_MS +
+                                        System.currentTimeMillis();
+
+        while (System.currentTimeMillis() < end) {
+            try {
+                Thread.sleep(300);
+                long up = getUptime();
+
+                if (up > 0 && up < uptimeOldServer) {
+                    // local password will change when server restarts
+                    if(getServerDirs() != null)
+                        resetServerDirs();
+
+                    // return here!!!!
+                    return;
+                }
+            } catch (Exception e) {
+                // continue
+            }
+        }
+        // if we get here -- we timed out
+        throw new CommandException(strings.get("restartDomain.noGFStart"));
+    }
+
+    /**
+     * Get uptime from the server.
+     */
+    protected final long getUptime() throws CommandException {
+        RemoteCommand cmd = new RemoteCommand("uptime", programOpts, env);
+        String up = cmd.executeAndReturnOutput("uptime");
+        long up_ms = parseUptime(up);
+
+        if (up_ms <= 0) {
+            throw new CommandException(strings.get("restart.dasNotRunning"));
+        }
+
+        logger.printDebugMessage("server uptime: " + up_ms);
+        return up_ms;
+    }
+
 
     ////////////////////////////////////////////////////////////////
     /// Section:  private methods
     ////////////////////////////////////////////////////////////////
+    /**
+     * The remote uptime command returns a string like:
+     * Uptime: 10 minutes, 53 seconds, Total milliseconds: 653859\n
+     * We find that last number and extract it.
+     * XXX - this is pretty gross, and fragile
+     */
+    private long parseUptime(String up) {
+        if (up == null || up.length() < 4)
+            return 0;
+
+        up = up.trim();
+        int index = up.lastIndexOf(':');
+        if (index < 0)
+            return 0;
+
+        if (up.length() - index < 3)
+            return 0;
+
+        try {
+            return Long.parseLong(up.substring(index + 2));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
     private final File getJKS() {
         if(serverDirs == null)
             return null;

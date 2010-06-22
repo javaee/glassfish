@@ -68,8 +68,6 @@ public class RestartDomainCommand extends StopDomainCommand {
     @Inject
     private Habitat habitat;
 
-    private long uptimeOldServer;
-
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(RestartDomainCommand.class);
 
@@ -80,13 +78,13 @@ public class RestartDomainCommand extends StopDomainCommand {
     protected void doCommand()
             throws CommandException, CommandValidationException {
         // first, find out how long the server has been up
-        uptimeOldServer = getUptime();  // may throw CommandException
+        long uptimeOldServer = getUptime();  // may throw CommandException
 
         // run the remote restart-domain command and throw away the output
         RemoteCommand cmd =
             new RemoteCommand("restart-domain", programOpts, env);
         cmd.executeAndReturnOutput("restart-domain");
-        waitForRestart();
+        waitForRestart(uptimeOldServer);
         logger.printMessage(strings.get("restartDomain.success"));
     }
 
@@ -100,75 +98,5 @@ public class RestartDomainCommand extends StopDomainCommand {
         CLICommand cmd = habitat.getComponent(CLICommand.class, "start-domain");
         // XXX - assume start-domain accepts all the same options
         return cmd.execute(argv);
-    }
-
-    /**
-     * Get uptime from the server.
-     */
-    private long getUptime()
-            throws CommandException, CommandValidationException {
-        RemoteCommand cmd = new RemoteCommand("uptime", programOpts, env);
-        String up = cmd.executeAndReturnOutput("uptime");
-        long up_ms = parseUptime(up);
-
-        if (up_ms <= 0) {
-            throw new CommandException(strings.get("restart.dasNotRunning"));
-        }
-
-        logger.printDebugMessage("server uptime: " + up_ms);
-        return up_ms;
-    }
-
-    /**
-     * The remote uptime command returns a string like:
-     * Uptime: 10 minutes, 53 seconds, Total milliseconds: 653859\n
-     * We find that last number and extract it.
-     * XXX - this is pretty gross, and fragile
-     */
-    private long parseUptime(String up) {
-        if (up == null || up.length() < 4)
-            return 0;
-
-        up = up.trim();
-        int index = up.lastIndexOf(':');
-        if (index < 0)
-            return 0;
-
-        if (up.length() - index < 3)
-            return 0;
-
-        try {
-            return Long.parseLong(up.substring(index + 2));
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
-    /**
-     * Wait for the server to restart.
-     */
-    private void waitForRestart() throws CommandException {
-        long end = CLIConstants.WAIT_FOR_DAS_TIME_MS +
-                                        System.currentTimeMillis();
-
-        while (System.currentTimeMillis() < end) {
-            try {
-                Thread.sleep(300);
-                long up = getUptime();
-
-                if (up > 0 && up < uptimeOldServer) {
-                    // local password will change when server restarts
-                    if(getDomainName() != null)
-                        resetServerDirs();
-                    
-                    // return here!!!!
-                    return;
-                }
-            } catch (Exception e) {
-                // continue
-            }
-        }
-        // if we get here -- we timed out
-        throw new CommandException(strings.get("restartDomain.noGFStart"));
     }
 }
