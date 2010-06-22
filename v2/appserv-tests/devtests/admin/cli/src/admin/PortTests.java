@@ -52,11 +52,7 @@ public class PortTests extends AdminBaseDevTest {
     }
 
     private void runTests() {
-        testConflictResolution();
-        stat.printSummary();
-    }
-
-    private void runTestsX() {
+        report("01234567890123456789012345678901234567890123456789012345678901234567890123456789", true);
         startDomain();
         verifyUserSuppliedPortNumbersAreUnique();
         verifyPortsAreLegal();
@@ -119,16 +115,16 @@ public class PortTests extends AdminBaseDevTest {
         buildup();
 
         // check that the first instance is using the port that we expect
-        report("i1-uses-24848", getMatches(
+        report("i1-uses-24848", doesGetMatch(
                 "configs.config.i1-config.system-property.ASADMIN_LISTENER_PORT.value",
                 "24848"));
 
-        report("instance-doesnt-use-22222", !getMatches(
+        report("instance-doesnt-use-22222", !doesGetMatch(
                 "configs.config.i1-config.system-property.ASADMIN_LISTENER_PORT.value",
                 "22222"));
 
         // the **config** has 24848
-        report("i2-config-uses-24848", getMatches(
+        report("i2-config-uses-24848", doesGetMatch(
                 "configs.config.i2-config.system-property.ASADMIN_LISTENER_PORT.value",
                 "24848"));
 
@@ -139,6 +135,16 @@ public class PortTests extends AdminBaseDevTest {
         runFakeServerDaemon(24851);
         report("create-i4", asadminWithOutput("create-local-instance", "i4"));
         checkAndReportPort("i4", 24852);
+
+        // if I delete i2, then i5 ought to re-use the port which is 24849
+        report("delete-i2", asadminWithOutput("delete-local-instance", "i2"));
+        report("create-i5", asadminWithOutput("create-local-instance", "i5"));
+        checkAndReportPort("i5", 24849);
+        // bring i2 up again -- teardown() will be looking for it
+        report("delete-i5", asadminWithOutput("delete-local-instance", "i5"));
+        report("create-i2", asadminWithOutput("create-local-instance", "i2"));
+        checkAndReportPort("i2", 24849);
+
         report("delete-i4", asadmin("delete-local-instance", "i4"));
 
         teardown();
@@ -195,7 +201,7 @@ public class PortTests extends AdminBaseDevTest {
     }
 
     private void checkAndReportPort(String instance, int port) {
-        report(instance + "-server-element-uses-" + port, getMatches(
+        report(instance + "-server-element-uses-" + port, doesGetMatch(
                 "servers.server." + instance + ".system-property.ASADMIN_LISTENER_PORT.value",
                 "" + port));
     }

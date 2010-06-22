@@ -68,7 +68,8 @@ abstract class AdminBaseDevTest extends BaseDevTest {
 
         // another issue is hacking off strings after a space.  Makes no sense to me!!
 
-        name = getClass().getName() + "_" + name;
+        if(name.length() > MAX_LENGTH - 3)
+            name = name.substring(0, MAX_LENGTH - 3);
         String name2 = name.replace(' ', '_');
         if (!name2.equals(name)) {
             System.out.println("Found spaces in the name.  Replaced with underscore. "
@@ -88,8 +89,10 @@ abstract class AdminBaseDevTest extends BaseDevTest {
         }
 
         int numpads = 60 - name2.length();
-            name2 += DASHES.substring(0, numpads);
         
+        if(numpads > 0)
+            name2 += DASHES.substring(0, numpads);
+
         super.report(name2, success);
     }
 
@@ -199,13 +202,13 @@ abstract class AdminBaseDevTest extends BaseDevTest {
         // and once for the output of the command.
 
         AsadminReturn ret = asadminWithOutput("get", what);
-        if(!ret.returnValue)
+        if (!ret.returnValue)
             return null;
 
         int index = ret.outAndErr.lastIndexOf(what);
         int len = ret.outAndErr.length();
 
-        if (index < 0 || len - index <=2)
+        if (index < 0 || len - index <= 2)
             return null;
 
         // e.g. "asadmin blah foo=xyz  len==20, index==13,  start at index=17
@@ -214,16 +217,16 @@ abstract class AdminBaseDevTest extends BaseDevTest {
         return ret.outAndErr.substring(index + what.length() + 1).trim();
     }
 
-    final boolean getMatches(String what, String match) {
+    final boolean doesGetMatch(String what, String match) {
         String ret = get(what);
 
-        if(!ok(match) && !ok(ret))
+        if (!ok(match) && !ok(ret))
             return true;
 
-        if(!ok(match) || !ok(ret))
+        if (!ok(match) || !ok(ret))
             return false;
 
-        return(match.equals(ret));
+        return (match.equals(ret));
     }
 
     public static void runFakeServerDaemon(int port) {
@@ -233,8 +236,9 @@ abstract class AdminBaseDevTest extends BaseDevTest {
     }
 
     final boolean ok(String s) {
-        return s!= null && s.length() > 0;
+        return s != null && s.length() > 0;
     }
+    private static final int MAX_LENGTH = 54;
     private static final String DASHES =
-"-------------------------------------------------------------------------------";
+            "------------------------------------------------------------------------------------------------------------------------------";
 }
