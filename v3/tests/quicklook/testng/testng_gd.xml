@@ -68,11 +68,6 @@
 		<class name="test.admin.AdminConsoleTests"/>
 	</classes>
   </test>
-  <test name="rest_tests">
-	<classes>
-		<class name="test.admin.RestTests"/>
-	</classes>
-  </test>
   <test name="deploy_upload_test">
     <classes>
        <class name="test.web.jsp.hello.HelloJSPTestNG" />
