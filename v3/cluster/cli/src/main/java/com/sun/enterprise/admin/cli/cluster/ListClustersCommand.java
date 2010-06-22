@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,32 +34,52 @@
  * holder.
  */
 
-package com.sun.enterprise.config.serverbeans;
+package com.sun.enterprise.admin.cli.cluster;
 
-import org.glassfish.config.support.*;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
+
+import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 import java.util.List;
 
-
 /**
- * Clusters configuration. Maintain a list of {@link Cluster}
- * active configurations.
+ *  This is a remote command that lists the configs.
+ * Usage: list-config
+ 	
+ * @author Bhakti Mehta
  */
-@Configured
-public interface Clusters extends ConfigBeanProxy, Injectable {
+@Service(name = "list-clusters")
+@Scoped(PerLookup.class)
+public final class ListClustersCommand implements AdminCommand {
 
-     /**
-      * Return the list of clusters currently configured
-      *
-      * @return list of {@link Cluster }
-      */
-    @Element
-    @Create(value="create-cluster", decorator=Cluster.Decorator.class)
-    @Delete(value="delete-cluster", resolver= TypeAndNameResolver.class, decorator=Cluster.DeleteDecorator.class)
+    @Inject
+    Domain domain;
 
-    public List<Cluster> getCluster();
+    private static final String NONE = "Nothing to list.";
+
+    public void execute(AdminCommandContext context) {
+        ActionReport report = context.getActionReport();
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+
+        Clusters clusters = domain.getClusters();
+        List<Cluster> clusterList = clusters.getCluster();
+        StringBuffer sb = new StringBuffer();
+        if (clusterList.size()<1) {
+            sb.append(NONE);
+        }
+
+        for (Cluster cluster : clusterList) {
+            sb.append(cluster.getName()).append('\n');
+
+        }
+        report.addSubActionsReport().setMessage(sb.toString() );
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    }
+
 }
