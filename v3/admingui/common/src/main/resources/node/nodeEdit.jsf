@@ -58,7 +58,7 @@
         //TODO: determine #instance thats up and #instance that is down
         setPageSessionAttribute(key="edit" value="#{true}");
         setPageSessionAttribute(key="title" value="$resource{i18nc.node.EditPageTitle}");
-        setPageSessionAttribute(key="helpText" value="$resource{i18nc.node.EditPageTitleHelp}");
+        setPageSessionAttribute(key="titleHelp" value="$resource{i18nc.node.EditPageTitleHelp}");
     />
     />
     </event>

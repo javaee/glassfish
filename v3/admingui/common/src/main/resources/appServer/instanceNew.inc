@@ -64,7 +64,7 @@
             <sun:property id="NameTextProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
                 <sun:textField id="NameText" text="#{name}" styleClass="required" columns="$int{55}" required="#{true}" />
             </sun:property>
-            <sun:property id="node"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.cluster.Node}" helpText="$resource{i18nc.cluster.NodeHelp}">
+            <sun:property id="node"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.clusterNew.Node}" helpText="$resource{i18nc.cluster.NodeHelp}">
                 <sun:dropDown id="node" labels="#{pageSession.nodesList}" selected="#{pageSession.Node}" >
                 </sun:dropDown>
             </sun:property>
