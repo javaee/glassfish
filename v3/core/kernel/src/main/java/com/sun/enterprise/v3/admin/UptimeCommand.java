@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin;
 
 import org.glassfish.api.Param;
@@ -47,27 +46,20 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.universal.Duration;
 
-
 /**
  * uptime command
  * Reports on how long the server has been running.
  * 
  */
-
 @Service(name = "uptime")
 @Scoped(PerLookup.class)
 @I18n("uptime")
 public class UptimeCommand implements AdminCommand {
+
     @Inject
     ServerEnvironmentImpl env;
-
-    // TODO bnevins June 1 2010
-    // the default should go to "terse".  But first all callers that parse the
-    // output should be found and changed.  In the meantime the default is exactly
-    // what 3.0 did.
-    
-    @Param(optional=true, acceptableValues="raw,terse,verbose", defaultValue="verbose")
-    String type;
+    @Param(name = "milliseconds", optional = true, defaultValue = "false")
+    Boolean milliseconds;
 
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
@@ -77,17 +69,13 @@ public class UptimeCommand implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         String message;
 
-        if("raw".equals(type))
-            // just the milliseconds maam!  Probably a computer program is calling us...
+        if (milliseconds)
             message = "" + totalTime_ms;
-        else if("terse".equals(type))
-            // Compact output.  Used by list-instances for instance.
-            message = localStrings.getLocalString("uptime.output.terse", "Uptime: {0}", duration);
         else
+            //message = localStrings.getLocalString("uptime.output.terse", "Uptime: {0}", duration);
             message = localStrings.getLocalString("uptime.output.normal", "Uptime: {0}, Total milliseconds: {1}", duration, "" + totalTime_ms);
 
         report.setMessage(message);
     }
-
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(UptimeCommand.class);
 }
