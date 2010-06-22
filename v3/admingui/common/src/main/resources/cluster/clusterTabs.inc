@@ -48,7 +48,7 @@
     <sun:tab id="clusterApp" immediate="$boolean{true}" text="$resource{i18nc.cluster.ApplicationsTab}">
 	<!command
             setSessionAttribute(key="clusterTabs" value="clusterApp");
-            gf.redirect(page="#{request.contextPath}/common/cluster/clusterApplications.jsf?name=#{encodedClusterName}");
+            gf.redirect(page="#{request.contextPath}/common/cluster/clusterApplications.jsf?clusterName=#{encodedClusterName}");
         />
     </sun:tab>
 
@@ -59,10 +59,10 @@
         />
     </sun:tab>
 
-     <sun:tab id="clusterResources" immediate="$boolean{true}" text="$resource{i18nc.cluster.ResourcesTab}">
+     <sun:tab id="clusterResources" immediate="$boolean{true}" text="$resource{i18nc.cluster.ResourcesTab} (TBD)">
 	<!command
             setSessionAttribute(key="clusterTabs" value="clusterResources");
-            gf.redirect(page="#{request.contextPath}/common/cluster/clusterResources.jsf?name=#{encodedClusterName}");
+            gf.redirect(page="#{request.contextPath}/common/cluster/clusterResources.jsf?clusterName=#{encodedClusterName}");
         />
     </sun:tab>
 
@@ -74,8 +74,8 @@
         />
     </sun:tab>
         -->
-  
-    <sun:tab id="clusterProps" immediate="$boolean{true}" text="$resource{i18nc.cluster.PropertiesTab}">
+
+    <sun:tab id="clusterProps" immediate="$boolean{true}" text="$resource{i18nc.cluster.PropertiesTab} (TBD)">
 	<!command
             setSessionAttribute(key="clusterTabs" value="clusterConfigProps");
             gf.redirect(page="#{request.contextPath}/common/cluster/clusterConfigProperties.jsf?clusterName=#{encodedClusterName}");
