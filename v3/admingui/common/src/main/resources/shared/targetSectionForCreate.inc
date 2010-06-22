@@ -37,6 +37,15 @@
 
 "<hr/>
 <sun:propertySheet id="targetSection">
+    <!beforeCreate
+    //if( $session{supportCluster}) {
+            setPageSessionAttribute(key="targetList" value={"server"} );
+            gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/clusters/cluster", result="#{requestScope.clusterList}");
+            gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.clusterList}");
+            gf.convertListToOptionArray(list="#{pageSession.targetList}", optionArray="#{pageSession.availableTargets}");
+            setPageSessionAttribute(key="selectedTargets" value=["server"] );
+        //}
+        />
     <sun:propertySheetSection id="targetSectionId" visible="#{true}"
 	    label="$resource{i18n.common.TargetTableTitle} (TBD)" rendered="#{true}" >
 	<sun:property id="addRemoveProp" noWrap="#{true}" overlapLabel="#{false}">

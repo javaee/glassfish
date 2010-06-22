@@ -44,13 +44,6 @@
         getRequestValue(key="cancelPage" default="#{listPageLink}" value="#{pageSession.cancelPage}");
         setPageSessionAttribute(key="enabled" value="#{true}");
         createMap(result="#{pageSession.deployMap}")
-        //if( $session{supportCluster}) {
-            setPageSessionAttribute(key="targetList" value={"server"} );
-            gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/clusters/cluster", result="#{requestScope.clusterList}");
-            gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.clusterList}");
-            gf.convertListToOptionArray(list="#{pageSession.targetList}", optionArray="#{pageSession.availableTargets}");
-            setPageSessionAttribute(key="selectedTargets" value=["server"] );
-        //}
     />
     </event>
     <sun:form id="form">
