@@ -53,6 +53,7 @@ public class TokenTest extends AdminBaseDevTest {
     private void runTests() {
         startDomain();
         testDAS();
+        //testCluster();
         stopDomain();
         stat.printSummary();
     }
@@ -90,6 +91,22 @@ public class TokenTest extends AdminBaseDevTest {
         report("delete-virtual-server", asadmin("delete-virtual-server", "jenvs"));
         report("delete-network-listener", asadmin("delete-network-listener", "jenlistener"));
         report("delete-system-property-domain", asadmin("delete-system-property","--target", "domain", "jenport"));
+    }
+
+    private void testCluster() {
+        //uncomment when issue 12312 is fixed
+        //report("create-system-properties-domain", asadmin("create-system-properties", "--target", "domain", "HTTP_LISTENER_PORT=1010"));
+        report("create-cluster-with-syspropport", asadmin("create-cluster", "--systemproperties", "HTTP_LISTENER_PORT=3030", "cluster1"));
+        report("create-instance-with-syspropport", asadmin("create-local-instance", "--cluster", "cluster1", "--systemproperties", "HTTP_LISTENER_PORT=4040", "instance1"));
+
+        report("start-local-instance-syspropport", asadmin("start-local-instance", "instance1"));
+        String str = getURL("http://localhost:4040");
+        boolean success = !str.isEmpty();
+        report("check-url-at-server-port", success);
+
+        report("stop-local-instance-syspropport", asadmin("stop-local-instance", "instance1"));
+        report("delete-local-instance-syspropport", asadmin("delete-local-instance", "instance1"));
+        report("delete-cluster-syspropport", asadmin("delete-cluster", "cluster1"));
     }
 
 }
