@@ -165,7 +165,7 @@ public class JmsRaUtil {
         //Return the server only if it is part of a cluster (i.e. only if a cluster
         //has a reference to it).
         for (int i = 0; i < clusters.size(); i++) {
-            final List servers = ((Cluster)clusters.get(i)).getServerRef();
+            final List servers = ((Cluster)clusters.get(i)).getInstances();
             for (int j = 0; j < servers.size(); j++) {
                 if (((Server)servers.get(j)).getName().equals(instanceName)) {
                     // check to see if the server exists as a sanity check.
