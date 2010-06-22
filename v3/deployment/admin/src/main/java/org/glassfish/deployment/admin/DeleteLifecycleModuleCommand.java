@@ -48,6 +48,8 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.Cluster;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -64,6 +66,7 @@ import java.util.logging.Level;
 @I18n("delete.lifecycle.module")
 @Scoped(PerLookup.class)
 @Cluster(value={RuntimeType.DAS})
+@TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class DeleteLifecycleModuleCommand implements AdminCommand {
 
     @Param(primary=true)

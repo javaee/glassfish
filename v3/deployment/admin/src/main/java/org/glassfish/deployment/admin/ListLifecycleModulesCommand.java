@@ -47,6 +47,8 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -64,6 +66,7 @@ import java.util.Properties;
 @I18n("list.lifecycle.modules")
 @Scoped(PerLookup.class)
 @Cluster(value={RuntimeType.DAS})
+@TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class ListLifecycleModulesCommand implements AdminCommand  {
 
     @Param(primary=true, optional=true)
