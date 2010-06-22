@@ -40,59 +40,42 @@
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"
-    guiTitle="$resource{i18nc.cluster.InstancesTitle}"
+    guiTitle="$resource{i18nc.cluster.ApplicationsTitle}"
     guiTemplateOnLoad="admingui.nav.refreshTree();"
 >
-
-#include "/common/appServer/instancesExtraButtons.inc"
 
 <!define name="content">
     <event>
     <!beforeCreate
-        setSessionAttribute(key="clusterTabs" value="clusterInst");
+        setSessionAttribute(key="clusterTabs" value="clusterApp");
         getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
         urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
-        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteInstances}");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/cluster/clusterInstances.jsf");
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/cluster/clusterInstancesEdit.jsf");
-        setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.cluster.instancesTableTitle}");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/cluster/clusterInstanceNew.jsf");
+        setPageSessionAttribute(key="listPageLink" value="/common/applications/applications.jsf");
+        setPageSessionAttribute(key="nextPageLink" value="#{request.contextPath}/common/applications/upload.jsf?cancelPage=#{listPageLink}");
+        setPageSessionAttribute(key="isLifecycle" value="#{false}");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmUndeploy}");
+
+        setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.clusterApplications.TableTitle}");
         setPageSessionAttribute(key="clusterList" value="#{true}" )
-        setPageSessionAttribute(key="parentUrl" value="#{sessionScope.REST_URL}/servers");
-        setPageSessionAttribute(key="childType" value="server");
-        setPageSessionAttribute(key="serverRefsEndpoint" value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}/server-ref");
-        gf.getChildrenNamesList(endpoint="#{pageSession.serverRefsEndpoint}", id="Ref", result="#{pageSession.serverRefList}");
-        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", includeList="#{pageSession.serverRefList}", result="#{requestScope.listOfRows}");
+        //setPageSessionAttribute(key="parentUrl" value="#{sessionScope.REST_URL}/servers");
+        //setPageSessionAttribute(key="childType" value="server");
+        //setPageSessionAttribute(key="serverRefsEndpoint" value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}/server-ref");
+        //gf.getChildrenNamesList(endpoint="#{pageSession.serverRefsEndpoint}", id="Ref", result="#{pageSession.serverRefList}");
+        //gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", includeList="#{pageSession.serverRefList}", result="#{requestScope.listOfRows}");
     />
     
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":instances");</script>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+"clusters");</script>
 <sun:form id="propertyForm">
 
 #include "/common/cluster/clusterTabs.inc"
 #include "/common/shared/alertMsg.inc"
 
-<sun:title id="propertyContentPage" title="$resource{i18nc.cluster.InstancesTitle}"
-                 helpText="$resource{i18nc.cluster.InstancesTitleHelp}" >
-    <!facet pageButtonsTop>
-        <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" text="$resource{i18n.button.Save}" disabled="true" >
-                <!command
-                getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
-                getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                prepareSuccessfulMsg();
-                //saveStandaloneInstanceWeight(TableRowGroup="${tableRowGroup}" );
-                setAttribute(key="selectedRows" value="${selectedRows}");
-                />
-            </sun:button>
-        </sun:panelGroup>
-        </facet>
-</sun:title>
-"<br /> <br />
-
-#include "/common/appServer/instancesTable.inc"
-
-<sun:hidden id="helpKey" value="$resource{help_common.clusterInstances}" />
+<sun:title id="propertyContentPage" title="$resource{i18nc.cluster.ApplicationsTitle}"
+                 helpText="$resource{i18nc.cluster.ApplicationsTitleHelp}" />
+"<br />
+#include "/common/applications/deployTable.inc"
+<sun:hidden id="helpKey" value="$resource{help_common.clusterApplications}" />
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 
