@@ -52,7 +52,7 @@
     <property file="../build.properties"/>
 
     <property name="server.log.path" location="${glassfish.home}/domains/domain1/logs/server.log"/>
-    <property name="log.msg.excl.path" location="./log_msg_excl.txt"/>
+    <property name="log.msg.excl.path" location="gfproject/log_msg_excl.txt"/>
     <tempfile property="log.msg.tmp.path" destdir="../test-output" prefix="server_log_filtered" deleteonexit="true"/>
 
     <!-- prepare regex patterns to detect missing Ids, typos, etc. -->
@@ -93,7 +93,7 @@
       </filterchain>
     </loadfile>
     <property name="excl_msgs" value="^(?:(?!dummymsg${log_msg_excl}).)*$"/>
-<echo>${excl_msgs}</echo>
+	<!--echo>${excl_msgs}</echo-->
     <!-- copy log file, filter excluded loggers and messages (start-up, stacktrace, etc.) -->
     <!-- further checks are based on this file -->
     <copy file="${server.log.path}" tofile="${log.msg.tmp.path}" overwrite="true">
@@ -145,6 +145,7 @@
             <ignoreblank/>
         </filterchain>
     </loadfile>
+
     <property name="remaining_messages" value="(none)"/>
     <echo>
 * Messages with no proper message Id:
