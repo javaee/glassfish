@@ -97,7 +97,7 @@ public class GetResultListHtmlProvider extends ProviderUtil implements MessageBo
 
      private String getHtml(GetResultList proxy) {
         String result = getHtmlHeader();
-         final String typeKey = upperCaseFirstLetter(slashToDash(decode(getName(uriInfo.getPath(), '/'))));
+         final String typeKey = upperCaseFirstLetter((decode(getName(uriInfo.getPath(), '/'))));
          result = result + "<h1>" + typeKey + "</h1>";
 
       //  String command = proxy.getPostCommand();

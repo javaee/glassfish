@@ -98,7 +98,7 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
 
     private String getHtml(GetResult proxy) {
         String result = getHtmlHeader();
-        final String typeKey = upperCaseFirstLetter(slashToDash(decode(getName(uriInfo.getAbsolutePath().toString(), '/'))));
+        final String typeKey = upperCaseFirstLetter((decode(getName(uriInfo.getAbsolutePath().toString(), '/'))));
         result = result + "<h1>" + typeKey + "</h1>";
 
         String attributes = getHtmlRespresentationForAttributes((ConfigBean)proxy.getDom(), uriInfo);
