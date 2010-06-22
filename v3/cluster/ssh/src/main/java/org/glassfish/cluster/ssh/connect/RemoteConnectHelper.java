@@ -124,13 +124,13 @@ public class RemoteConnectHelper  {
                 sshL.init(noderef);
 
                 // create command and params
-                /*
-                String dasHost = System.getProperty(
+
+                this.dasHost = System.getProperty(
                     SystemPropertyConstants.HOST_NAME_PROPERTY);
                 // XXX Hack. Need to get real admin port
-                String dasPort = "4848";
+                this.dasPort = 4848;
 
-                */
+                
                 String command = cmd + " " + instanceName;
 
                 // We always pass the DAS host and port to the asadmin
