@@ -60,7 +60,7 @@ public class MonitoringResource {
 
     @GET
     //@Produces({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML,MediaType.TEXT_HTML})
+    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML,"text/html;qs=2"})
     public List<TreeNode> getChildNodes() {
         List<TreeNode> list = new ArrayList<TreeNode>();
         MonitoringRuntimeDataRegistry monitoringRegistry = RestService.getMonitoringRegistry();
