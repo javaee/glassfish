@@ -328,7 +328,7 @@ public abstract class LocalServerCommand extends CLICommand {
      */
     protected final long getUptime() throws CommandException {
         RemoteCommand cmd = new RemoteCommand("uptime", programOpts, env);
-        String up = cmd.executeAndReturnOutput("uptime");
+        String up = cmd.executeAndReturnOutput("uptime", "--milliseconds").trim();
         long up_ms = parseUptime(up);
 
         if (up_ms <= 0) {
@@ -350,19 +350,8 @@ public abstract class LocalServerCommand extends CLICommand {
      * XXX - this is pretty gross, and fragile
      */
     private long parseUptime(String up) {
-        if (up == null || up.length() < 4)
-            return 0;
-
-        up = up.trim();
-        int index = up.lastIndexOf(':');
-        if (index < 0)
-            return 0;
-
-        if (up.length() - index < 3)
-            return 0;
-
         try {
-            return Long.parseLong(up.substring(index + 2));
+            return Long.parseLong(up);
         } catch (Exception e) {
             return 0;
         }

@@ -72,8 +72,7 @@ public class UptimeCommand implements AdminCommand {
         if (milliseconds)
             message = "" + totalTime_ms;
         else
-            //message = localStrings.getLocalString("uptime.output.terse", "Uptime: {0}", duration);
-            message = localStrings.getLocalString("uptime.output.normal", "Uptime: {0}, Total milliseconds: {1}", duration, "" + totalTime_ms);
+            message = localStrings.getLocalString("uptime.output.terse", "Uptime: {0}", duration);
 
         report.setMessage(message);
     }
