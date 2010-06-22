@@ -42,6 +42,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.util.net.*;
 import java.beans.PropertyVetoException;
 import java.util.*;
@@ -201,13 +202,13 @@ public final class PortManager {
     }
 
     private Integer getNextUnassignedPort(Integer num) throws TransactionFailure {
-        int max = num + 50;   // to avoid infinite loop
+        int max = num + MAX_PORT_TRIES;   // to avoid infinite loop
 
         for (int inum = num; inum < max; inum++) {
             if (!allPorts.contains(inum))
                 return inum;
         }
-        throw new TransactionFailure(Strings.get("PortManager.noFreePort"));
+        throw new TransactionFailure(Strings.get("PortManager.noFreePort", num, max));
     }
 
     private void changeSystemProperty(List<SystemProperty> sps, String name, String port) throws PropertyVetoException, TransactionFailure {
@@ -254,5 +255,23 @@ public final class PortManager {
     private final List<ServerPorts> serversOnHost;
     private final ServerPorts newServerPorts;
     private final boolean checkLivePorts = true;
+    private static final int MAX_PORT_TRIES;
+    private static final int DEFAULT_MAX_PORT_TRIES = 1100;
+    
+    static {
+        int tmp = DEFAULT_MAX_PORT_TRIES;
+
+        try {
+            tmp = Integer.parseInt(Utility.getEnvOrProp("MAX_PORT_TRIES"));
+        }
+        catch(Exception e) {
+            // ignore
+        }
+
+        if(tmp <= 0 || tmp > 10000)
+            tmp = DEFAULT_MAX_PORT_TRIES;
+
+        MAX_PORT_TRIES = tmp;
+    }
 
 }
