@@ -45,7 +45,7 @@
     </parent>
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>osgi-resource-locator</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>OSGi resource locator bundle - used by legacy JDK bundles</name>
     <description> See http://wiki.glassfish.java.net/Wiki.jsp?page=JdkSpiOsgi for more information</description>
     <!-- We don't use packaging type bundle as it requires us to 
