@@ -179,7 +179,7 @@
             <ssl ssl3-enabled="false" cert-nickname="s1as"></ssl>
           </protocol>
           <protocol name="admin-listener">
-            <http default-virtual-server="__asadmin" max-connections="250">
+            <http default-virtual-server="__asadmin" max-connections="250" encoded-slash-enabled="true" >
               <file-cache enabled="false"></file-cache>
             </http>
           </protocol>
