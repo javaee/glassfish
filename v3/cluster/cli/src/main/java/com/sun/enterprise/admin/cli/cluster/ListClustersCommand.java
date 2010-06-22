@@ -49,7 +49,7 @@ import org.jvnet.hk2.component.PerLookup;
 import java.util.List;
 
 /**
- *  This is a remote command that lists the configs.
+ *  This is a remote command that lists the clusters.
  * Usage: list-config
  	
  * @author Bhakti Mehta
