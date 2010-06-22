@@ -109,6 +109,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     private HashMap<String, Node> nodeMap;
     private AdminCommandContext ctx;
     private String noderef;
+    private Server instance;
 
     private static final String NL = System.getProperty("line.separator");
 
@@ -119,7 +120,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             logger.severe(Strings.get("start.instance.noInstanceName"));
             return;
         }
-        final Server instance = helper.getServer(instanceName);
+        instance = helper.getServer(instanceName);
         if(instance == null) {
             logger.severe(Strings.get("start.instance.noSuchInstance", instanceName));
             return;
@@ -161,7 +162,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
         if (noderef.equals("localhost")) {
             startInstance();
         } else {
-            RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodes, logger);
+            RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodes, logger, helper.getHost(instance), helper.getAdminPort(instance));
             // check if needs a remote connection
             if (rch.isRemoteConnectRequired(noderef)) {
                 // this command will run over ssh

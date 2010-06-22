@@ -36,6 +36,9 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.Servers;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.universal.process.ProcessManagerException;
@@ -43,13 +46,8 @@ import org.glassfish.api.ActionReport;
 import com.sun.enterprise.universal.process.LocalAdminCommand;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
-import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
-import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
 import org.jvnet.hk2.annotations.*;
@@ -67,7 +65,7 @@ import java.util.logging.Logger;
 @I18n("create.instance")
 @Scoped(PerLookup.class)
 @Cluster({RuntimeType.DAS})
-public class CreateInstanceCommand implements AdminCommand {
+public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
 
     private static final String DEFAULT_NODE = "localhost";
     private static final String LOCAL_HOST = "localhost";
@@ -84,6 +82,14 @@ public class CreateInstanceCommand implements AdminCommand {
 
     @Inject
     private Nodes nodes;
+
+    @Inject
+    private ServerEnvironment env;
+    @Inject
+    private Servers servers;
+    @Inject
+    private Configs configs;
+    
 
     @Param(name="node", optional=true, defaultValue=DEFAULT_NODE)
     String node;
@@ -105,7 +111,12 @@ public class CreateInstanceCommand implements AdminCommand {
 
     private Logger logger;
     private AdminCommandContext ctx;
+    private RemoteInstanceCommandHelper helper;
 
+    @Override
+    public void postConstruct() {
+        helper = new RemoteInstanceCommandHelper(env, servers, configs);
+    }
 
     @Override
     public void execute(AdminCommandContext context) {
@@ -185,7 +196,7 @@ public class CreateInstanceCommand implements AdminCommand {
     }
 
     private void createInstanceRemote() {
-            RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodeList, logger);
+            RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodeList, logger, helper.getHost(instance), helper.getAdminPort(instance));
             ActionReport report = ctx.getActionReport();
             // check if needs a remote connection
             if (rch.isRemoteConnectRequired(node)) {

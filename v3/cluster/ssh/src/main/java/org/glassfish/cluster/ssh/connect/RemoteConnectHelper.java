@@ -64,7 +64,11 @@ public class RemoteConnectHelper  {
 
     private Logger logger;
 
-    public RemoteConnectHelper(Habitat habitat, Node[] nodes, Logger logger) {
+    private String dasHost = null;
+
+    private int dasPort = -1;
+
+    public RemoteConnectHelper(Habitat habitat, Node[] nodes, Logger logger, String dasHost, int dasPort) {
         this.logger = logger;
         this.habitat = habitat;
         nodeMap = new HashMap<String, Node>();
@@ -73,6 +77,8 @@ public class RemoteConnectHelper  {
             Node n  =  nodes[i];
             nodeMap.put(n.getName(), n);
         }        
+        this.dasHost=dasHost;
+        this.dasPort=4848;
 
     }
 
@@ -102,11 +108,11 @@ public class RemoteConnectHelper  {
         //get the node ref and see if ssh connection is setup if so use it
         try{
 
-        Node node = nodeMap.get(noderef);
-        if (node == null){
-            logger.severe("remote.connect.noSuchNodeRef"+ noderef);
-            return 0;
-        }
+            Node node = nodeMap.get(noderef);
+            if (node == null){
+                logger.severe("remote.connect.noSuchNodeRef"+ noderef);
+                return 0;
+            }
             String nodeHome = node.getNodeHome();
             if( nodeHome == null) {  // what can we assume here?
                 logger.severe("remote.connect.noNodeHome"+noderef);
@@ -118,10 +124,13 @@ public class RemoteConnectHelper  {
                 sshL.init(noderef);
 
                 // create command and params
+                /*
                 String dasHost = System.getProperty(
                     SystemPropertyConstants.HOST_NAME_PROPERTY);
                 // XXX Hack. Need to get real admin port
                 String dasPort = "4848";
+
+                */
                 String command = cmd + " " + instanceName;
 
                 // We always pass the DAS host and port to the asadmin
@@ -132,7 +141,7 @@ public class RemoteConnectHelper  {
 
                 String fullCommand = prefix + command;
 
-                ByteArrayOutputStream outStream = new ByteArrayOutputStream(10000);
+                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
                 sshL.runCommand(fullCommand, outStream);
                 String results = outStream.toString();
