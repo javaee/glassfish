@@ -50,7 +50,11 @@
     <!beforeCreate
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="mail-resource");
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.tmpRows}");
+        //REST related
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.tmpRows}", id="JndiName");
+        //REST-TODO
         getResourceRealStatus(rows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}")
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njmail.msg.JS.confirmDeleteCR}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/full/mailResourceNew.jsf");

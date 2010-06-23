@@ -51,13 +51,23 @@
     setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=mail-resource,name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
     setPageSessionAttribute(key="childType" value="mail-resource");
-    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+    //REST related
+    setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+    setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
+    setPageSessionAttribute(key="rest-api" value="true");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");    
+
     setPageSessionAttribute(key="convertToFalseList" value={"Enabled", "Debug"});
     setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+    //REST - TO DO
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
     
     setPageSessionAttribute(key="parentObjectNameStr2" value="amx:pp=/domain/servers,type=server,name=server");
     setPageSessionAttribute(key="childType2" value="resource-ref");
+    //REST related
+    setPageSessionAttribute(key="parentUrl2", value="#{sessionScope.REST_URL}/servers/server/server");
+    setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl2}/#{pageSession.childType2}/#{pageSession.encodedName}");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
     //set the following for including buttons.inc
     setPageSessionAttribute(key="edit" value="#{true}" );
     setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
@@ -66,7 +76,6 @@
     setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
 
     setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{pageSession.Name}");
-    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
     setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
     setPageSessionAttribute(key="has2Objects" value="#{true}" );
     />

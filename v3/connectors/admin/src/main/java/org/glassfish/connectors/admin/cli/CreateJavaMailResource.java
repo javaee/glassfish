@@ -66,13 +66,13 @@ public class CreateJavaMailResource implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(CreateJavaMailResource.class);
 
-    @Param(name="mailhost")
+    @Param(name="mailhost", alias="host")
     String mailHost;
 
-    @Param(name="mailuser")
+    @Param(name="mailuser", alias="user")
     String mailUser;
 
-    @Param(name="fromaddress")
+    @Param(name="fromaddress",alias="from")
     String fromAddress;
 
     @Param(name="jndi_name", primary=true)
