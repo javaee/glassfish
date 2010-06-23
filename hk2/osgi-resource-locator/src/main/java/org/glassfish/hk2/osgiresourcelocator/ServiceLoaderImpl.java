@@ -213,7 +213,7 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
                     try {
                         is = url.openStream();
                         List<String> providerNames = load(is);
-                        System.out.println("Bundle = " + bundle + ", serviceName = " + serviceName + ", providerNames = " + providerNames);
+//                        System.out.println("Bundle = " + bundle + ", serviceName = " + serviceName + ", providerNames = " + providerNames);
                         providers.put(serviceName, providerNames);
                     } catch (IOException e) {
                     }
