@@ -60,6 +60,9 @@
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+        //REST related
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+        setPageSessionAttribute(key="rest-api" value="true");
     />
     </event>
             <sun:form id="propertyForm">

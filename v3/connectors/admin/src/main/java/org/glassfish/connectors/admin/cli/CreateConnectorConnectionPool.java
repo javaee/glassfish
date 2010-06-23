@@ -74,7 +74,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateConnectorConnectionPool.class);
 
-    @Param(name="raname")
+    @Param(name="raname", alias="resourceAdapterName")
     String raname;
 
     @Param(name="connectiondefinition", alias="connectiondefinitionname")
@@ -86,19 +86,19 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Param(name="maxpoolsize", optional=true)
     String maxpoolsize = "32";
 
-    @Param(name="maxwait", optional=true)
+    @Param(name="maxwait", optional=true, alias="maxWaitTimeInMillis")
     String maxwait = "60000";
 
-    @Param(name="poolresize", optional=true)
+    @Param(name="poolresize", optional=true, alias="poolResizeQuantity")
     String poolresize = "2";
 
-    @Param(name="idletimeout", optional=true)
+    @Param(name="idletimeout", optional=true, alias="idleTimeoutInSeconds")
     String idletimeout = "300";
 
-    @Param(name="isconnectvalidatereq", optional=true, defaultValue="false")
+    @Param(name="isconnectvalidatereq", optional=true, defaultValue="false", alias="isConnectionValidationRequired")
     Boolean isconnectvalidatereq;
 
-    @Param(name="failconnection", optional=true, defaultValue="false")
+    @Param(name="failconnection", optional=true, defaultValue="false", alias="failAllConnections")
     Boolean failconnection;
 
     @Param(name="leaktimeout", optional=true)

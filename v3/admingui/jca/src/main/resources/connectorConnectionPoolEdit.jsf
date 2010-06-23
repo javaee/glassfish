@@ -51,12 +51,17 @@
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
+        //REST related
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
 
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"Ping" "IsConnectionValidationRequired" "FailAllConnections" "AssociateWithThread" "ConnectionLeakReclaim" "LazyConnectionAssociation" "LazyConnectionEnlistment" "MatchConnections" });
         setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+        //REST-TO DO
         getApplicationBySnifferType(type="connector"  result="#{requestScope.rarList}");
         addSystemConnectors(rarList="#{requestScope.rarList}" result="#{pageSession.modList}")
 
@@ -75,13 +80,14 @@
         <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
-                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                gf.updateEntity(endpoint="#{pageSession.selfUrl}"  attrs="#{pageSession.valueMap}"
                     skipAttrs="#{pageSession.skipAttrsList}"
                     convertToFalse="#{pageSession.convertToFalseList}"
                     onlyUseAttrs="#{pageSession.onlyUseAttrs}"
                 );
                 prepareSuccessfulMsg();
                 if ("#{valueMap['Ping']}") {
+                    //REST-TO DO
                     pingJdbcConnectionPool(jndiName="#{valueMap['Name']}", wmsg="$resource{i18njca.msg.warning.poolSavedPingFailed}");
                 }
                 gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");

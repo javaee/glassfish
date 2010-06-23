@@ -51,7 +51,11 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
-        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.tmpMap}")
+        //REST related
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.tmpMap}");
+        //REST - TO DO
         getApplicationBySnifferType(type="connector" result="#{requestScope.tmpList}")
         filterOutRarExtension(inList="#{requestScope.tmpList}" convertedList="#{requestScope.rarList}")
         addSystemConnectors(rarList="#{requestScope.rarList}" result="#{requestScope.modList}")
@@ -80,6 +84,7 @@
                         <sun:button id="nextButton" text="$resource{i18n.button.Next}" 
                             onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                             <!command
+                                //REST - TO DO
                                 updateConnectorConnectionPoolWizard();
                                 gf.redirect(page="#{request.contextPath}/jca/connectorConnectionPoolNew2.jsf")
                             />

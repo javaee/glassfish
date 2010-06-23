@@ -51,8 +51,13 @@
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
     setPageSessionAttribute(key="childType" value="connector-connection-pool");
     setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+    //REST - TO DO
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
-    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+    //REST related
+    setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+    setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
+    setPageSessionAttribute(key="rest-api" value="true");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
 
     //set the following for including buttons.inc
     />
@@ -69,6 +74,7 @@
                 <!command
                 getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                 getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                //REST - TO DO
                 setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                 prepareSuccessfulMsg();
                 if ("#{valueMap['Ping']}") {

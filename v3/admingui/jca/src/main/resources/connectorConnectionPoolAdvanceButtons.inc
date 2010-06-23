@@ -41,13 +41,14 @@
     <sun:button id="saveButton"  text="$resource{i18n.button.Save}"
             onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
-            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+            gf.updateEntity(endpoint="#{pageSession.selfUrl}"  attrs="#{pageSession.valueMap}"
                 skipAttrs="#{pageSession.skipAttrsList}"
                 convertToFalse="#{pageSession.convertToFalseList}"
                 onlyUseAttrs="#{pageSession.onlyUseAttrs}"
             );
             prepareSuccessfulMsg();
             if ("#{valueMap['Ping']}") {
+                //REST-TO DO
                 pingJdbcConnectionPool(jndiName="#{valueMap['Name']}", wmsg="$resource{i18njca.msg.warning.poolSavedPingFailed}");
             }
             gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");

@@ -54,7 +54,6 @@
         setPageSessionAttribute(key="dependentType" value="connector-resource");
         setPageSessionAttribute(key="resHeader" value="$resource{i18njca.resourcesTable.colResAdapter}");
         setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18njca.resourcesTable.colDefinition}");
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeletePools}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jca/connectorConnectionPoolNew1.jsf");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
@@ -63,6 +62,10 @@
         setPageSessionAttribute(key="resHeader" value="$resource{i18njca.resourcesTable.colResAdapter}");
         setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18njca.resourcesTable.colDefinition}");
         setPageSessionAttribute(key="jcapool" value="#{true}" );
+        //REST related
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
         
     />
     </event>

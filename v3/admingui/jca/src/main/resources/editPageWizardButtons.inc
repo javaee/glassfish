@@ -51,16 +51,20 @@
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     updateConnectorConnectionPoolWizardStep2();
-                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                            attrs="#{sessionScope.wizardMap}"
-                            convertToFalse="#{pageSession.convertToFalseList}"
-                            result => $attribute{objStr});
+                    gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
+                        attrs="#{sessionScope.wizardMap}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                        result => $attribute{resultEndPoint});
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                        //REST - TO DO
+                        if ( !#{pageSession['rest-api']}) {
+                           setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                        }
                     }
                     if ("#{sessionScope.wizardMap['Ping']}") {
+                        //REST - TO DO
                         pingJdbcConnectionPool(jndiName="#{sessionScope.wizardMap['Name']}" , wmsg="$resource{i18njca.msg.warning.poolCreatedPingFailed}");
                         setSessionAttribute(key="wizardMap" value="#{null}")
                         setSessionAttribute(key="wizardPoolExtra" value="#{null}")

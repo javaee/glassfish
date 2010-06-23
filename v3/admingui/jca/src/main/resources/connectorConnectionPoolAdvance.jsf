@@ -50,7 +50,12 @@
     setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
     setPageSessionAttribute(key="childType" value="connector-connection-pool");
-    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+    //REST related
+    setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+    setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
+    setPageSessionAttribute(key="rest-api" value="true");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+
     setPageSessionAttribute(key="convertToFalseList" value={"Pooling" "FailAllConnections" "IsConnectionValidationRequired" "AssociateWithThread" "ConnectionLeakReclaim" "LazyConnectionAssociation" "LazyConnectionEnlistment" "MatchConnections"});
     setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
     //set the following for including buttons.inc

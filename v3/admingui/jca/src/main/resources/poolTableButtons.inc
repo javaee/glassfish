@@ -18,11 +18,11 @@
             getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
             if ( #{pageSession.jcapool}) {
-                deleteCascade(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}",  dependentType="#{pageSession.dependentType}", selectedRows="${selectedRows}");
+                gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", selectedRows="${selectedRows}", cascade="true");
             }
             if (! #{pageSession.jcapool}) {
-                deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
-            } 
+                gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", selectedRows="${selectedRows}");
+            }
             setAttribute(key="selectedRows" value="${selectedRows}");
             gf.redirect(page="#{pageSession.listLink}");
         />
