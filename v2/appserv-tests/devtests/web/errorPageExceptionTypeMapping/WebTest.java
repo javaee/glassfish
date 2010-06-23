@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,7 +52,7 @@ public class WebTest {
         = "error-page-exception-type-mapping";
 
     private static final String EXPECTED_STATUS =
-        "HTTP/1.1 500 java.sql.SQLException";
+        "HTTP/1.1 500 ";
 
     private static final String EXPECTED_RESPONSE_BODY =
         "Custom error page for SQL exception";
@@ -112,7 +112,7 @@ public class WebTest {
             bis = new BufferedReader(new InputStreamReader(is));
             String line = null;
             while ((line = bis.readLine()) != null) {
-                if (EXPECTED_STATUS.equals(line)) {
+                if (line.startsWith(EXPECTED_STATUS)) {
                     statusMatched = true;
                 }
                 if (EXPECTED_RESPONSE_BODY.equals(line)) {
