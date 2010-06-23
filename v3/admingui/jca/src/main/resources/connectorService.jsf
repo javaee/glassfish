@@ -46,7 +46,10 @@
     getRequestValue(key="configName" value=>$page{configName} default="server-config");
     setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorService.jsf?configName=#{pageSession.configName}");
     setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=connector-service");
-    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+    setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
+    setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/connector-service");
+    setPageSessionAttribute(key="rest-api" value="true");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
     setPageSessionAttribute(key="childType" value="connector-service");
     //set the following for including buttons.inc

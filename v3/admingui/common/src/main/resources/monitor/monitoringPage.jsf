@@ -49,8 +49,12 @@
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
         setPageSessionAttribute(key="childType" value="monitoring-service");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=monitoring-service");
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"DtraceEnabled", "MonitoringEnabled", "MbeanEnabled"});
+        // REST - TODO
         getMonitorLevels(objectName="amx:pp=/domain/configs/config[server-config]/monitoring-service,type=module-monitoring-levels" monitorCompList="#{requestScope.tableList}")
         //getValidMonitorLevels(monitorLevelList="#{pageSession.levelList}")
         
