@@ -53,7 +53,8 @@
     <property name="xmlfile" value="${env.APS_HOME}/test_resultsValid.xml" />
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
     <property name="teststorun" value="cli"/>
-    <property name="ENABLE_REPLICATION" value="true"/>
+    <property name="verbose" value="false"/>
+    <property name="javaprops" value="-Dverbose=${verbose}"/>
 
     <path id="class.path">
         <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
@@ -64,38 +65,55 @@
 
     <target name="cli" depends="ports, instance, cluster, configs, sync, domain, backup, tokens"/>
     <target name="cluster">
-        <java classname="admin.ClusterTest"  fork="true" classpath="${test}"/>
+        <java classname="admin.ClusterTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>
     </target>
     <target name="instance">
         <java classname="admin.InstanceTest"  fork="true" classpath="${test}">
             <jvmarg value="-Xdebug"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1323"/>
             <jvmarg value="-DNUM_TESTS=${num_tests}"/>
+            <jvmarg value="${javaprops}"/>
         </java>
     </target>
     <target name="ports" depends="build">
-        <java classname="admin.PortTests"  fork="true" classpath="${test}"/>
+        <java classname="admin.PortTests"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>
     </target>
     <target name="configs">
-        <java classname="admin.ConfigTests"  fork="true" classpath="${test}"/>
+        <java classname="admin.ConfigTests"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>
     </target>
     <target name="sync">
-        <java classname="admin.SyncTest"  fork="true" classpath="${test}"/>
+        <java classname="admin.SyncTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>
     </target>
     <target name="domain">
-         <java classname="admin.DomainTest"  fork="true" classpath="${test}"/>
+         <java classname="admin.DomainTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>
     </target>
     <target name="backup">
         <antcall target="cleanAS"/>
-        <java classname="admin.BackupCommandsTest"  fork="true" classpath="${test}"/>
+        <java classname="admin.BackupCommandsTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>
     </target>
     <target name="tokens">
-         <java classname="admin.TokenTest"  fork="true" classpath="${test}"/>
+         <java classname="admin.TokenTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>
     </target>
 
     <target name="portsonly" depends="init">
         <record name="admin.output" action="start" />
-        <java classname="admin.PortTests"  fork="true" classpath="${test}"/>
+        <java classname="admin.PortTests"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>            
         <antcall target="ports"/>
         <record name="admin.output" action="stop" />
         <antcall target="dev-report"/>
@@ -129,6 +147,6 @@
     </target>
 
     <target name="usage">
-        <echo>Usage: ant [-Dtesttorun=instance|cluster] [-Dnum_tests=n] all (Executes the admin tests)</echo>
+        <echo>Usage: ant [-Dtesttorun=instance|cluster|...] [-Dnum_tests=n] [-Dverbose=true/false] all (Executes the admin tests)</echo>
     </target>
 </project>

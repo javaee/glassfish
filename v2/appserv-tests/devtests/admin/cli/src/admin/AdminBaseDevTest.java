@@ -53,13 +53,16 @@ import java.util.TreeSet;
 abstract class AdminBaseDevTest extends BaseDevTest {
     
     AdminBaseDevTest() {
-        // bnevins -- I don't want to spend a bunch of time figuring out how to
-        // get ant -Dverbose=true percolated down into every test we run.
-        // So I'm doing it by hard-coding
-        // If you know how to do this better -- go for it!!!
+        boolean verbose = false;
+        try {
+            verbose = Boolean.parseBoolean(System.getProperty("verbose"));
+        }
+        catch (Exception e) {}
 
-        setVerbose(false);
-        System.out.println("#####  Non-Vervbose: Only Failures Are Printed #####");
+        setVerbose(verbose);
+        if (!verbose) {
+            System.out.println("#####  Non-Verbose: Only Failures Are Printed #####");
+        }
     }
 
     @Override
