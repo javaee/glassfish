@@ -87,7 +87,7 @@ public class WebTest {
     public void doTest() {     
         try { 
             invoke("/403.jsp", "HTTP/1.1 403");
-            invoke("/throwable.jsp", "HTTP/1.1 500 java.lang.Throwable");
+            invoke("/throwable.jsp", "HTTP/1.1 500");
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
