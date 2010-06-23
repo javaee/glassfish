@@ -51,6 +51,16 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 abstract class AdminBaseDevTest extends BaseDevTest {
+    
+    AdminBaseDevTest() {
+        // bnevins -- I don't want to spend a bunch of time figuring out how to
+        // get ant -Dverbose=true percolated down into every test we run.
+        // So I'm doing it by hard-coding
+        // If you know how to do this better -- go for it!!!
+
+        setVerbose(false);
+        System.out.println("#####  Non-Vervbose: Only Failures Are Printed #####");
+    }
 
     @Override
     public String getTestName() {
@@ -68,11 +78,11 @@ abstract class AdminBaseDevTest extends BaseDevTest {
 
         // another issue is hacking off strings after a space.  Makes no sense to me!!
 
-        if(name.length() > MAX_LENGTH - 3)
+        if (name.length() > MAX_LENGTH - 3)
             name = name.substring(0, MAX_LENGTH - 3);
         String name2 = name.replace(' ', '_');
         if (!name2.equals(name)) {
-            System.out.println("Found spaces in the name.  Replaced with underscore. "
+            write("Found spaces in the name.  Replaced with underscore. "
                     + "before: " + name + ", after: " + name2);
             name = name2;   // don't foul logic below!
         }
@@ -84,16 +94,19 @@ abstract class AdminBaseDevTest extends BaseDevTest {
         }
 
         if (!name2.equals(name)) {
-            System.out.println("Duplicate name found (" + name
+            write("Duplicate name found (" + name
                     + ") and replaced with: " + name2);
         }
 
         int numpads = 60 - name2.length();
-        
-        if(numpads > 0)
+
+        if (numpads > 0)
             name2 += DASHES.substring(0, numpads);
 
         super.report(name2, success);
+        
+        if(!success && !isVerbose())
+            writeFailure();
     }
 
     @Override
@@ -238,7 +251,7 @@ abstract class AdminBaseDevTest extends BaseDevTest {
     final boolean ok(String s) {
         return s != null && s.length() > 0;
     }
-    private static final int MAX_LENGTH = 54;
+    private static final int MAX_LENGTH = 51;
     private static final String DASHES =
             "------------------------------------------------------------------------------------------------------------------------------";
 }
