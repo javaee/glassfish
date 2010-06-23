@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.appserv.test;
 
 import java.io.File;
@@ -88,10 +87,10 @@ public abstract class BaseDevTest {
      * @return true if successful
      */
     public boolean asadmin(final String... args) {
-        AsadminReturn ret = asadminWithOutput(args);
-        write(ret.out);
-        write(ret.err);
-        return ret.returnValue;
+        lastAsadminReturn = asadminWithOutput(args);
+        write(lastAsadminReturn.out);
+        write(lastAsadminReturn.err);
+        return lastAsadminReturn.returnValue;
     }
 
     /**
@@ -120,7 +119,8 @@ public abstract class BaseDevTest {
 
         try {
             exit = pm.execute();
-        } catch (ProcessManagerException ex) {
+        }
+        catch (ProcessManagerException ex) {
             exit = 1;
         }
 
@@ -155,7 +155,8 @@ public abstract class BaseDevTest {
                 FileReader reader = new FileReader(new File(apsHome, "config.properties"));
                 try {
                     props.load(reader);
-                } finally {
+                }
+                finally {
                     reader.close();
 
                 }
@@ -172,7 +173,8 @@ public abstract class BaseDevTest {
                     value = value.replace(var, System.getenv(name));
                     System.setProperty(key, value);
                 }
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e.getMessage(), e);
             }
@@ -180,8 +182,22 @@ public abstract class BaseDevTest {
         return value;
     }
 
+    protected final void write() {
+        if (verbose) {
+            write(lastAsadminReturn.out);
+            write(lastAsadminReturn.err);
+        }
+    }
+
     public void write(final String text) {
-        System.out.println(text);
+        if (verbose)
+            System.out.println(text);
+    }
+
+    protected final void writeFailure() {
+        System.out.println(FAILURE_START);
+        System.out.println(lastAsadminReturn.out);
+        System.out.println(lastAsadminReturn.err);
     }
 
     /**
@@ -214,7 +230,8 @@ public abstract class BaseDevTest {
             Object result = xexpr.evaluate(doc, ret);
             write("Evaluating" + f.getAbsolutePath());
             return result;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -271,7 +288,8 @@ public abstract class BaseDevTest {
         File glassFishHome = new File(home);
         try {
             glassFishHome = glassFishHome.getCanonicalFile();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             glassFishHome = glassFishHome.getAbsoluteFile();
         }
         if (!glassFishHome.isDirectory()) {
@@ -287,6 +305,18 @@ public abstract class BaseDevTest {
     public void cleanup() {
     }
 
+    protected final boolean isVerbose() {
+        return verbose;
+    }
+
+    protected final void setVerbose(boolean b) {
+        verbose = b;
+    }
+
+    protected final AsadminReturn getLastAsadminReturn() {
+        return lastAsadminReturn;
+    }
+
     // simple C-struct -- DIY
     public static class AsadminReturn {
 
@@ -296,4 +326,8 @@ public abstract class BaseDevTest {
         public String outAndErr;
     }
     private static final int DEFAULT_TIMEOUT_MSEC = 120000; // 2 minutes
+    private boolean verbose = true;
+    // in case the command fails so that it can be printed (Hack bnevins)
+    private AsadminReturn lastAsadminReturn;
+    private static final String FAILURE_START = "#########    FAILURE   #########";
 }
