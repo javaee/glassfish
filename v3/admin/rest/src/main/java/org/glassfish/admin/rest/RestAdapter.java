@@ -112,7 +112,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     private Map<Integer, String> httpStatus = new HashMap<Integer, String>() {{
         put(404, "Resource not found");
-        put(500, "A server error occured. Please check the server logs.");
+        put(500, "A server error occurred. Please check the server logs.");
     }};
 
     protected RestAdapter() {
@@ -145,26 +145,20 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 return;
             } else {
 
-                Cookie[] cookies = req.getCookies();
-                boolean isAdminClient = false;
-                String uid = RestService.getRestUID();
-                if (uid != null) {
-                    if (cookies != null) {
-                        for (Cookie cookie: cookies) {
-                            if (cookie.getName().equals("gfrestuid")) {
-                                if (cookie.getValue().equals(uid)) {
-                                    isAdminClient = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (!isAdminClient) { //authenticate all clients except admin client
-                    if (!authenticate(req, report, res)) { //admin client - client with valid rest interface uid
-                        return;
-                    }
+                if (!authenticate(req)) {
+                    //Could not authenticate throw error
+                    String msg = localStrings.getLocalString("rest.adapter.auth.userpassword",
+                            "Invalid user name or password");
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setMessage(msg);
+                    report.setActionDescription("Authentication error");
+                    res.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
+                    res.setHeader("WWW-Authenticate", "BASIC");
+                    res.setContentType(report.getContentType());
+                    report.writeReport(res.getOutputStream());
+                    res.getOutputStream().flush();
+                    res.finishResponse();
+                    return;
                 }
 
                 //delegate to adapter managed by Jersey.
@@ -230,8 +224,62 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 //        }
     }
 
+    private boolean authenticate(GrizzlyRequest req) throws LoginException, IOException {
+        boolean authenticated = false;
 
-    public boolean authenticate(Request req) throws LoginException, IOException  {
+        authenticated = authenticateViaLocalPassword(req);
+
+        if(!authenticated) {
+            authenticated = authenticateViaRestToken(req);
+        }
+        
+        if(!authenticated) {
+            authenticated = authenticateViaAdminRalm(req.getRequest());
+        }
+
+        return authenticated;
+
+    }
+
+    private boolean authenticateViaRestToken(GrizzlyRequest req) { 
+        boolean authenticated = false;
+//        String restToken = req.getAuthorization(); //TODO investigate using Authorization header for token
+        Cookie[] cookies = req.getCookies();
+        String restToken = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("gfresttoken".equals(cookie.getName())) {
+                    restToken = cookie.getValue();
+                }
+            }
+        }
+        if(restToken != null) {
+            authenticated  = SessionManager.getSessionManager().authenticate(restToken);
+        }
+        return authenticated;
+    }
+
+    private boolean authenticateViaLocalPassword(GrizzlyRequest req) {
+        Cookie[] cookies = req.getCookies();
+        boolean authenticated = false;
+        String uid = RestService.getRestUID();
+        if (uid != null) {
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("gfrestuid")) {
+                        if (cookie.getValue().equals(uid)) {
+                            authenticated = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return authenticated;
+    }
+
+
+    private boolean authenticateViaAdminRalm(Request req) throws LoginException, IOException  {
         String[] up = AdminAdapter.getUserPassword(req);
         String user = up[0];
         String password = up.length > 1 ? up[1] : "";
@@ -317,27 +365,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     protected abstract Set<Class<?>> getResourcesConfig();
 
 
-    private boolean authenticate(GrizzlyRequest req, ActionReport report, GrizzlyResponse res)
-            throws LoginException, IOException {
-        boolean authenticated = authenticate(req.getRequest());
-        if (!authenticated) {
-            String msg = localStrings.getLocalString("rest.adapter.auth.userpassword",
-                    "Invalid user name or password");
-            System.out.println("msg: " + msg);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
-            report.setActionDescription("Authentication error");
-            res.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
-            res.setHeader("WWW-Authenticate", "BASIC");
-            res.setContentType(report.getContentType());
-            report.writeReport(res.getOutputStream());
-            res.getOutputStream().flush();
-            res.finishResponse();
-        }
-        return authenticated;
-    }
-
-
     private ActionReport getClientActionReport(String requestURI, GrizzlyRequest req) {
 
 
@@ -378,7 +405,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         if ((context != null) || (!"".equals(context))) {
             Set<Class<?>> classes = getResourcesConfig();
 
-            // we replace the following code with instrospection code
+            // we replace the following code with introspection code
             // in order to not load the jersery class until this method is called.
             // this way, we gain around 90ms at startup time by not loading jersey classes.
             // they are loaded only when a REST service is called.

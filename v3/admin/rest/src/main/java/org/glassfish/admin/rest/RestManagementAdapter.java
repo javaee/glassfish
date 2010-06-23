@@ -37,6 +37,8 @@ package org.glassfish.admin.rest;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import org.glassfish.admin.rest.staticresources.SessionsResource;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -58,6 +60,7 @@ public class RestManagementAdapter extends RestAdapter {
         // uncomment if you need to run the generator:
         r.add(GeneratorResource.class);
         r.add(org.glassfish.admin.rest.resources.DomainResource.class);
+        r.add(SessionsResource.class); //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
 
         //body readers, not in META-INF/services anymore
         r.add(org.glassfish.admin.rest.provider.FormReader.class);
