@@ -52,6 +52,10 @@ own identifying information: Portions Copyright [yyyy]
 
       <move file="target/stage/${install.dir.name}/glassfish/modules/javax.annotation.jar" todir="target/stage/${install.dir.name}/glassfish/modules/endorsed" failonerror="false"/>
 
+      <mkdir dir="target/stage/${install.dir.name}/glassfish/modules/autostart"/>
+
+      <move file="target/stage/${install.dir.name}/glassfish/modules/osgi-javaee-base.jar" todir="target/stage/${install.dir.name}/glassfish/modules/autostart" failonerror="false"/>
+
        <if test="${compression}">
 	       <antcall target="pack.compression" />
        </if>
