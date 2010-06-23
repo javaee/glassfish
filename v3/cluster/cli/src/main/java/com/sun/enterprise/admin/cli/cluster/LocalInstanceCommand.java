@@ -238,20 +238,20 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         }
         dasprops.setProperty("agent.das.protocol", "http");
         dasprops.setProperty("agent.das.port", Integer.toString(port));
-        FileOutputStream fos = null;
+        BufferedOutputStream bos = null;
         try {
-            fos = new FileOutputStream(propfile);
-            dasprops.store(fos,
+            bos = new BufferedOutputStream(new FileOutputStream(propfile));
+            dasprops.store(bos,
                 "Domain Administration Server Connection Properties");
-            fos.close();
-            fos = null;
+            bos.close();
+            bos = null;
         } catch (IOException ex2) {
             logger.printMessage(
                 strings.get("Instance.dasPropertiesUpdateFailed"));
         } finally {
-            if (fos != null) {
+            if (bos != null) {
                 try {
-                    fos.close();
+                    bos.close();
                 } catch (IOException cex) {
                     // ignore it
                 }
