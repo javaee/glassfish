@@ -180,7 +180,7 @@ public class EJBContainerImpl extends EJBContainer {
         cleanupTransactions();
         cleanupConnectorRuntime();
         undeploy();
-        if (res_app.deleteOnExit()) {
+        if (res_app != null && res_app.deleteOnExit()) {
             try {
                 FileUtils.whack((File)res_app.getApplication());
             } catch (Exception e) {
