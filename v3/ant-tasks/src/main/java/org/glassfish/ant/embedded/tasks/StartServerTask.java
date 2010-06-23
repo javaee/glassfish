@@ -76,10 +76,14 @@ public class StartServerTask extends TaskBase {
 
 
     public void execute() throws BuildException {
-        log ("Starting server");
 
         try {
-            Server server = Util.getServer(serverID, installRoot, instanceRoot, configFile, autoDelete);
+            Server server = Server.getServer(serverID);
+            if (server != null) {
+                return;
+            }
+            log ("Starting server");
+            server = Util.getServer(serverID, installRoot, instanceRoot, configFile, autoDelete);
 
             Util.createPort(server, configFile, port);
 
