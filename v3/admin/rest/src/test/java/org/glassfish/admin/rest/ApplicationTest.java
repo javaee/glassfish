@@ -54,22 +54,65 @@ public class ApplicationTest extends RestTestBase {
     @Test
     public void testApplicationDeployment() {
         final String appName = "testApp" + generateRandomString();
-        FormDataMultiPart f;
-        Map<String, Object> newApp = new HashMap<String, Object>() {{
-            put("id", new File("src/test/resources/test.war"));
-            put("contextroot", appName);
-            put("name", appName);
-        }};
+        Map<String, Object> newApp = new HashMap<String, Object>() {
 
-        ClientResponse response = postWithUpload(URL_APPLICATION_DEPLOY, newApp);
-        assertTrue(isSuccess(response));
+            {
+                put("id", new File("src/test/resources/test.war"));
+                put("contextroot", appName);
+                put("name", appName);
+            }
+        };
 
-        Map<String, String> deployedApp = getEntityValues(get(URL_APPLICATION_DEPLOY+"/"+appName));
+        Map<String, String> deployedApp = deployApp(newApp);
         assertEquals(appName, deployedApp.get("name"));
-        System.out.println("/"+appName + "\n/"+deployedApp.get("contextRoot"));
-        assertEquals("/"+appName, deployedApp.get("contextRoot"));
 
-        response = delete(URL_APPLICATION_DEPLOY+"/"+appName);
+        assertEquals("/" + appName, deployedApp.get("contextRoot"));
+
+        undeployApp(newApp);
+    }
+
+//    @Test
+    public void testApplicationDisableEnable() {
+        final String appName = "testApp" + generateRandomString();
+        Map<String, Object> newApp = new HashMap<String, Object>() {
+
+            {
+                put("id", new File("src/test/resources/test.war"));
+                put("contextroot", appName);
+                put("name", appName);
+            }
+        };
+
+        Map<String, String> deployedApp = deployApp(newApp);
+        assertEquals(appName, deployedApp.get("name"));
+
+        assertEquals("/" + appName, deployedApp.get("contextRoot"));
+
+        try {
+            ClientResponse response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/disable", null);
+            assertTrue(isSuccess(response));
+            deployedApp = getEntityValues(get(URL_APPLICATION_DEPLOY + "/" + newApp.get("name")));
+            ;
+            assertEquals("false", deployedApp.get("enabled"));
+
+            response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/enable", null);
+            assertTrue(isSuccess(response));
+            deployedApp = getEntityValues(get(URL_APPLICATION_DEPLOY + "/" + newApp.get("name")));
+            ;
+            assertEquals("true", deployedApp.get("enabled"));
+        } finally {
+            undeployApp(newApp);
+        }
+    }
+
+    protected Map<String, String> deployApp(Map<String, Object> app) {
+        ClientResponse response = postWithUpload(URL_APPLICATION_DEPLOY, app);
         assertTrue(isSuccess(response));
+
+        return getEntityValues(get(URL_APPLICATION_DEPLOY + "/" + app.get("name")));
+    }
+
+    protected void undeployApp(Map<String, Object> app) {
+        assertTrue(isSuccess(delete(URL_APPLICATION_DEPLOY + "/" + app.get("name"))));
     }
 }

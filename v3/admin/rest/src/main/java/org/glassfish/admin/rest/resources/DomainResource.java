@@ -45,6 +45,30 @@ DomainListTargetsResource resource = resourceContext.getResource(DomainListTarge
 return resource;
 }
 
+@Path("create-instance/")
+public DomainCreateInstanceResource getDomainCreateInstanceResource() {
+DomainCreateInstanceResource resource = resourceContext.getResource(DomainCreateInstanceResource.class);
+return resource;
+}
+
+@Path("delete-instance/")
+public DomainDeleteInstanceResource getDomainDeleteInstanceResource() {
+DomainDeleteInstanceResource resource = resourceContext.getResource(DomainDeleteInstanceResource.class);
+return resource;
+}
+
+@Path("start-instance/")
+public DomainStartInstanceResource getDomainStartInstanceResource() {
+DomainStartInstanceResource resource = resourceContext.getResource(DomainStartInstanceResource.class);
+return resource;
+}
+
+@Path("stop-instance/")
+public DomainStopInstanceResource getDomainStopInstanceResource() {
+DomainStopInstanceResource resource = resourceContext.getResource(DomainStopInstanceResource.class);
+return resource;
+}
+
 @Path("host-port/")
 public DomainHostPortResource getDomainHostPortResource() {
 DomainHostPortResource resource = resourceContext.getResource(DomainHostPortResource.class);
@@ -101,7 +125,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"list-targets", "GET"}, {"host-port", "GET"}, {"list-logger-levels", "GET"}, {"list-instances", "GET"}, {"restart", "POST"}, {"rotate-log", "POST"}, {"set-log-level", "POST"}, {"stop", "POST"}, {"uptime", "GET"}, {"version", "GET"}};
+return new String[][]{{"list-targets", "GET"}, {"create-instance", "POST"}, {"delete-instance", "DELETE"}, {"start-instance", "POST"}, {"stop-instance", "POST"}, {"host-port", "GET"}, {"list-logger-levels", "GET"}, {"list-instances", "GET"}, {"restart", "POST"}, {"rotate-log", "POST"}, {"set-log-level", "POST"}, {"stop", "POST"}, {"uptime", "GET"}, {"version", "GET"}};
 }
 
 	@Path("resources/")

@@ -38,6 +38,23 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class ClusterResource extends TemplateResource {
 
+@Path("start-cluster/")
+public ClusterStartClusterResource getClusterStartClusterResource() {
+ClusterStartClusterResource resource = resourceContext.getResource(ClusterStartClusterResource.class);
+return resource;
+}
+
+@Path("stop-cluster/")
+public ClusterStopClusterResource getClusterStopClusterResource() {
+ClusterStopClusterResource resource = resourceContext.getResource(ClusterStopClusterResource.class);
+return resource;
+}
+
+@Override
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"start-cluster", "POST"}, {"stop-cluster", "POST"}};
+}
+
 	@Path("application-ref/")
 	public ListApplicationRefResource getApplicationRefResource() {
 		ListApplicationRefResource resource = resourceContext.getResource(ListApplicationRefResource.class);

@@ -38,6 +38,17 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class NodesResource extends TemplateResource {
 
+@Path("create-node/")
+public NodesCreateNodeResource getNodesCreateNodeResource() {
+NodesCreateNodeResource resource = resourceContext.getResource(NodesCreateNodeResource.class);
+return resource;
+}
+
+@Override
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"create-node", "POST"}};
+}
+
 	@Path("node/")
 	public ListNodeResource getNodeResource() {
 		ListNodeResource resource = resourceContext.getResource(ListNodeResource.class);

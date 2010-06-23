@@ -34,25 +34,18 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.Path;
-import org.glassfish.admin.rest.TemplateResource;
-public class ClustersResource extends TemplateResource {
 
-@Path("create-cluster/")
-public ClustersCreateClusterResource getClustersCreateClusterResource() {
-ClustersCreateClusterResource resource = resourceContext.getResource(ClustersCreateClusterResource.class);
-return resource;
-}
+//generated code...;
 
-@Override
-public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-cluster", "POST"}};
-}
-
-	@Path("cluster/")
-	public ListClusterResource getClusterResource() {
-		ListClusterResource resource = resourceContext.getResource(ListClusterResource.class);
-		resource.setParentAndTagName(getEntity() , "cluster");
-		return resource;
-	}
+public class DomainStartInstanceResource extends org.glassfish.admin.rest.TemplateCommandPostResource {
+   public DomainStartInstanceResource() {
+       super(
+          "DomainStartInstance",
+          "start-instance",
+          "POST",
+          "Start Instance",
+          "start-instance",
+          (java.util.HashMap<String, String>) null ,
+          false);
+    }
 }
