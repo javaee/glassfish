@@ -62,7 +62,8 @@ public class ConfigTests extends AdminBaseDevTest {
         startDomain();
         testCopyDeleteListConfig();
         testDeleteConfig();
-        testConcurrentConfigAccess();
+        // commented out until issue 12313 is resolved
+        //testConcurrentConfigAccess();
         stopDomain();
         stat.printSummary();
     }
