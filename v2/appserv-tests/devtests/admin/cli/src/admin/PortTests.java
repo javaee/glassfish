@@ -99,10 +99,10 @@ public class PortTests extends AdminBaseDevTest {
 
         // UNIX -- if you are not superuser then we try incrementing 50 times and then quit.  Which is WAY under 1024.
 
-        int newPort = 0;
+        int newPort = 1000;
 
-        //if(isWindows())
-            //newPort = 0;
+        if(isWindows())
+            newPort = 0;
 
         nums[3] = newPort;
         report("create-instance-" + iname + "illegalPortsSpecified", asadmin("create-local-instance", "--systemproperties", assembleEnormousPortsString(nums), iname));
