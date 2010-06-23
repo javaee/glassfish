@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2006-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,7 +58,6 @@ public class RestTests {
         }
     }
 
-    /* Disable for now
     @Test
     public void testMonitoringEndpoint() {
         try {
@@ -68,7 +67,6 @@ public class RestTests {
             Assert.fail(e.getMessage());
         }
     }
-    */
 
     @Test
     public void testEndpointWithEncodedSlash() {
