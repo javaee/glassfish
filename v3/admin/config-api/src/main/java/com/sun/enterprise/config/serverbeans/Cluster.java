@@ -140,7 +140,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(defaultValue="2299")
+    @Attribute
     @Min(value=2048)
     @Max(value=49151)
     @NotNull
@@ -165,7 +165,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(defaultValue="229.9.1.1")
+    @Attribute
     @NotNull
     String getGmsMulticastAddress();
 
@@ -446,6 +446,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             instance.setGmsBindInterfaceAddress(String.format(
                 "${GMS-BIND-INTERFACE-ADDRESS-%s}",
                 instanceName));
+
+            instance.setGmsMulticastAddress("229.9.1.1");
+            instance.setGmsMulticastPort("2299");
 
             Property gmsListenerPort = instance.createChild(Property.class);
             gmsListenerPort.setName("GMS_LISTENER_PORT");
