@@ -507,6 +507,7 @@
         <ant dir="weblogicDD/sessionExpired" target="all"/>
         <ant dir="weblogicDD/sessionIdUrlRewriteSessionTrackingModeDeclarative" target="all"/>
         <ant dir="weblogicDD/sessionPreserveAcrossRedeployDeclarative" target="all"/>
+        <ant dir="weblogicDD/dirListing" target="all"/>
     </target>
 
     <target name="clustering" depends="init-report">
