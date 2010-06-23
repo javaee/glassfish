@@ -41,6 +41,10 @@ import com.sun.enterprise.config.serverbeans.Clusters;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.logging.LogDomains;
+
+import java.beans.PropertyChangeEvent;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.Startup;
@@ -49,6 +53,9 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.config.*;
+
+import java.beans.PropertyChangeListener;
 
 /**
  * This service is responsible for loading the group management
@@ -62,10 +69,13 @@ import org.jvnet.hk2.component.PostConstruct;
  * object can be retrieved.
  */
 @Service()
-public class GmsAdapterService implements Startup, PostConstruct {
+public class GmsAdapterService implements Startup, PostConstruct, ConfigListener {
 
     final static Logger logger = LogDomains.getLogger(
         GmsAdapterService.class, LogDomains.CORE_LOGGER);
+
+    @Inject
+    Clusters clusters;
 
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
@@ -94,6 +104,8 @@ public class GmsAdapterService implements Startup, PostConstruct {
         return Startup.Lifecycle.SERVER;
     }
 
+    private List<String> gmsEnabledClusters = new LinkedList<String>();
+
     /**
      * Starts the application loader service.
      *
@@ -106,7 +118,6 @@ public class GmsAdapterService implements Startup, PostConstruct {
     @Override
     public void postConstruct() {
         Domain domain = habitat.getComponent(Domain.class);
-        Clusters clusters = domain.getClusters();
         if (clusters != null) {
             if (server.isDas()) {
                 checkAllClusters(clusters);
@@ -146,6 +157,7 @@ public class GmsAdapterService implements Startup, PostConstruct {
     private void checkAllClusters(Clusters clusters) {
         logger.fine("In DAS. Checking all clusters.");
         for (Cluster cluster : clusters.getCluster()) {
+
             String gmsEnString = cluster.getGmsEnabled();
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine(String.format(
@@ -153,6 +165,7 @@ public class GmsAdapterService implements Startup, PostConstruct {
                     cluster.getName(), gmsEnString));
             }
             if (gmsEnString != null && Boolean.parseBoolean(gmsEnString)) {
+                gmsEnabledClusters.add(cluster.getName());
                 loadModule(cluster);
             }
         }
@@ -188,4 +201,24 @@ public class GmsAdapterService implements Startup, PostConstruct {
         gmsAdapter = habitat.getByContract(GMSAdapter.class);
     }
 
+    // DAS should join gms group when a cluster is created.
+    @Override
+     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events)  {
+        if (env.isDas()) {
+            return ConfigSupport.sortAndDispatch(events, new Changed() {
+            @Override
+            public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
+                if (changedType == Cluster.class && type == TYPE.ADD) {  //create-cluster
+                    Cluster cluster = (Cluster) changedInstance;
+                    if (Boolean.valueOf(cluster.getGmsEnabled()) && !gmsEnabledClusters.contains(cluster.getName())) {
+                        gmsEnabledClusters.add(cluster.getName());
+                        loadModule(cluster);
+                    }
+                }
+                return null; // know nothing about other cases, hope there aren't any
+            }
+        }, logger);
+        }
+        return null;
+    }
 }
