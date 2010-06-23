@@ -40,8 +40,13 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.UnprocessedChangeEvent;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import org.glassfish.internal.config.UnprocessedConfigListener;
 
 /**
@@ -50,16 +55,25 @@ import org.glassfish.internal.config.UnprocessedConfigListener;
  * @author Bill Shannon
  */
 @Service(name="_get-restart-required")
+@Scoped(PerLookup.class)
 @I18n("get.restart.required.command")
 public class GetRestartRequiredCommand implements AdminCommand {
-    
+
+    @Param(optional = true)
+    private boolean why;
+
     @Inject
-    UnprocessedConfigListener ucl;
+    private UnprocessedConfigListener ucl;
 
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.getTopMessagePart().setMessage(
-                            Boolean.toString(ucl.serverRequiresRestart()));
+        ActionReport.MessagePart mp = report.getTopMessagePart();
+        mp.setMessage(Boolean.toString(ucl.serverRequiresRestart()));
+        if (why) {
+            for (UnprocessedChangeEvents es : ucl.getUnprocessedChangeEvents())
+                for (UnprocessedChangeEvent e : es.getUnprocessed())
+                    mp.addChild().setMessage(e.getReason());
+        }
     }
 }
