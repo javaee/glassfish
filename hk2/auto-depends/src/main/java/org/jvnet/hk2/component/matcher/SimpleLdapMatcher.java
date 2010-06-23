@@ -144,9 +144,13 @@ public class SimpleLdapMatcher {
   private Map<String, Set<String>> getMatchingMap(MultiMap<String, String> props) {
     Map<String, Set<String>> result = new HashMap<String, Set<String>>();
     for (Entry<String, List<String>> entry : props.entrySet()) {
-      HashSet<String> set = new HashSet<String>();
+      String key = entry.getKey().toLowerCase();
+      Set<String> set = result.get(key);
+      if (null == set) {
+        set = new HashSet<String>();
+        result.put(entry.getKey().toLowerCase(), set);
+      }
       set.addAll(entry.getValue());
-      result.put(entry.getKey(), set);
     }
     return result;
   }

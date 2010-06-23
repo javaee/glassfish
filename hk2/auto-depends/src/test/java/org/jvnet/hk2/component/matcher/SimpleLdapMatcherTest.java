@@ -98,4 +98,34 @@ public class SimpleLdapMatcherTest extends TestCase {
     assertTrue(matcher.matches(props));
   }
   
+  /**
+   * Case-insensitivity only applies to the keys, not the values
+   */
+  public void testCaseInsensitiveMatches() {
+    MultiMap<String, String> props = new MultiMap<String, String>();
+    props.add("Prop1", "alpha");
+    props.add("proP1", "beta");
+    props.add("Prop2", "foo");
+    props.add("proP2", "bar");
+    props.add("Prop3", "biz");
+    props.add("proP3", "baz");
+    
+    SimpleLdapMatcher matcher = new SimpleLdapMatcher("(&(pRop1=alpha)(pRop2=bar)(pRop3=b*))");
+    assertTrue(matcher.matches(props));
+
+    matcher = new SimpleLdapMatcher("(&(pRop1=*a)(pRop3=*z))");
+    assertTrue(matcher.matches(props));
+
+    matcher = new SimpleLdapMatcher("(&(pRop1=*a)(pRop2=*)(pRop3=*z))");
+    assertTrue(matcher.matches(props));
+
+    matcher = new SimpleLdapMatcher("(&(pRop1=*a)(pRop2=blah)(pRop3=*z))");
+    assertFalse(matcher.matches(props));
+
+    matcher = new SimpleLdapMatcher("(&(pRop1=*a)(pRopX=*z))");
+    assertFalse(matcher.matches(props));
+
+    matcher = new SimpleLdapMatcher("(&(|(pRopX=*z)(pRop1=*a))(pRop3=baz))");
+    assertTrue(matcher.matches(props));
+  }
 }
