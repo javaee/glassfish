@@ -89,7 +89,7 @@ public class PropertyResolver {
      * is not found. Property values at the server override those at the configuration
      * which override those at the domain level.
      */
-    public String getPropertyValue(String propName, boolean bIncludingEnvironmentVariables) {
+    public String getPropertyValue(String propName) {
         if (propName.startsWith("${") && propName.endsWith("}")) {
             propName = propName.substring(2, propName.lastIndexOf("}"));
         }
@@ -119,19 +119,7 @@ public class PropertyResolver {
                 }
             }
         }
-        if (propVal == null) {
-            if (bIncludingEnvironmentVariables) {
-                propVal = System.getProperty(propName);
-            }
-        }
-
-        if (propVal == null) {
-            propVal = propName;
-        }
+        
         return propVal;
-    }
-    
-    public String getPropertyValue(String propName) {
-        return getPropertyValue(propName, true);
     }
 }
