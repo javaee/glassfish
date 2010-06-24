@@ -128,6 +128,46 @@ public class EjbDeployer
     }
 
     @Override
+    public boolean prepare(DeploymentContext dc) {
+        EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
+
+        if( ejbBundle == null ) {
+            throw new RuntimeException("Unable to load EJB module.  DeploymentContext does not contain any EJB " +
+                    " Check archive to ensure correct packaging for " + dc.getSourceDir());
+        }
+
+        // Get application-level properties (*not* module-level)
+        Properties appProps = dc.getAppProps();
+
+        long uniqueAppId;
+
+        if( !appProps.containsKey(APP_UNIQUE_ID_PROP)) {
+
+
+            // This is the first time load is being called for any ejb module in an
+            // application, so generate the unique id.
+
+            uniqueAppId = getNextEjbAppUniqueId();
+            appProps.setProperty(APP_UNIQUE_ID_PROP, uniqueAppId + "");
+        } else {
+            uniqueAppId = Long.parseLong(appProps.getProperty(APP_UNIQUE_ID_PROP));
+        }
+
+        Application app = ejbBundle.getApplication();
+
+        if( !app.isUniqueIdSet() ) {
+            // This will set the unique id for all EJB components in the application.
+            // If there are multiple ejb modules in the app, we'll only call it once
+            // for the first ejb module load().  All the old
+            // .xml processing for unique-id in the sun-* descriptors is removed so
+            // this is the only place where Application.setUniqueId() should be called.
+            app.setUniqueId(uniqueAppId);
+        }
+
+        return super.prepare(dc);
+    }
+
+    @Override
     public EjbApplication load(EjbContainerStarter containerStarter, DeploymentContext dc) {
         super.load(containerStarter, dc);
 
@@ -145,33 +185,6 @@ public class EjbDeployer
         }
 
         ejbBundle.setClassLoader(dc.getClassLoader());
-
-        // Get application-level properties (*not* module-level)
-        Properties appProps = dc.getAppProps();
-
-        long uniqueAppId;
-
-        if( !appProps.containsKey(APP_UNIQUE_ID_PROP)) {
-
-            // This is the first time load is being called for any ejb module in an
-            // application, so generate the unique id.
-
-            uniqueAppId = getNextEjbAppUniqueId();
-            appProps.setProperty(APP_UNIQUE_ID_PROP, uniqueAppId + "");
-        } else {
-            uniqueAppId = Long.parseLong(appProps.getProperty(APP_UNIQUE_ID_PROP));         
-        }
-
-        Application app = ejbBundle.getApplication();
-
-        if( !app.isUniqueIdSet() ) {
-            // This will set the unique id for all EJB components in the application.
-            // If there are multiple ejb modules in the app, we'll only call it once
-            // for the first ejb module load().  All the old
-            // .xml processing for unique-id in the sun-* descriptors is removed so
-            // this is the only place where Application.setUniqueId() should be called.
-            app.setUniqueId(uniqueAppId);
-        }
 
         if (ejbBundle.containsCMPEntity()) {
             CMPService cmpService = habitat.getByContract(CMPService.class);
@@ -245,7 +258,7 @@ public class EjbDeployer
         // But CMP drop tables should be handled here.
 
         OpsParams params = dc.getCommandParameters(OpsParams.class);
-        if ( (params.origin.isUndeploy() || params.origin.isDeploy()) && env.isDas()) {
+        if ( (params.origin.isUndeploy() || params.origin.isDeploy()) && (env.isDas() || env.isEmbedded())) {
 
             // If CMP beans are present, cmpDeployer should've been initialized in unload()
             if (cmpDeployer != null) {
@@ -289,7 +302,7 @@ public class EjbDeployer
             throws DeploymentException {
 
         OpsParams params = dc.getCommandParameters(OpsParams.class);
-        if (!(params.origin.isDeploy() && env.isDas()) ) { //Generate artifacts only when being deployed on DAS
+        if (!(params.origin.isDeploy() && (env.isDas() || env.isEmbedded())) ) { //Generate artifacts only when being deployed on DAS
             return;
         }
         

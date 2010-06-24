@@ -39,7 +39,7 @@ package org.glassfish.persistence.jpa;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.*;
 import org.glassfish.api.admin.ProcessEnvironment;
-import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.OpsParams;
@@ -68,7 +68,7 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
     private Habitat habitat;
 
     @Inject
-    private ServerEnvironment serverEnvironment;
+    private ServerEnvironmentImpl serverEnvironment;
 
     @Override public MetaData getMetaData() {
 
@@ -84,7 +84,7 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
     protected void cleanArtifacts(DeploymentContext dc) throws DeploymentException {
         // Drop tables if needed on undeploy.
         OpsParams params = dc.getCommandParameters(OpsParams.class);
-        if (params.origin.isUndeploy() && serverEnvironment.isDas()) {
+        if (params.origin.isUndeploy() && (serverEnvironment.isDas() || serverEnvironment.isEmbedded())) {
             Java2DBProcessorHelper helper = new Java2DBProcessorHelper(dc);
             helper.init();
             helper.createOrDropTablesInDB(false, "JPA"); // NOI18N
@@ -130,9 +130,10 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
                 for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
                     for (PersistenceUnitDescriptor pud : persistenceUnitsDescriptor.getPersistenceUnitDescriptors()) {
                         if(referencedPus.contains(pud)) {
+                            boolean isDas = serverEnvironment.isDas() || serverEnvironment.isEmbedded();
                             ProviderContainerContractInfo providerContainerContractInfo = serverEnvironment.getRuntimeType().isEmbedded() ?
-                                    new EmbeddedProviderContainerContractInfo(context, connectorRuntime, habitat, serverEnvironment.isDas()) :
-                                    new ServerProviderContainerContractInfo(context, connectorRuntime, serverEnvironment.isDas());
+                                    new EmbeddedProviderContainerContractInfo(context, connectorRuntime, habitat, isDas) :
+                                    new ServerProviderContainerContractInfo(context, connectorRuntime, isDas);
                             PersistenceUnitLoader puLoader = new PersistenceUnitLoader(pud, providerContainerContractInfo);
                             // Store the puLoader in context. It is retrieved in load() to execute java2db and to
                             // store the loaded emfs in a JPAApplicationContainer object for cleanup
