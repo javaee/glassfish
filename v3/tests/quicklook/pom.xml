@@ -153,13 +153,24 @@
                         <scope>test</scope>
                         <type>zip</type>
                     </dependency>
-		     <!-- dependency>
- 	      		<groupId>org.testng</groupId>
- 	      		<artifactId>testng</artifactId>
- 	      		<version>5.7</version>
- 	      		<classifier>jdk15</classifier>
- 	      		<scope>compile</scope>
- 	    	     </dependency -->
+		     		<!-- dependency>
+ 	      				<groupId>org.testng</groupId>
+ 	      				<artifactId>testng</artifactId>
+ 	      				<version>5.7</version>
+ 	      				<classifier>jdk15</classifier>
+ 	      				<scope>compile</scope>
+ 	    	     	</dependency -->
+					<dependency>
+                          <groupId>org.apache.ant</groupId>
+                          <artifactId>ant-apache-regexp</artifactId>
+                          <version>1.8.1</version>
+                          <scope>runtime</scope>
+                    </dependency>
+					<dependency>
+                          <groupId>jakarta-regexp</groupId>
+                          <artifactId>jakarta-regexp</artifactId>
+                          <version>1.4</version>
+                    </dependency>
                 </dependencies>
             </plugin>
         </plugins>
