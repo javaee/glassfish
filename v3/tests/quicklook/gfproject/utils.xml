@@ -152,35 +152,41 @@
     ${remaining_messages}
     </echo>
 
-    <fail>
-        <condition>
-            <not>
-                <and>
-                    <equals arg1="(none)" arg2="${lines_with_msg_key}"/>
-                    <equals arg1="(none)" arg2="${lines_with_msg_unsubst_param}"/>
-                    <equals arg1="(none)" arg2="${lines_with_bundle_not_found_msg}"/>
-                    <equals arg1="(none)" arg2="${lines_with_null_or_empty_msg}"/>
-                    <equals arg1="(none)" arg2="${lines_with_msg_not_found}"/>
-                    <equals arg1="(none)" arg2="${lines_with_msg_common_typos}"/>
-                    <equals arg1="(none)" arg2="${lines_with_msg_double_apos}"/>
-                    <equals arg1="(none)" arg2="${remaining_messages}"/>
-                </and>
-            </not>
-        </condition>-&gt;
-===============================================
-FAILED: check-logged-messages
-Issues found in one or more messages (see results above).
-Please address them, or if the message should be left as-is,
-add it to the exclusion list with details why it should be excluded:
-${log.msg.excl.path}
-===============================================
-    </fail>
-    <echo>
-===============================================
-PASSED: check-logged-messages
-===============================================
-    </echo>
+	<condition property="cond-is-true">
+    	<not>
+    		<and>
+    			<equals arg1="(none)" arg2="${lines_with_msg_key}"/>
+                <equals arg1="(none)" arg2="${lines_with_msg_unsubst_param}"/>
+                <equals arg1="(none)" arg2="${lines_with_bundle_not_found_msg}"/>
+                <equals arg1="(none)" arg2="${lines_with_null_or_empty_msg}"/>
+                <equals arg1="(none)" arg2="${lines_with_msg_not_found}"/>
+                <equals arg1="(none)" arg2="${lines_with_msg_common_typos}"/>
+                <equals arg1="(none)" arg2="${lines_with_msg_double_apos}"/>
+                <equals arg1="(none)" arg2="${remaining_messages}"/>
+    	    </and>
+    	</not>
+    </condition>
+
+	<antcall target="pass"/>
+	<antcall target="fail"/>
 </target>
+
+	<target name="pass" unless="cond-is-true">
+		<echo message="======================================================================"/>
+		<echo message="PASSED: check-logged-messages"/>
+		<echo message="======================================================================"/>
+	</target>
+
+	<target name="fail"  if="cond-is-true">
+		<echo message="======================================================================"/>
+		<echo message="FAILED: check-logged-messages"/>
+		<echo message="Issues found in one or more messages (see results above)."/>
+		<echo message="Please address them, or if the message should be left as-is,"/>
+		<echo message="add it to the exclusion list with details why it should be excluded:"/>
+		<echo message="${log.msg.excl.path}"/>
+		<echo message="======================================================================"/>
+	</target>
+
 
     <macrodef name="filter-log-file">
         <attribute name="srcfile" description="path to server.log file"/>
