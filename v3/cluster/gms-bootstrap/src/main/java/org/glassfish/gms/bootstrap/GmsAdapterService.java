@@ -40,6 +40,8 @@ import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Clusters;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.ee.cms.core.GMSConstants;
+import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.logging.LogDomains;
 
 import java.beans.PropertyChangeEvent;
@@ -117,7 +119,6 @@ public class GmsAdapterService implements Startup, PostConstruct, ConfigListener
      */
     @Override
     public void postConstruct() {
-        Domain domain = habitat.getComponent(Domain.class);
         if (clusters != null) {
             if (server.isDas()) {
                 checkAllClusters(clusters);
@@ -202,22 +203,44 @@ public class GmsAdapterService implements Startup, PostConstruct, ConfigListener
     }
 
     // DAS should join gms group when a cluster is created.
+
     @Override
-     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events)  {
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         if (env.isDas()) {
             return ConfigSupport.sortAndDispatch(events, new Changed() {
-            @Override
-            public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
-                if (changedType == Cluster.class && type == TYPE.ADD) {  //create-cluster
-                    Cluster cluster = (Cluster) changedInstance;
-                    if (Boolean.valueOf(cluster.getGmsEnabled()) && !gmsEnabledClusters.contains(cluster.getName())) {
-                        gmsEnabledClusters.add(cluster.getName());
-                        loadModule(cluster);
+                @Override
+                public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
+                    if (changedType == Cluster.class && type == TYPE.ADD) {  //create-cluster
+                        Cluster cluster = (Cluster) changedInstance;
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.fine("ClusterChangeEvent add clustername=" + cluster.getName());
+                        }
+                        if (Boolean.valueOf(cluster.getGmsEnabled()) && !gmsEnabledClusters.contains(cluster.getName())) {
+                            gmsEnabledClusters.add(cluster.getName());
+                            loadModule(cluster);
+                            gmsAdapter.getModule().reportJoinedAndReadyState(cluster.getName());
+                        }
+
+                        // todo:  when supporting multiple clusters, ensure that newly added cluster has a different gms-multicast-address than all existing clusters.
+                        //        if not and the multicast-address was defaulted,  generate a unique one. (this is how it worked in v2)
                     }
+                    if (changedType == Cluster.class && type == TYPE.REMOVE) {  //remove-cluster
+                        Cluster cluster = (Cluster) changedInstance;
+                        if (Boolean.valueOf(cluster.getGmsEnabled()) && gmsEnabledClusters.contains(cluster.getName())) {
+                            gmsEnabledClusters.remove(cluster.getName());
+
+                            // following only needed when gmsAdapter is a Singleton scope,  when we support multiple clusters,  there should
+                            // be a lookup here of gmsAdapter by its clustername and that should be shutdown.
+                            // for now,  just ensure if gmsAdapter is removed cluster, just shut it down.
+                            if (cluster.getName().compareTo(gmsAdapter.getModule().getGroupName()) == 0) {
+                                gmsAdapter.getModule().shutdown(GMSConstants.shutdownType.INSTANCE_SHUTDOWN);
+                                gmsAdapter = null;
+                            }
+                        }
+                    }
+                    return null;
                 }
-                return null; // know nothing about other cases, hope there aren't any
-            }
-        }, logger);
+            }, logger);
         }
         return null;
     }
