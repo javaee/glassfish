@@ -117,18 +117,18 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
         logger.printDebugMessage("It's the correct Instance");
         return doRemoteCommand();
     }
-
     /**
      * Print message and return exit code when
      * we detect that the DAS is not running.
      */
-    private int instanceNotRunning() {
+    protected int instanceNotRunning() throws CommandException{
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
 
         logger.printWarning(strings.get("StopInstance.instanceNotRunning"));
         return 0;
     }
+
     /**
      * Print message and return exit code when
      * we detect that there is no such instance
@@ -143,7 +143,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
     /**
      * Execute the actual stop-domain command.
      */
-    private final int doRemoteCommand()
+    protected int doRemoteCommand()
             throws CommandException, CommandValidationException {
         // run the remote stop-domain command and throw away the output
         RemoteCommand cmd = new RemoteCommand("stop-instance", programOpts, env);
