@@ -57,8 +57,8 @@ public class EmbeddedProviderContainerContractInfo extends ServerProviderContain
 
     private Habitat habitat;
 
-    public EmbeddedProviderContainerContractInfo(DeploymentContext deploymentContext, ConnectorRuntime connectorRuntime, Habitat habitat) {
-        super(deploymentContext, connectorRuntime);
+    public EmbeddedProviderContainerContractInfo(DeploymentContext deploymentContext, ConnectorRuntime connectorRuntime, Habitat habitat, boolean isDas) {
+        super(deploymentContext, connectorRuntime, isDas);
         this.habitat = habitat;
     }
 

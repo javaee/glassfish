@@ -245,8 +245,7 @@ public class EjbDeployer
         // But CMP drop tables should be handled here.
 
         OpsParams params = dc.getCommandParameters(OpsParams.class);
-        if (params.origin == OpsParams.Origin.undeploy || 
-            params.origin == OpsParams.Origin.deploy) {
+        if ( (params.origin.isUndeploy() || params.origin.isDeploy()) && env.isDas()) {
 
             // If CMP beans are present, cmpDeployer should've been initialized in unload()
             if (cmpDeployer != null) {
@@ -290,7 +289,7 @@ public class EjbDeployer
             throws DeploymentException {
 
         OpsParams params = dc.getCommandParameters(OpsParams.class);
-        if (params.origin != OpsParams.Origin.deploy) {
+        if (!(params.origin.isDeploy() && env.isDas()) ) { //Generate artifacts only when being deployed on DAS
             return;
         }
         

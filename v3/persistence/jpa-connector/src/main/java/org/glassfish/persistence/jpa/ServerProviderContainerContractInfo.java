@@ -64,12 +64,14 @@ public class ServerProviderContainerContractInfo extends ProviderContainerContra
        private final DeploymentContext deploymentContext;
        private final ClassLoader finalClassLoader;
        private ValidatorFactory validatorFactory;
+       boolean isDas;
 
-       public ServerProviderContainerContractInfo(DeploymentContext deploymentContext, ConnectorRuntime connectorRuntime) {
+       public ServerProviderContainerContractInfo(DeploymentContext deploymentContext, ConnectorRuntime connectorRuntime, boolean isDas) {
            super(connectorRuntime);
            this.deploymentContext = deploymentContext;
            // Cache finalClassLoader as deploymentContext.getFinalClassLoader() is expected to be called only once during deployment.
            this.finalClassLoader = deploymentContext.getFinalClassLoader();
+           this.isDas = isDas;
        }
 
       @Override
@@ -127,8 +129,7 @@ public class ServerProviderContainerContractInfo extends ProviderContainerContra
        public boolean isJava2DBRequired() {
            OpsParams params = deploymentContext.getCommandParameters(OpsParams.class);
            // We only do java2db while being deployed on DAS. We do not do java2DB on load of an application or being deployed on an instance of a cluster
-           // The method below gives us correct answers to handle above conditions
-           return !params.origin.isArtifactsPresent();
+           return params.origin.isDeploy() && isDas;
        }
 
        @Override
