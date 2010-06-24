@@ -142,7 +142,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      */
     @Attribute
     @Min(value=2048)
-    @Max(value=49151)
+    @Max(value=32000)
     @NotNull
     String getGmsMulticastPort();
 
@@ -447,8 +447,12 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 "${GMS-BIND-INTERFACE-ADDRESS-%s}",
                 instanceName));
 
-            instance.setGmsMulticastAddress("229.9.1.1");
-            instance.setGmsMulticastPort("2299");
+            if (instance.getGmsMulticastAddress() == null) {
+                instance.setGmsMulticastAddress(generateHeartbeatAddress());
+            }
+            if (instance.getGmsMulticastPort() == null) {
+                instance.setGmsMulticastPort(Integer.toString(generateHeartbeatPort()));
+            }
 
             Property gmsListenerPort = instance.createChild(Property.class);
             gmsListenerPort.setName("GMS_LISTENER_PORT");
@@ -543,6 +547,24 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 String msg = localStrings.getLocalString("Cluster.obsoleteOptions","Obsolete options used");
                 throw new TransactionFailure(msg);
             }
+        }
+
+        private int generateHeartbeatPort () {
+            final long MIN_GMS_MULTICAST_PORT = 2048;
+            final long MAX_GMS_MULTICAST_PORT = 32000;
+            long portInterval = MAX_GMS_MULTICAST_PORT - MIN_GMS_MULTICAST_PORT;
+            return new Long(Math.round(Math.random()*portInterval)+ MIN_GMS_MULTICAST_PORT)
+                      .intValue();
+        }
+
+        private String generateHeartbeatAddress () {
+            final int MAX_GMS_MULTICAST_ADDRESS_SUBRANGE = 255;
+
+            final StringBuffer heartbeatAddressBfr = new StringBuffer( "228.9.");
+            heartbeatAddressBfr.append(Math.round(Math.random()*MAX_GMS_MULTICAST_ADDRESS_SUBRANGE))
+                            .append('.')
+                            .append(Math.round(Math.random()*MAX_GMS_MULTICAST_ADDRESS_SUBRANGE));
+            return heartbeatAddressBfr.toString();
         }
     }
 
