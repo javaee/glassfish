@@ -59,7 +59,7 @@ import com.sun.enterprise.universal.io.SmartFile;
 public abstract class LocalInstanceCommand extends LocalServerCommand {
     @Param(name = "nodeagent", optional = true)
     protected String nodeAgent;
-    @Param(name = "agentdir", optional = true)
+    @Param(name = "nodehome", optional = true)
     protected String agentDir;
     @Param(name = "node", optional=true)
     protected String node;
