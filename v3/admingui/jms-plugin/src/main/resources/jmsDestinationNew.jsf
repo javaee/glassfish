@@ -53,9 +53,11 @@
             setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources" );
             setPageSessionAttribute(key="childType" value="admin-object-resource");
             setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
-
-            getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
-            getDefaultProxyAttrs( parentObjectNameStr="amx:pp=/domain/servers,type=server,name=server" childType="resource-ref"  valueMap="#{pageSession.valueMap2}")
+            //REST related
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+            setPageSessionAttribute(key="rest-api" value="true");
+            gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.valueMap}");
+            gf.getDefaultValues(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref", valueMap="#{pageSession.valueMap2}");
             //guiLog(message="***** valueMap2 = #{pageSession.valueMap2}");
 
             mapPut(map="#{pageSession.valueMap}", key="ResAdapter", value="jmsra");

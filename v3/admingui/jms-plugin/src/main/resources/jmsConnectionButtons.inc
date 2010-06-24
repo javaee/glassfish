@@ -37,6 +37,7 @@
 <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
         onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
     <!command
+        if (!#{pageSession['rest-api']}) {
         if(#{pageSession.hasPropertySheet}){
             saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
                 convertToFalse="#{pageSession.convertToFalseList}"
@@ -48,9 +49,24 @@
                 );
             }
         }
+        }
+        if (#{pageSession['rest-api']}) {
+            if(#{pageSession.hasPropertySheet}){
+                gf.updateEntity(endpoint="#{pageSession.selfUrl}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
+                    convertToFalse="#{pageSession.convertToFalseList}"
+                );
+                gf.updateEntity(endpoint="#{pageSession.resourceRefUrl}", attrs="#{pageSession.resourceRef}", convertToFalse={"Enabled"});
+                if(#{pageSession.has2Objects}){
+                    gf.updateEntity(endpoint="#{pageSession.selfUrl2}", attrs="#{pageSession.valueMap2}", skipAttrs="#{pageSession.skipAttrsList2}",
+                        convertToFalse="#{pageSession.convertToFalseList2}"
+                    );
+                }
+            }
+        }
         if (#{pageSession.hasPropertyTable}){
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+            //REST - TO DO
             setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
         }
         prepareSuccessfulMsg();
@@ -63,7 +79,8 @@
         // Create connector-resource
         // Update the connector-resource with the Name specified on the connector-connection-pool
         mapPut(map="#{pageSession.valueMap2}", key="PoolName", value="#{pageSession.valueMap['Name']}");
-        mapPut(map="#{pageSession.valueMap2}", key="JndiName", value="#{pageSession.valueMap['Name']}");
+        mapPut(map="#{pageSession.valueMap2}", key="Name", value="#{pageSession.valueMap['Name']}");
+        if (!#{pageSession['rest-api']}) {
         createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType2}"
                 attrs="#{pageSession.valueMap2}", convertToFalse="#{pageSession.convertToFalseList2}", result => $attribute{objStr3});
 
@@ -73,11 +90,22 @@
 
         // resource is always enabled.  resource-ref toggles
         createResourceRef(resourceName="#{pageSession.valueMap['Name']}", enabled="#{!empty pageSession.resourceRef['Enabled']}");
+        }
+        if (#{pageSession['rest-api']}) {
+         // Create connector-connection-pool
+        gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}",
+            attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}", result => $attribute{resultEndPoint});
+        }
+        gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType2}",
+                attrs="#{pageSession.valueMap2}", convertToFalse="#{pageSession.convertToFalseList2}", result => $attribute{resultEndPoint3});
 
         if (#{pageSession.hasPropertyTable}){
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+            //REST - TO DO
+            if (!#{pageSession['rest-api']}) {
             setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+            }
         }
         gf.redirect(page="#{parentPage}")
     />

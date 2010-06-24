@@ -58,7 +58,7 @@
     </sun:propertySheetSection>
     <sun:propertySheetSection id="poolPropertySheet" label="$resource{i18njms.connectionFactory.poolSettings}">
         <sun:property id="initSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.initPoolSize}" helpText="$resource{i18njms.connectionFactory.initPoolSizeHelp}">
-            <sun:textField id="ds" styleClass="required" columns="$int{10}" text="#{pageSession.valueMap['SteadyPoolSize']}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['SteadyPoolSize']}" />
             <sun:staticText id="con1" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
         <sun:property id="maxProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.maxPoolSize}" helpText="$resource{i18njms.connectionFactory.maxPoolSizeHelp}">

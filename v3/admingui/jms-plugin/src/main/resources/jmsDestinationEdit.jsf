@@ -61,10 +61,15 @@
         setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{pageSession.Name}");
 
         //setPageSessionAttribute(key="resourceRefEnabled", value="#{empty pageSession.valueMap2 ? 'true' : pageSession.valueMap2['Enabled']}");
-
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
-
+        //REST related
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+        setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/resources/#{pageSession.childType}/#{pageSession.encodedName}");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="childType2", value="resource-ref");
+        setPageSessionAttribute(key="selfUrl2", value="#{sessionScope.REST_URL}/servers/server/server/#{pageSession.childType2}/#{pageSession.encodedName}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}" valueMap="#{pageSession.valueMap2}");
+        //REST - TO DO
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         getPhysicalDestinationName(list="#{tableList}", physDestName="#{pageSession.physDestName}");
         filterTable(table="#{requestScope.tableList}", key="Name", value="Name", keep="false");
@@ -84,7 +89,7 @@
         <sun:button id="loadDefaults" style="margin-left: 8pt" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
             <!command
                 //getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
-                getDefaultProxyAttrs( parentObjectNameStr="amx:pp=/domain/servers,type=server,name=server" childType="resource-ref"  valueMap="#{pageSession.valueMap2}")
+                gf.getDefaultValues(endpoint="#{pageSession.selfUrl2}" orig="#{pageSession.valueMap2}" valueMap="#{pageSession.valueMap2}")
             />
         </sun:button>
         <!facet pageButtonsTop>

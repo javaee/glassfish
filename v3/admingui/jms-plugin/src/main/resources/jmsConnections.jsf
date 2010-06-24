@@ -54,6 +54,10 @@
             setPageSessionAttribute(key="childType2" value="connector-resource");
             //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
             //filterTable(table="#{requestScope.listOfRows}", key="ResourceAdapterName", value="jmsra")
+            //REST related
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+            setPageSessionAttribute(key="rest-api" value="true");
+            // REST - TO DO
             getJMSFactoriesTable(result="#{requestScope.listOfRows}");
             setPageSessionAttribute(key="tableTitle" value="$resource{i18njms.resourcesTable.connectionFactories}");
             setPageSessionAttribute(key="editLink" value="/jms/jmsConnectionEdit.jsf");

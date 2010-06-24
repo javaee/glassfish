@@ -63,10 +63,15 @@
 
             setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
             setPageSessionAttribute(key="resourceRefObjectNameStr", value="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{pageSession.Name}");
-
-            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+            //REST related
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+            setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
+            setPageSessionAttribute(key="resourceRefUrl", value="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{pageSession.encodedName}");
+            setPageSessionAttribute(key="rest-api" value="true");
+            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+            //REST - TO DO
             getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
-            getProxyAttrs(objectNameStr="#{pageSession.resourceRefObjectNameStr}",  valueMap="#{pageSession.resourceRef}");
+            gf.getEntityAttrs(endpoint="#{pageSession.resourceRefUrl}",  valueMap="#{pageSession.resourceRef}");
 
             //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );
@@ -87,8 +92,8 @@
         <sun:title id="propertyContentPage" title="$resource{i18njms.connectionFactory.editPageTitle}" helpText="$resource{i18njms.connectionFactory.editPageTitleHelp}">
             <sun:button id="loadDefaults" style="margin-left: 8pt" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
                 <!command
-                    getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}", childType="#{pageSession.childType}", orig="#{pageSession.valueMap}", valueMap="#{pageSession.valueMap}")
-                    getDefaultProxyAttrs( parentObjectNameStr="amx:pp=/domain/servers,type=server,name=server", childType="resource-ref",  orig="#{pageSession.resourceRef}", valueMap="#{pageSession.resourceRef}");
+                    gf.getDefaultValues( endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", orig="#{pageSession.valueMap}", valueMap="#{pageSession.valueMap}")
+                    gf.getDefaultValues( endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref",  orig="#{pageSession.resourceRef}", valueMap="#{pageSession.resourceRef}");
                 />
             </sun:button>
             <!facet pageButtonsTop>
