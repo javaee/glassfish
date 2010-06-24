@@ -39,12 +39,15 @@ package com.sun.enterprise.admin.cli.cluster;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
+import java.util.Properties;
+
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
+import org.glassfish.config.support.GenericCrudCommand;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.*;
 
@@ -65,6 +68,8 @@ public final class CopyConfigCommand implements AdminCommand {
     @Inject
     Domain domain;
 
+    @Param(optional=true, separator=':')
+    String systemproperties;
 
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CopyConfigCommand.class);
@@ -86,11 +91,11 @@ public final class CopyConfigCommand implements AdminCommand {
             return;
         }
 
-        String srcConfig = configs.get(0);
-        String destConfig = configs.get(1);
+        final String srcConfig = configs.get(0);
+        final String destConfig = configs.get(1);
         //Get the config from the domain
         //does the src config exist
-        Config config = domain.getConfigNamed(srcConfig);
+        final Config config = domain.getConfigNamed(srcConfig);
         if (config == null ){
             report.setMessage(localStrings.getLocalString(
                     "Config.noSuchConfig", "Config {0} does not exist.", srcConfig));
@@ -111,17 +116,42 @@ public final class CopyConfigCommand implements AdminCommand {
         final Config destCopy = (Config)config.deepCopy();
         final String configName = destConfig ;
 
-    
         try {
-            ConfigSupport.apply(new ConfigCode() {
+            ConfigSupport.apply(new ConfigCode(){
                 @Override
                 public Object run(ConfigBeanProxy[] w ) throws PropertyVetoException, TransactionFailure {
+                    if (systemproperties != null) {
+                        final Properties properties = GenericCrudCommand.convertStringToProperties(systemproperties,':');
+
+                        for (final Object key : properties.keySet()) {
+                            final String propName = (String) key;
+                            //cannot update a system property so remove it first
+                            List<SystemProperty> sysprops = destCopy.getSystemProperty() ;
+                            for (SystemProperty sysprop:sysprops) {
+                                if (propName.equals(sysprop.getName())) {
+                                    sysprops.remove(sysprop);
+                                    break;
+                                }
+
+                            }
+
+                            //Currently the systemproperties is not working due to this bug 12311
+                            SystemProperty newSysProp = ((Config)w[1]).createChild(SystemProperty.class);
+                            newSysProp.setName(propName);
+                            newSysProp.setValue(properties.getProperty(propName));
+                            ((Config)w[1]).getSystemProperty().add(newSysProp);
+                        }
+                    }
                     ((Configs) w[0]).getConfig().add(destCopy);
                     ((Config) w[1]).setName(configName);
                     return null;
+
                 }
-            }, domain.getConfigs(), destCopy);
+            }   ,domain.getConfigs(),destCopy);
+
+
         } catch (TransactionFailure e) {
+            e.printStackTrace();
             report.setMessage(
                 localStrings.getLocalString(
                     "Config.copyConfigError",

@@ -50,7 +50,7 @@ import java.util.List;
 
 /**
  *  This is a remote command that lists the clusters.
- * Usage: list-config
+ * Usage: list-clusters
  	
  * @author Bhakti Mehta
  */

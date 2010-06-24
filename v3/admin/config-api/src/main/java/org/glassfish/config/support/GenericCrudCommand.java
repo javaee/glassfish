@@ -365,7 +365,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
      * @param sep the separator character
      * @return Properties containing the elements in String
      */
-    static Properties convertStringToProperties(String propsString, char sep) {
+    public static Properties convertStringToProperties(String propsString, char sep) {
         final Properties properties = new Properties();
         if (propsString != null) {
 
