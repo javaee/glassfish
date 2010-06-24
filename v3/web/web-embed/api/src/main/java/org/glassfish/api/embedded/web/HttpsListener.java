@@ -37,12 +37,15 @@
 
 package org.glassfish.api.embedded.web;
 
+import org.apache.catalina.connector.Connector;
 import org.glassfish.api.embedded.web.config.SslConfig;
 
 /**
  * @author Rajiv Mordani
+ * @author Amy Roh
+ * TODO
  */
-public interface HttpsListener extends WebListener {
+public class HttpsListener extends WebListener {
 
     /**
      * Sets the SSL configuration for this web listener
@@ -51,7 +54,9 @@ public interface HttpsListener extends WebListener {
      *
      * @param sslConfig the SSL configuration for this web listener
      */
-    public void setSslConfig(SslConfig sslConfig);
+    public void setSslConfig(SslConfig sslConfig) {
+    }
+
     /**
      * Gets the SslConfig for this web listener
      *
@@ -59,5 +64,8 @@ public interface HttpsListener extends WebListener {
      *
      * @return the SSL configuration for this listener
      */
-    public SslConfig getSslConfig();
+    public SslConfig getSslConfig() {
+        return null;
+    }
+    
 }

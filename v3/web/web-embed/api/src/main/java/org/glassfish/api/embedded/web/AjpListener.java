@@ -37,10 +37,17 @@
 
 package org.glassfish.api.embedded.web;
 
+import org.apache.catalina.connector.Connector;
+
 /**
  * @author Rajiv Mordani
+ * @author Amy Roh
  */
-//TODO: 
-public interface AjpListener extends WebListener {
+public class AjpListener extends WebListener {
+
+    public AjpListener() {
+        super();
+        this.setProtocol("AJP/1.3");
+    }
     
 }

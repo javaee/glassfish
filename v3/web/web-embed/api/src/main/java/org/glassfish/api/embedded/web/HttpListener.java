@@ -37,12 +37,20 @@
 
 package org.glassfish.api.embedded.web;
 
+import org.apache.catalina.connector.Connector;
+
 /**
  * HTTP Listener listens on a TCP port for incoming HTTP connection
  *
  * @author Rajiv Mordani
  * @author Jan Luehe
+ * @author Amy Roh
  */
-public interface HttpListener extends WebListener {
+public class HttpListener extends WebListener {
+
+    public HttpListener() {
+        super();
+        this.setProtocol("HTTP/1.1");
+    }
 
 }

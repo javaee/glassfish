@@ -157,7 +157,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
         portNumber = port.getPortNumber();
         listenerName = getListenerName();
-        WebListener webListener = new WebListenerImpl();
+        WebListener webListener = new WebListener();
         webListener.setId(listenerName);
         webListener.setPort(portNumber);
         listeners.add(webListener);
@@ -336,7 +336,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
                 if (log.isLoggable(Level.INFO)) {
                     log.info("Listener does not exist - creating a new listener at port 8080");
                 }
-                WebListener listener = createWebListener(listenerName, WebListenerImpl.class);
+                WebListener listener = createWebListener(listenerName, WebListener.class);
                 listener.setPort(8080);
                 addWebListener(listener);
             }

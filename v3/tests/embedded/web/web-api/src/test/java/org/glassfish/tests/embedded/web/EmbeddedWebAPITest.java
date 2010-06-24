@@ -53,7 +53,6 @@ import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.*;
 import org.glassfish.api.embedded.web.*;
-import org.glassfish.web.embed.impl.WebListenerImpl;
 
 /**
  * Tests creating a port using EmbeddedWebContainer#createWeblistener & WebListener#setPort.
@@ -97,7 +96,7 @@ public class EmbeddedWebAPITest {
             embedded.setLogLevel(Level.INFO);
             embedded.setConfiguration((WebBuilder)b);
 
-            WebListener listener = embedded.createWebListener("test-listener", WebListenerImpl.class);
+            WebListener listener = embedded.createWebListener("test-listener", WebListener.class);
             listener.setPort(9090);
             embedded.addWebListener(listener);
 

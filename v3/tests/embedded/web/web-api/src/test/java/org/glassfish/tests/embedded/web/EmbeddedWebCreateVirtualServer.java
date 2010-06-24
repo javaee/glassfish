@@ -53,7 +53,6 @@ import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.*;
 import org.glassfish.api.embedded.web.*;
-import org.glassfish.web.embed.impl.WebListenerImpl;
 
 /**
  * Test for EmbeddedWebContainer#CreateVirtualServer & EmbeddedWebContainer#deleteWebListener
@@ -118,7 +117,7 @@ public class EmbeddedWebCreateVirtualServer {
             System.out.println("Network listener " + nl.getPort());
         }
 
-        WebListener listener = embedded.createWebListener("test-listener", WebListenerImpl.class);
+        WebListener listener = embedded.createWebListener("test-listener", WebListener.class);
         listener.setPort(9090);
         WebListener[] webListeners = new WebListener[1];
         webListeners[0] = listener;
