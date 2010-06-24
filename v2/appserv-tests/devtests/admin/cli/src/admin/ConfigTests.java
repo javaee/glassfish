@@ -62,6 +62,7 @@ public class ConfigTests extends AdminBaseDevTest {
         startDomain();
         testCopyDeleteListConfig();
         testDeleteConfig();
+        //testConfigSysprops();
         // commented out until issue 12313 is resolved
         //testConcurrentConfigAccess();
         stopDomain();
@@ -113,6 +114,17 @@ public class ConfigTests extends AdminBaseDevTest {
 
         //delete server-config should throw error
         report(testName+"server-config", !asadmin("delete-config", "server-config"));
+    }
+
+    /*
+     * This tests additional tests to add system props
+     */
+    private void testConfigSysProps(){
+        final String testName = "configSysProps";
+
+        //This fails currently due to bug 12311 commented test for now
+        /*report(testName+"copy-config", !asadmin("copy-config","system-properties","foo=bar", "default-config","myconfig"));*/
+
     }
 
     /*
