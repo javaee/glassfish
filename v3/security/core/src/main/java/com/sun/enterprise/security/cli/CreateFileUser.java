@@ -57,6 +57,7 @@ import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.security.common.Util;
 
 /**
@@ -96,6 +97,9 @@ public class CreateFileUser implements AdminCommand {
 
     @Inject
     Configs configs;
+
+    @Inject
+    RealmsManager realmsManager;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -179,28 +183,11 @@ public class CreateFileUser implements AdminCommand {
         // We have the right impl so let's get to checking existing user and 
         // adding one if one does not exist
 
-        FileRealm fr = null;
-        try {
-            fr = new FileRealm(keyFile);            
-        } catch(BadRealmException e) {
-            report.setMessage(
-                localStrings.getLocalString(
-                    "create.file.user.realmcorrupted",
-                    "Configured file realm {0} is corrupted.", authRealmName) +
-                "  " + e.getLocalizedMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
-            return;
-        } catch(NoSuchRealmException e) {
-            report.setMessage(
-                localStrings.getLocalString(
-                    "create.file.user.realmnotsupported",
-                    "Configured file realm {0} does not exist.", authRealmName) +
-                "  " + e.getLocalizedMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
-            return;
-        }
+   
+        //fr = new FileRealm(keyFile);
+        realmsManager.createRealms();
+        FileRealm fr = (FileRealm)realmsManager.getFromLoadedRealms(authRealmName);
+      
         
         // now adding user
         try {

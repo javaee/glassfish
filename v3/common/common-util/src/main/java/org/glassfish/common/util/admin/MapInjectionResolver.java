@@ -259,11 +259,11 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
 
         String value = params.getOne(key);
         // indicates a password parameter
-        if (key.startsWith(ASADMIN_CMD_PREFIX)) {
-            try {
-                GFBase64Decoder base64Decoder =
-                    new GFBase64Decoder();
-                value = new String(base64Decoder.decodeBuffer(value));
+        if (key.startsWith(ASADMIN_CMD_PREFIX) && (value != null)) {
+            try {               
+                  GFBase64Decoder base64Decoder =
+                        new GFBase64Decoder();
+                  value = new String(base64Decoder.decodeBuffer(value));                
             } catch (IOException e) {
                 // ignore for now. Not much can be done anyway.
                 // todo: improve this error condition reporting

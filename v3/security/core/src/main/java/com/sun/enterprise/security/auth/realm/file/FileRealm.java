@@ -815,7 +815,9 @@ public final class FileRealm extends IASRealm
         
         try {
             if (Util.isEmbeddedServer()) {
-               input = new BufferedReader(new FileReader(Util.writeConfigFileToTempDir(file)));
+                String embeddedFilePath = Util.writeConfigFileToTempDir(file).getAbsolutePath();
+                this.setProperty(PARAM_KEYFILE, embeddedFilePath);
+                input = new BufferedReader(new FileReader(embeddedFilePath));
             } else {
                 input = new BufferedReader(new FileReader(file));
             }

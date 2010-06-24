@@ -37,11 +37,15 @@
 package com.sun.enterprise.security.auth.realm;
 
 import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.logging.LogDomains;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -63,6 +67,7 @@ public class RealmsManager {
     // using value from server.xml
     private volatile String defaultRealmName="default";
     private final RealmsProbeProvider probeProvider = new RealmsProbeProvider();
+    private static final Logger _logger = LogDomains.getLogger(RealmsManager.class, LogDomains.SECURITY_LOGGER);
     
     public RealmsManager() {
         
@@ -153,6 +158,55 @@ public class RealmsManager {
       
        return arr;
        
-   } 
+   }
+
+
+   /**
+     * Load all configured realms from server.xml and initialize each
+     * one.  Initialization is done by calling Realm.initialize() with
+     * its name, class and properties.  The name of the default realm
+     * is also saved in the Realm class for reference during server
+     * operation.
+     *
+     * <P>This method superceeds the RI RealmManager.createRealms() method.
+     *
+     * */
+    public void createRealms() {
+        //check if realms are already loaded by admin GUI ?
+        if (realmsAlreadyLoaded()) {
+            return;
+        }
+
+        try {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Initializing configured realms from SecurityService in Domain.xml....");
+            }
+
+            SecurityService securityBean = Globals.getDefaultHabitat().getComponent(SecurityService.class);
+            assert (securityBean != null);
+
+            // grab default realm name
+            String defaultRealm = securityBean.getDefaultRealm();
+
+            // get set of auth-realms and process each
+            List<AuthRealm> realms = securityBean.getAuthRealm();
+            assert (realms != null);
+
+            RealmConfig.createRealms(defaultRealm, realms);
+
+        } catch (Exception e) {
+            _logger.log(Level.SEVERE, "realmconfig.nogood", e);
+        }
+    }
+
+    private boolean realmsAlreadyLoaded() {
+
+        Enumeration en = getRealmNames();
+        if (en.hasMoreElements()) {
+            return true;
+        }
+
+        return false;
+    }
 
 }
