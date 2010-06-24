@@ -73,12 +73,12 @@ import com.sun.enterprise.util.net.NetUtils;
 @Service(name = "_create-instance-filesystem")
 @Scoped(PerLookup.class)
 public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
-    
-    @Param(name = "agentport", optional = true)
-    private String agentPort;  //nodeagent.properties agent.adminPort
+    //agentport and agentproperties not needed until we have a node agent
+    //@Param(name = "agentport", optional = true)
+    //private String agentPort;  //nodeagent.properties agent.adminPort
 
-    @Param(name = "agentproperties", optional = true, separator = ':')
-    private Properties agentProperties;  //TODO Properties error handling
+    //@Param(name = "agentproperties", optional = true, separator = ':')
+    //private Properties agentProperties;  //TODO Properties error handling
 
     //@Param(name = "savemasterpassword", optional = true, defaultValue = "false")
     //private boolean saveMasterPassword = false;
@@ -116,11 +116,11 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         else
             throw new CommandException(strings.get("Instance.badInstanceName"));
 
-        if (agentPort != null) {
-            if (!NetUtils.isPortStringValid(agentPort)) {
-                throw new CommandException(strings.get("Instance.invalidAgentPort", agentPort));
-            }
-        }
+        //if (agentPort != null) {
+        //    if (!NetUtils.isPortStringValid(agentPort)) {
+        //        throw new CommandException(strings.get("Instance.invalidAgentPort", agentPort));
+        //    }
+        //}
 
         super.validate();
 
@@ -215,8 +215,8 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
             if (!dasPropsFile.isFile()) {
                 writeDasProperties();
             }
-            filename = nodeagentPropsFile.getName();
-            writeNodeagentProperties();
+            //filename = nodeagentPropsFile.getName();
+            //writeNodeagentProperties();
             filename = loggingPropsFile.getName();
             writeLoggingProperties();
         } catch (IOException ex) {
@@ -237,7 +237,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         fos.close();
     }
 
-    private void writeNodeagentProperties() throws IOException, CommandException {
+    /*private void writeNodeagentProperties() throws IOException, CommandException {
         //TODO allow any properties?
         if (!nodeagentPropsFile.isFile()) {
             nodeagentPropsFile.createNewFile();
@@ -268,14 +268,14 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         FileOutputStream fos = new FileOutputStream(nodeagentPropsFile);
         _nodeagentProps.store(fos, strings.get("Instance.nodeagentPropertiesComment"));
         fos.close();
-    }
+    }*/
 
     /**
      * Returns the agent port specified by the --agentport option. If unspecified a
      * random free port is chosen. We ensure that the agent port is not in use or
      * a CommandException is thrown.
      */
-    protected int getAgentPort() throws CommandException
+    /*protected int getAgentPort() throws CommandException
     {
         //verify admin port is not in use
         int port;
@@ -290,7 +290,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         }
         logger.printDebugMessage("agentPort = " + port);
         return port;
-    }
+    }*/
 
     private void writeLoggingProperties() throws IOException {
         String rootFolder = getSystemProperty(com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
