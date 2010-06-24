@@ -124,9 +124,11 @@ public class ComponentDefinition implements ComponentInfo {
     }
 
     private void initializeMethods() {
-        for (Class cl: classes) {
+        for (Class cl : classes) {
             for (Method method : cl.getDeclaredMethods()) {
-                methodMap.put(new MethodKey(method), method);
+                if (!method.isBridge()) {
+                    methodMap.put(new MethodKey(method), method);
+                }
             }
         }
     }
