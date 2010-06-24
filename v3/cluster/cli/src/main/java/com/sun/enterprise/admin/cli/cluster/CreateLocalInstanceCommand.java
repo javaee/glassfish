@@ -43,12 +43,11 @@ import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
-import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 
 /**
- *  This is a local command that calls the primitive remote create-instance to add the
+ *  This is a local command that calls the primitive remote _register-instance to add the
  *  entries in domain.xml and then the primitive local command _create-instance-filesystem
  *  to create the empty directory structure and das.properties
  *
@@ -56,9 +55,6 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Service(name = "create-local-instance")
 @Scoped(PerLookup.class)
 public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesystemCommand {
-
-    @Param(name = "filesystemonly", optional = true, defaultValue = "false")
-    private boolean filesystemOnly = false;
 
     @Param(name = "config", optional = true)
     private String configName;
@@ -92,18 +88,17 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         INSTANCE_DOTTED_NAME = "servers.server." + instanceName;
         RENDEZVOUS_DOTTED_NAME = INSTANCE_DOTTED_NAME + ".property." + RENDEZVOUS_PROPERTY_NAME;
 
-        if (!filesystemOnly) {
-            if (!rendezvousWithDAS()) {
-                instanceDir.delete();
-                throw new CommandException(
-                        strings.get("Instance.rendezvousFailed", DASHost, "" + DASPort));
-            }
+        
+        if (!rendezvousWithDAS()) {
+            instanceDir.delete();
+            throw new CommandException(
+                    strings.get("Instance.rendezvousFailed", DASHost, "" + DASPort));
+        }
 
-            _rendezvousOccurred = rendezvousOccurred();
-            if (_rendezvousOccurred) {
-                throw new CommandException(
-                        strings.get("Instance.rendezvousAlready", instanceName, DASHost, "" + DASPort));
-            }
+        _rendezvousOccurred = rendezvousOccurred();
+        if (_rendezvousOccurred) {
+            throw new CommandException(
+                    strings.get("Instance.rendezvousAlready", instanceName, DASHost, "" + DASPort));
         }
     }
 
@@ -114,21 +109,19 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             throws CommandException, CommandValidationException {
         int exitCode = -1;
         
-        if (!this.filesystemOnly) {
-            if (isRegisteredToDAS()) {
-                if (!_rendezvousOccurred) {
-                    setRendezvousOccurred("true");
-                    _rendezvousOccurred = true;
-                }
+        if (isRegisteredToDAS()) {
+            if (!_rendezvousOccurred) {
+                setRendezvousOccurred("true");
+                _rendezvousOccurred = true;
+            }
 
-            } else {
-                try {
-                    registerToDAS();
-                    _rendezvousOccurred = true;
-                } catch (CommandException ce) {
-                    instanceDir.delete();
-                    throw ce;
-                }
+        } else {
+            try {
+                registerToDAS();
+                _rendezvousOccurred = true;
+            } catch (CommandException ce) {
+                instanceDir.delete();
+                throw ce;
             }
         }
         try {
@@ -139,10 +132,9 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
                 msg = msg + ": " + ce.getLocalizedMessage();
             }
             logger.printError(msg);
-            if (!filesystemOnly) {
-                setRendezvousOccurred("false");
-                _rendezvousOccurred = false;
-            }
+            setRendezvousOccurred("false");
+            _rendezvousOccurred = false;
+            
             throw new CommandException(msg, ce);
         }
         return exitCode;
@@ -151,12 +143,14 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     private boolean rendezvousWithDAS() {
         try {
             logger.printMessage(strings.get("Instance.rendezvousAttempt", DASHost, "" + DASPort));
-            RemoteAdminCommand rac = new RemoteAdminCommand("uptime", DASHost, DASPort, dasIsSecure, "admin", null, logger.getLogger());
-            rac.setConnectTimeout(10000);
-            ParameterMap map = new ParameterMap();
-            rac.executeCommand(map);
-            logger.printMessage(strings.get("Instance.rendezvousSuccess", DASHost, "" + DASPort));
-            return true;
+            boolean success = false;
+            RemoteCommand rc = new RemoteCommand("uptime", this.programOpts, this.env);
+            int exitCode = rc.execute("uptime");
+            if (exitCode == 0) {
+                logger.printMessage(strings.get("Instance.rendezvousSuccess", DASHost, "" + DASPort));
+                success = true;
+            }
+            return success;
         } catch (CommandException ex) {
             return false;
         }
