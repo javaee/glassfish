@@ -269,6 +269,9 @@ Address used:
 java.net.MalformedURLException
 Sun specific deployment descriptor
 
+# From LocalStrings.properties file
+was successfully deployed in
+
 # Waiting to be fixed: https://glassfish.dev.java.net/issues/show_bug.cgi?id=11627
 endpoint.determine.destinationtype
 
