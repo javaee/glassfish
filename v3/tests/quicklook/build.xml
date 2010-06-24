@@ -39,8 +39,9 @@
     <property environment="env"/>
 
     <property file="build.properties"/>
-     <property file="${basedir}/gfproject/derby.properties"/>
-     <import file="${basedir}/gfproject/db-targets.xml"/>
+    <property file="${basedir}/gfproject/derby.properties"/>
+    <import file="${basedir}/gfproject/db-targets.xml"/>
+	<import file="${basedir}/gfproject/utils.xml"/>
     
     <description>Builds, tests, and runs the project V3 Quicklook</description>
     <!-- target name="all_wd" depends="clean" -->
@@ -58,7 +59,8 @@
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
         <antcall target="testng-summary"/>
-	<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
+		<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
+		<antcall target="check-logged-messages"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -79,7 +81,8 @@
         <antcall target="stop_server_with_security_manager_enabled" />
 
         <antcall target="testng-summary"/>
-	<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
+		<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
+		<antcall target="check-logged-messages"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -118,8 +121,9 @@
         <antcall target="quicklook-summary"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
-	<copy file="test-output/emailable-report.html" tofile="test-output/QL-GP-report.html" failonerror="false"/>
+		<copy file="test-output/emailable-report.html" tofile="test-output/QL-GP-report.html" failonerror="false"/>
         <antcall target="testng-summary"/>
+		<antcall target="check-logged-messages"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -147,6 +151,7 @@
         <antcall target="stop-derby"/>
         <copy file="test-output/emailable-report.html" tofile="test-output/QL-GP-report.html" failonerror="false"/>
         <antcall target="testng-summary"/>
+		<antcall target="check-logged-messages"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -161,6 +166,7 @@
         <antcall target="undeploy"/>
         <antcall target="stop-derby"/>
         <antcall target="testng-summary"/>
+		<antcall target="check-logged-messages"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -568,4 +574,5 @@
          <arg value="verify-domain-xml"/>
      </exec>
 </target>
+
 </project>
