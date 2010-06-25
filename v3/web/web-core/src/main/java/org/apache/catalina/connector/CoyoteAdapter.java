@@ -91,6 +91,12 @@ public class CoyoteAdapter
 
     // -------------------------------------------------------------- Constants
 
+    private static final String POWERED_BY = "Servlet/3.0 JSP/2.2 " +
+            "(" + ServerInfo.getServerInfo() + " Java/" +
+            System.getProperty("java.vm.vendor") + "/" +
+            System.getProperty("java.runtime.version") + ")";
+
+
     protected boolean v3Enabled = 
         Boolean.valueOf(System.getProperty("v3.grizzly.useMapper", "true")).booleanValue();
     
@@ -253,7 +259,7 @@ public class CoyoteAdapter
         // END SJSAS 6331392
 
         if (connector.isXpoweredBy()) {
-            response.addHeader("X-Powered-By", "Servlet/3.0");
+            response.addHeader("X-Powered-By", POWERED_BY);
         }
 
 
