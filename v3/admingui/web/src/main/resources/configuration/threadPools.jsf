@@ -42,7 +42,7 @@
 />
 <!composition template="/templates/default.layout"  
     guiTitle="$resource{i18n_web.configuration.threadPoolPageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:threadPools','/web/configuration/pluginTreeNodeThreadPool.jsf','threadPools');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:threadPools');"
 >
 
 <!define name="content">

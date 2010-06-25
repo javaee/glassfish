@@ -41,7 +41,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18nc.msgSecurity.ListPageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:security:messageSecurity','/common/pluginTreeNodeSecurity.jsf','security:messageSecurity');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:security:messageSecurity');"
 >
 <!define name="content">
     <event>

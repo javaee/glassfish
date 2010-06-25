@@ -43,7 +43,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18n_corba.iiopListeners.ListPageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:orb:iiopListeners','/corba/pluginTreeNodeCorba.jsf','orb:iiopListeners');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:orb:iiopListeners');"
 >
 <!define name="content">
     <event>

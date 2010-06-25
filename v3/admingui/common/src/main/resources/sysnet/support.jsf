@@ -40,7 +40,7 @@
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.support.PageTitle}"
-        guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:registration', '/common/peTree.inc', 'treeForm:tree:registration');">
+        guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:registration');">
 <!define name="content">
 
 <sun:script>

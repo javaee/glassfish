@@ -41,7 +41,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18nc.standaloneInstances.PageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree();"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:standaloneInstances');"
 >
 
 #include "/common/appServer/instancesExtraButtons.inc"

@@ -41,7 +41,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18nc.auditModule.PageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:security:auditModules','/common/pluginTreeNodeSecurity.jsf','security:auditModules');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:security:auditModules');"
 >
 <!define name="content">
     <event>

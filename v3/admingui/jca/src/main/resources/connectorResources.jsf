@@ -41,7 +41,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njca.connectorResources.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:Connectors:connectorResources','/jca/jcaTreeNode.jsf','Connectors:connectorResources');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:Connectors:connectorResources');"
 >
 <!define name="content">
     <event>

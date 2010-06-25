@@ -41,8 +41,7 @@
 
 <!composition template="/templates/default.layout"  
     guiTitle="$resource{i18njms.jmsHosts.ListPageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:jmsConfiguration:jmsHosts','/jms/configurationNodes.jsf','jmsConfiguration:jmsHosts');"
->
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configurations:#{pageSession.configName}:jmsConfiguration:jmsHosts');">
 <!define name="content">
     <event>
     <!beforeCreate

@@ -42,7 +42,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njca.resourceAdapterConfig.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:resourceAdapterConfigs','/jca/raconfigTreeNode.jsf','resourceAdapterConfigs');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:resourceAdapterConfigs');"
 >
 <!define name="content">
     <event>

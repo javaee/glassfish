@@ -42,7 +42,7 @@
 />
 <!composition template="/templates/default.layout"  
     guiTitle="$resource{i18nc.jacc.PageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:security:jaccProviders','/common/pluginTreeNodeSecurity.jsf','security:jaccProviders');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:security:jaccProviders');"
 >
 <!define name="content">
     <event>

@@ -43,7 +43,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njmail.javaMailSessions.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:mailResources','/full/jmailTreeNode.jsf','mailResources');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:mailResources');"
 >
 <!define name="content">
     <event>

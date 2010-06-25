@@ -39,7 +39,10 @@
     setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jmsPhysDestinations.pageTitle}" >
+<!composition
+	template="/templates/default.layout"
+	guiTitle="$resource{i18njms.jmsPhysDestinations.pageTitle}"
+	guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configurations:#{configName}:jmsConfiguration:jmsPhysDest');">
 <!define name="content">
     <event>
         <!beforeCreate

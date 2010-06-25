@@ -43,7 +43,7 @@
 //<sun:page id="page1">
 <!composition template="/templates/default.layout" 
     guiTitle="$resource{i18n.enterpriseApplications.title}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:applications', '/common/peTree.inc', 'treeForm:tree:applications');">
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:applications');">
 <!define name="content">
     <event>
         <!beforeCreate

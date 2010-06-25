@@ -41,7 +41,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18nc.nodes.PageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree();"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:nodes');"
 >
 
 <!define name="content">

@@ -41,7 +41,7 @@
 />
 <!composition template="/templates/default.layout" 
     guiTitle="$resource{i18nc.realm.PageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:security:realms','/common/pluginTreeNodeSecurity.jsf','security:realms');">
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:security:realms');">
 <!define name="content">
     <event>
     <!beforeCreate

@@ -42,7 +42,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njdbc.jdbcResources.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:JDBC:jdbcResources','/jdbc/jdbcTreeNode.jsf','JDBC:jdbcResources');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:JDBC:jdbcResources');"
 >
 <!define name="content">
     <event>

@@ -41,7 +41,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18nc.clusters.PageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree();"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:clusters');"
 >
 
 <!define name="extraButton2">
