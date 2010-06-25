@@ -211,7 +211,6 @@ public class Main implements BundleActivator
      */
     private void initCurrentManagedBundles()
     {
-        long startTime = System.currentTimeMillis();
         Bundle[] bundles = this.context.getBundles();
         String watchedDirPath = bundlesDir.toURI().normalize().getPath();
         final long thisBundleId = context.getBundle().getBundleId();
@@ -246,7 +245,6 @@ public class Main implements BundleActivator
                 // by FileInstall, as we always use proper filepath as location.
             }
         }
-        System.out.println("Time taken by initCurrentManagedBundles()" + (System.currentTimeMillis() - startTime));
     }
 
     /**
