@@ -45,13 +45,13 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.ParameterMap;
 
 /**
  * Extracts a ParameterMap corresponding to the
- * parameters defined on an AdminCommand.
+ * parameters defined on injected objects, such as AdminCommand or
+ * CommandParameters implementations.
  * <p>
  * This can be useful from a supplemental command which needs to create a new
  * command invocation, with parameters similar to its own, for execution on
@@ -61,15 +61,30 @@ import org.glassfish.api.admin.ParameterMap;
  */
 public class ParameterMapExtractor {
 
-    private final AdminCommand command;
+    private final Object[] injectionTargets;
 
-    public ParameterMapExtractor(final AdminCommand command) {
-        this.command = command;
+    /**
+     * Creates a new extractor based on the injected values in one or more
+     * injected targets, typically AdminCommand or CommandParameters
+     * implementations.
+     * <p>
+     * Note that the objects are processed in the order specified, and any
+     * values set in later objects will override values that were set from
+     * earlier objects.
+     *
+     * @param targets the objects to inspect for injected @Param values
+     * @throws IllegalArgumentException if a null is passed for the targets
+     */
+    public ParameterMapExtractor(final Object... targets) {
+        if (targets == null) {
+            throw new IllegalArgumentException();
+        }
+        injectionTargets = targets;
     }
 
     /**
      * Creates a ParameterMap from the @Param fields defined on the
-     * command obejct provided in the constructor call.
+     * injected objects provided in the constructor call.
      * @return ParameterMap for the parameters injected into the admin object
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
@@ -80,10 +95,9 @@ public class ParameterMapExtractor {
 
     /**
      * Creates a ParameterMap from the @Param fields defined on the
-     * command object's class provided in the constructor call, excluding selected parameters.
-     * @param command the AdminCommand to analyze
+     * injected objects provided in the constructor call, excluding selected parameters.
      * @param parameterNamesToExclude parameter names to exclude from the parameter map
-     * @return ParameterMap for the parameters injected into the admin command
+     * @return ParameterMap for the parameters injected into the targets passed to the constructor
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      */
@@ -91,24 +105,34 @@ public class ParameterMapExtractor {
             throws IllegalArgumentException, IllegalAccessException {
         final ParameterMap paramMap = new ParameterMap();
 
-        for (Field f : command.getClass().getFields()) {
-            final Param param = f.getAnnotation(Param.class);
-            if (param != null &&
-                    ! parameterNamesToExclude.contains(f.getName())) {
-                final Object fieldValue = f.get(command);
-                if (fieldValue != null) {
-                    final String paramName = CommandModel.getParamName(param, f);
-                    if (param.multiple()) {
-                        paramMap.set(paramName, multipleValue(param, f.get(command)));
-                    } else {
-                        paramMap.set(paramName, singleValue(param, f.get(command)));
-                    }
-                }
+        for (Object target : injectionTargets) {
+            if (target != null) {
+                extract(target, parameterNamesToExclude, paramMap);
             }
         }
         return paramMap;
     }
 
+    private void extract(final Object target,
+            final Collection<String> parameterNamesToExclude,
+            final ParameterMap paramMap) throws IllegalArgumentException, IllegalAccessException {
+        for (Field f : target.getClass().getFields()) {
+            final Param param = f.getAnnotation(Param.class);
+            if (param != null &&
+                    ! parameterNamesToExclude.contains(f.getName())) {
+                final Object fieldValue = f.get(target);
+                if (fieldValue != null) {
+                    final String paramName = CommandModel.getParamName(param, f);
+                    if (param.multiple()) {
+                        paramMap.set(paramName, multipleValue(param, f.get(target)));
+                    } else {
+                        paramMap.set(paramName, singleValue(param, f.get(target)));
+                    }
+                }
+            }
+        }
+    }
+    
     private String singleValue(final Param p, final Object value) {
         if (value.getClass().isAssignableFrom(String.class)) {
             return (String) value;

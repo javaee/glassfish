@@ -46,6 +46,7 @@ import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.Utility;
+import org.glassfish.common.util.admin.ParameterMapExtractor;
 import java.util.StringTokenizer;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.admin.AdminAdapter;
@@ -55,6 +56,8 @@ import org.glassfish.api.*;
 import org.glassfish.api.event.*;
 import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.*;
@@ -89,6 +92,7 @@ import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URI;
 
 import org.glassfish.deployment.versioning.VersioningService;
 import org.glassfish.deployment.versioning.VersioningSyntaxException;
@@ -860,20 +864,30 @@ public class ApplicationLifecycle implements Deployment {
 
     // register application information in domain.xml
     public void registerAppInDomainXML(final ApplicationInfo
-        applicationInfo, final DeploymentContext context, Transaction t)
+        applicationInfo, final DeploymentContext context, Transaction t) 
+        throws TransactionFailure {
+        registerAppInDomainXML(applicationInfo, context, t, false);
+    }
+
+    // register application information in domain.xml
+    public void registerAppInDomainXML(final ApplicationInfo
+        applicationInfo, final DeploymentContext context, Transaction t, 
+        boolean appRefOnly)
         throws TransactionFailure {
         final Properties appProps = context.getAppProps();
         final DeployCommandParameters deployParams = context.getCommandParameters(DeployCommandParameters.class);
-        Application app_w = context.getTransientAppMetaData(
-            APPLICATION_ELEMENT_NAME, Application.class);
-        if (t != null && app_w != null) {
+        if (t != null) {
             try {
-                // adding the application element
-                setRestAppAttributes(app_w, appProps);
-                Applications apps_w = t.enroll(applications);
-                apps_w.getModules().add(app_w);
-                if (applicationInfo != null) {
-                    applicationInfo.save(app_w);
+                if (!appRefOnly) {
+                    Application app_w = context.getTransientAppMetaData(
+                        APPLICATION_ELEMENT_NAME, Application.class);
+                    // adding the application element
+                    setRestAppAttributes(app_w, appProps);
+                    Applications apps_w = t.enroll(applications);
+                    apps_w.getModules().add(app_w);
+                    if (applicationInfo != null) {
+                        applicationInfo.save(app_w);
+                    }
                 }
 
                 Server servr = domain.getServerNamed(deployParams.target); 
@@ -945,6 +959,7 @@ public class ApplicationLifecycle implements Deployment {
                 ServerTags.LOCATION));
             // always set the enable attribute of application to true
             app.setEnabled(String.valueOf(true));
+            app.setAvailabilityEnabled(deployParams.availabilityenabled.toString());
         } else {
             // this is not a regular javaee module 
             app.setEnabled(deployParams.enabled.toString());
@@ -991,8 +1006,14 @@ public class ApplicationLifecycle implements Deployment {
         }
     }
 
-    public void unregisterAppFromDomainXML(final String appName, 
+    public void unregisterAppFromDomainXML(final String appName,
         final String target) throws TransactionFailure {
+        unregisterAppFromDomainXML(appName, target, false);
+    }
+
+    public void unregisterAppFromDomainXML(final String appName, 
+        final String target, final boolean appRefOnly) 
+        throws TransactionFailure {
         ConfigSupport.apply(new SingleConfigCode() {
             public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
                 // get the transaction
@@ -1040,13 +1061,15 @@ public class ApplicationLifecycle implements Deployment {
                         }
                     }
 
-                    // remove application element
-                    Applications apps = ((Domain)param).getApplications();
-                    ConfigBeanProxy apps_w = t.enroll(apps);
-                    for (ApplicationName module : apps.getModules()) {
-                        if (module.getName().equals(appName)) {
-                            ((Applications)apps_w).getModules().remove(module);
-                            break;
+                    if (!appRefOnly) {
+                        // remove application element
+                        Applications apps = ((Domain)param).getApplications();
+                        ConfigBeanProxy apps_w = t.enroll(apps);
+                        for (ApplicationName module : apps.getModules()) {
+                            if (module.getName().equals(appName)) {
+                                ((Applications)apps_w).getModules().remove(module);
+                                break;
+                            }
                         }
                     }
                 }
@@ -1108,7 +1131,7 @@ public class ApplicationLifecycle implements Deployment {
 
     // check if the application is registered in domain.xml
     public boolean isRegistered(String appName) {
-        return ConfigBeansUtilities.getModule(appName)!=null;
+        return applications.getApplication(appName)!=null;
     }
 
     public ApplicationInfo get(String appName) {
@@ -1361,39 +1384,63 @@ public class ApplicationLifecycle implements Deployment {
         return sniffers;
     }
 
-    public List<Application> getApplicationsForTarget(String target) {
-        if (target.equals("domain")) {
-            // special target domain
-            return applications.getApplications();
+    public ParameterMap prepareInstanceDeployParamMap(DeploymentContext dc) 
+        throws Exception {
+        final DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
+        final Collection<String> excludedParams = new ArrayList<String>();
+        excludedParams.add("path");
+        excludedParams.add("deploymentplan");
+        excludedParams.add("upload"); // We'll force it to true ourselves.
+
+        final ParameterMap paramMap;
+        final ParameterMapExtractor extractor = new ParameterMapExtractor(params);
+        paramMap = extractor.extract(excludedParams);
+
+        // set the generated dir params
+        final File genPolicyDir = dc.getScratchDir("policy");
+        /*
+         * The generated policy directory is not always created, so check it
+         * before adding it to the parameters.
+         */
+        if (genPolicyDir.isDirectory()) {
+            paramMap.set("generatedpolicydir", dc.getScratchDir("policy").getAbsolutePath());
+        }
+        paramMap.set("generatedxmldir", dc.getScratchDir("xml").getAbsolutePath());
+        paramMap.set("generatedejbdir", dc.getScratchDir("ejb").getAbsolutePath());
+        paramMap.set("generatedjspdir", dc.getScratchDir("jsp").getAbsolutePath());
+
+        // set the path and plan params
+
+        // get the location properties from the application so the token
+        // will be resolved
+        Application application = applications.getApplication(params.name);
+        Properties appProperties = application.getDeployProperties();
+        String archiveLocation = appProperties.getProperty(Application.APP_LOCATION_PROP_NAME);
+        final File archiveFile = new File(new URI(archiveLocation));
+        paramMap.set("DEFAULT", archiveFile.getAbsolutePath());
+
+        String planLocation = appProperties.getProperty(Application.DEPLOYMENT_PLAN_LOCATION_PROP_NAME);
+        if (planLocation != null) {
+            final File actualPlan = new File(new URI(planLocation));
+            paramMap.set(DeployCommandParameters.ParameterNames.DEPLOYMENT_PLAN, actualPlan.getAbsolutePath());
         }
 
-        List<Application> apps = new ArrayList<Application>();
-        Server servr = domain.getServerNamed(target);
-        if (servr != null) {
-            // standalone server instance
-            for (ApplicationRef ref : servr.getApplicationRef()) {
-                Application app = applications.getApplication(ref.getRef());
-                if (app != null) {
-                    apps.add(app);
-                }
-            }
-            return apps;
+        // always upload the archives to the instance side
+        paramMap.set("upload", "true");
+
+        // pass the params we restored from the previous deployment in case of
+        // redeployment
+        if (params.previousContextRoot != null) {
+            paramMap.set("preservedcontextroot", params.previousContextRoot);
         }
 
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster != null) {
-             // cluster instances
-            for (Server svr : cluster.getInstances() ) {
-                for (ApplicationRef ref : svr.getApplicationRef()) {
-                    Application app = applications.getApplication(ref.getRef());
-                    if (app != null) {
-                        apps.add(app);
-                    }
-                }
-            }
-            return apps;
-        }
-        return apps;
+        // pass the app props so we have the information to persist in the
+        // domain.xml
+        Properties appProps = dc.getAppProps();
+        appProps.remove("appConfig");
+        paramMap.set("appprops", extractor.propertiesValue(appProps, ':'));
+
+        return paramMap;
     }
 }
 

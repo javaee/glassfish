@@ -50,6 +50,7 @@ import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -63,9 +64,9 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.SnifferManager;
-import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -106,14 +107,12 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
     final private static String COPY_IN_PLACE_ARCHIVE_PROP_NAME = "copy.inplace.archive";
-    private static final String INSTANCE_ROOT_URI_PROPERTY_NAME = "com.sun.aas.instanceRootURI";
-
 
     @Inject
     Applications apps;
 
     @Inject
-    ServerEnvironmentImpl env;
+    ServerEnvironment env;
 
     @Inject
     Habitat habitat;
@@ -271,8 +270,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
              * to modify the app locations.  Leave the location alone if
              * it does not fall within the domain directory.
              */
-            String appLocation = relativizeWithinDomainIfPossible(
-                    deploymentContext.getSource().getURI());
+            String appLocation = DeploymentUtils.relativizeWithinDomainIfPossible( deploymentContext.getSource().getURI());
             
             appProps.setProperty(ServerTags.LOCATION, appLocation);
             // set to default "user", deployers can override it
@@ -299,10 +297,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                     moveAppFilesToPermanentLocation(
                             deploymentContext, logger);
                     recordFileLocations(appProps);
-                    prepareParametersForSupplementalCommand(suppInfo,
-                             deploymentContext);
                     // register application information in domain.xml
                     deployment.registerAppInDomainXML(appInfo, deploymentContext, t);
+                    suppInfo.setDeploymentContext(deploymentContext);
                 } catch (Exception e) {
                     // roll back the deployment and re-throw the exception
                     deployment.undeploy(name, deploymentContext);
@@ -350,16 +347,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
       } finally {
           events.unregister(this);
       }
-    }
-
-    private String relativizeWithinDomainIfPossible(
-            final URI absURI) throws URISyntaxException {
-        URI instanceRootURI = new URI(System.getProperty(INSTANCE_ROOT_URI_PROPERTY_NAME));
-        URI appURI = instanceRootURI.relativize(absURI);
-        String appLocation = (appURI.isAbsolute()) ?
-            appURI.toString() :
-            "${" + INSTANCE_ROOT_URI_PROPERTY_NAME + "}/" + appURI.toString();
-        return appLocation;
     }
 
     /**
@@ -436,20 +423,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         return result;
     }
 
-    private void prepareParametersForSupplementalCommand(
-            final DeployCommandSupplementalInfo suppInfo,
-            final DeploymentContext dc) {
-        if (safeCopyOfApp != null) {
-            suppInfo.setArchiveFile(safeCopyOfApp);
-        }
-        if (safeCopyOfDeploymentPlan != null) {
-            suppInfo.setDeploymentPlan(safeCopyOfDeploymentPlan);
-        }
-
-        suppInfo.setDeploymentContext(dc);
-        
-    }
-    
     private void recordFileLocations(
             final Properties appProps) throws URISyntaxException {
         /*
@@ -459,12 +432,12 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
          */
         if (safeCopyOfApp != null) {
             appProps.setProperty(Application.APP_LOCATION_PROP_NAME,
-                    relativizeWithinDomainIfPossible(
+                    DeploymentUtils.relativizeWithinDomainIfPossible(
                     safeCopyOfApp.toURI()));
         }
         if (safeCopyOfDeploymentPlan != null) {
                 appProps.setProperty(Application.DEPLOYMENT_PLAN_LOCATION_PROP_NAME,
-                        relativizeWithinDomainIfPossible(
+                        DeploymentUtils.relativizeWithinDomainIfPossible(
                         safeCopyOfDeploymentPlan.toURI()));
         }
     }

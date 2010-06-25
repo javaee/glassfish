@@ -427,6 +427,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     List<String> getAllTargets();
 
     @DuckTyped
+    List<Application> getApplicationsForTarget(String target);
+
+    @DuckTyped
     ReferenceContainer getReferenceContainerNamed(String name);
 
     @DuckTyped
@@ -663,6 +666,23 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
             return referencedTargets;
         }
 
+        public static List<Application> getApplicationsForTarget(Domain me, String target) {
+            if (target.equals("domain")) {
+                // special target domain
+                return me.getApplications().getApplications();
+            }
+
+            List<Application> apps = new ArrayList<Application>();
+
+            List<ApplicationRef> applicationRefs = me.getApplicationRefsInTarget(target);
+            for (ApplicationRef ref : applicationRefs) {
+                Application app = me.getApplications().getApplication(ref.getRef());
+                if (app != null) {
+                    apps.add(app);
+                }
+            }
+            return apps;
+         }
 
          public static ReferenceContainer getReferenceContainerNamed(Domain d, String name) {
             // Clusters and Servers are ReferenceContainers

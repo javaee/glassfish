@@ -36,14 +36,13 @@
 
 package org.glassfish.deployment.admin;
 
-import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ActionReport;
@@ -51,7 +50,6 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.deployment.StateCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.internal.deployment.Deployment;
@@ -89,13 +87,16 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DisableCommand.class);    
 
     @Inject
-    ServerEnvironmentImpl env;
+    ServerEnvironment env;
 
     @Inject
     Deployment deployment;
 
     @Inject
     Domain domain;
+
+    @Inject
+    Applications applications;
 
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
@@ -173,13 +174,10 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
                 new UndeployCommandParameters();
             commandParams.origin = this.origin;
             commandParams.name = appName;
+            commandParams.target = target;
             final ExtendedDeploymentContext deploymentContext = 
                     deployment.getBuilder(logger, commandParams, report).source(appInfo.getSource()).build();
-            ApplicationName module = ConfigBeansUtilities.getModule(appName);
-            Application application = null;
-            if (module instanceof Application) {
-                application = (Application) module;
-            }
+            Application application = applications.getApplication(appName);
             if (application != null) {
                 deploymentContext.getAppProps().putAll(
                     application.getDeployProperties());

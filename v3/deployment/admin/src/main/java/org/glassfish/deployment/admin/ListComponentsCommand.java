@@ -39,14 +39,12 @@ package org.glassfish.deployment.admin;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.deployment.SnifferManager;
-import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.annotations.Service;
@@ -85,9 +83,6 @@ public class ListComponentsCommand  implements AdminCommand {
     @Inject
     SnifferManager snifferManager;
 
-    @Inject
-    Deployment deployment;
-
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListComponentsCommand.class);    
 
     public void execute(AdminCommandContext context) {
@@ -96,9 +91,7 @@ public class ListComponentsCommand  implements AdminCommand {
 
         ActionReport.MessagePart part = report.getTopMessagePart();        
         int numOfApplications = 0;
-        for (ApplicationName module : deployment.getApplicationsForTarget(target)) {
-            if (module instanceof Application) {
-                final Application app = (Application)module;
+        for (Application app : domain.getApplicationsForTarget(target)) {
                 if (app.getObjectType().equals("user")) {
                     if (type==null || isApplicationOfThisType(app, type)) {
                         ActionReport.MessagePart childPart = part.addChild();
@@ -111,7 +104,6 @@ public class ListComponentsCommand  implements AdminCommand {
                         numOfApplications++;
                     }
                 }
-            }
         }
         if (numOfApplications == 0) {
             part.setMessage(localStrings.getLocalString("list.components.no.elements.to.list", "Nothing to List."));            

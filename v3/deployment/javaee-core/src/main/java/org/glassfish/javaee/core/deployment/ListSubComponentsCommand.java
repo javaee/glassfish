@@ -39,7 +39,6 @@ package org.glassfish.javaee.core.deployment;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.Cluster;
@@ -47,6 +46,7 @@ import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.internal.deployment.Deployment;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.BundleDescriptor;
@@ -94,6 +94,9 @@ public class ListSubComponentsCommand implements AdminCommand {
     @Inject
     public Deployment deployment;
 
+    @Inject
+    public Applications applications;
+
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListSubComponentsCommand.class);    
 
     public void execute(AdminCommandContext context) {
@@ -122,12 +125,7 @@ public class ListSubComponentsCommand implements AdminCommand {
 
         }
 
-        ApplicationName module = ConfigBeansUtilities.getModule(applicationName);
-  
-        Application application = null;
-        if (module instanceof Application) {
-            application = (Application) module;
-        }
+        Application application = applications.getApplication(applicationName);
 
         ApplicationInfo appInfo = appRegistry.get(applicationName);
         if (appInfo == null) {

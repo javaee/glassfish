@@ -315,9 +315,6 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
 
         public static DeployCommandParameters getDeployParameters(Application app, ApplicationRef appRef) {
 
-            if (appRef==null) {
-                throw new IllegalArgumentException("Null appRef passed");
-            }
             URI uri = null;
             try {
                 uri = new URI(app.getLocation());
@@ -336,7 +333,10 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
             deploymentParams.enabled = Boolean.parseBoolean(app.getEnabled());
             deploymentParams.contextroot = app.getContextRoot();
             deploymentParams.libraries = app.getLibraries();
-            deploymentParams.virtualservers = appRef.getVirtualServers();
+            deploymentParams.availabilityenabled = Boolean.parseBoolean(app.getAvailabilityEnabled());
+            if (appRef != null) {
+                deploymentParams.virtualservers = appRef.getVirtualServers();
+            }
             return deploymentParams;
         }
 

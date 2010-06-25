@@ -67,6 +67,8 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Application;
 
 
 /**
@@ -90,6 +92,9 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
 
     @Inject
     ArchiveFactory archiveFactory;
+
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Applications applications;
 
     @Inject
     ServerEnvironment env;
@@ -149,7 +154,15 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
                 renameOrCopyFileParam(generatedpolicydir, deploymentContext.getScratchDir("policy"), logger);
             }
 
-            Transaction t = deployment.prepareAppConfigChanges(deploymentContext);
+             
+            Transaction t = null;
+            Application application = applications.getApplication(name);
+            if (application != null) {
+                // application element already been synchronized over
+                t = new Transaction();
+            } else {
+                t = deployment.prepareAppConfigChanges(deploymentContext);
+            }
 
             ApplicationInfo appInfo;
             if (type==null) {
@@ -161,7 +174,14 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 try {
                     // register application information in domain.xml
-                    deployment.registerAppInDomainXML(appInfo, deploymentContext, t);
+                    if (application != null)  {
+                        // application element already synchronized over
+                        // just write application-ref
+                        deployment.registerAppInDomainXML(appInfo, deploymentContext, t, true);
+                    } else {
+                        // write both application and application-ref
+                        deployment.registerAppInDomainXML(appInfo, deploymentContext, t);
+                    }
                 } catch (Exception e) {
                     // roll back the deployment and re-throw the exception
                     deployment.undeploy(name, deploymentContext);

@@ -40,6 +40,7 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.EventTypes;
@@ -55,8 +56,8 @@ import com.sun.enterprise.config.serverbeans.Application;
 import java.io.IOException;
 import java.io.File;
 import java.util.LinkedList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 /**
@@ -178,11 +179,20 @@ public interface Deployment {
         throws TransactionFailure;
 
     public void registerAppInDomainXML(final ApplicationInfo
-        applicationInfo, final DeploymentContext context, Transaction t)
+        applicationInfo, final DeploymentContext context, Transaction t) 
         throws TransactionFailure;
 
     public void unregisterAppFromDomainXML(final String appName, 
         final String target)
+        throws TransactionFailure;
+
+    public void registerAppInDomainXML(final ApplicationInfo
+        applicationInfo, final DeploymentContext context, Transaction t,
+        boolean appRefOnly)
+        throws TransactionFailure;
+
+    public void unregisterAppFromDomainXML(final String appName,
+        final String target, boolean appRefOnly)
         throws TransactionFailure;
 
     public void updateAppEnabledAttributeInDomainXML(final String appName,
@@ -201,5 +211,5 @@ public interface Deployment {
 
     public List<Sniffer> prepareSniffersForOSGiDeployment(String type, DeploymentContext context);
 
-    public List<Application> getApplicationsForTarget(String target); 
+    public ParameterMap prepareInstanceDeployParamMap(DeploymentContext dc) throws Exception;
 }

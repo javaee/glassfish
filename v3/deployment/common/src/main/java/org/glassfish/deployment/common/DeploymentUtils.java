@@ -44,6 +44,8 @@ import org.glassfish.api.deployment.DeploymentContext;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 
 /** 
@@ -67,6 +69,8 @@ public class DeploymentUtils {
     private static final String EXPANDED_RAR_SUFFIX = "_rar";
     private static final String EXPANDED_JAR_SUFFIX = "_jar";
     
+    private static final String INSTANCE_ROOT_URI_PROPERTY_NAME = "com.sun.aas.instanceRootURI";
+
     // checking whether the archive is a web archive
     public static boolean isWebArchive(ReadableArchive archive) {
         try {
@@ -225,5 +229,16 @@ public class DeploymentUtils {
     public static boolean useV2Compatibility(DeploymentContext context) {
         return V2_COMPATIBILITY.equals(context.getAppProps().getProperty(DeploymentProperties.COMPATIBILITY));
     }
+
+    public static String relativizeWithinDomainIfPossible(
+            final URI absURI) throws URISyntaxException {
+        URI instanceRootURI = new URI(System.getProperty(INSTANCE_ROOT_URI_PROPERTY_NAME));
+        URI appURI = instanceRootURI.relativize(absURI);
+        String appLocation = (appURI.isAbsolute()) ?
+            appURI.toString() :
+            "${" + INSTANCE_ROOT_URI_PROPERTY_NAME + "}/" + appURI.toString();
+        return appLocation;
+    }
+
 
 }

@@ -35,10 +35,6 @@
  */
 package com.sun.enterprise.config.serverbeans;
 
-import org.glassfish.config.support.Create;
-import org.glassfish.config.support.Delete;
-import org.glassfish.config.support.TargetAndNameBasedResolver;
-import org.glassfish.config.support.TargetBasedResolver;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
@@ -67,7 +63,5 @@ public interface RefContainer extends ConfigBeanProxy {
      * @return the list of applications references.
      */
     @Element
-    @Create(value="create-application-ref", resolver= TargetBasedResolver.class)
-    @Delete(value="delete-application-ref", resolver = TargetAndNameBasedResolver.class)            
     List<ApplicationRef> getApplicationRef();
 }

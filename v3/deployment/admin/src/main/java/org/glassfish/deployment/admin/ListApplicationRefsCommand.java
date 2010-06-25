@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,58 +36,59 @@
 
 package org.glassfish.deployment.admin;
 
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.ServerTags;
-import com.sun.enterprise.config.serverbeans.Domain;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.Param;
-import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Domain;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 
-import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
- * List lifecycle modules.
- *
+ * List application ref command
  */
-@Service(name="list-lifecycle-modules")
-@I18n("list.lifecycle.modules")
-@Scoped(PerLookup.class)
+@Service(name="list-application-refs")
+@I18n("list.application.refs")
 @Cluster(value={RuntimeType.DAS})
+@Scoped(PerLookup.class)
 @TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
-public class ListLifecycleModulesCommand implements AdminCommand  {
+public class ListApplicationRefsCommand implements AdminCommand {
+
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListApplicationRefsCommand.class);
 
     @Param(primary=true, optional=true)
-    public String target = "server";
+    String target = "server";
 
     @Inject
     Domain domain;
 
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListLifecycleModulesCommand.class);
-   
+    /**
+     * Entry point from the framework into the command execution
+     * @param context context for the command.
+     */
     public void execute(AdminCommandContext context) {
-        
-        ActionReport report = context.getActionReport();
+        final ActionReport report = context.getActionReport();
+        final Logger logger = context.getLogger();
+
         ActionReport.MessagePart part = report.getTopMessagePart();
 
-        for (Application app : domain.getApplicationsForTarget(target)) {
-            if (Boolean.valueOf(app.getDeployProperties().getProperty
-                (ServerTags.IS_LIFECYCLE))) {
-                ActionReport.MessagePart childPart = part.addChild();
-                childPart.setMessage(app.getName());
-            }
+        for (ApplicationRef ref : domain.getApplicationRefsInTarget(target)) {
+            ActionReport.MessagePart childPart = part.addChild();
+            childPart.setMessage(ref.getRef());
         }
 
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);

@@ -399,7 +399,8 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
 
     public void clean() {
         // need to remove the generated directories...
-        // need to remove generated/xml, generated/ejb, generated/jsp
+        // need to remove generated/xml, generated/ejb, generated/jsp, 
+        // generated/policy
 
         // remove generated/xml
         File generatedXmlRoot = getScratchDir("xml");
@@ -414,6 +415,11 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
         File generatedJspRoot = getScratchDir("jsp");
         // recursively delete...
         FileUtils.whack(generatedJspRoot);
+
+        // remove generated/policy
+        File generatedPolicyRoot = getScratchDir("policy");
+        // recursively delete...
+        FileUtils.whack(generatedPolicyRoot);
         
         // remove the internal archive directory which holds the original
         // archive (and possibly deployment plan) that cluster sync can use

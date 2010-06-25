@@ -47,31 +47,22 @@ import org.glassfish.api.deployment.DeploymentContext;
  */
 public class DeployCommandSupplementalInfo {
 
-    private File archiveFile = null;
-    private File deploymentPlanFile = null;
     private DeploymentContext dc = null;
-
-    public void setArchiveFile(final File f) {
-        archiveFile = f;
-    }
-
-    public File archiveFile() {
-        return archiveFile;
-    }
-
-    public void setDeploymentPlan(final File f) {
-        deploymentPlanFile = f;
-    }
-
-    public File deploymentPlan() {
-        return deploymentPlanFile;
-    }
-
+    private boolean appRefExists = false;
+    
     public void setDeploymentContext(final DeploymentContext dc) {
         this.dc = dc;
     }
 
     public DeploymentContext deploymentContext() {
         return dc;
+    }
+
+    public void setAppRefExists(final boolean refExists) {
+        appRefExists = refExists;
+    }
+
+    public boolean isAppRefExists() {
+        return appRefExists;
     }
 }

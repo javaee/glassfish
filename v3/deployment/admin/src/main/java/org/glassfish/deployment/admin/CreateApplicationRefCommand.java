@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2006-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,22 +36,26 @@
 
 package org.glassfish.deployment.admin;
 
-import com.sun.enterprise.config.serverbeans.Application;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.StateCommandParameters;
 import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.OpsParams.Origin;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
+import org.glassfish.deployment.common.DeploymentUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.Utility;
-import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.internal.deployment.Deployment;
@@ -60,9 +64,8 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.Transaction;
 
 import java.util.Properties;
 import java.util.logging.Level;
@@ -71,23 +74,31 @@ import java.util.Map;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.beans.PropertyVetoException;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
 
-import org.glassfish.deployment.versioning.VersioningService;
-import org.glassfish.deployment.versioning.VersioningSyntaxException;
-
 /**
- * Enable command
+ * Create application ref command
  */
-@Service(name="enable")
-@I18n("enable.command")
-@Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
+@Service(name="create-application-ref")
+@I18n("create.application.ref.command")
+@Cluster(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
-@TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE})
-public class EnableCommand extends StateCommandParameters implements AdminCommand {
+@TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
+public class CreateApplicationRefCommand implements AdminCommand {
 
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(EnableCommand.class);
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateApplicationRefCommand.class);
+
+    @Param(primary=true)
+    public String name = null;
+
+    @Param(optional=true)
+    String target = "server";
+
+    @Param(optional=true)
+    public String virtualservers = null;
+
+    @Param(optional=true, defaultValue="true")
+    public Boolean enabled = true;
 
     @Inject
     Deployment deployment;
@@ -107,9 +118,6 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
 
-    @Inject
-    VersioningService versioningService;
-
     /**
      * Entry point from the framework into the command execution
      * @param context context for the command.
@@ -118,75 +126,42 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
-        // TODO: use this workaround till the command replication is turned on
-        // by default
-        boolean doReplication = false;
-        if(Utility.getEnvOrProp("ENABLE_REPLICATION")!=null) {
-            doReplication = Boolean.parseBoolean(Utility.getEnvOrProp("ENABLE_REPLICATION"));
-        }
-        if (!deployment.isRegistered(name())) {
-            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name()));
+        if (!deployment.isRegistered(name)) {
+            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
-        ApplicationRef applicationRef = domain.getApplicationRefInTarget(name(), target);
-        if (applicationRef == null) {
-            report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name(), target));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        final DeployCommandSupplementalInfo suppInfo =
+              new DeployCommandSupplementalInfo();
+        context.getActionReport().
+              setResultType(DeployCommandSupplementalInfo.class, suppInfo);
+
+        ApplicationRef applicationRef = domain.getApplicationRefInTarget(name, target);
+        if (applicationRef != null) {
+            suppInfo.setAppRefExists(true);
             return;
         }
 
-        // return if the application is already in enabled state
-        if (Boolean.valueOf(applicationRef.getEnabled())) {
-            logger.fine("The application is already enabled");
-            return;
-        }
-
-        if (!doReplication) {
-        // try to disable the enabled version, if exist
-        try {
-            versioningService.handleDisable(name(),target, report);
-        } catch (VersioningSyntaxException e) {
-            report.failure(logger, e.getMessage());
-            return;
-        }
-        }
-
-        if (!domain.isCurrentInstanceMatchingTarget(target, server.getName())) {
-            // if the target does not match with the current instance name
-            // we should just update the domain.xml and return
-            try {
-                deployment.updateAppEnabledAttributeInDomainXML(name(), target, true);
-            } catch(TransactionFailure e) {
-                logger.warning("failed to set enable attribute for " + name());
-            }
-            return;
-        }
+        Transaction t = new Transaction();
 
         ReadableArchive archive;
         File file = null;
+        ApplicationRef appRef = null;
         DeployCommandParameters commandParams=null;
         Properties contextProps = new Properties();
         Map<String, Properties> modulePropsMap = null;
         ApplicationConfigInfo savedAppConfig = null;
+        Application app = applications.getApplication(name); 
         try {
-            Application app = applications.getApplication(name()); 
-            ApplicationRef appRef = domain.getApplicationRefInServer(server.getName(), name());
-            if (app!=null && appRef != null) {
-                commandParams = app.getDeployParameters(appRef);
-                commandParams.origin = Origin.load;
-                commandParams.target = target;
-                contextProps = app.getDeployProperties();
-                modulePropsMap = app.getModulePropertiesMap();
-                savedAppConfig = new ApplicationConfigInfo(app);
-            }
-            if (commandParams==null) {
-                report.setMessage(localStrings.getLocalString("bug",
-                    "invalid domain.xml entries, please file a bug"));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;                
-            }
+            commandParams = app.getDeployParameters(null);
+            commandParams.origin = Origin.load;
+            commandParams.target = target;
+            commandParams.virtualservers = virtualservers;
+            commandParams.enabled = enabled;
+            contextProps = app.getDeployProperties();
+            modulePropsMap = app.getModulePropertiesMap();
+            savedAppConfig = new ApplicationConfigInfo(app);
 
             URI uri = new URI(app.getLocation());
             file = new File(uri);
@@ -213,25 +188,42 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
 
             Properties appProps = deploymentContext.getAppProps();
             appProps.putAll(contextProps);
+
+            // relativize the location so it could be set properly in 
+            // domain.xml 
+            String location = DeploymentUtils.relativizeWithinDomainIfPossible(new URI(app.getLocation()));
+            appProps.setProperty(ServerTags.LOCATION, location);
+
+            // relativize the URI properties so they could store in the 
+            // domain.xml properly on the instances
+            String appLocation = appProps.getProperty(Application.APP_LOCATION_PROP_NAME);
+            appProps.setProperty(Application.APP_LOCATION_PROP_NAME, DeploymentUtils.relativizeWithinDomainIfPossible(new URI(appLocation)));
+            String planLocation = appProps.getProperty(Application.DEPLOYMENT_PLAN_LOCATION_PROP_NAME);
+            if (planLocation != null) {
+                appProps.setProperty(Application.APP_LOCATION_PROP_NAME, DeploymentUtils.relativizeWithinDomainIfPossible(new URI(planLocation)));
+            }
             savedAppConfig.store(appProps);
 
             if (modulePropsMap != null) {
                 deploymentContext.setModulePropsMap(modulePropsMap);
             }
 
-            deployment.deploy(deploymentContext);
+            if (domain.isCurrentInstanceMatchingTarget(target, server.getName())) {
+                deployment.deploy(deploymentContext);
+            }
 
             if (report.getActionExitCode().equals(
                 ActionReport.ExitCode.SUCCESS)) {
                 try {
-                    deployment.updateAppEnabledAttributeInDomainXML(name(), target, true);
+                    deployment.registerAppInDomainXML(null, deploymentContext, t, true);
+                    suppInfo.setDeploymentContext(deploymentContext);
                 } catch(TransactionFailure e) {
-                    logger.warning("failed to set enable attribute for " + name());
+                    logger.warning("failed to create application ref for " + name);
                 }
             }
 
         } catch(Exception e) {
-            logger.log(Level.SEVERE, "Error during enabling: ", e);
+            logger.log(Level.SEVERE, "Error during creating application ref ", e);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(e.getMessage());
         } finally {

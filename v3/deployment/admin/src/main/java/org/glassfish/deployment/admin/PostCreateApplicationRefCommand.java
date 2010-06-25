@@ -36,49 +36,73 @@
 
 package org.glassfish.deployment.admin;
 
+import java.util.Collections;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.ClusterExecutor;
-import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.Supplemental;
 import org.glassfish.api.admin.FailurePolicy;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.Param;
 import org.glassfish.internal.deployment.Deployment;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
- * Causes InstanceDeployCommand executions on the correct remote instances.
+ * When the create-application-ref command is invoked with a remote target,
+ * we are essentially doing a remote deploy on that target.
  *
- * @author tjquinn
  */
-@Service(name="postdeploy")
-@Supplemental(value="deploy", ifFailure=FailurePolicy.Warn)
+@Service(name="postcreateapplicationref")
+@Supplemental(value="create-application-ref", ifFailure=FailurePolicy.Warn)
 @Scoped(PerLookup.class)
 @Cluster(value={RuntimeType.DAS})
 
-public class PostDeployCommand extends DeployCommandParameters implements AdminCommand {
+public class PostCreateApplicationRefCommand implements AdminCommand {
+
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(PostCreateApplicationRefCommand.class);
+
+    @Param(primary=true)
+    public String name = null;
+
+    @Param(optional=true)
+    public String target = "server";
+
+    @Param(optional=true)
+    public String virtualservers = null;
+
+    @Param(optional=true, defaultValue="true")
+    public Boolean enabled = true;
+
+    @Inject
+    private Deployment deployment;   
 
     @Inject
     private ClusterExecutor clusterExecutor;
 
-    @Inject 
-    private Deployment deployment; 
-
-    @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
         final DeployCommandSupplementalInfo suppInfo =
                 context.getActionReport().getResultType(DeployCommandSupplementalInfo.class);
+
+        if (suppInfo.isAppRefExists()) {
+            // the application ref already exists
+            report.setMessage(localStrings.getLocalString("appref.already.exists","Application reference {0} already exists in target {1}.", name, target));
+            report.setActionExitCode(ActionReport.ExitCode.WARNING);
+            return;
+        }
+
         final DeploymentContext dc = suppInfo.deploymentContext();
         final DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
 
