@@ -206,6 +206,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link ConnectorService }
      */
     @Element
+    @NotNull
     ConnectorService getConnectorService();
 
     /**
