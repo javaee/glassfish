@@ -37,6 +37,12 @@ public class InhabitantTrackerContextBuilder {
     return new InhabitantTrackerContextBuilder();
   }
   
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
+        "(" + build() + ")";
+  }
+  
   public InhabitantTrackerContextBuilder presence(Boolean presence) {
     this.presence = presence;
     return this;
@@ -107,6 +113,11 @@ public class InhabitantTrackerContextBuilder {
         return true;
       }
       return matcher.matches(map);
+    }
+    
+    @Override
+    public String toString() {
+      return matcher.toString();
     }
   }
 

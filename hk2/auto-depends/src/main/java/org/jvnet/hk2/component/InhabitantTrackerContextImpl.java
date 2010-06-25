@@ -25,6 +25,12 @@ public class InhabitantTrackerContextImpl implements InhabitantTrackerContext {
   }
   
   @Override
+  public String toString() {
+    return getClass().getSimpleName() + "-" + System.identityHashCode(this) +
+        "(" + filter + ")";
+  }
+  
+  @Override
   public Set<String> getClassNames() {
     return classNames;
   }

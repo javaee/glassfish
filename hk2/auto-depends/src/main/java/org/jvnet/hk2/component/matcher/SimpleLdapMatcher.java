@@ -379,6 +379,7 @@ public class SimpleLdapMatcher {
       throw new AssertionError("Unknown node type " + type);
     }
 
+    @Override
     public String toString() {
       String typeString;
 

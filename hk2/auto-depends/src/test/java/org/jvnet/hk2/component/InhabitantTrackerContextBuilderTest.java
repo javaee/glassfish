@@ -82,11 +82,20 @@ public class InhabitantTrackerContextBuilderTest extends TestCase {
     }
   }
   
+  /**
+   * Verifies matching behavior when this inhabitant has not properties.
+   */
   public void testCreate_simpleLdapMatcher_emptyMap() throws Exception {
     String expression = "(OBJECTCLASS=com.oracle.pkg.Aclass)";
     InhabitantTrackerContext itc = InhabitantTrackerContextBuilder.create(null).ldapFilter(expression).build();
+
     MultiMap<String, String> meta1 = new MultiMap<String, String>();
     ExistingSingletonInhabitant inhab1 = new ExistingSingletonInhabitant(Object.class, this, meta1);
     assertTrue(itc.getFilter().matches(inhab1));
+
+    meta1 = null;
+    inhab1 = new ExistingSingletonInhabitant(Object.class, this, meta1);
+    assertTrue(itc.getFilter().matches(inhab1));
   }
+
 }

@@ -16,7 +16,25 @@ public class Constants {
   public static final String OBJECTCLASS = "objectclass";
   
   /**
-   * represents service ranking
+   * Service property identifying a service's ranking number.
+   * 
+   * <p>
+   * The service ranking is used by the Framework to determine the <i>natural
+   * order</i> of services (when specifically used with the Tracker).
+   * 
+   * <p>
+   * The default ranking is zero (0). A service with a ranking of
+   * <code>Integer.MAX_VALUE</code> is very likely to be returned as the
+   * default service, whereas a service with a ranking of
+   * <code>Integer.MIN_VALUE</code> is very unlikely to be returned.
+   * 
+   * <p>
+   * If the supplied property value is not of type <code>Integer</code>, it is
+   * deemed to have a ranking value of zero.
+   * 
+   * <p>
+   * Hk2 manages its meta information as String, but converts to Integer
+   * for comparisons.
    */
   public static final String SERVICE_RANKING = "service.ranking";
   

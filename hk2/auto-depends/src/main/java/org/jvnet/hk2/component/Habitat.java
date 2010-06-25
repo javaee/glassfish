@@ -72,7 +72,7 @@ import java.util.logging.Logger;
 public class Habitat {
 
     /**
-     * Name to use to progammatically store default instances of a particular service.
+     * Name to use to programmatically store default instances of a particular service.
      */
     public final String DEFAULT_NAME = "_HABITAT_DEFAULT";
     /**
@@ -96,6 +96,13 @@ public class Habitat {
 //      "true".equals(System.getProperty("hk2.concurrency.controls", "true"));
       Boolean.getBoolean("hk2.concurrency.controls");
     private final boolean concurrencyControls;
+    
+    // Listeners and trackers use this executor for notification of habitat
+    // changes. Many systems will require same-thread notifications.  This is
+    // why OSGi defaults to synchronous service tracker customizers, etc.
+    // We also, therefore, will default to a synchronous model.
+    static boolean ASYNC_EXECUTOR = 
+      Boolean.getBoolean("hk2.async.executor");
     final ExecutorService exec;
     
     public Habitat() {
@@ -111,14 +118,18 @@ public class Habitat {
         this.singletonScope = new ScopeInstance("singleton", new HashMap());
 
         if (null == exec) {
-          exec = Executors.newCachedThreadPool(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable runnable) {
-              Thread t = Executors.defaultThreadFactory().newThread(runnable);
-              t.setDaemon(true);
-              return t;
-            }
-          });
+          if (ASYNC_EXECUTOR) {
+            exec = Executors.newCachedThreadPool(new ThreadFactory() {
+              @Override
+              public Thread newThread(Runnable runnable) {
+                Thread t = Executors.defaultThreadFactory().newThread(runnable);
+                t.setDaemon(true);
+                return t;
+              }
+            });
+          } else {
+            exec = new SameThreadExecutor();
+          }
         }
         this.exec = exec;
         // make the listeners available very early in lifecycle
@@ -1036,7 +1047,7 @@ public class Habitat {
       } 
 
       public void add(HabitatListener listener) {
-        listeners.add(listener);
+        listeners.add(0, listener);
       }
       
       public boolean remove(HabitatListener listener) {

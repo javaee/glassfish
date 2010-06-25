@@ -41,6 +41,22 @@ import org.jvnet.hk2.component.matcher.Constants;
     }
   }
 
+  @Override
+  public String toString() {
+    // need to initialize data structures / listeners for proper toString() output
+    checkInitializedListener();
+    
+    String many;
+    if (matches.size() > 1) {
+      many = ",...";
+    } else {
+      many = "";
+    }
+    
+    return getClass().getSimpleName() + "-" +
+        System.identityHashCode(this) + "(" + getInhabitant() + many + ")";
+  }
+
   protected void checkInitializedListener() {
     if (!initialized) {
       initialized = true;
