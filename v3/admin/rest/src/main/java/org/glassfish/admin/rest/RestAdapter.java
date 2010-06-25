@@ -404,32 +404,9 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         logger.fine("Exposing rest resource context root: " + context);
         if ((context != null) || (!"".equals(context))) {
             Set<Class<?>> classes = getResourcesConfig();
-
-            // we replace the following code with introspection code
-            // in order to not load the jersery class until this method is called.
-            // this way, we gain around 90ms at startup time by not loading jersey classes.
-            // they are loaded only when a REST service is called.
-            //// LazyJerseyInit lazyInit = new LazyJerseyInit();
-
-            try {
-                Class<?> lazyInitClass = Class.forName("org.glassfish.admin.rest.LazyJerseyInit");
-                Method init = lazyInitClass.getMethod("exposeContext",
-                        new Class[]{
-                            Set.class,
-                            ServerContext.class
-                        });
-                Object o[] = new Object[2];
-                o[0] = classes;
-                o[1] = sc;
-                adapter = (GrizzlyAdapter) init.invoke(null, o);
-                ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
-            } catch (Exception ex) {
-                logger.log(Level.SEVERE,
-                        "Error trying to call org.glassfish.admin.rest.LazyJerseyInit via instrospection: ", ex);
-
-            }
-
-
+            adapter = LazyJerseyInit.exposeContext(classes, sc);
+            ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
+            
             logger.info("Listening to REST requests at context: " + context + "/domain");
         }
     }

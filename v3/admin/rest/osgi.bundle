@@ -5,6 +5,7 @@ DynamicImport-Package: \
                         com.sun.jersey.core.header, \
                         com.sun.jersey.multipart, \
                         com.sun.jersey.spi, \
+                        com.sun.jersey.spi.container, \
                         com.sun.jersey.core.impl.provider.header, \
                         com.sun.ws.rs.ext, \
                         javax.ws.rs, \
