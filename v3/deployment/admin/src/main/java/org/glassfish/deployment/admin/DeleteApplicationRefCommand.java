@@ -144,7 +144,15 @@ public class DeleteApplicationRefCommand implements AdminCommand {
 
             UndeployCommandParameters commandParams =
                 new UndeployCommandParameters();
-            commandParams.origin = Origin.unload;
+
+            if (server.isDas()) {
+                commandParams.origin = Origin.unload;
+            } else {
+                // delete application ref on instance
+                // is essentially an undeploy
+                commandParams.origin = Origin.undeploy;
+            }
+
             commandParams.name = name;
             commandParams.cascade = cascade;
 
