@@ -174,12 +174,11 @@ public class ResourcesXMLParser implements EntityResolver
         String publicId = document.getDoctype().getPublicId();
         String systemId = document.getDoctype().getSystemId();
         Logger logger  = Logger.getLogger(ResourcesXMLParser.class.getName());
-        //TODO LogStrings 
         if( (publicId != null && publicId.contains(SUN_RESOURCES)) ||
                 (systemId != null && systemId.contains(SUN_RESOURCES))){
             String msg = localStrings.getString(
                     "deprecated.resources.dtd", resourceFile.getAbsolutePath() );
-            logger.log(Level.WARNING, msg);
+            logger.log(Level.FINEST, msg);
         }
     }
 
