@@ -57,8 +57,10 @@ import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
 
 import java.beans.PropertyChangeEvent;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,7 +80,8 @@ public class WebContainerStarter
         implements Startup, PostConstruct, ConfigListener {
 
     private static final Logger logger = LogDomains.getLogger(
-        WebContainerStarter.class, LogDomains.WEB_LOGGER);
+        WebContainerStarter.class, LogDomains.CORE_LOGGER);
+    private static final ResourceBundle rb = logger.getResourceBundle();
 
     private static final String AUTH_PASSTHROUGH_ENABLED_PROP =
         "authPassthroughEnabled";
@@ -179,7 +182,9 @@ public class WebContainerStarter
     private void startWebContainer() {
         Sniffer webSniffer = habitat.getComponent(Sniffer.class,"web");
         if (webSniffer==null) {
-            logger.info("Web container not installed");
+            if (logger.isLoggable(Level.INFO)) {
+                logger.info("core.web_container_not_installed");
+            }
             return;
         }
         
@@ -197,17 +202,18 @@ public class WebContainerStarter
                     for (EngineInfo info : containersInfo) {
                         info.getContainer();
                         if (logger.isLoggable(Level.INFO)) {
-                            logger.info("Done with starting " +
-                                webSniffer.getModuleType() + " container");
+                            logger.log(Level.INFO, "core.start_container_done", 
+                                webSniffer.getModuleType());
                         }
                     }
                 } else {
-                    logger.severe(
-                        "Unable to start container (no exception provided)");
+                    logger.severe("core.unable_start_container_no_exception");
                 }
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Unable to start container " +
-                    webSniffer.getContainersNames()[0], e);
+                String msg = MessageFormat.format(
+                        rb.getString("core.unable_start_container"),
+                        webSniffer.getContainersNames()[0]);
+                logger.log(Level.SEVERE, msg, e);
             }
         }
     }
