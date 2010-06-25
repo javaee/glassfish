@@ -103,7 +103,7 @@ public class RemoteConnectHelper  {
     // need to get the command options that were specified too
 
     public int runCommand(String noderef, String cmd, String instanceName,
-            StringBuilder outputString ){
+            StringBuilder outputString ) {
 
         //get the node ref and see if ssh connection is setup if so use it
         try{
@@ -121,7 +121,7 @@ public class RemoteConnectHelper  {
             SshConnector connector = node.getSshConnector();
             if ( connector != null)  {
                 SSHLauncher sshL=habitat.getComponent(SSHLauncher.class);
-                sshL.init(noderef);
+                sshL.init(node, logger);
 
                 // create command and params
 
@@ -143,7 +143,8 @@ public class RemoteConnectHelper  {
 
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
-                sshL.runCommand(fullCommand, outStream);
+                //XXX:  Need to figure out what the status codes are returned and what they mean.
+                int status = sshL.runCommand(fullCommand, outStream);
                 String results = outStream.toString();
                 outputString.append(results);
                 // XXX sshL.runCommand() needs to return a status

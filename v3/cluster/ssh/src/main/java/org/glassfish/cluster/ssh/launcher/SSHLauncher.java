@@ -52,9 +52,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 @Service(name="SSHLauncher")
-public class SSHLauncher implements PostConstruct {
+public class SSHLauncher {
 
   /**
      * Database of known hosts.
@@ -89,32 +90,17 @@ public class SSHLauncher implements PostConstruct {
 
     private String authType;
 
-    @Inject
-    Node[] nodes;
 
     private File knownHosts;
 
-    private HashMap<String, Node> nodeMap;
-
-    @Override
-    public void postConstruct() {
-        nodeMap = new HashMap<String, Node>();
-        for (Node node: nodes) {
-            if (node.getSshConnector() != null) {
-                nodeMap.put(node.getName(), node);
-            }
-        }
+    private Logger logger;
 
 
-    }
-
-    public void init(String nodeName) {
+    public void init(Node node, Logger logger) {
+        this.logger = logger;
         int port;
         String host;
 
-        Node node = nodeMap.get(nodeName);
-        //XXX: Getting the first one right now. Do we really need a list to be
-        // returned?
         SshConnector connector = node.getSshConnector();
 
         host = connector.getSshHost();
@@ -130,8 +116,6 @@ public class SSHLauncher implements PostConstruct {
             port = 22;
         }
         this.port = port == 0 ? 22 : port;
-        //XXX: Getting the first one right now. Do we really need a list to be
-        // returned?
         String sshHost = connector.getSshHost();
         if (sshHost != null)
             this.host = sshHost;
@@ -147,9 +131,6 @@ public class SSHLauncher implements PostConstruct {
                     System.getProperty("user.name") : userName;
 
 
-
-        // String authType = sshAuth.;
-        //this.authType = authType == null ? "key" : authType;
 
         if (knownHosts == null) {
             File home = new File(System.getProperty("user.home"));
@@ -176,7 +157,7 @@ public class SSHLauncher implements PostConstruct {
         try {
             connection.connect(new HostVerifier(knownHostsDatabase));
             String userName = this.userName;
-            if(SSHUtil.checkString(keyFile)==null) {
+            if(SSHUtil.checkString(keyFile) == null) {
                 // check the default key locations if no authentication 
                 // method is explicitly configured.
                 File home = new File(System.getProperty("user.home"));
@@ -189,8 +170,11 @@ public class SSHLauncher implements PostConstruct {
                             connection.authenticateWithPublicKey(userName, 
                                                                  key, null);
                     }
-                    if (isAuthenticated)
+                    if (isAuthenticated) {
+                        logger.fine("Authentication successful");
                         break;
+                    }
+
                 }
             }
             if (!isAuthenticated && SSHUtil.checkString(keyFile)!=null) {
@@ -205,6 +189,7 @@ public class SSHLauncher implements PostConstruct {
             if (!isAuthenticated && !connection.isAuthenticationComplete()) {
                 connection.close();
                 connection = null;
+                logger.fine("Could not authenticate");
                 throw new IOException("Could not authenticate");
             }
             SSHUtil.register(connection);
@@ -216,22 +201,21 @@ public class SSHLauncher implements PostConstruct {
         return isAuthenticated;
     }
 
-    public void runCommand(String command, OutputStream os) throws IOException,
+    public int runCommand(String command, OutputStream os) throws IOException,
                                             InterruptedException 
     {
+        logger.fine("Running command " + command);
         if ( !openConnection()) {
-            return;
+            logger.fine("Could not open connection");
+            return -1;
         }
-        //the output of running the command. Also right now nodehome is
-        //not used. Need to add that in. For now the full command path
-        //needs to be specified.
-        //the output of running the command.
-        
-        connection.exec(command, os);
+
+        int status = connection.exec(command, os);
 
         // XXX: Should we close connection after each command or cache it
         // and re-use it?
         SSHUtil.unregister(connection);
         connection = null;
+        return status;
     }
 }
