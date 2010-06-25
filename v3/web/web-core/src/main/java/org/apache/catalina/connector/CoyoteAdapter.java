@@ -94,7 +94,7 @@ public class CoyoteAdapter
     private static final String POWERED_BY = "Servlet/3.0 JSP/2.2 " +
             "(" + ServerInfo.getServerInfo() + " Java/" +
             System.getProperty("java.vm.vendor") + "/" +
-            System.getProperty("java.runtime.version") + ")";
+            System.getProperty("java.specification.version") + ")";
 
 
     protected boolean v3Enabled = 
