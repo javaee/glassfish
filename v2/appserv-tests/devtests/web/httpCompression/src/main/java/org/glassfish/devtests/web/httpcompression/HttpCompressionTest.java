@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,27 +61,31 @@ public class HttpCompressionTest extends BaseDevTest {
 
     public void run() {
         try {
-            final String[] schemes = {"gzip"/*, "lzma"*/};
+            final int port = Integer.valueOf(antProp("http.port"));
+				final String path = "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=";
+            final String[] schemes = {"gzip", "lzma"};
             for (String scheme : schemes) {
                 String header = scheme + "-";
-                final int port = Integer.valueOf(antProp("http.port"));
                 get("localhost", port, false, "compressed-output-off", scheme);
-                report(header + "set-compression-on", asadmin("set",
-                    "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=on"));
+
+                report(header + "set-compression-on", asadmin("set", path + "on"));
                 get("localhost", port, true, "compressed-output-on", scheme);
-                report(header + "set-compression-force", asadmin("set",
-                    "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=force"));
+
+                report(header + "set-compression-force", asadmin("set", path + "force"));
                 get("localhost", port, true, "compressed-output-force", scheme);
-                report(header + "set-compression-false", !asadmin("set",
-                    "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=false"));
-                report(header + "set-compression-true", !asadmin("set",
-                    "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=true"));
-                report(header + "set-compression-off", asadmin("set",
-                    "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=off"));
-                report(header + "set-compression-1024", asadmin("set",
-                    "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=1024"));
+
+                report(header + "set-compression-false", !asadmin("set", path + "false"));
+
+                report(header + "set-compression-true", !asadmin("set", path + "true"));
+
+                report(header + "set-compression-1024", asadmin("set", path + "1024"));
+                get("localhost", port, true, "compressed-output-1024", scheme);
+
+                report(header + "set-compression-off", asadmin("set", path + "off"));
+                get("localhost", port, false, "compressed-output-off-2", scheme);
             }
         } catch (Exception e) {
+			  report(e.getMessage(), false);
             throw new RuntimeException(e.getMessage(), e);
         } finally {
             stat.printSummary();
@@ -104,21 +108,19 @@ public class HttpCompressionTest extends BaseDevTest {
         boolean found = false;
         try {
             while ((line = bis.readLine()) != null && !"".equals(line.trim())) {
-                write("from server: " + line);
                 found |= line.contains("Content-Encoding: " + compScheme);
             }
         } finally {
             s.close();
         }
         if (zipped) {
-            stat.addStatus(test, found ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL);
+            stat.addStatus(compScheme + "-" + test, found ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL);
         } else {
-            stat.addStatus(test, found ? SimpleReporterAdapter.FAIL : SimpleReporterAdapter.PASS);
+            stat.addStatus(compScheme + "-" + test, found ? SimpleReporterAdapter.FAIL : SimpleReporterAdapter.PASS);
         }
     }
 
     private void send(final OutputStream os, final String text) throws IOException {
-        write(text);
         os.write((text + "\n").getBytes());
     }
 
