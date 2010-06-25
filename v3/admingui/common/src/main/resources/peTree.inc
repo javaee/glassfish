@@ -56,43 +56,34 @@ monitoring     web  800
 update tool    updatetool 800
 -->
 
+// NOTE: Do not include anything outside the sun:form component... it will
+// NOTE: not get used on tree refresh.
 
-
-<event>
+//<sun:body  onLoad="fixTree(); setTreeWidth('#{treeId}');" >
+  <sun:form id="treeForm">
     <!beforeCreate
 	#getConfigNameOfTarget(target="server" configName=>$attribute{configName});
 	// FIXME: "server-config" should not be hard-coded, it should be
 	// FIXME: the 0th element of this config list
 	setAttribute(key="configName" value="server-config");
     />
-</event>
- 
-
-//<sun:body  onLoad="fixTree(); setTreeWidth('#{treeId}');" >
-  <sun:form id="treeForm">
     <h:commandButton id="update" style="display: none;">
-
-	<!-- KEEP THIS IN SYNCH WITH clusterProfileTree.jsf -->
 	<!command
             setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
 
-	    // Find the old component
-	    <!-- It is safe to use #{param} in this handler -->
-            convertStringToMap(str="#{param.params}", delimiter="&", result="params");
-
-	    getUIComponent(clientId="#{params.updateTreeNode}", component="#{oldComp}");
-
-	    setAttribute(key="parent" value="#{oldComp.parent}");
+	    // Must use entire treeForm so that all IntegrationPoints are considered
+	    getUIComponent(clientId="treeForm", component="#{requestScope.oldComp}");
+	    setAttribute(key="parent" value="#{requestScope.oldComp.parent}");
 
 	    // Replace it with something temporary to hold position
 	    // Needed, or it it will just find the old one vs. create it
 	    createComponent(type="staticText" component=>$attribute{temp});
-	    replaceUIComponent(old="${oldComp}" new="$attribute{temp}");
+	    replaceUIComponent(old="$attribute{oldComp}" new="$attribute{temp}");
 
-	    // Rengenerate it
+	    // Rengenerate entire tree (must create everything to be complete)
 	    getLayoutComponent(
-		viewId="#{params.viewId}"
-		clientId="#{params.relId}"
+		viewId="/common/peTree.inc"
+		clientId="treeForm"
 		component=>$attribute{desc});
 	    buildUIComponentTree(layoutElement="$attribute{desc}" parent="#{parent}" result=>$attribute{newComp});
 	    replaceUIComponent(old="${temp}" new="$attribute{newComp}");
@@ -254,9 +245,6 @@ update tool    updatetool 800
 	    }
 	/>
     </event>
-  </sun:form>
-
-//</sun:body>
 
 <!-- We only want to set the width for IE browser only. -->
 <f:verbatim>
@@ -272,3 +260,6 @@ function setTreeWidth(treeId) {
 }
 </script>
 </f:verbatim>
+  </sun:form>
+
+//</sun:body>

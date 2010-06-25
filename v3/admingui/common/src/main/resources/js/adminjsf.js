@@ -695,32 +695,14 @@ admingui.nav = {
      *	    navigation frame to be "refreshed".  This means that it and its
      *	    children will be deleted, recreated, and redisplayed.</p>
      *	<dl>
-     *      <dt><b>Parameters:</b></dt>
      *      <dd>
      *          <code>refreshNodeId</code> - The clientId of the tree node to refresh
      *      </dd>
-     *      <dd>
-     *          <code>viewId</code> - The ID of the view in which the node is defined. This
-     *          is not the same as the JSF view ID. Rather, it is, more or less, the name of
-     *          the file on disk.  For example, for the applications page, the view Id would be
-     *          '/common/peTree.inc'.  The view ID, then, follows this pattern:
-     *          <code>/pluginId/&lt;path/relative/to/src/main/resources/fileName.ext&gt;</code>
-     *      </dd>
-     *      <dd>
-     *          <code>relId</code> - The quasi-clientId of the component, relative to the root
-     *          of the <code>viewId</code>.  This ID does <strong>not</strong> include <em>any</em>
-     *          <code>NamingContainer</code>s that might be found in the final page.  The ID includes
-     *          <em>only</em> those <code>NamingContainer</code>s defined in the page specified
-     *          by the <code>viewId</code>.
-     *      </dd>
      *  </dl>
      */
-    refreshTree: function(refreshNodeId, viewId, relId) {
+    refreshTree: function(refreshNodeId) {
         admingui.util.log("Updating tree node " + refreshNodeId);
-        if (!viewId) {
-            // Supply best guess defaults...
-            viewId = '/common/peTree.inc';
-        }
+	var viewId = '/common/peTree.inc';
         var refreshNode = null;
         if (refreshNodeId) {
             refreshNode = admingui.nav.getTreeFrameElementById(refreshNodeId);
@@ -731,10 +713,6 @@ admingui.nav = {
             refreshNode = admingui.nav.getSelectedTreeNode();
             refreshNodeId = refreshNode.id;
         }
-        if (!relId) {
-            // Supply best guess defaults...
-            relId = refreshNodeId;
-        }
         var updateTreeButton = document.getElementById('treeForm:update');
         if (refreshNode && updateTreeButton) {
             admingui.nav.requestTreeUpdate(
@@ -742,8 +720,7 @@ admingui.nav = {
                 {
                     type: 'click'
                 },
-                refreshNodeId,
-                "updateTreeNode="+refreshNodeId+"&viewId="+viewId+"&relId="+relId,
+                refreshNodeId, "",
                 {
                     mainNode: document.getElementById(refreshNodeId),
                     childNodes: document.getElementById(refreshNodeId+"_children")
@@ -762,7 +739,7 @@ admingui.nav = {
             onevent: function(data) {
                 admingui.nav.processUpdatedTreeNode(data, nodeId, previousState);
             },
-            params: 'treeForm:update=&' + params
+            params: 'treeForm:update=' + params
         });
     },
 
@@ -800,7 +777,7 @@ admingui.nav = {
                         admingui.nav.copyStyleAndClass(childNodes, oldNode);
                     }
                 } catch (err) {
-
+// FIXME: Log error
                 }
             } else {
                 var element = document.getElementById(nodeId);
