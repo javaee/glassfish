@@ -58,9 +58,9 @@
         <antcall target="quicklook-summary"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
-        <antcall target="testng-summary"/>
 		<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
 		<antcall target="check-logged-messages"/>
+        <antcall target="testng-summary"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -80,9 +80,9 @@
         <antcall target="remove-quicklook-policy-grants" />
         <antcall target="stop_server_with_security_manager_enabled" />
 
-        <antcall target="testng-summary"/>
 		<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
 		<antcall target="check-logged-messages"/>
+        <antcall target="testng-summary"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -122,8 +122,8 @@
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
 		<copy file="test-output/emailable-report.html" tofile="test-output/QL-GP-report.html" failonerror="false"/>
-        <antcall target="testng-summary"/>
 		<antcall target="check-logged-messages"/>
+        <antcall target="testng-summary"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -150,8 +150,8 @@
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
         <copy file="test-output/emailable-report.html" tofile="test-output/QL-GP-report.html" failonerror="false"/>
-        <antcall target="testng-summary"/>
 		<antcall target="check-logged-messages"/>
+        <antcall target="testng-summary"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -165,8 +165,8 @@
         <param name="testng.xml" value="testng/testng_debug.xml"/> </antcall>
         <antcall target="undeploy"/>
         <antcall target="stop-derby"/>
-        <antcall target="testng-summary"/>
 		<antcall target="check-logged-messages"/>
+        <antcall target="testng-summary"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
