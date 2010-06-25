@@ -353,7 +353,7 @@
   <!--   debug                Debugging detail level for messages logged    -->
   <!--                        by this servlet.  [0]                         -->
   <!--                                                                      -->
-  <!--   executable           Name of the exectuable used to run the        -->
+  <!--   executable           Name of the executable used to run the        -->
   <!--                        script. [perl]                                -->
   <!--                                                                      -->
   <!--   parameterEncoding    Name of parameter encoding to be used with    -->
@@ -362,6 +362,11 @@
   <!--                                                                      -->
   <!--   passShellEnvironment Should the shell environment variables (if    -->
   <!--                        any) be passed to the CGI script? [false]     -->
+  <!--                                                                      -->
+  <!--   stderrTimeout        The time (in milliseconds) to wait for the    -->
+  <!--                        reading of stderr to complete before          -->
+  <!--                        terminating the CGI process. [2000]           -->
+
 
 <!--
   <servlet>
