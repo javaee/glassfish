@@ -211,6 +211,7 @@ public class Main implements BundleActivator
      */
     private void initCurrentManagedBundles()
     {
+        long startTime = System.currentTimeMillis();
         Bundle[] bundles = this.context.getBundles();
         String watchedDirPath = bundlesDir.toURI().normalize().getPath();
         final long thisBundleId = context.getBundle().getBundleId();
@@ -245,6 +246,7 @@ public class Main implements BundleActivator
                 // by FileInstall, as we always use proper filepath as location.
             }
         }
+        System.out.println("Time taken by initCurrentManagedBundles()" + (System.currentTimeMillis() - startTime));
     }
 
     /**
@@ -277,15 +279,16 @@ public class Main implements BundleActivator
 
         // We do the operations in the following order:
         // uninstall, update, install, refresh & start.
-        uninstall(deletedBundles);
+        int uninstalled = uninstall(deletedBundles);
         int updated = update(existingBundles);
-        install(newBundles);
-        if ((newBundles.size() + deletedBundles.size() + updated) > 0) {
+        int installed = install(newBundles);
+        if ((installed + uninstalled + updated) > 0) {
             refresh();
         }
     }
 
-    private void uninstall(Collection<Jar> bundles) {
+    private int uninstall(Collection<Jar> bundles) {
+        int noOfBundlesUninstalled = 0;
         for (Jar jar : bundles) {
             Bundle bundle = context.getBundle(jar.getBundleId());
             if (bundle == null) {
@@ -301,6 +304,7 @@ public class Main implements BundleActivator
             }
             try {
                 bundle.uninstall();
+                noOfBundlesUninstalled++;
                 logger.logp(Level.INFO, "Main", "uninstall",
                         "Uninstalled bundle {0} installed from {1} ",
                         new Object[]{bundle.getBundleId(), jar.getPath()});
@@ -310,6 +314,7 @@ public class Main implements BundleActivator
                         e);
             }
         }
+        return noOfBundlesUninstalled;
     }
 
     private int update(Collection<Jar> jars) {
@@ -338,7 +343,8 @@ public class Main implements BundleActivator
         return updated;
     }
 
-    private void install(Collection<Jar> jars) {
+    private int install(Collection<Jar> jars) {
+        int installed = 0;
         for (Jar jar : jars) {
             try {
                 final String path = jar.getPath();
@@ -346,6 +352,7 @@ public class Main implements BundleActivator
                 final FileInputStream is = new FileInputStream(file);
                 try {
                     Bundle b = context.installBundle(jar.getURI().toString(), is);
+                    installed++;
                     currentManagedBundles.put(jar.getURI(), new Jar(b));
                     logger.logp(Level.FINE, "Main", "install",
                             "Installed bundle {0} from {1} ",
@@ -362,6 +369,7 @@ public class Main implements BundleActivator
                         e);
             }
         }
+        return installed;
     }
 
     private void refresh() {
