@@ -60,18 +60,14 @@ public class MultiMap<K,V> implements Serializable {
 
     public final String toString() {
         final StringBuilder builder = new StringBuilder();
-        
         final String newline = System.getProperty( "line.separator" );
-        builder.append( "{" );
+        builder.append("{");
         for ( final K key : store.keySet() ) {
-            builder.append( key).append(": {" );
-            for( final V value : store.get(key) ) {
-                builder.append( value.toString()).append("," );
-            }
-            // trailing comma is OK
-            builder.append( "}").append(newline);
+            builder.append(key).append(": ");
+            builder.append(store.get(key));
+            builder.append(newline);
         }
-        builder.append( "}" );
+        builder.append("}");
         return builder.toString();
     }
     

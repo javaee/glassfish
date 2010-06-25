@@ -61,17 +61,26 @@ public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
     public ExistingSingletonInhabitant(Class<T> type, T object, MultiMap<String,String> metadata) {
         this.type = type;
         this.object = object;
-        this.metadata = metadata;
+        this.metadata = (null == metadata) ? new MultiMap<String,String>() : metadata;
+    }
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
+          "(" + get(null) + "," + metadata + ")";
     }
 
+    @Override
     public String typeName() {
         return type.getName();
     }
 
+    @Override
     public Class<T> type() {
         return type;
     }
 
+    @Override
     public MultiMap<String, String> metadata() {
         return metadata;
     }
@@ -80,10 +89,12 @@ public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
         return object;
     }
 
+    @Override
     public boolean isInstantiated() {
         return true;
     }
 
+    @Override
     public void release() {
         // since we are working on the existing object,
         // we can't release its instance.
