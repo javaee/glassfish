@@ -26,6 +26,7 @@ public class Version implements PostConstruct {
     private static String full_version                = "@FULL_VERSION@";
     private static final String major_version         = "@MAJOR_VERSION@";
     private static final String minor_version         = "@MINOR_VERSION@"; 
+    private static final String update_version        = "@UPDATE_VERSION@"; 
     private static final String build_id              = "@BUILD_ID@";
     private static final String version_prefix        = "@VERSION_PREFIX@";
     private static final String version_suffix        = "@VERSION_SUFFIX@";
@@ -50,15 +51,33 @@ public class Version implements PostConstruct {
         if ((minor_version != null) && (minor_version.length() > 0)) {
             try {
                 if (Integer.parseInt(minor_version) > 0) {
-                    full_version = major_version + "." + minor_version;
+                    if (update_version.length() > 0) {
+                        if (Integer.parseInt(update_version) > 0) {
+                            full_version = major_version + "." + minor_version
+                                + "." + update_version;
+                        }
+                    }
+                    else {
+                        full_version = major_version + "." + minor_version;
+                    }
                 } else {
-                    full_version = major_version;
+                    if (update_version.length() > 0) {
+                        if (Integer.parseInt(update_version) > 0) {
+                            full_version = major_version + "." + minor_version
+                                + "." + update_version;
+                        }
+                    }
+                    else {
+                        full_version = major_version;
+                    }
                 }
+
             } catch (NumberFormatException nfe) {
                     full_version = major_version;
             }
         }
     }
+
 
     /**
     * Returns version
@@ -74,7 +93,7 @@ public class Version implements PostConstruct {
         if (ok(version_prefix))
             sb.append(" ").append(version_prefix);
         if (full_version != null) 
-            sb.append(full_version);
+            sb.append(" ").append(full_version);
         if (ok(version_suffix))
             sb.append(" ").append(version_suffix);
         return sb.toString();
@@ -118,6 +137,16 @@ public class Version implements PostConstruct {
             return br.getMinorVersion();
         }
     	return minor_version;
+    }
+
+    /**
+    * Returns Update version
+    */
+    public static String getUpdateVersion() {
+        if (br != null) {
+            return br.getUpdateVersion();
+        }
+        return update_version;
     }
 
     /**

@@ -63,6 +63,7 @@ public class GlassFishBranding implements Branding, PostConstruct {
     private String full_version          = "@FULL_VERSION@";
     private String major_version         = "@MAJOR_VERSION@";
     private String minor_version         = "@MINOR_VERSION@"; 
+    private String update_version        = "@UPDATE_VERSION@";
     private String build_id              = "@BUILD_ID@";
     private String version_prefix        = "@VERSION_PREFIX@";
     private String version_suffix        = "@VERSION_SUFFIX@";
@@ -83,6 +84,7 @@ public class GlassFishBranding implements Branding, PostConstruct {
         abbrev_product_name = fetch("abbrev_product_name", abbrev_product_name);
         major_version = fetch("major_version", major_version);
         minor_version = fetch("minor_version", minor_version);
+        update_version = fetch("update_version", update_version);
         build_id = fetch("build_id", build_id);
         version_prefix = fetch("version_prefix", version_prefix);
         version_suffix = fetch("version_suffix", version_suffix);
@@ -94,17 +96,31 @@ public class GlassFishBranding implements Branding, PostConstruct {
         }
 
         // construct full version
-        if(!fullVersionSet && ok(minor_version)) {
+        if ((!fullVersionSet) && ok(minor_version)){
             try {
-                if(Integer.parseInt(minor_version) > 0) {
-                    full_version = major_version + "." + minor_version;
+                if (Integer.parseInt(minor_version) > 0) {
+                    if (update_version.length() > 0) {
+                        if (Integer.parseInt(update_version) > 0) {
+                            full_version = major_version + "." + minor_version
+                                + "." + update_version;
+                        }
+                    }
+                    else {
+                        full_version = major_version + "." + minor_version;
+                    }
+                } else {
+                   if (update_version.length() > 0) {
+                        if (Integer.parseInt(update_version) > 0) {
+                            full_version = major_version + "." + minor_version
+                                + "." + update_version;
+                        }
+                    }
+                    else {
+                        full_version = major_version;
+                    }
                 }
-                else {
+            } catch (NumberFormatException nfe) {
                     full_version = major_version;
-                }
-            }
-            catch(NumberFormatException nfe) {
-                full_version = major_version;
             }
         }
     }
@@ -120,8 +136,8 @@ public class GlassFishBranding implements Branding, PostConstruct {
         StringBuffer sb = new StringBuffer(product_name);
         if(ok(version_prefix))
             sb.append(" ").append(version_prefix);
-        if(full_version != null)
-            sb.append(full_version);
+        if (full_version != null)
+            sb.append(" ").append(full_version);
         if(ok(version_suffix))
             sb.append(" ").append(version_suffix);
         return sb.toString();
@@ -157,6 +173,14 @@ public class GlassFishBranding implements Branding, PostConstruct {
     @Override
     public String getMinorVersion() {
         return minor_version;
+    }
+
+    /**
+     * Returns Update version
+     */
+    @Override
+    public String getUpdateVersion() {
+        return update_version;
     }
 
     /**
