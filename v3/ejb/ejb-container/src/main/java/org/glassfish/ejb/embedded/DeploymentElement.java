@@ -41,8 +41,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -68,10 +70,17 @@ public class DeploymentElement {
 
     private File element;
     private boolean isEJBModule;
+    private boolean isWebApp = false;
 
     DeploymentElement (File element, boolean isEJBModule) {
         this.element  = element;
         this.isEJBModule  = isEJBModule;
+        if (element.isFile()) {
+            isWebApp = element.getName().endsWith(".war");
+        } else {
+            List files = Arrays.asList(element.list());
+            isWebApp = files.contains("WEB-INF");
+        }
     }
 
     File getElement() {
@@ -82,6 +91,10 @@ public class DeploymentElement {
         return isEJBModule;
     }
 
+    boolean isWebApp() {
+        return isWebApp;
+    }
+
     public static boolean hasEJBModule(Set<DeploymentElement> modules) {
         for (DeploymentElement module : modules) {
             if (module.isEJBModule()) {
@@ -89,6 +102,24 @@ public class DeploymentElement {
             }
         }
         return false;
+    }
+
+    public static boolean hasWar(Set<DeploymentElement> modules) {
+        for (DeploymentElement module : modules) {
+            if (module.isWebApp()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static DeploymentElement getWar(Set<DeploymentElement> modules) {
+        for (DeploymentElement module : modules) {
+            if (module.isWebApp()) {
+                return module;
+            }
+        }
+        return null;
     }
 
     public static boolean hasLibrary(Set<DeploymentElement> modules) {
@@ -121,10 +152,12 @@ public class DeploymentElement {
         Object result = null;
         boolean deleteOnExit = false;
         if (modules == null || modules.size() == 0 || !DeploymentElement.hasEJBModule(modules)) {
-            _logger.info("[DeploymentElement] No modules found");
+            _logger.severe("[DeploymentElement] No modules found");
         } else if (modules.size() == 1) {
             // Single EJB module
             result = modules.iterator().next().getElement();
+        } else if(DeploymentElement.countEJBModules(modules) == 1 && DeploymentElement.hasWar(modules)) {
+                result = DeploymentElement.getWar(modules).getElement();
         } else if (DeploymentElement.countEJBModules(modules) == 1) {
             // EJB molule with libraries - create ScatteredArchive
             String aName = null;
@@ -200,7 +233,7 @@ public class DeploymentElement {
                     ModuleExploder.explodeJar(f, out);
                 } else {
                     if (f.isDirectory()) { 
-                        name = name + (m.isEJBModule()? "_jar" : ".jar");
+                        name = name + (m.isWebApp()? "_war" : (m.isEJBModule()? "_jar" : ".jar"));
                     }
                     File out = new File(base, name);
                     if (out.exists()) {

@@ -81,7 +81,6 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     private static final String GF_INSTALLATION_ROOT = "org.glassfish.ejb.embedded.glassfish.installation.root";
     private static final String GF_INSTANCE_ROOT = "org.glassfish.ejb.embedded.glassfish.instance.root";
     private static final String GF_DOMAIN_FILE = "org.glassfish.ejb.embedded.glassfish.configuration.file";
-    private static final String JAR_FILE_EXT = ".jar";
     private static final Attributes.Name ATTRIBUTE_NAME_SKIP = new Attributes.Name("Bundle-SymbolicName");
     private static final String[] ATTRIBUTE_VALUES_SKIP = 
             {"org.glassfish.", "com.sun.enterprise.", "org.eclipse."};
@@ -241,7 +240,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             boolean isEJBModule = false;
             String moduleName = DeploymentUtils.getDefaultEEName(fileName);
             archive = archiveFactory.openArchive(file);
-            is = archive.getEntry("META-INF/ejb-jar.xml");
+            is = getDeploymentDescriptor(archive);
             if (is != null) {
                 isEJBModule = true;
                 EjbDeploymentDescriptorFile eddf =
@@ -305,7 +304,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
      * of the other known implementation modules.
      */
     private boolean skipJar(File file) throws Exception {
-        if (!file.isFile()) {
+        if (!file.isFile() ) {
             return false; // probably a directory
         }
 
@@ -440,6 +439,15 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         }
 
         return rs;
+    }
+
+    private InputStream getDeploymentDescriptor(ReadableArchive archive) throws IOException {
+        InputStream dd = archive.getEntry("META-INF/ejb-jar.xml");
+        if (dd == null) {
+            // Try EJB in a .war file as well
+            dd = archive.getEntry("WEB-INF/ejb-jar.xml");
+        }
+        return dd;
     }
 
     private class Result {

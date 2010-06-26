@@ -104,6 +104,7 @@ public class EJBContainerImpl extends EJBContainer {
         this.ejbContainer = ejbContainer;
         this.deployer = deployer;
         state = RUNNING;
+        cleanup = new Cleanup(this);
     }
 
     /**
@@ -114,6 +115,10 @@ public class EJBContainerImpl extends EJBContainer {
             res_app = DeploymentElement.getOrCreateApplication(modules);
             Object app = res_app.getApplication();
             
+            if (app == null) {
+                throw new EJBException("Invalid set of modules to deploy - see log for details");
+            }
+
             if (_logger.isLoggable(Level.INFO)) {
                 _logger.info("[EJBContainerImpl] Deploying app: " + app);
             }
@@ -130,7 +135,6 @@ public class EJBContainerImpl extends EJBContainer {
                 deployedAppName = deployer.deploy((ScatteredArchive)app, dp);
             }
 
-            cleanup = new Cleanup(this);
         } catch (IOException e) {
             throw new EJBException("Failed to deploy EJB modules", e);
         }
