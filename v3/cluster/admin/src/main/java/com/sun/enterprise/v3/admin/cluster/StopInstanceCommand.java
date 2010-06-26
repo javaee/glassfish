@@ -51,6 +51,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.ParameterMap;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 
 import java.util.Iterator;
@@ -58,6 +59,7 @@ import java.util.Collection;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * AdminCommand to stop the instance
@@ -73,6 +75,7 @@ import org.jvnet.hk2.component.PostConstruct;
  */
 @Service(name = "stop-instance")
 @Async
+@Scoped(PerLookup.class)
 @I18n("stop.instance.command")
 public class StopInstanceCommand implements AdminCommand, PostConstruct {
     public void execute(AdminCommandContext context) {
