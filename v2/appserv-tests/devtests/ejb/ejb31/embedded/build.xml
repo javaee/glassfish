@@ -18,6 +18,8 @@
         <antcall target="timertest"/>
         <antcall target="modulewithlibs"/>
         <antcall target="twomoduleswithlibs"/>
+        <antcall target="ejbinwar"/>
+        <antcall target="ejbandwar"/>
     </target>
 
     <target name="basic">
@@ -54,6 +56,18 @@
         <record name="twomoduleswithlibs.output" action="start" />
             <ant dir="twomoduleswithlibs" target="all"/>
         <record name="twomoduleswithlibs.output" action="stop" />
+    </target>
+
+    <target name="ejbinwar">
+        <record name="ejbinwar.output" action="start" />
+            <ant dir="ejbinwar" target="all"/>
+        <record name="ejbinwar.output" action="stop" />
+    </target>
+
+    <target name="ejbandwar">
+        <record name="ejbandwar.output" action="start" />
+            <ant dir="ejbandwar" target="all"/>
+        <record name="ejbandwar.output" action="stop" />
     </target>
 
     <target name="usage">
