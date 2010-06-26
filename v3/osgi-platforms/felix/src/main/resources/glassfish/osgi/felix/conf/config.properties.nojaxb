@@ -32,23 +32,16 @@ org.osgi.framework.system.packages=\
 
 extra-system-packages=${jre-${java.specification.version}} ${internal-jdk-pkgs-for-gf}
 
-# Eclipselink does not import these packages, although it depends on them.
-# See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=265763.
-eclipselink.bootdelegation=javax.naming, javax.naming.*, javax.sql, javax.sql.*, oracle.sql, oracle.sql.*, \
-                           org.xml.sax, org.xml.sax.*, org.w3c.dom, org.w3c.dom.*, \
-                           javax.xml.parsers, javax.xml.parsers.*, javax.xml.transform, javax.xml.transform.*, javax.xml.validation, javax.xml.validation.*, \
-                           javax.xml.datatype, javax.xml.datatype.*, javax.xml.namespace, javax.xml.namespace.*, javax.xml.xpath, javax.xml.xpath.*
+# Although Eclipselink imports these packages, in typical GlassFish installation,
+# Oracle JDBC driver may not be available as a bundle, so we ask user to install it in 
+# java.ext.dirs and the bootdelegation helps there.
+eclipselink.bootdelegation=oracle.sql, oracle.sql.*
 
 # There is no need to use bootdelegation except for the following issues:
 # 1. EclipseLink
-# 2. javax.transaction is needed to avoid loader constraint violation as javax.sql depends on
-# javax.transaction and we use javax.sql from JDK. 
-# 3. org.omg.CORBA is needed because JDK contains only subset of the classes in this package.
 # 4. NetBeans profiler packages exist in parent class loader (see issue #8612)
 # 5. BTrace exists in bootclasspath.
-org.osgi.framework.bootdelegation=javax.transaction, javax.transaction.*, \
-                                  org.omg.CORBA, \
-                                  ${eclipselink.bootdelegation}, \
+org.osgi.framework.bootdelegation=${eclipselink.bootdelegation}, \
                                   com.sun.btrace, com.sun.btrace.*, \
                                   org.netbeans.lib.profiler, org.netbeans.lib.profiler.*
                                   
@@ -80,45 +73,14 @@ org.osgi.framework.startlevel.beginning=1
 felix.startlevel.bundle=1
 #felix.service.urlhandlers=false
 
-# We don't use felix config file to configure various bundles
-# like remotre shell, fileinstall. Instead, we use domain.xml.
-# Hence the following properties are commented. See issue GlassFish issue #9677.
-
-# Port on which remote shell listens for connections.
-# osgi.shell.telnet.port=6666
-# How many concurrent users can connect to this remote shell
-# osgi.shell.telnet.maxconn=1
-# From which hosts users can connect
-# osgi.shell.telnet.ip=127.0.0.1
-
-# Directory being watched by fileinstall.
-# felix.fileinstall.dir=${com.sun.aas.installRoot}/modules/autostart/
-# Time period fileinstaller thread in ms.
-# felix.fileinstall.poll=5000
-# debug level
-# felix.fileinstall.debug=1
-# should new bundles be started or installed only? true => start, false => only install
-# felix.fileinstall.bundles.new.start=true
-
 #
 # Java SE 6 platform packages. Taken from: http://java.sun.com/javase/6/docs/api/
 # Don't add/remove any new package unless you find bugs.
 # Since we don't know the actual package versions,
 # we export most of them with default version.
-# We don't export JAXB and JAX-WS packages because higher version of
-# those packages are exported by respective modules in glassfish. 
-# That should not be a problem, but Felix seems to spend infinite
-# time in calculating uses constraints when there are multiple providers
-# for some package.
-# The same issue exists for javax.annotation package, which will be present
-# with 1.1 version in EE6. See issue #7658
-# So, for the time being, we have stopped exporting such packages from JDK.
-# Please also note that, javax.transaction and org.omg.CORBA are exported with a mandatory
-# attribute, because JRE contains a partial list of classes from that package.
-#
 jre-1.6=, \
  javax.accessibility, \
- javax.activation; version="1.1", \
+ javax.activation, \
  javax.activity, \
  javax.annotation.processing, \
  javax.crypto, \
@@ -193,12 +155,12 @@ jre-1.6=, \
  javax.swing.tree, \
  javax.swing.undo, \
  javax.tools, \
- javax.transaction; javax.transaction.xa;partial=true; mandatory:=partial, \
+ javax.transaction; javax.transaction.xa, \
  javax.xml, \
  javax.xml.datatype, \
  javax.xml.namespace, \
  javax.xml.parsers, \
- javax.xml.stream; javax.xml.stream.events; javax.xml.stream.util; version=1.0, \
+ javax.xml.stream; javax.xml.stream.events; javax.xml.stream.util, \
  javax.xml.transform, \
  javax.xml.transform.dom, \
  javax.xml.transform.sax, \
@@ -207,7 +169,7 @@ jre-1.6=, \
  javax.xml.validation, \
  javax.xml.xpath, \
  org.ietf.jgss, \
- org.omg.CORBA;partial=true; mandatory:=partial, \
+ org.omg.CORBA, \
  org.omg.CORBA.DynAnyPackage, \
  org.omg.CORBA.ORBPackage, \
  org.omg.CORBA.TypeCodePackage, \
