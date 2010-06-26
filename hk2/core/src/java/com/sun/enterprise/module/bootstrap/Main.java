@@ -351,9 +351,9 @@ public class Main {
                 targetClass = mainModule.getClassLoader().loadClass(targetClassName).asSubclass(ModuleStartup.class);
                 startupCode = habitat.getComponent(targetClass);
             } catch (ClassNotFoundException e) {
-                throw new BootException("Unable to load "+targetClassName,e);
+                throw new BootException("Unable to load component of type " + targetClassName,e);
             } catch (ComponentException e) {
-                throw new BootException("Unable to load "+targetClass,e);
+                throw new BootException("Unable to load component of type " + targetClassName,e);
             } finally {
                 Thread.currentThread().setContextClassLoader(currentCL);
             }
