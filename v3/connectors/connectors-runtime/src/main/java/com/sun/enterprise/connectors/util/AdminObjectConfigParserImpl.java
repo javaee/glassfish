@@ -227,7 +227,7 @@ public class AdminObjectConfigParserImpl implements AdminObjectConfigParser {
         if (adminObjectSet == null || adminObjectSet.size() == 0) {
             return null;
         }
-        String[] adminObjectClassNames = new String[adminObjectSet.size()];
+
         Iterator it = adminObjectSet.iterator();
         AdminObject aor = null;
         Set<String> adminObjectClasses = new HashSet<String>();
@@ -238,6 +238,7 @@ public class AdminObjectConfigParserImpl implements AdminObjectConfigParser {
                 adminObjectClasses.add(aor.getAdminObjectClass());
             }
         }
+        String[] adminObjectClassNames = new String[adminObjectClasses.size()];
         adminObjectClassNames = adminObjectClasses.toArray(adminObjectClassNames);
         return adminObjectClassNames;
     }
