@@ -309,7 +309,7 @@ public class ListSubComponentsCommand implements AdminCommand {
             type = "WebModule";
         } else if (modDesc.getModuleType().equals(XModuleType.CAR)) {
             type = "AppClientModule";
-        } else if (modDesc.getModuleType().equals(XModuleType.CAR)) {
+        } else if (modDesc.getModuleType().equals(XModuleType.RAR)) {
             type = "ConnectorModule";
         }
 
