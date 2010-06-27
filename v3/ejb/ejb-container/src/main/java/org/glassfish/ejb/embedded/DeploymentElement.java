@@ -209,6 +209,12 @@ public class DeploymentElement {
             int duplicate_dir_counter = 0;
             for (DeploymentElement m : modules) {
                 File f = m.getElement();
+
+                if (_logger.isLoggable(Level.INFO)) {
+                    _logger.info("[DeploymentElement] adding " + f.getName() + " to exploded ear " +
+                            " isEJBModule? " + m.isEJBModule() + " isWebApp? " + m.isWebApp());
+                }
+
                 String filename = f.toURI().getSchemeSpecificPart();
                 if (filename.endsWith(File.separator) || filename.endsWith("/")) {
                     int length = filename.length();

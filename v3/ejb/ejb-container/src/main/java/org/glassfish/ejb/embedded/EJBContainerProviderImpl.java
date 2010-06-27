@@ -86,6 +86,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             {"org.glassfish.", "com.sun.enterprise.", "org.eclipse."};
     private static final String[] ATTRIBUTE_VALUES_OK = {"sample", "test"};
 
+    static final String GF_WEB_HTTP_PORT = "org.glassfish.ejb.embedded.glassfish.web.http.port";
 
     // Use Bundle from another package
     private static final Logger _logger = 
@@ -146,6 +147,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 Result rs = getLocations(properties);
                 if (rs == null) {
                     server = builder.build();
+                    addWebContainerIfRequested(properties);
                 } else {
                     EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
                     efsb.configurationFile(rs.domain_file);
@@ -163,6 +165,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
                 EmbeddedEjbContainer ejbContainer = server.addContainer(ejb);
                 server.addContainer(ContainerBuilder.Type.jpa);
+
                 try {
                     server.start();
                 } catch (LifecycleException e) {
@@ -420,7 +423,8 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                         File temp_domain_file = null;
                         try {
                             DomainXmlTransformer dxf = new DomainXmlTransformer(domain_file, _logger);
-                            temp_domain_file = dxf.transform();
+                            boolean keep_ports = (properties == null)? false : ((properties.get(GF_WEB_HTTP_PORT) == null)? false : true);
+                            temp_domain_file = dxf.transform(keep_ports);
                         } catch (Exception e) {
                             throw new EJBException(localStrings.getString(
                                     "ejb.embedded.exception_creating_temporary_domain_xml_file"), e);
@@ -448,6 +452,27 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             dd = archive.getEntry("WEB-INF/ejb-jar.xml");
         }
         return dd;
+    }
+
+    private void addWebContainerIfRequested(Map<?, ?> properties) throws EJBException {
+        String http_port = (properties == null)? null : (String)properties.get(GF_WEB_HTTP_PORT);
+        if (http_port != null) {
+            int port = 8080;
+            try {
+                port = Integer.valueOf(http_port);
+            } catch (NumberFormatException e) {
+                System.err.println("Using port 8080");
+            }
+
+            try {
+                Port http = server.createPort(port);
+                ContainerBuilder<EmbeddedContainer> cb = server.createConfig(ContainerBuilder.Type.web);
+                EmbeddedContainer container = server.addContainer(cb);
+                container.bind(http, "http");
+            } catch (Exception e) {
+                throw new EJBException(e);
+            }
+        }
     }
 
     private class Result {

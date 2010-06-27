@@ -88,7 +88,9 @@ public class DomainXmlTransformer {
     private static final String FALSE = "false";
 
     private static final Set<String> SKIP_ELEMENTS = new HashSet(Arrays.asList(VIRTUAL_SERVER));
+    private static final Set<String> SKIP_ELEMENTS_KEEP_PORTS = new HashSet();
     private static final Set<String> EMPTY_ELEMENTS = new HashSet(Arrays.asList(NETWORK_LISTENERS, PROTOCOLS, APPLICATIONS));
+    private static final Set<String> EMPTY_ELEMENTS_KEEP_PORTS = new HashSet(Arrays.asList(APPLICATIONS));
     private static final Set<String> LAZY_SETTINGS_ELEMENTS = new HashSet(Arrays.asList(IIOP_LISTENER, JMS_HOST));
     private static final Set<String> DISABLE_ELEMENTS = new HashSet(Arrays.asList(JMX_CONNECTOR));
 
@@ -104,7 +106,7 @@ public class DomainXmlTransformer {
         _logger = logger;
     }
 
-    public File transform() {
+    public File transform(boolean keepPorts) {
         FileInputStream fis = null;
         FileOutputStream fos = null;
         XMLEventReader parser = null;
@@ -115,6 +117,8 @@ public class DomainXmlTransformer {
                 XMLInputFactory.newInstance(XMLInputFactory.class.getName(),
                         XMLInputFactory.class.getClassLoader());
         
+        Set<String> empty_elements = (keepPorts)? EMPTY_ELEMENTS_KEEP_PORTS : EMPTY_ELEMENTS;
+        Set<String> skip_elements = (keepPorts)? SKIP_ELEMENTS_KEEP_PORTS : SKIP_ELEMENTS;
         try {
             fis = new FileInputStream(in);
             out = File.createTempFile("domain", "xml");
@@ -134,7 +138,7 @@ public class DomainXmlTransformer {
                 XMLEvent event = parser.nextEvent();
                 if (event.isStartElement()) {
                     String name = event.asStartElement().getName().getLocalPart();
-                    if (SKIP_ELEMENTS.contains(name)) {
+                    if (skip_elements.contains(name)) {
                         if (_logger.isLoggable(Level.FINE)) {
                             _logger.fine("[DomainXmlTransformer] Skipping all of: " + name);
                         }
@@ -143,7 +147,7 @@ public class DomainXmlTransformer {
                     } 
 
                     boolean skip_to_end = false;
-                    if (EMPTY_ELEMENTS.contains(name)) {
+                    if (empty_elements.contains(name)) {
                         if (_logger.isLoggable(Level.FINE)) {
                             _logger.fine("[DomainXmlTransformer] Skipping details of: " + name);
                         }
