@@ -102,7 +102,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name="nodehost")
+    @Param(name="nodehost", optional=true)
     void setNodeHost(String value) throws PropertyVetoException;
 
     /**
@@ -121,7 +121,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name="nodehome")
+    @Param(name="nodehome", optional=true)
     void setNodeHome(String value) throws PropertyVetoException;
 
     @Element
@@ -132,11 +132,17 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
     @Service
     @Scoped(PerLookup.class)
     class Decorator implements CreationDecorator<Node> {
+        @Param(name="nodehost", optional=true)
+        String nodehost=null;
+
+        @Param(name="nodehome", optional=true)
+        String nodehome=null;
+
         @Param(name="sshport",optional=true)
         String sshPort="-1";
+
         @Param(name="sshnodehost",optional=true)
         String sshHost=null;
-
 
         @Param (name="sshuser", optional=true)
         String sshuser=null;
@@ -169,17 +175,18 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
         @Override
         public void decorate(AdminCommandContext context, final Node instance) throws TransactionFailure, PropertyVetoException {
 
-
-            Logger logger = LogDomains.getLogger(Node.class, LogDomains.ADMIN_LOGGER);
-            LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Node.class);
+            if(nodehome != null)
+                instance.setNodeHome(nodehome);
+            if (nodehost != null)
+                instance.setNodeHost(nodehost);
+            
             SshConnector sshC = instance.createChild(SshConnector.class);
             if (sshPort != "-1" )
                 sshC.setSshPort(sshPort);
-            else
-                sshC.setSshPort("22");
+
             if (sshHost != null)
                 sshC.setSshHost(sshHost);
-            
+
             if (sshuser != null || sshkeyfile != null) {
                 SshAuth sshA = sshC.createChild(SshAuth.class);
                 if (sshuser != null)
@@ -192,7 +199,8 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
         }
     }
 
-        @Service
+
+    @Service
     @Scoped(PerLookup.class)
     class DeleteDecorator implements DeletionDecorator<Nodes, Node> {
         @Inject

@@ -1,7 +1,8 @@
 /*
+ *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,65 +34,72 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.v3.admin.cluster;
 
-package com.sun.enterprise.config.serverbeans;
-
-import org.glassfish.config.support.*;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
-import org.jvnet.hk2.config.DuckTyped;
-
-import java.util.List;
-
+import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.config.serverbeans.Nodes;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.*;
+import org.glassfish.api.admin.CommandRunner.CommandInvocation;
+import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.*;
+import java.util.logging.Logger;
 
 /**
- * Nodes configuration. Maintain a list of {@link Node}
- * active configurations.
+ * Remote AdminCommand to create and ssh node.  This command is run only on DAS.
+ * Register the node with SSH info on DAS
+ *
+ * @author Carla Mott
  */
-@Configured
-public interface Nodes extends ConfigBeanProxy, Injectable {
+@Service(name = "create-node-ssh")
+@I18n("create.node.ssh")
+@Scoped(PerLookup.class)
+@Cluster({RuntimeType.DAS})
+public class CreateNodeSshCommand implements AdminCommand  {
 
-     /**
-      * Return the list of nodes currently configured
-      *
-      * @return list of {@link Node }
-      */
-    @Element
-    /*
-    @Creates({
-        @Create(value="create-node-ssh", decorator=Node.Decorator.class ),
-        @Create(value="create-node-config", decorator=Node.DecoratorConfig.class )    
-    })
-    */
 
-    @Create(value="_create-node", decorator=Node.Decorator.class )
-    @Delete(value="delete-node-ssh", resolver= TypeAndNameResolver.class, decorator=Node.DeleteDecorator.class)
-    @Listing(value="list-nodes")
-    public List<Node> getNode();
-    
+    @Inject
+    private CommandRunner cr;
 
-    /**
-     * Return the node with the given name, or null if no such node exists.
-     *
-     * @param   name    the name of the node
-     * @return          the Node object, or null if no such node
-     */
-    @DuckTyped
-    public Node getNode(String name);
+    @Param(name="name", primary = true)
+    String name;
 
-    class Duck {
-        public static Node getNode(Nodes nodes, String name) {
-            if (name == null || nodes == null) {
-                return null;
-            }
-            for (Node node : nodes.getNode()) {
-                if (node.getName().equals(name)) {
-                    return node;
-                }
-            }
-            return null;
-        }
+    @Param(name="nodehost")
+    String nodehost;
+
+    @Param(name = "nodehome")
+    String nodehome;
+
+    @Param(name="sshport", optional=true)
+    String sshport;
+
+    @Param(name = "sshuser", optional = true)
+    String sshuser;
+
+    @Param(name = "sshkeyfile", optional = true)
+    String sshkeyfile;
+
+
+    @Override
+    public void execute(AdminCommandContext context) {
+        ActionReport report = context.getActionReport();
+
+        CommandInvocation ci = cr.getCommandInvocation("_create-node", report);
+        ParameterMap map = new ParameterMap();
+        map.add("DEFAULT", name);
+        map.add("nodehome", nodehome);
+        map.add("nodehost", nodehost);
+        if (sshport == null)
+            sshport="22";
+        map.add("sshport", sshport);
+        map.add("sshuser", sshuser);
+        map.add("sshkeyfile", sshkeyfile);
+        ci.parameters(map);
+        ci.execute();
+
+        
     }
+
 }

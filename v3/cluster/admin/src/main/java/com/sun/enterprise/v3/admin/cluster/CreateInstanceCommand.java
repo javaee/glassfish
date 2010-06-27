@@ -221,6 +221,8 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
                 logger.warning(msg);
                 report.setActionExitCode(ActionReport.ExitCode.WARNING);
                 report.setMessage(msg);
+
+                // print the command that suer must excute on the remote host
             }
     }
 

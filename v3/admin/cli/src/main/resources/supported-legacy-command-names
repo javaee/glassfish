@@ -159,3 +159,4 @@ stop-cluster R
 backup-domain L
 restore-domain L
 list-backups L
+start-instance R
