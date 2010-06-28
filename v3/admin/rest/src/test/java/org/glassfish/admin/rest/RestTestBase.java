@@ -99,8 +99,8 @@ public class RestTestBase {
         return ((status == 200) || (status == 201));
     }
 
-    protected String get(String address) {
-        return client.resource(address).accept(RESPONSE_TYPE).get(String.class);
+    protected ClientResponse get(String address) {
+        return client.resource(address).accept(RESPONSE_TYPE).get(ClientResponse.class);
     }
 
     protected ClientResponse post(String address, Map<String, String> payload) {
@@ -123,10 +123,6 @@ public class RestTestBase {
         return post(address, payload);
     }
 
-    protected String read(String address) {
-        return get(address);
-    }
-
     protected ClientResponse update(String address, Map<String, String> payload) {
         // For now... :(
         return create(address, payload);
@@ -147,9 +143,10 @@ public class RestTestBase {
      * @param xml
      * @return
      */
-    protected Map<String, String> getEntityValues(String xml) {
+    protected Map<String, String> getEntityValues(ClientResponse response) {
         Map<String, String> map = new HashMap<String, String>();
 
+        String xml = response.getEntity(String.class);
         if ((xml != null) && !xml.isEmpty()) {
             try {
                 Document doc = getDocument(xml);
@@ -169,7 +166,8 @@ public class RestTestBase {
         return map;
     }
 
-    protected List<String> getCommandResults(String xml) {
+    protected List<String> getCommandResults(ClientResponse response) {
+        String xml = response.getEntity(String.class);
         List<String> results = new ArrayList<String>();
         Document document = getDocument(xml);
 

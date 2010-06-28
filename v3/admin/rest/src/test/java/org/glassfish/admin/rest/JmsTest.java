@@ -82,7 +82,7 @@ public class JmsTest extends RestTestBase {
         assertEquals(201, response.getStatus());
 
         // Check connection pool creation
-        Map<String, String> pool = getEntityValues(read(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName));
+        Map<String, String> pool = getEntityValues(get(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName));
         assertFalse(pool.size() == 0);
 
         // Create connector resource
@@ -90,7 +90,7 @@ public class JmsTest extends RestTestBase {
         assertEquals(201, response.getStatus());
 
         // Check connector resource
-        Map<String, String> resource = getEntityValues(read(URL_CONNECTOR_RESOURCE + "/" + poolName));
+        Map<String, String> resource = getEntityValues(get(URL_CONNECTOR_RESOURCE + "/" + poolName));
         assertFalse(resource.size() == 0);
 
         // Edit and check ccp
@@ -102,7 +102,7 @@ public class JmsTest extends RestTestBase {
         });
         assertEquals(200, response.getStatus());
 
-        pool = getEntityValues(read(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName));
+        pool = getEntityValues(get(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName));
         assertTrue(pool.get("description").equals(poolName));
 
         // Edit and check cr
@@ -114,7 +114,7 @@ public class JmsTest extends RestTestBase {
         });
         assertEquals(200, response.getStatus());
 
-        resource = getEntityValues(read(URL_CONNECTOR_RESOURCE + "/" + poolName));
+        resource = getEntityValues(get(URL_CONNECTOR_RESOURCE + "/" + poolName));
         assertTrue(pool.get("description").equals(poolName));
 
         // Delete objects
@@ -144,7 +144,7 @@ public class JmsTest extends RestTestBase {
         ClientResponse response = this.create(URL_ADMIN_OBJECT_RESOURCE, attrs);
         assertEquals(201, response.getStatus());
 
-        Map<String, String> entity = getEntityValues(read(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName));
+        Map<String, String> entity = getEntityValues(get(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName));
         assertFalse(entity.isEmpty());
 
         response = delete(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName, null);
@@ -170,13 +170,13 @@ public class JmsTest extends RestTestBase {
         assertEquals(201, response.getStatus());
 
         // Test edit
-        Map<String, String> entity = getEntityValues(read(URL_JMS_HOST + "/" + jmsHostName));
+        Map<String, String> entity = getEntityValues(get(URL_JMS_HOST + "/" + jmsHostName));
         assertFalse(entity.isEmpty());
         assertEquals(jmsHostName, entity.get("name"));
         entity.put("port", "8686");
         response = update(URL_JMS_HOST + "/" + jmsHostName, entity);
         assertEquals(200, response.getStatus());
-        entity = getEntityValues(read(URL_JMS_HOST + "/" + jmsHostName));
+        entity = getEntityValues(get(URL_JMS_HOST + "/" + jmsHostName));
         assertEquals("8686", entity.get("port"));
 
         // Test delete
@@ -199,20 +199,19 @@ public class JmsTest extends RestTestBase {
 
         // Test creation. There's no CLI for editing a JMS destination, so we query
         // the broker for the newly created destination to make sure it knows about it
-        List<String> list = getCommandResults(read(URL_LIST_JMS_DEST));
+        List<String> list = getCommandResults(get(URL_LIST_JMS_DEST));
         assertTrue(list.contains(jmsDestName));
 
         // Test deletion
         response = post(URL_DELETE_JMS_DEST, newDest); // You POST to commands
         assertEquals(200, response.getStatus());
-        list = getCommandResults(read(URL_LIST_JMS_DEST));
+        list = getCommandResults(get(URL_LIST_JMS_DEST));
         assertFalse(list.contains(jmsDestName));
     }
 
     @Test
     public void testJmsPing() {
-        List<String> results = getCommandResults(read(URL_PING_JMS));
-        System.out.println(results);
+        List<String> results = getCommandResults(get(URL_PING_JMS));
         assertTrue(results.contains("JMS-ping command executed successfully"));
     }
 

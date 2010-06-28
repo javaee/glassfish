@@ -71,7 +71,7 @@ public class ApplicationTest extends RestTestBase {
         undeployApp(newApp);
     }
 
-//    @Test
+    @Test
     public void testApplicationDisableEnable() {
         final String appName = "testApp" + generateRandomString();
         Map<String, Object> newApp = new HashMap<String, Object>() {
@@ -89,17 +89,20 @@ public class ApplicationTest extends RestTestBase {
         assertEquals("/" + appName, deployedApp.get("contextRoot"));
 
         try {
-            ClientResponse response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/disable", null);
+            ClientResponse response = get("http://localhost:8080/" + appName + "/index.html");
+            assertEquals ("Test", response.getEntity(String.class).trim());
+
+            response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/disable", null);
             assertTrue(isSuccess(response));
-            deployedApp = getEntityValues(get(URL_APPLICATION_DEPLOY + "/" + newApp.get("name")));
-            ;
-            assertEquals("false", deployedApp.get("enabled"));
+
+            response = get("http://localhost:8080/" + appName + "/index.html");
+            assertFalse(isSuccess(response));
 
             response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/enable", null);
             assertTrue(isSuccess(response));
-            deployedApp = getEntityValues(get(URL_APPLICATION_DEPLOY + "/" + newApp.get("name")));
-            ;
-            assertEquals("true", deployedApp.get("enabled"));
+
+            response = get("http://localhost:8080/" + appName + "/index.html");
+            assertEquals ("Test", response.getEntity(String.class).trim());
         } finally {
             undeployApp(newApp);
         }

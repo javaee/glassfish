@@ -49,7 +49,7 @@ public class JdbcConnectionPoolTest extends RestTestBase {
     public static final String BASE_JDBC_CP_URL = BASE_URL+"/resources/jdbc-connection-pool";
     @Test
     public void testReading() {
-        Map<String, String> entity = getEntityValues(read(BASE_JDBC_CP_URL + "/__TimerPool"));
+        Map<String, String> entity = getEntityValues(get(BASE_JDBC_CP_URL + "/__TimerPool"));
         assertEquals("__TimerPool", entity.get("name"));
     }
 
@@ -62,17 +62,13 @@ public class JdbcConnectionPoolTest extends RestTestBase {
         ClientResponse response = create(BASE_JDBC_CP_URL, params);
         assertTrue(isSuccess(response));
 
-        Map<String, String> entity = getEntityValues(read(BASE_JDBC_CP_URL + "/"+poolName));
-        assertFalse(entity.size() == 0);
+        Map<String, String> entity = getEntityValues(get(BASE_JDBC_CP_URL + "/"+poolName));
+        assertNotSame(0, entity.size());
 
         response = delete(BASE_JDBC_CP_URL+"/"+poolName, new HashMap<String, String>());
         assertTrue(isSuccess(response));
 
-        try {
-            read(BASE_JDBC_CP_URL + "/"+poolName);
-            fail("Deleted resource should return 404");
-        } catch (Exception e) {
-
-        }
+        response = get(BASE_JDBC_CP_URL + "/" + poolName);
+        assertEquals(404, response.getStatus());
     }
 }

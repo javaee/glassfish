@@ -53,15 +53,13 @@ public class AuthRealmTest extends RestTestBase {
     public static final String URL_AUTH_REALM_CLASS_NAMES = BASE_URL + "/configs/config/server-config/security-service/auth-realm/list-predefined-authrealm-classnames";
     @Test
     public void testListGroupNames() {
-        String result = get(URL_LIST_GROUP_NAMES);
-        List<String> groups = getCommandResults(result);
+        List<String> groups = getCommandResults(get(URL_LIST_GROUP_NAMES));
         assertTrue(groups.size() == 2);
     }
 
     @Test
     public void testSupportsUserManagement() {
-        String result = get(URL_SUPPORTS_USER_MANAGEMENT);
-        List<String> groups = getCommandResults(result);
+        List<String> groups = getCommandResults(get(URL_SUPPORTS_USER_MANAGEMENT));
         assertEquals("true", groups.get(0));
     }
 

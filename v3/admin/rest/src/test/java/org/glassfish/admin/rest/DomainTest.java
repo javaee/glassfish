@@ -52,7 +52,7 @@ public class DomainTest extends RestTestBase {
     @Test
     public void testDomainGet() throws IOException {
         Map payload = new HashMap();
-        Map<String, String> current = getEntityValues(read(BASE_URL));
+        Map<String, String> current = getEntityValues(get(BASE_URL));
 
         // Select a random locale so we're not setting the locale to its current value
         List<String> locales = new ArrayList<String>() {{
@@ -73,7 +73,7 @@ public class DomainTest extends RestTestBase {
         ClientResponse response = create(BASE_URL, payload);
 
         // Reload the domain and make sure our new locale was saved
-        Map<String, String> map = getEntityValues(this.read(BASE_URL));
+        Map<String, String> map = getEntityValues(this.get(BASE_URL));
         assertEquals(newLocale, map.get("locale"));
     }
 }

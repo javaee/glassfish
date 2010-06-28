@@ -49,12 +49,12 @@ public class PartialUpdateTest extends RestTestBase {
     public void testPartialUpdate() {
         final String endpoint = JdbcConnectionPoolTest.BASE_JDBC_CP_URL + "/DerbyPool";
         final String newDesc = generateRandomString();
-        Map<String, String> origAttrs = getEntityValues(read(endpoint));
+        Map<String, String> origAttrs = getEntityValues(get(endpoint));
         Map<String, String> newAttrs = new HashMap<String, String>() {{
             put ("description", newDesc);
         }};
         update(endpoint, newAttrs);
-        Map<String, String> updatedAttrs = getEntityValues(read(endpoint));
+        Map<String, String> updatedAttrs = getEntityValues(get(endpoint));
         assertEquals(newDesc, updatedAttrs.get("description"));
         assertEquals(origAttrs.get("driverClassname"), updatedAttrs.get("driverClassname"));
         assertEquals(origAttrs.get("resType"), updatedAttrs.get("resType"));
