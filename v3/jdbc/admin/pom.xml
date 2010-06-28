@@ -120,6 +120,11 @@
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+         <dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>connectors-internal-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>kernel</artifactId>
