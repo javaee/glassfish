@@ -49,6 +49,8 @@ import org.jvnet.hk2.component.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * JUnit runner for hk2 enabled tests. Life-cycle of the test will be managed by
@@ -60,10 +62,20 @@ public class Hk2Runner extends Runner {
 
     final Class<?> testClass;
     final Description description;
+    final Map<Description, Method> testMethods = 
+          new LinkedHashMap<Description, Method>();
     
     public Hk2Runner(Class testClass) {
         this.testClass = testClass;
         description = Description.createSuiteDescription(testClass);
+        
+        for (Method m : testClass.getDeclaredMethods()) {
+            if (m.getAnnotation(Test.class)!=null) {
+                Description testDescription = Description.createTestDescription(testClass, m.getName());
+                description.addChild(testDescription);
+                testMethods.put(testDescription, m);
+            }
+        }
     }
 
     @Override
@@ -107,24 +119,24 @@ public class Hk2Runner extends Runner {
             return;
         }
 
-        for (Method m : testClass.getDeclaredMethods()) {
-            Description testDescription = Description.createTestDescription(testClass, m.getName());
-            System.out.println("Running " + m.toGenericString());
+        for (Description testDescription : description.getChildren()) {
+            Method m = testMethods.get(testDescription);
             if (m.isAnnotationPresent(Ignore.class)) {
                 notifier.fireTestIgnored(testDescription);
                 continue;
             }
-            if (m.isAnnotationPresent(Test.class)) {
-                try {
-                    m.invoke(instance);
-                } catch (IllegalAccessException e) {
-                    Failure failure = new Failure(testDescription, e);
-                    notifier.fireTestFailure(failure);
-                } catch (InvocationTargetException e) {
-                    Failure failure = new Failure(testDescription, e);
-                    notifier.fireTestFailure(failure);
-                }
+          
+            notifier.fireTestStarted(testDescription);
+            try {
+                m.invoke(instance);
+            } catch (IllegalAccessException e) {
+                Failure failure = new Failure(testDescription, e);
+                notifier.fireTestFailure(failure);
+            } catch (InvocationTargetException e) {
+                Failure failure = new Failure(testDescription, e.getTargetException());
+                notifier.fireTestFailure(failure);
             }
+            
             notifier.fireTestFinished(testDescription);
         }
 
@@ -144,8 +156,6 @@ public class Hk2Runner extends Runner {
                 }
             }
         }
-        
-
     }
 
     @SuppressWarnings("unused")

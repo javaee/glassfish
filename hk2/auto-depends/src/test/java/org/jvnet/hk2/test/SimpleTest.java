@@ -36,7 +36,9 @@
  */
 package org.jvnet.hk2.test;
 
-import junit.framework.Assert;
+import static junit.framework.Assert.*;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
@@ -45,7 +47,7 @@ import org.jvnet.hk2.test.contracts.Simple;
 import org.jvnet.hk2.test.impl.RandomService;
 
 /**
- * Test
+ * Tests basics of Hk2Runner with some simple Habitat injection points.
  *
  * @author Jerome Dochez
  */
@@ -61,17 +63,37 @@ public class SimpleTest {
     @Inject(name="other")
     Simple other;
 
+    // This one is NOT annotated at field level, but is at method level
+    Simple anotherSimple;
+    
+    @Inject(name="other")
+    void setSimple(Simple simple) {
+      anotherSimple = simple;
+    }
+    
     @Test
     public void byType() {
-        Assert.assertTrue(myService!=null);
-        Assert.assertEquals(myService.someMethod("bar"), "barbar");
+        assertTrue(myService!=null);
+        assertEquals(myService.someMethod("bar"), "barbar");
     }
 
     @Test
     public void byName() {
-        Assert.assertNotNull(one);
-        Assert.assertNotNull(other);
-        Assert.assertEquals(one.get(), "one");
-        Assert.assertEquals(other.get(), "other");
+        assertNotNull(one);
+        assertNotNull(other);
+        assertEquals(one.get(), "one");
+        assertEquals(other.get(), "other");
+    }
+
+    @Ignore
+    @Test
+    public void ignored() {
+        fail("should be ignored");
+    }
+
+    @Test
+    public void setter() {
+        assertTrue(anotherSimple!=null);
+        assertEquals(anotherSimple.get(), "other");
     }
 }
