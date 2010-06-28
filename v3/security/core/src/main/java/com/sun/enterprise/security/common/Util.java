@@ -36,15 +36,10 @@
 
 package com.sun.enterprise.security.common;
 
-import com.sun.enterprise.config.serverbeans.AuthRealm;
-import com.sun.enterprise.config.serverbeans.SecurityService;
-import com.sun.enterprise.security.auth.realm.file.FileRealm;
-import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -59,7 +54,6 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.config.types.Property;
 
 /**
  *
@@ -74,9 +68,7 @@ public class Util {
     private static Habitat habitat;
     @Inject 
     private ProcessEnvironment penv;
-
-    @Inject
-    private static SecurityService securityService;
+    
    
     //stuff required for AppClient
     private CallbackHandler callbackHandler;
@@ -179,79 +171,6 @@ public class Util {
         List<String> embeddedServerNames = Server.getServerNames();
         String embeddedServerName = (embeddedServerNames.get(0) == null) ? "embedded" : embeddedServerNames.get(0);
         return embeddedServerName;
-
-    }
-
-    public static void copyConfigFiles(String fromInstanceDir, String toInstanceDir)throws IOException{
-        //For security reasons, permit only an embedded server instance to carry out the copy operations
-        if(!isEmbeddedServer()) {
-            return;
-        }
-
-        if((fromInstanceDir == null) || (toInstanceDir == null)) {
-            throw new IllegalArgumentException("Null inputs");
-        }
-        
-        File fileFromInstanceDir = new File(fromInstanceDir);
-        File fileToInstanceDir =  new File(toInstanceDir);
-
-        List<String> fileNames = new ArrayList<String>();
-
-
-        //Add FileRealm keyfiles to the list
-
-        //This is under the assumption that the domain.xml for the fromInstance has the property
-        //com.sun.aas.instanceRoot expanded (ie) it is a non-embedded gf (as in the EjbContainer case)
-
-        List<AuthRealm> authRealms = securityService.getAuthRealm();
-        for(AuthRealm authRealm:authRealms) {
-            String className = authRealm.getClassname();
-            if ("com.sun.enterprise.security.auth.realm.file.FileRealm".equals(className)) {
-                List<Property> props = authRealm.getProperty();
-                for (Property prop:props) {
-                    if("file".equals(prop.getName())) {
-                        fileNames.add(prop.getValue());
-                    }
-                }
-            }
-        }
-
-         //Add keystore and truststore files
-
-        // For the embedded server case, will the system properties be set in case of multiple embedded instances?
-        //Not sure - so obtain the other files from the usual locations instead of from the System properties
-
-        // String keyStoreFileName = System.getProperty(keyStoreProp);
-        //String trustStoreFileName = System.getProperty(trustStoreProp);
-        // String loginConf = System.getProperty(SYS_PROP_LOGIN_CONF);
-        // String secPolicy = System.getProperty(SYS_PROP_JAVA_SEC_POLICY);
-
-        String keyStoreFileName = fromInstanceDir + File.separator + "config" + File.separator + "keystore.jks";
-        String trustStoreFileName = fromInstanceDir + File.separator + "config" + File.separator + "cacerts.jks";
-
-        fileNames.add(keyStoreFileName);
-        fileNames.add(trustStoreFileName);
-
-        //Add login.conf and security policy
-
-        String loginConf = fromInstanceDir + File.separator + "config" + File.separator + "login.conf";
-        String secPolicy = fromInstanceDir + File.separator + "config" + File.separator + "security.policy";       
-        
-        fileNames.add(loginConf);
-        fileNames.add(secPolicy);
-
-        File toConfigDir = new File(fileToInstanceDir, "config");
-        if (!toConfigDir.exists()) {
-            toConfigDir.mkdir();
-        }
-
-        //Copy files into new directory
-
-        for(String fileName:fileNames) {
-            int beginIndex = fileName.lastIndexOf(File.separator);
-            FileUtils.copyFile(new File(fileName), new File(toConfigDir,fileName.substring(beginIndex) + 1));
-        }
-
 
     }
     
