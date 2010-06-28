@@ -209,6 +209,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             if (name==null) {
                 name = archiveHandler.getDefaultApplicationName(archive, initialContext);
+            } else {
+                DeploymentUtils.validateApplicationName(name);
             }
 
             if(enabled){

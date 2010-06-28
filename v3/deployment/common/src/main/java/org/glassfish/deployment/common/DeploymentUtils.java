@@ -39,6 +39,7 @@ package org.glassfish.deployment.common;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.deployment.deploy.shared.Util;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.deployment.DeploymentContext;
 
 import java.io.File;
@@ -53,6 +54,8 @@ import java.net.URISyntaxException;
  */
 
 public class DeploymentUtils {
+
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeploymentUtils.class);
 
     private static final String V2_COMPATIBILITY = "v2";
 
@@ -240,5 +243,14 @@ public class DeploymentUtils {
         return appLocation;
     }
 
-
+    public static void validateApplicationName(String name) {
+        if (name.indexOf('/') != -1) { 
+            throw new IllegalArgumentException(localStrings.getLocalString("illegal_char_in_name", "Illegal character [{0}] in the name [{1}].", "/", name)); 
+        } else if (name.indexOf('#') != -1) {
+            throw new IllegalArgumentException(localStrings.getLocalString("illegal_char_in_name", "Illegal character [{0}] in the name [{1}].", "#", name)); 
+        } else if (name.indexOf(';') != -1) {
+            throw new IllegalArgumentException(localStrings.getLocalString("illegal_char_in_name", "Illegal character [{0}] in the name [{1}].", ";", name)); 
+        }
+        return;
+    }
 }
