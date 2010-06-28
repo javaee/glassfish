@@ -39,12 +39,6 @@ import org.glassfish.admin.rest.TemplateResource;
 @Path("/domain/")
 public class DomainResource extends org.glassfish.admin.rest.staticresources.GlassFishDomainResource {
 
-@Path("list-targets/")
-public DomainListTargetsResource getDomainListTargetsResource() {
-DomainListTargetsResource resource = resourceContext.getResource(DomainListTargetsResource.class);
-return resource;
-}
-
 @Path("create-instance/")
 public DomainCreateInstanceResource getDomainCreateInstanceResource() {
 DomainCreateInstanceResource resource = resourceContext.getResource(DomainCreateInstanceResource.class);
@@ -87,6 +81,12 @@ DomainListInstancesResource resource = resourceContext.getResource(DomainListIns
 return resource;
 }
 
+@Path("recover-transactions/")
+public DomainRecoverTransactionsResource getDomainRecoverTransactionsResource() {
+DomainRecoverTransactionsResource resource = resourceContext.getResource(DomainRecoverTransactionsResource.class);
+return resource;
+}
+
 @Path("restart/")
 public DomainRestartResource getDomainRestartResource() {
 DomainRestartResource resource = resourceContext.getResource(DomainRestartResource.class);
@@ -125,7 +125,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"list-targets", "GET"}, {"create-instance", "POST"}, {"delete-instance", "DELETE"}, {"start-instance", "POST"}, {"stop-instance", "POST"}, {"host-port", "GET"}, {"list-logger-levels", "GET"}, {"list-instances", "GET"}, {"restart", "POST"}, {"rotate-log", "POST"}, {"set-log-level", "POST"}, {"stop", "POST"}, {"uptime", "GET"}, {"version", "GET"}};
+return new String[][]{{"create-instance", "POST"}, {"delete-instance", "DELETE"}, {"start-instance", "POST"}, {"stop-instance", "POST"}, {"host-port", "GET"}, {"list-logger-levels", "GET"}, {"list-instances", "GET"}, {"recover-transactions", "POST"}, {"restart", "POST"}, {"rotate-log", "POST"}, {"set-log-level", "POST"}, {"stop", "POST"}, {"uptime", "GET"}, {"version", "GET"}};
 }
 
 	@Path("resources/")

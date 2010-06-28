@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.rest;
 
+import com.sun.jersey.multipart.FormDataMultiPart;
 import java.util.HashMap;
 
 import javax.ws.rs.core.MediaType;
@@ -59,11 +60,11 @@ import org.glassfish.admin.rest.provider.ActionReportResult;
  * that contains the logic for mapped commands RS Resources
  *
  */
-public class TemplateCommandPostResource extends TemplateExecCommand{
+public class TemplateCommandPostResource extends TemplateExecCommand {
 
     public TemplateCommandPostResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, HashMap<String, String> m, boolean b) {
-        super ( resourceName,  commandName,  commandMethod,commandAction,commandDisplayName,  m,  b);
-         parameterType= Constants.MESSAGE_PARAMETER;
+        super(resourceName, commandName, commandMethod, commandAction, commandDisplayName, m, b);
+        parameterType = Constants.MESSAGE_PARAMETER;
    }
 
     @POST

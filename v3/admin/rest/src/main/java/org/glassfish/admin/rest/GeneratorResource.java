@@ -129,10 +129,9 @@ public class GeneratorResource {
         {"AuthRealm", "delete-file-user", "DELETE", "delete-user", "Delete", "authrealmname=$parent"},
         {"AuthRealm", "list-file-users", "GET", "list-users", "List", "authrealmname=$parent"},
 //        {"Configs", "create-config", "POST", "create-config", "Create Config"},
-        {"Cluster", "start-cluster", "POST", "start-cluster", "Start Cluster"},
-        {"Cluster", "stop-cluster", "POST", "stop-cluster", "Stop Cluster"},
+        {"Cluster", "start-cluster", "POST", "start-cluster", "Start Cluster", "id=$parent"},
+        {"Cluster", "stop-cluster", "POST", "stop-cluster", "Stop Cluster", "id=$parent"},
         {"ConnectionPool", "ping-connection-pool", "GET", "ping", "Ping"},
-        {"Domain", "__list-targets", "GET", "list-targets", "List Targets"},
         {"Domain", "create-instance", "POST", "create-instance", "Create Instance"},
         {"Domain", "delete-instance", "DELETE", "delete-instance", "Delete Instance"},
         {"Domain", "start-instance", "POST", "start-instance", "Start Instance"},
@@ -140,6 +139,7 @@ public class GeneratorResource {
         {"Domain", "get-host-and-port", "GET", "host-port", "HostPort"},
         {"Domain", "list-logger-levels", "GET", "list-logger-levels", "LogLevels"},
         {"Domain", "list-instances", "GET", "list-instances", "List Instances"},
+        {"Domain", "recover-transactions", "POST", "recover-transactions", "Recover"},
         {"Domain", "restart-domain", "POST", "restart", "Restart"},
         {"Domain", "rotate-log", "POST", "rotate-log", "RotateLog"},
         {"Domain", "set-log-level", "POST", "set-log-level", "LogLevel"},
@@ -161,8 +161,7 @@ public class GeneratorResource {
         {"NetworkListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"},
         {"Nodes", "create-node-ssh", "POST", "create-node", "Create Node"},
         {"Protocol", "create-http", "POST", "create-http", "Create", "id=$parent"},
-        {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"},
-        {"TransactionService", "recover-transactions", "POST", "recover-transactions", "Recover"}
+        {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"}
     };
 
 

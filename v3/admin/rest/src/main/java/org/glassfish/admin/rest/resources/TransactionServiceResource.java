@@ -38,17 +38,6 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class TransactionServiceResource extends TemplateResource {
 
-@Path("recover-transactions/")
-public TransactionServiceRecoverTransactionsResource getTransactionServiceRecoverTransactionsResource() {
-TransactionServiceRecoverTransactionsResource resource = resourceContext.getResource(TransactionServiceRecoverTransactionsResource.class);
-return resource;
-}
-
-@Override
-public String[][] getCommandResourcesPaths() {
-return new String[][]{{"recover-transactions", "POST"}};
-}
-
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);

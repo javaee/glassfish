@@ -37,10 +37,10 @@ package org.glassfish.admin.rest.resources;
 
 //generated code...;
 
-public class TransactionServiceRecoverTransactionsResource extends org.glassfish.admin.rest.TemplateCommandPostResource {
-   public TransactionServiceRecoverTransactionsResource() {
+public class DomainRecoverTransactionsResource extends org.glassfish.admin.rest.TemplateCommandPostResource {
+   public DomainRecoverTransactionsResource() {
        super(
-          "TransactionServiceRecoverTransactions",
+          "DomainRecoverTransactions",
           "recover-transactions",
           "POST",
           "Recover",

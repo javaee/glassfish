@@ -174,6 +174,13 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                         // i18n
                         message = "Request returned " + status;
                     }
+//                    res.setStatus(status);
+//                    res.setHeader("Content-Length", Integer.toString(message.length()));
+//                    res.setContentType("text/html");
+//                    res.getOutputStream().write(message.getBytes());
+//                    res.getOutputStream().flush();
+//                    res.finishResponse();
+
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     report.setMessage(message);
                     reportError(res, report, status);

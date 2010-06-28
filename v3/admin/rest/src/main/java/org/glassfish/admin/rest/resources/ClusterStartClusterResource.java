@@ -45,7 +45,9 @@ public class ClusterStartClusterResource extends org.glassfish.admin.rest.Templa
           "POST",
           "Start Cluster",
           "start-cluster",
-          (java.util.HashMap<String, String>) null ,
-          false);
+          new java.util.HashMap<String, String>() {{
+                    put("id","$parent");
+       }},
+          true);
     }
 }

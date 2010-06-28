@@ -45,7 +45,9 @@ public class ClusterStopClusterResource extends org.glassfish.admin.rest.Templat
           "POST",
           "Stop Cluster",
           "stop-cluster",
-          (java.util.HashMap<String, String>) null ,
-          false);
+          new java.util.HashMap<String, String>() {{
+                    put("id","$parent");
+       }},
+          true);
     }
 }

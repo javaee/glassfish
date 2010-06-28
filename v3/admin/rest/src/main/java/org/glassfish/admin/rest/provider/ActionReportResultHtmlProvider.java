@@ -112,7 +112,6 @@ public class ActionReportResultHtmlProvider extends ProviderUtil
             try {
                 proxy.getActionReport().writeReport(baos);
                 result = result + baos.toString() + "<br>";
-
             } catch (IOException ex) {
                 Logger.getLogger(ActionReportResultHtmlProvider.class.getName()).log(Level.SEVERE, null, ex);
             }
