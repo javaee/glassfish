@@ -110,9 +110,13 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      */
     public Habitat newHabitat() throws ComponentException {
         Habitat habitat = new Habitat();
-        habitat.addIndex(new ExistingSingletonInhabitant<Logger>(Logger.getAnonymousLogger()),
-                Logger.class.getName(), null);
+        initializeHabitat(habitat);
         return habitat;
+    }
+    
+    protected void initializeHabitat(Habitat h) throws ComponentException {
+      h.addIndex(new ExistingSingletonInhabitant<Logger>(Logger.getAnonymousLogger()),
+          Logger.class.getName(), null);
     }
 
     /**
