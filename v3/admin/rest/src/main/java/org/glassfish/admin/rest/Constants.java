@@ -40,38 +40,21 @@ package org.glassfish.admin.rest;
  * @author Rajeshwar Paitl
  */
 public interface Constants {
-
     public static final String INDENT = "  ";
-
     public static final int QUERY_PARAMETER = 0;
-
     public static final int MESSAGE_PARAMETER = 1;
-
     public static final String JAVA_STRING_TYPE = "java.lang.String";
-
     public static final String JAVA_BOOLEAN_TYPE = "java.lang.Boolean";
-
     public static final String JAVA_INT_TYPE = "java.lang.Integer";
-
     public static final String JAVA_PROPERTIES_TYPE = "java.util.Properties";
-
     public static final String XSD_STRING_TYPE = "string";
-
     public static final String XSD_BOOLEAN_TYPE = "boolean";
-
     public static final String XSD_INT_TYPE = "int";
-
     public static final String XSD_PROPERTIES_TYPE = "string"; //?
-
     public static final String TYPE = "type";
-
     public static final String KEY = "key";
-
     public static final String OPTIONAL = "optional";
-
     public static final String DEFAULT_VALUE = "defaultValue";
-
     public static final String ACCEPTABLE_VALUES = "acceptableValues";
-
     public static final String PARENT_NAME_VARIABLE = "$parent";
 }

@@ -37,15 +37,17 @@ package org.glassfish.admin.rest.resources;
 
 //generated code...;
 
-public class DomainRecoverTransactionsResource extends org.glassfish.admin.rest.TemplateCommandPostResource {
-   public DomainRecoverTransactionsResource() {
+public class ServerRecoverTransactionsResource extends org.glassfish.admin.rest.TemplateCommandPostResource {
+   public ServerRecoverTransactionsResource() {
        super(
-          "DomainRecoverTransactions",
+          "ServerRecoverTransactions",
           "recover-transactions",
           "POST",
           "Recover",
           "recover-transactions",
-          (java.util.HashMap<String, String>) null ,
-          false);
+          new java.util.HashMap<String, String>() {{
+                    put("id","$parent");
+       }},
+          true);
     }
 }

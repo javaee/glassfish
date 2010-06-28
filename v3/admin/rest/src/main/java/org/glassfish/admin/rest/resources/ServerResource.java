@@ -38,6 +38,17 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class ServerResource extends TemplateResource {
 
+@Path("recover-transactions/")
+public ServerRecoverTransactionsResource getServerRecoverTransactionsResource() {
+ServerRecoverTransactionsResource resource = resourceContext.getResource(ServerRecoverTransactionsResource.class);
+return resource;
+}
+
+@Override
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"recover-transactions", "POST"}};
+}
+
 	@Path("application-ref/")
 	public ListApplicationRefResource getApplicationRefResource() {
 		ListApplicationRefResource resource = resourceContext.getResource(ListApplicationRefResource.class);

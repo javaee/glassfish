@@ -136,7 +136,7 @@ public abstract class TemplateListOfResource {
     @Produces(MediaType.TEXT_HTML)
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
-    public Response CreateResource(HashMap<String, String> data) {
+    public Response createResource(HashMap<String, String> data) {
         try {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
@@ -214,7 +214,7 @@ public abstract class TemplateListOfResource {
 
     //called in case of POST on application resource (deployment).
     //resourceToCreate is the name attribute if provided.
-    private Response CreateResource(HashMap<String, String> data, String resourceToCreate) {
+    private Response createResource(HashMap<String, String> data, String resourceToCreate) {
         try {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
@@ -294,7 +294,7 @@ public abstract class TemplateListOfResource {
              *
              * */
             HashMap<String, String> data = TemplateResource.createDataBasedOnForm(formData);
-            return CreateResource(data, data.get("name")); //execute the deploy command with a copy of the file locally
+            return createResource(data, data.get("name")); //execute the deploy command with a copy of the file locally
 
     }
 

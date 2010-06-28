@@ -139,7 +139,6 @@ public class GeneratorResource {
         {"Domain", "get-host-and-port", "GET", "host-port", "HostPort"},
         {"Domain", "list-logger-levels", "GET", "list-logger-levels", "LogLevels"},
         {"Domain", "list-instances", "GET", "list-instances", "List Instances"},
-        {"Domain", "recover-transactions", "POST", "recover-transactions", "Recover"},
         {"Domain", "restart-domain", "POST", "restart", "Restart"},
         {"Domain", "rotate-log", "POST", "rotate-log", "RotateLog"},
         {"Domain", "set-log-level", "POST", "set-log-level", "LogLevel"},
@@ -161,7 +160,8 @@ public class GeneratorResource {
         {"NetworkListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"},
         {"Nodes", "create-node-ssh", "POST", "create-node", "Create Node"},
         {"Protocol", "create-http", "POST", "create-http", "Create", "id=$parent"},
-        {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"}
+        {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"},
+        {"Server", "recover-transactions", "POST", "recover-transactions", "Recover", "id=$parent"}
     };
 
 
