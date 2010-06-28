@@ -56,7 +56,6 @@ Grizzly Framework
 
 # GlassFish start-up messages
 # Common messages have [^\w] appended to reduce hits when used in other messages.
-
 INFO: JVM invocation command line:
 UnlockDiagnosticVMOptions
 -XX:MaxPermSize=
@@ -116,6 +115,7 @@ INFO: Successfully launched in
 Running GlassFish Version
 This message was emitted before the logging service started:
 
+
 # No need to log following log level messages
 \|CONFIG\|
 \|FINE\|
@@ -127,8 +127,12 @@ This message was emitted before the logging service started:
 MQJMSRA_RA4001: getJMXServiceURLList:Exception:Message=No JMXServiceURL was found for connector jmxrmi.
 Address used: [^\w]
 
+
 # Exceptions
 java.lang.IllegalArgumentException: 
+java.net.SocketException
+java.net.MalformedURLException
+javax.management.InstanceAlreadyExistsException:
 
 
 # Messages that probably should have Id's but currently don't have any:
@@ -137,16 +141,23 @@ java.lang.IllegalArgumentException:
 # Some of the messages here are printed by the test applications.
 # As they have no unique logger name I cannot filter them out more efficiently.
 
-The Admin Console is installing...
-The Admin Console is already installed, but not yet loaded.
-The Admin Console is loading...
+
+# Dont find in v3 source code - No need to fix this
 Initializing Mojarra 
 osgi-javaee-base.jar
 org.apache.felix.scr.jar
 org.apache.felix.fileinstall-autodeploy-bundles.cfg
 osgi-web-container.jar
 Started bundle: file:
-The Admin Console application is loaded.
+com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.
+org.glassfish.admin.amx.impl.config.AMXConfigLoader
+amx-pref =
+Unprocessed event : UnprocessedChangeEvent
+org.apache.felix.bundlerepository.jar
+Address used:
+
+
+# From QL Test - No need to fix this
 In SingletonBean::init()
 sessionCtx = SingletonBean; id: 
 In SingletonBean::init
@@ -156,17 +167,11 @@ In HelloBean::hello
 ^.{0,6}\|#\]
 BeanMessage: appendMessage=
 Hello from beanLeaf: 
-javax.management.InstanceAlreadyExistsException: 
-com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.
-org.glassfish.admin.amx.impl.config.AMXConfigLoader
-Probe is not yet registered: glassfish:ejb:
-amx-pref = 
 resource-adapter-name=AMXConfigProxyTests.connectorConnectionPoolTest
 name=AMXConfigProxyTests.connectorConnectionPoolTest
 user-name=testUser, password=testPassword
     \]
 description=desc.for.prop
-Unprocessed event : UnprocessedChangeEvent
 desc.for.AMXConfigProxyTests
 AMXConfigProxyTests.TEST_PROP
 Servlet processing do get..
@@ -231,8 +236,6 @@ In InterceptorA::around
 In StatefulBean::hello()
 Filter.destroy
 Realm file was successfully updated.
-Realm file was successfully updated.
-Realm file was successfully updated.
 In SingletonBean::destroy()
 In InterceptorB::destroy()
 In InterceptorA::destroy()
@@ -240,32 +243,39 @@ In StatefulBean::destroy()
 In StatelessBean::destroy()
 In HelloBean::destroy()
 Server restart initiated
+
+
+# From LocalStrings.properties file - No need to fix this
+was successfully deployed in
+The Admin Console is installing...
+The Admin Console is already installed, but not yet loaded.
+The Admin Console is loading...
+The Admin Console application is loaded.
+Probe is not yet registered: glassfish:ejb:
 The Admin Console is already installed, but not yet loaded.
 Server shutdown initiated
-org.apache.felix.bundlerepository.jar
-java.net.SocketException
-StatefulContainerbuilder instantiated store
-Address used:
-java.net.MalformedURLException
 Sun specific deployment descriptor
 
-# From LocalStrings.properties file
-was successfully deployed in
 
 # Waiting to be fixed: 11627
 endpoint.determine.destinationtype
 
+
 # Waiting to be fixed: 11195
 FromWsdl
+
 
 # Waiting to be fixed: 12310
 !!!!! Cannot create Update Center Image for 
 
+
 # Waiting to be fixed: 12302
 Loading __admingui Application done is 
 
+
 # Waiting to be fixed: 12308 - 12309
 Done with starting web container
+
 
 # Waiting to be fixed: 12304
 Security startup service called
@@ -276,22 +286,28 @@ Security service\(s\) started successfully
 Realm file was successfully updated.
 Web login failed: Login failed: javax.security.auth.login.LoginException: Failed file login for j2ee.
 
+
 # Waiting to be fixed: 12251
 Portable JNDI names for EJB 
 A system exception occurred during an invocation on EJB 
 javax.ejb.NoSuchObjectLocalException: The EJB does not exist. session-key: 
  Current thread done cleanup
 Glassfish-specific \(Non-portable\) JNDI names for EJB 
+StatefulContainerbuilder instantiated store
+
 
 # Waiting to be fixed: 12207
 issueAttributeChangeForXmlAttrName\(\): MBean attribute name not found for xml name, using xml name: name
 AttributeChangeNotification: 
 
+
 # Waiting to be fixed: 12305
 admin console: initSessionAttributes
 
+
 # Waiting to be fixed: 12307
 JMS Service Connection URL is
+
 
 # Need to check why this is picking up
 WEB0169: Created HTTP listener
