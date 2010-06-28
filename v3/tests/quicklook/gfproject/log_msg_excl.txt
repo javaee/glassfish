@@ -20,7 +20,7 @@
 # identifying information: "Portions Copyrighted [year]
 # [name of copyright owner]"
 #
-# Contributor(s): Dies Koper (Fujitsu Ltd.)
+# Contributor(s): Dies Koper (Fujitsu Ltd.), Naman Mehta(Sun)
 #
 # If you wish your version of this file to be governed by only the CDDL or
 # only the GPL Version 2, indicate your decision by adding "[Contributor]
@@ -28,7 +28,7 @@
 # Version 2] license."  If you don't indicate a single choice of license, a
 # recipient has the option to distribute your version of this file under
 # either the CDDL, the GPL Version 2 or to extend the choice of license to
-# its licensees as provided above.  However, if you add GPL Version 2 code
+# its licensees as provided above.  However, if you add GPL Version 2 codeWEB0169: Created HTTP listene
 # and therefore, elected the GPL Version 2 license, then the option applies
 # only if the new code is made subject to such option by the copyright
 # holder.
@@ -40,7 +40,6 @@
 
 
 # Loggers of excluded third-party libraries
-
 com.sun.grizzly.
 org.eclipse.persistence
 org.hibernate.validator
@@ -48,12 +47,10 @@ org.jboss.weld
 
 
 # Stacktraces
-
 	at 
 
 
 # Grizzly start-up message
-
 Grizzly Framework 
 
 
@@ -119,15 +116,18 @@ INFO: Successfully launched in
 Running GlassFish Version
 This message was emitted before the logging service started:
 
+# No need to log following log level messages
+\|CONFIG\|
+\|FINE\|
+\|FINER\|
+\|FINEST\|
+
 
 # Message mistakenly picked up due to line ending in it:
-
 MQJMSRA_RA4001: getJMXServiceURLList:Exception:Message=No JMXServiceURL was found for connector jmxrmi.
 Address used: [^\w]
 
-
 # Exceptions
-
 java.lang.IllegalArgumentException: 
 
 
@@ -137,29 +137,18 @@ java.lang.IllegalArgumentException:
 # Some of the messages here are printed by the test applications.
 # As they have no unique logger name I cannot filter them out more efficiently.
 
-!!!!! Cannot create Update Center Image for 
 The Admin Console is installing...
-Done with starting web container
 The Admin Console is already installed, but not yet loaded.
 The Admin Console is loading...
-Security startup service called
-Realm admin-realm of classtype com.sun.enterprise.security.auth.realm.file.FileRealm successfully created.
-Realm file of classtype com.sun.enterprise.security.auth.realm.file.FileRealm successfully created.
-Realm certificate of classtype com.sun.enterprise.security.auth.realm.certificate.CertificateRealm successfully created.
-Security service\(s\) started successfully
 Initializing Mojarra 
 osgi-javaee-base.jar
 org.apache.felix.scr.jar
 org.apache.felix.fileinstall-autodeploy-bundles.cfg
 osgi-web-container.jar
 Started bundle: file:
-Loading __admingui Application done is 
 The Admin Console application is loaded.
-Portable JNDI names for EJB 
-Realm file was successfully updated.
 In SingletonBean::init()
 sessionCtx = SingletonBean; id: 
-Glassfish-specific \(Non-portable\) JNDI names for EJB 
 In SingletonBean::init
 In HelloBean::init
 In HelloBean::hello
@@ -177,12 +166,9 @@ name=AMXConfigProxyTests.connectorConnectionPoolTest
 user-name=testUser, password=testPassword
     \]
 description=desc.for.prop
-issueAttributeChangeForXmlAttrName\(\): MBean attribute name not found for xml name, using xml name: name
 Unprocessed event : UnprocessedChangeEvent
 desc.for.AMXConfigProxyTests
 AMXConfigProxyTests.TEST_PROP
-AttributeChangeNotification: 
-admin console: initSessionAttributes
 Servlet processing do get..
 Filter.init
 Filter.doFilter
@@ -211,7 +197,6 @@ OK: not get BV ex for remove
 testcase = verify
 5. Verifying employee ....
 , name=emp
-Web login failed: Login failed: javax.security.auth.login.LoginException: Failed file login for j2ee.
 In HelloBean::
 servlet init: message=PostBeanRootPostBeanLeafHelloBeanLeaf
 BeanMessage: appendMessage=PostBeanRootPostBeanLeafHelloBeanLeafHelloBeanRoot
@@ -219,7 +204,6 @@ Persisting ....
 JpaBean id=1, name=JpaBean
 ==== : com.sun.ejb.containers.EJBLocalObjectInvocationHandler@
 In HelloBean::woke up from 5second sleep
-JMS Service Connection URL is 
 Got message!!!
 Calling hello
 HelloStateless
@@ -227,12 +211,9 @@ HelloStateful
 Business method marked with @Remove called in local ejb3.0 stateful
 PRE-DESTROY callback received in local ejb3.0 stateful
 NRU-com.sun.mdb.HelloStateful: Cannot load from  BACKUPSTORE FOR Key: 
-A system exception occurred during an invocation on EJB 
-javax.ejb.NoSuchObjectLocalException: The EJB does not exist. session-key: 
 Successfully caught EJBException after  accessing removed SFSB
 Sending message
 message sent
- Current thread done cleanup
 In InterceptorB::init()
 StatelessBean = numberguess.StatelessLocal_
 In InterceptorA::init()
@@ -260,7 +241,6 @@ In StatelessBean::destroy()
 In HelloBean::destroy()
 Server restart initiated
 The Admin Console is already installed, but not yet loaded.
-Done with starting web container
 Server shutdown initiated
 org.apache.felix.bundlerepository.jar
 java.net.SocketException
@@ -272,8 +252,49 @@ Sun specific deployment descriptor
 # From LocalStrings.properties file
 was successfully deployed in
 
-# Waiting to be fixed: https://glassfish.dev.java.net/issues/show_bug.cgi?id=11627
+# Waiting to be fixed: 11627
 endpoint.determine.destinationtype
 
-# Waiting to be fixed: https://glassfish.dev.java.net/issues/show_bug.cgi?id=11195
+# Waiting to be fixed: 11195
 FromWsdl
+
+# Waiting to be fixed: 12310
+!!!!! Cannot create Update Center Image for 
+
+# Waiting to be fixed: 12302
+Loading __admingui Application done is 
+
+# Waiting to be fixed: 12308 - 12309
+Done with starting web container
+
+# Waiting to be fixed: 12304
+Security startup service called
+Realm admin-realm of classtype com.sun.enterprise.security.auth.realm.file.FileRealm successfully created.
+Realm file of classtype com.sun.enterprise.security.auth.realm.file.FileRealm successfully created.
+Realm certificate of classtype com.sun.enterprise.security.auth.realm.certificate.CertificateRealm successfully created.
+Security service\(s\) started successfully
+Realm file was successfully updated.
+Web login failed: Login failed: javax.security.auth.login.LoginException: Failed file login for j2ee.
+
+# Waiting to be fixed: 12251
+Portable JNDI names for EJB 
+A system exception occurred during an invocation on EJB 
+javax.ejb.NoSuchObjectLocalException: The EJB does not exist. session-key: 
+ Current thread done cleanup
+Glassfish-specific \(Non-portable\) JNDI names for EJB 
+
+# Waiting to be fixed: 12207
+issueAttributeChangeForXmlAttrName\(\): MBean attribute name not found for xml name, using xml name: name
+AttributeChangeNotification: 
+
+# Waiting to be fixed: 12305
+admin console: initSessionAttributes
+
+# Waiting to be fixed: 12307
+JMS Service Connection URL is
+
+# Need to check why this is picking up
+WEB0169: Created HTTP listener
+WEB0671: Loading application
+MNTG0107:Enabling the monitoring for all the stats with level
+MNTG0201:Flashlight listener registration failed for listener class
