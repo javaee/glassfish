@@ -2189,7 +2189,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         if (!hasBeenUndeployed) {
-            _logger.log(Level.SEVERE, "webContaienr.undeployError", contextRoot);
+            _logger.log(Level.SEVERE, "webContainer.undeployError", contextRoot);
         }
     }
 
