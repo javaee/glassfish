@@ -49,6 +49,11 @@ import org.glassfish.api.admin.ParameterMap;
  */
 public final class InstanceInfo {
 
+    public InstanceInfo(String name0, int port0, String host0,
+            Logger logger0, int timeout0) {
+        this(name0, port0, host0, null, logger0, timeout0);
+    }
+    
     public InstanceInfo(String name0, int port0, String host0, String cluster0,
             Logger logger0, int timeout0) {
         if (name0 == null || host0 == null)
