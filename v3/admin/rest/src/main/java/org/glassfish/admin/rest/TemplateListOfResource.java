@@ -149,21 +149,22 @@ public abstract class TemplateListOfResource {
 
             //Command to execute
             String commandName = getPostCommand();
-            String resourceToCreate = uriInfo.getAbsolutePath() + "/";
+            ResourceUtil.adjustParameters(data);
+            String resourceToCreate = uriInfo.getAbsolutePath() +
+                "/" + data.get("DEFAULT");
 
             if (null != commandName) {
                 // TODO: Not needed anymore?
 //                data = __resourceUtil.translateCamelCasedNamesToCommandParamNames(data,commandName, RestService.getHabitat(), RestService.logger);
-                ResourceUtil.adjustParameters(data); //adjusting for DEFAULT is required only while executing a CLI command
-                resourceToCreate += data.get("DEFAULT");
-                String typeOfResult = requestHeaders.getAcceptableMediaTypes().get(0).getSubtype();
-                ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),typeOfResult);
+            String typeOfResult = requestHeaders.getAcceptableMediaTypes().get(0).getSubtype();
+                ActionReport actionReport = ResourceUtil.runCommand(commandName,
+                    data, RestService.getHabitat(),typeOfResult);
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode == ActionReport.ExitCode.SUCCESS) {
                     String successMessage =
                         localStrings.getLocalString("rest.resource.create.message",
-                            "\"{0}\" created successfully.", resourceToCreate);
+                            "\"{0}\" created successfully.", new Object[] {resourceToCreate});
                     return ResourceUtil.getResponse(201, /* 201 - created */
                          successMessage, requestHeaders, uriInfo);
                 }
@@ -175,10 +176,10 @@ public abstract class TemplateListOfResource {
                 // create it on the fly without a create CLI command.
 
                 Class<? extends ConfigBeanProxy> proxy = getElementTypeByName(parent, tagName);
-                ConfigBean createdBean = ConfigSupport.createAndSet((ConfigBean) parent, proxy, data);
+                ConfigSupport.createAndSet((ConfigBean) parent, proxy, data);
                 String successMessage =
                         localStrings.getLocalString("rest.resource.create.message",
-                        "\"{0}\" created successfully.", createdBean.getKey());
+                        "\"{0}\" created successfully.", new Object[]{resourceToCreate});
                 return ResourceUtil.getResponse(201, //201 - created
                         successMessage, requestHeaders, uriInfo);
 
