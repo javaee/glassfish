@@ -62,28 +62,20 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
     private static final String DOMAIN_ROOT_KEY = "Domain-Root_value";
     private DomainDirs dd = null;
 
-    @Override
     /*
      * The prepare method must ensure that the superclass' implementation of
      * the method is called.  
      * The reason we override here is that we can get into trouble with layers 
      * of NPE possibilities.  So here the ServerDirs object is initialized
-     * right away.  It will return null for all non-boolean method calls.  But we
-     * never have to do a null-check on the ServerDirs object itself.
+     * right away.  It will return null for all non-boolean method calls.  But
+     * we never have to do a null-check on the ServerDirs object itself.
      * ServerDirs is 100% immutable.  A new one will be made later if needed.
      */
+    @Override
     protected void prepare()
             throws CommandException, CommandValidationException {
         super.prepare();
         setServerDirs(new ServerDirs()); // do-nothing ServerDirs object...
-        String pw = getServerDirs().getLocalPassword();
-
-        if(StringUtils.ok(pw)) {
-            programOpts.setPassword(pw, ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
-            logger.printDebugMessage("Using local password");
-        }
-        else
-            logger.printDebugMessage("Not using local password");
     }
 
     @Override
@@ -104,7 +96,7 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
     protected final String getDomainName() {
         // can't just use "dd" since it may be half-baked right now!
 
-        if(dd != null && dd.isValid())
+        if (dd != null && dd.isValid())
             return dd.getDomainName();
         else // too early!
             return userArgDomainName;  // might be and is ok to be null
@@ -123,15 +115,23 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
         try {
             File domainsDirFile = null;
 
-            if(ok(domainDirParam))
+            if (ok(domainDirParam))
                 domainsDirFile = new File(domainDirParam);
 
             dd = new DomainDirs(domainsDirFile, getDomainName());
             setServerDirs(dd.getServerDirs());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new CommandException(e);
         }
+
+        String pw = getServerDirs().getLocalPassword();
+
+        if (ok(pw)) {
+            programOpts.setPassword(pw,
+                            ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
+            logger.printDebugMessage("Using local password");
+        } else
+            logger.printDebugMessage("Not using local password");
     }
 
     protected boolean isThisDAS(File ourDir) {
