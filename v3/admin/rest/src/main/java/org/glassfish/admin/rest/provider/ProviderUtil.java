@@ -76,7 +76,7 @@ public class ProviderUtil {
      * Produce a string in double quotes with backslash sequences in all the
      * right places.
      */
-    static protected final String quote(String string) {
+    protected static String quote(String string) {
         if (string == null || string.length() == 0) {
             return "\"\"";
         }
@@ -85,7 +85,7 @@ public class ProviderUtil {
         char c = 0;
         int i;
         int len = string.length();
-        StringBuffer sb = new StringBuffer(len + 4);
+        StringBuilder sb = new StringBuilder(len + 4);
         String t;
 
         sb.append('"');

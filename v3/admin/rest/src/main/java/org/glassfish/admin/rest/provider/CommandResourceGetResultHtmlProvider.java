@@ -54,7 +54,7 @@ import static org.glassfish.admin.rest.Util.*;
  * @author Rajeshwar Patil
  */
 @Provider
-@Produces(MediaType.TEXT_HTML)
+@Produces("text/html;qs=2")
 public class CommandResourceGetResultHtmlProvider extends ProviderUtil 
         implements MessageBodyWriter<CommandResourceGetResult> {
 

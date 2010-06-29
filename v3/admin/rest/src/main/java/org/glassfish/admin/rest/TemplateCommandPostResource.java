@@ -65,13 +65,17 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
     public TemplateCommandPostResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, HashMap<String, String> m, boolean b) {
         super(resourceName, commandName, commandMethod, commandAction, commandDisplayName, m, b);
         parameterType = Constants.MESSAGE_PARAMETER;
-   }
+    }
 
     @POST
     @Consumes({
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
+    @Produces({
+        "text/html;qs=2",
+        MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_XML})
     public ActionReportResult executeCommand(HashMap<String, String> data) {
         try {
             if (data.containsKey("error")) {
@@ -93,9 +97,9 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
             ResourceUtil.purgeEmptyEntries(data);
             String typeOfResult = ResourceUtil.getResultType(requestHeaders);
 
-            ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),typeOfResult);
+            ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(), typeOfResult);
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-           ActionReportResult results = new ActionReportResult(commandName, actionReport, options());
+            ActionReportResult results = new ActionReportResult(commandName, actionReport, options());
 
             if (exitCode == ActionReport.ExitCode.SUCCESS) {
                 results.setStatusCode(200); /*200 - ok*/
@@ -106,7 +110,7 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
             }
 
             return results;
-            
+
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
@@ -135,5 +139,4 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
-
 }
