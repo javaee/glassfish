@@ -53,7 +53,7 @@ import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.ReferenceContainer;
 import org.jvnet.hk2.component.*;
-
+import static com.sun.enterprise.v3.admin.cluster.Constants.*;
 /**
  * AdminCommand to list all instances and their states
  *
@@ -263,10 +263,6 @@ public class ListInstancesCommand implements AdminCommand {
         return servers;
     }
 
-    // these are all not localized because REST etc. depends on them.
-    private static final String NONE = "Nothing to list.";
-    private static final String RUNNING = "running";
-    private static final String NOT_RUNNING = "not running";
 
     /*
      * false means error

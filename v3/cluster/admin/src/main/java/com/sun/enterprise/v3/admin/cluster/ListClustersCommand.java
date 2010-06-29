@@ -52,6 +52,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.logging.Logger;
+import static com.sun.enterprise.v3.admin.cluster.Constants.*;
 
 /**
  *  This is a remote command that lists the clusters.
@@ -82,9 +83,6 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
     private static final String NONE = "Nothing to list.";
 
 
-    private static final String RUNNING = "running";
-    private static final String NOT_RUNNING = "not running";
-    private static final String PARTIALLY_RUNNING = "partially running";
 
      @Override
     public void postConstruct() {
