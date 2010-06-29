@@ -243,7 +243,6 @@ public class ProviderUtil {
         StringBuilder result = new StringBuilder();
 
         Set<String> attributes = proxy.model.getAttributeNames();
-        System.out.println("attributes: " + attributes);
 
         MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(proxy);
 
@@ -465,7 +464,7 @@ public class ProviderUtil {
         ///result = result + "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://localhost:8080/glassfish_rest_interface.css\" />";
         result = result + "</head><body>";
         result = result + "<h1 class=\"mainheader\">GlassFish REST Interface</h1>";
-        result = result + "<hr>";
+        result = result + "<hr/>";
         return result;
     }
 
@@ -541,9 +540,10 @@ public class ProviderUtil {
             if (hasValue) {
                 result = result + "<dd><input name=\"" + parameter + "\" value =\"" +
                     parameterValue + "\" type=\"" + parameterType + "\" disabled=\"disabled\"></dd>";
-            } else {
+            } else { //no value for the key, so we are in create mode, enable the entry field in the ui
                 //control should never reach here.
-            }
+                result = result + "<dd><input name=\"" + parameter + "\" type=\"" + parameterType + "\"></dd>";
+           }
         } else {
             if (isBoolean || hasAcceptableValues) {
                 //use combo box

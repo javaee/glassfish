@@ -163,7 +163,10 @@ public class TemplateResource {
     // TODO: This is wrong. Updates are done via PUT
     @POST  //update
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public Response updateEntity(HashMap<String, String> data) {
+    @Produces({"text/html;qs=2",
+        MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_XML})
+        public Response updateEntity(HashMap<String, String> data) {
         try {
             //data.remove("submit");
             removeAttributesToBeSkipped(data);
@@ -234,7 +237,7 @@ public class TemplateResource {
                 ConfigSupport.deleteChild(p, (ConfigBean) entity);
                 String successMessage = localStrings.getLocalString("rest.resource.delete.message",
                         "\"{0}\" deleted successfully.", new Object[]{uriInfo.getAbsolutePath()});
-                return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo); //200 - ok
+                return ResourceUtil.getDeleteResponse(200, successMessage, requestHeaders, uriInfo); //200 - ok
             } catch (TransactionFailure ex) {
                 throw new WebApplicationException(ex,
                         Response.Status.INTERNAL_SERVER_ERROR);

@@ -484,11 +484,27 @@ public class ResourceUtil {
     public static Response getResponse(int status, String message,
             HttpHeaders requestHeaders, UriInfo uriInfo){
         if(isBrowser(requestHeaders)) {
-            message = getHtml(message, uriInfo);
+            message = getHtml(message, uriInfo,false);
         }
         return Response.status(status).entity(message).build();
     }
 
+    /**
+     * special case for the delete operation: we need to give back the URI of the parent
+     * since the resource we are on is deleted
+     * @param status
+     * @param message
+     * @param requestHeaders
+     * @param uriInfo
+     * @return
+     */
+    public static Response getDeleteResponse(int status, String message,
+            HttpHeaders requestHeaders, UriInfo uriInfo){
+        if(isBrowser(requestHeaders)) {
+            message = getHtml(message, uriInfo,true);
+        }
+        return Response.status(status).entity(message).build();
+    }
 
 
     /**

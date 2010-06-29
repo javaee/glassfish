@@ -169,18 +169,21 @@ public class Util {
      * @param uriInfo the uriInfo context of the request
      * @return String the html representation of the given message
      */
-    public static String getHtml(String message, UriInfo uriInfo) {
+    protected static String getHtml(String message, UriInfo uriInfo,boolean delete) {
         String result = ProviderUtil.getHtmlHeader();
         String uri = uriInfo.getAbsolutePath().toString();
+        if (delete){
+            uri=uri+"/..";
+        }
         String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
         String parentName =
                upperCaseFirstLetter(eleminateHypen(getParentName(uri)));
 
         result = result + "<h1>" + name + "</h1>";
-        result = result + message + "<br><br>";
-        result = result + "<a href=\"" + uri + "\">Back</a><br>";
+        result = result + message ;//+ "<br><br>";
+        result = result + "<a href=\"" + uri + "\">Back</a>";
 
-        result = "<div>" + result + "</div>" + "<br>";
+      //  result =  result +  "<br>";
         result = result + "</body></html>";
         return result;
     }
