@@ -34,19 +34,24 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.cluster;
+package com.sun.enterprise.v3.admin.cluster;
 
 
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.util.cluster.InstanceInfo;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.PostConstruct;
 
 import java.util.List;
+import java.util.LinkedList;
+import java.util.logging.Logger;
 
 /**
  *  This is a remote command that lists the clusters.
@@ -56,16 +61,40 @@ import java.util.List;
  */
 @Service(name = "list-clusters")
 @Scoped(PerLookup.class)
-public final class ListClustersCommand implements AdminCommand {
+public final class ListClustersCommand implements AdminCommand, PostConstruct {
 
     @Inject
     Domain domain;
 
+    @Inject
+    private ServerEnvironment env;
+
+    @Inject
+    private Servers servers;
+
+    @Inject
+    private Configs configs;
+
+    private RemoteInstanceCommandHelper helper;
+
+    private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
+
     private static final String NONE = "Nothing to list.";
+
+
+    private static final String RUNNING = "running";
+    private static final String NOT_RUNNING = "not running";
+    private static final String PARTIALLY_RUNNING = "partially running";
+
+     @Override
+    public void postConstruct() {
+        helper = new RemoteInstanceCommandHelper(env, servers, configs);
+    }
 
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        Logger logger = context.getLogger();
 
         Clusters clusters = domain.getClusters();
         List<Cluster> clusterList = clusters.getCluster();
@@ -74,8 +103,42 @@ public final class ListClustersCommand implements AdminCommand {
             sb.append(NONE);
         }
 
+        boolean atleastOneInstanceRunning = false ;
+        boolean allInstancesRunning = true;
+        int timeoutInMsec = 2000;
+
+        //List the cluster and also the state
+        //A cluster is a three-state entity and
+        //list-cluster should return one of the following:
+
+        //running (all instances running)
+        //not running (no instance running)
+        //partially running (at least 1 instance is not running)
+
         for (Cluster cluster : clusterList) {
-            sb.append(cluster.getName()).append('\n');
+            List<Server> servers = cluster.getInstances();
+            for (Server server:servers) {
+                String name = server.getName();
+                if (name != null) {
+                    InstanceInfo ii = new InstanceInfo(
+                        name, helper.getAdminPort(server), helper.getHost(server), logger, timeoutInMsec);
+                    infos.add(ii);
+
+                    allInstancesRunning &= ii.isRunning();
+                    if (ii.isRunning()) {
+                        atleastOneInstanceRunning = true;
+                    }
+
+                }
+                
+            }
+            String state = "";
+            if (allInstancesRunning && atleastOneInstanceRunning){
+                state = RUNNING;
+            }  else if (!allInstancesRunning && !(atleastOneInstanceRunning)) {
+                state = NOT_RUNNING;
+            }  else state = PARTIALLY_RUNNING;
+            sb.append(cluster.getName()).append(' ' ).append(state).append('\n');
 
         }
         report.addSubActionsReport().setMessage(sb.toString() );
