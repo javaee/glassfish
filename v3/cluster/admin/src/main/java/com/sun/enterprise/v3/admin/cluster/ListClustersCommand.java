@@ -121,7 +121,8 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
                 String name = server.getName();
                 if (name != null) {
                     InstanceInfo ii = new InstanceInfo(
-                        name, helper.getAdminPort(server), helper.getHost(server), logger, timeoutInMsec);
+                        name, helper.getAdminPort(server), helper.getHost(server), 
+                        cluster.getName(), logger, timeoutInMsec);
                     infos.add(ii);
 
                     allInstancesRunning &= ii.isRunning();
