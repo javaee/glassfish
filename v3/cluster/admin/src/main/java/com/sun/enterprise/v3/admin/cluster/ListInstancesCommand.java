@@ -82,14 +82,11 @@ public class ListInstancesCommand implements AdminCommand {
     private boolean standaloneonly;
     @Param(optional = true, defaultValue = "false")
     private boolean nostatus;
-    @Param(optional = true, primary = true)
+    @Param(optional = true, primary = true, defaultValue = "domain")
     String target;
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
     private List<Server> serverList;
     private ActionReport report;
-// if showDas is true then they entered the string "server" as the target
-    // this is weird but stipulated by IT 12104
-    private boolean showDas = false;
 
     @Override
     public void execute(AdminCommandContext context) {
@@ -105,7 +102,8 @@ public class ListInstancesCommand implements AdminCommand {
         report = context.getActionReport();
         Logger logger = context.getLogger();
 
-        validateParams();
+        if (!validateParams())
+            return;
 
         serverList = createServerList();
 
@@ -142,7 +140,7 @@ public class ListInstancesCommand implements AdminCommand {
 
                 String name = server.getName();
 
-                if (showDas || notDas(name))
+                if (notDas(name))
                     report.addSubActionsReport().setMessage(name);
             }
     }
@@ -166,7 +164,7 @@ public class ListInstancesCommand implements AdminCommand {
                 continue;   // can this happen?!?
 
             // skip DAS maybe
-            if (showDas || notDas(name)) {
+            if (notDas(name)) {
                 InstanceInfo ii = new InstanceInfo(
                         name, helper.getAdminPort(server), helper.getHost(server),
                         logger, timeoutInMsec);
@@ -195,9 +193,6 @@ public class ListInstancesCommand implements AdminCommand {
         // 1. no target specified
         if (!StringUtils.ok(target))
             return allServers.getServer();
-
-        if (target.equals(SystemPropertyConstants.DAS_SERVER_NAME))
-            showDas = true;
 
         // what is it?!?
         ReferenceContainer rc = domain.getReferenceContainerNamed(target);
@@ -247,6 +242,13 @@ public class ListInstancesCommand implements AdminCommand {
      * false means error
      */
     private boolean validateParams() {
+        // another sort of weird scenario is that if the target is set to "domain",
+        // that means ALL instances in the domains.  To make life easier -- we just
+        //set the target to zilch to signal all instances in domain
+
+        if ("domain".equals(target))
+            target = null;
+
         // standaloneonly AND a target are mutually exclusive
         if (standaloneonly && StringUtils.ok(target)) {
             fail(Strings.get("list.instances.targetWithStandaloneOnly"));
@@ -261,6 +263,15 @@ public class ListInstancesCommand implements AdminCommand {
             return false;
         }
 
+        // details details details!
+        // if the target is the weird screwy "server" then fail.
+        // TODO - we *could* show DAS status in the future but it's stupid
+        // since this command ONLY runs on DAS -- it is obviously running!!
+
+        if (!notDas(target)) {
+            fail(Strings.get("list.instances.serverTarget"));
+            return false;
+        }
         return true;
     }
 
