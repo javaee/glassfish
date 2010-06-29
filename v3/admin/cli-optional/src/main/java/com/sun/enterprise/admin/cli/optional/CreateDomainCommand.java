@@ -161,10 +161,12 @@ public final class CreateDomainCommand extends CLICommand {
 
     public CreateDomainCommand() {
         masterPasswordOption = new ParamModelData(MASTER_PASSWORD,
-                        String.class, false, strings.get("MasterPassword"));
+                        String.class, false, null);
+        masterPasswordOption.description = strings.get("MasterPassword");
         masterPasswordOption.param._password = true;
         adminPasswordOption = new ParamModelData(ADMIN_PASSWORD,
-                        String.class, false, strings.get("AdminPassword"));
+                        String.class, false, null);
+        adminPasswordOption.description = strings.get("AdminPassword");
         adminPasswordOption.param._password = true;
     }
 
