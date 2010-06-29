@@ -196,11 +196,10 @@ public class ListInstancesCommand implements AdminCommand {
         if (!StringUtils.ok(target))
             return allServers.getServer();
 
-        // what is it?!?
         ReferenceContainer rc = domain.getReferenceContainerNamed(target);
-        // 2. the name of a node
+        // 2. Not a server or a cluster. Could be a config or a Node
         if (rc == null) {
-            return getServersForNode(target);
+            return getServersForNodeOrConfig();
         }
         else if (rc.isServer()) {
             List<Server> l = new LinkedList<Server>();
@@ -215,7 +214,19 @@ public class ListInstancesCommand implements AdminCommand {
             return null;
     }
 
-    private List<Server> getServersForNode(String nodeName) {
+    private List<Server> getServersForNodeOrConfig() {
+        if (target == null)
+            throw new NullPointerException("impossible!");
+
+        List<Server> list = getServersForNode();
+
+        if (list == null)
+            list = getServersForConfig();
+
+        return list;
+    }
+
+    private List<Server> getServersForNode() {
         boolean foundNode = false;
         Nodes nodes = domain.getNodes();
 
@@ -223,7 +234,7 @@ public class ListInstancesCommand implements AdminCommand {
             List<Node> nodeList = nodes.getNode();
             if (nodeList != null) {
                 for (Node node : nodeList) {
-                    if (nodeName.equals(node.getName())) {
+                    if (target.equals(node.getName())) {
                         foundNode = true;
                         break;
                     }
@@ -235,6 +246,23 @@ public class ListInstancesCommand implements AdminCommand {
         else
             return domain.getInstancesOnNode(target);
     }
+
+    private List<Server> getServersForConfig() {
+        Config config = domain.getConfigNamed(target);
+
+        if (config == null)
+            return null;
+
+        List<ReferenceContainer> rcs = domain.getReferenceContainersOf(config);
+        List<Server> servers = new LinkedList<Server>();
+
+        for (ReferenceContainer rc : rcs)
+            if(rc.isServer())
+                servers.add((Server)rc);
+
+        return servers;
+    }
+
     // these are all not localized because REST etc. depends on them.
     private static final String NONE = "Nothing to list.";
     private static final String RUNNING = "running";
