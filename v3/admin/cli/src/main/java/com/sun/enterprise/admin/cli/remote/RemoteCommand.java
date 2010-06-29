@@ -329,7 +329,7 @@ public class RemoteCommand extends CLICommand {
             output = rac.executeCommand(options);
             if (returnAttributes)
                 attrs = rac.getAttributes();
-            if (!returnOutput)
+            else if (!returnOutput)
                 logger.printMessage(output);
         } catch (CommandException ex) {
             // if a --help request failed, try to emulate it locally
