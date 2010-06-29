@@ -212,4 +212,9 @@ public interface Deployment {
     public List<Sniffer> prepareSniffersForOSGiDeployment(String type, DeploymentContext context);
 
     public ParameterMap prepareInstanceDeployParamMap(DeploymentContext dc) throws Exception;
+
+    public void validateDeploymentTarget(String target, String name,
+        boolean isRedeploy);
+
+    public void validateUndeploymentTarget(String target, String name);
 }

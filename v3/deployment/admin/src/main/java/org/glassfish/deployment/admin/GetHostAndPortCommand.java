@@ -42,11 +42,12 @@ import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.util.HostAndPort;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.StringUtils;
@@ -81,6 +82,9 @@ public class GetHostAndPortCommand implements AdminCommand {
     @Inject
     Configs configs;
 
+    @Inject 
+    Domain domain;
+
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(GetHostAndPortCommand.class);    
 
     public void execute(AdminCommandContext context) {
@@ -93,12 +97,19 @@ public class GetHostAndPortCommand implements AdminCommand {
         HostAndPort hostAndPort = null;
 
         try {
-            Server server = ConfigBeansUtilities.getServerNamed(target);
-            if (server == null) {
-                throw new Exception("Target : " + target + 
-                    " does not exist");
+            String configName = null;
+            Server server = domain.getServerNamed(target);
+            if (server != null) {
+                configName = server.getConfigRef();
+            } else {
+                Cluster cluster = domain.getClusterNamed(target);
+                if (cluster == null) {
+                     throw new Exception("No such target:" + target);   
+                }
+                configName = cluster.getConfigRef();
+                
             }
-            Config config = configs.getConfigByName(server.getConfigRef());
+            Config config = configs.getConfigByName(configName);
 
             httpService = config.getHttpService();
 
@@ -134,8 +145,8 @@ public class GetHostAndPortCommand implements AdminCommand {
             }
         }
 
-        ApplicationRef appRef = ConfigBeansUtilities.getApplicationRefInServer(
-            target, moduleId); 
+        ApplicationRef appRef = domain.getApplicationRefInTarget(
+            moduleId, target); 
 
         if (appRef == null) {
             throw new Exception("Application : " + moduleId + 

@@ -144,6 +144,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     private File safeCopyOfApp = null;
     private File safeCopyOfDeploymentPlan = null;
     private File originalPathValue;
+    private boolean isRedeploy = false;
 
     public DeployCommand() {
         origin = Origin.deploy;
@@ -212,6 +213,10 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             } else {
                 DeploymentUtils.validateApplicationName(name);
             }
+
+            boolean isRegistered = deployment.isRegistered(name);
+            isRedeploy = isRegistered && force;
+            deployment.validateDeploymentTarget(target, name, isRedeploy);
 
             if(enabled){
                 // try to disable the enabled version, if exist
@@ -458,14 +463,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
      */
     private Properties handleRedeploy(final String name, final ActionReport report)
         throws Exception {
-        boolean isRegistered = deployment.isRegistered(name);
-        if (isRegistered && !force) {
-            String msg = localStrings.getLocalString(
-                "application.alreadyreg.redeploy",
-                "Application with name {0} is already registered. Either specify that redeployment must be forced, or redeploy the application. Or if this is a new deployment, pick a different name.", name);
-            throw new Exception(msg);
-        }
-        else if (isRegistered && force) 
+        if (isRedeploy) 
         {
             //preserve settings first before undeploy
             Application app = apps.getModule(Application.class, name);

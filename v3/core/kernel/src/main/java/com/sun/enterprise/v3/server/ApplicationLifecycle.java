@@ -1442,5 +1442,39 @@ public class ApplicationLifecycle implements Deployment {
 
         return paramMap;
     }
+
+    public void validateDeploymentTarget(String target, String name, 
+        boolean isRedeploy) {
+        List<String> referencedTargets = domain.getAllReferencedTargetsForApplication(name);
+        if (referencedTargets.isEmpty()) {
+            return;
+        }
+        if (!isRedeploy) { 
+            if (referencedTargets.size() == 1 && 
+                referencedTargets.contains(target)) {
+                throw new IllegalArgumentException(localStrings.getLocalString("application.alreadyreg.redeploy", "Application with name {0} is already registered. Either specify that redeployment must be forced, or redeploy the application. Or if this is a new deployment, pick a different name.", name));
+            } else {
+                throw new IllegalArgumentException(localStrings.getLocalString("use.create_app_ref", "Application {0} is already referenced by other target(s). Please use create application ref to create application reference on target {1}.", name, target));
+            }
+        } else {
+            if (referencedTargets.size() == 1 && 
+                referencedTargets.contains(target)) {
+                return;
+            } else {
+                if (!target.equals("domain")) {
+                    throw new IllegalArgumentException(localStrings.getLocalString("redeploy_on_multiple_targets", "Application {0} is referenced by more than one targets. Please remove all references or specify all targets (or domain target if using asadmin command line) before attempting redeploy operation.", name)); 
+                }
+            } 
+        }
+    }
+
+    public void validateUndeploymentTarget(String target, String name) {
+        List<String> referencedTargets = domain.getAllReferencedTargetsForApplication(name);
+        if (referencedTargets.size() > 1) {
+            if (!target.equals("domain")) {
+                throw new IllegalArgumentException(localStrings.getLocalString("undeploy_on_multiple_targets", "Application {0} is referenced by more than one targets. Please remove all references or specify all targets (or domain target if using asadmin command line) before attempting undeploy operation.", name)); 
+            }
+        }
+    }
 }
 

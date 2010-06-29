@@ -41,15 +41,17 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.Service;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.admin.config.ApplicationName;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import java.util.List;
 
@@ -66,6 +68,12 @@ public class ListAppRefsCommand implements AdminCommand {
     @Param(optional=true, defaultValue="all")
     String state;
 
+    @Inject 
+    Domain domain;
+
+    @Inject
+    Applications applications;
+
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListAppRefsCommand.class);    
 
     public void execute(AdminCommandContext context) {
@@ -76,7 +84,7 @@ public class ListAppRefsCommand implements AdminCommand {
         part.setMessage(target);
         part.setChildrenType("application");
         List<ApplicationRef> appRefs = 
-            ConfigBeansUtilities.getApplicationRefsInServer(target);
+            domain.getApplicationRefsInTarget(target);
         for (ApplicationRef appRef : appRefs) {
             if (state.equals("all") || 
                (state.equals("running") && 
@@ -98,11 +106,7 @@ public class ListAppRefsCommand implements AdminCommand {
             return true;
         }
 
-        ApplicationName ApplicationName = ConfigBeansUtilities.getModule(name);
-        Application app = null;
-        if (ApplicationName instanceof Application) {
-            app = (Application) ApplicationName;
-        }
+        Application app = applications.getApplication(name);
         if (app != null) {
             if (!app.isStandaloneModule()) {
                 if (type.equals("ear")) {
