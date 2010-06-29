@@ -163,11 +163,13 @@ public class ListInstancesCommand implements AdminCommand {
             if (name == null)
                 continue;   // can this happen?!?
 
-            // skip DAS maybe
+            Cluster cluster = domain.getClusterForInstance(name);
+            String clusterName = (cluster != null) ? cluster.getName() : null;
+            // skip DAS
             if (notDas(name)) {
                 InstanceInfo ii = new InstanceInfo(
                         name, helper.getAdminPort(server), helper.getHost(server),
-                        logger, timeoutInMsec);
+                        clusterName, logger, timeoutInMsec);
                 infos.add(ii);
             }
         }

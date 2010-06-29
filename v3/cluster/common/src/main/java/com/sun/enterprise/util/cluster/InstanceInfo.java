@@ -36,6 +36,7 @@
 package com.sun.enterprise.util.cluster;
 
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
+import com.sun.enterprise.util.StringUtils;
 import java.util.*;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.CommandException;
@@ -48,7 +49,8 @@ import org.glassfish.api.admin.ParameterMap;
  */
 public final class InstanceInfo {
 
-    public InstanceInfo(String name0, int port0, String host0, Logger logger0, int timeout0) {
+    public InstanceInfo(String name0, int port0, String host0, String cluster0,
+            Logger logger0, int timeout0) {
         if (name0 == null || host0 == null)
             throw new NullPointerException("null arguments");
 
@@ -58,50 +60,70 @@ public final class InstanceInfo {
         logger = logger0;
         state = pingInstance();
         timeoutInMsec = timeout0;
+
+        if (!StringUtils.ok(cluster0))
+            cluster = null;
+        else
+            cluster = cluster0;
     }
 
     @Override
     public final String toString() {
+        String cl = "";
+
+        if (cluster != null)
+            cl = ", cluster: " + getCluster();
+
         return "name: " + getName()
                 + ", host: " + getHost()
                 + ", port: " + getPort()
+                + cl
                 + ", state: " + state;
     }
 
-    public String getHost() {
+    public final String getDisplayCluster() {
+        return cluster == null ? NO_CLUSTER : cluster;
+    }
+
+    public final String getCluster() {
+        return cluster;
+    }
+
+    public final String getHost() {
         return host;
     }
 
-    public int getPort() {
+    public final int getPort() {
         return port;
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public String getState() {
+    public final String getState() {
         return state;
     }
 
-    public boolean isRunning() {
+    public final boolean isRunning() {
         return running;
     }
 
     /////////////////////////////////////////////////////////////////////////
     ////////  static formatting stuff below   ///////////////////////////////
     /////////////////////////////////////////////////////////////////////////
-
     public static String format(List<InstanceInfo> infos) {
         int longestName = NAME.length();
         int longestHost = HOST.length();
         int longestState = STATE.length();
         int longestPort = PORT.length();
+        int longestCluster = CLUSTER.length();
 
         for (InstanceInfo info : infos) {
             int namel = info.getName().length();
             int hostl = info.getHost().length();
             int statel = info.getState().length();
+            int clusterl = info.getDisplayCluster().length();
 
             if (namel > longestName)
                 longestName = namel;
@@ -109,6 +131,8 @@ public final class InstanceInfo {
                 longestHost = hostl;
             if (statel > longestState)
                 longestState = statel;
+            if (clusterl > longestCluster)
+                longestCluster = clusterl;
         }
 
         // we could truncate to fit in 80 characters -- but that gets very complex.
@@ -118,27 +142,40 @@ public final class InstanceInfo {
         longestHost += 2;
         longestState += 2;
         longestPort += 2;
+        longestCluster += 2;
         StringBuilder sb = new StringBuilder();
 
-        String formattedLine = "%-" + longestName + "s %-" + longestHost
-                + "s %-" + longestPort + "s %-" + longestState + "s";
+        String formattedLine =
+                "%-" + longestName
+                + "s %-" + longestHost
+                + "s %-" + longestPort
+                + "s %-" + longestCluster
+                + "s %-" + longestState
+                + "s";
 
-        sb.append(String.format(formattedLine, NAME, HOST, PORT, STATE));
+        sb.append(String.format(formattedLine, NAME, HOST, PORT, CLUSTER, STATE));
         sb.append('\n');
-        for(int i = 0; i < longestName; i++) sb.append('-');
+        for (int i = 0; i < longestName; i++)
+            sb.append('-');
         sb.append('|');
-        for(int i = 0; i < longestHost; i++) sb.append('-');
+        for (int i = 0; i < longestHost; i++)
+            sb.append('-');
         sb.append('|');
-        for(int i = 0; i < longestPort; i++) sb.append('-');
+        for (int i = 0; i < longestPort; i++)
+            sb.append('-');
         sb.append('|');
-        for(int i = 0; i < longestState; i++) sb.append('-');
+        for (int i = 0; i < longestCluster; i++)
+            sb.append('-');
+        sb.append('|');
+        for (int i = 0; i < longestState; i++)
+            sb.append('-');
         sb.append('|');
         sb.append('\n');
 
         // no linefeed at the end!!!
         boolean first = true;
         for (InstanceInfo info : infos) {
-            if(first)
+            if (first)
                 first = false;
             else
                 sb.append('\n');
@@ -146,7 +183,7 @@ public final class InstanceInfo {
             String portString = "   " + info.getPort();
 
             sb.append(String.format(formattedLine, info.getName(),
-                    info.getHost(), portString, info.getState()));
+                    info.getHost(), portString, " " + info.getDisplayCluster(), info.getState()));
         }
 
         return sb.toString();
@@ -201,12 +238,12 @@ public final class InstanceInfo {
 
         return null;
     }
-
-    private String host;
-    private int port;
-    private String name;
-    private String state;
-    private Logger logger;
+    private final String host;
+    private final int port;
+    private final String name;
+    private final String state;
+    private final String cluster;
+    private final Logger logger;
     private final int timeoutInMsec;
     private boolean running;
     private static final String NOT_RUNNING = Strings.get("ListInstances.NotRunning");
@@ -214,4 +251,6 @@ public final class InstanceInfo {
     private static final String HOST = Strings.get("ListInstances.host");
     private static final String PORT = Strings.get("ListInstances.port");
     private static final String STATE = Strings.get("ListInstances.state");
+    private static final String CLUSTER = Strings.get("ListInstances.cluster");
+    private static final String NO_CLUSTER = "---";
 }
