@@ -37,18 +37,22 @@
 package com.sun.enterprise.v3.admin.commands;
 
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 
 import com.sun.grizzly.config.dom.ThreadPool;
-import com.sun.enterprise.config.serverbeans.ThreadPools;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.List;
@@ -62,10 +66,19 @@ import java.util.List;
 @Service(name="list-threadpools")
 @Scoped(PerLookup.class)
 @I18n("list.threadpools")
+@Cluster(RuntimeType.DAS)
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class ListThreadpools implements AdminCommand {
 
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
+
     @Inject
-    ThreadPools threadPools;
+    Domain domain;
+
+    @Param(name = "target", primary = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    String target;
+    
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ListThreadpools.class);
 
@@ -77,6 +90,16 @@ public class ListThreadpools implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
+
+        ThreadPools threadPools = config.getThreadPools();
         try {
         List<ThreadPool> poolList = threadPools.getThreadPool();
         for (ThreadPool pool : poolList) {

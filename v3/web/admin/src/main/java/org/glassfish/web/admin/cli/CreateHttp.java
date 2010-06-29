@@ -39,6 +39,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.Protocol;
@@ -46,9 +47,9 @@ import com.sun.grizzly.config.dom.Protocols;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.*;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -72,6 +73,8 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name = "create-http")
 @Scoped(PerLookup.class)
 @I18n("create.http")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class CreateHttp implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CreateHttp.class);
@@ -91,7 +94,7 @@ public class CreateHttp implements AdminCommand {
     String serverName;
     @Param(name = "xpowered", optional = true, defaultValue = "true")
     Boolean xPoweredBy = false;
-    @Param(name = "target", optional = true, defaultValue = "server")
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;

@@ -39,12 +39,14 @@ package com.sun.enterprise.v3.admin.commands;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -53,11 +55,7 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Configs;
-
 import com.sun.grizzly.config.dom.ThreadPool;
-import com.sun.enterprise.config.serverbeans.ThreadPools;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
@@ -69,6 +67,8 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 @Service(name="create-threadpool")
 @Scoped(PerLookup.class)
 @I18n("create.threadpool")
+@org.glassfish.api.admin.Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 
 public class CreateThreadpool implements AdminCommand {
 
@@ -90,16 +90,20 @@ public class CreateThreadpool implements AdminCommand {
     @Param(name="maxqueuesize", optional=true)
     String maxQueueSize;
 
-    @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
-
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    String target;
+    
     @Param(name="threadpool_id", primary=true)
     String threadpool_id;
+    
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
     @Inject
     Configs configs;
 
-
+    @Inject
+    Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -110,9 +114,14 @@ public class CreateThreadpool implements AdminCommand {
 
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-
-        List<Config> configList = configs.getConfig();
-        Config config = configList.get(0);
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         ThreadPools threadPools = config.getThreadPools();
 
         for (ThreadPool pool: threadPools.getThreadPool()) {

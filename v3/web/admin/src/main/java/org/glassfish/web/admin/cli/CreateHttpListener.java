@@ -46,6 +46,7 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
@@ -61,6 +62,8 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -77,7 +80,8 @@ import org.jvnet.hk2.config.Transactions;
 @Service(name = "create-http-listener")
 @Scoped(PerLookup.class)
 @I18n("create.http.listener")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})  
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class CreateHttpListener implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateHttpListener.class);
     @Param(name = "listeneraddress")
@@ -104,7 +108,7 @@ public class CreateHttpListener implements AdminCommand {
     Boolean secure; //FIXME
     @Param(name = "listener_id", primary = true)
     String listenerId;
-    @Param(name = "target", optional = true, defaultValue = "server")
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;

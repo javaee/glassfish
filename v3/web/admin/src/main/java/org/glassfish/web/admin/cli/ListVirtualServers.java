@@ -43,6 +43,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.api.I18n;
@@ -52,6 +53,8 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -62,11 +65,12 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service(name = "list-virtual-servers")
 @Scoped(PerLookup.class)
-@I18n("list.virtual.servers")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@I18n("list.virtual.servers")  
+@Cluster(RuntimeType.DAS)
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class ListVirtualServers implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListVirtualServers.class);
-    @Param(name = "target", optional = true, defaultValue = "server")
+    @Param(name = "target", primary = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;

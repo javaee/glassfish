@@ -36,11 +36,9 @@
 
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.config.serverbeans.IiopListener;
-import com.sun.enterprise.config.serverbeans.IiopService;
-import com.sun.enterprise.config.serverbeans.Configs;
-import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.config.dom.NetworkConfig;
@@ -48,8 +46,10 @@ import com.sun.grizzly.config.dom.Protocol;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.*;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -74,6 +74,8 @@ import java.util.List;
 @Service(name="delete-ssl")
 @Scoped(PerLookup.class)
 @I18n("delete.ssl")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class DeleteSsl implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteSsl.class);
@@ -84,14 +86,23 @@ public class DeleteSsl implements AdminCommand {
     @Param(name="listener_id", primary=true, optional=true)
     String listenerId;
 
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    String target;
+
     @Inject
     NetworkListeners networkListeners;
 
     @Inject
     IiopService iiopService;
+    
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
     @Inject
     Configs configs;
+    
+    @Inject
+    Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -101,6 +112,14 @@ public class DeleteSsl implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
 
         if (!type.equals("iiop-service")) {
             if (listenerId == null) {

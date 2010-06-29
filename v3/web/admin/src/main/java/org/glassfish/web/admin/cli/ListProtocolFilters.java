@@ -40,6 +40,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.config.dom.ProtocolChain;
 import com.sun.grizzly.config.dom.ProtocolFilter;
@@ -48,7 +49,10 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -60,10 +64,12 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "list-protocol-filters")
 @Scoped(PerLookup.class)
 @I18n("list.protocol.filters")
+@org.glassfish.api.admin.Cluster(RuntimeType.DAS)
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class ListProtocolFilters implements AdminCommand {
     final private static LocalStringManagerImpl localStrings
         = new LocalStringManagerImpl(ListProtocolFilters.class);
-    @Param(name = "target", optional = true, defaultValue = "server")
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
     @Param(name = "protocol", primary=true)
     String protocolName;

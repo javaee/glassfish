@@ -39,12 +39,14 @@ package com.sun.enterprise.v3.admin.commands;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -54,13 +56,9 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Configs;
-
 import com.sun.grizzly.config.dom.ThreadPool;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.Protocol;
-import com.sun.enterprise.config.serverbeans.ThreadPools;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport.ExitCode;
@@ -68,6 +66,8 @@ import org.glassfish.api.ActionReport.ExitCode;
 @Service(name="delete-threadpool")
 @Scoped(PerLookup.class)
 @I18n("delete.threadpool")
+@org.glassfish.api.admin.Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class DeleteThreadpool implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings =
@@ -76,11 +76,17 @@ public class DeleteThreadpool implements AdminCommand {
     @Param(name="threadpool_id", primary=true)
     String threadpool_id;
 
-    @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    String target;
+    
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
     @Inject
     Configs configs;
+
+    @Inject
+    Domain domain;
 
     @Inject
     Habitat habitat;
@@ -94,8 +100,14 @@ public class DeleteThreadpool implements AdminCommand {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
 
-        List<Config> configList = configs.getConfig();
-        Config config = configList.get(0);
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         ThreadPools threadPools = config.getThreadPools();
 
         if(!isThreadPoolExists(threadPools)) {

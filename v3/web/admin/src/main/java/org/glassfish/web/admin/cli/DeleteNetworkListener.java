@@ -42,6 +42,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
 import org.glassfish.api.ActionReport;
@@ -52,6 +53,8 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -69,12 +72,13 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Scoped(PerLookup.class)
 @I18n("delete.network.listener")
 @Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class DeleteNetworkListener implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(DeleteNetworkListener.class);
     @Param(name = "networkListenerName", primary = true)
     String networkListenerName;
-    @Param(name = "target", optional = true, defaultValue = "server")
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
     NetworkListener listenerToBeRemoved = null;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)

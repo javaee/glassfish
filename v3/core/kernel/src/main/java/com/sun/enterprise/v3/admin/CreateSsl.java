@@ -38,12 +38,9 @@ package com.sun.enterprise.v3.admin;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Configs;
-import com.sun.enterprise.config.serverbeans.IiopListener;
-import com.sun.enterprise.config.serverbeans.IiopService;
-import com.sun.enterprise.config.serverbeans.SslClientConfig;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.Protocol;
@@ -52,8 +49,10 @@ import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.*;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -78,6 +77,8 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name = "create-ssl")
 @Scoped(PerLookup.class)
 @I18n("create.ssl")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class CreateSsl implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CreateSsl.class);
@@ -99,12 +100,16 @@ public class CreateSsl implements AdminCommand {
     Boolean tlsrollbackenabled;
     @Param(name = "clientauthenabled", optional = true, defaultValue = "true")
     Boolean clientauthenabled;
-    @Param(optional = true)
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
     @Param(name = "listener_id", primary = true, optional = true)
     String listenerId;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
     @Inject
     Configs configs;
+    @Inject
+    Domain domain;
     @Inject
     Habitat habitat;
 
@@ -116,6 +121,14 @@ public class CreateSsl implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         if (!"iiop-service".equals(type)) {
             if (listenerId == null) {
                 report.setMessage(localStrings.getLocalString("create.ssl.listenerid.missing",
@@ -124,8 +137,6 @@ public class CreateSsl implements AdminCommand {
                 return;
             }
         }
-        List<Config> configList = configs.getConfig();
-        Config config = configList.get(0);
         if ("http-listener".equals(type) || "network-listener".equals(type)) {
             addSslToNetworkListener(config, report);
         } else if ("iiop-listener".equals(type)) {

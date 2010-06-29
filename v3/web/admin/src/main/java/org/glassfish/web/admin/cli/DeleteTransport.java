@@ -42,6 +42,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.Transport;
@@ -51,7 +52,10 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -67,6 +71,8 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name="delete-transport")
 @Scoped(PerLookup.class)
 @I18n("delete.transport")
+@org.glassfish.api.admin.Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class DeleteTransport implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings =
@@ -77,7 +83,7 @@ public class DeleteTransport implements AdminCommand {
 
     Transport transportToBeRemoved = null;
 
-    @Param(name = "target", optional = true, defaultValue = "server")
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
 
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
