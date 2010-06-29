@@ -70,6 +70,8 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     private static final String DEFAULT_NODE = "localhost";
     private static final String LOCAL_HOST = "localhost";
     private static final String NL = System.getProperty("line.separator");
+    private ParameterMap map;
+
 
     @Inject
     private CommandRunner cr;
@@ -196,34 +198,39 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     }
 
     private void createInstanceRemote() {
-            RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodeList, logger, helper.getHost(instance), helper.getAdminPort(instance));
-            ActionReport report = ctx.getActionReport();
-            // check if needs a remote connection
-            if (rch.isRemoteConnectRequired(node)) {
+        int dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
+        String dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
+        RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodeList, logger, dasHost, dasPort);
+        ActionReport report = ctx.getActionReport();
+        // check if needs a remote connection
+        if (rch.isRemoteConnectRequired(node)) {
                 // this command will run over ssh
-                StringBuilder output = new StringBuilder();
-                int status = rch.runCommand(node, "_create-instance-filesystem",
-                        instance, output);
-                if (output.length() > 0) {
-                    logger.info(output.toString());
+            StringBuilder output = new StringBuilder();
+            ParameterMap map = new ParameterMap();
+            map.set("DEFAULT", instance);
+                
+            int status = rch.runCommand(node, "_create-instance-filesystem",
+                        map, output);
+            if (output.length() > 0) {
+                logger.info(output.toString());
+            }
+            if (status != 1){
+                String msg = Strings.get("create.instance.failed", instance);
+                logger.warning(msg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(output.toString() + NL + msg);
                 }
-                if (status != 1){
-                    String msg = Strings.get("create.instance.failed", instance);
-                    logger.warning(msg);
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(output.toString() + NL + msg);
-                }
-            } else {
+        } else {
                 // Could not reach the node via SSH
-                String msg = Strings.get("mustRunLocal",
+            String msg = Strings.get("mustRunLocal",
                         getHostFromNodeName(node), node,
                         "asadmin create-local-instance --filesystemonly " + instance);
-                logger.warning(msg);
-                report.setActionExitCode(ActionReport.ExitCode.WARNING);
-                report.setMessage(msg);
+            logger.warning(msg);
+            report.setActionExitCode(ActionReport.ExitCode.WARNING);
+            report.setMessage(msg);
 
-                // print the command that suer must excute on the remote host
-            }
+                // print the command that user must excute on the remote host
+        }
     }
 
 }

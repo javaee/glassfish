@@ -40,13 +40,14 @@ import java.io.OutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
-import java.util.Iterator;
 import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.glassfish.api.admin.ParameterMap;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.config.serverbeans.Nodes;
@@ -78,7 +79,7 @@ public class RemoteConnectHelper  {
             nodeMap.put(n.getName(), n);
         }        
         this.dasHost=dasHost;
-        this.dasPort=4848;
+        this.dasPort=dasPort;
 
     }
 
@@ -102,7 +103,7 @@ public class RemoteConnectHelper  {
     }
     // need to get the command options that were specified too
 
-    public int runCommand(String noderef, String cmd, String instanceName,
+    public int runCommand(String noderef, String cmd, final ParameterMap parameters,
             StringBuilder outputString ) {
 
         //get the node ref and see if ssh connection is setup if so use it
@@ -124,21 +125,34 @@ public class RemoteConnectHelper  {
                 sshL.init(node, logger);
 
                 // create command and params
-
-                this.dasHost = System.getProperty(
-                    SystemPropertyConstants.HOST_NAME_PROPERTY);
-                // XXX Hack. Need to get real admin port
-                this.dasPort = 4848;
-
-                
-                String command = cmd + " " + instanceName;
+                String command =new String();
 
                 // We always pass the DAS host and port to the asadmin
                 // command we are running because some local commands like
-                // _create-instance-filesystem use them
-                String prefix = nodeHome +"/bin/asadmin " +
+
+                
+                String prefix = nodeHome +"/bin/asadmin " + cmd +
                         " --host " + dasHost + " --port " + dasPort + " ";
 
+                 //get the params for the command
+                // we don't validate since called by other commands directly
+
+                for (Map.Entry<String,List<String>> entry : parameters.entrySet()) {
+                    String key = entry.getKey();
+                    String value = parameters.getOne(key);
+                    
+                    if (key.equals("DEFAULT") ) {
+                        command = command +" " +value;
+                        continue;
+                    }
+
+                    // help and Xhelp are meta-options that are handled specially
+                    if (key.equals("help")) {
+                        continue;
+                    }
+
+                    command = command +" " +value;
+                }
                 String fullCommand = prefix + command;
 
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();

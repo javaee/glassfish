@@ -43,6 +43,7 @@ import com.sun.enterprise.util.StringUtils;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
@@ -162,13 +163,17 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
         if (noderef.equals("localhost")) {
             startInstance();
         } else {
-            RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodes, logger, helper.getHost(instance), helper.getAdminPort(instance));
+            int dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
+            String dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
+            RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodes, logger, dasHost, dasPort);
             // check if needs a remote connection
             if (rch.isRemoteConnectRequired(noderef)) {
                 // this command will run over ssh
                 StringBuilder output = new StringBuilder();
+                ParameterMap map = new ParameterMap();
+                map.set("DEFAULT", instanceName);
                 int status = rch.runCommand(noderef, "start-local-instance",
-                        instanceName, output);
+                        map, output);
                 if (output.length() > 0) {
                     logger.info(output.toString());
                 }
