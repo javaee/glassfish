@@ -171,6 +171,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                      if (rs != null) {
                           // If we are running from an existing install, copy over security files to the temp instance
                           ServerEnvironmentImpl env = habitat.getComponent(ServerEnvironmentImpl.class);
+// Can also use == server.getFileSystem().instanceRoot ==
                           EmbeddedSecurityUtil.copyConfigFiles(habitat, rs.instance_root.getAbsolutePath(), 
                                   env.getInstanceRoot().getAbsolutePath());
                      }
