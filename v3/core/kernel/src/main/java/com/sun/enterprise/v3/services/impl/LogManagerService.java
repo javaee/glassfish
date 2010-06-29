@@ -36,69 +36,47 @@
 
 package com.sun.enterprise.v3.services.impl;
 
+import com.sun.common.util.logging.LoggingConfigImpl;
+import com.sun.common.util.logging.LoggingOutputStream;
+import com.sun.common.util.logging.LoggingXMLNames;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.server.logging.FormatterDelegate;
 import com.sun.enterprise.server.logging.UniformLogFormatter;
 import com.sun.enterprise.util.EarlyLogger;
-import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
-import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.common.util.logging.LoggingOutputStream;
-import com.sun.common.util.logging.LoggingOutputStream.LoggingPrintStream;
-import com.sun.common.util.logging.LoggingXMLNames;
-import com.sun.common.util.logging.LoggingConfigImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
-
-
+import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.logging.LogDomains;
-import org.glassfish.internal.api.Init;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.api.branding.Branding;
 import org.glassfish.api.admin.FileMonitoring;
+import org.glassfish.internal.api.Init;
 import org.glassfish.internal.config.UnprocessedConfigListener;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.*;
-import com.sun.enterprise.server.logging.UniformLogFormatter;
-import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import org.jvnet.hk2.config.UnprocessedChangeEvent;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
-
+import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
-import java.io.PrintWriter;
-import java.io.FileInputStream;
-import java.util.Properties;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import java.beans.PropertyChangeEvent;
-import java.util.logging.Handler;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
-import java.util.logging.Filter;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import java.util.*;
+import java.util.logging.*;
 
 /**
  * Reinitialzie the log manager using our logging.properties file.
  *
  * @author Jerome Dochez
  * @author Carla Mott
+ * @author Naman Mehta
  */
 
 @Service
 @Scoped(Singleton.class)
-public class LogManagerService implements Init, PostConstruct, PreDestroy {   
+public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
     @Inject
     ServerEnvironmentImpl env;
@@ -106,8 +84,8 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
     @Inject
     Habitat habitat;
 
-    @Inject(optional=true)
-    Agent agent=null;
+    @Inject(optional = true)
+    Agent agent = null;
 
     @Inject
     FileMonitoring fileMonitoring;
@@ -118,26 +96,97 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
     @Inject
     UnprocessedConfigListener ucl;
 
-    final Map <String, Handler> gfHandlers = new HashMap <String,Handler>();
-    Logger logger = LogDomains.getLogger(LogManagerService.class,LogDomains.CORE_LOGGER);
-    
+    @Inject
+    Domain domain;
+
+    final Map<String, Handler> gfHandlers = new HashMap<String, Handler>();
+    Logger logger = LogDomains.getLogger(LogManagerService.class, LogDomains.CORE_LOGGER);
+
+    /*
+        Returns properties based on the DAS/Cluster/Instance
+     */
+    public Map<String, String> getLoggingProperties() throws IOException {
+
+        Server targetServer = domain.getServerNamed(env.getInstanceName());
+
+        Map<String, String> props = null;
+
+        if (targetServer != null) {
+            if (targetServer.isDas()) {
+                props = loggingConfig.getLoggingProperties();
+            } else if (targetServer.getCluster() != null) {
+                props = loggingConfig.getLoggingProperties(targetServer.getCluster().getName());
+            } else if (targetServer.isInstance()) {
+                props = loggingConfig.getLoggingProperties(env.getInstanceName());
+            } else {
+                props = loggingConfig.getLoggingProperties();
+            }
+        } else {
+            props = loggingConfig.getLoggingProperties();
+        }
+
+        return props;
+    }
+
+    /*
+        Returns logging file to be monitor during server is running.
+     */
+    public File getLoggingFile() throws IOException {
+
+        File file = null;
+
+        Server targetServer = domain.getServerNamed(env.getInstanceName());
+
+        if (targetServer != null) {
+            if (targetServer.isDas()) {
+                file = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileName);
+            } else if (targetServer.getCluster() != null) {
+                String pathForLogging = env.getConfigDirPath() + File.separator + targetServer.getCluster().getName() + "-config";
+                File dirForLogging = new File(pathForLogging);
+
+                file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+
+                if (!file.exists()) {
+                    loggingConfig.copyLoggingPropertiesFile(env.getConfigDirPath(), dirForLogging);
+                    file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+                }
+            } else if (targetServer.isInstance()) {
+                String pathForLogging = env.getConfigDirPath() + File.separator + env.getInstanceName() + "-config";
+                File dirForLogging = new File(pathForLogging);
+
+                file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+
+                if (!file.exists()) {
+                    loggingConfig.copyLoggingPropertiesFile(env.getConfigDirPath(), dirForLogging);
+                    file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+                }
+            } else {
+                file = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileName);
+            }
+        } else {
+            file = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileName);
+        }
+        return file;
+    }
+
     /**
      * Initialize the loggers
      */
     public void postConstruct() {
-        
+
         // if the system property is already set, we don't need to do anything
-        if (System.getProperty("java.util.logging.config.file")!=null) {
+        if (System.getProperty("java.util.logging.config.file") != null) {
             return;
         }
-        
-        // logging.properties nassaging.
-        final LogManager logMgr = LogManager.getLogManager();
-        File logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileName);
-        System.setProperty("java.util.logging.config.file", logging.getAbsolutePath());
-        // reset settings
 
+        // logging.properties massaging.
+        final LogManager logMgr = LogManager.getLogManager();
+        File logging = null;
+
+        // reset settings
         try {
+            logging = getLoggingFile();
+            System.setProperty("java.util.logging.config.file", logging.getAbsolutePath());
             if (!logging.exists()) {
                 Logger.getAnonymousLogger().log(Level.WARNING, logging.getAbsolutePath() + " not found, creating new file from template.");
                 String rootFolder = env.getProps().get(com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
@@ -148,23 +197,24 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                 logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileName);
             }
             logMgr.readConfiguration();
-        } catch(IOException e) {
-             logger.log(Level.SEVERE, "Cannot read logging configuration file : ", e);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Cannot read logging configuration file : ", e);
         }
 
         FormatterDelegate agentDelegate = null;
-        if (agent!=null) {
+        if (agent != null) {
             agentDelegate = new AgentFormatterDelegate(agent);
 
         }
 
         // force the ConsoleHandler to use GF formatter
-        String formatterClassname=null;
+        String formatterClassname = null;
         try {
-            Map<String,String> props = loggingConfig.getLoggingProperties();
+
+            Map<String, String> props = getLoggingProperties();
             formatterClassname = props.get("java.util.logging.ConsoleHandler.formatter");
             Class formatterClass = LogManagerService.class.getClassLoader().loadClass(formatterClassname);
-            UniformLogFormatter formatter = (UniformLogFormatter)formatterClass.newInstance();
+            UniformLogFormatter formatter = (UniformLogFormatter) formatterClass.newInstance();
             for (Handler handler : logMgr.getLogger("").getHandlers()) {
                 // only get the ConsoleHandler
                 handler.setFormatter(formatter);
@@ -173,18 +223,18 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         } catch (java.io.IOException ex) {
             logger.log(Level.WARNING, "logging.read.error", ex);
 
-        } catch (ClassNotFoundException exc){
+        } catch (ClassNotFoundException exc) {
             logger.log(Level.WARNING, "logging.formatter.load ", formatterClassname);
         } catch (Exception e) {
-           logger.log(Level.WARNING, "logging.set.formatter ", e);
+            logger.log(Level.WARNING, "logging.set.formatter ", e);
         }
 
         Collection<Handler> handlers = habitat.getAllByContract(Handler.class);
-        if (handlers!=null && handlers.size()>0) {
-            synchronized(logMgr) {
+        if (handlers != null && handlers.size() > 0) {
+            synchronized (logMgr) {
                 // I need to reset the formatter for the existing console handlers
                 Enumeration<String> loggerNames = logMgr.getLoggerNames();
-                while(loggerNames.hasMoreElements()) {
+                while (loggerNames.hasMoreElements()) {
                     String loggerName = loggerNames.nextElement();
                     logMgr.getLogger(loggerName);
                     for (Handler handler : logger.getHandlers()) {
@@ -202,54 +252,57 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         }
         // add the filter if there is one
         try {
-            Map<String,String> map = loggingConfig.getLoggingProperties();
+
+            Map<String, String> map = getLoggingProperties();
+
             String filterClassName = map.get(LoggingXMLNames.xmltoPropsMap.get("log-filter"));
             if (filterClassName != null) {
-                Filter filterClass = habitat.getComponent(java.util.logging.Filter.class,filterClassName);
+                Filter filterClass = habitat.getComponent(java.util.logging.Filter.class, filterClassName);
                 Logger rootLogger = Logger.global.getParent();
-                if (rootLogger!=null) {
-                       rootLogger.setFilter(filterClass);
+                if (rootLogger != null) {
+                    rootLogger.setFilter(filterClass);
                 }
             }
-        } catch (java.io.IOException ex){
+        } catch (java.io.IOException ex) {
 
         }
 
 
         // redirect stderr and stdout, a better way to do this
         //http://blogs.sun.com/nickstephen/entry/java_redirecting_system_out_and
-/*        Logger _ologger = LogDomains.getLogger(LogManagerService.class,LogDomains.STD_LOGGER);
-        LoggingOutputStream los = new LoggingOutputStream(_ologger, Level.INFO);
-        LoggingOutputStream.LoggingPrintStream pout = los.new  LoggingPrintStream(los);
-        System.setOut(pout);
+        /*
+                Logger _ologger = LogDomains.getLogger(LogManagerService.class,LogDomains.STD_LOGGER);
+                LoggingOutputStream los = new LoggingOutputStream(_ologger, Level.INFO);
+                LoggingOutputStream.LoggingPrintStream pout = los.new  LoggingPrintStream(los);
+                System.setOut(pout);
 
-        Logger _elogger = LogDomains.getLogger(LogManagerService.class,LogDomains.STD_LOGGER);
-        los = new LoggingOutputStream(_elogger, Level.SEVERE);
-        LoggingOutputStream.LoggingPrintStream perr = los.new  LoggingPrintStream(los);
-        System.setErr(perr);
-*/
+                Logger _elogger = LogDomains.getLogger(LogManagerService.class,LogDomains.STD_LOGGER);
+                los = new LoggingOutputStream(_elogger, Level.SEVERE);
+                LoggingOutputStream.LoggingPrintStream perr = los.new  LoggingPrintStream(los);
+                System.setErr(perr);
+             */
         LoggingOutputStream los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.INFO);
-        PrintStream pout = new PrintStream(los,true);
+        PrintStream pout = new PrintStream(los, true);
         System.setOut(pout);
 
         los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.SEVERE);
-        PrintStream perr = new PrintStream(los,true);
+        PrintStream perr = new PrintStream(los, true);
         System.setErr(perr);
 
         // finally listen to changes to the logging.properties file
-        if (logging!=null) {
+        if (logging != null) {
             fileMonitoring.monitors(logging, new FileMonitoring.FileChangeListener() {
                 public void changed(File changedFile) {
-                    synchronized(gfHandlers) {
+                    synchronized (gfHandlers) {
                         try {
 
-                            Map<String,String> props = loggingConfig.getLoggingProperties();
-                            if ( props == null)
+                            Map<String, String> props = getLoggingProperties();
+                            if (props == null)
                                 return;
                             Set<String> keys = props.keySet();
-                            for (String a : keys)   {
+                            for (String a : keys) {
                                 if (a.endsWith(".level")) {
-                                    String n = a.substring(0,a.lastIndexOf(".level"));
+                                    String n = a.substring(0, a.lastIndexOf(".level"));
                                     Level l = Level.parse(props.get(a));
                                     if (logMgr.getLogger(n) != null) {
                                         logMgr.getLogger(n).setLevel(l);
@@ -259,20 +312,19 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                                         h.setLevel(l);
                                     } else if (n.equals("java.util.logging.ConsoleHandler")) {
                                         Logger logger = Logger.global.getParent();
-                                        Handler[] h= logger.getHandlers();
-                                        for(int i=0;i<h.length;i++){
+                                        Handler[] h = logger.getHandlers();
+                                        for (int i = 0; i < h.length; i++) {
                                             String name = h[i].toString();
-                                            if(name.contains("java.util.logging.ConsoleHandler"))
+                                            if (name.contains("java.util.logging.ConsoleHandler"))
                                                 h[i].setLevel(l);
                                         }
                                     }
 
-                                }
-                                else if(a.endsWith(".file")){
+                                } else if (a.endsWith(".file")) {
                                     //check if file name was changed and send notification
-                                    if (!a.contains("${com.sun.aas.instanceRoot}/logs/server.log")){
-                                        PropertyChangeEvent pce= new PropertyChangeEvent(this,a,"${com.sun.aas.instanceRoot}/logs/server.log",props.get(a));
-                                        UnprocessedChangeEvents ucel= new UnprocessedChangeEvents(new UnprocessedChangeEvent(pce,"server log filename changed."));
+                                    if (!a.contains("${com.sun.aas.instanceRoot}/logs/server.log")) {
+                                        PropertyChangeEvent pce = new PropertyChangeEvent(this, a, "${com.sun.aas.instanceRoot}/logs/server.log", props.get(a));
+                                        UnprocessedChangeEvents ucel = new UnprocessedChangeEvents(new UnprocessedChangeEvent(pce, "server log filename changed."));
                                         List<UnprocessedChangeEvents> b = new ArrayList();
                                         b.add(ucel);
                                         ucl.unprocessedTransactedEvents(b);
@@ -281,7 +333,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
                             }
 
-                            logger.log(Level.INFO,"logging.update.levels");
+                            logger.log(Level.INFO, "logging.update.levels");
                         } catch (IOException e) {
                             logger.log(Level.SEVERE, "logging.read.error", e);
                         }
@@ -298,8 +350,8 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         // started.  Just use our own logger...
         List<EarlyLogger.LevelAndMessage> catchUp = EarlyLogger.getEarlyMessages();
 
-        if(!catchUp.isEmpty()) {
-            for(EarlyLogger.LevelAndMessage levelAndMessage : catchUp) {
+        if (!catchUp.isEmpty()) {
+            for (EarlyLogger.LevelAndMessage levelAndMessage : catchUp) {
                 logger.log(levelAndMessage.level, levelAndMessage.msg);
             }
             catchUp.clear();
@@ -308,15 +360,16 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
     /**
      * Adds a new handler to the root logger
+     *
      * @param handler handler to be iadded.
      */
     public void addHandler(Handler handler) {
         Logger rootLogger = Logger.global.getParent();
-        if (rootLogger!=null) {
-            synchronized(gfHandlers) {
-               rootLogger.addHandler(handler);
-               String handlerName = handler.toString();
-               gfHandlers.put(handlerName.substring(0, handlerName.indexOf("@")), handler);
+        if (rootLogger != null) {
+            synchronized (gfHandlers) {
+                rootLogger.addHandler(handler);
+                String handlerName = handler.toString();
+                gfHandlers.put(handlerName.substring(0, handlerName.indexOf("@")), handler);
             }
         }
     }
@@ -328,7 +381,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
             for (Inhabitant<? extends Handler> i : habitat.getInhabitants(Handler.class)) {
                 i.release();
             }
-        } catch(ComponentException e) {
+        } catch (ComponentException e) {
             e.printStackTrace();
         }
     }

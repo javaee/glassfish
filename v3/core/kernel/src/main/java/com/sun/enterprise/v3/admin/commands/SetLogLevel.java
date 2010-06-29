@@ -37,54 +37,63 @@
 
 package com.sun.enterprise.v3.admin.commands;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.Param;
+import com.sun.common.util.logging.LoggingConfigImpl;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
-
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Inject;
-
-import com.sun.common.util.logging.LoggingConfigImpl;
-import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 import java.io.IOException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.Properties;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 
 /**
  * Created by IntelliJ IDEA.
- * User: cmott
+ * User: cmott, naman mehta
  * Date: Jul 8, 2009
  * Time: 11:48:20 AM
  * To change this template use File | Settings | File Templates.
  */
-  
-/*
- * Set Logger Level Command
- *
- * Updates one or more loggers' level
- *
- * Usage: set-log-level [-?|--help=false]
- * (logger_name=logging_value)[:logger_name=logging_value]*
- *
- */
 
-@Service(name="set-log-level")
+/*
+* Set Logger Level Command
+*
+* Updates one or more loggers' level
+*
+* Usage: set-log-level [-?|--help=false]
+* (logger_name=logging_value)[:logger_name=logging_value]*
+*
+*/
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@Service(name = "set-log-level")
+@Scoped(PerLookup.class)
 @I18n("set.log.level")
 public class SetLogLevel implements AdminCommand {
 
-    @Param(name="name_value", primary=true, separator=':')
-        Properties properties;
-    
+    @Param(name = "name_value", primary = true, separator = ':')
+    Properties properties;
+
+    @Param(optional = true)
+    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+
     @Inject
     LoggingConfigImpl loggingConfig;
+
+    @Inject
+    Domain domain;
 
     String[] validLevels = {"SEVERE", "WARNING", "INFO", "FINE", "FINER", "FINEST"};
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(SetLogLevel.class);
@@ -94,38 +103,114 @@ public class SetLogLevel implements AdminCommand {
 
 
         final ActionReport report = context.getActionReport();
+        boolean isCluster = false;
+        boolean isDas = false;
+        boolean isInstance = false;
 
-        Map<String,String> m = new HashMap<String,String>();
+        Map<String, String> m = new HashMap<String, String>();
         try {
             for (final Object key : properties.keySet()) {
                 final String logger_name = (String) key;
-                final String level = (String)properties.get(logger_name);
+                final String level = (String) properties.get(logger_name);
                 // that is is a valid level
-                boolean vlvl=false;
-                for (String s: validLevels) {
-                    if (s.equals(level) ) {
-                        m.put(logger_name+".level", level );
-                        vlvl=true;
+                boolean vlvl = false;
+                for (String s : validLevels) {
+                    if (s.equals(level)) {
+                        m.put(logger_name + ".level", level);
+                        vlvl = true;
                         break;
                     }
                 }
                 if (!vlvl) {
                     report.setMessage(localStrings.getLocalString("set.log.level.invalid",
-                    "Invalid logger level found {0}.  Valid levels are: SEVERE, WARNING, INFO, FINE, FINER, FINEST", level));
+                            "Invalid logger level found {0}.  Valid levels are: SEVERE, WARNING, INFO, FINE, FINER, FINEST", level));
+                }
+            }
+
+            Server targetServer = domain.getServerNamed(target);
+
+            if (targetServer != null && targetServer.isDas()) {
+                isDas = true;
+            } else {
+                com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+                if (cluster != null) {
+                    isCluster = true;
+                } else {
+                    isInstance = true;
+                }
+            }
+
+            if (isCluster || isInstance) {
+                loggingConfig.updateLoggingProperties(m, target);
+            } else if (isDas) {
+                loggingConfig.updateLoggingProperties(m);
+            } else {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                String clusterName = "";
+                String msg = localStrings.getLocalString("invalid.target.sys.props",
+                        "Invalid target: {0}. Valid default target is a server named ''server'' (default) or cluster name.", target);
+
+                if (targetServer != null && targetServer.isInstance()) {
+                    clusterName = targetServer.getCluster().getName();
+                    msg = localStrings.getLocalString("invalid.target.sys.props",
+                            "Instance {0} is part of the Cluster so valid target value is '" + clusterName + "'.", target);
                 }
 
-
+                report.setMessage(msg);
+                return;
             }
-            loggingConfig.updateLoggingProperties(m);
+
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
-
-        }   catch (IOException e) {
+        } catch (IOException e) {
             report.setMessage("Could not set logger levels ");
             report.setMessage(localStrings.getLocalString("set.log.level.failed",
                     "Could not set logger levels."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         }
     }
+
+    /**
+     * Find the rightmost unescaped occurrence of specified character in target
+     * string.
+     * <p/>
+     * XXX Doesn't correctly interpret escaped backslash characters, e.g. foo\\.bar
+     *
+     * @param target string to search
+     * @param ch     a character
+     * @return index index of last unescaped occurrence of specified character
+     *         or -1 if there are no unescaped occurrences of this character.
+     */
+    private static int trueLastIndexOf(String target, char ch) {
+        int i = target.lastIndexOf(ch);
+        while (i > 0) {
+            if (target.charAt(i - 1) == '\\') {
+                i = target.lastIndexOf(ch, i - 1);
+            } else {
+                break;
+            }
+        }
+        return i;
+    }
+
+    /**
+     * Indicate in the action report that the command failed.
+     */
+    private static void fail(AdminCommandContext context, String msg,
+                             Exception ex) {
+        context.getActionReport().setActionExitCode(
+                ActionReport.ExitCode.FAILURE);
+        if (ex != null)
+            context.getActionReport().setFailureCause(ex);
+        context.getActionReport().setMessage(msg);
+    }
+
+    /**
+     * Indicate in the action report that the command failed.
+     */
+    private static void fail(AdminCommandContext context, String msg) {
+        fail(context, msg, null);
+    }
+
 
 }

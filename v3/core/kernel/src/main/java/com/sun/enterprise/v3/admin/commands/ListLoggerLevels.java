@@ -37,57 +37,112 @@
 
 package com.sun.enterprise.v3.admin.commands;
 
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.ActionReport;
-
 import com.sun.common.util.logging.LoggingConfigImpl;
-
-import java.util.logging.Logger;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-
-import java.io.IOException;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+
 /**
  * Created by IntelliJ IDEA.
- * User: cmott
+ * User: cmott, naman mehta
  * Date: Aug 26, 2009
  * Time: 5:32:17 PM
  * To change this template use File | Settings | File Templates.
  */
-@Service(name="list-logger-levels")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@Service(name = "list-logger-levels")
+@Scoped(PerLookup.class)
+@I18n("list.logger.levls")
 public class ListLoggerLevels implements AdminCommand {
 
     @Inject
     LoggingConfigImpl loggingConfig;
 
+    @Param(optional = true)
+    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+
+    @Inject
+    Domain domain;
+
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListLoggerLevels.class);
+
     public void execute(AdminCommandContext context) {
+
         final ActionReport report = context.getActionReport();
+        boolean isCluster = false;
+        boolean isDas = false;
+        boolean isInstance = false;
+
         try {
-            HashMap<String,String>  props = (HashMap)loggingConfig.getLoggingProperties();
+            HashMap<String, String> props = null;
+
+            Server targetServer = domain.getServerNamed(target);
+
+            if (targetServer != null && targetServer.isDas()) {
+                isDas = true;
+            } else {
+                com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+                if (cluster != null) {
+                    isCluster = true;
+                } else {
+                    isInstance = true;
+                }
+            }
+
+            if (isCluster || isInstance) {
+                props = (HashMap) loggingConfig.getLoggingProperties(target);
+            } else if (isDas) {
+                props = (HashMap) loggingConfig.getLoggingProperties();
+            } else {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                String clusterName = "";
+                String msg = localStrings.getLocalString("invalid.target.sys.props",
+                        "Invalid target: {0}. Valid default target is a server named ''server'' (default) or cluster name.", target);
+                if (targetServer != null && targetServer.isInstance()) {
+                    clusterName = targetServer.getCluster().getName();
+                    msg = localStrings.getLocalString("invalid.target.sys.props",
+                            "Instance {0} is part of the Cluster so valid target value is '" + clusterName + "'.", target);
+                }
+                report.setMessage(msg);
+                return;
+            }
+
 
             ArrayList keys = new ArrayList();
             keys.addAll(props.keySet());
             Collections.sort(keys);
             Iterator it2 = keys.iterator();
-            while (it2.hasNext())  {
-                String name = (String)it2.next();
+            while (it2.hasNext()) {
+                String name = (String) it2.next();
                 if (name.endsWith(".level") && !name.equals(".level")) {
-                final ActionReport.MessagePart part = report.getTopMessagePart()
-                    .addChild();
-                String n = name.substring(0,name.lastIndexOf(".level"));
-                part.setMessage(n + ": "+ (String)props.get(name));
+                    final ActionReport.MessagePart part = report.getTopMessagePart()
+                            .addChild();
+                    String n = name.substring(0, name.lastIndexOf(".level"));
+                    part.setMessage(n + ": " + (String) props.get(name));
                 }
             }
 
 
-        } catch (IOException ex){
-          report.setMessage("Unable to get the logger names");
+        } catch (IOException ex) {
+            report.setMessage("Unable to get the logger names");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(ex);
             return;
