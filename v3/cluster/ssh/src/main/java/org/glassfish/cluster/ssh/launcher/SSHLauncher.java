@@ -38,14 +38,13 @@ package org.glassfish.cluster.ssh.launcher;
 
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.KnownHosts;
+import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.glassfish.cluster.ssh.util.HostVerifier;
 import org.glassfish.cluster.ssh.util.SSHUtil;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.config.serverbeans.Node;
-import org.jvnet.hk2.component.PostConstruct;
 
 import java.io.OutputStream;
 import java.io.File;
@@ -150,65 +149,58 @@ public class SSHLauncher {
      * key.
      * 
      */
-    private boolean openConnection() {
+    private void openConnection() throws IOException {
 
-        boolean isAuthenticated = false;
-        connection = new Connection(host, port);
-        try {
-            connection.connect(new HostVerifier(knownHostsDatabase));
-            String userName = this.userName;
-            if(SSHUtil.checkString(keyFile) == null) {
-                // check the default key locations if no authentication 
-                // method is explicitly configured.
-                File home = new File(System.getProperty("user.home"));
-                for (String keyName : Arrays.asList("id_rsa","id_dsa",
-                                                    "identity")) 
-                {
-                    File key = new File(home,".ssh/"+keyName);
-                    if (key.exists()) {
-                        isAuthenticated = 
-                            connection.authenticateWithPublicKey(userName, 
-                                                                 key, null);
-                    }
-                    if (isAuthenticated) {
-                        logger.fine("Authentication successful");
-                        break;
-                    }
+    boolean isAuthenticated = false;
+    connection = new Connection(host, port);
 
-                }
-            }
-            if (!isAuthenticated && SSHUtil.checkString(keyFile)!=null) {
-                File key = new File(keyFile);
+        connection.connect(new HostVerifier(knownHostsDatabase));
+        String userName = this.userName;
+        if(SSHUtil.checkString(keyFile) == null) {
+            // check the default key locations if no authentication
+            // method is explicitly configured.
+            File home = new File(System.getProperty("user.home"));
+            for (String keyName : Arrays.asList("id_rsa","id_dsa",
+                                                "identity"))
+            {
+                File key = new File(home,".ssh/"+keyName);
                 if (key.exists()) {
-                   isAuthenticated = connection.authenticateWithPublicKey(
-                                                userName, key, null);
-
+                    isAuthenticated =
+                        connection.authenticateWithPublicKey(userName,
+                                                             key, null);
                 }
+                if (isAuthenticated) {
+                    logger.fine("Authentication successful");
+                    break;
+                }
+
             }
-
-            if (!isAuthenticated && !connection.isAuthenticationComplete()) {
-                connection.close();
-                connection = null;
-                logger.fine("Could not authenticate");
-                throw new IOException("Could not authenticate");
-            }
-            SSHUtil.register(connection);
-
-
-        } catch (IOException e) {
-            e.printStackTrace();  
         }
-        return isAuthenticated;
+        if (!isAuthenticated && SSHUtil.checkString(keyFile) != null) {
+            File key = new File(keyFile);
+            if (key.exists()) {
+               isAuthenticated = connection.authenticateWithPublicKey(
+                                            userName, key, null);
+
+            }
+        }
+
+        if (!isAuthenticated && !connection.isAuthenticationComplete()) {
+            connection.close();
+            connection = null;
+            logger.fine("Could not authenticate");
+            throw new IOException("Could not authenticate");
+        }
+        SSHUtil.register(connection);
+
     }
 
     public int runCommand(String command, OutputStream os) throws IOException,
                                             InterruptedException 
     {
-        logger.fine("Running command " + command);
-        if ( !openConnection()) {
-            logger.fine("Could not open connection");
-            return -1;
-        }
+        logger.fine("Running command " + command + " on host: " + this.host);
+
+        openConnection();
 
         int status = connection.exec(command, os);
 
@@ -217,5 +209,33 @@ public class SSHLauncher {
         SSHUtil.unregister(connection);
         connection = null;
         return status;
+    }
+
+    public  boolean validate(String host, int port,
+                             String userName, String keyFile, String nodeHome,
+                             Logger logger) 
+    {
+        this.host = host;
+        this.port = port;
+        this.userName = userName;
+        this.keyFile = keyFile;
+        this.logger = logger;
+        boolean isValid = false;
+
+        try {
+            openConnection();
+            logger.fine("Connection settings valid");
+            //Validate if nodeHome exists
+            SFTPClient sftpClient = new SFTPClient(connection);
+            isValid = sftpClient.exists(nodeHome);
+            logger.fine("Node home validated");
+            SSHUtil.unregister(connection);
+
+        } catch (IOException ioe) {
+            isValid = false;
+            ioe.printStackTrace();
+        }
+        connection = null;
+        return isValid;
     }
 }
