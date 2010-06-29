@@ -129,6 +129,7 @@ public class GeneratorResource {
         {"AuthRealm", "delete-file-user", "DELETE", "delete-user", "Delete", "authrealmname=$parent"},
         {"AuthRealm", "list-file-users", "GET", "list-users", "List", "authrealmname=$parent"},
 //        {"Configs", "create-config", "POST", "create-config", "Create Config"},
+        {"Cluster", "delete-cluster", "POST", "delete-cluster", "Delete Cluster", "id=$parent"},
         {"Cluster", "start-cluster", "POST", "start-cluster", "Start Cluster", "id=$parent"},
         {"Cluster", "stop-cluster", "POST", "stop-cluster", "Stop Cluster", "id=$parent"},
         {"ConnectionPool", "ping-connection-pool", "GET", "ping", "Ping"},

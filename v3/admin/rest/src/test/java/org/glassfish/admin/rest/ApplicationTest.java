@@ -93,13 +93,13 @@ public class ApplicationTest extends RestTestBase {
             assertEquals ("Test", response.getEntity(String.class).trim());
 
             response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/disable", null);
-            assertTrue(isSuccess(response));
+            assertTrue("Response was " + response.getStatus(), isSuccess(response));
 
             response = get("http://localhost:8080/" + appName + "/index.html");
-            assertFalse(isSuccess(response));
+            assertFalse("Response was " + response.getStatus(), isSuccess(response));
 
             response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/enable", null);
-            assertTrue(isSuccess(response));
+            assertTrue("Response was " + response.getStatus(), isSuccess(response));
 
             response = get("http://localhost:8080/" + appName + "/index.html");
             assertEquals ("Test", response.getEntity(String.class).trim());
@@ -110,12 +110,13 @@ public class ApplicationTest extends RestTestBase {
 
     protected Map<String, String> deployApp(Map<String, Object> app) {
         ClientResponse response = postWithUpload(URL_APPLICATION_DEPLOY, app);
-        assertTrue(isSuccess(response));
+        assertTrue("Response was " + response.getStatus(), isSuccess(response));
 
         return getEntityValues(get(URL_APPLICATION_DEPLOY + "/" + app.get("name")));
     }
 
     protected void undeployApp(Map<String, Object> app) {
-        assertTrue(isSuccess(delete(URL_APPLICATION_DEPLOY + "/" + app.get("name"))));
+        ClientResponse response = delete(URL_APPLICATION_DEPLOY + "/" + app.get("name"));
+        assertTrue("Response was " + response.getStatus(), isSuccess(response));
     }
 }
