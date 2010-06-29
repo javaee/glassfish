@@ -108,11 +108,69 @@ public class ClusterTest extends AdminBaseDevTest {
         testDeleteClusterWithInstances();
         testClusterWithObsoleteOptions();
         testEndToEndDemo();
+        testListClusters();
         cleanup();
         stopDomain();
         stat.printSummary();
     }
 
+
+    private void testListClusters(){
+        final String testName = "issue12249-";
+
+        final String cname ="12249-cl";
+        final String iname = "12249-ins" ;
+        report(testName +"create-cl" , asadmin("create-cluster", cname));
+        for (int i = 0 ; i<3; i ++) {
+            report(testName +"create-li" , asadmin("create-local-instance","--cluster", cname,iname+i));
+           
+        }
+        report(testName+"list-cl" , !isClusterRunning(cname));
+        for (int i = 0 ; i<3; i ++) {
+            report(testName +"start-li" , asadmin("start-local-instance",iname+i));
+
+
+        }
+        report(testName+"list-cl" , isClusterRunning(cname));
+        report(testName +"stop-one" , asadmin("stop-local-instance",iname+1));
+        report(testName+"list-cl" , isClusterPartiallyRunning(cname));
+        report(testName +"start-one" , asadmin("start-local-instance",iname+1));
+
+        for (int i = 0 ; i<3; i ++) {
+            report(testName +"stop-again" , asadmin("stop-local-instance",iname+i));
+            report(testName +"delete-li" , asadmin("delete-local-instance",iname+i));
+
+
+        }
+        report(testName+"delete-cl" , asadmin("delete-cluster",cname));
+
+    }
+
+    private boolean isClusterRunning(String iname) {
+        AsadminReturn ret = asadminWithOutput("list-clusters");
+        String[] lines = ret.out.split("[\r\n]");
+
+        for (String line : lines) {
+            if (line.indexOf(iname) >= 0) {
+                printf("Line from list-instances = " + line);
+                return line.indexOf(iname + " running") >= 0;
+            }
+        }
+        return false;
+    }
+
+    private boolean isClusterPartiallyRunning(String iname) {
+        AsadminReturn ret = asadminWithOutput("list-clusters");
+        String[] lines = ret.out.split("[\r\n]");
+
+        for (String line : lines) {
+            if (line.indexOf(iname) >= 0) {
+                printf("Line from list-instances = " + line);
+                return line.indexOf(iname + " partially running") >= 0;
+            }
+        }
+        return false;
+    }
 
     private void testClusterWithObsoleteOptions(){
         final String cluster = "obscl";
