@@ -57,14 +57,14 @@ import org.jvnet.hk2.component.*;
 /**
  * AdminCommand to list all instances and their states
  *
+ * This is so clumsy & hard to remember I leave it here as a comment:
+ * @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
  * @author Byron Nevins
  */
 @Service(name = "list-instances")
 @I18n("list.instances.command")
 @Scoped(PerLookup.class)
 public class ListInstancesCommand implements AdminCommand {
-    //@Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    //private Server dasServer;
 
     @Inject
     private Domain domain;
@@ -74,6 +74,8 @@ public class ListInstancesCommand implements AdminCommand {
     private Servers allServers;
     @Inject
     private Configs configs;
+    @Param(optional = true, defaultValue = "false")
+    private boolean verbose;
     @Param(optional = true, defaultValue = "2000")
     private String timeoutmsec;
     @Param(optional = true, defaultValue = "false")
@@ -84,8 +86,8 @@ public class ListInstancesCommand implements AdminCommand {
     String target;
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
     private List<Server> serverList;
-
-    // if showDas is true then they entered the string "server" as the target
+    private ActionReport report;
+// if showDas is true then they entered the string "server" as the target
     // this is weird but stipulated by IT 12104
     private boolean showDas = false;
 
@@ -100,34 +102,34 @@ public class ListInstancesCommand implements AdminCommand {
             timeoutInMsec = 2000;
         }
 
-        ActionReport report = context.getActionReport();
+        report = context.getActionReport();
         Logger logger = context.getLogger();
+
+        validateParams();
+
         serverList = createServerList();
 
         if (serverList == null) {
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(Strings.get("list.instances.badTarget", target));
+            fail(Strings.get("list.instances.badTarget", target));
             return;
         }
         // Require that we be a DAS
         if (!env.isDas()) {
             String msg = Strings.get("list.instances.onlyRunsOnDas");
             logger.warning(msg);
-            report.setActionExitCode(ExitCode.FAILURE);
-            report.setMessage(msg);
+            fail(msg);
             return;
         }
 
         if (nostatus)
-            noStatus(report, serverList);
+            noStatus(serverList);
         else
-            yesStatus(report, serverList, timeoutInMsec, logger);
+            yesStatus(serverList, timeoutInMsec, logger);
 
         report.setActionExitCode(ExitCode.SUCCESS);
-
     }
 
-    private void noStatus(ActionReport report, List<Server> serverList) {
+    private void noStatus(List<Server> serverList) {
         if (serverList.size() < 1) {
             report.addSubActionsReport().setMessage(NONE);
         }
@@ -149,7 +151,7 @@ public class ListInstancesCommand implements AdminCommand {
         return !SystemPropertyConstants.DAS_SERVER_NAME.equals(name);
     }
 
-    private void yesStatus(ActionReport report, List<Server> serverList, int timeoutInMsec, Logger logger) {
+    private void yesStatus(List<Server> serverList, int timeoutInMsec, Logger logger) {
         // Gather a list of InstanceInfo -- one per instance in domain.xml
         RemoteInstanceCommandHelper helper = new RemoteInstanceCommandHelper(env, serverList, configs);
 
@@ -171,8 +173,13 @@ public class ListInstancesCommand implements AdminCommand {
                 infos.add(ii);
             }
         }
-        if (infos.size() < 1)
+        if (infos.size() < 1) {
             report.addSubActionsReport().setMessage(NONE);
+            return;
+        }
+
+        if (verbose)
+            report.setMessage(InstanceInfo.format(infos));
         else
             for (InstanceInfo ii : infos) {
                 String s = ii.isRunning() ? RUNNING : NOT_RUNNING;
@@ -235,4 +242,31 @@ public class ListInstancesCommand implements AdminCommand {
     private static final String NONE = "Nothing to list.";
     private static final String RUNNING = "running";
     private static final String NOT_RUNNING = "not running";
+
+    /*
+     * false means error
+     */
+    private boolean validateParams() {
+        // standaloneonly AND a target are mutually exclusive
+        if (standaloneonly && StringUtils.ok(target)) {
+            fail(Strings.get("list.instances.targetWithStandaloneOnly"));
+            return false;
+        }
+
+        // verbose is not allowed with nostatus.
+        // It could be allowed in the future if desired but the table code needs
+        // to change.
+        if (verbose && nostatus) {
+            fail(Strings.get("list.instances.verboseAndNoStatus"));
+            return false;
+        }
+
+        return true;
+    }
+
+    // avoid ugly boilerplate...
+    private void fail(String s) {
+        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        report.setMessage(s);
+    }
 }
