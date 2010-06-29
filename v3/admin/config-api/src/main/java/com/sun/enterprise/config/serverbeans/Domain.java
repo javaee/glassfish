@@ -441,7 +441,31 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     @DuckTyped
     List<ReferenceContainer> getReferenceContainersOf(Config config);
 
+    @DuckTyped
+    List<Server> getInstancesOnNode(String nodeName);
+
     class Duck {
+        /* return an empty list if given garbage -- or errors are encountered
+         * or if no matches
+         */
+        public static List<Server> getInstancesOnNode(Domain domain, String nodeName) {
+            List<Server> ret = new LinkedList<Server>();
+            try {
+                if(!StringUtils.ok(nodeName))
+                    return ret;
+
+                List<Server> servers = domain.getServers().getServer();
+
+                for(Server server : servers) {
+                    if(nodeName.equals(server.getNode()))
+                            ret.add(server);
+                }
+            }
+            catch(Exception e) {
+                // ignore
+            }
+            return ret;
+        }
         public static List<Application> getAllDefinedSystemApplications(Domain me) {
             List<Application> allSysApps = new ArrayList<Application>();
             SystemApplications sa = me.getSystemApplications();
