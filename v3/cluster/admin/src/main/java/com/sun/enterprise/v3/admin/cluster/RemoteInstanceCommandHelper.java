@@ -60,10 +60,16 @@ import java.util.*;
  */
 final class RemoteInstanceCommandHelper {
     RemoteInstanceCommandHelper(ServerEnvironment env0, Servers servers0, Configs configs0) {
-        env = env0;
         // get rid of the annoying extra level of indirection...
+        // callers may have a Servers object or the may happen to have a List<Server> object
+        // we have a ctor for both!
+        this(env0, servers0.getServer(), configs0);
+    }
+
+    RemoteInstanceCommandHelper(ServerEnvironment env0, List<Server> servers0, Configs configs0) {
+        env = env0;
         configs = configs0.getConfig();
-        servers = servers0.getServer();
+        servers = servers0;
     }
 
     final boolean isDas() {
@@ -87,20 +93,12 @@ final class RemoteInstanceCommandHelper {
         if(server == null)
             return null;
 
-        // TODO May 14 - for now we assume this is the host
-        // TODO May 14 - for now we assume this is the host
-        // TODO May 14 - for now we assume this is the host
-        // TODO May 14 - for now we assume this is the host
-        String host = server.getNodeAgentRef();
+        String host = server.getNode();
 
         if(StringUtils.ok(host))
             return host;
         else
-            return Strings.get("noNodeAgentRef");
-        // TODO May 14 - for now we assume this is the host
-        // TODO May 14 - for now we assume this is the host
-        // TODO May 14 - for now we assume this is the host
-        // TODO May 14 - for now we assume this is the host
+            return Strings.get("noNode");
     }
 
     final Server getServer(final String serverName) {
