@@ -84,7 +84,7 @@ public class TemplateExecCommand {
     @OPTIONS
     @Produces({
         MediaType.APPLICATION_JSON,
-        MediaType.TEXT_HTML,
+        "text/html;qs=2",
         MediaType.APPLICATION_XML})
     public OptionsResult options() {
         OptionsResult optionsResult = new OptionsResult(resourceName);

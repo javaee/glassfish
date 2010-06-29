@@ -104,7 +104,7 @@ public abstract class CollectionLeafResource {
     }
 
     @GET
-    @Produces({MediaType.TEXT_HTML,
+    @Produces({"text/html;qs=2",
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public StringListResult get(@QueryParam("expandLevel")
@@ -119,7 +119,7 @@ public abstract class CollectionLeafResource {
 
 
     @POST //create
-    @Produces(MediaType.TEXT_HTML)
+    @Produces("text/html;qs=2")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
     public Response create(HashMap<String, String> data) {
@@ -140,7 +140,7 @@ public abstract class CollectionLeafResource {
 
 
     @DELETE //delete
-    @Produces(MediaType.TEXT_HTML)
+    @Produces("text/html;qs=2")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
     public Response delete(HashMap<String, String> data) {
@@ -151,7 +151,7 @@ public abstract class CollectionLeafResource {
 
 
     @OPTIONS
-    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, "text/html;qs=2", MediaType.APPLICATION_XML})
     public OptionsResult options() {
         OptionsResult optionsResult =
                 new OptionsResult(Util.getResourceName(uriInfo));
@@ -224,7 +224,7 @@ public abstract class CollectionLeafResource {
             String attributeName = data.get("DEFAULT");
 
             if (null != commandName) {
-                String typeOfResult = requestHeaders.getAcceptableMediaTypes().get(0).getSubtype();
+                String typeOfResult = ResourceUtil.getResultType(requestHeaders);
                 ActionReport actionReport = ResourceUtil.runCommand(commandName,
                     data, RestService.getHabitat(),typeOfResult);
 

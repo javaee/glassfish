@@ -149,22 +149,21 @@ public abstract class TemplateListOfResource {
 
             //Command to execute
             String commandName = getPostCommand();
-            ResourceUtil.adjustParameters(data);
-            String resourceToCreate = uriInfo.getAbsolutePath() +
-                "/" + data.get("DEFAULT");
+            String resourceToCreate = uriInfo.getAbsolutePath() + "/";
 
             if (null != commandName) {
                 // TODO: Not needed anymore?
 //                data = __resourceUtil.translateCamelCasedNamesToCommandParamNames(data,commandName, RestService.getHabitat(), RestService.logger);
-            String typeOfResult = requestHeaders.getAcceptableMediaTypes().get(0).getSubtype();
-                ActionReport actionReport = ResourceUtil.runCommand(commandName,
-                    data, RestService.getHabitat(),typeOfResult);
+                ResourceUtil.adjustParameters(data); //adjusting for DEFAULT is required only while executing a CLI command
+                resourceToCreate += data.get("DEFAULT");
+                String typeOfResult = ResourceUtil.getResultType(requestHeaders);
+                ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),typeOfResult);
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode == ActionReport.ExitCode.SUCCESS) {
                     String successMessage =
                         localStrings.getLocalString("rest.resource.create.message",
-                            "\"{0}\" created successfully.", new Object[] {resourceToCreate});
+                            "\"{0}\" created successfully.", resourceToCreate);
                     return ResourceUtil.getResponse(201, /* 201 - created */
                          successMessage, requestHeaders, uriInfo);
                 }
@@ -176,10 +175,10 @@ public abstract class TemplateListOfResource {
                 // create it on the fly without a create CLI command.
 
                 Class<? extends ConfigBeanProxy> proxy = getElementTypeByName(parent, tagName);
-                ConfigSupport.createAndSet((ConfigBean) parent, proxy, data);
+                ConfigBean createdBean = ConfigSupport.createAndSet((ConfigBean) parent, proxy, data);
                 String successMessage =
                         localStrings.getLocalString("rest.resource.create.message",
-                        "\"{0}\" created successfully.", new Object[]{resourceToCreate});
+                        "\"{0}\" created successfully.", createdBean.getKey());
                 return ResourceUtil.getResponse(201, //201 - created
                         successMessage, requestHeaders, uriInfo);
 
@@ -246,7 +245,7 @@ public abstract class TemplateListOfResource {
             }
 
             if (null != commandName) {
-                            String typeOfResult = requestHeaders.getAcceptableMediaTypes().get(0).getSubtype();
+                String typeOfResult = ResourceUtil.getResultType(requestHeaders);
 
                 ActionReport actionReport = ResourceUtil.runCommand(commandName,
                     data, RestService.getHabitat(),typeOfResult);
@@ -288,7 +287,7 @@ public abstract class TemplateListOfResource {
      * */
 
     @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA) 
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response post(FormDataMultiPart formData) {
             /* data passed to the generic command running
              *
@@ -298,10 +297,10 @@ public abstract class TemplateListOfResource {
 
     }
 
-    @OPTIONS 
+    @OPTIONS
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
     public OptionsResult options() {
-        OptionsResult optionsResult = 
+        OptionsResult optionsResult =
             new OptionsResult(Util.getResourceName(uriInfo));
         try {
             //GET meta data

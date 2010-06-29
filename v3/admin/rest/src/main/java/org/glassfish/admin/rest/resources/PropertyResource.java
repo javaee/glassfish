@@ -37,5 +37,8 @@ package org.glassfish.admin.rest.resources;
 import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class PropertyResource extends TemplateResource {
-
+@Override
+public String getDeleteCommand() {
+	return "GENERIC-DELETE";
+}
 }

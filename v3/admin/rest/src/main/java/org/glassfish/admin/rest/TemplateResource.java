@@ -76,6 +76,7 @@ import org.glassfish.api.admin.RestRedirect;
 
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.ValidationException;
 
 import org.glassfish.admin.rest.provider.GetResult;
@@ -212,8 +213,34 @@ public class TemplateResource {
     @DELETE
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_OCTET_STREAM})
     public Response delete(HashMap<String, String> data) {
-        //User can not directly delete the resource. User can only
-        //do so implicitly through asadmin command
+        if (entity == null) {//wrong resource
+            String errorMessage = localStrings.getLocalString("rest.resource.erromessage.noentity",
+                   "Resource not found.");
+            return ResourceUtil.getResponse(404, /*parsing error*/
+                    errorMessage, requestHeaders, uriInfo);
+        }
+
+        if (getDeleteCommand() == null) {
+             String message = localStrings.getLocalString("rest.resource.delete.forbidden",
+                "DELETE on \"{0}\" is forbidden.", new Object[] {uriInfo.getAbsolutePath()});
+            return ResourceUtil.getResponse(403, message, requestHeaders, uriInfo); //403 - forbidden
+        }
+        if (getDeleteCommand().equals("GENERIC-DELETE")){
+            try {
+                ConfigBean p = (ConfigBean)parent;
+                if (parent==null){
+                    p = (ConfigBean) entity.parent();
+                }
+                ConfigSupport.deleteChild(p, (ConfigBean) entity);
+                String successMessage = localStrings.getLocalString("rest.resource.delete.message",
+                        "\"{0}\" deleted successfully.", new Object[]{uriInfo.getAbsolutePath()});
+                return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo); //200 - ok
+            } catch (TransactionFailure ex) {
+                throw new WebApplicationException(ex,
+                        Response.Status.INTERNAL_SERVER_ERROR);
+            }
+        }
+        //do the delete via the command:
         try {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
@@ -268,7 +295,7 @@ public class TemplateResource {
     }
 
     @OPTIONS
-    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, "text/html;qs=2", MediaType.APPLICATION_XML})
     public OptionsResult options() {
         OptionsResult optionsResult =
                 new OptionsResult(Util.getResourceName(uriInfo));
@@ -446,7 +473,7 @@ public class TemplateResource {
     private ActionReport runCommand(String commandName, HashMap<String, String> data) {
 
         if (commandName != null) {
-                        String typeOfResult = requestHeaders.getAcceptableMediaTypes().get(0).getSubtype();
+            String typeOfResult = ResourceUtil.getResultType(requestHeaders);
 
             return ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),typeOfResult);//processed
         }

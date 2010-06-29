@@ -94,7 +94,8 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
             ResourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
             ResourceUtil.adjustParameters(data);
             ResourceUtil.purgeEmptyEntries(data);
-                        String typeOfResult = requestHeaders.getAcceptableMediaTypes().get(0).getSubtype();
+            String typeOfResult = ResourceUtil.getResultType(requestHeaders);
+
 
             ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),typeOfResult);
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
@@ -148,7 +149,7 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
 
     @GET
     @Produces({
-        MediaType.TEXT_HTML,
+        "text/html;qs=2",
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML})
     public CommandResourceGetResult get() {

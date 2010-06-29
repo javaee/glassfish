@@ -104,8 +104,8 @@ public class GeneratorResource {
 
     private static String MappingConfigBeansToDELETECommands[][] = {
         {"NetworkListener", "delete-network-listener"},
+        {"Property", "GENERIC-DELETE"},
         {"Protocol", "delete-protocol"},
-        {"Transport", "delete-transport"},
         {"Transport", "delete-transport"}
     };
 

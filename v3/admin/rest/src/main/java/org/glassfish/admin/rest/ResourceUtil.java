@@ -676,4 +676,31 @@ public class ResourceUtil {
         }
         return convertedData;
     }
+    /* we try to prefer html by default for all browsers (safari, chrome, firefox.
+     * Same if the request is asking for "*"
+     * among all the possible AcceptableMediaTypes
+     * 
+     */
+    public static String getResultType(HttpHeaders requestHeaders) {
+        String result = "html";
+        String firstOne = null;
+        List<MediaType> lmt = requestHeaders.getAcceptableMediaTypes();
+        for (MediaType mt : lmt) {
+            if (mt.getSubtype().equals("html")) {
+                return result;
+            }
+            if (mt.getSubtype().equals("*")) {
+                return result;
+            }
+            if (firstOne == null) { //default to the first one if many are there.
+                firstOne = mt.getSubtype();
+            }
+        }
+
+        if (firstOne != null) {
+            return firstOne;
+        } else {
+            return result;
+        }
+    }
 }
