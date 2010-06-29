@@ -64,6 +64,8 @@ import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.security.embedded.EmbeddedSecurityUtil;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.module.bootstrap.Which;
@@ -159,22 +161,30 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 }
 
                 EjbBuilder ejb = server.createConfig(EjbBuilder.class);
-                habitat = ejb.habitat;
-
-                archiveFactory = habitat.getComponent(ArchiveFactory.class);
-
                 EmbeddedEjbContainer ejbContainer = server.addContainer(ejb);
                 server.addContainer(ContainerBuilder.Type.jpa);
 
+                habitat = ejb.habitat;
                 try {
+/** Uncomment when EmbeddedSecurityUtil.copyConfigFiles works correctly
+
+                     if (rs != null) {
+                          // If we are running from an existing install, copy over security files to the temp instance
+                          ServerEnvironmentImpl env = habitat.getComponent(ServerEnvironmentImpl.class);
+                          EmbeddedSecurityUtil.copyConfigFiles(habitat, rs.instance_root.getAbsolutePath(), 
+                                  env.getInstanceRoot().getAbsolutePath());
+                     }
+**/
+
                     server.start();
-                } catch (LifecycleException e) {
+                } catch (Exception e) {
                     throw new EJBException(e);
                 }
                 EmbeddedDeployer deployer = server.getDeployer();
 
                 Sniffer sniffer = habitat.getComponent(Sniffer.class, "Ejb");
                 ejbAnnotations = sniffer.getAnnotationTypes();
+                archiveFactory = habitat.getComponent(ArchiveFactory.class);
 
                 container = new EJBContainerImpl(habitat, server, ejbContainer, deployer);
             // }
@@ -436,7 +446,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                             throw new EJBException(localStrings.getString(
                                     "ejb.embedded.failed_create_temporary_domain_xml_file"));
                         }
-                        rs = new Result(installed_root, domain_file);
+                        rs = new Result(installed_root, instance_root, domain_file);
                     }
                 }
             }
@@ -476,11 +486,13 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     }
 
     private class Result {
-        File installed_root;
-        File domain_file;
+        final File installed_root;
+        final File instance_root;
+        final File domain_file;
 
-        Result (File installed_root, File domain_file) {
+        Result (File installed_root, File instance_root, File domain_file) {
             this.installed_root  = installed_root;
+            this.instance_root  = instance_root;
             this.domain_file  = domain_file;
         }
     }
