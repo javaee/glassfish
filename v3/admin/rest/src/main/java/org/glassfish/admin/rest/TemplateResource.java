@@ -314,10 +314,17 @@ public class TemplateResource {
             //DELETE meta data
             String command = getDeleteCommand();
             if (command != null) {
-                MethodMetaData deleteMethodMetaData = ResourceUtil.getMethodMetaData(
-                        command, RestService.getHabitat(), RestService.logger);
-                //In case of delete operation(command), do not  display/provide id attribute.
-                deleteMethodMetaData.removeParamMetaData("id");
+                MethodMetaData deleteMethodMetaData;
+                if (command.equals("GENERIC-DELETE")) {
+                    deleteMethodMetaData = new MethodMetaData();
+
+                } else {
+                    deleteMethodMetaData = ResourceUtil.getMethodMetaData(
+                            command, RestService.getHabitat(), RestService.logger);
+                    //In case of delete operation(command), do not  display/provide id attribute.
+                    deleteMethodMetaData.removeParamMetaData("id");
+                }
+
                 optionsResult.putMethodMetaData("DELETE", deleteMethodMetaData);
             }
         } catch (Exception e) {
