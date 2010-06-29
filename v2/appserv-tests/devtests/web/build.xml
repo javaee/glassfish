@@ -517,7 +517,6 @@
 
     <target name="init-report" unless="report.inited">
         <property name="report.inited" value="true"/>
-        <antcall target="init"/>
         <record name="web.output" action="start" />
         <antcall target="startDomain"/>
     </target>
