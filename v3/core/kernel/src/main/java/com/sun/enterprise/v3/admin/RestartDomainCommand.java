@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.ModulesRegistry;
@@ -64,27 +63,23 @@ import java.util.logging.*;
  *
  * @author Byron Nevins
  */
-
-@Service(name="restart-domain")
+@Service(name = "restart-domain")
 @Scoped(PerLookup.class)
 @Async
 @I18n("restart.domain.command")
-
-public class RestartDomainCommand implements AdminCommand {
+public class RestartDomainCommand extends RestartServer implements AdminCommand {
     @Inject
     ModulesRegistry registry;
 
     /** version which will use injection */
-    public RestartDomainCommand()
-    {
+    public RestartDomainCommand() {
     }
-    
+
     /** version which will not use injection */
-    public RestartDomainCommand( final ModulesRegistry registryIn )
-    {
+    public RestartDomainCommand(final ModulesRegistry registryIn) {
         registry = registryIn;
     }
-    
+
     /**
      * Restart of the application server :
      *
@@ -94,148 +89,7 @@ public class RestartDomainCommand implements AdminCommand {
      * Client code that started us should notice the return value of 10 and restart us.
      */
     public void execute(AdminCommandContext context) {
-        try {
-            init(context);
-
-            if(!verbose) {
-                // do it now while we still have the Logging service running...
-                reincarnate();
-            }
-            // else we just return 10 from System.exit()
-
-            Collection<Module> modules = registry.getModules(
-                    "com.sun.enterprise.osgi-adapter");
-            if (modules.size() == 1) {
-                final Module mgmtAgentModule = modules.iterator().next();
-                mgmtAgentModule.stop();
-            }
-            else
-                context.getLogger().warning(modules.size() + " no of primordial modules found");
-            
-        }
-        catch(Exception e) {
-            context.getLogger().severe("Got an exception trying to restart: " + e);
-        }
-
-        System.exit(10);
+        setRegistry(registry);
+        doExecute(context);
     }
-
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    /////////               ALL PRIVATE BELOW               ////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-
-    private void init(AdminCommandContext context) throws IOException {
-        logger = context.getLogger();
-        String s = System.getProperty(com.sun.enterprise.glassfish.bootstrap.Constants.ARGS_PROP);
-        Reader reader = new StringReader(s);
-        props = new Properties();
-        props.load(reader);
-        verbose = Boolean.parseBoolean(props.getProperty("-verbose", "false"));
-        logger.info(strings.get("restart.domain.init"));
-    }
-
-    private void reincarnate() {
-        try {
-            if(setupReincarnationWithAsadmin() || setupReincarnationWithOther())
-                doReincarnation();
-            else
-                logger.severe(strings.get("restart.domain.noStartupInfo", 
-                        strings.get("restart.domain.asadminError"),
-                        strings.get("restart.domain.nonAsadminError") ));
-        }
-        catch(RDCException rdce) {
-            // already logged...
-        }
-        catch(Exception e) {
-            logger.severe(strings.get("restart.domain.internalError", e));
-        }
-
-    }
-
-    private void doReincarnation() throws RDCException {
-        try {
-            // TODO JavaClassRunner is very simple and primitive.
-            // Feel free to beef it up...
-
-            String[] props = normalProps;
-
-            if(Boolean.parseBoolean(System.getenv("AS_SUPER_DEBUG")))
-                props = debuggerProps;  // very very difficult to debug this stuff otherwise!
-
-            new JavaClassRunner(classpath, props, classname, args);
-        }
-        catch(Exception e) {
-            logger.severe(strings.get("restart.domain.jvmError", e));
-            throw new RDCException();
-        }
-    }
-
-    private boolean setupReincarnationWithAsadmin() throws RDCException{
-        classpath   = props.getProperty("-asadmin-classpath");
-        classname   = props.getProperty("-asadmin-classname");
-        argsString  = props.getProperty("-asadmin-args");
-
-        return verify("restart.domain.asadminError");
-    }
-
-    private boolean setupReincarnationWithOther() throws RDCException {
-
-        classpath   = props.getProperty("-startup-classpath");
-        classname   = props.getProperty("-startup-classname");
-        argsString  = props.getProperty("-startup-args");
-
-        return verify("restart.domain.nonAsadminError");
-    }
-
-    private boolean verify(String errorStringKey) throws RDCException {
-        // Either asadmin or non-asadmin startup params have been set -- check them!
-        // THREE possible returns:
-        // 1) true
-        // 2) false
-        // 3) RDCException
-        if(classpath == null && classname == null && argsString == null) {
-            return false;
-        }
-
-        // now that at least one is set -- demand that ALL OF THEM be set...
-        if(!ok(classpath) || !ok(classname) || argsString == null) {
-            logger.severe(strings.get(errorStringKey));
-            throw new RDCException();
-        }
-
-        args = argsString.split(",,,");
-
-        return true;
-    }
-
-    private boolean ok(String s) {
-        return s != null && s.length() > 0;
-    }
-
-    // We use this simply to tell the difference between fatal errors and other
-    // non-fatal conditions.
-    private static class RDCException extends Exception {
-    }
-
-    private Properties      props;
-    private Logger          logger;
-    private boolean         verbose;
-    private String          classpath;
-    private String          classname;
-    private String          argsString;
-    private String[]        args;
-
-    /////////////             static variables               ///////////////////
-
-    private static final String             magicProperty = "-DAS_RESTART=true";
-    private static final String[]           normalProps = { magicProperty };
-    private static final LocalStringsImpl   strings = new LocalStringsImpl(RestartDomainCommand.class);
-    private static final boolean            debug   = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
-    private static final String[]           debuggerProps =
-    {
-        magicProperty,
-        "-Xdebug",
-        "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1323" };
 }

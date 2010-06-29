@@ -36,9 +36,13 @@
 
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.module.ModulesRegistry;
 import org.glassfish.api.*;
 import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.*;
+import com.sun.enterprise.v3.admin.RestartServer;
+import com.sun.enterprise.v3.admin.RestartServer;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  *
@@ -47,14 +51,17 @@ import org.jvnet.hk2.annotations.*;
 
 
 @Service(name = "restart-instance")
+@Scoped(PerLookup.class)
 @Async
 @I18n("restart.instance.command")
 
-public class RestartInstanceCommand implements AdminCommand{
+public class RestartInstanceCommand extends RestartServer implements AdminCommand  {
+    @Inject
+    ModulesRegistry registry;
 
     @Override
     public void execute(AdminCommandContext context) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        setRegistry(registry);
+        doExecute(context);
     }
-
 }
