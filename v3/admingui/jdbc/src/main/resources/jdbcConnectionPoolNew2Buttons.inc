@@ -56,12 +56,13 @@
             gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}",
                     attrs="#{wizardMap}"
                     convertToFalse="#{pageSession.convertToFalseList}"
-                    result => $attribute{objStr});
+                    result => $attribute{resultEndPoint});
             if (#{pageSession.hasPropertyTable}){
                 getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                 getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                 println("***** setProxyProperties needs to be implemented. Bug filed. Nag inserted.");
-                //setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{wizardMap['Name']}");
+                setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
             }
             if ("#{wizardMap['Ping']}") {
                 pingJdbcConnectionPool(jndiName="#{wizardMap['Name']}" , wmsg="$resource{i18njdbc.msg.warning.poolCreatedPingFailed}");

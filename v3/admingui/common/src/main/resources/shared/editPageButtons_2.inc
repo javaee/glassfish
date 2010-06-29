@@ -172,9 +172,10 @@
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                        if (!#{pageSession['rest-api']}) {
-                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                        if (#{pageSession['rest-api']}) {
+                            setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['Name']}");
                         }
+                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                     }
 
                     //when creating resource, need to create the resource-ref

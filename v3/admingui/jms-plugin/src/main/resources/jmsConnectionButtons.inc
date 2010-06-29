@@ -95,17 +95,18 @@
          // Create connector-connection-pool
         gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}",
             attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}", result => $attribute{resultEndPoint});
-        }
         gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType2}",
                 attrs="#{pageSession.valueMap2}", convertToFalse="#{pageSession.convertToFalseList2}", result => $attribute{resultEndPoint3});
+        }
 
         if (#{pageSession.hasPropertyTable}){
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
             //REST - TO DO
-            if (!#{pageSession['rest-api']}) {
-            setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+            if (#{pageSession['rest-api']}) {
+                setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['Name']}");
             }
+            setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
         }
         gf.redirect(page="#{parentPage}")
     />

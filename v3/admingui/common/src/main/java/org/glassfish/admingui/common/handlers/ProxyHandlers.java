@@ -916,26 +916,28 @@ public class ProxyHandlers {
      */
     @Handler(id = "getResourceRealStatus",
         input = {
+            @HandlerInput(name = "endpoint", type = String.class),
             @HandlerInput(name = "rows", type = java.util.List.class, required = true)},
         output = {
             @HandlerOutput(name = "result", type = List.class)})
     public static void getResourceRealStatus(HandlerContext handlerCtx) {
         List<Map> rows = (List) handlerCtx.getInputValue("rows");
+        String resourceRefEndPoint = (String) handlerCtx.getInputValue("endpoint");
         for (Map oneRow : rows) {
             String enabled = (String) oneRow.get("Enabled");
-            String name = (String) oneRow.get("Name");
+            String name = (String) oneRow.get("encodedName");
+            String endpoint = resourceRefEndPoint + "/" +name;
             if (enabled == null){
                 continue;   //this should never happen.
             }
-            Set<AMXProxy> resRefSet = V3AMX.getInstance().getDomainRoot().getQueryMgr().queryTypeName("resource-ref", name);
-            for(AMXProxy ref : resRefSet){
-                String refStatus = (String)ref.attributesMap().get("Enabled");
-                if (refStatus.equals("true")){
+            String resourceRefString = RestApiHandlers.get(endpoint).getResponseBody();
+            Map<String,String> attrMp = RestApiHandlers.getEntityAttrs(resourceRefString);
+            String refStatus = (String) attrMp.get("Enabled");
+            if (refStatus.equals("true")){
                     oneRow.put("Enabled", enabled);   //depend on the resource itself.
-                }else{
+            }else{
                     oneRow.put("Enabled", false);
-                }
-            }
+            }            
         }
         handlerCtx.setOutputValue("result", rows);
     }

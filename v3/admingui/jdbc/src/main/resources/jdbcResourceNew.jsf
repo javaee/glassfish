@@ -48,6 +48,8 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcResources.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="jdbc-resource");
+        //REST - for setproxyProperties after creating an entity.
+        setPageSessionAttribute(key="restObjStr", value="amx:pp=/domain/resources,type=#{pageSession.childType}");
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
         //REST related
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");

@@ -47,6 +47,8 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorResources.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="connector-resource");
+        //REST - for setproxyProperties after creating an entity.
+        setPageSessionAttribute(key="restObjStr", value="amx:pp=/domain/resources,type=#{pageSession.childType}");
         //REST related
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="rest-api" value="true");

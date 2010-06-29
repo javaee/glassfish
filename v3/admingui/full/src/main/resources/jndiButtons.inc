@@ -77,9 +77,10 @@
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                         //REST - TO DO
-                        if (!#{pageSession['rest-api']}) {
-                            setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                        if (#{pageSession['rest-api']}) {
+                            setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['Name']}");
                         }
+                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                     }
                     gf.redirect(page="#{parentPage}")
                 />
