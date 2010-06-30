@@ -35,6 +35,8 @@
  */
 package com.sun.enterprise.v3.admin;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import org.glassfish.api.Param;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
@@ -63,8 +65,7 @@ public class UptimeCommand implements AdminCommand {
 
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        long start = env.getStartupContext().getCreationTime();
-        long totalTime_ms = System.currentTimeMillis() - start;
+        long totalTime_ms = getUptime();
         Duration duration = new Duration(totalTime_ms);
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         String message;
@@ -77,4 +78,18 @@ public class UptimeCommand implements AdminCommand {
         report.setMessage(message);
     }
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(UptimeCommand.class);
+
+    private long getUptime() {
+        RuntimeMXBean mxbean = ManagementFactory.getRuntimeMXBean();
+        long totalTime_ms = -1;
+
+        if (mxbean != null)
+            totalTime_ms = mxbean.getUptime();
+
+        if (totalTime_ms <= 0) {
+            long start = env.getStartupContext().getCreationTime();
+            totalTime_ms = System.currentTimeMillis() - start;
+        }
+        return totalTime_ms;
+    }
 }
