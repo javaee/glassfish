@@ -42,6 +42,10 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
@@ -55,6 +59,10 @@ import java.util.List;
 @Service(name = "list-jndi-entries")
 @Scoped(PerLookup.class)
 @I18n("list.jndi.entries")
+@Cluster(value={RuntimeType.INSTANCE})
+@TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, 
+                   CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER,
+                   CommandTarget.CLUSTERED_INSTANCE})
 public class ListJndiEntries implements AdminCommand {
 
    final private static LocalStringManagerImpl localStrings =
@@ -67,7 +75,7 @@ public class ListJndiEntries implements AdminCommand {
     String target;
 
     public void execute(AdminCommandContext context) {
-        List<String> names;
+        List<String> names = null;
         final ActionReport report = context.getActionReport();
 
         try {
@@ -81,7 +89,7 @@ public class ListJndiEntries implements AdminCommand {
         }
                                         
         try {
-        if (names.isEmpty()) {
+            if (names.isEmpty()) {
                 final ActionReport.MessagePart part =
                         report.getTopMessagePart().addChild();
                 part.setMessage(localStrings.getLocalString(
@@ -107,7 +115,7 @@ public class ListJndiEntries implements AdminCommand {
 
     private List<String> getNames(String context)
             throws NamingException {
-        List<String> names;
+        List<String> names = null;
         JndiNameLookupHelper helper = new JndiNameLookupHelper();
         names = helper.getJndiEntriesByContextPath(context);
         return names;
