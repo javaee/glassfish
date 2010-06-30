@@ -236,8 +236,17 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
                                                          List<Server> servers, Logger logger) throws CommandException {
         ArrayList<InstanceCommandExecutor> list = new ArrayList<InstanceCommandExecutor>();
         for(Server svr : servers) {
-            String host = helper.getHost(svr);
-            int port = helper.getAdminPort(svr);
+            //TODO : As of now, the node-agent-ref is used to indicate host info for instance. This may change later
+            String host = svr.getNodeAgentRef();
+            //TODO : The following piece of code is kludge - pending config API changes for tokens in MS2
+            int port = 4848;
+            List<SystemProperty> sprops = svr.getSystemProperty();
+            for(SystemProperty p : sprops) {
+                if("ASADMIN_LISTENER_PORT".equals(p.getName())) {
+                    port = Integer.parseInt(p.getValue());
+                    break;
+                }
+            }
             list.add(new InstanceCommandExecutor(commandName, svr, host, port, logger));
         }
         return list;
