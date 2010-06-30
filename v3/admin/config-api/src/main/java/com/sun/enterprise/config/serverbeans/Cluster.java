@@ -510,7 +510,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             }
 
             for (Resource resource : domain.getResources().getResources()) {
-                if (resource.getObjectType().equals("system-all")) {
+                if (resource.getObjectType().equals("system-all") || resource.getObjectType().equals("system-instance")) {
                     String name=null;
                     if (resource instanceof BindableResource) {
                         name = ((BindableResource) resource).getJndiName();
@@ -527,7 +527,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 }
             }
             for (Application application : domain.getApplications().getApplications()) {
-                if (application.getObjectType().equals("system-all")) {
+                if (application.getObjectType().equals("system-all") || application.getObjectType().equals("system-instance")) {
                     ApplicationRef newAppRef = instance.createChild(ApplicationRef.class);
                     newAppRef.setRef(application.getName());
                     instance.getApplicationRef().add(newAppRef);

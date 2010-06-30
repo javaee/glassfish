@@ -477,7 +477,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             }
 
             for (Resource resource : domain.getResources().getResources()) {
-                if (resource.getObjectType().equals("system-all")) {
+                if (resource.getObjectType().equals("system-all") || resource.getObjectType().equals("system-instance")) {
                     String name = null;
                     if (resource instanceof BindableResource) {
                         name = ((BindableResource) resource).getJndiName();
@@ -494,15 +494,38 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 }
             }
             for (Application application : domain.getApplications().getApplications()) {
-                if (application.getObjectType().equals("system-all")) {
+                if (application.getObjectType().equals("system-all") || application.getObjectType().equals("system-instance")) {
                     ApplicationRef newAppRef = instance.createChild(ApplicationRef.class);
                     newAppRef.setRef(application.getName());
                     // todo : what about virtual-servers ?
                     instance.getApplicationRef().add(newAppRef);
                 }
             }
+            
+            this.addClusterRefs(ourCluster, instance);
+
             PortManager pm = new PortManager(ourCluster, ourConfig, domain, instance);
             pm.process(); // might throw
+        }
+
+        private void addClusterRefs(Cluster cluster, Server instance) throws TransactionFailure, PropertyVetoException {
+            if (cluster != null) {
+                for (ApplicationRef appRef : cluster.getApplicationRef()) {
+                    ApplicationRef newAppRef = instance.createChild(ApplicationRef.class);
+                    newAppRef.setRef(appRef.getRef());
+                    newAppRef.setDisableTimeoutInMinutes(appRef.getDisableTimeoutInMinutes());
+                    newAppRef.setEnabled(appRef.getEnabled());
+                    newAppRef.setLbEnabled(appRef.getLbEnabled());
+                    newAppRef.setVirtualServers(appRef.getVirtualServers());
+                    instance.getApplicationRef().add(newAppRef);
+                }
+                for (ResourceRef rr : cluster.getResourceRef()) {
+                    ResourceRef newRR = instance.createChild(ResourceRef.class);
+                    newRR.setRef(rr.getRef());
+                    newRR.setEnabled(rr.getEnabled());
+                    instance.getResourceRef().add(newRR);
+                }
+            }
         }
     }
 
