@@ -69,8 +69,6 @@
         <extracted-dtd-directory>${extracted-dtd-top-level-directory}/lib/dtds</extracted-dtd-directory>
         <config-dtd-file>sun-application-client-container_1_2.dtd</config-dtd-file>
 
-        <acc.corba-version>3.0.0-b001</acc.corba-version>
-
         <standalone.classifier>lib</standalone.classifier>
         <acc.osgi.module.classifier>module</acc.osgi.module.classifier>
 <!--
@@ -383,7 +381,6 @@
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-orb</artifactId>
-            <version>${acc.corba-version}</version>
         </dependency>
 
         <dependency>
