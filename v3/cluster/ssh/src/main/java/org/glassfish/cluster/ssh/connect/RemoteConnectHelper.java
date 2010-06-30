@@ -112,12 +112,12 @@ public class RemoteConnectHelper  {
             Node node = nodeMap.get(noderef);
             if (node == null){
                 logger.severe("remote.connect.noSuchNodeRef"+ noderef);
-                return 0;
+                return 1;
             }
             String nodeHome = node.getNodeHome();
             if( nodeHome == null) {  // what can we assume here?
                 logger.severe("remote.connect.noNodeHome"+noderef);
-                return 0;
+                return 1;
             }
             SshConnector connector = node.getSshConnector();
             if ( connector != null)  {
@@ -136,13 +136,14 @@ public class RemoteConnectHelper  {
 
                  //get the params for the command
                 // we don't validate since called by other commands directly
+                String instanceName = new String();
 
                 for (Map.Entry<String,List<String>> entry : parameters.entrySet()) {
                     String key = entry.getKey();
                     String value = parameters.getOne(key);
                     
                     if (key.equals("DEFAULT") ) {
-                        command = command +" " +value;
+                        instanceName = value;
                         continue;
                     }
 
@@ -151,9 +152,9 @@ public class RemoteConnectHelper  {
                         continue;
                     }
 
-                    command = command +" " +value;
+                    command = command + " "+ key + " " +value;
                 }
-                String fullCommand = prefix + command;
+                String fullCommand = prefix + command + " " +  instanceName;
 
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
@@ -161,20 +162,19 @@ public class RemoteConnectHelper  {
                 int status = sshL.runCommand(fullCommand, outStream);
                 String results = outStream.toString();
                 outputString.append(results);
-                // XXX sshL.runCommand() needs to return a status
-                if (results.trim().endsWith("successfully."))
-                    return 1;
-                else
-                    return 0;
+                if (!results.trim().endsWith("successfully."))
+                    return 1;                
             } 
 
         }catch (IOException ex) {
             logger.severe("remote.connect.ioexception"+ cmd);
+            return 1;
         } catch (java.lang.InterruptedException ei){
             logger.severe("remote.connect.interrupt"+ cmd);
+            return 1;
         }
 
-        return 1;
+        return 0;
     }
 }
 

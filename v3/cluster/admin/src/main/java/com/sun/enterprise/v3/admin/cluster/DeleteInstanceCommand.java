@@ -36,18 +36,23 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.universal.process.LocalAdminCommand;
+import com.sun.enterprise.universal.process.ProcessManagerException;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.Cluster;
-import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
-import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.admin.RuntimeType;
+import org.jvnet.hk2.annotations.*;
+import org.glassfish.cluster.ssh.launcher.SSHLauncher;
+import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+import java.util.logging.Logger;
+import java.io.IOException;
 
 /**
  * Remote AdminCommand to delete an instance.  This command is run only on DAS.
@@ -60,20 +65,105 @@ import org.jvnet.hk2.component.*;
 @I18n("delete.instance")
 @Scoped(PerLookup.class)
 @Cluster({RuntimeType.DAS})
-public class DeleteInstanceCommand implements AdminCommand {
+public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
+
+    private static final String DEFAULT_NODE = "localhost";
+    private static final String LOCAL_HOST = "localhost";
+    private static final String NL = System.getProperty("line.separator");
+    private ParameterMap map;
+
     @Inject
     private CommandRunner cr;
 
+    @Inject
+    Habitat habitat;
+
+    @Inject
+    Node[] nodeList;
+
+    @Inject
+    private Nodes nodes;
+
+    @Inject
+    private ServerEnvironment env;
+    @Inject
+    private Servers servers;
+    @Inject
+    private Configs configs;
+
+    @Inject
+    Domain domain;
+
+
+   @Param(name="node", optional=true, defaultValue=DEFAULT_NODE)
+    String node;
+    
     @Param(name="nodeagent", optional=true)
     String nodeAgent;
 
     @Param(name = "instance_name", primary = true)
     private String instance;
 
+    private Logger logger;    
+    private AdminCommandContext ctx;
+    private RemoteInstanceCommandHelper helper;
+    private RemoteConnectHelper rch;
+
+
+    @Override
+    public void postConstruct() {
+        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
+    }
 
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
+        ctx = context;
+        logger = context.logger;
+
+        int dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
+        String dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
+        rch = new RemoteConnectHelper(habitat, nodeList, logger, dasHost, dasPort);
+
+        if (nodes.getNode(node) == null) {
+            String msg = Strings.get("noSuchNode", node);
+            logger.warning(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
+        }
+        String msg;
+
+        if (node == null || !rch.isRemoteConnectRequired(node)) {
+            LocalAdminCommand lac = new LocalAdminCommand("delete-local-instance",instance);
+            msg = Strings.get("deletingInstance", instance, LOCAL_HOST);
+            logger.info(msg);
+            try {
+                 int status = lac.execute();
+            }   catch (ProcessManagerException ex)  {
+                msg = Strings.get("delete.instance.remote.failed", instance);
+                logger.warning(msg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+                return;
+            }
+        } else if (rch.isRemoteConnectRequired(node)) {
+            msg = Strings.get("deletingInstance", instance, node);
+            logger.info(msg);
+            int status =deleteInstanceRemote();
+            if (status != 0)
+                return;
+        }
+
+        // XXX dipol
+        // We are transitioning from nodeAgent to node. Some parts of the code
+        // still assume the server's node-agent-ref to be the hostname for the
+        // host the server is on. If --nodeagent was not specified we use the
+        // hostname from the node.
+        // At some point we need to come back and remove all the nodeagent stuf
+        if (nodeAgent == null || nodeAgent.length() == 0) {
+            nodeAgent = getHostFromNodeName(node);
+        }
 
         CommandInvocation ci = cr.getCommandInvocation("_unregister-instance", report);
         ParameterMap map = new ParameterMap();
@@ -82,4 +172,47 @@ public class DeleteInstanceCommand implements AdminCommand {
         ci.parameters(map);
         ci.execute();
     }
+
+    /**
+      * Given a node name return the node's host name
+      * @param nodeName  name of node
+      * @return  node's host name, or "localhost" if can't find the host name
+      */
+     private String getHostFromNodeName(String nodeName) {
+
+         Node theNode = nodes.getNode(nodeName);
+
+         if (theNode == null) {
+             return LOCAL_HOST;
+         }
+         String hostName = theNode.getNodeHost();
+         if (hostName == null || hostName.length() == 0) {
+             return LOCAL_HOST;
+         }
+         return hostName;
+     }
+
+     private int deleteInstanceRemote() {
+
+         ActionReport report = ctx.getActionReport();
+         StringBuilder output = new StringBuilder();
+         ParameterMap map = new ParameterMap();
+         map.add("--filesystemonly","true");
+         map.add("DEFAULT", instance);
+         
+         int status = rch.runCommand(node, "delete-local-instance",
+                         map, output);
+         if (output.length() > 0) {
+             logger.info(output.toString());
+         }
+         if (status != 0){
+             String msg = Strings.get("delete.instance.remote.failed", instance);
+             logger.warning(msg);
+             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+             report.setMessage(output.toString() + NL + msg);
+             return 1;
+         }
+         return 0;
+     }
+
 }

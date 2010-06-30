@@ -42,6 +42,7 @@ import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
+import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.universal.process.ProcessManagerException;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.universal.process.LocalAdminCommand;
@@ -54,6 +55,7 @@ import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import java.util.logging.Logger;
+import java.io.IOException;
 
 /**
  * Remote AdminCommand to create an instance.  This command is run only on DAS.
@@ -118,6 +120,8 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     private Logger logger;
     private AdminCommandContext ctx;
     private RemoteInstanceCommandHelper helper;
+    private RemoteConnectHelper rch;
+
 
     @Override
     public void postConstruct() {
@@ -130,12 +134,38 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         ctx = context;
         logger = context.logger;
 
+        int dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
+        String dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
+        rch = new RemoteConnectHelper(habitat, nodeList, logger, dasHost, dasPort);
+
         if (nodes.getNode(node) == null) {
             String msg = Strings.get("noSuchNode", node);
             logger.warning(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             return;
+        }
+        String msg;
+
+        if (node == null || !rch.isRemoteConnectRequired(node)) {
+            LocalAdminCommand lac = new LocalAdminCommand("_create-instance-filesystem",instance);
+            msg = Strings.get("creatingInstance", instance, LOCAL_HOST);
+            logger.info(msg);
+            try {
+                 int status = lac.execute();
+            }   catch (ProcessManagerException ex)  {
+                msg = Strings.get("create.instance.remote.failed", instance);
+                logger.warning(msg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+                return;
+            }
+        } else if (rch.isRemoteConnectRequired(node)) {
+            msg = Strings.get("creatingInstance", instance, node);
+            logger.info(msg);
+            int status =createInstanceRemote();
+            if (status != 0)
+                return;
         }
 
         // XXX dipol
@@ -147,10 +177,10 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         if (nodeAgent == null || nodeAgent.length() == 0) {
             nodeAgent = getHostFromNodeName(node);
         }
-        
+
         CommandInvocation ci = cr.getCommandInvocation("_register-instance", report);
         ParameterMap map = new ParameterMap();
-        map.add("node", node);        
+        map.add("node", node);
         map.add("nodeagent", nodeAgent);
         map.add("config", configRef);
         map.add("cluster", clusterName);
@@ -159,27 +189,6 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         ci.parameters(map);
         ci.execute();
 
-        String msg;
-
-        if (node == null || node.equals(LOCAL_HOST)) {
-            LocalAdminCommand lac = new LocalAdminCommand("_create-instance-filesystem",instance);
-            msg = Strings.get("creatingInstance", instance, LOCAL_HOST);
-            logger.info(msg);
-            try {
-                 int status = lac.execute();
-            }   catch (ProcessManagerException ex)  {
-                msg = Strings.get("create.instance.failed", instance);
-                logger.warning(msg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage(msg);                
-            }
-
-        } else {
-            msg = Strings.get("creatingInstance", instance, node);
-            logger.info(msg);
-            createInstanceRemote();
-        }
-        
     }
 
     /**
@@ -201,14 +210,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         return hostName;
     }
 
-    private void createInstanceRemote() {
-        int dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
-        String dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
-        RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodeList, logger, dasHost, dasPort);
+    private int createInstanceRemote() {
+
         ActionReport report = ctx.getActionReport();
-        // check if needs a remote connection
-        if (rch.isRemoteConnectRequired(node)) {
-                // this command will run over ssh
             StringBuilder output = new StringBuilder();
             ParameterMap map = new ParameterMap();
             map.set("DEFAULT", instance);
@@ -218,23 +222,14 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             if (output.length() > 0) {
                 logger.info(output.toString());
             }
-            if (status != 1){
-                String msg = Strings.get("create.instance.failed", instance);
+            if (status != 0){
+                String msg = Strings.get("create.instance.remote.failed", instance);
                 logger.warning(msg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(output.toString() + NL + msg);
-                }
-        } else {
-                // Could not reach the node via SSH
-            String msg = Strings.get("mustRunLocal",
-                        getHostFromNodeName(node), node,
-                        "asadmin create-local-instance --filesystemonly " + instance);
-            logger.warning(msg);
-            report.setActionExitCode(ActionReport.ExitCode.WARNING);
-            report.setMessage(msg);
-
-                // print the command that user must excute on the remote host
-        }
+                return 1;
+            }
+        return 0;
     }
 
 }
