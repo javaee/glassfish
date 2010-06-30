@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.List;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.types.Property;
 
@@ -54,22 +55,20 @@ import org.jvnet.hk2.config.types.Property;
  */
 public class EmbeddedSecurityUtil {
 
-    public static void copyConfigFiles(Habitat habitat, String fromInstanceDir, String toInstanceDir) throws IOException {
+    public static void copyConfigFiles(Habitat habitat, File fromInstanceDir) throws IOException {
         //For security reasons, permit only an embedded server instance to carry out the copy operations
         ServerEnvironment se = habitat.getComponent(ServerEnvironment.class);
         if (!isEmbedded(se)) {
             return;
         }
 
-        if ((fromInstanceDir == null) || (toInstanceDir == null)) {
+        if ((fromInstanceDir == null)) {
             throw new IllegalArgumentException("Null inputs");
         }
 
-        File fileFromInstanceDir = new File(fromInstanceDir);
-        File fileToInstanceDir = new File(toInstanceDir);
+        File toInstanceDir = habitat.getComponent(ServerEnvironmentImpl.class).getInstanceRoot();
 
         List<String> fileNames = new ArrayList<String>();
-
 
         //Add FileRealm keyfiles to the list
 
@@ -95,7 +94,7 @@ public class EmbeddedSecurityUtil {
         fileNames.add(loginConf);
         fileNames.add(secPolicy);
 
-        File toConfigDir = new File(fileToInstanceDir, "config");
+        File toConfigDir = new File(toInstanceDir, "config");
         if (!toConfigDir.exists()) {
             toConfigDir.mkdir();
         }
