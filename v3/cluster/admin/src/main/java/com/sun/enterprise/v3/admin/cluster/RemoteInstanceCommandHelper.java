@@ -60,17 +60,20 @@ import java.util.*;
  */
 final class RemoteInstanceCommandHelper {
 
-    RemoteInstanceCommandHelper(ServerEnvironment env0, Servers servers0, Configs configs0) {
+    RemoteInstanceCommandHelper(ServerEnvironment env0, Servers servers0, 
+            Configs configs0, Domain domain0) {
         // get rid of the annoying extra level of indirection...
         // callers may have a Servers object or the may happen to have a List<Server> object
         // we have a ctor for both!
-        this(env0, servers0.getServer(), configs0);
+        this(env0, servers0.getServer(), configs0, domain0);
     }
 
-    RemoteInstanceCommandHelper(ServerEnvironment env0, List<Server> servers0, Configs configs0) {
+    RemoteInstanceCommandHelper(ServerEnvironment env0, List<Server> servers0, 
+            Configs configs0, Domain domain0) {
         env = env0;
         configs = configs0.getConfig();
         servers = servers0;
+        domain = domain0;
     }
 
     final boolean isDas() {
@@ -234,4 +237,5 @@ final class RemoteInstanceCommandHelper {
     final private ServerEnvironment env;
     final private List<Server> servers;
     final private List<Config> configs;
+    final private Domain domain;
 }

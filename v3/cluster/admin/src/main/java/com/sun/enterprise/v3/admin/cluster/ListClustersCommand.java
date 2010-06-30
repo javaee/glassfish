@@ -88,7 +88,7 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
 
      @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs);
+        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
     }
 
     public void execute(AdminCommandContext context) {

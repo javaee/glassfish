@@ -37,6 +37,7 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.Node;
@@ -80,6 +81,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     Habitat habitat;
 
     @Inject
+    Domain domain;
+
+    @Inject
     Node[] nodeList;
 
     @Inject
@@ -117,7 +121,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
 
     @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs);
+        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
     }
 
     @Override

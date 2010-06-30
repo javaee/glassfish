@@ -101,7 +101,7 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
 
     @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs);
+        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
     }
 
     /**

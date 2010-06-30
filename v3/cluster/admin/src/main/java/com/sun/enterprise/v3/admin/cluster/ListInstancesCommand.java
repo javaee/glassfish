@@ -151,7 +151,8 @@ public class ListInstancesCommand implements AdminCommand {
 
     private void yesStatus(List<Server> serverList, int timeoutInMsec, Logger logger) {
         // Gather a list of InstanceInfo -- one per instance in domain.xml
-        RemoteInstanceCommandHelper helper = new RemoteInstanceCommandHelper(env, serverList, configs);
+        RemoteInstanceCommandHelper helper = 
+                new RemoteInstanceCommandHelper(env, serverList, configs, domain);
 
         for (Server server : serverList) {
             boolean clustered = server.getCluster() != null;

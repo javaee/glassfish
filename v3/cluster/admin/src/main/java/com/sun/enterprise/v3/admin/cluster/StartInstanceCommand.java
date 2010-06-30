@@ -88,6 +88,9 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     Habitat habitat;
 
     @Inject
+    Domain domain;
+    
+    @Inject
     Node[] nodes;
 
     @Inject
@@ -147,7 +150,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
 
     @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs);
+        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
     }
 
     private void startInstance()  {

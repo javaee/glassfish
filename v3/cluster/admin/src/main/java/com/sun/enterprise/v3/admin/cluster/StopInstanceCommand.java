@@ -78,6 +78,10 @@ import org.jvnet.hk2.component.PerLookup;
 @Scoped(PerLookup.class)
 @I18n("stop.instance.command")
 public class StopInstanceCommand implements AdminCommand, PostConstruct {
+
+    @Inject
+    Domain domain;
+
     public void execute(AdminCommandContext context) {
         logger = context.getLogger();
 
@@ -108,7 +112,7 @@ public class StopInstanceCommand implements AdminCommand, PostConstruct {
 
     @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs);
+        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
     }
 
     private void callInstance() {

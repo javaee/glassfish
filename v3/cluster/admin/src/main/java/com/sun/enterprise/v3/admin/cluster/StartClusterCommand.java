@@ -86,7 +86,7 @@ public class StartClusterCommand implements AdminCommand, PostConstruct {
 
     @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs);
+        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
     }
 
     @Override
