@@ -54,7 +54,6 @@ pkg = {
                       },
     "files"         : { "glassfish/osgi/felix/conf/config.properties" : { "preserve" : "renamenew"},
                         "glassfish/osgi/felix/conf/system.properties" : { "preserve" : "renamenew"},
-                        "glassfish/osgi/felix/conf/config.properties.nojaxb" : { "preserve" : "renamenew"},
                       },
     "licenses"      : {
                         "../../../../ApacheLicense.txt" : {"license" : "ApacheV2"},
