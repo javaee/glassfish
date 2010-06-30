@@ -182,7 +182,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
                 }
                 if (status != 1){
                     ActionReport report = ctx.getActionReport();
-                    String msg = Strings.get("start.instance.failed", instanceName);
+                    String msg = Strings.get("start.remote.instance.failed", instanceName);
                     logger.warning(msg);
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     report.setMessage(output + NL + msg);
