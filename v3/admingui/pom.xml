@@ -3,7 +3,7 @@
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved. 
+* Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -84,6 +84,7 @@
     	<module>plugin-service</module>
         <module>common</module>
         <module>core</module>
+        <module>cluster</module>
         <module>community-theme</module>
         <module>web</module>
         <module>jts</module>
