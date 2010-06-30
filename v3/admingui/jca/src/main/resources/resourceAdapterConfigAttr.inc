@@ -49,6 +49,7 @@
             <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['Name']}" labels="$pageSession{connectorList}"
                     required="#{true}" submitForm="#{true}" immediate="#{true}" >
                 <!beforeCreate
+                     //REST - TO DO
                      getApplicationBySnifferType(type="connector"  result="#{pageSession.connectorList}")
                      listAdd(list="#{pageSession.connectorList}" value="jmsra")
                 />
@@ -66,8 +67,8 @@
             //<sun:textField id="threadpoolsid" columns="$int{55}" text="#{pageSession.valueMap['ThreadPoolIds']}" />
             <sun:dropDown id="threadpoolsid" selected="#{pageSession.valueMap['ThreadPoolIds']}" labels="#{pageSession.threadPoolList}" >
                 <!beforeCreate
-                    getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[server-config],type=thread-pools" 
-                        type="thread-pool" result="#{requestScope.tmpList}");
+                    gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/server-config/thread-pools"
+                        result="#{requestScope.tmpList}");
                     addEmptyFirstElement(in="#{requestScope.tmpList}" out="#{pageSession.threadPoolList}")
                 />
                 </sun:dropDown>

@@ -48,14 +48,20 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/resourceAdapterConfigs.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="resource-adapter-config");
+        //REST - for setproxyProperties after creating an entity.
+        setPageSessionAttribute(key="restObjStr", value="amx:pp=/domain/resources,type=#{pageSession.childType}");
         //getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        //REST related
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+        setPageSessionAttribute(key="rest-api" value="true");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
         getRequestValue(key="name" value="#{pageSession.Name}");
+        //REST - TO DO
         getResourceAdapterConfigNewInfo(name="#{pageSession.Name}", valueMap="#{pageSession.valueMap}" tableList="#{requestScope.tableList}" )
     />
     </event>

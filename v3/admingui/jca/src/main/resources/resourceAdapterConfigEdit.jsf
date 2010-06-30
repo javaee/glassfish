@@ -50,7 +50,12 @@
     setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=resource-adapter-config,name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
     setPageSessionAttribute(key="childType" value="resource-adapter-config");
-    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+    //REST related
+    setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+    setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
+    setPageSessionAttribute(key="rest-api" value="true");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+    //REST - TO DO
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
     //set the following for including buttons.inc
     setPageSessionAttribute(key="edit" value="#{true}" );

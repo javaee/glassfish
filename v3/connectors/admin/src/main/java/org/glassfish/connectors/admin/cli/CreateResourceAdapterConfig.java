@@ -79,7 +79,7 @@ public class CreateResourceAdapterConfig implements AdminCommand {
     @Param(optional=true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
-    @Param(name="threadpoolid", optional=true)
+    @Param(name="threadpoolid", optional=true, alias="threadPoolIds")
     String threadPoolIds;
 
     @Param(name="objecttype", defaultValue="user", optional=true)

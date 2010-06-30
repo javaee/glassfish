@@ -40,6 +40,7 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
+                    //REST- TO DO
                     saveWorkSecurityMap(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}" valueMap2="#{pageSession.valueMap2}" usersOptionG="#{usersOptionG}" usersOptionP="#{usersOptionP}" );
                 prepareSuccessfulMsg();
                 gf.redirect(page="#{selfPage}&mapName=#{pageSession.valueMap['Name']}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
@@ -48,6 +49,7 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
+                   //REST - TO DO
                    createWorkSecurityMap(parentObjectNameStr="#{pageSession.parentObjectNameStr}"
                         childType="#{pageSession.childType}"
                         usersOptionG="#{usersOptionG}"
