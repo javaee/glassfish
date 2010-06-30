@@ -238,8 +238,6 @@ public class AppClientDeployer
         AppClientDeployerHelper helper = null;
         try {
             helper = getSavedHelperOrCreateHelper(dc);
-            DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
-            addArtifactsToDownloads(params.name(), helper);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -289,6 +287,8 @@ public class AppClientDeployer
             final AppClientDeployerHelper helper = createAndSaveHelper(
                     dc, gfClientModuleClassLoader);
             helper.prepareJARs();
+            DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
+            addArtifactsToDownloads(params.name(), helper);
         } catch (Exception ex) {
             throw new DeploymentException(ex);
         }
