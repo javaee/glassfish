@@ -44,6 +44,7 @@
   
   <test name="admincli_tests">
         <classes>
+                <class name="test.admincli.RestartDomainTests"/>
                 <class name="test.admincli.ExistStatusTests"/>
         </classes>
   </test>
