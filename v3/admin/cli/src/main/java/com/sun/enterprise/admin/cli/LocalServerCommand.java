@@ -297,10 +297,25 @@ public abstract class LocalServerCommand extends CLICommand {
                     programOpts.getPort());
     }
 
+    protected final void waitForRestart(File pwFile, long oldTimeStamp, long uptimeOldServer) throws CommandException {
+        if (oldTimeStamp <= 0 || !usingLocalPassword())
+            waitForRestartRemote(uptimeOldServer);
+        else
+            waitForRestartLocal(pwFile, oldTimeStamp, uptimeOldServer);
+    }
+
     /**
-     * Wait for the server to restart.
+     * Wait for the local server to restart.
      */
-    protected final void waitForRestart(File pwFile, long oldTimeStamp) throws CommandException {
+    private void waitForRestartLocal(File pwFile, long oldTimeStamp, long uptimeOldServer) throws CommandException {
+        // we are using local-password for authentication to the local server.  We need
+        // to use the NEW password that will be soon generated.  After that we can
+        // do Uptime calls to make sure V3 is ready to receive commands
+
+        if (!usingLocalPassword())
+            throw new CommandException("Internal Error - waitForRestartLocal should "
+                    + "not be called unless using local password authentication.");
+
         long end = CLIConstants.WAIT_FOR_DAS_TIME_MS
                 + System.currentTimeMillis();
 
@@ -315,11 +330,39 @@ public abstract class LocalServerCommand extends CLICommand {
                         + "old: " + oldTimeStamp + ", new: " + newTimeStamp);
 
                 if (newTimeStamp > oldTimeStamp) {
-                    // All Done!!
+                    // Server has restarted but may not be quite ready to handle commands
+                    // automated tests would have issues if we returned right here...
                     resetServerDirs();
+                    programOpts.setPassword(getServerDirs().getLocalPassword(), ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
+                    waitForRestartRemote(uptimeOldServer);
                     return;
                 }
-                Thread.sleep(300);
+                Thread.sleep(CLIConstants.RESTART_CHECK_INTERVAL_MSEC);
+            }
+            catch (Exception e) {
+                // continue
+            }
+        }
+        // if we get here -- we timed out
+        throw new CommandException(strings.get("restartDomain.noGFStart"));
+    }
+
+    /**
+     * Wait for the remote server to restart.
+     */
+    private void waitForRestartRemote(long uptimeOldServer) throws CommandException {
+        long end = CLIConstants.WAIT_FOR_DAS_TIME_MS
+                + System.currentTimeMillis();
+
+        while (System.currentTimeMillis() < end) {
+            try {
+                Thread.sleep(CLIConstants.RESTART_CHECK_INTERVAL_MSEC);
+                long up = getUptime();
+                logger.printDebugMessage("oldserver-uptime, newserver-uptime = " + uptimeOldServer + " --- " + up);
+
+                if (up > 0 && up < uptimeOldServer) {
+                    return;
+                }
             }
             catch (Exception e) {
                 // continue
@@ -361,6 +404,10 @@ public abstract class LocalServerCommand extends CLICommand {
         catch (Exception e) {
             return 0;
         }
+    }
+
+    private boolean usingLocalPassword() {
+        return programOpts.getPasswordLocation() == ProgramOptions.PasswordLocation.LOCAL_PASSWORD;
     }
 
     private final File getJKS() {

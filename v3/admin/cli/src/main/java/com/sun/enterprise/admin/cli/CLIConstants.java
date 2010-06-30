@@ -82,6 +82,7 @@ public class CLIConstants {
     public static final String NODEAGENT_DEFAULT_HOST_ADDRESS = "0.0.0.0";
     public static final String NODEAGENT_JMX_DEFAULT_PROTOCOL = "rmi_jrmp";
     public static final String HOST_NAME_PROPERTY = "com.sun.aas.hostName";
+    public static final int RESTART_CHECK_INTERVAL_MSEC = 300;
 
     ////////////////////////////////////////////////////////////////////////////
     ///////       private                   ////////////////////////////////////

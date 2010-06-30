@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli;
 
 import java.io.*;
@@ -44,7 +43,6 @@ import org.jvnet.hk2.component.*;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-
 
 /**
  * THe restart-domain command.
@@ -65,9 +63,9 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Service(name = "restart-domain")
 @Scoped(PerLookup.class)
 public class RestartDomainCommand extends StopDomainCommand {
+
     @Inject
     private Habitat habitat;
-
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(RestartDomainCommand.class);
 
@@ -82,16 +80,20 @@ public class RestartDomainCommand extends StopDomainCommand {
 
         // run the remote restart-domain command and throw away the output
         RemoteCommand cmd =
-            new RemoteCommand("restart-domain", programOpts, env);
+                new RemoteCommand("restart-domain", programOpts, env);
         String oldpw = programOpts.getPassword();
 
-        // get the timestamp BEFORE calling the server!
+
         File pwFile = getServerDirs().getLocalPasswordFile();
-        long stamp = pwFile.lastModified();
+        long stamp = -1;
+
+        if (pwFile != null)
+            stamp = pwFile.lastModified();
 
         cmd.executeAndReturnOutput("restart-domain");
-        waitForRestart(pwFile, stamp);
-        //waitForRestart(uptimeOldServer);
+
+        waitForRestart(pwFile, stamp, uptimeOldServer);
+
         logger.printMessage(strings.get("restartDomain.success"));
     }
 
@@ -104,6 +106,16 @@ public class RestartDomainCommand extends StopDomainCommand {
         logger.printWarning(strings.get("restart.dasNotRunning"));
         CLICommand cmd = habitat.getComponent(CLICommand.class, "start-domain");
         // XXX - assume start-domain accepts all the same options
+
+
+
+
+
+
+
+
+
+
         return cmd.execute(argv);
     }
 }

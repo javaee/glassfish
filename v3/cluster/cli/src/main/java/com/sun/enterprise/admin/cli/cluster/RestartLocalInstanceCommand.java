@@ -53,27 +53,31 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "restart-local-instance")
 @Scoped(PerLookup.class)
 public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
+
     @Inject
     private Habitat habitat;
-
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(RestartLocalInstanceCommand.class);
 
     @Override
     protected final int doRemoteCommand() throws CommandException {
+        // first, find out how long the server has been up
+        long uptimeOldServer = getUptime();  // may throw CommandException
+
         // get the timestamp BEFORE calling the server!
+        // it is null if this is a remote server call
         File pwFile = getServerDirs().getLocalPasswordFile();
-        long timestamp = pwFile.lastModified();
+        long timestamp = (pwFile != null) ? pwFile.lastModified() : -1;
 
         // run the remote restart-domain command and throw away the output
         RemoteCommand cmd = new RemoteCommand("restart-instance", programOpts, env);
         cmd.executeAndReturnOutput("restart-instance");
-        waitForRestart(pwFile, timestamp);
+        waitForRestart(pwFile, timestamp, uptimeOldServer);
         return 0;
     }
-    
+
     @Override
-    protected int instanceNotRunning() throws CommandException{
+    protected int instanceNotRunning() throws CommandException {
         logger.printWarning(strings.get("restart.instanceNotRunning"));
         CLICommand cmd = habitat.getComponent(CLICommand.class, "start-local-instance");
         return cmd.execute(argv);
