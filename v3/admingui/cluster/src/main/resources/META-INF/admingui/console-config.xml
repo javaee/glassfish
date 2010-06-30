@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="cluster">
+         <integration-point
+                id="clustersNode"
+                type="org.glassfish.admingui:navNode"
+                priority="300"
+                parentId="tree"
+                content="/cluster/clusterTreeNode.jsf"
+        />
+        <integration-point
+                id="standalonesNode"
+                type="org.glassfish.admingui:navNode"
+                priority="350"
+                parentId="tree"
+                content="/standalone/standaloneTreeNode.jsf"
+        />
+        <integration-point
+                id="nodesNode"
+                type="org.glassfish.admingui:navNode"
+                priority="400"
+                parentId="tree"
+                content="/node/nodeTreeNode.jsf"
+        />
+</console-config>
