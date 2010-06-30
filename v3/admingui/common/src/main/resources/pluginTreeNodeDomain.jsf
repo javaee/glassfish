@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -33,10 +33,12 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- pluginTreeNodeClusters.jsf -->
-<!--  ===================================== Clusters ======================  -->
-<sun:treeNode  id="clusters"
-	text="$resource{i18n.tree.clusters}"
-	url="/common/cluster/clusters.jsf"
-	imageURL="/resource/images/cluster.gif"
-	expanded="true" />
+<!-- pluginTreeNodeNodes.jsf -->
+
+<!--  ===================================== Nodes ======================  -->
+<sun:treeNode  id="nodes"
+    text="$resource{i18nc.tree.domain}"
+    url="/common/appServer/domain.jsf"
+    imageURL="/resource/images/domain.gif"
+    expanded="true"
+/>

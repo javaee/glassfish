@@ -55,12 +55,9 @@ monitoring     web  800
 
     // Parent == "tree" priorities:
     100: pluginTreeNodeRegistration.jsf
-    200: pluginTreeNodeServer.jsf
-    300: pluginTreeNodeApps.jsf
-    400: pluginTreeNodeResources.jsf
-    500: pluginTreeNodeClusters.jsf
-    530: pluginTreeNodeInstances.jsf
-    560: pluginTreeNodeNodes.jsf
+    200: pluginTreeNodeApps.jsf
+    300: pluginTreeNodeResources.jsf
+    400: pluginTreeNodeServer.jsf
     700: pluginTreeNodeConfigurations.jsf
     800: update center
 -->

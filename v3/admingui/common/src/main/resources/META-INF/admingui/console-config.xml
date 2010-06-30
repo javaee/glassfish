@@ -104,6 +104,12 @@
                 parentId="tree"
                 content="pluginTreeNodeRegistration.jsf" />
         <integration-point
+                id="common_domain"
+                type="org.glassfish.admingui:navNode"
+                priority="170"
+                parentId="tree"
+                content="pluginTreeNodeDomain.jsf" />
+        <integration-point
                 id="common_server"
                 type="org.glassfish.admingui:navNode"
                 priority="200"
@@ -112,33 +118,15 @@
         <integration-point
                 id="common_apps"
                 type="org.glassfish.admingui:navNode"
-                priority="300"
+                priority="500"
                 parentId="tree"
                 content="pluginTreeNodeApps.jsf" />
         <integration-point
                 id="common_resources"
                 type="org.glassfish.admingui:navNode"
-                priority="400"
+                priority="600"
                 parentId="tree"
                 content="pluginTreeNodeResources.jsf" />
-        <integration-point
-                id="common_clusters"
-                type="org.glassfish.admingui:navNode"
-                priority="500"
-                parentId="tree"
-                content="pluginTreeNodeClusters.jsf" />
-        <integration-point
-                id="common_instances"
-                type="org.glassfish.admingui:navNode"
-                priority="530"
-                parentId="tree"
-                content="pluginTreeNodeInstances.jsf" />
-        <integration-point
-                id="common_nodes"
-                type="org.glassfish.admingui:navNode"
-                priority="560"
-                parentId="tree"
-                content="pluginTreeNodeNodes.jsf" />
         <integration-point
                 id="common_config"
                 type="org.glassfish.admingui:navNode"

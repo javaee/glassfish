@@ -38,7 +38,7 @@
 <!--  ===================================== Application Server  ======================  -->
 <sun:treeNode
 	id="applicationServer"
-	text="$resource{i18n.tree.appServer}"
+	text="$resource{i18nc.tree.adminServer}"
 	url="/common/appServer/serverInstGeneralPe.jsf?instanceName=server"
 	imageURL="/resource/images/instance.gif">
     <!facet image>
