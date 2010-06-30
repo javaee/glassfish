@@ -40,10 +40,10 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.ee.cms.core.*;
 import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.impl.client.*;
+import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
 import com.sun.logging.LogDomains;
 
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static com.sun.enterprise.ee.cms.core.ServiceProviderConfigurationKeys.*;
 
@@ -51,6 +51,8 @@ import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.Properties;
 import java.util.Enumeration;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.FileInputStream;
@@ -62,19 +64,23 @@ import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.gms.bootstrap.GMSAdapter;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.types.Property;
 
 /**
  * @author Sheetal.Vartak@Sun.COM
  */
+@Scoped(PerLookup.class)
 @Service()
 public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     private static final Logger logger =
         LogDomains.getLogger(GMSAdapterImpl.class, LogDomains.GMS_LOGGER);
+    private Level gmsLogLevel = Level.CONFIG;
     private static final String BEGINS_WITH = "^";
     private static final String GMS_PROPERTY_PREFIX = "GMS_";
     private static final String GMS_PROPERTY_PREFIX_REGEXP = BEGINS_WITH + GMS_PROPERTY_PREFIX;
@@ -95,6 +101,19 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     private String clusterName = null;
     private Config clusterConfig = null;
 
+    private ConcurrentHashMap<CallBack, JoinNotificationActionFactory> callbackJoinActionFactoryMapping =
+            new ConcurrentHashMap<CallBack, JoinNotificationActionFactory>();
+    private ConcurrentHashMap<CallBack, JoinedAndReadyNotificationActionFactory> callbackJoinedAndReadyActionFactoryMapping =
+            new ConcurrentHashMap<CallBack, JoinedAndReadyNotificationActionFactory>();
+    private ConcurrentHashMap<CallBack, FailureNotificationActionFactory> callbackFailureActionFactoryMapping =
+            new ConcurrentHashMap<CallBack, FailureNotificationActionFactory>();
+    private ConcurrentHashMap<CallBack, FailureSuspectedActionFactory> callbackFailureSuspectedActionFactoryMapping =
+            new ConcurrentHashMap<CallBack, FailureSuspectedActionFactory>();
+    private ConcurrentHashMap<CallBack, GroupLeadershipNotificationActionFactory> callbackGroupLeadershipActionFactoryMapping =
+            new ConcurrentHashMap<CallBack, GroupLeadershipNotificationActionFactory>();
+    private ConcurrentHashMap<CallBack, PlannedShutdownActionFactory> callbackPlannedShutdownActionFactoryMapping =
+            new ConcurrentHashMap<CallBack, PlannedShutdownActionFactory>();
+
     @Inject
     Events events;
 
@@ -107,55 +126,82 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     @Inject
     Habitat habitat;
 
+    @Inject
+    Clusters clusters;
+
     @Override
     public void postConstruct() {
         logger.setLevel(Level.CONFIG);
         logger.log(Level.CONFIG, "gmsservice.postconstruct");
-
-        Domain domain = habitat.getComponent(Domain.class);
-        instanceName = env.getInstanceName();
-
-        isDas = env.isDas();
-        if (isDas) {
-            // hack: only supporting one cluster for M2
-            cluster = domain.getClusters().getCluster().get(0);
-        } else {
-            cluster = server.getCluster();
-        }
-
-        if (cluster == null) {
-            logger.log(Level.WARNING, "gmsservice.nocluster.warning");
-            return;       //don't enable GMS
-        }
-
-        clusterName = cluster.getName();
-        clusterConfig = domain.getConfigNamed(clusterName + "-config");
-        if (logger.isLoggable(Level.CONFIG)) {
-            logger.config("clusterName=" + clusterName);
-            logger.config("clusterConfig=" + clusterConfig);
-            logger.config("domaing.getConfigs()=" + domain.getConfigs());
-        }
-        try {
-            initializeGMS();
-        } catch (GMSException e) {
-            logger.log(Level.WARNING, "gmsexception.occurred", e.getLocalizedMessage());
-        }
     }
 
-    private void initStopGapGMSConfiguration(Properties configProps) {
-        getSystemProps(configProps);   //setting up Shoal defaults
-        readFromPropsFile(configProps);
+    AtomicBoolean initialized = new AtomicBoolean(false);
+    AtomicBoolean initializationComplete = new AtomicBoolean(false);
 
-        // trim white space from keys and values.  Was needed for java property files, unsure whether needed when getting from domain.xml
-        for (Enumeration property = configProps.propertyNames(); property.hasMoreElements();) {
-            String key = (String) property.nextElement();
-            String value = configProps.getProperty(key);
-            if (value != null) {
-                configProps.setProperty(key.trim(), value.trim());
+    @Override
+    public String getClusterName() {
+        return clusterName;
+    }
+
+    @Override
+    public boolean initialize(String clusterName) {
+        if (initialized.compareAndSet(false, true)) {
+            this.clusterName = clusterName;
+            if (clusterName == null) {
+                logger.log(Level.SEVERE, "no clustername to lookup");
+                return false;
             }
+            try {
+                gms = GMSFactory.getGMSModule(clusterName);
+            } catch (GMSException ge) {
+                // ignore
+            }
+            if (gms != null) {
+                logger.log(Level.SEVERE, "multiple gms-adapter service for cluster " + clusterName);
+                return false;
+            }
+
+            Domain domain = habitat.getComponent(Domain.class);
+            instanceName = env.getInstanceName();
+
+            isDas = env.isDas();
+            if (isDas) {
+                for (Cluster clusterI : clusters.getCluster()) {
+                    if (clusterName.compareTo(clusterI.getName()) == 0) {
+                        cluster = clusterI;
+                        break;
+                    }
+                }
+            } else {
+                cluster = server.getCluster();
+                assert (clusterName.equals(cluster.getName()));
+            }
+
+            if (cluster == null) {
+                logger.log(Level.WARNING, "gmsservice.nocluster.warning");
+                return false;       //don't enable GMS
+            }
+
+            clusterConfig = domain.getConfigNamed(clusterName + "-config");
+            if (logger.isLoggable(Level.CONFIG)) {
+                logger.config("clusterName=" + clusterName + " clusterConfig=" + clusterConfig);
+            }
+            try {
+                initializeGMS();
+            } catch (GMSException e) {
+                logger.log(Level.WARNING, "gmsexception.occurred", e);
+            }
+            initializationComplete.set(true);
         }
+        return initialized.get();
     }
-    
+
+    public void complete() {
+        initialized.compareAndSet(true, false);
+        initializationComplete.compareAndSet(true, false);
+        gms = null;
+        GMSFactory.removeGMSModule(clusterName);
+    }
 
     private void readGMSConfigProps(Properties configProps) {
         configProps.put(MEMBERTYPE_STRING, isDas ? SPECTATOR : CORE);
@@ -293,9 +339,9 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 String name = prop.getName().trim();
                 String value = prop.getValue().trim();
                 logger.config("processing group-management-service property name=" + name + " value= " + value);
-                  if (value.startsWith("${")) {
+                if (value.startsWith("${")) {
                     logger.config("skipping group-management-service property name=" + name + " since value is unresolved symbolic token="+ value);
-                } else if (name != null ) {
+                 } else if (name != null ) {
                     try {
                         logger.config("processing group-management-service property name=" + name + " value= " + value);
                         if (name.startsWith(GMS_PROPERTY_PREFIX)) {
@@ -304,11 +350,10 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                         GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(name);
                         configProps.put(name, value);
                     } catch (IllegalArgumentException iae) {
+                        logger.warning("ignoring group-management-service property " + name + " with value of " + value + " due to " + iae.getLocalizedMessage());
                     }
-                }
+                 }
             }
-
-            
         }
         if (cluster != null) {
             props = cluster.getProperty();
@@ -344,35 +389,42 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     private void initializeGMS() throws GMSException{
         Properties configProps = new Properties();
 
-        // todo  delete once readGMSConfigProps() confirmed to replace this functionality for certain.
-        // pre-M2 stop-gap gms configuration read GMS configuration from java property files, one per instance and cluster.
-        //initStopGapGMSConfiguration(configProps);
 
         // read GMS configuration from domain.xml
         readGMSConfigProps(configProps);
-        
+
         printProps(configProps);
 
-        String memberType = (String) configProps.get(MEMBERTYPE_STRING);   
+        String memberType = (String) configProps.get(MEMBERTYPE_STRING);
 
         gms = (GroupManagementService) GMSFactory.startGMSModule(instanceName, clusterName,
                 GroupManagementService.MemberType.valueOf(memberType), configProps);
-
+        //remove GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER).setLevel(gmsLogLevel);
+        GMSFactory.setGMSEnabledState(clusterName, Boolean.TRUE);
+        GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER).setLevel(Level.CONFIG);
         if (gms != null) {
             try {
 
-                gms.addActionFactory(new JoinedAndReadyNotificationActionFactoryImpl(this));
-                gms.addActionFactory(new JoinNotificationActionFactoryImpl(this));
-                gms.addActionFactory(new FailureNotificationActionFactoryImpl(this));
-                gms.addActionFactory(new PlannedShutdownActionFactoryImpl(this));
-                gms.addActionFactory(new FailureSuspectedActionFactoryImpl(this));
-
+                // todo remove these in future. just verifying that these handlers are getting registered and getting called.
+                registerJoinedAndReadyNotificationListener(this);
+                registerJoinNotificationListener(this);
+                registerFailureNotificationListener(this);
+                registerPlannedShutdownListener(this);
+                registerFailureSuspectedListener(this);
+                
                 events.register(new org.glassfish.api.event.EventListener() {
                     @Override
                     public void event(Event event) {
                         if (event.is(EventTypes.SERVER_SHUTDOWN)) {
                             logger.fine("Calling gms.shutdown()...");
+
+                            // todo: remove these when removing the test register ones above.
+                            removeJoinedAndReadyNotificationListener(GMSAdapterImpl.this);
+                            removeJoinNotificationListener(GMSAdapterImpl.this);
+                            removeFailureNotificationListener(GMSAdapterImpl.this);
+                            removeFailureSuspectedListener(GMSAdapterImpl.this);
                             gms.shutdown(GMSConstants.shutdownType.INSTANCE_SHUTDOWN);
+                            removePlannedShutdownListener(GMSAdapterImpl.this);
                         } else if (event.is(EventTypes.SERVER_READY)) {
                             logger.fine("Ready");
                             gms.reportJoinedAndReadyState(clusterName);
@@ -391,108 +443,6 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
         logger.info(instanceName + " joined group " + clusterName);
 
-    }
-
-    private Properties readFromPropsFile(Properties configProps) {
-        final String INSTANCE_PROPS_FILE_LOCATION = "/clusters/" + clusterName + "/" + instanceName + ".properties";
-        final String CLUSTER_PROPS_FILE_LOCATION = "/clusters/" + clusterName + "/cluster.properties";
-
-        //load default properties
-
-        String install_location= System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
-        String fileName = install_location + INSTANCE_PROPS_FILE_LOCATION;
-        logger.config("configProps file location ..." + install_location + INSTANCE_PROPS_FILE_LOCATION + "and " +
-                install_location + CLUSTER_PROPS_FILE_LOCATION);
-        FileInputStream in;
-        try {
-
-            in = new FileInputStream(fileName);
-            configProps.load(in);
-            in.close();
-
-        } catch (FileNotFoundException fe) {
-            logger.log(Level.WARNING, "Cannot find the properties file : " + fileName, fe.getLocalizedMessage() + "Using Shoal Defaults..." );
-            return configProps;
-
-        } catch (IOException ioe) {
-            logger.log(Level.WARNING, "Exception while trying to load the properties file.Using GMS default properties", ioe.getLocalizedMessage());
-            return configProps;
-        }
-
-        try {
-            fileName = install_location + CLUSTER_PROPS_FILE_LOCATION;
-
-            in = new FileInputStream(fileName);
-            configProps.load(in);
-            in.close();
-            return configProps;
-        } catch (FileNotFoundException fe) {
-            logger.log(Level.WARNING, "Cannot find the properties file : " + fileName + "Using GMS default properties", fe.getLocalizedMessage());
-            return configProps;
-
-        } catch (IOException ioe) {
-            logger.log(Level.WARNING, "Exception while trying to load the properties file.Using GMS default properties", ioe.getLocalizedMessage());
-            return configProps;
-        }
-    }
-
-    private Properties getSystemProps(Properties configProps) {
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "Is initial host=" + System.getProperty("IS_INITIAL_HOST"));
-        }
-        configProps.put(INSTANCE_NAME, instanceName);
-        configProps.put(CLUSTER_NAME, clusterName);
-
-        // bobby: get the other names into here
-        if (instanceName.equals("server")) {   //instance is DAS
-            configProps.put(MEMBERTYPE_STRING, SPECTATOR);
-
-            configProps.put(ServiceProviderConfigurationKeys.IS_BOOTSTRAPPING_NODE.toString(), true);
-        } else {
-            configProps.put(MEMBERTYPE_STRING, System.getProperty(MEMBERTYPE_STRING, CORE).toUpperCase());
-            configProps.put(ServiceProviderConfigurationKeys.IS_BOOTSTRAPPING_NODE.toString(),
-                    System.getProperty("IS_INITIAL_HOST", "false"));
-        }
-
-        configProps.put(ServiceProviderConfigurationKeys.MULTICASTADDRESS.toString(),
-                System.getProperty("MULTICASTADDRESS", "229.9.1.1"));
-
-        configProps.put(ServiceProviderConfigurationKeys.MULTICASTPORT.toString(), 2299);
-
-        if (System.getProperty("INITIAL_HOST_LIST") != null) {
-            configProps.put(ServiceProviderConfigurationKeys.VIRTUAL_MULTICAST_URI_LIST.toString(),
-                    System.getProperty("INITIAL_HOST_LIST"));
-        }
-
-        configProps.put(ServiceProviderConfigurationKeys.FAILURE_DETECTION_RETRIES.toString(),
-                System.getProperty(ServiceProviderConfigurationKeys.FAILURE_DETECTION_RETRIES.toString(), "3"));
-
-        configProps.put(ServiceProviderConfigurationKeys.FAILURE_DETECTION_TIMEOUT.toString(),
-                System.getProperty(ServiceProviderConfigurationKeys.FAILURE_DETECTION_TIMEOUT.toString(), "2000"));
-
-        configProps.put(ServiceProviderConfigurationKeys.DISCOVERY_TIMEOUT.toString(),
-                System.getProperty(ServiceProviderConfigurationKeys.DISCOVERY_TIMEOUT.toString(), "5000"));
-
-        configProps.put(ServiceProviderConfigurationKeys.FAILURE_VERIFICATION_TIMEOUT.toString(),
-                System.getProperty(ServiceProviderConfigurationKeys.FAILURE_VERIFICATION_TIMEOUT.toString(), "1500"));
-
-        String timeout = System.getProperty(ServiceProviderConfigurationKeys.FAILURE_DETECTION_TCP_RETRANSMIT_TIMEOUT.toString());
-        if (timeout != null)
-            configProps.put(ServiceProviderConfigurationKeys.FAILURE_DETECTION_TCP_RETRANSMIT_TIMEOUT.toString(),
-                    timeout);
-
-
-        //Uncomment this to receive loop back messages
-        //configProps.put(ServiceProviderConfigurationKeys.LOOPBACK.toString(), "true");
-        final String bindInterfaceAddress = System.getProperty("BIND_INTERFACE_ADDRESS");
-        if (bindInterfaceAddress != null) {
-            configProps.put(ServiceProviderConfigurationKeys.BIND_INTERFACE_ADDRESS.toString(), bindInterfaceAddress);
-        }
-        configProps.put(GrizzlyConfigConstants.TCPSTARTPORT.toString(), System.getProperty("TCPSTARTPORT", "9090"));
-        configProps.put(GrizzlyConfigConstants.TCPENDPORT.toString(), System.getProperty("TCPENDPORT", "9120"));
-
-        return configProps;
     }
 
     private void printProps(Properties prop) {
@@ -529,7 +479,218 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     // each of the getModule(s) methods are temporary. see class-level comment.
     @Override
     public GroupManagementService getModule() {
+        if( ! initialized.get() || ! initializationComplete.get())  {
+            throw new IllegalStateException("GMSAdapter not properly initialized.");
+        }
         return gms;
     }
 
+    /**
+     * Registers a JoinNotification Listener.
+     *
+     * @param callback processes GMS notification JoinNotificationSignal
+     */
+    @Override
+    public void registerJoinNotificationListener(CallBack callback) {
+        if (gms != null  && callback != null) {
+            JoinNotificationActionFactory jnaf =  new JoinNotificationActionFactoryImpl(callback);
+            gms.addActionFactory(jnaf);
+            callbackJoinActionFactoryMapping.put(callback, jnaf);
+        }
+    }
+
+    /**
+     * Registers a JoinAndReadyNotification Listener.
+     *
+     * @param callback processes GMS notification JoinAndReadyNotificationSignal
+     */
+    @Override
+    public void registerJoinedAndReadyNotificationListener(CallBack callback) {
+        if (gms != null && callback != null) {
+            JoinedAndReadyNotificationActionFactory jnaf =  new JoinedAndReadyNotificationActionFactoryImpl(callback);
+            gms.addActionFactory(jnaf);
+            callbackJoinedAndReadyActionFactoryMapping.put(callback, jnaf);
+        }
+    }
+
+    /**
+     * Register a listener for all events that represent a member has left the group.
+     *
+     * @param callback Signal can be either PlannedShutdownSignal, FailureNotificationSignal or JoinNotificationSignal(subevent Rejoin).
+     */
+    @Override
+    public void registerMemberLeavingListener(CallBack callback) {
+        if (gms != null && callback != null) {
+            registerFailureNotificationListener(callback);
+            registerPlannedShutdownListener(callback);
+            registerJoinNotificationListener(callback);
+        }
+    }
+
+    /**
+     * Registers a PlannedShutdown Listener.
+     *
+     * @param callback processes GMS notification PlannedShutdownSignal
+     */
+    @Override
+    public void registerPlannedShutdownListener(CallBack callback) {
+        if (gms != null && callback != null) {
+            PlannedShutdownActionFactory psaf = new PlannedShutdownActionFactoryImpl(callback);
+            callbackPlannedShutdownActionFactoryMapping.put(callback, psaf);
+            gms.addActionFactory(psaf);
+        }
+    }
+
+    /**
+     * Registers a FailureSuspected Listener.
+     *
+     * @param callback processes GMS notification FailureSuspectedSignal
+     */
+    @Override
+    public void registerFailureSuspectedListener(CallBack callback) {
+        if (gms != null) {
+            FailureSuspectedActionFactory fsaf = new FailureSuspectedActionFactoryImpl(callback);
+            callbackFailureSuspectedActionFactoryMapping.put(callback, fsaf);
+            gms.addActionFactory(fsaf);
+        }
+    }
+
+    /**
+     * Registers a FailureNotification Listener.
+     *
+     * @param callback processes GMS notification FailureNotificationSignal
+     */
+    @Override
+    public void registerFailureNotificationListener(CallBack callback) {
+        if (gms != null) {
+            FailureNotificationActionFactory fnaf = new FailureNotificationActionFactoryImpl(callback);
+            callbackFailureActionFactoryMapping.put(callback, fnaf);
+            gms.addActionFactory(fnaf);
+        }
+    }
+
+    /**
+     * Registers a FailureRecovery Listener.
+     *
+     * @param callback      processes GMS notification FailureRecoverySignal
+     * @param componentName The name of the parent application's component that should be notified of selected for
+     *                      performing recovery operations. One or more components in the parent application may
+     *                      want to be notified of such selection for their respective recovery operations.
+     */
+    @Override
+    public void registerFailureRecoveryListener(String componentName, CallBack callback) {
+        if (gms != null) {
+            gms.addActionFactory(componentName, new FailureRecoveryActionFactoryImpl(callback));
+        }
+    }
+
+    /**
+     * Registers a Message Listener.
+     *
+     * @param componentName   Name of the component that would like to consume
+     *                        Messages. One or more components in the parent application would want to
+     *                        be notified when messages arrive addressed to them. This registration
+     *                        allows GMS to deliver messages to specific components.
+     * @param messageListener processes GMS MessageSignal
+     */
+    @Override
+    public void registerMessageListener(String componentName, CallBack messageListener) {
+        if (gms != null) {
+            gms.addActionFactory(new MessageActionFactoryImpl(messageListener), componentName);
+        }
+    }
+
+    /**
+     * Registers a GroupLeadershipNotification Listener.
+     *
+     * @param callback processes GMS notification GroupLeadershipNotificationSignal. This event occurs when the GMS masters leaves the Group
+     *                 and another member of the group takes over leadership. The signal indicates the new leader.
+     */
+    @Override
+    public void registerGroupLeadershipNotificationListener(CallBack callback) {
+        if (gms != null) {
+            gms.addActionFactory(new GroupLeadershipNotificationActionFactoryImpl(callback));
+        }
+    }
+
+    @Override
+    public void removeFailureRecoveryListener(String componentName) {
+        if (gms != null) {
+            gms.removeFailureRecoveryActionFactory(componentName);
+        }
+    }
+
+    @Override
+    public void removeMessageListener(String componentName){
+        if (gms != null) {
+            gms.removeMessageActionFactory(componentName);
+        }
+    }
+
+    @Override
+    public void removeFailureNotificationListener(CallBack callback){
+        if (gms != null) {
+            FailureNotificationActionFactory fnaf = callbackFailureActionFactoryMapping.remove(callback);
+            if (fnaf != null) {
+                gms.removeActionFactory(fnaf);
+            }
+        }
+    }
+
+    @Override
+    public void removeFailureSuspectedListener(CallBack callback){
+         if (gms != null) {
+            FailureSuspectedActionFactory fsaf = callbackFailureSuspectedActionFactoryMapping.remove(callback);
+            if (fsaf != null) {
+                gms.removeFailureSuspectedActionFactory(fsaf);
+            }
+        }
+    }
+
+    @Override
+    public void removeJoinNotificationListener(CallBack callback){
+        if (gms != null) {
+            JoinNotificationActionFactory jaf = callbackJoinActionFactoryMapping.get(callback);
+            if (jaf != null)  {
+                gms.removeActionFactory(jaf);
+            }
+        }
+    }
+
+    @Override
+    public void removeJoinedAndReadyNotificationListener(CallBack callback){
+        if (gms != null) {
+            JoinedAndReadyNotificationActionFactory jaf = callbackJoinedAndReadyActionFactoryMapping.get(callback);
+            if (jaf != null)  {
+                gms.removeActionFactory(jaf);
+            }
+        }
+    }
+
+    @Override
+    public void removePlannedShutdownListener(CallBack callback){
+        if (gms != null) {
+            PlannedShutdownActionFactory psaf = callbackPlannedShutdownActionFactoryMapping.remove(callback);
+            if (psaf != null) {
+                gms.removeActionFactory(psaf);
+            }
+        }
+    }
+
+    @Override
+    public void removeGroupLeadershipLNotificationistener(CallBack callback){
+         if (gms != null) {
+            GroupLeadershipNotificationActionFactory glnf = callbackGroupLeadershipActionFactoryMapping.get(callback);
+            if (glnf != null)  {
+                gms.removeActionFactory(glnf);
+            }
+        }
+    }
+
+    @Override
+    public void removeMemberLeavingListener(CallBack callback){
+        removePlannedShutdownListener(callback);
+        removeFailureNotificationListener(callback);
+        removeJoinNotificationListener(callback);
+    }
 }

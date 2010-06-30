@@ -39,9 +39,8 @@ package org.glassfish.gms.bootstrap;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Clusters;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.ee.cms.core.GMSConstants;
-import com.sun.enterprise.ee.cms.core.GroupManagementService;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.logging.LogDomains;
 
 import java.beans.PropertyChangeEvent;
@@ -56,8 +55,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.*;
-
-import java.beans.PropertyChangeListener;
 
 /**
  * This service is responsible for loading the group management
@@ -88,12 +85,11 @@ public class GmsAdapterService implements Startup, PostConstruct, ConfigListener
     @Inject
     Habitat habitat;
 
-    /* TODO:
-     * For M2, there is just the one cluster so we'll have only
-     * one GMSAdapter. Going forward, we want one adapter created
-     * for each cluster (in the DAS).
-     */
-    GMSAdapter gmsAdapter;
+    static private Object lock = new Object();
+
+    List<GMSAdapter> gmsAdapters = new LinkedList<GMSAdapter>();
+
+    final static private Level TRACE_LEVEL = Level.FINE;
 
     /**
      * Returns the lifecyle of the service. This service may not be needed
@@ -106,16 +102,8 @@ public class GmsAdapterService implements Startup, PostConstruct, ConfigListener
         return Startup.Lifecycle.SERVER;
     }
 
-    private List<String> gmsEnabledClusters = new LinkedList<String>();
-
     /**
      * Starts the application loader service.
-     *
-     * Look at the list of existing clusters. Stop after finding the
-     * first gms-enabled cluster.
-     *
-     * todo: in instance, only check *my* cluster (if I'm part of
-     * a cluster)
      */
     @Override
     public void postConstruct() {
@@ -123,7 +111,10 @@ public class GmsAdapterService implements Startup, PostConstruct, ConfigListener
             if (server.isDas()) {
                 checkAllClusters(clusters);
             } else {
-                checkCurrentCluster(clusters);
+                Cluster cluster = server.getCluster();
+                if (cluster != null) {
+                    checkCluster(cluster);
+                }
             }
         }
     }
@@ -133,76 +124,85 @@ public class GmsAdapterService implements Startup, PostConstruct, ConfigListener
         return "GMS Loader";
     }
 
-    /* TODO:
-     * In instance case, there is only the one adapter. In the DAS,
-     * do we want multiple instances of GMSAdapter and each one has
-     * only the single getModule() method?
+    /*
      */
     public GMSAdapter getGMSAdapter() {
-        return gmsAdapter;
+        synchronized(lock) {
+            if (gmsAdapters.size() > 1) {
+                throw new IllegalStateException("use getGMSAdapterByName method when there are multiple clusters");
+            } else if (gmsAdapters.size() == 1) {
+                return gmsAdapters.get(0);
+            } else {
+                return null;
+            }
+        }
     }
 
     public boolean isGmsEnabled() {
-        return gmsAdapter != null;
+        return gmsAdapters.size() > 0;
     }
 
-    /* TODO:
-     */
     public GMSAdapter getGMSAdapterByName(String clusterName) {
-        return gmsAdapter;
+        synchronized(lock) {
+            return habitat.getComponent(GMSAdapter.class, clusterName);
+        }
     }
 
-    /* TODO:
+    /**
      * Create a GMSAdapter for each cluster that has gms enabled.
      */
     private void checkAllClusters(Clusters clusters) {
-        logger.fine("In DAS. Checking all clusters.");
+        if (logger.isLoggable(TRACE_LEVEL)) {
+            logger.log(TRACE_LEVEL, "In DAS. Checking all clusters.");
+        }
         for (Cluster cluster : clusters.getCluster()) {
-
-            String gmsEnString = cluster.getGmsEnabled();
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine(String.format(
-                    "cluster %s found with gms-enabled='%s'",
-                    cluster.getName(), gmsEnString));
-            }
-            if (gmsEnString != null && Boolean.parseBoolean(gmsEnString)) {
-                gmsEnabledClusters.add(cluster.getName());
-                loadModule(cluster);
-            }
+            checkCluster(cluster);
         }
     }
 
-    /* TODO:
-     * Need to find only the cluster to which this instance belongs
-     * and check to see if gms is enabled.
-     */
-    private void checkCurrentCluster(Clusters clusters) {
-        logger.fine("In instance. Looking for current cluster.");
-        for (Cluster cluster : clusters.getCluster()) {
-            String gmsEnString = cluster.getGmsEnabled();
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine(String.format(
-                    "cluster %s found with gms-enabled='%s'",
-                    cluster.getName(), gmsEnString));
-            }
-            if (gmsEnString != null && Boolean.parseBoolean(gmsEnString)) {
-                loadModule(cluster);
-                break;
-            }
+    private GMSAdapter checkCluster(Cluster cluster) {
+        GMSAdapter result = null;
+        String gmsEnString = cluster.getGmsEnabled();
+        if (logger.isLoggable(TRACE_LEVEL)) {
+            logger.log(TRACE_LEVEL, String.format("cluster %s found with gms-enabled='%s'",
+                        cluster.getName(), gmsEnString));
         }
+        if (gmsEnString != null && Boolean.parseBoolean(gmsEnString)) {
+            result = loadModule(cluster);
+        }
+        return result;
     }
 
     /*
-     * TODO: in case of multiple clusters, we want an instance
-     * of GMSAdapter for each group. The cluster param is more
-     * of a placeholder. May only need a name to use for group here.
+     * initial support for multiple clusters in DAS. a clustered instance can only belong to one cluster.
      */
-    private void loadModule(Cluster cluster) {
-        // getting the service from the habitat is enough to load it
-        gmsAdapter = habitat.getByContract(GMSAdapter.class);
+    private GMSAdapter loadModule(Cluster cluster) {
+        GMSAdapter result = null;
+        synchronized(lock) {
+            result = getGMSAdapterByName(cluster.getName());
+            if (logger.isLoggable(TRACE_LEVEL)) {
+                logger.log(TRACE_LEVEL, "lookup GMSAdapter by clusterName=" + cluster.getName() + " returned " + result);
+            }
+            if (result == null) {
+                if (logger.isLoggable(TRACE_LEVEL)) {
+                    logger.log(TRACE_LEVEL, "creating gms-adapter for clustername " + cluster.getName() + " since no gms adapter found for clustername " + cluster.getName());
+                }
+                result = habitat.getByContract(GMSAdapter.class);
+                boolean initResult = result.initialize(cluster.getName());
+                habitat.addIndex(new ExistingSingletonInhabitant<GMSAdapter>(result), GMSAdapter.class.getName(), cluster.getName());
+                if (logger.isLoggable(TRACE_LEVEL)) {
+                    logger.log(TRACE_LEVEL, "loadModule: registered created gmsadapter for cluster " + cluster.getName() + " initialized result=" + initResult);
+                }
+                gmsAdapters.add(result);
+            }
+        }
+        return result;
     }
 
-    // DAS should join gms group when a cluster is created.
+    /*
+     * On create-cluster event, DAS joins a gms-enabled cluster.
+     * On delete-cluster event, DAS leaves a gms-enabled cluster.
+     */
 
     @Override
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
@@ -212,29 +212,34 @@ public class GmsAdapterService implements Startup, PostConstruct, ConfigListener
                 public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
                     if (changedType == Cluster.class && type == TYPE.ADD) {  //create-cluster
                         Cluster cluster = (Cluster) changedInstance;
-                        if (logger.isLoggable(Level.FINE)) {
-                            logger.fine("ClusterChangeEvent add clustername=" + cluster.getName());
+                        if (logger.isLoggable(TRACE_LEVEL)) {
+                            logger.log(TRACE_LEVEL, "ClusterChangeEvent add cluster " + cluster.getName());
                         }
-                        if (Boolean.valueOf(cluster.getGmsEnabled()) && !gmsEnabledClusters.contains(cluster.getName())) {
-                            gmsEnabledClusters.add(cluster.getName());
-                            loadModule(cluster);
-                            gmsAdapter.getModule().reportJoinedAndReadyState(cluster.getName());
+                        GMSAdapter localGmsAdapter = checkCluster(cluster);
+                        if (localGmsAdapter != null) {
+                            localGmsAdapter.getModule().reportJoinedAndReadyState(cluster.getName());
                         }
 
                         // todo:  when supporting multiple clusters, ensure that newly added cluster has a different gms-multicast-address than all existing clusters.
-                        //        if not and the multicast-address was defaulted,  generate a unique one. (this is how it worked in v2)
+                        //        currently, generating a unique multicast address depending on random so this check is necessary.
                     }
                     if (changedType == Cluster.class && type == TYPE.REMOVE) {  //remove-cluster
                         Cluster cluster = (Cluster) changedInstance;
-                        if (Boolean.valueOf(cluster.getGmsEnabled()) && gmsEnabledClusters.contains(cluster.getName())) {
-                            gmsEnabledClusters.remove(cluster.getName());
+                        if (logger.isLoggable(TRACE_LEVEL)) {
+                            logger.log(TRACE_LEVEL, "ClusterChangeEvent remove cluster " + cluster.getName());
+                        }
+                        synchronized(lock) {
+                            GMSAdapter localGmsAdapter = getGMSAdapterByName(cluster.getName());
+                            if (localGmsAdapter != null) {
+                                gmsAdapters.remove(localGmsAdapter);
+                                localGmsAdapter.getModule().shutdown(GMSConstants.shutdownType.INSTANCE_SHUTDOWN);
+                                boolean result = habitat.removeIndex(GMSAdapter.class.getName(), localGmsAdapter);
+                                if (logger.isLoggable(TRACE_LEVEL)) {
+                                    logger.log(TRACE_LEVEL, "removeIndex(" + GMSAdapter.class.getName() + ") returned result of " + result);
+                                }
 
-                            // following only needed when gmsAdapter is a Singleton scope,  when we support multiple clusters,  there should
-                            // be a lookup here of gmsAdapter by its clustername and that should be shutdown.
-                            // for now,  just ensure if gmsAdapter is removed cluster, just shut it down.
-                            if (cluster.getName().compareTo(gmsAdapter.getModule().getGroupName()) == 0) {
-                                gmsAdapter.getModule().shutdown(GMSConstants.shutdownType.INSTANCE_SHUTDOWN);
-                                gmsAdapter = null;
+                                // remove GMS module for deleted cluster.  Must do this or will fail if the cluster is recreated before DAS is stopped.
+                                localGmsAdapter.complete();
                             }
                         }
                     }
