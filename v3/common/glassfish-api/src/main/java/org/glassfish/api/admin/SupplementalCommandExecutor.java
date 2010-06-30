@@ -41,6 +41,9 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.Contract;
 
+import java.io.File;
+import java.util.Map;
+
 /**
  * An executor responsible for executing suplemental commands registered for a main command
  *
@@ -50,5 +53,5 @@ import org.jvnet.hk2.annotations.Contract;
 public interface SupplementalCommandExecutor {
 
     public ActionReport.ExitCode execute(String commandName, Supplemental.Timing time,
-                                         AdminCommandContext context, InjectionResolver<Param> injector);
+                             AdminCommandContext context, ParameterMap parameters, Map<String, File> optionFileMap);
 }

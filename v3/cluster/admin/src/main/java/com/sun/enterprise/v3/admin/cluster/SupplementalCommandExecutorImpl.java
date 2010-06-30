@@ -45,6 +45,7 @@ import com.sun.hk2.component.InjectionResolver;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
+import org.glassfish.common.util.admin.MapInjectionResolver;
 import org.glassfish.common.util.admin.UnacceptableValueException;
 import org.jvnet.hk2.component.*;
 import org.glassfish.common.util.admin.CommandModelImpl;
@@ -52,6 +53,7 @@ import org.glassfish.config.support.GenericCrudCommand;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,7 +87,7 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
     private Map<String, List<SupplementalCommand>> supplementalCommandsMap = null;
 
     public ActionReport.ExitCode execute(String commandName, Supplemental.Timing time,
-                                         AdminCommandContext context, InjectionResolver<Param> injector) {
+                             AdminCommandContext context, ParameterMap parameters, Map<String, File> optionFileMap) {
         //TODO : Use the executor service to parallelize this
         ActionReport.ExitCode finalResult = ActionReport.ExitCode.SUCCESS;
         if(!getSupplementalCommandsList().isEmpty() && getSupplementalCommandsList().containsKey(commandName)) {
@@ -96,7 +98,8 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
                     if( (time.equals(Supplemental.Timing.Before) && aCmd.toBeExecutedBefore()) ||
                         (time.equals(Supplemental.Timing.After) && aCmd.toBeExecutedAfter()) ) {
                         ActionReport.ExitCode result = FailurePolicy.applyFailurePolicy(aCmd.onFailure(),
-                                inject(aCmd, injector, context.getActionReport()));
+                                inject(aCmd, getInjector(aCmd.command, parameters, optionFileMap),
+                                        context.getActionReport()));
                         if(!result.equals(ActionReport.ExitCode.SUCCESS)) {
                             if(finalResult.equals(ActionReport.ExitCode.SUCCESS))
                                 finalResult = result;
@@ -150,6 +153,17 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
             }
         }
         return supplementalCommandsMap;
+    }
+
+    private InjectionResolver<Param> getInjector(AdminCommand command, ParameterMap parameters, Map<String, File> map) {
+        CommandModel model;
+        try {
+            CommandModelProvider c = CommandModelProvider.class.cast(command);
+            model = c.getModel();
+        } catch (ClassCastException e) {
+            model = new CommandModelImpl(command.getClass());
+        }
+        return new MapInjectionResolver(model, parameters, map);
     }
 
     private ActionReport.ExitCode inject(SupplementalCommand cmd,InjectionResolver<Param> injector, ActionReport subActionReport) {

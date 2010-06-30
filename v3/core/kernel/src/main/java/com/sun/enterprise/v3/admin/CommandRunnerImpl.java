@@ -974,7 +974,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 SupplementalCommandExecutor supplementalExecutor = habitat.getComponent(SupplementalCommandExecutor.class,
                         "SupplementalCommandExecutorImpl");
                 ActionReport.ExitCode supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
-                            Supplemental.Timing.Before, context, injectionMgr);
+                            Supplemental.Timing.Before, context, parameters, ufm.optionNameToFileMap());
                 if(supplementalReturn.equals(ActionReport.ExitCode.FAILURE)) {
                     report.setActionExitCode(supplementalReturn);
                     report.setMessage(adminStrings.getLocalString("commandrunner.executor.supplementalcmdfailed",
@@ -990,7 +990,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 if(!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
                     //Run Supplemental commands that have to be run after this command on this instance type
                     supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
-                            Supplemental.Timing.After, context, injectionMgr);
+                            Supplemental.Timing.After, context, parameters, ufm.optionNameToFileMap());
                     if(supplementalReturn.equals(ActionReport.ExitCode.FAILURE)) {
                         report.setActionExitCode(supplementalReturn);
                         report.setMessage(adminStrings.getLocalString("commandrunner.executor.supplementalcmdfailed",
