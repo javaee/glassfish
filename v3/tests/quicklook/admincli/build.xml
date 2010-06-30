@@ -14,12 +14,14 @@
 
 <target name="build">
    <antcall target="compile-tests"/>
+   <record name="admincli-restart.output" action="start"/>
+	<antcall target="restart-server"/>
+   <record name="admincli-restart.output" action="stop"/>
 </target>
 
 <target  name="runtest">
    <antcall target="runtest-impl">
        <param name="testng.test.name" value="${testng.test.name}"/>
-       <param name="testng.testclient" value="ExistStatusTests"/>
    </antcall>
 </target>
 

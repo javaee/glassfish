@@ -517,22 +517,6 @@
     </exec>
 </target>
 
-<target name="restart-server-unix" depends="setOSConditions">
-    <echo message="restarting server"/>
-     <exec executable="${glassfish.home}/bin/asadmin">        
-        <arg value="restart-domain"/>
-    </exec>
-</target>
-    
-<target name="restart-server-windows" depends="setOSConditions">
-    <echo message="restarting server"/>
-     <exec executable="cmd">	
-         <arg value="/c"/>
-         <arg value="${glassfish.home}\bin\asadmin.bat"/>
-         <arg value="restart-domain"/>
-     </exec>
-</target>
-    
 <target name="stop-server" depends="setOSConditions">
     <echo message="stopping server"/>
     <antcall target="stop-server-unix"/>
@@ -540,7 +524,6 @@
 </target>
     
 <target name="stop-server-windows" if="isWindows">
-    <antcall target="restart-server-windows"/>
      <exec executable="cmd">	
          <arg value="/c"/>
          <arg value="${glassfish.home}\bin\asadmin.bat"/>
@@ -549,7 +532,6 @@
 </target>
          
 <target name="stop-server-unix" if="isUnix">
-    <antcall target="restart-server-unix"/>
      <exec executable="${glassfish.home}/bin/asadmin">
         <arg value="stop-domain"/>
     </exec>

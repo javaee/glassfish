@@ -39,38 +39,56 @@ package test.admincli;
 
 import org.testng.annotations.Test;
 import org.testng.Assert;
-import test.admincli.util.*;
 
-//@Test(sequential = true)
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
 public class RestartDomainTests {
-    private boolean execReturn = false;
-    private String ASADMIN = System.getProperty("ASADMIN");
-    private String cmd, cmd1;
+
+    private BufferedReader in = null;
+    private String outPutFile=null, expectedOutPut=null, testErr=null;
+    String host=System.getProperty("http.host");
+    String port=System.getProperty("http.port");
+
     @Test
-    public void createJDBCPool() throws Exception {
-//        System.out.println(ASADMIN);
-        cmd = ASADMIN + " create-jdbc-connection-pool " +
-            "--datasourceclassname=org.apache.derby.jdbc.ClientDataSource --property " +
-            "DatabaseName=sun-appserv-samples:PortNumber=1527:serverName=localhost:Password=APP:User=APP QLJdbcPool";
-
-        execReturn = RtExec.execute(cmd);
-        Assert.assertEquals(execReturn, true, "Create jdbc connection pool failed ...");
+    public void restartDomainTest() throws Exception {
+	outPutFile = "admincli-restart.output";
+	expectedOutPut = "Successfully restarted the domain";
+	testErr = "Restart domain failed.";
+	parseTestResults(outPutFile, expectedOutPut, testErr);    
     }
 
-    @Test(dependsOnMethods = { "createJDBCPool" })
-    public void pingJDBCPool() throws Exception {
-//      extra ping of DerbyPool to create sun-appserv-samples DB.
-        cmd = ASADMIN + " ping-connection-pool DerbyPool";
-        RtExec.execute(cmd);
-        cmd1 = ASADMIN + " ping-connection-pool QLJdbcPool";
-        execReturn = RtExec.execute(cmd1);
-        Assert.assertEquals(execReturn, true, "Ping jdbc connection pool failed ...");
-    }
+    public void parseTestResults(String outPutFile, String expectedOutPut, String testErr) throws Exception {
+       boolean result=false;
+       File dir1 = new File (".");
+       String fileName = dir1.getCanonicalPath()+"/"+outPutFile;
+       this.expectedOutPut = expectedOutPut;
+       this.testErr = testErr;
+       //System.out.println("Parsing output file: "+fileName );
+       try {
+           in = new BufferedReader(new FileReader(fileName));
+       } catch (FileNotFoundException e) {
+           System.out.println("Could not open file " + fileName + " for reading ");
+       }
 
-    @Test(dependsOnMethods = { "pingJDBCPool" })
-    public void deleteJDBCPool() throws Exception {
-        cmd = ASADMIN + " delete-jdbc-connection-pool QLJdbcPool";
-        execReturn = RtExec.execute(cmd);
-        Assert.assertEquals(execReturn, true, "Delete jdbc connection pool failed ...");
+       if(in != null) {
+           String line;
+           String testLine = null;
+           try {
+              while (( line = in.readLine() )  != null ) {
+                //System.out.println("The line read is: " + line);
+                if(line.indexOf(expectedOutPut)!=-1){
+                  result=true;
+                  testLine = line;
+                  //System.out.println(testLine); 
+		} 
+	      }
+              Assert.assertEquals(result, true, testErr);
+           }catch(Exception e){
+              e.printStackTrace();
+              throw new Exception(e);
+         }
+       }
     }
 }
