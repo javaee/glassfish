@@ -47,6 +47,7 @@ import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.config.ReferenceContainer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -61,6 +62,7 @@ import com.sun.enterprise.config.serverbeans.*;
  */
 @Service(name = "delete-config")
 @Scoped(PerLookup.class)
+@I18n("delete.config.command")
 public final class DeleteConfigCommand implements AdminCommand {
 
     @Param(primary=true)

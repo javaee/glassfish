@@ -42,6 +42,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
@@ -58,6 +59,7 @@ import java.util.List;
  * @author Bhakti Mehta
  */
 @Service(name = "list-configs")
+@I18n("list.configs.command")
 @Scoped(PerLookup.class)
 public final class ListConfigsCommand implements AdminCommand {
 

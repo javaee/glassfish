@@ -46,6 +46,7 @@ import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
 import org.glassfish.api.admin.*;
 import org.glassfish.config.support.GenericCrudCommand;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -59,6 +60,7 @@ import com.sun.enterprise.config.serverbeans.*;
  * @author Bhakti Mehta
  */
 @Service(name = "copy-config")
+@I18n("copy.config.command")
 @Scoped(PerLookup.class)
 public final class CopyConfigCommand implements AdminCommand {
 

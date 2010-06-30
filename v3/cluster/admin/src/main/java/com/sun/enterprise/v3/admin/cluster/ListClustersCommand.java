@@ -40,6 +40,7 @@ package com.sun.enterprise.v3.admin.cluster;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.cluster.InstanceInfo;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -62,6 +63,7 @@ import static com.sun.enterprise.v3.admin.cluster.Constants.*;
  */
 @Service(name = "list-clusters")
 @Scoped(PerLookup.class)
+@I18n("list.clusters.command")
 public final class ListClustersCommand implements AdminCommand, PostConstruct {
 
     @Inject
