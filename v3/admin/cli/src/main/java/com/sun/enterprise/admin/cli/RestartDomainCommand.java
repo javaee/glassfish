@@ -83,8 +83,15 @@ public class RestartDomainCommand extends StopDomainCommand {
         // run the remote restart-domain command and throw away the output
         RemoteCommand cmd =
             new RemoteCommand("restart-domain", programOpts, env);
+        String oldpw = programOpts.getPassword();
+
+        // get the timestamp BEFORE calling the server!
+        File pwFile = getServerDirs().getLocalPasswordFile();
+        long stamp = pwFile.lastModified();
+
         cmd.executeAndReturnOutput("restart-domain");
-        waitForRestart(uptimeOldServer);
+        waitForRestart(pwFile, stamp);
+        //waitForRestart(uptimeOldServer);
         logger.printMessage(strings.get("restartDomain.success"));
     }
 

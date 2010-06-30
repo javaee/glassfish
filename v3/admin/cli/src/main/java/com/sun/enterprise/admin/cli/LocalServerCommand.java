@@ -78,7 +78,6 @@ public abstract class LocalServerCommand extends CLICommand {
     ////////////////////////////////////////////////////////////////
     /// Section:  protected methods that are notOK to override.
     ////////////////////////////////////////////////////////////////
-
     /**
      * Returns the admin port of the local domain. Note that this method should
      * be called only when you own the domain that is available on accessible
@@ -108,7 +107,7 @@ public abstract class LocalServerCommand extends CLICommand {
             MiniXmlParser parser = new MiniXmlParser(getDomainXml(), serverName);
             Set<Integer> portsSet = parser.getAdminPorts();
 
-            if(portsSet.size() > 0)
+            if (portsSet.size() > 0)
                 return portsSet.iterator().next();
             else
                 throw new CommandException("admin port not found");
@@ -143,7 +142,7 @@ public abstract class LocalServerCommand extends CLICommand {
      */
     protected final String readFromMasterPasswordFile() {
         File mpf = getMasterPasswordFile();
-        if(mpf == null)
+        if (mpf == null)
             return null;   // no master password  saved
         try {
             PasswordAdapter pw = new PasswordAdapter(mpf.getAbsolutePath(),
@@ -172,7 +171,7 @@ public abstract class LocalServerCommand extends CLICommand {
         }
         finally {
             try {
-                if(fis != null)
+                if (fis != null)
                     fis.close();
             }
             catch (IOException ioe) {
@@ -191,17 +190,17 @@ public abstract class LocalServerCommand extends CLICommand {
         final int RETRIES = 3;
         long t0 = System.currentTimeMillis();
         String mpv = passwords.get(CLIConstants.MASTER_PASSWORD);
-        if(mpv == null) { //not specified in the password file
+        if (mpv == null) { //not specified in the password file
             mpv = "changeit";  //optimization for the default case -- see 9592
-            if(!verifyMasterPassword(mpv)) {
+            if (!verifyMasterPassword(mpv)) {
                 mpv = readFromMasterPasswordFile();
-                if(!verifyMasterPassword(mpv)) {
+                if (!verifyMasterPassword(mpv)) {
                     mpv = retry(RETRIES);
                 }
             }
         }
         else { // the passwordfile contains AS_ADMIN_MASTERPASSWORD, use it
-            if(!verifyMasterPassword(mpv))
+            if (!verifyMasterPassword(mpv))
                 mpv = retry(RETRIES);
         }
         long t1 = System.currentTimeMillis();
@@ -216,7 +215,7 @@ public abstract class LocalServerCommand extends CLICommand {
      * @return true if it's the DAS at this domain directory
      */
     protected final boolean isThisServer(File ourDir, String directoryKey) {
-        if(!ok(directoryKey))
+        if (!ok(directoryKey))
             throw new NullPointerException();
 
         ourDir = getUniquePath(ourDir);
@@ -230,7 +229,7 @@ public abstract class LocalServerCommand extends CLICommand {
             String theirDirPath = attrs.get(directoryKey);
             logger.printDebugMessage("Remote server has root directory " + theirDirPath);
 
-            if(ok(theirDirPath)) {
+            if (ok(theirDirPath)) {
                 File theirDir = getUniquePath(new File(theirDirPath));
                 return theirDir.equals(ourDir);
             }
@@ -240,6 +239,7 @@ public abstract class LocalServerCommand extends CLICommand {
             return false;
         }
     }
+
     /**
      * There is sometimes a need for subclasses to know if a
      * <code> local domain </code> is running. An example of such a command is
@@ -265,7 +265,7 @@ public abstract class LocalServerCommand extends CLICommand {
             return false;
         }
         finally {
-            if(server != null) {
+            if (server != null) {
                 try {
                     server.close();
                 }
@@ -281,41 +281,47 @@ public abstract class LocalServerCommand extends CLICommand {
     protected final boolean isRunning(int port) {
         return isRunning(null, port);
     }
+
     /**
      * Is the server still running?
      * This is only called when we're hanging around waiting for the server to die.
      */
-    protected final  boolean isRunning() {
+    protected final boolean isRunning() {
         File pf = getServerDirs().getPidFile();
 
-        if(pf != null) {
+        if (pf != null) {
             return pf.exists();
         }
         else
             return isRunning(programOpts.getHost(), // remote case
                     programOpts.getPort());
     }
+
     /**
      * Wait for the server to restart.
      */
-    protected final void waitForRestart(long uptimeOldServer) throws CommandException {
-        long end = CLIConstants.WAIT_FOR_DAS_TIME_MS +
-                                        System.currentTimeMillis();
+    protected final void waitForRestart(File pwFile, long oldTimeStamp) throws CommandException {
+        long end = CLIConstants.WAIT_FOR_DAS_TIME_MS
+                + System.currentTimeMillis();
 
         while (System.currentTimeMillis() < end) {
+            // when the server has restarted the passwordfile will be different
+            // don't waste time reading the file again and again, just look
+            // for the time stamp to change.
+            // Careful -- there is a slice of time where the file does not exist!
             try {
-                Thread.sleep(300);
-                long up = getUptime();
+                long newTimeStamp = pwFile.lastModified(); // could be 0L
+                logger.printDebugMessage("Checking timestamp of local-password.  "
+                        + "old: " + oldTimeStamp + ", new: " + newTimeStamp);
 
-                if (up > 0 && up < uptimeOldServer) {
-                    // local password will change when server restarts
-                    if(getServerDirs() != null)
-                        resetServerDirs();
-
-                    // return here!!!!
+                if (newTimeStamp > oldTimeStamp) {
+                    // All Done!!
+                    resetServerDirs();
                     return;
                 }
-            } catch (Exception e) {
+                Thread.sleep(300);
+            }
+            catch (Exception e) {
                 // continue
             }
         }
@@ -339,7 +345,6 @@ public abstract class LocalServerCommand extends CLICommand {
         return up_ms;
     }
 
-
     ////////////////////////////////////////////////////////////////
     /// Section:  private methods
     ////////////////////////////////////////////////////////////////
@@ -352,28 +357,29 @@ public abstract class LocalServerCommand extends CLICommand {
     private long parseUptime(String up) {
         try {
             return Long.parseLong(up);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return 0;
         }
     }
 
     private final File getJKS() {
-        if(serverDirs == null)
+        if (serverDirs == null)
             return null;
 
         File mp = new File(new File(serverDirs.getServerDir(), "config"), "keystore.jks");
-        if(!mp.canRead())
+        if (!mp.canRead())
             return null;
         return mp;
     }
 
     private File getMasterPasswordFile() {
 
-        if(serverDirs == null)
+        if (serverDirs == null)
             return null;
 
         File mp = new File(serverDirs.getServerDir(), "master-password");
-        if(!mp.canRead())
+        if (!mp.canRead())
             return null;
 
         return mp;
@@ -382,16 +388,16 @@ public abstract class LocalServerCommand extends CLICommand {
     private String retry(int times) throws CommandException {
         String mpv;
         // prompt times times
-        for(int i = 0; i < times; i++) {
+        for (int i = 0; i < times; i++) {
             // XXX - I18N
             String prompt = strings.get("mp.prompt", (times - i));
             mpv = super.readPassword(prompt);
-            if(mpv == null)
+            if (mpv == null)
                 throw new CommandException(strings.get("no.console"));
             // ignore retries :)
-            if(verifyMasterPassword(mpv))
+            if (verifyMasterPassword(mpv))
                 return mpv;
-            if(i < (times - 1))
+            if (i < (times - 1))
                 logger.printMessage(strings.get("retry.mp"));
             // make them pay for typos?
             //Thread.currentThread().sleep((i+1)*10000);
@@ -408,14 +414,10 @@ public abstract class LocalServerCommand extends CLICommand {
         }
         return f;
     }
-
     ////////////////////////////////////////////////////////////////
     /// Section:  private variables
     ////////////////////////////////////////////////////////////////
-
     private ServerDirs serverDirs;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(LocalDomainCommand.class);
 }
-
-

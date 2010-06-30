@@ -225,7 +225,14 @@ public class ServerDirs {
     public String getLocalPassword() {
         return localPassword;
     }
-    
+
+    public final File getLocalPasswordFile() {
+        if (!valid)
+            return null;
+
+        return localPasswordFile;
+    }
+
     public final boolean isValid() {
         return valid;
     }

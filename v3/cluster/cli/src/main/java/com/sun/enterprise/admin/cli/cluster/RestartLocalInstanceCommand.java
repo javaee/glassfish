@@ -38,6 +38,7 @@ package com.sun.enterprise.admin.cli.cluster;
 import com.sun.enterprise.admin.cli.CLICommand;
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import java.io.*;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.CommandValidationException;
 import org.jvnet.hk2.annotations.*;
@@ -60,11 +61,14 @@ public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
 
     @Override
     protected final int doRemoteCommand() throws CommandException {
+        // get the timestamp BEFORE calling the server!
+        File pwFile = getServerDirs().getLocalPasswordFile();
+        long timestamp = pwFile.lastModified();
+
         // run the remote restart-domain command and throw away the output
-        long uptimeOldServer = getUptime();  // may throw CommandException
         RemoteCommand cmd = new RemoteCommand("restart-instance", programOpts, env);
         cmd.executeAndReturnOutput("restart-instance");
-        waitForRestart(uptimeOldServer);
+        waitForRestart(pwFile, timestamp);
         return 0;
     }
     
