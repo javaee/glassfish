@@ -132,22 +132,9 @@ public class ASMainFelix extends ASMainOSGi {
     }
 
     /**
-     * horrible shortcut to work around the issue that felix spends an infinite amount
-     * of time resolve jaxb interfaces which are both part of the jdk and some distributions.
-     *
-     * When the distribution contains a repackaged jaxb, we are blocking the jdk API
-     * visibility, otherwise we use the normal delegation model.
-     *
-     * This should be removed once the new felix resolver is integrated.
-     * 
      * @return the config file name to use to configure felix
      */
     private String getConfigFileName() {
-        File jaxb =new File(glassfishDir, "modules/jaxb-osgi.jar");
-        if (jaxb.exists()) {
-            return CONFIG_PROPERTIES + ".nojaxb";
-        } else {
-            return CONFIG_PROPERTIES;
-        }
+        return CONFIG_PROPERTIES;
     }
 }
