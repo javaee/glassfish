@@ -35,6 +35,7 @@
 */
 package org.glassfish.connectors.admin.cli.internal;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -47,14 +48,17 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Map;
 
-@Service(name = "__get-connection-definition-properties-and-defaults")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-connection-definition-properties-and-defaults")
 @Scoped(PerLookup.class)
 public class GetConnectionDefinitionPropertiesAndDefaults implements AdminCommand {
 
     @Inject
     private ConnectorRuntime connectorRuntime;
 
-    @Param(primary = true)
+    @Param
     private String connectionDefinitionClass;
 
     @Param
@@ -71,14 +75,14 @@ public class GetConnectionDefinitionPropertiesAndDefaults implements AdminComman
             Map<String, Object> connectionDefinitionPropertiesAndDefaults =
                     connectorRuntime.getConnectionDefinitionPropertiesAndDefaults(connectionDefinitionClass, resType);
 
-            //TODO Using "Name|Value" option
             for (String key : connectionDefinitionPropertiesAndDefaults.keySet()) {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(key + "|" + connectionDefinitionPropertiesAndDefaults.get(key));
+                part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER +
+                        connectionDefinitionPropertiesAndDefaults.get(key));
             }
 
         } catch (Exception e) {
-            report.setMessage("__get-connection-definition-properties-and-defaults failed");
+            report.setMessage("_get-connection-definition-properties-and-defaults failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

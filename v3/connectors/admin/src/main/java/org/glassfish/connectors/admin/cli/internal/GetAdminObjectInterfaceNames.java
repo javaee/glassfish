@@ -45,15 +45,17 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
-
-@Service(name = "__get-admin-object-interface-names")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-admin-object-interface-names")
 @Scoped(PerLookup.class)
 public class GetAdminObjectInterfaceNames implements AdminCommand {
 
     @Inject
     private ConnectorRuntime connectorRuntime;
 
-    @Param(primary = true)
+    @Param
     private String rarName;
 
 
@@ -73,7 +75,7 @@ public class GetAdminObjectInterfaceNames implements AdminCommand {
             }
 
         } catch (Exception e) {
-            report.setMessage("__get-admin-object-interface-names failed");
+            report.setMessage("_get-admin-object-interface-names failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

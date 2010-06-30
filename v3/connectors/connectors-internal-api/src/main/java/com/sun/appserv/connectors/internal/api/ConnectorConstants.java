@@ -119,6 +119,11 @@ public interface ConnectorConstants {
                        JAXR_RA_NAME
                ));
 
+    /**
+     * delimiter used in hidden CLIs when name-value pairs are returned in response
+     */
+    public static final String HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER="=";
+
     
     /** 
      *  Reserver JNDI context under which sub contexts for default resources 

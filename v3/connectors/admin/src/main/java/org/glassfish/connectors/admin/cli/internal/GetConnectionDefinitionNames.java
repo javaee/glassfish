@@ -45,14 +45,17 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
-@Service(name = "__get-connection-definition-names")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-connection-definition-names")
 @Scoped(PerLookup.class)
 public class GetConnectionDefinitionNames implements AdminCommand {
 
     @Inject
     private ConnectorRuntime connectorRuntime;
 
-    @Param(primary = true)
+    @Param
     private String rarName;
 
 
@@ -72,7 +75,7 @@ public class GetConnectionDefinitionNames implements AdminCommand {
             }
 
         } catch (Exception e) {
-            report.setMessage("__get-connection-definition-names failed");
+            report.setMessage("_get-connection-definition-names failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

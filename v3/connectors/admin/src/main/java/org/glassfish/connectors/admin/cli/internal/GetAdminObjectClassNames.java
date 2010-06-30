@@ -46,7 +46,10 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 
-@Service(name = "__get-admin-object-class-names")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-admin-object-class-names")
 @Scoped(PerLookup.class)
 public class GetAdminObjectClassNames implements AdminCommand {
 
@@ -56,7 +59,7 @@ public class GetAdminObjectClassNames implements AdminCommand {
     @Param
     private String rarName;
 
-    @Param(primary = true)
+    @Param
     private String adminObjectInterface;
 
     /**
@@ -74,7 +77,7 @@ public class GetAdminObjectClassNames implements AdminCommand {
                 part.setMessage(intfName);
             }
         } catch (Exception e) {
-            report.setMessage("__get-admin-object-class-names failed");
+            report.setMessage("_get-admin-object-class-names failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

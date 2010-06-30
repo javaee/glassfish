@@ -46,8 +46,10 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Set;
 
-
-@Service(name = "__get-database-vendor-names")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-database-vendor-names")
 @Scoped(PerLookup.class)
 public class GetDatabaseVendorNames implements AdminCommand {
 
@@ -69,7 +71,7 @@ public class GetDatabaseVendorNames implements AdminCommand {
                 part.setMessage(vendorName);
             }
         } catch (Exception e) {
-            report.setMessage("__get-database-vendor-names failed");
+            report.setMessage("_get-database-vendor-names failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

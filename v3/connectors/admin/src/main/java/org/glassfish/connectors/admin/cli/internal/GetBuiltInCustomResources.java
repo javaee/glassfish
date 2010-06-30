@@ -35,6 +35,7 @@
 */
 package org.glassfish.connectors.admin.cli.internal;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
@@ -46,7 +47,10 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Map;
 
-@Service(name = "__get-built-in-custom-resources")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-built-in-custom-resources")
 @Scoped(PerLookup.class)
 public class GetBuiltInCustomResources implements AdminCommand {
 
@@ -62,30 +66,14 @@ public class GetBuiltInCustomResources implements AdminCommand {
         try {
             Map<String, String> builtInCustomResources = connectorRuntime.getBuiltInCustomResources();
 
-/*
-            //TODO should we add individual "part" with a property rather than one part with all properties ?
-            final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            for (String key : builtInCustomResources.keySet()) {
-                part.addProperty(key, builtInCustomResources.get(key));
-            }
-*/
-/*
-            final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            for (String key : builtInCustomResources.keySet()) {
-                ActionReport.MessagePart keyValuePart = part.addChild();
-                ActionReport.MessagePart keyPart = keyValuePart.addChild();
-                keyPart.setMessage(key);
-                ActionReport.MessagePart valuePart = keyValuePart.addChild();
-                valuePart.setMessage(builtInCustomResources.get(key));
-            }
-*/
             for (String key : builtInCustomResources.keySet()) {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(key + "|" + builtInCustomResources.get(key));
+                part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER +
+                        builtInCustomResources.get(key));
             }
 
         } catch (Exception e) {
-            report.setMessage("__get-built-in-custom-resources failed");
+            report.setMessage("_get-built-in-custom-resources failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

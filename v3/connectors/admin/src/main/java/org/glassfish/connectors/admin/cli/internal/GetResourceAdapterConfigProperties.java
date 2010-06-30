@@ -35,6 +35,7 @@
 */
 package org.glassfish.connectors.admin.cli.internal;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -47,14 +48,17 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Map;
 
-@Service(name = "__get-resource-adapter-config-properties")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-resource-adapter-config-properties")
 @Scoped(PerLookup.class)
 public class GetResourceAdapterConfigProperties implements AdminCommand {
 
     @Inject
     private ConnectorRuntime connectorRuntime;
 
-    @Param(primary = true)
+    @Param
     private String rarName;
 
     /**
@@ -69,10 +73,10 @@ public class GetResourceAdapterConfigProperties implements AdminCommand {
 
             for (String key : configProps.keySet()) {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(key + "|" + configProps.get(key));
+                part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER + configProps.get(key));
             }
         } catch (Exception e) {
-            report.setMessage("__get-resource-adapter-config-properties failed");
+            report.setMessage("_get-resource-adapter-config-properties failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

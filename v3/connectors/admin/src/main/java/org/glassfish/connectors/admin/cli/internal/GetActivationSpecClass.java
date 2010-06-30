@@ -45,7 +45,10 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
-@Service(name = "__get-activation-spec-class")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-activation-spec-class")
 @Scoped(PerLookup.class)
 public class GetActivationSpecClass implements AdminCommand {
     @Inject
@@ -54,7 +57,7 @@ public class GetActivationSpecClass implements AdminCommand {
     @Param
     private String rarName;
 
-    @Param(primary = true)
+    @Param
     private String messageListenerType;
 
     /**
@@ -69,7 +72,7 @@ public class GetActivationSpecClass implements AdminCommand {
             final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
             part.setMessage(activationSpecClass);
         } catch (Exception e) {
-            report.setMessage("__get-activation-spec-class failed");
+            report.setMessage("_get-activation-spec-class failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

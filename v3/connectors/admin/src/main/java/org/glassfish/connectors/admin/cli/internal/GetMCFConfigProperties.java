@@ -36,6 +36,7 @@
 
 package org.glassfish.connectors.admin.cli.internal;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -48,14 +49,17 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Map;
 
-@Service(name = "__get-mcf-config-properties")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-mcf-config-properties")
 @Scoped(PerLookup.class)
 public class GetMCFConfigProperties implements AdminCommand {
 
     @Inject
     private ConnectorRuntime connectorRuntime;
 
-    @Param(primary = true)
+    @Param
     private String connectionDefnName;
 
     @Param
@@ -74,11 +78,12 @@ public class GetMCFConfigProperties implements AdminCommand {
 
             for (String key : mcfConfigProps.keySet()) {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(key + "|" + mcfConfigProps.get(connectionDefnName));
+                part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER +
+                        mcfConfigProps.get(connectionDefnName));
             }
 
         } catch (Exception e) {
-            report.setMessage("__get-mcf-config-properties failed");
+            report.setMessage("_get-mcf-config-properties failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

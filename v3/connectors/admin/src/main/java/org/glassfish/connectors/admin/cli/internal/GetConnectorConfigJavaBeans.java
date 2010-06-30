@@ -35,6 +35,7 @@
 */
 package org.glassfish.connectors.admin.cli.internal;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -48,7 +49,10 @@ import org.jvnet.hk2.component.PerLookup;
 import java.util.Map;
 
 
-@Service(name = "__get-connector-config-java-beans")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-connector-config-java-beans")
 @Scoped(PerLookup.class)
 public class GetConnectorConfigJavaBeans implements AdminCommand {
     @Inject
@@ -60,7 +64,7 @@ public class GetConnectorConfigJavaBeans implements AdminCommand {
     @Param
     private String connectionDefnName;
 
-    @Param(primary = true, acceptableValues = "ManagedConnectionFactory,AdminObject,ResourceAdapter,MessageListener")
+    @Param(acceptableValues = "ManagedConnectionFactory,AdminObject,ResourceAdapter,MessageListener")
     private String javaBeanType;
 
     /**
@@ -75,10 +79,11 @@ public class GetConnectorConfigJavaBeans implements AdminCommand {
 
             for (String key : configProps.keySet()) {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(key + "|" + configProps.get(key));
+                part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER +
+                        configProps.get(key));
             }
         } catch (Exception e) {
-            report.setMessage("__get-connector-config-java-beans failed");
+            report.setMessage("_get-connector-config-java-beans failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

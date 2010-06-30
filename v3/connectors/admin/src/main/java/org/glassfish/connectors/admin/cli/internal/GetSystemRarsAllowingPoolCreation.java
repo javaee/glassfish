@@ -45,7 +45,10 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 
-@Service(name = "__get-system-rars-allowing-pool-creation")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-system-rars-allowing-pool-creation")
 @Scoped(PerLookup.class)
 public class GetSystemRarsAllowingPoolCreation implements AdminCommand {
 
@@ -67,7 +70,7 @@ public class GetSystemRarsAllowingPoolCreation implements AdminCommand {
                 }
             }
         } catch (Exception e) {
-            report.setMessage("__get-system-rars-allowing-pool-creation failed");
+            report.setMessage("_get-system-rars-allowing-pool-creation failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

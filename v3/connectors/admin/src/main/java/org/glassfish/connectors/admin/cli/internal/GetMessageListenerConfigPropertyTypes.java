@@ -35,6 +35,7 @@
 */
 package org.glassfish.connectors.admin.cli.internal;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -47,7 +48,10 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Map;
 
-@Service(name = "__get-message-listener-config-property-types")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-message-listener-config-property-types")
 @Scoped(PerLookup.class)
 public class GetMessageListenerConfigPropertyTypes implements AdminCommand {
     @Inject
@@ -56,7 +60,7 @@ public class GetMessageListenerConfigPropertyTypes implements AdminCommand {
     @Param
     private String rarName;
 
-    @Param(primary = true)
+    @Param
     private String messageListenerType;
 
     /**
@@ -71,10 +75,11 @@ public class GetMessageListenerConfigPropertyTypes implements AdminCommand {
 
             for (String key : messageListenerConfigPropTypes.keySet()) {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(key + "|" + messageListenerConfigPropTypes.get(key));
+                part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER +
+                        messageListenerConfigPropTypes.get(key));
             }
         } catch (Exception e) {
-            report.setMessage("__get-message-listener-config-property-types");
+            report.setMessage("_get-message-listener-config-property-types");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

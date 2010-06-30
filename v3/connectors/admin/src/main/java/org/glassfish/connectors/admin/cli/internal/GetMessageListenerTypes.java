@@ -45,13 +45,16 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
-@Service(name = "__get-message-listener-types")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-message-listener-types")
 @Scoped(PerLookup.class)
 public class GetMessageListenerTypes implements AdminCommand {
     @Inject
     private ConnectorRuntime connectorRuntime;
 
-    @Param(primary = true)
+    @Param
     private String rarName;
 
     /**
@@ -69,7 +72,7 @@ public class GetMessageListenerTypes implements AdminCommand {
                 part.setMessage(key);
             }
         } catch (Exception e) {
-            report.setMessage("__message-listener-types failed");
+            report.setMessage("_message-listener-types failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

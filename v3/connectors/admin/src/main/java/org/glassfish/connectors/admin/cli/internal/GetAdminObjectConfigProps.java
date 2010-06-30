@@ -36,6 +36,7 @@
 package org.glassfish.connectors.admin.cli.internal;
 
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -48,7 +49,10 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Map;
 
-@Service(name = "__get-admin-object-config-properties")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-admin-object-config-properties")
 @Scoped(PerLookup.class)
 public class GetAdminObjectConfigProps implements AdminCommand {
     @Inject
@@ -57,7 +61,7 @@ public class GetAdminObjectConfigProps implements AdminCommand {
     @Param
     private String rarName;
 
-    @Param(primary = true)
+    @Param
     private String adminObjectInterface;
 
     @Param(optional = true)
@@ -76,7 +80,8 @@ public class GetAdminObjectConfigProps implements AdminCommand {
 
                 for (String key : adminObjectConfigProps.keySet()) {
                     final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                    part.setMessage(key + "|" + adminObjectConfigProps.get(key));
+                    part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER +
+                            adminObjectConfigProps.get(key));
                 }
             } else {
                 Map<String, String> adminObjectConfigProps =
@@ -84,12 +89,13 @@ public class GetAdminObjectConfigProps implements AdminCommand {
 
                 for (String key : adminObjectConfigProps.keySet()) {
                     final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                    part.setMessage(key + "|" + adminObjectConfigProps.get(key));
+                    part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER +
+                            adminObjectConfigProps.get(key));
                 }
             }
 
         } catch (Exception e) {
-            report.setMessage("__get-admin-object-config-properties failed");
+            report.setMessage("_get-admin-object-config-properties failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

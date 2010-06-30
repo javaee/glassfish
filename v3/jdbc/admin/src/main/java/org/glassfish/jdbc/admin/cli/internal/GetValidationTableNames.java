@@ -47,14 +47,17 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Set;
 
-@Service(name = "__get-validation-table-names")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-validation-table-names")
 @Scoped(PerLookup.class)
 public class GetValidationTableNames implements AdminCommand {
 
     @Inject
     private ConnectorRuntime connectorRuntime;
 
-    @Param(primary = true)
+    @Param
     private String poolName;
 
     /**
@@ -71,7 +74,7 @@ public class GetValidationTableNames implements AdminCommand {
                 part.setMessage(vendorName);
             }
         } catch (Exception e) {
-            report.setMessage("__get-validation-table-names failed");
+            report.setMessage("_get-validation-table-names failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

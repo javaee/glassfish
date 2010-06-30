@@ -47,14 +47,17 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Set;
 
-@Service(name = "__get-validation-class-names")
+/**
+ * @author Jagadish Ramu
+ */
+@Service(name = "_get-validation-class-names")
 @Scoped(PerLookup.class)
 public class GetValidationClassNames implements AdminCommand {
 
     @Inject
     private ConnectorRuntime connectorRuntime;
 
-    @Param(primary = true)
+    @Param
     private String dbVendor;
 
 
@@ -72,7 +75,7 @@ public class GetValidationClassNames implements AdminCommand {
                 part.setMessage(vendorName);
             }
         } catch (Exception e) {
-            report.setMessage("__get-validation-class-names failed");
+            report.setMessage("_get-validation-class-names failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;
