@@ -57,7 +57,8 @@ import org.jvnet.hk2.annotations.Service;
  *
  * @author Nithya Subramanian
  */
-/*@Service
+/*
+@Service
 public class EmbeddedSecurityLifeCycle
         implements EmbeddedLifecycle{
 
@@ -83,14 +84,14 @@ public class EmbeddedSecurityLifeCycle
             List<String> keyFileNames = EmbeddedSecurityUtil.getKeyFileNames(securityService);
             for(String keyFileName:keyFileNames) {
                 //Copy the keyfiles in instanceRoot/config. If file is already present, then exit (handled by getManagedFile)
-                FileUtils.getManagedFile(EmbeddedSecurityUtil.parseFileName(keyFileName), new File(instanceRoot,"config"));
+                FileUtils.getManagedFile("config" + File.separator + EmbeddedSecurityUtil.parseFileName(keyFileName), instanceRoot);
             }
             //Copy the other security files to instanceRoot/config
             //Assuming that these files are present as config/filename in the embedded jar file and are to be extracted that way/
-            FileUtils.getManagedFile("login.conf", new File(instanceRoot,"config"));
-            FileUtils.getManagedFile("server.policy", new File(instanceRoot,"config"));
-            FileUtils.getManagedFile("cacerts.jks", new File(instanceRoot,"config"));
-            FileUtils.getManagedFile("keystore.jks", new File(instanceRoot,"config"));
+            FileUtils.getManagedFile("config" + File.separator + "login.conf", instanceRoot);
+            FileUtils.getManagedFile("config" + File.separator + "server.policy", instanceRoot);
+            FileUtils.getManagedFile("config" + File.separator + "cacerts.jks", instanceRoot);
+            FileUtils.getManagedFile("config" + File.separator + "keystore.jks", instanceRoot);
             
         }catch(IOException ioEx) {
            _logger.log(Level.WARNING,"IOException", ioEx);
