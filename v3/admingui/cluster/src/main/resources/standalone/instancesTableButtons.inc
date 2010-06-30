@@ -64,7 +64,7 @@
         </sun:button>
        
         <sun:button id="button2" text="$resource{i18n.button.Start}" disabled="#{true}" primary="#{false}" 
-            onClick="if (getConfirm(this, '$resource{i18n.msg.JS.confirmStartInstances}') )
+            onClick="if (getConfirm(this, '$resource{i18ncs.msg.JS.confirmStartInstances}') )
                 { return submitAndDisable(this, '$resource{i18n.button.Processing}');} 
                 else {return false;} " >
             
@@ -84,7 +84,7 @@
             />            
         </sun:button>
         <sun:button id="button3" text="$resource{i18n.button.Stop}" disabled="#{true}" primary="#{false}" 
-            onClick="if (getConfirm(this, '$resource{i18n.msg.JS.confirmStopInstances}') )
+            onClick="if (getConfirm(this, '$resource{i18ncs.msg.JS.confirmStopInstances}') )
                 { return submitAndDisable(this, '$resource{i18n.button.Processing}');} 
                 else {return false;} " >
             <!command 

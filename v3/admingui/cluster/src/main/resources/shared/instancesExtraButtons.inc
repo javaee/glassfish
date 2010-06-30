@@ -38,7 +38,7 @@
 
 <!define name="extraButton2">
    <sun:button id="button2" text="$resource{i18n.button.Start} (TBD)" disabled="#{true}" primary="#{false}"
-        onClick="if ( getConfirm(this,'$resource{i18nc.msg.JS.confirmStartInstances}') )
+        onClick="if ( getConfirm(this,'$resource{i18ncs.msg.JS.confirmStartInstances}') )
             { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
             else {return false;} " >
         <!command
@@ -52,7 +52,7 @@
 
 <!define name="extraButton3">
     <sun:button id="button3" text="$resource{i18n.button.Stop} (TBD)" disabled="#{true}" primary="#{false}"
-            onClick="if ( getConfirm(this,'$resource{i18nc.msg.JS.confirmStopInstances}') )
+            onClick="if ( getConfirm(this,'$resource{i18ncs.msg.JS.confirmStopInstances}') )
                     { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
                     else {return false;} " >
         <!command
