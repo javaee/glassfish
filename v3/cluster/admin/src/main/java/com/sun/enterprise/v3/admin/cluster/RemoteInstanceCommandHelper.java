@@ -59,6 +59,7 @@ import java.util.*;
  *
  */
 final class RemoteInstanceCommandHelper {
+
     RemoteInstanceCommandHelper(ServerEnvironment env0, Servers servers0, Configs configs0) {
         // get rid of the annoying extra level of indirection...
         // callers may have a Servers object or the may happen to have a List<Server> object
@@ -90,39 +91,39 @@ final class RemoteInstanceCommandHelper {
 
     final String getHost(final Server server) {
 
-        if(server == null)
+        if (server == null)
             return null;
 
         String host = server.getNode();
 
-        if(StringUtils.ok(host))
+        if (StringUtils.ok(host))
             return host;
         else
             return Strings.get("noNode");
     }
 
     final Server getServer(final String serverName) {
-        for(Server server : servers) {
+        for (Server server : servers) {
             final String name = server.getName();
 
             // ??? TODO is this crazy?
-            if(serverName == null) {
-                if(name == null) // they match!!
+            if (serverName == null) {
+                if (name == null) // they match!!
                     return server;
             }
-            else if(serverName.equals(name))
+            else if (serverName.equals(name))
                 return server;
         }
         return null;
     }
 
-    final String getNode(final Server server){
+    final String getNode(final Server server) {
 
-        if(server == null)
+        if (server == null)
             return null;
         String node = server.getNode();
 
-        if(StringUtils.ok(node))
+        if (StringUtils.ok(node))
             return node;
         else
             return Strings.get("noNodeRef");
@@ -131,13 +132,13 @@ final class RemoteInstanceCommandHelper {
     final int getAdminPort(Server server) {
         String portString = getAdminPortString(server, getConfig(server));
 
-        if(portString == null)
+        if (portString == null)
             return -1; // get out quick.  it is kosher to call with a null Server
 
         try {
             return Integer.parseInt(portString);
         }
-        catch(Exception e) {
+        catch (Exception e) {
             // drop through...
         }
         // we might have something like "${SOME_PORT}" as the value of the port
@@ -150,18 +151,18 @@ final class RemoteInstanceCommandHelper {
     // private to final on the method
     ///////////////////////////////////////////////////////////////////////////
     private String getAdminPortString(Server server, Config config) {
-        if(server == null || config == null)
+        if (server == null || config == null)
             return null;
 
         try {
             List<NetworkListener> listeners = config.getNetworkConfig().getNetworkListeners().getNetworkListener();
 
-            for(NetworkListener listener : listeners) {
-                if("admin-listener".equals(listener.getProtocol()))
+            for (NetworkListener listener : listeners) {
+                if ("admin-listener".equals(listener.getProtocol()))
                     return translatePort(listener.getPort(), server, config);
             }
         }
-        catch(Exception e) {
+        catch (Exception e) {
             // handled below...
         }
         return null;
@@ -169,16 +170,16 @@ final class RemoteInstanceCommandHelper {
 
     private Config getConfig(final Server server) {
         // multiple returns makes this short method more readable...
-        if(server == null)
+        if (server == null)
             return null;
 
         String cfgName = server.getConfigRef();
 
-        if(cfgName == null)
+        if (cfgName == null)
             return null;
 
-        for(Config config : configs)
-            if(cfgName.equals(config.getName()))
+        for (Config config : configs)
+            if (cfgName.equals(config.getName()))
                 return config;
 
         return null;
@@ -196,7 +197,7 @@ final class RemoteInstanceCommandHelper {
      * @return the port number or -1 if there is an error.
      */
     private String translatePort(String portString, Server server, Config config) {
-        if(!isToken(portString))
+        if (!isToken(portString))
             return portString;
 
         // isToken returned true so we are NOT assuming anything below!
@@ -211,13 +212,13 @@ final class RemoteInstanceCommandHelper {
 
         SystemProperty prop = server.getSystemProperty(key);
 
-        if(prop != null) {
+        if (prop != null) {
             return prop.getValue();
         }
 
         prop = config.getSystemProperty(key);
 
-        if(prop != null) {
+        if (prop != null) {
             return prop.getValue();
         }
 
