@@ -273,7 +273,7 @@ FromWsdl
 Loading __admingui Application done is 
 
 
-# Waiting to be fixed: 12308 - 12309
+# Waiting to be fixed: 12309
 Done with starting web container
 
 
@@ -307,10 +307,3 @@ admin console: initSessionAttributes
 
 # Waiting to be fixed: 12307
 JMS Service Connection URL is
-
-
-# Need to check why this is picking up
-WEB0169: Created HTTP listener
-WEB0671: Loading application
-MNTG0107:Enabling the monitoring for all the stats with level
-MNTG0201:Flashlight listener registration failed for listener class
