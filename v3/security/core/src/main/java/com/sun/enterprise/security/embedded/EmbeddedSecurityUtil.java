@@ -111,7 +111,7 @@ public class EmbeddedSecurityUtil {
     }
 
     public static List<String> getKeyFileNames(SecurityService securityService) {
-        List<String> keyFileNames = Collections.EMPTY_LIST;
+        List<String> keyFileNames = new ArrayList<String>();
 
         List<AuthRealm> authRealms = securityService.getAuthRealm();
         for (AuthRealm authRealm : authRealms) {
