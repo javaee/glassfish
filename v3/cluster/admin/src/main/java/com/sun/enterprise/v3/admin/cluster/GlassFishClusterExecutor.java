@@ -41,6 +41,7 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.StringUtils;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
@@ -52,6 +53,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
+import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.types.Property;
 
 import java.lang.annotation.Annotation;
@@ -69,7 +71,7 @@ import java.util.logging.Logger;
  * @author Vijay Ramachandran
  */
 @Service(name="GlassFishClusterExecutor")
-public class GlassFishClusterExecutor implements ClusterExecutor {
+public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct {
 
     @Inject
     private Domain domain;
@@ -83,8 +85,24 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
 
+    @Inject
+    private ServerEnvironment env;
+
+    @Inject
+    private Servers servers;
+
+    @Inject
+    private Configs configs;
+
     private static final LocalStringManagerImpl strings =
                         new LocalStringManagerImpl(GlassFishClusterExecutor.class);
+
+    private RemoteInstanceCommandHelper helper;
+
+    @Override
+    public void postConstruct() {
+        helper = new RemoteInstanceCommandHelper(env, servers, configs);
+    }
 
     /**
      * <p>Execute the passed command on targeted remote instances. The list of remote
@@ -117,6 +135,19 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
         if((!CommandTarget.DAS.isValid(habitat, targetName))
                 && (!CommandTarget.DOMAIN.isValid(habitat, targetName))) {
             Target target = habitat.getComponent(Target.class);
+
+            //If the target is a cluster and dynamic reconfig enabled is false, no replication
+            if(target.isCluster(targetName)) {
+                String dynRecfg = target.getClusterConfig(targetName).getDynamicReconfigurationEnabled();
+                if(Boolean.FALSE.equals(Boolean.valueOf(dynRecfg))) {
+                    ActionReport aReport = context.getActionReport().addSubActionsReport();
+                    aReport.setActionExitCode(ActionReport.ExitCode.WARNING);
+                    aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.dynrecfgdisabled",
+                            "WARNING : The command was not replicated to all cluster instances because the" +
+                                    " dynamic-reconfig-enabled flag is set to false for cluster {0}", targetName));
+                    return ActionReport.ExitCode.WARNING;
+                }
+            }
             List<Server> instancesForReplication = target.getInstances(targetName);
             if(instancesForReplication.size() == 0) {
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
@@ -125,8 +156,6 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
                         "Did not find any suitable instances for target {0}; command executed on DAS only", targetName));
                 return ActionReport.ExitCode.SUCCESS;
             }
-
-            //TODO : Support for dynamic-reconfig-enabled flag should go here
 
             return(replicateCommand(commandName, (clAnnotation == null) ? FailurePolicy.Error : clAnnotation.ifFailure(),
                     (clAnnotation == null) ? FailurePolicy.Warn : clAnnotation.ifOffline(),
@@ -156,7 +185,10 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
                 try {
                     rac.executeCommand(parameters);
                     aReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-                    aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandSuccessful",
+                    if(StringUtils.ok(rac.getCommandOutput()))
+                        aReport.setMessage(rac.getServer().getName() + " : " + rac.getCommandOutput());
+                    else
+                        aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandSuccessful",
                             "Command {0} executed successfully on server instance {1}", commandName,
                             rac.getServer().getName()));
                 } catch (CommandException cmdEx) {
@@ -204,22 +236,8 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
                                                          List<Server> servers, Logger logger) throws CommandException {
         ArrayList<InstanceCommandExecutor> list = new ArrayList<InstanceCommandExecutor>();
         for(Server svr : servers) {
-            //TODO : As of now, the node-agent-ref is used to indicate host info for instance. This may change later
-            String host = svr.getNodeAgentRef();
-
-            NetworkListener adminListener =
-              domain.getConfigs().getConfigByName(svr.getConfigRef()).getNetworkConfig().getNetworkListener("admin-listener");
-            String portStr = adminListener.getPort();
-            //int port = Integer.parseInt(portStr);
-            //TODO : The following piece of code is kludge - pending config API changes for tokens in MS2
-            int port = 4848;
-            List<SystemProperty> sprops = svr.getSystemProperty();
-            for(SystemProperty p : sprops) {
-                if("ASADMIN_LISTENER_PORT".equals(p.getName())) {
-                    port = Integer.parseInt(p.getValue());
-                    break;
-                }
-            }
+            String host = helper.getHost(svr);
+            int port = helper.getAdminPort(svr);
             list.add(new InstanceCommandExecutor(commandName, svr, host, port, logger));
         }
         return list;

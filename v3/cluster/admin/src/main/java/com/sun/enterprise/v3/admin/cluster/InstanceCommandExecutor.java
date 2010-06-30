@@ -65,6 +65,10 @@ public class InstanceCommandExecutor extends RemoteAdminCommand {
         this.server = server;
     }
 
+    public String getCommandOutput() {
+        return this.output;
+    }
+
     public Server getServer() { return server;}
 }
 

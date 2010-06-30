@@ -116,7 +116,7 @@ public class RemoteAdminCommand {
     private String              responseFormatType = "hk2-agent";
     private OutputStream        userOut;
     // return output string rather than printing it
-    private String              output;
+    protected String              output;
     private Map<String, String> attrs;
     private boolean             doUpload = false;
     private boolean             addedUploadOption = false;
