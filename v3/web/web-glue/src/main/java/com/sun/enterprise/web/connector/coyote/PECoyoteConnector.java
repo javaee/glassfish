@@ -968,8 +968,9 @@ public class PECoyoteConnector extends Connector {
     public void configureJKProperties(final NetworkListener listener) {
 
         File propertiesFile   = new File(listener.getJkConfigurationFile());
-        if (!propertiesFile.exists()) {
-            propertiesFile   = new File(System.getProperty("com.sun.enterprise.web.connector.enableJK.propertyFile"));
+        String propertyFile = System.getProperty("com.sun.enterprise.web.connector.enableJK.propertyFile");
+        if (!propertiesFile.exists() && propertyFile!=null) {
+            propertiesFile   = new File(propertyFile);
         }
         if (!propertiesFile.exists()) {
             if (_logger.isLoggable(Level.FINEST)) {
