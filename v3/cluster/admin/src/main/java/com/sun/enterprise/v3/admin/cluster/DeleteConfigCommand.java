@@ -34,7 +34,8 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.cluster;
+package com.sun.enterprise.v3.admin.cluster;
+
 
 
 import java.beans.PropertyVetoException;
