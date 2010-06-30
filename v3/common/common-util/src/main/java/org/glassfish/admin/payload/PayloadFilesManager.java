@@ -681,7 +681,7 @@ public abstract class PayloadFilesManager {
         reportFailure(partName,
                 strings.getLocalString(
                     "payload.errExtracting",
-                    "Error extracting tranferred file {0}",
+                    "Error extracting transferred file {0}",
                     partName),
                     e);
     }
