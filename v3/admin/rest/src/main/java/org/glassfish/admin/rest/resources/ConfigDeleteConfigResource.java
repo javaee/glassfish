@@ -34,25 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.Path;
-import org.glassfish.admin.rest.TemplateResource;
-public class ConfigsResource extends TemplateResource {
 
-@Path("copy-config/")
-public ConfigsCopyConfigResource getConfigsCopyConfigResource() {
-ConfigsCopyConfigResource resource = resourceContext.getResource(ConfigsCopyConfigResource.class);
-return resource;
-}
+//generated code...;
 
-@Override
-public String[][] getCommandResourcesPaths() {
-return new String[][]{{"copy-config", "POST"}};
-}
-
-	@Path("config/")
-	public ListConfigResource getConfigResource() {
-		ListConfigResource resource = resourceContext.getResource(ListConfigResource.class);
-		resource.setParentAndTagName(getEntity() , "config");
-		return resource;
-	}
+public class ConfigDeleteConfigResource extends org.glassfish.admin.rest.TemplateCommandPostResource {
+   public ConfigDeleteConfigResource() {
+       super(
+          "ConfigDeleteConfig",
+          "delete-config",
+          "POST",
+          "Delete Config",
+          "delete-config",
+          new java.util.HashMap<String, String>() {{
+                    put("id","$parent");
+       }},
+          true);
+    }
 }

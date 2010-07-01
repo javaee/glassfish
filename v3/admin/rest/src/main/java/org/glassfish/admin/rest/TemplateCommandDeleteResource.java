@@ -52,6 +52,7 @@ import org.glassfish.admin.rest.provider.CommandResourceGetResult;
 
 
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ParameterMap;
 
 /**
  *
@@ -72,7 +73,7 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
-    public Response executeCommand(HashMap<String, String> data) {
+    public Response executeCommand(ParameterMap data) {
         try {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
@@ -81,19 +82,10 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
                         errorMessage, requestHeaders, uriInfo);
             }
 
-            if (commandParams != null) {
-//formulate parent-link attribute for this command resource
-//Parent link attribute may or may not be the id/target attribute
-                if (isLinkedToParent) {
-                    ResourceUtil.resolveParentParamValue(commandParams, uriInfo);
-                }
-
-                data.putAll(commandParams);
-            }
-
-            ResourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
-            ResourceUtil.adjustParameters(data);
-            ResourceUtil.purgeEmptyEntries(data);
+            processCommandParams(data);
+            addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
+            adjustParameters(data);
+            purgeEmptyEntries(data);
             String typeOfResult = ResourceUtil.getResultType(requestHeaders);
 
 
@@ -120,7 +112,7 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
     @DELETE
     public Response executeCommand() {
         try {
-            return executeCommand(new HashMap<String, String>());
+            return executeCommand(new ParameterMap());
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
@@ -139,7 +131,7 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
-    public Response hack(HashMap<String, String> data) {
+    public Response hack(ParameterMap data) {
         if ((data.containsKey("operation"))
                 && (data.get("operation").equals("__deleteoperation"))) {
             data.remove("operation");

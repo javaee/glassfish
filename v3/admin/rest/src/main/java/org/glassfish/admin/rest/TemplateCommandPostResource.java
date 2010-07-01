@@ -35,7 +35,6 @@
  */
 package org.glassfish.admin.rest;
 
-import com.sun.jersey.multipart.FormDataMultiPart;
 import java.util.HashMap;
 
 import javax.ws.rs.core.MediaType;
@@ -52,6 +51,7 @@ import javax.ws.rs.WebApplicationException;
 import org.glassfish.api.ActionReport;
 import org.glassfish.admin.rest.provider.CommandResourceGetResult;
 import org.glassfish.admin.rest.provider.ActionReportResult;
+import org.glassfish.api.admin.ParameterMap;
 
 /**
  *
@@ -76,25 +76,16 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
         "text/html;qs=2",
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML})
-    public ActionReportResult executeCommand(HashMap<String, String> data) {
+    public ActionReportResult executeCommand(ParameterMap data) {
         try {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error", "Unable to parse the input entity. Please check the syntax.");
                 throw new WebApplicationException(ResourceUtil.getResponse(400, /*parsing error*/ errorMessage, requestHeaders, uriInfo));
             }
 
-            if (commandParams != null) {
-//formulate parent-link attribute for this command resource
-//Parent link attribute may or may not be the id/target attribute
-                if (isLinkedToParent) {
-                    ResourceUtil.resolveParentParamValue(commandParams, uriInfo);
-                }
-
-                data.putAll(commandParams);
-            }
-
-            ResourceUtil.adjustParameters(data);
-            ResourceUtil.purgeEmptyEntries(data);
+            processCommandParams(data);
+            adjustParameters(data);
+            purgeEmptyEntries(data);
             String typeOfResult = ResourceUtil.getResultType(requestHeaders);
 
             ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(), typeOfResult);
@@ -121,7 +112,7 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
     @POST
     public ActionReportResult executeCommand() {
         try {
-            return executeCommand(new HashMap<String, String>());
+            return executeCommand(new ParameterMap());
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }

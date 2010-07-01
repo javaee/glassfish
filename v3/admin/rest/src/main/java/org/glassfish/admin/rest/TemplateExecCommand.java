@@ -38,16 +38,22 @@ package org.glassfish.admin.rest;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.OptionsResult;
+import org.glassfish.api.admin.ParameterMap;
 
 /**
  *
@@ -98,5 +104,58 @@ public class TemplateExecCommand {
         }
 
         return optionsResult;
+    }
+
+    protected void processCommandParams(ParameterMap data) {
+        if (commandParams != null) {
+            //formulate parent-link attribute for this command resource
+            //Parent link attribute may or may not be the id/target attribute
+            if (isLinkedToParent) {
+                ResourceUtil.resolveParentParamValue(commandParams, uriInfo);
+            }
+            for (Map.Entry<String, String> entry : commandParams.entrySet()) {
+                data.add(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    protected void addQueryString(MultivaluedMap<String, String> qs, ParameterMap data) {
+        for (Map.Entry<String, List<String>> entry : qs.entrySet()) {
+            String key = entry.getKey();
+            for (String value : entry.getValue()) {
+                data.add(key, value);
+            }
+        }
+    }
+
+    protected void adjustParameters(ParameterMap data) {
+        if (data != null) {
+            if (!(data.containsKey("DEFAULT"))) {
+                boolean isRenamed = renameParameter(data, "name", "DEFAULT");
+                if (!isRenamed) {
+                    renameParameter(data, "id", "DEFAULT");
+                }
+            }
+        }
+    }
+
+    protected boolean renameParameter(ParameterMap data, String parameterToRename, String newName) {
+
+        if ((data.containsKey(parameterToRename))) {
+            List<String> value = data.get(parameterToRename);
+            data.remove(parameterToRename);
+            data.set(newName, value);
+            return true;
+        }
+        return false;
+    }
+
+    protected void purgeEmptyEntries(ParameterMap data) {
+        Set<Entry<String, List<String>>> entries = data.entrySet();
+        for (Entry<String, List<String>> entry : entries) {
+            if ((entry.getValue() == null) || (entry.getValue().isEmpty())) {
+                data.remove(entry.getKey());// CME ?
+            }
+        }
     }
 }

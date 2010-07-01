@@ -38,6 +38,17 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class ConfigResource extends TemplateResource {
 
+@Path("delete-config/")
+public ConfigDeleteConfigResource getConfigDeleteConfigResource() {
+ConfigDeleteConfigResource resource = resourceContext.getResource(ConfigDeleteConfigResource.class);
+return resource;
+}
+
+@Override
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"delete-config", "POST"}};
+}
+
 	@Path("admin-service/")
 	public AdminServiceResource getAdminServiceResource() {
 		AdminServiceResource resource = resourceContext.getResource(AdminServiceResource.class);

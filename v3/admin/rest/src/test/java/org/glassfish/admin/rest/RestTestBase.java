@@ -193,12 +193,14 @@ public class RestTestBase {
             Document doc = db.parse(new ByteArrayInputStream(input.getBytes()));
             return doc;
         } catch (Exception ex) {
-            ex.printStackTrace();
             return null;
         }
     }
 
     private MultivaluedMap buildMultivalueMap(Map<String, String> payload) {
+        if (payload instanceof MultivaluedMap) {
+            return (MultivaluedMap)payload;
+        }
         MultivaluedMap formData = new MultivaluedMapImpl();
         if (payload != null) {
             for (final Map.Entry<String, String> entry : payload.entrySet()) {

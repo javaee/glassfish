@@ -169,14 +169,19 @@ public class ResourceUtil {
      */
     public static ActionReport runCommand(String commandName,
             HashMap<String, String> parameters, Habitat habitat, String resultType) {
-        CommandRunner cr = habitat.getComponent(CommandRunner.class);
-        ActionReport ar = habitat.getComponent(ActionReport.class,resultType);
         ParameterMap p = new ParameterMap();
         for (Map.Entry<String,String> entry : parameters.entrySet()) {
             p.set(entry.getKey(), entry.getValue());
         }
 
-        cr.getCommandInvocation(commandName, ar).parameters(p).execute();
+        return runCommand(commandName, p, habitat, resultType);
+    }
+
+    public static ActionReport runCommand(String commandName, ParameterMap parameters, Habitat habitat, String resultType) {
+        CommandRunner cr = habitat.getComponent(CommandRunner.class);
+        ActionReport ar = habitat.getComponent(ActionReport.class,resultType);
+
+        cr.getCommandInvocation(commandName, ar).parameters(parameters).execute();
         return ar;
     }
 
