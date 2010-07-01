@@ -65,4 +65,13 @@ public class RestResponseTest {
         RestResponse response = RestApiHandlers.get(URL_UPTIME);
         assertTrue(response.getResponseBody().contains("Uptime:"));
     }
+
+    @Test
+    public void testEndpointExists() {
+        RestResponse response = RestApiHandlers.get(URL_UPTIME);
+        assertTrue(response.isSuccess());
+
+        response = RestApiHandlers.get(URL_UPTIME + "/forceFailure");
+        assertFalse(response.isSuccess());
+    }
 }
