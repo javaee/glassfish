@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -36,38 +36,50 @@
 <!-- appServer/serverInstDomainAttrs.jsf -->
 
 <!initPage
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings");
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.server.DomainAttrs}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.domain.DomainAttrsPageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
-            setSessionAttribute(key="serverInstTabs" value="domainAttrs");
-            getRequestValue(key="configName" value=>$page{configName} default="server-config");
-            getRequestValue(key="name" value="#{pageSession.Name}");
-            setPageSessionAttribute(key="objectNameStr", value="amx:pp=/,type=domain");
-            setPageSessionAttribute(key="parentObjectNameStr", value="#{sessionScope.DOMAIN_ROOT}");
-            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
-             //set the following for including buttons.inc
+            setSessionAttribute(key="domainTabs" value="domainAttrs");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf");
+            setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}");
+            setPageSessionAttribute(key="rest-api" value="true");
+            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+            //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );
             setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
             setPageSessionAttribute(key="showCancelButton" value="#{false}" );
             setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
-             setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
-            
+            setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
         />   
     </event>
             <sun:form id="propertyForm">
-#include "serverInstTabs.inc"
+#include "/common/appServer/domainTabs.inc"
 #include "/common/shared/alertMsg.inc"
- <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18n.server.DomainAttrs}" >
-#include "/common/shared/editPageButtons.inc"
+    <sun:title id="propertyContentPage" title="$resource{i18nc.domain.DomainAttrsPageTitle}" helpText="$resource{i18nc.domain.DomainAttrsPageTitleHelp}">
+   //#include "/common/shared/editPageButtons.inc"
     </sun:title>
-    "<br><br>
-#include "/common/appServer/domainAttributesCommon.inc"
-	<sun:hidden id="helpKey" value="$resource{help.serverInstDomainAttrs}" />
-            </sun:form>
+
+<sun:propertySheet id="propertySheet">
+    <sun:propertySheetSection id="propertSectionTextField">
+        <sun:property id="appRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AppRoot}" helpText="$resource{i18nc.domain.AppRootHelp}">
+            <sun:textField id="AppRoot" columns="$int{55}" text="#{pageSession.valueMap['ApplicationRoot']}"/>
+        </sun:property>
+        <sun:property id="logRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.LogRoot}" helpText="$resource{i18nc.domain.LogRootHelp}">
+            <sun:textField id="LogRoot" columns="$int{55}" text="#{pageSession.valueMap['LogRoot']}"/>
+        </sun:property>
+        <sun:property id="localeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.Locale}" helpText="$resource{i18nc.domain.LocaleHelp}">
+            <sun:textField id="Locale" columns="$int{55}" text="#{pageSession.valueMap['Locale']}"/>
+        </sun:property>
+    "<br/>
+    </sun:propertySheetSection>
+
+</sun:propertySheet>
+
+<sun:hidden id="helpKey" value="$resource{help_common.serverInstDomainAttrs}" />
+    </sun:form>
 </define>
 </composition>

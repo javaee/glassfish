@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -44,33 +44,6 @@
         gf.redirect(page="#{request.contextPath}/common/appServer/serverInstGeneralPe.jsf");
 	    />       
     </sun:tab>
-
-    <sun:tab id="advanced" immediate="true" text="$resource{i18n.headings.Advanced}" toolTip="$resource{i18n.headings.Advanced} Tab">
-        <!command
-        setSessionAttribute(key="serverInstTabs" value="advanced");
-        gf.redirect(page="#{request.contextPath}/common/appServer/serverInstAppsConfig.jsf?configName=server-config");
-        />
-        <sun:tab id="appConfig" immediate="true" text="$resource{i18n.headings.AppConfig}" toolTip="$resource{i18n.headings.AppConfig} Tab" >
-            <!command
-            setSessionAttribute(key="serverInstTabs" value="appConfig");
-            gf.redirect(page="#{request.contextPath}/common/appServer/serverInstAppsConfig.jsf?configName=server-config");
-            />
-        </sun:tab>
-        <sun:tab id="domainAttrs" immediate="true" text="$resource{i18n.headings.DomainAttributes}" toolTip="$resource{i18n.headings.DomainAttributes} Tab" >
-            <!command
-            setSessionAttribute(key="serverInstTabs" value="domainAttrs");
-            gf.redirect(page="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf?configName=server-config");
-            />
-        </sun:tab>
-    </sun:tab>
-
-      <sun:tab id="adminPassword" immediate="true" text="$resource{i18n.headings.AdminPassword}" toolTip="$resource{i18n.headings.AdminPassword} Tab" >
-	    <!command
-        setSessionAttribute(key="serverInstTabs" value="adminPassword");
-		gf.redirect(page="#{request.contextPath}/common/appServer/serverInstAdminPassword.jsf");
-	    />
-    </sun:tab>
-
     <sun:tab id="token" immediate="true" text="$resource{i18n.systemProps.tableTitle}" toolTip="$resource{i18n.systemProps.tableTitle} Tab">
         <!command
             setSessionAttribute(key="serverInstTabs" value="token");

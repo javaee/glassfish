@@ -1,3 +1,4 @@
+
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -33,12 +34,25 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- pluginTreeNodeDomain.jsf -->
+<!-- appServer/domainTabs.jsf -->
 
-<!--  ===================================== Nodes ======================  -->
-<sun:treeNode  id="nodes"
-    text="$resource{i18nc.tree.domain}"
-    url="/common/appServer/serverInstDomainAttrs.jsf"
-    imageURL="/resource/images/domain.gif"
-    expanded="true"
-/>
+<sun:tabSet id="domainTabs" immediate="true" selected="#{sessionScope.domainTabs}">
+    <sun:tab id="domainAttrs" immediate="true" text="$resource{i18n.headings.DomainAttributes}" toolTip="$resource{i18n.headings.DomainAttributes} Tab" >
+        <!command
+            setSessionAttribute(key="domainTabs" value="domainAttrs");
+            gf.redirect(page="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf");
+        />
+    </sun:tab>
+    <sun:tab id="appConfig" immediate="true" text="$resource{i18n.headings.AppConfig}" toolTip="$resource{i18n.headings.AppConfig} Tab" >
+        <!command
+            setSessionAttribute(key="domainTabs" value="appConfig");
+            gf.redirect(page="#{request.contextPath}/common/appServer/serverInstAppsConfig.jsf");
+        />
+    </sun:tab>
+    <sun:tab id="adminPassword" immediate="true" text="$resource{i18n.headings.AdminPassword}" toolTip="$resource{i18n.headings.AdminPassword} Tab" >
+        <!command
+            setSessionAttribute(key="domainTabs" value="adminPassword");
+            gf.redirect(page="#{request.contextPath}/common/appServer/serverInstAdminPassword.jsf");
+        />
+    </sun:tab>
+</sun:tabSet>
