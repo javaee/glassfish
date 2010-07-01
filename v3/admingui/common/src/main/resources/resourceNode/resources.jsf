@@ -39,7 +39,7 @@
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.server.AppsConfigPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.resourcesPageTitle}" >
 <!define name="content">
    <sun:form id="resourcesForm"> 
                 <sun:title 
