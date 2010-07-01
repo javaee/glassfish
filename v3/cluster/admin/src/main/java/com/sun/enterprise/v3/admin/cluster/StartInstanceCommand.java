@@ -97,10 +97,6 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     private CommandRunner cr;
     @Inject
     private ServerEnvironment env;
-    @Inject
-    private Servers servers;
-    @Inject
-    private Configs configs;
     
     @Param(optional = true, defaultValue = "true")
     private Boolean force;
@@ -150,7 +146,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
 
     @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
+        helper = new RemoteInstanceCommandHelper(habitat);
     }
 
     private void startInstance()  {

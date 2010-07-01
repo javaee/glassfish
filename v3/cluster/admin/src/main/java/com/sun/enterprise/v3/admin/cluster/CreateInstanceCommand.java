@@ -91,14 +91,6 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     @Inject
     private Nodes nodes;
 
-    @Inject
-    private ServerEnvironment env;
-    @Inject
-    private Servers servers;
-    @Inject
-    private Configs configs;
-    
-
     @Param(name="node", optional=true, defaultValue=DEFAULT_NODE)
     String node;
 
@@ -125,7 +117,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
 
     @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
+        helper = new RemoteInstanceCommandHelper(habitat);
     }
 
     @Override

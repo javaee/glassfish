@@ -85,13 +85,6 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
     private Nodes nodes;
 
     @Inject
-    private ServerEnvironment env;
-    @Inject
-    private Servers servers;
-    @Inject
-    private Configs configs;
-
-    @Inject
     Domain domain;
 
 
@@ -112,7 +105,7 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
 
     @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
+        helper = new RemoteInstanceCommandHelper(habitat);
     }
 
     @Override

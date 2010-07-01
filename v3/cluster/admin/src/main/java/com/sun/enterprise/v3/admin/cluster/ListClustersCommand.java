@@ -33,9 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin.cluster;
-
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.cluster.InstanceInfo;
@@ -47,6 +45,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
 
@@ -58,7 +57,7 @@ import static com.sun.enterprise.v3.admin.cluster.Constants.*;
 /**
  *  This is a remote command that lists the clusters.
  * Usage: list-clusters
- 	
+
  * @author Bhakti Mehta
  */
 @Service(name = "list-clusters")
@@ -67,28 +66,17 @@ import static com.sun.enterprise.v3.admin.cluster.Constants.*;
 public final class ListClustersCommand implements AdminCommand, PostConstruct {
 
     @Inject
+    private Habitat habitat;
+    @Inject
     Domain domain;
-
     @Inject
-    private ServerEnvironment env;
-
-    @Inject
-    private Servers servers;
-
-    @Inject
-    private Configs configs;
-
     private RemoteInstanceCommandHelper helper;
-
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
-
     private static final String NONE = "Nothing to list.";
 
-
-
-     @Override
+    @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
+        helper = new RemoteInstanceCommandHelper(habitat);
     }
 
     public void execute(AdminCommandContext context) {
@@ -99,11 +87,11 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
         Clusters clusters = domain.getClusters();
         List<Cluster> clusterList = clusters.getCluster();
         StringBuffer sb = new StringBuffer();
-        if (clusterList.size()<1) {
+        if (clusterList.size() < 1) {
             sb.append(NONE);
         }
 
-        boolean atleastOneInstanceRunning = false ;
+        boolean atleastOneInstanceRunning = false;
         boolean allInstancesRunning = true;
         int timeoutInMsec = 2000;
 
@@ -117,12 +105,12 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
 
         for (Cluster cluster : clusterList) {
             List<Server> servers = cluster.getInstances();
-            for (Server server:servers) {
+            for (Server server : servers) {
                 String name = server.getName();
                 if (name != null) {
                     InstanceInfo ii = new InstanceInfo(
-                        name, helper.getAdminPort(server), helper.getHost(server), 
-                        cluster.getName(), logger, timeoutInMsec);
+                            name, helper.getAdminPort(server), helper.getHost(server),
+                            cluster.getName(), logger, timeoutInMsec);
                     infos.add(ii);
 
                     allInstancesRunning &= ii.isRunning();
@@ -131,19 +119,21 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
                     }
 
                 }
-                
+
             }
             String state = "";
-            if (allInstancesRunning && atleastOneInstanceRunning){
+            if (allInstancesRunning && atleastOneInstanceRunning) {
                 state = RUNNING;
-            }  else if (!allInstancesRunning && !(atleastOneInstanceRunning)) {
+            }
+            else if (!allInstancesRunning && !(atleastOneInstanceRunning)) {
                 state = NOT_RUNNING;
-            }  else state = PARTIALLY_RUNNING;
-            sb.append(cluster.getName()).append(' ' ).append(state).append('\n');
+            }
+            else
+                state = PARTIALLY_RUNNING;
+            sb.append(cluster.getName()).append(' ').append(state).append('\n');
 
         }
-        report.addSubActionsReport().setMessage(sb.toString() );
+        report.addSubActionsReport().setMessage(sb.toString());
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
-
 }

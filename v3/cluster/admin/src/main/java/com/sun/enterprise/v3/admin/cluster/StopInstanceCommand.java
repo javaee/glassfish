@@ -58,6 +58,7 @@ import java.util.Iterator;
 import java.util.Collection;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PerLookup;
 
@@ -80,26 +81,38 @@ import org.jvnet.hk2.component.PerLookup;
 public class StopInstanceCommand implements AdminCommand, PostConstruct {
 
     @Inject
+    private Habitat habitat;
+    @Inject
     Domain domain;
+    @Inject
+    private ServerEnvironment env;
+    @Inject
+    private ModulesRegistry registry;
+    @Param(optional = true, defaultValue = "true")
+    private Boolean force;
+    @Param(optional = true, primary = true)
+    private String instanceName;
+    private Logger logger;
+    private RemoteInstanceCommandHelper helper;
 
     public void execute(AdminCommandContext context) {
         logger = context.getLogger();
 
-        if(env.isDas()) {
+        if (env.isDas()) {
             callInstance();
         }
-        else if(env.isInstance()) {
+        else if (env.isInstance()) {
             logger.info(Strings.get("stop.instance.init"));
             Collection<Module> modules = registry.getModules(
                     "org.glassfish.core.glassfish");
-            if(modules.size() == 1) {
+            if (modules.size() == 1) {
                 final Module mgmtAgentModule = modules.iterator().next();
                 mgmtAgentModule.stop();
             }
             else {
                 logger.warning(modules.size() + " no of primordial modules found");
             }
-            if(force) {
+            if (force) {
                 System.exit(0);
             }
         }
@@ -112,27 +125,27 @@ public class StopInstanceCommand implements AdminCommand, PostConstruct {
 
     @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
+        helper = new RemoteInstanceCommandHelper(habitat);
     }
 
     private void callInstance() {
         try {
-            if(!StringUtils.ok(instanceName)) {
+            if (!StringUtils.ok(instanceName)) {
                 logger.severe(Strings.get("stop.instance.noInstanceName"));
                 return;
             }
             final Server instance = helper.getServer(instanceName);
-            if(instance == null) {
+            if (instance == null) {
                 logger.severe(Strings.get("stop.instance.noSuchInstance", instanceName));
                 return;
             }
             String host = helper.getHost(instance);
-            if(host == null) {
+            if (host == null) {
                 logger.severe(Strings.get("stop.instance.noHost", instanceName));
                 return;
             }
             int port = helper.getAdminPort(instance);
-            if(port < 0) {
+            if (port < 0) {
                 logger.severe(Strings.get("stop.instance.noPort", instanceName));
                 return;
             }
@@ -147,19 +160,4 @@ public class StopInstanceCommand implements AdminCommand, PostConstruct {
             logger.severe(Strings.get("stop.instance.racError", instanceName));
         }
     }
-    
-    @Inject
-    private ServerEnvironment env;
-    @Inject
-    private Servers servers;
-    @Inject
-    private Configs configs;
-    @Inject
-    private ModulesRegistry registry;
-    @Param(optional = true, defaultValue = "true")
-    private Boolean force;
-    @Param(optional = true, primary = true)
-    private String instanceName;
-    private Logger logger;
-    private RemoteInstanceCommandHelper helper;
 }

@@ -85,15 +85,6 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
 
-    @Inject
-    private ServerEnvironment env;
-
-    @Inject
-    private Servers servers;
-
-    @Inject
-    private Configs configs;
-
     private static final LocalStringManagerImpl strings =
                         new LocalStringManagerImpl(GlassFishClusterExecutor.class);
 
@@ -101,7 +92,7 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
 
     @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
+        helper = new RemoteInstanceCommandHelper(habitat);
     }
 
     /**

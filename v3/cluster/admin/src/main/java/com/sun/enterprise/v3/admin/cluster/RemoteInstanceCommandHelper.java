@@ -41,6 +41,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.grizzly.config.dom.NetworkListener;
 import java.util.*;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * @author Byron Nevins
@@ -60,20 +61,17 @@ import java.util.*;
  */
 final class RemoteInstanceCommandHelper {
 
-    RemoteInstanceCommandHelper(ServerEnvironment env0, Servers servers0, 
-            Configs configs0, Domain domain0) {
-        // get rid of the annoying extra level of indirection...
-        // callers may have a Servers object or the may happen to have a List<Server> object
-        // we have a ctor for both!
-        this(env0, servers0.getServer(), configs0, domain0);
-    }
+    RemoteInstanceCommandHelper(Habitat habitatIn) {
 
-    RemoteInstanceCommandHelper(ServerEnvironment env0, List<Server> servers0, 
-            Configs configs0, Domain domain0) {
-        env = env0;
-        configs = configs0.getConfig();
-        servers = servers0;
-        domain = domain0;
+        try {
+            habitat = habitatIn;
+            configs = habitat.getByType(Configs.class).getConfig();
+            servers = habitat.getByType(Servers.class).getServer();
+            env = habitat.getByType(ServerEnvironment.class);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     final boolean isDas() {
@@ -82,10 +80,6 @@ final class RemoteInstanceCommandHelper {
 
     final boolean isInstance() {
         return env.isInstance();
-    }
-
-    final int getAdminPort(final String serverName) {
-        return getAdminPort(getServer(serverName));
     }
 
     final String getHost(final String serverName) {
@@ -120,16 +114,24 @@ final class RemoteInstanceCommandHelper {
         return null;
     }
 
+    // bnevins: KLUDGE alert -- what is UP with the noNodeRef?!?
+    // TODO TODO
+    
     final String getNode(final Server server) {
 
         if (server == null)
             return null;
+
         String node = server.getNode();
 
         if (StringUtils.ok(node))
             return node;
         else
             return Strings.get("noNodeRef");
+    }
+
+    final int getAdminPort(final String serverName) {
+        return getAdminPort(getServer(serverName));
     }
 
     final int getAdminPort(Server server) {
@@ -237,5 +239,5 @@ final class RemoteInstanceCommandHelper {
     final private ServerEnvironment env;
     final private List<Server> servers;
     final private List<Config> configs;
-    final private Domain domain;
+    final private Habitat habitat;
 }

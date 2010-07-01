@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin.cluster;
 
 import java.util.logging.Logger;
@@ -54,39 +53,25 @@ import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
 
 @I18n("start.cluster.command")
-@Service(name="start-cluster")
+@Service(name = "start-cluster")
 @Scoped(PerLookup.class)
 public class StartClusterCommand implements AdminCommand, PostConstruct {
 
-    @Param(optional=false, primary=true)
+    @Inject
+    private Habitat habitat;
+    @Param(optional = false, primary = true)
     private String clusterName;
-
-    @Inject
-    private ServerEnvironment env;
-
-    @Inject
-    private Servers servers;
-
     @Inject
     private Domain domain;
-
-    @Inject
-    private Configs configs;
-
     @Inject
     private CommandRunner runner;
-
-    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    private Server das_server;
-
     @Param(optional = true, defaultValue = "false")
     private boolean verbose;
-
     private RemoteInstanceCommandHelper helper;
 
     @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
+        helper = new RemoteInstanceCommandHelper(habitat);
     }
 
     @Override
@@ -98,7 +83,7 @@ public class StartClusterCommand implements AdminCommand, PostConstruct {
         logger.info(Strings.get("start.cluster", clusterName));
 
         // Require that we be a DAS
-        if(!helper.isDas()) {
+        if (!helper.isDas()) {
             String msg = Strings.get("cluster.command.notDas");
             logger.warning(msg);
             report.setActionExitCode(ExitCode.FAILURE);
@@ -114,7 +99,8 @@ public class StartClusterCommand implements AdminCommand, PostConstruct {
             String commandName = "start-instance";
             clusterHelper.runCommand(commandName, null, clusterName, context,
                     verbose);
-        } catch (CommandException e) {
+        }
+        catch (CommandException e) {
             String msg = e.getLocalizedMessage();
             logger.warning(msg);
             report.setActionExitCode(ExitCode.FAILURE);

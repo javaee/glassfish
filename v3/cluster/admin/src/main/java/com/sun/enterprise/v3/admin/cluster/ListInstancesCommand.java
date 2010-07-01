@@ -38,6 +38,7 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.cluster.InstanceInfo;
@@ -54,6 +55,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.ReferenceContainer;
 import org.jvnet.hk2.component.*;
 import static com.sun.enterprise.v3.admin.cluster.Constants.*;
+
 /**
  * AdminCommand to list all instances and their states
  *
@@ -67,13 +69,13 @@ import static com.sun.enterprise.v3.admin.cluster.Constants.*;
 public class ListInstancesCommand implements AdminCommand {
 
     @Inject
+    private Habitat habitat;
+    @Inject
     private Domain domain;
     @Inject
     private ServerEnvironment env;
     @Inject
     private Servers allServers;
-    @Inject
-    private Configs configs;
     @Param(optional = true, defaultValue = "false")
     private boolean verbose;
     @Param(optional = true, defaultValue = "2000")
@@ -151,8 +153,7 @@ public class ListInstancesCommand implements AdminCommand {
 
     private void yesStatus(List<Server> serverList, int timeoutInMsec, Logger logger) {
         // Gather a list of InstanceInfo -- one per instance in domain.xml
-        RemoteInstanceCommandHelper helper = 
-                new RemoteInstanceCommandHelper(env, serverList, configs, domain);
+        RemoteInstanceCommandHelper helper = new RemoteInstanceCommandHelper(habitat);
 
         for (Server server : serverList) {
             boolean clustered = server.getCluster() != null;
@@ -258,8 +259,8 @@ public class ListInstancesCommand implements AdminCommand {
         List<Server> servers = new LinkedList<Server>();
 
         for (ReferenceContainer rc : rcs)
-            if(rc.isServer())
-                servers.add((Server)rc);
+            if (rc.isServer())
+                servers.add((Server) rc);
 
         return servers;
     }

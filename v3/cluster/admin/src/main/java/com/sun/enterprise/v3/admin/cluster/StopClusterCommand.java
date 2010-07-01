@@ -57,6 +57,8 @@ import com.sun.enterprise.config.serverbeans.Domain;
 @Service(name="stop-cluster")
 @Scoped(PerLookup.class)
 public class StopClusterCommand implements AdminCommand, PostConstruct {
+    @Inject
+    private Habitat habitat;
 
     @Param(optional=false, primary=true)
     private String clusterName;
@@ -64,14 +66,10 @@ public class StopClusterCommand implements AdminCommand, PostConstruct {
     @Inject
     private ServerEnvironment env;
 
-    @Inject
-    private Servers servers;
 
     @Inject
     private Domain domain;
 
-    @Inject
-    private Configs configs;
 
     @Inject
     private CommandRunner runner;
@@ -86,7 +84,7 @@ public class StopClusterCommand implements AdminCommand, PostConstruct {
 
     @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(env, servers, configs, domain);
+        helper = new RemoteInstanceCommandHelper(habitat);
     }
 
     @Override
