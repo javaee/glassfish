@@ -38,6 +38,17 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class ExternalJndiResourceResource extends TemplateResource {
 
+@Path("delete-resource/")
+public ExternalJndiResourceDeleteResourceResource getExternalJndiResourceDeleteResourceResource() {
+ExternalJndiResourceDeleteResourceResource resource = resourceContext.getResource(ExternalJndiResourceDeleteResourceResource.class);
+return resource;
+}
+
+@Override
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"delete-resource", "POST"}};
+}
+
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);

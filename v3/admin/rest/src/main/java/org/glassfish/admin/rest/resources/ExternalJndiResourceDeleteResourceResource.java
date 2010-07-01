@@ -34,12 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.Path;
-import org.glassfish.admin.rest.TemplateResource;
-public class PropertyResource extends TemplateResource {
 
-@Override
-public String getDeleteCommand() {
-	return "GENERIC-DELETE";
-}
+//generated code...;
+
+public class ExternalJndiResourceDeleteResourceResource extends org.glassfish.admin.rest.TemplateCommandPostResource {
+   public ExternalJndiResourceDeleteResourceResource() {
+       super(
+          "ExternalJndiResourceDeleteResource",
+          "delete-jndi-resource",
+          "POST",
+          "Delete Resource",
+          "delete-resource",
+          new java.util.HashMap<String, String>() {{
+                    put("id","$parent");
+       }},
+          true);
+    }
 }
