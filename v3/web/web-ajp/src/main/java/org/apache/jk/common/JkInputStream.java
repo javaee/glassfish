@@ -62,6 +62,7 @@ import com.sun.grizzly.tcp.InputBuffer;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
 
+import org.apache.catalina.connector.Constants;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 
@@ -74,8 +75,6 @@ import com.sun.grizzly.util.http.MimeHeaders;
 /** Generic input stream impl on top of ajp
  */
 public class JkInputStream implements InputBuffer, OutputBuffer {
-    
-    private static final boolean USE_CUSTOM_STATUS_MSG_IN_HEADER = false;
     
     private static Logger log=
         Logger.getLogger( JkInputStream.class.getName() );
@@ -321,7 +320,7 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
         outputMsg.appendInt( res.getStatus() );
         
         String message = null;
-        if (USE_CUSTOM_STATUS_MSG_IN_HEADER) {
+        if (Constants.USE_CUSTOM_STATUS_MSG_IN_HEADER) {
             message = res.getMessage();
         } 
         if( message==null ){
