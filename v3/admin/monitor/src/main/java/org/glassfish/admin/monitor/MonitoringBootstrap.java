@@ -47,6 +47,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.external.probe.provider.StatsProviderInfo;
 import org.jvnet.hk2.component.*;
 import org.glassfish.external.probe.provider.StatsProviderManager;
@@ -66,14 +67,19 @@ import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleLifecycleListener;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.URI;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.Collections;
@@ -112,6 +118,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     protected ProbeClientMediator pcm;
     @Inject
     Events events;
+    @Inject
+    ClassLoaderHierarchy classloader;
 
     @Inject(optional=true)
     MonitoringService monitoringService = null;
@@ -120,6 +128,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
 
 
     Map<String,Module> map = Collections.synchronizedMap(new WeakHashMap<String,Module>());
+    List<String> appList = Collections.synchronizedList(new ArrayList<String>());
 
     private static final String INSTALL_ROOT_URI_PROPERTY_NAME = "com.sun.aas.installRootURI";
     private static final Logger logger =
@@ -131,6 +140,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     private StatsProviderManagerDelegateImpl spmd;
     private boolean monitoringEnabled;
     private boolean hasDiscoveredXMLProviders = false;
+    private ClassLoader connectorClassLoader = null;
 
     public void postConstruct() {
         // wbn: This value sticks for the life of the bootstrapping.  If the user changes it
@@ -163,6 +173,23 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                 if (logger.isLoggable(Level.FINE))
                     logger.fine(" In (discoverProbeProviders) ModuleState - " + m.getState() + " : " + m.getName());
                 verifyModule(m);
+            }
+        }
+
+        //system applications
+        File root = new File(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
+        File applicationsDir = new File(root, "lib" + File.separator +"install" + File.separator + "applications");
+        connectorClassLoader = classloader.getConnectorClassLoader(null); // Make more generic?
+        String[] appChild = null;
+        if (applicationsDir != null) {
+            appChild = applicationsDir.list();
+            if (appChild != null) {
+                for (String a : appChild) {
+                    File childDir = new File(applicationsDir, a);
+                    if (childDir.isDirectory()) {
+                        verifyApp(a, childDir);
+                    }
+                }
             }
         }
     }
@@ -220,6 +247,14 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         }
     }
 
+    private synchronized void verifyApp(String app, File appDir) {
+        if (app == null) return;
+        if (!appList.contains(app)) {
+            appList.add(app);
+            addProvider(appDir);
+        }
+    }
+
     public synchronized void moduleStopped(Module module) {
         if (module == null) return;
         String str = module.getName();
@@ -251,6 +286,38 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         if (md != null) {
             mf = md.getManifest();
         }
+        if (mf != null) {
+            processManifest(mf, mcl);
+        }
+        handleFutureStatsProviders();
+    }
+
+    private void addProvider(File appDir) {
+        //get manifest entries and process
+        File manifestFile = new File(appDir, "META-INF" + File.separator + "MANIFEST.MF");
+        String appDirPath = "";
+        Manifest mf = null;
+        if (manifestFile != null) {
+            try {
+                appDirPath = appDir.getCanonicalPath();
+                FileInputStream fis = new FileInputStream(manifestFile);
+                mf = new Manifest(fis);
+            } catch (IOException ex) {
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("Can't access " + "META-INF"+File.separator+"MANIFEST.MF" + " for " + appDirPath);
+                    logger.fine(ex.getLocalizedMessage());
+                }
+                return;
+            }
+            if (mf != null) {
+                processManifest(mf, connectorClassLoader);
+            }
+        }
+
+        handleFutureStatsProviders();
+    }
+
+    private void processManifest(Manifest mf, ClassLoader mcl) {
         if (mf != null) {
             Attributes attrs = mf.getMainAttributes();
             String cnames = null;
@@ -284,7 +351,6 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                 }
             }
         }
-        handleFutureStatsProviders();
     }
 
     public void handleFutureStatsProviders() {
@@ -358,18 +424,29 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                 providerMap.put(moduleName, file);
                 if (logger.isLoggable(Level.FINE))
                     logger.fine(" The provider xml belongs to - \"" + moduleName + "\"");
-                if (!map.containsKey(moduleName)) {
+                if (!map.containsKey(moduleName) && !appList.contains(moduleName)) {
                     continue;
                 }
                 if (logger.isLoggable(Level.FINE))
                     logger.fine (" Module found (containsKey)");
                 Module module = map.get(moduleName);
-                if (module == null) {
+                int idx = appList.indexOf(moduleName);
+                String app = null;
+                if (idx != -1) {
+                    app = appList.get(idx);
+                }
+                if (module == null && app == null) {
                     logger.log(Level.SEVERE,
                                 "monitoringMissingModuleFromXmlProbeProviders",
                                         new Object[] {moduleName});
                 } else {
-                    ClassLoader mcl = module.getClassLoader();
+                    ClassLoader mcl = null;
+                    if (module != null) {
+                        mcl = module.getClassLoader();
+                    } else if (app != null) {
+                        mcl = connectorClassLoader;
+                    }
+
                     if (logger.isLoggable(Level.FINE)) {
                         logger.fine("ModuleClassLoader = " + mcl);
                         logger.fine("XML File path = " + file.getAbsolutePath());
