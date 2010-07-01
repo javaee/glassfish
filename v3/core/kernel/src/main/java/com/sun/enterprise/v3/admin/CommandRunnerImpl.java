@@ -515,7 +515,8 @@ public class CommandRunnerImpl implements CommandRunner {
 	    report.setMessage(model.getCommandName() + " - " +
                                     localStrings.getLocalString(i18nKey, ""));
 	    report.getTopMessagePart().addProperty("SYNOPSIS",
-                                                getUsageText(command, model));
+                            encodeManPage(new BufferedReader(new StringReader(
+                                getUsageText(command, model)))));
 	    for (CommandModel.ParamModel param : model.getParameters()) {
 		addParamUsage(report, localStrings, i18nKey, param);
 	    }
@@ -746,11 +747,16 @@ public class CommandRunnerImpl implements CommandRunner {
     }
 
     private static String encodeManPage(InputStream in) {
+        if (in == null)
+            return null;
+        return encodeManPage(new BufferedReader(new InputStreamReader(in)));
+    }
+
+    private static String encodeManPage(BufferedReader br) {
         try {
-            if (in == null)
+            if (br == null)
                 return null;
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String line;
             StringBuilder sb = new StringBuilder();
 
@@ -761,6 +767,11 @@ public class CommandRunnerImpl implements CommandRunner {
             return sb.toString();
         } catch (Exception ex) {
             return null;
+        } finally {
+            if (br != null)
+                try {
+                    br.close();
+                } catch (IOException ioex) { }
         }
     }
 
