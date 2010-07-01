@@ -57,21 +57,21 @@
 
     <!-- prepare regex patterns to detect missing Ids, typos, etc. -->
     <!-- like in IT 11637 -->
-    <property name="msg_with_id" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\-\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|\w+\d+\s?:\s?.*?\|#\]"/>
+    <property name="msg_with_id" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\D\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|\w+\d+\s?:\s?.*?\|#\]"/>
     <!-- like in IT 11627, 11545, 6988, 7004, 7001, 9883, 9910, 9147, 10998 -->
-    <property name="msg_key" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\-\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|(\w+\.)+\w*\|#\]"/>
+    <property name="msg_key" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\D\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|(\w+\.)+\w*\|#\]"/>
     <!-- like in IT 7141 -->
-    <property name="msg_not_found" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\-\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|No local string defined\|#\]"/>
+    <property name="msg_not_found" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\D\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|No local string defined\|#\]"/>
     <!-- like in IT 9922, 11542 -->
-    <property name="bundle_not_found_msg" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\-\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|Can not find resource bundle for this logger\.\|#\]"/>
+    <property name="bundle_not_found_msg" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\D\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|Can not find resource bundle for this logger\.\|#\]"/>
     <!-- like in IT 9266, 8285 -->
-    <property name="null_or_empty_msg" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\-\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|(null|The log message is null)?\|#\]"/>
+    <property name="null_or_empty_msg" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\D\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|(null|The log message is null)?\|#\]"/>
     <!-- like in IT 10884 -->
-    <property name="msg_common_typos" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\-\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|.*?(occure| dont ).*?\|#\]"/>
+    <property name="msg_common_typos" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\D\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|.*?(occure| dont ).*?\|#\]"/>
     <!-- like in IT 7053, 6990, 6989, 7002, 10038, 10769 -->
-    <property name="msg_unsubst_param" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\-\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|.*?\{\d\}.*?\|#\]"/>
+    <property name="msg_unsubst_param" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\D\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|.*?\{\d\}.*?\|#\]"/>
     <!-- like in IT 9896, 9212 -->
-    <property name="msg_double_apos" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\-\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|.*?\w''\w.*?\|#\]"/>
+    <property name="msg_double_apos" value="\[#\|\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\D\d\d\d\d\|(INFO|WARNING|SEVERE)\|[\w.]+?\|.+?\|.*?\|.*?\w''\w.*?\|#\]"/>
     <!-- example msg for reference to understand above regex's:
     [#|2010-05-15T15:07:39.453+1000|INFO|glassfishv3.0|javax.enterprise.resource.jta.com.sun.enterprise.transaction|_ThreadID=15;_ThreadName=Thread-1;|DTX5019: Using [com.sun.enterprise.transaction.jts.JavaEETransactionManagerJTSDelegate] as the delegate|#]
     [#|yyyy-mm-ddTHH:mm:ss:SSS-ZZZZ|Level|ProductId|Logger Name|Name Value Pairs|MsgId: Message|#]
