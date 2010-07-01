@@ -53,7 +53,7 @@
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
 
-        gf.checkIfEndPointExist(endpoint="#{pageSession.profilerUrl}" edit="#{pageSession.edit}");
+        gf.checkIfEndPointExist(endpoint="#{pageSession.profilerUrl}" exists="#{pageSession.edit}");
 
         setPageSessionAttribute(key="edit" value="#{true}");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );

@@ -118,24 +118,10 @@ public class RestApiHandlers {
             input = {
                     @HandlerInput(name = "endpoint", type = String.class, required = true)},
             output = {
-                    @HandlerOutput(name = "edit", type = Boolean.class)
+                    @HandlerOutput(name = "exists", type = Boolean.class)
             })
     public static void checkIfEndPointExist(HandlerContext handlerCtx) {
-        try {
-            Boolean edit = false;
-            String endpoint = (String) handlerCtx.getInputValue("endpoint");
-            String entity = get(endpoint).getResponseBody();
-            Map<String, String> tmp = getEntityAttrs(entity);
-            if (tmp.size() != 0) {
-                edit = true;
-            }
-            handlerCtx.setOutputValue("edit", edit);
-        }catch (Exception ex){
-            //This is a method for testing if the element exist.  So, an exception is expected for non-existent case.
-            //no need to log it.
-            //also pass back edit as false.
-            handlerCtx.setOutputValue("edit", false);
-        }
+        handlerCtx.setOutputValue("exists", get((String) handlerCtx.getInputValue("endpoint")).isSuccess());
     }
     /**
      *
