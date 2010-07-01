@@ -104,6 +104,10 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
 
         for (Cluster cluster : clusterList) {
             List<Server> servers = cluster.getInstances();
+            if (servers.size()==0) {
+                allInstancesRunning = false;
+            }
+
             for (Server server : servers) {
                 String name = server.getName();
                 if (name != null) {
@@ -121,7 +125,7 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
 
             }
             String state = "";
-            if (allInstancesRunning && atleastOneInstanceRunning) {
+            if (allInstancesRunning ) {
                 state = RUNNING;
             }
             else if (!allInstancesRunning && !(atleastOneInstanceRunning)) {
