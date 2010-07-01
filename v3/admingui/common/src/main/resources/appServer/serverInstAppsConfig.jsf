@@ -45,7 +45,7 @@
     <event>
     <!beforeCreate
         setSessionAttribute(key="domainTabs" value="appConfig");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/serverInstAppsConfig.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/serverInstAppsConfig.jsf?");
         setPageSessionAttribute(key="convertToFalseList" value={"DynamicReloadEnabled" "AutodeployEnabled" "AutodeployVerifierEnabled" "AutodeployJspPrecompilationEnabled"});
 
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/server-config/admin-service");
@@ -73,7 +73,7 @@
 #include "/common/shared/alertMsg.inc"
    <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18nc.domain.AppsConfigPageTitle}"   helpText="$resource{i18nc.domain.AppsConfigPageHelp}" >
-    //#include "/common/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
     </sun:title>
 
 <sun:propertySheet id="propertySheet">

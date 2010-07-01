@@ -44,7 +44,7 @@
     <event>
         <!beforeCreate
             setSessionAttribute(key="domainTabs" value="domainAttrs");
-            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf?");
             setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}");
             setPageSessionAttribute(key="rest-api" value="true");
             gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
@@ -60,7 +60,7 @@
 #include "/common/appServer/domainTabs.inc"
 #include "/common/shared/alertMsg.inc"
     <sun:title id="propertyContentPage" title="$resource{i18nc.domain.DomainAttrsPageTitle}" helpText="$resource{i18nc.domain.DomainAttrsPageTitleHelp}">
-   //#include "/common/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons.inc"
     </sun:title>
 
 <sun:propertySheet id="propertySheet">
