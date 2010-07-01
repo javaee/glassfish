@@ -105,16 +105,18 @@
                 if (#{pageSession.hasPropertyTable}){
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    if ( !#{pageSession['rest-api']}){
-                        setProxyProperties(objectNameStr="#{pageSession.parentObjectNameStr}/#{pageSession.childType}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-                    }
+                    setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                 }
 
                 if (#{pageSession.additionalSaveHandler}){
                     gf.invokeHandler(handler="#{pageSession.additionalSaveHandler}", args="#{pageSession.additionalSaveHandlerArgs}" );
                 }
                 prepareSuccessfulMsg();
-                gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                //println("======== redirect to #{pageSession.selfPage}==========");
+                //println("alertType=${alertType}");
+                //("alertSummary=${alertSummary}");
+                //println("alertDetail=${alertDetail}");
+                gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
 
