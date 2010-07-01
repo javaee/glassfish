@@ -55,6 +55,11 @@ import java.util.Map;
 @Scoped(PerLookup.class)
 public class PropsFileActionReporter extends ActionReporter {
 
+/**
+ * Important -- if you get the "top part" and then call setMessage on it -- this
+ * EOL replacement will NOT happen and you may get surprising results!! 
+ * @param message
+ */
     @Override
     public void setMessage(String message) {
         if (message != null) {
