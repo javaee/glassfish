@@ -104,9 +104,6 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
 
         for (Cluster cluster : clusterList) {
             List<Server> servers = cluster.getInstances();
-            if (servers.size()==0) {
-                allInstancesRunning = false;
-            }
 
             for (Server server : servers) {
                 String name = server.getName();
@@ -133,6 +130,11 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
             }
             else
                 state = PARTIALLY_RUNNING;
+            if (servers.size()==0) {
+
+               state = NOT_RUNNING;
+            }
+            System.out.println(cluster.getName()+state);
             sb.append(cluster.getName()).append(' ').append(state).append('\n');
 
         }
