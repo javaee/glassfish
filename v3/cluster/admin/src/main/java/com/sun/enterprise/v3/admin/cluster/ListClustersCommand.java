@@ -69,7 +69,6 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
     private Habitat habitat;
     @Inject
     Domain domain;
-    @Inject
     private RemoteInstanceCommandHelper helper;
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
     private static final String NONE = "Nothing to list.";
