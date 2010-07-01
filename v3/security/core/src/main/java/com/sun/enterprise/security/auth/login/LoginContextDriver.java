@@ -546,6 +546,37 @@ public class LoginContextDriver  {
         return subject;
     }
 
+    public static Subject jmacLogin(Subject subject, String identityAssertion, String realm) throws LoginException {
+
+        if (subject == null) {
+            subject = new Subject();
+        }
+        final Subject fs = subject;
+        String userName = identityAssertion;
+
+        try {
+            Realm realmInst = Realm.getInstance(realm);
+            final Enumeration groups = realmInst.getGroupNames(userName);
+            if (groups != null && groups.hasMoreElements()) {
+                AppservAccessController.doPrivileged(new PrivilegedAction() {
+
+                    public java.lang.Object run() {
+                        while (groups.hasMoreElements()) {
+                            String grp = (String) groups.nextElement();
+                            fs.getPrincipals().add(new Group(grp));
+                        }
+                        return fs;
+                    }
+                });
+            }
+        } catch (Exception ex) {
+            if (_logger.isLoggable(Level.INFO)) {
+                _logger.log(Level.INFO, "Exception when trying to populate groups for CallerPrincipal " + identityAssertion, ex);
+            }
+        }
+        return subject;
+    }
+
     /**
      * A special case login for handling X509CertificateCredential.
      * This does not get triggered based on current RI code. See X500Login.

@@ -102,6 +102,7 @@ import java.util.Set;
 import sun.security.util.DerValue;
 import org.glassfish.internal.api.Globals;
 
+
 /**
  * Base Callback Handler for JSR 196
  * @author  Harpreet Singh
@@ -247,6 +248,10 @@ abstract class BaseContainerCallbackHandler
         if (isCertRealm) {
             if(principal  instanceof X500Principal) {
                  LoginContextDriver.jmacLogin(fs, (X500Principal)principal);
+            }
+        } else {
+            if (!principal.equals(SecurityContext.getDefaultCallerPrincipal())) {
+                LoginContextDriver.jmacLogin(fs, principal.getName(), realmName);
             }
         }
 
