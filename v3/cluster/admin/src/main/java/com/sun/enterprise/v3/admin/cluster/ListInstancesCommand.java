@@ -38,7 +38,6 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Cluster;
-import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.cluster.InstanceInfo;
@@ -89,7 +88,8 @@ public class ListInstancesCommand implements AdminCommand {
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
     private List<Server> serverList;
     private ActionReport report;
-
+    private ActionReport.MessagePart top;
+    private static final String EOL = "\n";
     @Override
     public void execute(AdminCommandContext context) {
         // setup
@@ -102,6 +102,8 @@ public class ListInstancesCommand implements AdminCommand {
         }
 
         report = context.getActionReport();
+        top = report.getTopMessagePart();
+
         Logger logger = context.getLogger();
 
         if (!validateParams())
@@ -131,20 +133,31 @@ public class ListInstancesCommand implements AdminCommand {
 
     private void noStatus(List<Server> serverList) {
         if (serverList.size() < 1) {
-            report.addSubActionsReport().setMessage(NONE);
+            report.setMessage(NONE);
+            return;
         }
-        else
-            for (Server server : serverList) {
-                boolean clustered = server.getCluster() != null;
 
-                if (standaloneonly && clustered)
-                    continue;
+        StringBuilder sb = new StringBuilder();
+        boolean firstServer = true;
 
-                String name = server.getName();
+        for (Server server : serverList) {
+            boolean clustered = server.getCluster() != null;
 
-                if (notDas(name))
-                    report.addSubActionsReport().setMessage(name);
+            if (standaloneonly && clustered)
+                continue;
+
+            String name = server.getName();
+
+            if (notDas(name)) {
+                if (firstServer)
+                    firstServer = false;
+                else
+                    sb.append(EOL);
+
+                sb.append(name);
+                top.addProperty(name, "");
             }
+        }
     }
 
     private boolean notDas(String name) {
@@ -162,6 +175,7 @@ public class ListInstancesCommand implements AdminCommand {
                 continue;
 
             String name = server.getName();
+
             if (name == null)
                 continue;   // can this happen?!?
 
@@ -176,17 +190,31 @@ public class ListInstancesCommand implements AdminCommand {
             }
         }
         if (infos.size() < 1) {
-            report.addSubActionsReport().setMessage(NONE);
+            report.setMessage(NONE);
             return;
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+
+        for (InstanceInfo ii : infos) {
+            if(first) 
+                first = false;
+            else
+                sb.append(EOL);
+            
+            String name = ii.getName();
+            String display = ii.isRunning() ? RUNNING_DISPLAY : NOT_RUNNING_DISPLAY;
+            String value = ii.isRunning() ? RUNNING : NOT_RUNNING;
+            
+            sb.append(name).append(display);
+            top.addProperty(name, value);
         }
 
         if (verbose)
             report.setMessage(InstanceInfo.format(infos));
         else
-            for (InstanceInfo ii : infos) {
-                String s = ii.isRunning() ? RUNNING : NOT_RUNNING;
-                report.addSubActionsReport().setMessage(ii.getName() + " " + s);
-            }
+            report.setMessage(sb.toString());
     }
 
     /*

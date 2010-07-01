@@ -59,6 +59,7 @@ import static com.sun.enterprise.v3.admin.cluster.Constants.*;
  * Usage: list-clusters
 
  * @author Bhakti Mehta
+ * @author Byron Nevins
  */
 @Service(name = "list-clusters")
 @Scoped(PerLookup.class)
@@ -72,6 +73,7 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
     private RemoteInstanceCommandHelper helper;
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
     private static final String NONE = "Nothing to list.";
+    private static final String EOL = "\n";
 
     @Override
     public void postConstruct() {
@@ -82,10 +84,11 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         Logger logger = context.getLogger();
+        ActionReport.MessagePart top = report.getTopMessagePart();
 
         Clusters clusters = domain.getClusters();
         List<Cluster> clusterList = clusters.getCluster();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (clusterList.size() < 1) {
             sb.append(NONE);
         }
@@ -102,7 +105,11 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
         //not running (no instance running)
         //partially running (at least 1 instance is not running)
 
+        // bnevins: hassle to not have an extra linefeed at the end
+        boolean firstCluster = true;
+
         for (Cluster cluster : clusterList) {
+            String clusterName = cluster.getName();
             List<Server> servers = cluster.getInstances();
 
             for (Server server : servers) {
@@ -110,35 +117,41 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
                 if (name != null) {
                     InstanceInfo ii = new InstanceInfo(
                             name, helper.getAdminPort(server), helper.getHost(server),
-                            cluster.getName(), logger, timeoutInMsec);
+                            clusterName, logger, timeoutInMsec);
                     infos.add(ii);
 
                     allInstancesRunning &= ii.isRunning();
                     if (ii.isRunning()) {
                         atleastOneInstanceRunning = true;
                     }
-
                 }
+            }
 
+            String display;
+            String value;
+
+            if (servers.isEmpty() || !atleastOneInstanceRunning) {
+                display = NOT_RUNNING_DISPLAY;
+                value = NOT_RUNNING;
             }
-            String state = "";
-            if (allInstancesRunning ) {
-                state = RUNNING;
+            else if (allInstancesRunning) {
+                display = RUNNING_DISPLAY;
+                value = RUNNING;
             }
-            else if (!allInstancesRunning && !(atleastOneInstanceRunning)) {
-                state = NOT_RUNNING;
+            else {
+                display = PARTIALLY_RUNNING_DISPLAY;
+                value = PARTIALLY_RUNNING;
             }
+
+            // do not put an extraneous linefeed at the end!
+            if (firstCluster)
+                firstCluster = false;
             else
-                state = PARTIALLY_RUNNING;
-            if (servers.size()==0) {
+                sb.append(EOL);
 
-               state = NOT_RUNNING;
-            }
-            System.out.println(cluster.getName()+state);
-            sb.append(cluster.getName()).append(' ').append(state).append('\n');
-
+            sb.append(clusterName).append(display);
+            top.addProperty(clusterName, value);
         }
-        report.addSubActionsReport().setMessage(sb.toString());
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        report.setMessage(sb.toString());
     }
 }
