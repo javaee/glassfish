@@ -47,7 +47,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>gms-adapter</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Glassfish GMS Module</name>
+    <name>GMS Module</name>
     <dependencies>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
@@ -70,7 +70,11 @@
         </dependency>
         <dependency>
             <groupId>org.shoal</groupId>
-            <artifactId>shoal-gms</artifactId>
+            <artifactId>shoal-gms-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.shoal</groupId>
+            <artifactId>shoal-gms-impl</artifactId>
         </dependency>
     </dependencies>
 </project>

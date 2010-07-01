@@ -47,7 +47,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>gms-bootstrap</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>GlassFish GMS Bootstrap Module</name>
+    <name>GMS Bootstrap Module</name>
     <dependencies>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
@@ -68,13 +68,9 @@
             <artifactId>config-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- Once the shoal-gms jar has been divided into api and
-             implementation jars, this module will depend only
-             on the api jar.
-        -->
         <dependency>
             <groupId>org.shoal</groupId>
-            <artifactId>shoal-gms</artifactId>
+            <artifactId>shoal-gms-api</artifactId>
         </dependency>
     </dependencies>
 </project>

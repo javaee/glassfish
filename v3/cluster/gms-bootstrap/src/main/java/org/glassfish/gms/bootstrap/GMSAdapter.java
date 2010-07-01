@@ -40,9 +40,6 @@ import org.jvnet.hk2.annotations.Contract;
 import com.sun.enterprise.ee.cms.core.CallBack;
 
 /**
- * Interface used to obtain a GroupManagementService object from
- * GMSAdapterService.
- *
  * <P>The register methods below replace GroupManagementService.addFactory methods.
  * The remove methods below replace GroupManagementService.removeFactory methods.
  *
@@ -182,7 +179,7 @@ public interface GMSAdapter {
      */
     void removeMemberLeavingListener(CallBack callback);
 
-    // only to be called by GmsAdapterService
+    // only to be called by GMSAdapterService
     boolean initialize(String clusterName);
     void complete();
 }
