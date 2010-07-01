@@ -53,8 +53,7 @@ public class WebTest {
     private static final String TEST_NAME
         = "http-response-error-message";
 
-    private static final String EXPECTED_HEADER = "HTTP/1.1 403 Forbidden";
-    private static final String EXPECTED_PATTERN = "Hi, there!";
+    private static final Pattern PATTERN = Pattern.compile("http/\\d\\.\\d 403 .*Hi, there.*", Pattern.CASE_INSENSITIVE);
 
     private String host;
     private String port;
@@ -105,8 +104,7 @@ public class WebTest {
 
         InputStream is = null;
         BufferedReader bis = null;
-        boolean isExpectedHeader = false;
-        boolean isExpectedPattern = false;
+        boolean isExpected = false;
 
         try {
             is = sock.getInputStream();
@@ -114,13 +112,10 @@ public class WebTest {
             String line = null;
             while ((line = bis.readLine()) != null) {
                 System.out.println(line);
-                if (!isExpectedHeader) {
-                    isExpectedHeader = EXPECTED_HEADER.equals(line);
-                }
-                if (!isExpectedPattern) {
-                    isExpectedPattern = line.contains(EXPECTED_PATTERN);
-                }
-                if (isExpectedHeader && isExpectedPattern) {
+                Matcher m = PATTERN.matcher(line);
+                if (m.matches()) {
+                    isExpected = true;
+
                     break;
                 }
             }
@@ -141,12 +136,11 @@ public class WebTest {
             }
         }
 
-        if (isExpectedHeader && isExpectedPattern) {
+        if (isExpected) {
             stat.addStatus(TEST_NAME, stat.PASS);
         } else {
             stat.addStatus(TEST_NAME, stat.FAIL);
-            System.err.println("Missing expected response header: " +
-                    EXPECTED_HEADER + " or missing content: " + EXPECTED_PATTERN);
+            System.err.println("Missing expected response: " + PATTERN.toString());
         }
     }
 }

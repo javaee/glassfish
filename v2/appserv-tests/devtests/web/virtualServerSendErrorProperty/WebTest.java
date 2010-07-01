@@ -77,11 +77,11 @@ public class WebTest {
         stat.addDescription("Unit test for 6324911");
         WebTest webTest = new WebTest(args);
         try {
-            webTest.doTest("/nonexistent", "HTTP/1.1 404 ", "MY404");
+            webTest.doTest("/nonexistent", "HTTP/1.1 404 MY404", "MY404");
             webTest.doTest(webTest.contextRoot + "/test500?sendError=true",
-                "HTTP/1.1 500 ", "<web-app xmlns=");
+                "HTTP/1.1 500 MY500", "<web-app xmlns=");
             webTest.doTest(webTest.contextRoot + "/test500?sendError=false",
-                "HTTP/1.1 500 ", "<web-app xmlns=");
+                "HTTP/1.1 500 MY500", "<web-app xmlns=");
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
