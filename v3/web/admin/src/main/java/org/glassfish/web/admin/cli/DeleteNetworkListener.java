@@ -103,6 +103,10 @@ public class DeleteNetworkListener implements AdminCommand {
         if (cluster!=null) {
             config = domain.getConfigNamed(cluster.getConfigRef());
         }
+        Config newConfig = domain.getConfigNamed(target);
+        if (newConfig!=null) {
+            config = newConfig;
+        }
         ActionReport report = context.getActionReport();
         NetworkListeners networkListeners = config.getNetworkConfig().getNetworkListeners();
         try {

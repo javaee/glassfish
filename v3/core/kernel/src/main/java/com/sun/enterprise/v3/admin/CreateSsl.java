@@ -129,6 +129,10 @@ public class CreateSsl implements AdminCommand {
         if (cluster!=null) {
             config = domain.getConfigNamed(cluster.getConfigRef());
         }
+        Config newConfig = domain.getConfigNamed(target);
+        if (newConfig!=null) {
+            config = newConfig;
+        }
         if (!"iiop-service".equals(type)) {
             if (listenerId == null) {
                 report.setMessage(localStrings.getLocalString("create.ssl.listenerid.missing",

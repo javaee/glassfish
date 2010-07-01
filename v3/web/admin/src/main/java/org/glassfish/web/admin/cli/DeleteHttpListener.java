@@ -107,6 +107,10 @@ public class DeleteHttpListener implements AdminCommand {
         if (cluster!=null) {
             config = domain.getConfigNamed(cluster.getConfigRef());
         }
+        Config newConfig = domain.getConfigNamed(target);
+        if (newConfig!=null) {
+            config = newConfig;
+        }
         ActionReport report = context.getActionReport();
         networkConfig = config.getNetworkConfig();
         if (!exists()) {

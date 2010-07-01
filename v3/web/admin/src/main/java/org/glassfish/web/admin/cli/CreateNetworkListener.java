@@ -121,6 +121,10 @@ public class CreateNetworkListener implements AdminCommand {
         if (cluster!=null) {
             config = domain.getConfigNamed(cluster.getConfigRef());
         }
+        Config newConfig = domain.getConfigNamed(target);
+        if (newConfig!=null) {
+            config = newConfig;
+        }
         final ActionReport report = context.getActionReport();
         NetworkConfig networkConfig = config.getNetworkConfig();
         NetworkListeners nls = networkConfig.getNetworkListeners();

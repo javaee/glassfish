@@ -97,6 +97,10 @@ public class DeleteProtocolFinder implements AdminCommand {
         if (cluster!=null) {
             config = domain.getConfigNamed(cluster.getConfigRef());
         }
+        Config newConfig = domain.getConfigNamed(target);
+        if (newConfig!=null) {
+            config = newConfig;
+        }
         report = context.getActionReport();
         try {
             final Protocols protocols = config.getNetworkConfig().getProtocols();

@@ -120,6 +120,10 @@ public class DeleteSsl implements AdminCommand {
         if (cluster!=null) {
             config = domain.getConfigNamed(cluster.getConfigRef());
         }
+        Config newConfig = domain.getConfigNamed(target);
+        if (newConfig!=null) {
+            config = newConfig;
+        }
 
         if (!type.equals("iiop-service")) {
             if (listenerId == null) {

@@ -122,6 +122,10 @@ public class CreateThreadpool implements AdminCommand {
         if (cluster!=null) {
             config = domain.getConfigNamed(cluster.getConfigRef());
         }
+        Config newConfig = domain.getConfigNamed(target);
+        if (newConfig!=null) {
+            config = newConfig;
+        }
         ThreadPools threadPools = config.getThreadPools();
 
         for (ThreadPool pool: threadPools.getThreadPool()) {

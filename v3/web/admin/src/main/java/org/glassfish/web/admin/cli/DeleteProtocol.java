@@ -112,6 +112,10 @@ public class DeleteProtocol implements AdminCommand {
         if (cluster!=null) {
             config = domain.getConfigNamed(cluster.getConfigRef());
         }
+        Config newConfig = domain.getConfigNamed(target);
+        if (newConfig!=null) {
+            config = newConfig;
+        }
         ActionReport report = context.getActionReport();
 
         NetworkConfig networkConfig = config.getNetworkConfig();

@@ -87,6 +87,10 @@ public class ListProtocols implements AdminCommand {
         if (cluster!=null) {
             config = domain.getConfigNamed(cluster.getConfigRef());
         }
+        Config newConfig = domain.getConfigNamed(target);
+        if (newConfig!=null) {
+            config = newConfig;
+        }
         final ActionReport report = context.getActionReport();
         List<Protocol> list = config.getNetworkConfig().getProtocols().getProtocol();
         for (Protocol protocol : list) {
