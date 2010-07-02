@@ -121,12 +121,10 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
                 for (String providerName : providerNames) {
                     try {
                         final Class providerClass = bundle.loadClass(providerName);
-                        if (onlyCompatible) {
-                            if (serviceClass.isAssignableFrom(providerClass)) {
-                                providerClasses.add(providerClass);
-                            } else {
-                                System.out.println("Bundle " + bundle + " provided service " + providerClass + " is not compatible with " + serviceClass);
-                            }
+                        if (!onlyCompatible || serviceClass.isAssignableFrom(providerClass)) {
+                            providerClasses.add(providerClass);
+                        } else {
+                            System.out.println("Bundle " + bundle + " provided service " + providerClass + " is not compatible with " + serviceClass);
                         }
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
