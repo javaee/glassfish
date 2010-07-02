@@ -33,16 +33,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.common;
 
+import com.sun.enterprise.util.StringUtils;
+import java.util.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.File;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
 import java.util.Map;
@@ -51,15 +51,10 @@ import java.util.Map;
  * Action reporter to a manifest file
  * @author Jerome Dochez
  */
-@Service(name="hk2-agent")
+@Service(name = "hk2-agent")
 @Scoped(PerLookup.class)
 public class PropsFileActionReporter extends ActionReporter {
 
-/**
- * Important -- if you get the "top part" and then call setMessage on it -- this
- * EOL replacement will NOT happen and you may get surprising results!! 
- * @param message
- */
     @Override
     public void setMessage(String message) {
         if (message != null) {
@@ -68,6 +63,7 @@ public class PropsFileActionReporter extends ActionReporter {
         }
         super.setMessage(message);
     }
+
     public void writeReport(OutputStream os) throws IOException {
 
         Manifest out = new Manifest();
@@ -75,37 +71,36 @@ public class PropsFileActionReporter extends ActionReporter {
         mainAttr.put(Attributes.Name.SIGNATURE_VERSION, "1.0");
         mainAttr.putValue("exit-code", exitCode.toString());
         mainAttr.putValue("use-main-children-attribute", Boolean.toString(useMainChildrenAttr));
-        
-        if(exitCode == ExitCode.FAILURE)
+
+        if (exitCode == ExitCode.FAILURE)
             writeCause(mainAttr);
-        
+
         writeReport(null, topMessage, out, mainAttr);
         out.write(os);
     }
 
-    public void writeReport(String prefix, MessagePart part, Manifest m,  Attributes attr) {
-        
+    public void writeReport(String prefix, MessagePart part, Manifest m, Attributes attr) {
         //attr.putValue("message", part.getMessage());
         StringBuilder sb = new StringBuilder();
         getCombinedMessages(this, sb);
         attr.putValue("message", sb.toString());
-        if (part.getProps().size()>0) {
-            String keys=null;
+        if (part.getProps().size() > 0) {
+            String keys = null;
             for (Map.Entry entry : part.getProps().entrySet()) {
-                String key  = entry.getKey().toString().replaceAll(" ", "_");
-                keys = (keys==null?key:keys + ";" + key);
-                attr.putValue(key+"_name", entry.getKey().toString());
-                attr.putValue(key+"_value", entry.getValue().toString());
+                String key = fixKey(entry.getKey().toString());
+                keys = (keys == null ? key : keys + ";" + key);
+                attr.putValue(key + "_name", entry.getKey().toString());
+                attr.putValue(key + "_value", entry.getValue().toString());
             }
-         
+
             attr.putValue("keys", keys);
         }
-        if (part.getChildren().size()>0) {
+        if (part.getChildren().size() > 0) {
             attr.putValue("children-type", part.getChildrenType());
-            String keys=null;
+            String keys = null;
             for (MessagePart child : part.getChildren()) {
-                String newPrefix = (prefix==null?child.getMessage():prefix+"."+child.getMessage());
-                keys = (keys==null?newPrefix:keys + ";" + newPrefix);
+                String newPrefix = (prefix == null ? child.getMessage() : prefix + "." + child.getMessage());
+                keys = (keys == null ? newPrefix : keys + ";" + newPrefix);
                 Attributes childAttr = new Attributes();
                 m.getEntries().put(newPrefix, childAttr);
                 writeReport(newPrefix, child, m, childAttr);
@@ -117,21 +112,95 @@ public class PropsFileActionReporter extends ActionReporter {
     private void writeCause(Attributes mainAttr) {
         Throwable t = getFailureCause();
 
-        if(t == null)
+        if (t == null)
             return;
 
         String causeMessage = t.toString();
         mainAttr.putValue("cause", causeMessage);
     }
 
-   /* Issue 5918 Keep output sorted. If set to true ManifestManager will grab 
-    * "children" from main attributes. "children" is in original order of
-    * output set by server-side
-    */
+    /* Issue 5918 Keep output sorted. If set to true ManifestManager will grab
+     * "children" from main attributes. "children" is in original order of
+     * output set by server-side
+     */
     public void useMainChildrenAttribute(boolean useMainChildrenAttr) {
         this.useMainChildrenAttr = useMainChildrenAttr;
     }
 
-    private boolean useMainChildrenAttr = false;
-}
+    private String fixKey(String key) {
+        // take a look at the  javadoc -- java.util.jar.Attributes.Name
+        // < 70 chars in length and [a-zA-Z0-9_-]
+        // then you can see in the code above that we take the key and add
+        // _value to it.  So we simply hack it off at 63 characters.
+        // We also replace "bad" characters with "_".  Note that asadmin will
+        // display the correct real name.
 
+        if (!StringUtils.ok(key))
+            return key; // GIGO!
+
+        StringBuilder sb = new StringBuilder();
+        boolean wasChanged = false;
+        int len = key.length();
+
+        if (len > LONGEST) {
+            len = LONGEST;
+            wasChanged = true;
+        }
+
+        for (int i = 0; i < len; i++) {
+            char c = key.charAt(i);
+
+            if (!isValid(c)) {
+                wasChanged = true;
+                sb.append('_');
+            }
+            else
+                sb.append(c);
+        }
+
+        if (!wasChanged)
+            return key;
+
+        String fixedName = sb.toString();
+
+        if (fixedNames.add(fixedName))
+            return fixedName;
+
+        // perhaps they are using huge long names that differ just at the end?
+        return doubleFixName(fixedName);
+    }
+
+    private String doubleFixName(String s) {
+        // Yes, this is a nightmare!
+        int len = s.length();
+
+        if (len > LONGEST - 5)
+            s = s.substring(0, LONGEST - 5);
+
+        for (int i = 0; i < 10000; i++) {
+            String num = String.format("%05d", i);
+            String ret = s + num;
+
+            if (fixedNames.add(ret))
+                return ret;
+        }
+        // Wow!!!
+        throw new IllegalArgumentException("Could not come up with a unique name after 10000 attempts!!");
+    }
+
+    private static boolean isValid(char c) {
+        return isAlpha(c) || isDigit(c) || c == '_' || c == '-';
+    }
+
+    private static boolean isAlpha(char c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+    }
+
+    private static boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
+    }
+
+    private boolean useMainChildrenAttr = false;
+    private Set<String> fixedNames = new TreeSet<String>();
+    private static final int LONGEST = 62;
+}
