@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli;
 
 import java.io.*;
@@ -65,34 +64,27 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
 
     private GFLauncherInfo info;
     private GFLauncher launcher;
-
     @Param(optional = true, defaultValue = "false")
     private boolean verbose;
-
     @Param(optional = true, defaultValue = "false")
     private boolean upgrade;
-
     @Param(optional = true, defaultValue = "false")
     private boolean debug;
-
     @Param(name = "domain_name", primary = true, optional = true)
     private String domainName0;
-
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartDomainCommand.class);
-
     // the name of the master password option
-
     private StartServerHelper helper;
 
     @Override
     public RuntimeType getType() {
-         return RuntimeType.DAS;
+        return RuntimeType.DAS;
     }
 
     @Override
     protected void validate()
-                        throws CommandException, CommandValidationException {
+            throws CommandException, CommandValidationException {
         setDomainName(domainName0);
         super.validate();
     }
@@ -105,15 +97,15 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
             final String mpv = getMasterPassword();
 
             helper = new StartServerHelper(
-                        logger,
-                        programOpts.isTerse(),
-                        getServerDirs(),
-                        launcher,
-                        mpv,
-						debug);
+                    logger,
+                    programOpts.isTerse(),
+                    getServerDirs(),
+                    launcher,
+                    mpv,
+                    debug);
 
-            if(helper.prepareForLaunch() == false)
-                    return ERROR;
+            if (helper.prepareForLaunch() == false)
+                return ERROR;
 
             doUpgrade(mpv);
 
@@ -127,19 +119,22 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
 
                     if (CLIConstants.debugMode)
                         System.setProperty(CLIConstants.WALL_CLOCK_START_PROP,
-                                            "" + System.currentTimeMillis());
+                                "" + System.currentTimeMillis());
 
                     launcher.relaunch();
                 }
                 return launcher.getExitValue();
-            } else {
+            }
+            else {
                 helper.waitForServer();
                 helper.report();
                 return SUCCESS;
             }
-        } catch (GFLauncherException gfle) {
+        }
+        catch (GFLauncherException gfle) {
             throw new CommandException(gfle.getMessage());
-        } catch (MiniXmlParserException me) {
+        }
+        catch (MiniXmlParserException me) {
             throw new CommandException(me);
         }
     }
@@ -150,26 +145,25 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
      * Sets the launcher and info fields.
      * It has to be public because it is part of an interface
      */
-    
     @Override
     public void createLauncher()
-                        throws GFLauncherException, MiniXmlParserException {
-            launcher = GFLauncherFactory.getInstance(getType());
-            info = launcher.getInfo();
+            throws GFLauncherException, MiniXmlParserException {
+        launcher = GFLauncherFactory.getInstance(getType());
+        info = launcher.getInfo();
 
-            info.setDomainName(getDomainName());
-            info.setDomainParentDir(getDomainsDir().getPath());
-            info.setVerbose(verbose || upgrade);
-            info.setDebug(debug);
-            info.setUpgrade(upgrade);
+        info.setDomainName(getDomainName());
+        info.setDomainParentDir(getDomainsDir().getPath());
+        info.setVerbose(verbose || upgrade);
+        info.setDebug(debug);
+        info.setUpgrade(upgrade);
 
-            info.setRespawnInfo(programOpts.getClassName(),
-                            programOpts.getClassPath(),
-                            programOpts.getProgramArguments());
+        info.setRespawnInfo(programOpts.getClassName(),
+                programOpts.getClassPath(),
+                programOpts.getProgramArguments());
 
-            launcher.setup();
+        launcher.setup();
     }
- 
+
     /*
      * This is useful for debugging restart-domain problems.
      * In that case the Server process will run this class and it is fairly
@@ -180,9 +174,10 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
     private void debug(String s) {
         try {
             PrintStream ps = new PrintStream(
-                                new FileOutputStream("startdomain.txt", true));
+                    new FileOutputStream("startdomain.txt", true));
             ps.println(new Date().toString() + ":  " + s);
-        } catch (FileNotFoundException ex) {
+        }
+        catch (FileNotFoundException ex) {
             //
         }
     }
@@ -193,7 +188,7 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
      * then start the domain again for real.
      */
     private void doUpgrade(String mpv) throws GFLauncherException, MiniXmlParserException, CommandException {
-        if(upgrade || !launcher.needsUpgrade())
+        if (upgrade || !launcher.needsUpgrade())
             return;
 
         logger.printMessage(strings.get("upgradeNeeded"));
@@ -204,20 +199,21 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
         int exitCode = -1;
         try {
             exitCode = p.waitFor();
-        } catch (InterruptedException ex) {
+        }
+        catch (InterruptedException ex) {
             // should never happen
         }
         if (exitCode != SUCCESS) {
             ProcessStreamDrainer psd =
-                launcher.getProcessStreamDrainer();
+                    launcher.getProcessStreamDrainer();
             String output = psd.getOutErrString();
             if (ok(output))
                 throw new CommandException(
                         strings.get("upgradeFailedOutput",
-                            info.getDomainName(), exitCode, output));
+                        info.getDomainName(), exitCode, output));
             else
                 throw new CommandException(strings.get("upgradeFailed",
-                            info.getDomainName(), exitCode));
+                        info.getDomainName(), exitCode));
         }
         logger.printMessage(strings.get("upgradeSuccessful"));
 
@@ -225,5 +221,4 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
         createLauncher();
         // continue with normal start...
     }
-
 }
