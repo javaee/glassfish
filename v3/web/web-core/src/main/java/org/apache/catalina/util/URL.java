@@ -630,7 +630,7 @@ public final class URL implements Serializable {
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("URL[");
+        StringBuilder sb = new StringBuilder("URL[");
         sb.append("authority=");
         sb.append(authority);
         sb.append(", file=");
