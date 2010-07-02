@@ -100,36 +100,36 @@ public abstract class ServiceLoader {
 
     /**
      * It is not clear why one needs this method, but it is provided just in case one needs it.
-     * Calling this method is equivalent to calling {@link #lookupProviderClasses(Class, boolean)} with a true argument.
-     *
-     * @see #lookupProviderClasses(Class, boolean)
-     */
-    public static <T> Iterable<Class> lookupProviderClasses(Class<T> serviceClass) {
-        return lookupProviderClasses(serviceClass, true);
-    }
-
-    /**
      * Returns classes found in META-INF/services/serviceClass.getName() in OSGi bundles. This method searches for
      * such named resources in every OSGi bundle. For every resource found, it assumes that the file contains
      * a class name. It loads the class name mentioned in that file using the bundle containing the resource.
-     * If onlyCompatible argument is true, it returns the class only if the loaded class is assignment compatible
-     * with the service class.
-     *
-     * WARNING: Be extra careful while invoking this method with a false argument. It can result in ClassCastException
-     * in your code. Only for special cases like JAXBContext, this method need to be called with false argument.
-     *
-     * It is not clear why one needs this method, but it is provided just in case one needs it.
+     * It does not check if the class mentioned in provider file actually implements/extends service class,
+     * because there are cases where it does not. JAXB is an example. JAXBContext provider file contains
+     * a class that's used as a factory class for JAXBContext. To handle such issues, yet not return classes
+     * that are not class loader compatible, this method will only return those classes which see the same service
+     * class as supplied in the parameter.
+     * Let's take an example. We have JAXB classes exported by JRE and there is a bundle A which contains JAXB API
+     * and implementation. The bundle B is wired to itself for JAXB classes. Assume a user supplied bundle
+     * B is wired to JRE's JAXB. When bundle B calls JAXBContext.createContext(JAXBContext.class),
+     * JRE's JAXBContext will use this API. The implementation will look for META-INF/services/JAXBContext files and
+     * find a file in JAXB bundle. Let's say that file contains com.acme.jaxb.JAXBContextFactory.
+     * com.acme.jaxb.ContextFactory does not implement JAXBContext.class. Instead, as per JAXB spec,
+     * it must provide some factory methods to create JAXBContext. If our implementation simply returns that class
+     * without doing any further tests, a nasty class cast exception is going to be resulted, because user's bundle B
+     * uses JAXB from JRE, which means JAXBContext.class is loaded by JRE, yet com.acme.jaxb.JAXBContextFactory
+     * uses JAXBContext from bundle A. To avoid such problem, we will try to load JAXBContext using class loader of
+     * com.acme.jaxb.JAXBContextFactory and see if that's same as supplied JAXBContext.class. If they are same,
+     * we return com.acme.jaxb.JAXBContextFactory, else we don't. In this example, we won't.
      *
      * @param serviceClass type of service requested
-     * @param onlyCompatible indicates if only compatible classes to be returned.
      * @param <T>
      * @return classes corresponding to entries in META-INF/services file for the service class.
      */
-    public static <T> Iterable<Class> lookupProviderClasses(Class<T> serviceClass, boolean onlyCompatible) {
-        return _me.lookupProviderClasses1(serviceClass, onlyCompatible);
+    public static <T> Iterable<Class> lookupProviderClasses(Class<T> serviceClass) {
+        return _me.lookupProviderClasses1(serviceClass);
     }
 
     /*package*/ abstract <T> Iterable<? extends T> lookupProviderInstances1(Class<T> serviceType, ProviderFactory<T> factory);
-    /*package*/ abstract <T> Iterable<Class> lookupProviderClasses1(Class<T> serviceType, boolean onlyCompatible);
+    /*package*/ abstract <T> Iterable<Class> lookupProviderClasses1(Class<T> serviceType);
 
 }

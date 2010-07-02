@@ -93,9 +93,14 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
             factory = new DefaultFactory<T>();
         }
         List<T> providers = new ArrayList<T>();
-        for (Class c : lookupProviderClasses1(serviceClass, false)) {
+        for (Class c : lookupProviderClasses1(serviceClass)) {
             try {
-                providers.add(factory.make(c, serviceClass));
+                final T providerInstance = factory.make(c, serviceClass);
+                if (providerInstance != null) {
+                    providers.add(providerInstance);
+                } else {
+                    debug(factory + " returned null provider instance!!!");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -103,7 +108,7 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
         return providers;
     }
 
-    /*package*/ <T> Iterable<Class> lookupProviderClasses1(Class<T> serviceClass, boolean onlyCompatible) {
+    /*package*/ <T> Iterable<Class> lookupProviderClasses1(Class<T> serviceClass) {
         List<Class> providerClasses = new ArrayList<Class>();
         rwLock.readLock().lock();
         try {
@@ -121,10 +126,8 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
                 for (String providerName : providerNames) {
                     try {
                         final Class providerClass = bundle.loadClass(providerName);
-                        if (!onlyCompatible || serviceClass.isAssignableFrom(providerClass)) {
+                        if (isCompatible(providerClass, serviceClass)) {
                             providerClasses.add(providerClass);
-                        } else {
-                            System.out.println("Bundle " + bundle + " provided service " + providerClass + " is not compatible with " + serviceClass);
                         }
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
@@ -134,6 +137,22 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
             return providerClasses;
         } finally {
             rwLock.readLock().unlock();
+        }
+    }
+
+    private boolean isCompatible(Class providerClass, Class serviceClass) {
+        try {
+            final Class<?> serviceClassSeenByProviderClass = Class.forName(serviceClass.getName(), false, providerClass.getClassLoader());
+            final boolean isCompatible = serviceClassSeenByProviderClass == serviceClass;
+            if (!isCompatible) {
+                debug(providerClass + " loaded by " + providerClass.getClassLoader()
+                        + " sees " + serviceClass + " from " + serviceClassSeenByProviderClass.getClassLoader()
+                        + ", where as caller uses " + serviceClass + " loaded by " + serviceClass.getClassLoader());
+            }
+            return isCompatible;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -211,7 +230,7 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
                     try {
                         is = url.openStream();
                         List<String> providerNames = load(is);
-//                        System.out.println("Bundle = " + bundle + ", serviceName = " + serviceName + ", providerNames = " + providerNames);
+                        debug("Bundle = " + bundle + ", serviceName = " + serviceName + ", providerNames = " + providerNames);
                         providers.put(serviceName, providerNames);
                     } catch (IOException e) {
                     }
@@ -303,6 +322,12 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
                 return (T)providerClass.newInstance();
             }
             return null;
+        }
+    }
+
+    private void debug(String s) {
+        if (Boolean.valueOf(bundleContext.getProperty("org.glassfish.hk2.osgiresourcelocator.debug"))) {
+            System.out.println("org.glassfish.hk2.osgiresourcelocator:DEBUG: " + s);
         }
     }
 }
