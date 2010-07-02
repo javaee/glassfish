@@ -41,6 +41,8 @@ import org.glassfish.api.admin.ServerEnvironment;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.grizzly.config.dom.NetworkListener;
 import java.util.*;
+import org.glassfish.config.support.GlassFishConfigBean;
+import org.glassfish.config.support.PropertyResolver;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -68,6 +70,7 @@ final class RemoteInstanceCommandHelper {
             configs = habitat.getByType(Configs.class).getConfig();
             servers = habitat.getByType(Servers.class).getServer();
             env = habitat.getByType(ServerEnvironment.class);
+            domain = habitat.getByType(Domain.class);
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -116,7 +119,6 @@ final class RemoteInstanceCommandHelper {
 
     // bnevins: KLUDGE alert -- what is UP with the noNodeRef?!?
     // TODO TODO
-    
     final String getNode(final Server server) {
 
         if (server == null)
@@ -164,7 +166,7 @@ final class RemoteInstanceCommandHelper {
 
             for (NetworkListener listener : listeners) {
                 if ("admin-listener".equals(listener.getProtocol()))
-                    return translatePort(listener.getPort(), server, config);
+                    return translatePort(listener, server);
             }
         }
         catch (Exception e) {
@@ -190,6 +192,26 @@ final class RemoteInstanceCommandHelper {
         return null;
     }
 
+    private String translatePort(NetworkListener adminListener, Server server) {
+        NetworkListener adminListenerRaw = null;
+
+        try {
+            adminListenerRaw = GlassFishConfigBean.getRawView(adminListener);
+            String portString = adminListenerRaw.getPort();
+
+            if (!isToken(portString))
+                return portString;
+
+            PropertyResolver resolver = new PropertyResolver(domain, server.getName());
+            return resolver.getPropertyValue(portString);
+        }
+        catch (ClassCastException e) {
+            //jc: workaround for issue 12354
+            // TODO severe error 
+            return translatePortOld(adminListener.getPort(), server, getConfig(server));
+        }
+    }
+
     /**
      * The way the automatic translation works is that system-property
      * elements are used to resolve tokens.  But we are inside DAS.  We need to
@@ -201,7 +223,7 @@ final class RemoteInstanceCommandHelper {
      * 4. config for the cluster
      * @return the port number or -1 if there is an error.
      */
-    private String translatePort(String portString, Server server, Config config) {
+    private String translatePortOld(String portString, Server server, Config config) {
         if (!isToken(portString))
             return portString;
 
@@ -240,4 +262,5 @@ final class RemoteInstanceCommandHelper {
     final private List<Server> servers;
     final private List<Config> configs;
     final private Habitat habitat;
+    final private Domain domain;
 }
