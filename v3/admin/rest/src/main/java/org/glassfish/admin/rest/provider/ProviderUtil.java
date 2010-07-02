@@ -515,16 +515,14 @@ public class ProviderUtil {
         }
 
         boolean hasAcceptableValues = false;
-        String acceptableValues =
-            parameterMetaData.getAttributeValue(Constants.ACCEPTABLE_VALUES);
+        String acceptableValues = parameterMetaData.getAttributeValue(Constants.ACCEPTABLE_VALUES);
         if ((acceptableValues != null) && (acceptableValues.length() > 0)) {
             hasAcceptableValues = true;
         }
 
         boolean hasValue = false;
         if ((parameterValue == null) || (parameterValue.equals(""))) {
-            String defaultValue =
-                parameterMetaData.getAttributeValue(Constants.DEFAULT_VALUE);
+            String defaultValue = parameterMetaData.getAttributeValue(Constants.DEFAULT_VALUE);
             if ((defaultValue != null) && (defaultValue.length() > 0)) {
                 parameterValue = defaultValue;
             }
@@ -534,8 +532,7 @@ public class ProviderUtil {
             hasValue = true;
         }
 
-        boolean keyAttribute = Boolean.valueOf(
-            parameterMetaData.getAttributeValue(Constants.KEY)).booleanValue();
+        boolean keyAttribute = Boolean.valueOf(parameterMetaData.getAttributeValue(Constants.KEY)).booleanValue();
         if (keyAttribute) {
             if (hasValue) {
                 result = result + "<dd><input name=\"" + parameter + "\" value =\"" +
@@ -566,12 +563,19 @@ public class ProviderUtil {
                 result = result + "</select></dd>";
             } else {
                 //use text box
+                String field;
+                boolean isList = parameterMetaData.getAttributeValue(Constants.TYPE).equals("interface java.util.List");
                 if (hasValue) {
-                    result = result + "<dd><input name=\"" + parameter + "\" value =\"" +
-                        parameterValue + "\" type=\"" +  parameterType + "\"></dd>";
+                    field = "<input name=\"" + parameter + "\" value =\"" +
+                        parameterValue + "\" type=\"" +  parameterType + "\">";
                 } else {
-                    result = result + "<dd><input name=\"" + parameter + "\" type=\"" + parameterType + "\"></dd>";
+                    field = "<input name=\"" + parameter + "\" type=\"" + parameterType + "\">";
                 }
+                result += "<dd>" + field;
+                if (isList) {
+                    result += field + "<a href=\"#\" onclick=\"try { var newNode = this.previousSibling.cloneNode(false); this.parentNode.insertBefore(newNode, this);} catch (err) { alert (err); } return false; return false;\">Add row<a/>";
+                }
+                result += "</dd>";
             }
         }
 
