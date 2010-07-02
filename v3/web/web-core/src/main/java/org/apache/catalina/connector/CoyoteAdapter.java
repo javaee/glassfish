@@ -112,14 +112,6 @@ public class CoyoteAdapter
         Boolean.valueOf(System.getProperty(
             "com.sun.enterprise.web.collapseAdjacentSlashes", "true")).booleanValue();
 
-    // START CR 6309511
-    /**
-     * The match string for identifying a session ID parameter.
-     */
-    private static final String SESSION_PARAMETER =
-        ";" + Globals.SESSION_PARAMETER_NAME + "=";
-    // END CR 6309511
-
     /**
      * When mod_jk is used, the adapter must be invoked the same way 
      * Tomcat does by invoking service(...) and the afterService(...). This
@@ -507,11 +499,7 @@ public class CoyoteAdapter
 
         // Parse session id
         if (ctx != null && !uriParamsCC.isNull()) {
-            String sessionParam = SESSION_PARAMETER;
-            if (ctx.isSessionCookieConfigInitialized() &&
-                    ctx.getSessionCookieName() != null) {
-                sessionParam = ";" + ctx.getSessionCookieName() + "=";
-            }
+            String sessionParam = ";" + ctx.getSessionParameterName() + "=";
             request.parseSessionId(sessionParam, uriParamsCC);
         }
 
@@ -571,7 +559,7 @@ public class CoyoteAdapter
             if (request.isRequestedSessionIdFromURL()) {
                 // This is not optimal, but as this is not very common, it
                 // shouldn't matter
-                redirectPath = redirectPath + ";" + Globals.SESSION_PARAMETER_NAME + "=" 
+                redirectPath = redirectPath + ";" + ctx.getSessionParameterName() + "=" 
                     + request.getRequestedSessionId();
             }            
             // START GlassFish 936

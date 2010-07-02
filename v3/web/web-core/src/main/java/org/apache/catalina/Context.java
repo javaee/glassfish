@@ -191,7 +191,7 @@ public interface Context extends Container {
      * <tt>ServletContext</tt>.
      */
     public SessionCookieConfig getSessionCookieConfig();
-
+ 
 
     /**
      * @return true if any of the setter methods have been
@@ -199,6 +199,13 @@ public interface Context extends Container {
      * otherwise
      */
     public boolean isSessionCookieConfigInitialized();
+
+
+    /**
+     * @return the name that will be assigned to any session tracking
+     * parameter created on behalf of this context
+     */
+    public String getSessionParameterName();
 
 
     /**

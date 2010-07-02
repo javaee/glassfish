@@ -91,9 +91,10 @@ public final class SessionCookieConfig {
      * The expiration time in seconds after which the browser expires
      * the cookie.
      *
-     * The default value is -1 (never expire).
+     * The default value is -1 (never expire) will be set in
+     * org.apache.catalina.core.SessionCookieConfigImpl
      */
-    private int _maxAge = -1;
+    private Integer _maxAge = null;
 
     /**
      * The domain for which the cookie is valid.
@@ -175,14 +176,14 @@ public final class SessionCookieConfig {
     /**
      * Set the expiration time for the session cookie.
      */
-    public void setMaxAge(int maxAge) {
+    public void setMaxAge(Integer maxAge) {
         _maxAge = maxAge;
     }
 
     /**
      * Return the expiration time for the session cookie.
      */
-    public int getMaxAge() {
+    public Integer getMaxAge() {
         return _maxAge;
     }
 

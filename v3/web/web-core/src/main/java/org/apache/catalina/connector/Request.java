@@ -2974,7 +2974,7 @@ public class Request
             cookie.setSecure(true);
         }
 
-        // Overridde the default config with servlet context
+        // Override the default config with servlet context
         // sessionCookieConfig
         if (context != null &&
                 context.isSessionCookieConfigInitialized()) {

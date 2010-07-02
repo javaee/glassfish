@@ -483,7 +483,9 @@ public class TomcatDeploymentConfig {
                 sessionCookieConfig.setPath(gfSessionCookieConfig.getPath());
             }
 
-            sessionCookieConfig.setMaxAge(gfSessionCookieConfig.getMaxAge());
+            if (gfSessionCookieConfig.getMaxAge() != null) {
+                sessionCookieConfig.setMaxAge(gfSessionCookieConfig.getMaxAge());
+            }
 
             if (gfSessionCookieConfig.getDomain() != null) {
                 sessionCookieConfig.setDomain(gfSessionCookieConfig.getDomain());

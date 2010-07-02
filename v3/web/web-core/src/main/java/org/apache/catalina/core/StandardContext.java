@@ -688,10 +688,13 @@ public class StandardContext
 
     /**
      * The name of the session tracking cookies created by this context
+     * Cache the name here as the getSessionCookieConfig() is synchronized.
      */
     private String sessionCookieName = Globals.SESSION_COOKIE_NAME;
 
     private boolean sessionCookieConfigInitialized = false;
+
+    private boolean sessionCookieNameInitialized = false;
 
     protected ConcurrentHashMap<String, ServletRegistrationImpl> servletRegisMap =
         new ConcurrentHashMap<String, ServletRegistrationImpl>();
@@ -2583,6 +2586,7 @@ public class StandardContext
      */
     void setSessionCookieName(String sessionCookieName) {
         this.sessionCookieName = sessionCookieName;
+        sessionCookieNameInitialized = true;
     }
 
     /**
@@ -2591,6 +2595,20 @@ public class StandardContext
      */
     public String getSessionCookieName() {
         return sessionCookieName;
+    }
+
+    /**
+     * @return the name that will be assigned to any session tracking
+     * parameter created on behalf of this context
+     */
+    public String getSessionParameterName() {
+        if (sessionCookieNameInitialized) {
+            if (sessionCookieName != null && (!sessionCookieName.isEmpty())) {
+               return sessionCookieName; 
+            }
+        }
+        
+        return Globals.SESSION_PARAMETER_NAME;
     }
 
     /**
