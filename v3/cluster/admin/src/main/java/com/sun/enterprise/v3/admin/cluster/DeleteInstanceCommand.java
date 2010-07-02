@@ -47,7 +47,6 @@ import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.jvnet.hk2.annotations.*;
-import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -83,10 +82,6 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
 
     @Inject
     private Nodes nodes;
-
-    @Inject
-    Domain domain;
-
 
    @Param(name="node", optional=true, defaultValue=DEFAULT_NODE)
     String node;
@@ -127,7 +122,7 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
         }
         String msg;
 
-        if (node == null || !rch.isRemoteConnectRequired(node)) {
+        if (rch.isLocalhost(nodes.getNode(node))) {
             LocalAdminCommand lac = new LocalAdminCommand("delete-local-instance",instance);
             msg = Strings.get("deletingInstance", instance, LOCAL_HOST);
             logger.info(msg);
@@ -146,44 +141,17 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
             int status =deleteInstanceRemote();
             if (status != 0)
                 return;
+        } else {
+            msg = Strings.get("delete.instance.failed", instance);
+            logger.warning(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
+
         }
 
-        // XXX dipol
-        // We are transitioning from nodeAgent to node. Some parts of the code
-        // still assume the server's node-agent-ref to be the hostname for the
-        // host the server is on. If --nodeagent was not specified we use the
-        // hostname from the node.
-        // At some point we need to come back and remove all the nodeagent stuf
-        if (nodeAgent == null || nodeAgent.length() == 0) {
-            nodeAgent = getHostFromNodeName(node);
-        }
-
-        CommandInvocation ci = cr.getCommandInvocation("_unregister-instance", report);
-        ParameterMap map = new ParameterMap();
-        map.add("nodeagent", nodeAgent);
-        map.add("DEFAULT", instance);
-        ci.parameters(map);
-        ci.execute();
     }
 
-    /**
-      * Given a node name return the node's host name
-      * @param nodeName  name of node
-      * @return  node's host name, or "localhost" if can't find the host name
-      */
-     private String getHostFromNodeName(String nodeName) {
-
-         Node theNode = nodes.getNode(nodeName);
-
-         if (theNode == null) {
-             return LOCAL_HOST;
-         }
-         String hostName = theNode.getNodeHost();
-         if (hostName == null || hostName.length() == 0) {
-             return LOCAL_HOST;
-         }
-         return hostName;
-     }
 
      private int deleteInstanceRemote() {
 

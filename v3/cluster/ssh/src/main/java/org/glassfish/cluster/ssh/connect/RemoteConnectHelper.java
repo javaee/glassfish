@@ -53,6 +53,7 @@ import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.net.NetUtils;
 
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import java.io.ByteArrayOutputStream;
@@ -81,6 +82,15 @@ public class RemoteConnectHelper  {
         this.dasHost=dasHost;
         this.dasPort=dasPort;
 
+    }
+
+    public boolean isLocalhost(Node nodeRef) {
+        String nodeHost = nodeRef.getNodeHost();
+        if (nodeRef.equals("localhost"))
+            return true;
+        if (NetUtils.IsThisHostLocal(nodeHost))
+            return true;
+        return false;
     }
 
     public boolean isRemoteConnectRequired(String nodeRef) {

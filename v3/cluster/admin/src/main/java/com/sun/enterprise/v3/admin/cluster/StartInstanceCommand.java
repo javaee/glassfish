@@ -65,7 +65,6 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
 
-import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
 import java.io.IOException;
 import java.lang.InterruptedException;
@@ -88,13 +87,14 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     Habitat habitat;
 
     @Inject
-    Domain domain;
-    
+    Node[] nodeList;
+
     @Inject
-    Node[] nodes;
+    private Nodes nodes;
 
     @Inject
     private CommandRunner cr;
+
     @Inject
     private ServerEnvironment env;
     
@@ -106,7 +106,6 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     private Logger logger;
     private RemoteInstanceCommandHelper helper;
 
-    private HashMap<String, Node> nodeMap;
     private AdminCommandContext ctx;
     private String noderef;
     private Server instance;
@@ -159,31 +158,35 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     }
 
     private void callInstance() {
-        if (noderef.equals("localhost")) {
+        int dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
+        String dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
+        RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodeList, logger, dasHost, dasPort);
+
+        if (rch.isLocalhost(nodes.getNode(noderef))) {
             startInstance();
-        } else {
-            int dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
-            String dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
-            RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodes, logger, dasHost, dasPort);
-            // check if needs a remote connection
-            if (rch.isRemoteConnectRequired(noderef)) {
-                // this command will run over ssh
-                StringBuilder output = new StringBuilder();
-                ParameterMap map = new ParameterMap();
-                map.set("DEFAULT", instanceName);
-                int status = rch.runCommand(noderef, "start-local-instance",
-                        map, output);
-                if (output.length() > 0) {
-                    logger.info(output.toString());
-                }
-                if (status != 1){
-                    ActionReport report = ctx.getActionReport();
-                    String msg = Strings.get("start.remote.instance.failed", instanceName);
-                    logger.warning(msg);
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(output + NL + msg);
-                }
+        } else  if (rch.isRemoteConnectRequired(noderef)) {  // check if needs a remote connection
+            // this command will run over ssh
+            StringBuilder output = new StringBuilder();
+            ParameterMap map = new ParameterMap();
+            map.set("DEFAULT", instanceName);
+            int status = rch.runCommand(noderef, "start-local-instance",
+                     map, output);
+            if (output.length() > 0) {
+                 logger.info(output.toString());
             }
+            if (status != 1){
+                ActionReport report = ctx.getActionReport();
+                String msg = Strings.get("start.remote.instance.failed", instanceName);
+                logger.warning(msg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(output + NL + msg);
+             }
+        } else {
+            ActionReport report = ctx.getActionReport();
+            String msg = Strings.get("start.remote.instance.failed", instanceName);
+            logger.warning(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);            
         }
     }
     

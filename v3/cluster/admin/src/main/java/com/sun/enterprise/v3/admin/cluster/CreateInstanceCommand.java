@@ -36,9 +36,6 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
-import com.sun.enterprise.config.serverbeans.Configs;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
@@ -50,7 +47,6 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
-import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -81,9 +77,6 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     
     @Inject
     Habitat habitat;
-
-    @Inject
-    Domain domain;
 
     @Inject
     Node[] nodeList;
@@ -139,7 +132,8 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         }
         String msg;
 
-        if (node == null || !rch.isRemoteConnectRequired(node)) {
+//        if (node == null || !rch.isRemoteConnectRequired(node)) {
+        if (rch.isLocalhost(nodes.getNode(node))) {
             LocalAdminCommand lac = new LocalAdminCommand("_create-instance-filesystem",instance);
             msg = Strings.get("creatingInstance", instance, LOCAL_HOST);
             logger.info(msg);
@@ -158,6 +152,12 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             int status =createInstanceRemote();
             if (status != 0)
                 return;
+        } else {
+            msg = Strings.get("create.instance.remote.failed", instance);
+            logger.warning(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;            
         }
 
         // XXX dipol
