@@ -125,6 +125,9 @@ public class GetHostAndPortCommand implements AdminCommand {
         if (hostAndPort != null) {
             part.setMessage(hostAndPort.getHost() + ":" + 
                 hostAndPort.getPort());
+            part.addProperty("host", hostAndPort.getHost()); //property for REST Access
+            part.addProperty("port", ""+hostAndPort.getPort()); //property for REST Access
+
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
