@@ -39,11 +39,16 @@ package org.glassfish.deployment.versioning;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import java.util.Map;
+import java.util.Properties;
+import java.io.File;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.types.Property;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import com.sun.enterprise.config.serverbeans.*;
 
 /**
  *
@@ -145,21 +150,21 @@ public class VersioningServiceTest {
     @Test
     public void testGetVersions() throws VersioningException {
         // the set of applications
-        List<ApplicationRef> listApplications = new ArrayList<ApplicationRef>();
-        listApplications.add(new ApplicationRefTest(APPLICATION_NAME));
-        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
+        List<Application> listApplications = new ArrayList<Application>();
+        listApplications.add(new ApplicationTest(APPLICATION_NAME));
+        listApplications.add(new ApplicationTest(APPLICATION_NAME+
                 VersioningService.EXPRESSION_SEPARATOR+"BETA-1.0.0"));
-        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
+        listApplications.add(new ApplicationTest(APPLICATION_NAME+
                 VersioningService.EXPRESSION_SEPARATOR+"RC-1.0.0"));
-        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
+        listApplications.add(new ApplicationTest(APPLICATION_NAME+
                 "_RC-1.0.0"));
-        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
+        listApplications.add(new ApplicationTest(APPLICATION_NAME+
                 ";RC-1.0.0"));
-        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
+        listApplications.add(new ApplicationTest(APPLICATION_NAME+
                 ".RC-1.0.0"));
-        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
+        listApplications.add(new ApplicationTest(APPLICATION_NAME+
                 "-RC-1.0.0"));
-        listApplications.add(new ApplicationRefTest(APPLICATION_NAME+
+        listApplications.add(new ApplicationTest(APPLICATION_NAME+
                 APPLICATION_NAME));
 
         // the expected set of versions
@@ -488,31 +493,55 @@ public class VersioningServiceTest {
         assertEquals(expectedResult, result);
     }
 
-    // this class is used to fake the List<ApplicationRef> returned by
-    // Applications.getModule. so we can call the VersioningService.matchExpression
+    // this class is used to fake the List<Application> 
+    // so we can call the VersioningService.matchExpression
     // with an home made set of applications.
-    private class ApplicationRefTest implements ApplicationRef{
-        private String ref;
+    private class ApplicationTest implements Application {
+        private String name;
 
-        public ApplicationRefTest(String value){
-            this.ref = value;
+        public ApplicationTest(String value){
+            this.name = value;
         }
 
         @Override
-        public String getRef() {
-            return ref;
+        public String getName() {
+            return name;
         }
 
         @Override
-        public void setRef(String value) throws PropertyVetoException{
+        public void setName(String value) throws PropertyVetoException{
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
-        public void setEnabled(String value) throws PropertyVetoException{
+        public String getContextRoot() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
+        @Override
+        public void setContextRoot(String value) throws PropertyVetoException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public String getLocation() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setLocation(String value) throws PropertyVetoException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public String getObjectType() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setObjectType(String value) throws PropertyVetoException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
 
         @Override
         public String getEnabled() {
@@ -520,34 +549,128 @@ public class VersioningServiceTest {
         }
 
         @Override
-        public void setLbEnabled(String value) throws PropertyVetoException{
+        public void setEnabled(String value) throws PropertyVetoException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public String getLibraries() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setLibraries(String value) throws PropertyVetoException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public String getAvailabilityEnabled() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setAvailabilityEnabled(String value) throws PropertyVetoException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public String getDirectoryDeployed() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setDirectoryDeployed(String value) throws PropertyVetoException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public String getDescription() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setDescription(String value) throws PropertyVetoException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public List<Module> getModule() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public List<Engine> getEngine() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public List<WebServiceEndpoint> getWebServiceEndpoint() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Module getModule(String moduleName) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Properties getDeployProperties() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public DeployCommandParameters getDeployParameters(ApplicationRef appRef) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Map<String, Properties> getModulePropertiesMap() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
 
         @Override
-        public String getLbEnabled(){
+        public boolean isStandaloneModule() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
-        public void setVirtualServers(String value) throws PropertyVetoException{
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-
-        @Override
-        public String getVirtualServers(){
+        public boolean containsSnifferType(String snifferType) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
-        public void setDisableTimeoutInMinutes(String value) throws PropertyVetoException{
+        public void recordFileLocations(File app, File plan) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
-        public String getDisableTimeoutInMinutes(){
+        public File application() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public File deploymentPlan() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public List<Property> getProperty() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Property getProperty(String name) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public String getPropertyValue(String name) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public String getPropertyValue(String name, String defaultValue) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
@@ -562,6 +685,12 @@ public class VersioningServiceTest {
         }
 
         @Override
+        public void injectedInto(Object target) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+
+        @Override
         public <T extends ConfigBeanProxy> T createChild(Class<T> type)
                throws TransactionFailure {
             throw new UnsupportedOperationException("Not supported yet.");
@@ -569,11 +698,6 @@ public class VersioningServiceTest {
 
         @Override
         public ConfigBeanProxy deepCopy() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public void injectedInto(Object target) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 

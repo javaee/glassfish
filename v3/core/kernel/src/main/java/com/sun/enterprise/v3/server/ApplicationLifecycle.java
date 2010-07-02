@@ -352,7 +352,7 @@ public class ApplicationLifecycle implements Deployment {
                  // if enable attribute is set to true
                  // and the target is the default server instance of current VM
                  // we load and start the application
-                if (commandParams.enabled && domain.isCurrentInstanceMatchingTarget(commandParams.target, server.getName())) {
+                if (commandParams.enabled && domain.isCurrentInstanceMatchingTarget(commandParams.target, appName, server.getName(), context.getTransientAppMetaData("previousTargets", List.class))) {
                     Thread.currentThread().setContextClassLoader(context.getFinalClassLoader());
                     appInfo.setLibraries(commandParams.libraries());
                     try {
@@ -890,32 +890,45 @@ public class ApplicationLifecycle implements Deployment {
                     }
                 }
 
-                Server servr = domain.getServerNamed(deployParams.target); 
-                if (servr != null) {
-                    // adding the application-ref element to the standalone
-                    // server instance
-                    ConfigBeanProxy servr_w = t.enroll(servr);
-                    // adding the application-ref element to the standalone
-                    // server instance
-                    ApplicationRef appRef = servr_w.createChild(ApplicationRef.class);
-                    setAppRefAttributes(appRef, deployParams);
-                    ((Server)servr_w).getApplicationRef().add(appRef);
+                List<String> targets = new ArrayList<String>();
+                if (!deployParams.target.equals("domain")) {
+                    targets.add(deployParams.target);    
+                } else {
+                    List<String> previousTargets = context.getTransientAppMetaData("previousTargets", List.class);
+                    if (previousTargets == null) {
+                        previousTargets = domain.getAllReferencedTargetsForApplication(deployParams.name);
+                    }
+                    targets = previousTargets;
                 }
 
-                Cluster cluster = domain.getClusterNamed(deployParams.target); 
-                if (cluster != null) {
-                    // adding the application-ref element to the cluster
-                    // and instances
-                    ConfigBeanProxy cluster_w = t.enroll(cluster);
-                    ApplicationRef appRef = cluster_w.createChild(ApplicationRef.class);
-                    setAppRefAttributes(appRef, deployParams);
-                    ((Cluster)cluster_w).getApplicationRef().add(appRef);
+                for (String target : targets) {
+                    Server servr = domain.getServerNamed(target); 
+                    if (servr != null) {
+                        // adding the application-ref element to the standalone
+                        // server instance
+                        ConfigBeanProxy servr_w = t.enroll(servr);
+                        // adding the application-ref element to the standalone
+                        // server instance
+                        ApplicationRef appRef = servr_w.createChild(ApplicationRef.class);
+                        setAppRefAttributes(appRef, deployParams);
+                        ((Server)servr_w).getApplicationRef().add(appRef);
+                    }
 
-                    for (Server svr : cluster.getInstances() ) {
-                        ConfigBeanProxy svr_w = t.enroll(svr);
-                        ApplicationRef appRef2 = svr_w.createChild(ApplicationRef.class);
-                        setAppRefAttributes(appRef2, deployParams);
-                        ((Server)svr_w).getApplicationRef().add(appRef2);
+                    Cluster cluster = domain.getClusterNamed(target); 
+                    if (cluster != null) {
+                        // adding the application-ref element to the cluster
+                        // and instances
+                        ConfigBeanProxy cluster_w = t.enroll(cluster);
+                        ApplicationRef appRef = cluster_w.createChild(ApplicationRef.class);
+                        setAppRefAttributes(appRef, deployParams);
+                        ((Cluster)cluster_w).getApplicationRef().add(appRef);
+
+                        for (Server svr : cluster.getInstances() ) {
+                            ConfigBeanProxy svr_w = t.enroll(svr);
+                            ApplicationRef appRef2 = svr_w.createChild(ApplicationRef.class);
+                            setAppRefAttributes(appRef2, deployParams);
+                            ((Server)svr_w).getApplicationRef().add(appRef2);
+                        }
                     }
                 }
             } catch(TransactionFailure e) {
@@ -1012,50 +1025,59 @@ public class ApplicationLifecycle implements Deployment {
     }
 
     public void unregisterAppFromDomainXML(final String appName, 
-        final String target, final boolean appRefOnly) 
+        final String tgt, final boolean appRefOnly) 
         throws TransactionFailure {
         ConfigSupport.apply(new SingleConfigCode() {
             public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
                 // get the transaction
                 Transaction t = Transaction.getTransaction(param);
                 if (t!=null) {
-                    Server servr = ((Domain)param).getServerNamed(target);
-                    if (servr != null) {
-                        // remove the application-ref from standalone 
-                        // server instance
-                        ConfigBeanProxy servr_w = t.enroll(servr);
-                        for (ApplicationRef appRef : 
-                            servr.getApplicationRef()) {
-                            if (appRef.getRef().equals(appName)) {
-                                ((Server)servr_w).getApplicationRef().remove(
-                                    appRef);
-                                break;
-                            }
-                        }
+                    List<String> targets = new ArrayList<String>();
+                    if (!tgt.equals("domain")) {
+                        targets.add(tgt);    
+                    } else {
+                        targets = domain.getAllReferencedTargetsForApplication(appName);
                     }
-              
-                    Cluster cluster = ((Domain)param).getClusterNamed(target);
-                    if (cluster != null) {
-                        // remove the application-ref from cluster
-                        ConfigBeanProxy cluster_w = t.enroll(cluster);
-                        for (ApplicationRef appRef : 
-                            cluster.getApplicationRef()) {
-                            if (appRef.getRef().equals(appName)) {
-                                ((Cluster)cluster_w).getApplicationRef().remove(
+
+                    for (String target : targets) {
+                        Server servr = ((Domain)param).getServerNamed(target);
+                        if (servr != null) {
+                            // remove the application-ref from standalone 
+                            // server instance
+                            ConfigBeanProxy servr_w = t.enroll(servr);
+                            for (ApplicationRef appRef : 
+                                servr.getApplicationRef()) {
+                                if (appRef.getRef().equals(appName)) {
+                                    ((Server)servr_w).getApplicationRef().remove(
                                         appRef);
                                     break;
+                                }
                             }
                         }
-
-                        // remove the application-ref from cluster instances
-                        for (Server svr : cluster.getInstances() ) {
-                            ConfigBeanProxy svr_w = t.enroll(svr);
+              
+                        Cluster cluster = ((Domain)param).getClusterNamed(target);
+                        if (cluster != null) {
+                            // remove the application-ref from cluster
+                            ConfigBeanProxy cluster_w = t.enroll(cluster);
                             for (ApplicationRef appRef : 
-                                svr.getApplicationRef()) {
+                                cluster.getApplicationRef()) {
                                 if (appRef.getRef().equals(appName)) {
-                                    ((Server)svr_w).getApplicationRef(
-                                       ).remove(appRef);
-                                    break;
+                                    ((Cluster)cluster_w).getApplicationRef().remove(
+                                            appRef);
+                                        break;
+                                }
+                            }
+
+                            // remove the application-ref from cluster instances
+                            for (Server svr : cluster.getInstances() ) {
+                                ConfigBeanProxy svr_w = t.enroll(svr);
+                                for (ApplicationRef appRef : 
+                                    svr.getApplicationRef()) {
+                                    if (appRef.getRef().equals(appName)) {
+                                        ((Server)svr_w).getApplicationRef(
+                                           ).remove(appRef);
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -1086,6 +1108,20 @@ public class ApplicationLifecycle implements Deployment {
                 // get the transaction
                 Transaction t = Transaction.getTransaction(param);
                 if (t!=null) {
+                    if (enabled || target.equals("domain")) {
+                        Application app = ((Domain)param).getApplications().getApplication(appName);
+                        ConfigBeanProxy app_w = t.enroll(app);
+                       ((Application)app_w).setEnabled(String.valueOf(enabled));
+
+                    }
+
+                    // for target domain, only update the application enable
+                    // attribute, for the rest of the targets, update the
+                    // application-ref enable attribute as well
+                    if (target.equals("domain")) {
+                        return Boolean.TRUE;
+                    }
+
                     Server servr = ((Domain)param).getServerNamed(target);
                     if (servr != null) {
                         // update the application-ref from standalone
@@ -1447,9 +1483,15 @@ public class ApplicationLifecycle implements Deployment {
         boolean isRedeploy) {
         List<String> referencedTargets = domain.getAllReferencedTargetsForApplication(name);
         if (referencedTargets.isEmpty()) {
+            if (isRegistered(name) && !isRedeploy && target.equals("domain")) {
+                throw new IllegalArgumentException(localStrings.getLocalString("application.alreadyreg.redeploy", "Application with name {0} is already registered. Either specify that redeployment must be forced, or redeploy the application. Or if this is a new deployment, pick a different name.", name));
+            }
             return;
         }
         if (!isRedeploy) { 
+            if (target.equals("domain")) {
+                throw new IllegalArgumentException(localStrings.getLocalString("application.deploy_domain", "Application with name {0} is already referenced by other target(s). Please specify force option to redeploy to domain.", name));
+            }
             if (referencedTargets.size() == 1 && 
                 referencedTargets.contains(target)) {
                 throw new IllegalArgumentException(localStrings.getLocalString("application.alreadyreg.redeploy", "Application with name {0} is already registered. Either specify that redeployment must be forced, or redeploy the application. Or if this is a new deployment, pick a different name.", name));

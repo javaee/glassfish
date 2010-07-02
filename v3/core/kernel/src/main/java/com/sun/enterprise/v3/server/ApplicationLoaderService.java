@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.io.FileUtils;
@@ -167,9 +168,8 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
         // load standalone resource adapters first
         for (Application standaloneAdapter : standaloneAdapters) {
-            ApplicationRef appRef = server.getApplicationRef(
-                standaloneAdapter.getName());
-            if (appRef != null && Boolean.valueOf(appRef.getEnabled())) {
+            if (isAppEnabled(standaloneAdapter)) {
+                ApplicationRef appRef = server.getApplicationRef(standaloneAdapter.getName());
                 processApplication(standaloneAdapter, appRef, logger);
             }
         }
@@ -180,8 +180,8 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                 app.containsSnifferType("connector")) {
                 continue;
             }
-            ApplicationRef appRef = server.getApplicationRef(app.getName());
-            if (appRef != null && Boolean.valueOf(appRef.getEnabled())) {
+            if (isAppEnabled(app)) {
+                ApplicationRef appRef = server.getApplicationRef(app.getName());
                 processApplication(app, appRef, logger);
             }
         }
@@ -429,4 +429,17 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         }
     }
 
+    private boolean isAppEnabled(Application app) {
+        if (Boolean.valueOf(app.getEnabled())) {
+            ApplicationRef appRef = server.getApplicationRef(app.getName());
+            if (appRef != null && Boolean.valueOf(appRef.getEnabled())) {
+                Cluster cluster = server.getCluster();
+                ApplicationRef appRef2 = cluster.getApplicationRef(app.getName());
+                if (appRef2 != null && Boolean.valueOf(appRef2.getEnabled())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

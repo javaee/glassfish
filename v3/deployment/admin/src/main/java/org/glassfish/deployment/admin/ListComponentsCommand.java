@@ -91,7 +91,7 @@ public class ListComponentsCommand  implements AdminCommand {
 
         ActionReport.MessagePart part = report.getTopMessagePart();        
         int numOfApplications = 0;
-        for (Application app : domain.getApplicationsForTarget(target)) {
+        for (Application app : domain.getApplicationsInTarget(target)) {
                 if (app.getObjectType().equals("user")) {
                     if (type==null || isApplicationOfThisType(app, type)) {
                         ActionReport.MessagePart childPart = part.addChild();
@@ -117,8 +117,7 @@ public class ListComponentsCommand  implements AdminCommand {
            // ignore --verbose for target domain 
            return message;
        }
-       ApplicationRef ref = domain.getApplicationRefInTarget(app.getName(), target);
-       boolean isVersionEnabled = Boolean.valueOf(ref.getEnabled());
+       boolean isVersionEnabled = domain.isAppEnabledInTarget(app.getName(), target);
        if ( isVersionEnabled ) {
            message = localStrings.getLocalString("list.applications.verbose.enabled", "(enabled)");
        } else {

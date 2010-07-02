@@ -163,7 +163,7 @@ public class DeleteApplicationRefCommand implements AdminCommand {
             deploymentContext.setModulePropsMap(
                 application.getModulePropertiesMap());
 
-            if (domain.isCurrentInstanceMatchingTarget(target, server.getName())&& appInfo != null) {
+            if (domain.isCurrentInstanceMatchingTarget(target, name, server.getName(), null)&& appInfo != null) {
                 // stop and unload application if it's the target and the 
                 // the application is in enabled state
                 appInfo.stop(deploymentContext, deploymentContext.getLogger());

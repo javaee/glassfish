@@ -106,7 +106,7 @@ public class ShowComponentStatusCommand implements AdminCommand {
         // if matched list is empty and no VersioningException thrown,
         // this is an unversioned behavior and the given application is not registered
         if(matchedVersions.isEmpty()){
-            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name));
+            report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name, target));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
@@ -136,8 +136,7 @@ public class ShowComponentStatusCommand implements AdminCommand {
                 return;
             }
 
-            if (Boolean.valueOf(app.getEnabled()) &&
-                Boolean.valueOf(ref.getEnabled())) {
+            if (domain.isAppEnabledInTarget(appName, target)) {
                 status = "enabled";
             }
             

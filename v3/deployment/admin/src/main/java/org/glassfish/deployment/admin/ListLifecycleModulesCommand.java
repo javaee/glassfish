@@ -82,7 +82,7 @@ public class ListLifecycleModulesCommand implements AdminCommand  {
         ActionReport report = context.getActionReport();
         ActionReport.MessagePart part = report.getTopMessagePart();
 
-        for (Application app : domain.getApplicationsForTarget(target)) {
+        for (Application app : domain.getApplicationsInTarget(target)) {
             if (Boolean.valueOf(app.getDeployProperties().getProperty
                 (ServerTags.IS_LIFECYCLE))) {
                 ActionReport.MessagePart childPart = part.addChild();

@@ -37,6 +37,8 @@
 package org.glassfish.deployment.admin;
 
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.ArrayList;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -90,6 +92,19 @@ public class PostDeployCommand extends DeployCommandParameters implements AdminC
         try {
             final ParameterMap paramMap = deployment.prepareInstanceDeployParamMap(dc);
 
+            List<String> targets = new ArrayList<String>();
+            if (!target.equals("domain")) {
+                targets.add(params.target);
+            } else {
+                targets = dc.getTransientAppMetaData("previousTargets", List.class);
+                // TODO: call framework API to replicate the command to all 
+                // targets
+
+                // if the target is DAS, we do not need to do anything more
+                if (targets.contains("server")) {
+                    return;
+                }
+            }
             clusterExecutor.execute("_deploy", this, context, paramMap);
         } catch (Exception e) {
             report.failure(logger, e.getMessage());

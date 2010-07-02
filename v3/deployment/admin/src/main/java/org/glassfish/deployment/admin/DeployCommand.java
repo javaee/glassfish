@@ -145,6 +145,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     private File safeCopyOfDeploymentPlan = null;
     private File originalPathValue;
     private boolean isRedeploy = false;
+    private List<String> previousTargets = new ArrayList<String>();
 
     public DeployCommand() {
         origin = Origin.deploy;
@@ -214,11 +215,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 DeploymentUtils.validateApplicationName(name);
             }
 
-            boolean isRegistered = deployment.isRegistered(name);
-            isRedeploy = isRegistered && force;
-            deployment.validateDeploymentTarget(target, name, isRedeploy);
-
-            if(enabled){
+            if (!target.equals("domain") && enabled) {
                 // try to disable the enabled version, if exist
                 try {
                     versioningService.handleDisable(name,target, report);
@@ -226,7 +223,11 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                     report.failure(logger, e.getMessage());
                     return;
                 }
-            }
+            } 
+
+            boolean isRegistered = deployment.isRegistered(name);
+            isRedeploy = isRegistered && force;
+            deployment.validateDeploymentTarget(target, name, isRedeploy);
 
             ActionReport.MessagePart part = report.getTopMessagePart();
             part.addProperty("name", name);
@@ -289,6 +290,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             appProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
 
             savedAppConfig.store(appProps);
+
+            deploymentContext.addTransientAppMetaData("previousTargets", previousTargets);
 
             Transaction t = deployment.prepareAppConfigChanges(deploymentContext);
 
@@ -585,6 +588,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                     properties.setProperty(DeploymentProperties.COMPATIBILITY, compatProp);
                 }
             }
+
+            previousTargets = domain.getAllReferencedTargetsForApplication(name);
         }
     }
 

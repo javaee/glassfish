@@ -53,6 +53,7 @@ import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.config.support.TargetType;
@@ -102,6 +103,9 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
     VersioningService versioningService;
 
     @Inject
+    ServerEnvironment env;
+
+    @Inject
     Domain domain;
 
     public UndeployCommand() {
@@ -131,7 +135,7 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
         // if matched list is empty and no VersioningException thrown,
         // this is an unversioned behavior and the given application is not registered
         if(matchedVersions.isEmpty()){
-            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name));
+            report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name, target));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
@@ -154,11 +158,19 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
 
             deployment.validateUndeploymentTarget(target, appName);
 
-            ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
-            if (ref == null) {
-                report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
+            if (!target.equals("domain")) {
+                ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
+                if (ref == null) {
+                    report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            }
+
+            if (env.isDas() && target.equals("domain")) { 
+                List<String> targets = domain.getAllReferencedTargetsForApplication(name());
+                // TODO: call framework API to replicate command to all
+                // referenced targets (possibly remove DAS target first)
             }
 
             ReadableArchive source = null;

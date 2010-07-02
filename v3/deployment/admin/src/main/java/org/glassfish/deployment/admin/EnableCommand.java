@@ -68,6 +68,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Map;
+import java.util.List;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -118,50 +119,52 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
-        // TODO: use this workaround till the command replication is turned on
-        // by default
-        boolean doReplication = false;
-        if(Utility.getEnvOrProp("ENABLE_REPLICATION")!=null) {
-            doReplication = Boolean.parseBoolean(Utility.getEnvOrProp("ENABLE_REPLICATION"));
-        }
         if (!deployment.isRegistered(name())) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
-        ApplicationRef applicationRef = domain.getApplicationRefInTarget(name(), target);
-        if (applicationRef == null) {
-            report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name(), target));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
+        if (!target.equals("domain")) {
+            ApplicationRef applicationRef = domain.getApplicationRefInTarget(name(), target);
+            if (applicationRef == null) {
+                report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name(), target));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
         }
 
         // return if the application is already in enabled state
-        if (Boolean.valueOf(applicationRef.getEnabled())) {
+        if (domain.isAppEnabledInTarget(name(), target)) {
             logger.fine("The application is already enabled");
             return;
         }
 
-        if (!doReplication) {
-        // try to disable the enabled version, if exist
-        try {
-            versioningService.handleDisable(name(),target, report);
-        } catch (VersioningSyntaxException e) {
-            report.failure(logger, e.getMessage());
-            return;
-        }
+        if (env.isDas()) {
+            if (!target.equals("domain")) {
+                // try to disable the enabled version, if exist
+                try {
+                    versioningService.handleDisable(name(),target, report);
+                } catch (VersioningSyntaxException e) {
+                    report.failure(logger, e.getMessage());
+                    return;
+                }
+            } else {
+                List<String> targets = domain.getAllReferencedTargetsForApplication(name());
+                // TODO: call framework API to replicate command to all 
+                // referenced targets (possibly remove DAS target first) 
+            }
         }
 
-        if (!domain.isCurrentInstanceMatchingTarget(target, server.getName())) {
-            // if the target does not match with the current instance name
-            // we should just update the domain.xml and return
-            try {
-                deployment.updateAppEnabledAttributeInDomainXML(name(), target, true);
-            } catch(TransactionFailure e) {
-                logger.warning("failed to set enable attribute for " + name());
-            }
-            return;
+        // update the domain.xml
+        try {
+            deployment.updateAppEnabledAttributeInDomainXML(name(), target, true);
+        } catch(TransactionFailure e) {
+            logger.warning("failed to set enable attribute for " + name());
+        }
+
+        if (!domain.isCurrentInstanceMatchingTarget(target, name(), server.getName(), null)) {
+            return;  
         }
 
         ReadableArchive archive;
@@ -220,16 +223,6 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
             }
 
             deployment.deploy(deploymentContext);
-
-            if (report.getActionExitCode().equals(
-                ActionReport.ExitCode.SUCCESS)) {
-                try {
-                    deployment.updateAppEnabledAttributeInDomainXML(name(), target, true);
-                } catch(TransactionFailure e) {
-                    logger.warning("failed to set enable attribute for " + name());
-                }
-            }
-
         } catch(Exception e) {
             logger.log(Level.SEVERE, "Error during enabling: ", e);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

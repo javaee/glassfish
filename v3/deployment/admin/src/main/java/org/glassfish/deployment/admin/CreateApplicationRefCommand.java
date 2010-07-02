@@ -208,7 +208,7 @@ public class CreateApplicationRefCommand implements AdminCommand {
                 deploymentContext.setModulePropsMap(modulePropsMap);
             }
 
-            if (domain.isCurrentInstanceMatchingTarget(target, server.getName())) {
+            if (domain.isCurrentInstanceMatchingTarget(target, name, server.getName(), null)) {
                 deployment.deploy(deploymentContext);
             }
 

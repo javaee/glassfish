@@ -36,7 +36,7 @@
 package org.glassfish.deployment.versioning;
 
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -166,23 +166,23 @@ public class VersioningService {
      *
      * @param untaggedName the application name as an untagged version : an
      * application name without version identifier
-     * @param allApplicationRefs the set of application refs
+     * @param allApplications the set of applications
      * @return all the version(s) of the given application in the given set of
      * applications
      */
     public static final List<String> getVersions(String untaggedName,
-            List<ApplicationRef> allApplicationRefs) {
+            List<Application> allApplications) {
 
         List<String> allVersions = new ArrayList<String>();
-        Iterator<ApplicationRef> it = allApplicationRefs.iterator();
+        Iterator<Application> it = allApplications.iterator();
 
         while (it.hasNext()) {
-            ApplicationRef ref = it.next();
+            Application app = it.next();
 
             // if a tagged version or untagged version of the app
-            if (ref.getRef().startsWith(untaggedName + EXPRESSION_SEPARATOR)
-                    || ref.getRef().equals(untaggedName)) {
-                allVersions.add(ref.getRef());
+            if (app.getName().startsWith(untaggedName + EXPRESSION_SEPARATOR)
+                    || app.getName().equals(untaggedName)) {
+                allVersions.add(app.getName());
             }
         }
         return allVersions;
@@ -198,9 +198,9 @@ public class VersioningService {
      * @return all the version(s) of the given application
      */
     public final List<String> getAllversions(String untaggedName, String target) {
-        List<ApplicationRef> allApplicationRefs =
-                domain.getApplicationRefsInTarget(target);
-        return getVersions(untaggedName, allApplicationRefs);
+        List<Application> allApplications =
+            domain.getApplicationsInTarget(target);
+        return getVersions(untaggedName, allApplications);
     }
 
     /**
@@ -225,9 +225,7 @@ public class VersioningService {
                 String app = (String) it.next();
 
                 // if a version of the app is enabled
-                ApplicationRef ref = domain.getApplicationRefInTarget(
-                        app, target);
-                if (ref != null && Boolean.valueOf(ref.getEnabled())) {
+                if (domain.isAppEnabledInTarget(app, target)) {
                     return app;
                 }
             }

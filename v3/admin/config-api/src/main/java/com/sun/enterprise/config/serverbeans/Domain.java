@@ -405,8 +405,8 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     Cluster getClusterNamed(String name);
 
     @DuckTyped
-    boolean isCurrentInstanceMatchingTarget(String target, 
-        String currentInstance);
+    boolean isCurrentInstanceMatchingTarget(String target, String appName,
+        String currentInstance, List<String> referencedTargets);
 
     @DuckTyped
     List<Server> getServersInTarget(String target);
@@ -418,7 +418,13 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     ApplicationRef getApplicationRefInTarget(String appName, String target);
 
     @DuckTyped
+    ApplicationRef getApplicationRefInTarget(String appName, String target, boolean includeInstances);
+
+    @DuckTyped
     boolean isAppRefEnabledInTarget(String appName, String target);
+
+    @DuckTyped
+    boolean isAppEnabledInTarget(String appName, String target);
 
     @DuckTyped
     List<String> getAllReferencedTargetsForApplication(String appName);
@@ -427,7 +433,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     List<String> getAllTargets();
 
     @DuckTyped
-    List<Application> getApplicationsForTarget(String target);
+    List<Application> getApplicationsInTarget(String target);
 
     @DuckTyped
     ReferenceContainer getReferenceContainerNamed(String name);
@@ -588,28 +594,41 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
         }
 
         public static boolean isCurrentInstanceMatchingTarget(Domain d, 
-            String target, String currentInstance) {
+            String target, String appName, String currentInstance, 
+            List<String> referencedTargets) {
 
             if (target == null || currentInstance == null) {
                 return false;
             }
 
-            if (currentInstance.equals(target)) {
-                // standalone instance case
-                return true;
+            List<String> targets = new ArrayList<String>();
+            if (!target.equals("domain")) {
+                targets.add(target);
+            } else {
+                if (referencedTargets == null) {
+                    referencedTargets = 
+                        d.getAllReferencedTargetsForApplication(appName);
+                }
+                targets = referencedTargets;
             }
 
-            Cluster cluster = getClusterNamed(d, target);
+            for  (String target2 : targets) {
+                if (currentInstance.equals(target2)) {
+                    // standalone instance case
+                    return true;
+                }
 
-            if (cluster != null) {
-                for (Server svr : cluster.getInstances() ) {
-                    if (svr.getName().equals(currentInstance)) {
-                        // cluster instance case
-                        return true;
+                Cluster cluster = getClusterNamed(d, target2);
+
+                if (cluster != null) {
+                    for (Server svr : cluster.getInstances() ) {
+                        if (svr.getName().equals(currentInstance)) {
+                            // cluster instance case
+                            return true;
+                        }
                     }
                 }
             }
-
             return false;
         }
 
@@ -631,16 +650,37 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
 
         public static List<ApplicationRef> getApplicationRefsInTarget(
             Domain me, String target) {
-            Server server = me.getServerNamed(target);
-            if (server != null) {
-                return server.getApplicationRef();
+            return getApplicationRefsInTarget(me, target, false);
+        }
+
+        public static List<ApplicationRef> getApplicationRefsInTarget(
+            Domain me, String tgt, boolean includeInstances) {
+            List<String> targets = new ArrayList<String>();
+            if (!tgt.equals("domain")) {
+                targets.add(tgt);
             } else {
-                Cluster cluster = getClusterNamed(me, target);
-                if (cluster != null) {
-                    return cluster.getApplicationRef();
+                targets = me.getAllTargets();
+            }
+
+            List<ApplicationRef> allAppRefs = new ArrayList<ApplicationRef>();
+
+            for (String target : targets) {
+                Server server = me.getServerNamed(target);
+                if (server != null) {
+                    allAppRefs.addAll(server.getApplicationRef());
+                } else {
+                    Cluster cluster = getClusterNamed(me, target);
+                    if (cluster != null) {
+                        allAppRefs.addAll(cluster.getApplicationRef());
+                        if (includeInstances) {
+                            for (Server svr : cluster.getInstances() ) {
+                                allAppRefs.addAll(svr.getApplicationRef());
+                            }
+                        }
+                    }
                 }
             }
-            return Collections.EMPTY_LIST;
+            return allAppRefs;
         }
 
         public static ApplicationRef getApplicationRefInTarget(
@@ -655,9 +695,36 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
 
         public static boolean isAppRefEnabledInTarget(
             Domain me, String appName, String target) {
-            ApplicationRef ref = getApplicationRefInTarget(me, appName, target);
-            if (ref != null && Boolean.valueOf(ref.getEnabled())) {
+            boolean found = false;
+            for (ApplicationRef ref : 
+                getApplicationRefsInTarget(me, target, true)) {
+                if (ref.getRef().equals(appName)) {
+                    found = true;
+                    if (!Boolean.valueOf(ref.getEnabled())) {
+                        return false;
+                    }
+                }
+            }
+            // if we found the ref(s) and the enable attribute(s) is/are true
+            if (found) {
                 return true;
+            } 
+            return false;
+        }
+
+        public static boolean isAppEnabledInTarget(
+            Domain me, String appName, String target) {
+            Application application = me.getApplications().getApplication(
+                appName);
+            if (application != null && 
+                Boolean.valueOf(application.getEnabled())) {
+                if (target.equals("domain")) {
+                    return true;
+                } else {
+                    if (isAppRefEnabledInTarget(me, appName, target)) {
+                        return true;
+                    }
+                }
             }
             return false;
         }
@@ -690,7 +757,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
             return referencedTargets;
         }
 
-        public static List<Application> getApplicationsForTarget(Domain me, String target) {
+        public static List<Application> getApplicationsInTarget(Domain me, String target) {
             if (target.equals("domain")) {
                 // special target domain
                 return me.getApplications().getApplications();

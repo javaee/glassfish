@@ -148,22 +148,30 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
             return;
         }
 
-        ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
-        if (ref == null) {
-            report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
+        if (!target.equals("domain")) {
+            ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
+            if (ref == null) {
+                report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
         }
 
-        if (!domain.isCurrentInstanceMatchingTarget(target, server.getName())) {
-            // if the target does not match with the current instance name
-            // we should just update the domain.xml and return
-            try {
-                deployment.updateAppEnabledAttributeInDomainXML(name(), target, false);
-            } catch(TransactionFailure e) {
-                logger.warning("failed to set enable attribute for " + name());
-            }
+        try {
+            deployment.updateAppEnabledAttributeInDomainXML(appName, target, false);
+        } catch(TransactionFailure e) {
+            logger.warning("failed to set enable attribute for " + appName);
+        }
 
+        if (env.isDas()) {
+            if (target.equals("domain")) {
+                List<String> targets = domain.getAllReferencedTargetsForApplication(appName);
+                // TODO: call framework API to replicate command to all
+                // referenced targets (possibly remove DAS target first)
+            }
+        }
+
+        if (!domain.isCurrentInstanceMatchingTarget(target, appName, server.getName(), null)) {
             return;
         }
 
@@ -187,15 +195,6 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
 
             appInfo.stop(deploymentContext, deploymentContext.getLogger());
             appInfo.unload(deploymentContext);
-
-            if (report.getActionExitCode().equals(
-                ActionReport.ExitCode.SUCCESS)) {
-                try {
-                    deployment.updateAppEnabledAttributeInDomainXML(name(), target, false);
-                } catch(TransactionFailure e) {
-                    logger.warning("failed to set enable attribute for " + name());
-                }
-            }
 
         } catch(Exception e) {
             logger.log(Level.SEVERE, "Error during disabling: ", e);

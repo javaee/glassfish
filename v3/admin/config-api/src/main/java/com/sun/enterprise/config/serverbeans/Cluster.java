@@ -347,6 +347,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @Override
     boolean isInstance();
 
+    @DuckTyped
+    ApplicationRef getApplicationRef(String appName);
+
     class Duck {
         public static boolean isCluster(Cluster me) { return true; }
         public static boolean isServer(Cluster me)  { return false; }
@@ -374,6 +377,17 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             }
             return instances;
         }
+
+        public static ApplicationRef getApplicationRef(Cluster cluster,
+                String appName) {
+            for (ApplicationRef appRef : cluster.getApplicationRef()) {
+                if (appRef.getRef().equals(appName)) {
+                    return appRef;
+                }
+            }
+            return null;
+        }
+
     }
 
     @Service
