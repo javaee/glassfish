@@ -737,7 +737,7 @@ public class VirtualServer extends StandardHost
                 String webUri = wbd.getModuleDescriptor().getArchiveUri();
                 String contextRoot = wbd.getModuleDescriptor().getContextRoot();
                 if (moduleID.equals(webUri)) {
-                    StringBuffer dir = new StringBuffer(location);
+                    StringBuilder dir = new StringBuilder(location);
                     dir.append(File.separator);
                     dir.append(moduleDir);
                     File docroot = new File(dir.toString());

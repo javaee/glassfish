@@ -204,7 +204,7 @@ public class WebStatsProviderBootstrap implements PostConstruct {
     }
 
     private String getNodeString(String moduleName, String... others) {
-        StringBuffer sb = new StringBuffer(moduleName);
+        StringBuilder sb = new StringBuilder(moduleName);
         for (String other: others) {
             sb.append(NODE_SEPARATOR).append(other);
         }

@@ -773,7 +773,7 @@ public class ThreadPool  {
      * @return thread status as String
      */
     public String threadStatusString() {
-        StringBuffer sb=new StringBuffer();
+        StringBuilder sb=new StringBuilder();
         Iterator it=threads.keySet().iterator();
         sb.append("<ul>");
         while( it.hasNext()) {

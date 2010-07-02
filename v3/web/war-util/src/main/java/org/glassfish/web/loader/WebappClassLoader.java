@@ -832,7 +832,7 @@ public class WebappClassLoader
      */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("WebappClassLoader (delegate=");
         sb.append(delegate);
         if (repositories != null) {

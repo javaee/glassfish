@@ -1365,7 +1365,7 @@ public class PECoyoteConnector extends Connector {
      */
     private String getJSSECiphers(String ciphers) {
         String cipher = null;
-        StringBuffer enabledCiphers = null;
+        StringBuilder enabledCiphers = null;
         boolean first = true;
         int index = ciphers.indexOf(',');
         if (index != -1) {
@@ -1382,7 +1382,7 @@ public class PECoyoteConnector extends Connector {
                             "pewebcontainer.unrecognized_cipher", cipher);
                     } else {
                         if (enabledCiphers == null) {
-                            enabledCiphers = new StringBuffer();
+                            enabledCiphers = new StringBuilder();
                         }
                         if (!first) {
                             enabledCiphers.append(", ");
@@ -1411,7 +1411,7 @@ public class PECoyoteConnector extends Connector {
                         "pewebcontainer.unrecognized_cipher", cipher);
                 } else {
                     if (enabledCiphers == null) {
-                        enabledCiphers = new StringBuffer();
+                        enabledCiphers = new StringBuilder();
                     }
                     if (!first) {
                         enabledCiphers.append(", ");

@@ -142,11 +142,7 @@ public class DefaultCacheHelper implements CacheHelper {
                 return key;
         }
 
-        StringBuffer sb = new StringBuffer(128);
-
-        /** XXX: the StringBuffer append is a (uncontended) synchronized method. 
-         *  performance hit?
-         */
+        StringBuilder sb = new StringBuilder(128);
         sb.append(request.getServletPath());
 
         // append the key fields

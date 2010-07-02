@@ -151,7 +151,7 @@ public abstract class AccessLogFormatter {
     }
 
     protected String calculateTimeZoneOffset(long offset) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if ((offset<0))  {
             sb.append("-");
             offset = -offset;

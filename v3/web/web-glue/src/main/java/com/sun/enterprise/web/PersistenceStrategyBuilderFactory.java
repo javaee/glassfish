@@ -131,7 +131,7 @@ public class PersistenceStrategyBuilderFactory {
 
         try {
             builder = (PersistenceStrategyBuilder)
-                (Class.forName(className)).newInstance();
+                (Class.forName(className, true, Thread.currentThread().getContextClassLoader())).newInstance();
         } catch (Exception ex) {
             Object[] params = { getApplicationId(ctx), persistenceType,
                                 frequency, scope };

@@ -245,7 +245,7 @@ public final class SessionCookieConfig {
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("SessionCookieConfig[");
+        StringBuilder sb = new StringBuilder("SessionCookieConfig[");
         sb.append("name=");
         sb.append(_name);
         if (_path != null) {

@@ -181,7 +181,7 @@ public final class JSPCompiler {
 		
 		String classpath = null;
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 
 		for (Iterator it = paths.iterator(); it.hasNext(); ) {
