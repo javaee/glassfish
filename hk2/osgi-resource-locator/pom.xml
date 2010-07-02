@@ -46,7 +46,7 @@
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>osgi-resource-locator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>OSGi resource locator bundle - used by legacy JDK bundles</name>
+    <name>OSGi resource locator bundle - used by various API providers that rely on META-INF/services mechanism to locate providers.</name>
     <description> See http://wiki.glassfish.java.net/Wiki.jsp?page=JdkSpiOsgi for more information</description>
     <!-- We don't use packaging type bundle as it requires us to 
          set extension=true for bundle-plugin and that in turn interfers
