@@ -137,6 +137,7 @@ public class ListLoggerLevels implements AdminCommand {
                             .addChild();
                     String n = name.substring(0, name.lastIndexOf(".level"));
                     part.setMessage(n + ": " + (String) props.get(name));
+                    report.getTopMessagePart().addProperty(n, (String) props.get(name)); //Needed for REST xml and JSON output
                 }
             }
 
