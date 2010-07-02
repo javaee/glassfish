@@ -477,7 +477,7 @@ public class TemplateResource {
     }
 
     public String getDeleteCommand() {
-        return ResourceUtil.getCommand(RestRedirect.OpType.DELETE, (ConfigBean)getEntity());
+        return ResourceUtil.getCommand(RestRedirect.OpType.DELETE, getEntity());
     }
 
     private ActionReport runCommand(String commandName, HashMap<String, String> data) {

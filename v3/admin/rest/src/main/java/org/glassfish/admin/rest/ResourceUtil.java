@@ -137,7 +137,7 @@ public class ResourceUtil {
      * @param type the given resource operation
      * @return String the associated command name for the given operation.
      */
-    public static String getCommand(RestRedirect.OpType type, ConfigBean configBean) {
+    public static String getCommand(RestRedirect.OpType type, Dom configBean) {
 
         Class<? extends ConfigBeanProxy> cbp = null;
         try {
