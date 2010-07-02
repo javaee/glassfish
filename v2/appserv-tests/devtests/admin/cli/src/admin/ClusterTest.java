@@ -153,7 +153,7 @@ public class ClusterTest extends AdminBaseDevTest {
         for (String line : lines) {
             if (line.indexOf(iname) >= 0) {
                 printf("Line from list-instances = " + line);
-                return line.indexOf(iname + " = running") >= 0;
+                return line.indexOf(iname + " running") >= 0;
             }
         }
         return false;
@@ -166,7 +166,7 @@ public class ClusterTest extends AdminBaseDevTest {
         for (String line : lines) {
             if (line.indexOf(iname) >= 0) {
                 printf("Line from list-instances = " + line);
-                return line.indexOf(iname + " = partially running") >= 0;
+                return line.indexOf(iname + " partially running") >= 0;
             }
         }
         return false;
