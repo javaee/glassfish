@@ -133,20 +133,25 @@ public class UpdateNodeCommand implements AdminCommand {
                         writeableNode.setNodeHost(nodehost);
                     if (nodehome != null)
                         writeableNode.setNodeHome(nodehome);
-                    if (sshport != null || sshnodehost != null){
+                    if (sshport != null || sshnodehost != null ||sshuser != null || sshkeyfile != null){
                         SshConnector sshC = writeableNode.getSshConnector();
-                        if (sshC == null)
+                        if (sshC == null)  {
                             sshC =writeableNode.createChild(SshConnector.class);
+                        }else
+                            sshC = t.enroll(sshC);
 
                         if (sshport != null)
                             sshC.setSshPort(sshport);
                         if(sshnodehost != null)
                             sshC.setSshHost(sshnodehost);
 
-                        if (sshuser != null || sshkeyfile != null) {
+                        if (sshuser != null || sshkeyfile != null ) {
                             SshAuth sshA = sshC.getSshAuth();
-                            if (sshA == null)
+                            if (sshA == null) {
                                sshA = sshC.createChild(SshAuth.class);
+                            } else
+                                sshA = t.enroll(sshA);
+
                             if (sshuser != null)
                                 sshA.setUserName(sshuser);
                             if (sshkeyfile != null)
