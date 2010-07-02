@@ -467,6 +467,40 @@ public class TomcatDeploymentConfig {
                 sessionConfig.getTrackingModes());
         }
 
+        // glassfish-web.xml override the web.xml
+        com.sun.enterprise.web.session.SessionCookieConfig gfSessionCookieConfig =
+                webModule.getSessionCookieConfigFromSunWebXml();
+        if (gfSessionCookieConfig != null) {
+            SessionCookieConfig sessionCookieConfig =
+                webModule.getSessionCookieConfig();
+
+            if (gfSessionCookieConfig.getName() != null &&
+                    !gfSessionCookieConfig.getName().isEmpty()) {
+                sessionCookieConfig.setName(gfSessionCookieConfig.getName());
+            }
+
+            if (gfSessionCookieConfig.getPath() != null) {
+                sessionCookieConfig.setPath(gfSessionCookieConfig.getPath());
+            }
+
+            sessionCookieConfig.setMaxAge(gfSessionCookieConfig.getMaxAge());
+
+            if (gfSessionCookieConfig.getDomain() != null) {
+                sessionCookieConfig.setDomain(gfSessionCookieConfig.getDomain());
+            }
+
+            if (gfSessionCookieConfig.getComment() != null) {
+                sessionCookieConfig.setComment(gfSessionCookieConfig.getComment());
+            }
+
+            // The "dynamic" secure attribute gfSessionCookieConfig will be processed later
+            if (!gfSessionCookieConfig.getSecure().equalsIgnoreCase(
+                    com.sun.enterprise.web.session.SessionCookieConfig.DYNAMIC_SECURE)) {
+
+                sessionCookieConfig.setSecure(Boolean.parseBoolean(gfSessionCookieConfig.getSecure()));
+            }
+        }
+
         enumeration = wmd.getWelcomeFiles();
         while (enumeration.hasMoreElements()){
             webModule.addWelcomeFile((String)enumeration.nextElement());

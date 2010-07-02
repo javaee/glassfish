@@ -41,6 +41,7 @@ import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.grizzly.util.http.ServerCookie;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Context;
+import org.apache.catalina.Globals;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
@@ -138,35 +139,12 @@ public class PwcCoyoteRequest extends Request {
 
         super.configureSessionCookie(cookie);
 
-        // Do not consider SessionCookieConfig from sun-web.xml 
-        // if ServletContext's SessionCookieConfig has been initialized
-        if ((getContext() != null) && 
-                (getContext().isSessionCookieConfigInitialized())) {
-            return;
-        }
-        
+        // glassfish-web.xml should override the web.xml
         PwcWebModule wm = (PwcWebModule) getContext();
         SessionCookieConfig cookieConfig = wm.getSessionCookieConfigFromSunWebXml();
-        if (cookieConfig != null) {
-
-            if (cookieConfig.getPath() != null) {
-                cookie.setPath(cookieConfig.getPath());
-            }
-
-            cookie.setMaxAge(cookieConfig.getMaxAge());
-
-            if (cookieConfig.getDomain() != null) {
-                cookie.setDomain(cookieConfig.getDomain());
-            }
-
-            if (cookieConfig.getComment() != null) {
-                cookie.setVersion(1);
-                cookie.setComment(cookieConfig.getComment());
-            }
-
-            if (!cookieConfig.getSecure().equalsIgnoreCase(SessionCookieConfig.DYNAMIC_SECURE)) {
-                cookie.setSecure(Boolean.parseBoolean(cookieConfig.getSecure()));
-            }
+        if (cookieConfig != null &&
+                cookieConfig.getSecure().equalsIgnoreCase(SessionCookieConfig.DYNAMIC_SECURE)) {
+            cookie.setSecure(isSecure());
         }
     }
     

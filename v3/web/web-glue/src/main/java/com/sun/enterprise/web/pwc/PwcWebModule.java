@@ -148,20 +148,6 @@ public abstract class PwcWebModule extends StandardContext {
     }
 
 
-    @Override
-    public String getSessionCookieName() {
-        if (isSessionCookieConfigInitialized()) {
-            // return cookie name from web.xml, or default
-            return super.getSessionCookieName();
-        } else if (_cookieConfig != null && _cookieConfig.getName() != null) {
-            // return cookie name from sun-web.xml
-            return _cookieConfig.getName();
-        } else {
-            return Globals.SESSION_COOKIE_NAME;
-        }
-    }
-
-
     /**
      * return parameter-encoding form-hint-field attribute value
      */

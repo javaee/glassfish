@@ -75,7 +75,7 @@ public final class SessionCookieConfig {
      *
      * Default value is JSESSIONID
      */
-    private String _name = Globals.SESSION_COOKIE_NAME;
+    private String _name = null;
 
     /**
      * The pathname that is set when the cookie is created.
