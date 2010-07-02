@@ -123,7 +123,7 @@
                  source="1.5"
 		 target="1.5"
 		 classpathref="class.path"
-                 srcdir="${ws.root}/admincli/src/test/admincli/util"
+                 srcdir="${ws.root}/admincli/src/test/admincli/util:${ws.root}/utils"
                  destdir="${test.class.output}">
         </javac>
     </target>    
@@ -331,12 +331,13 @@
     suitename="${testsuite.name}"
     testname="${testng.test.name}"
             classpathref="run.testng.classpath">
+	<sysproperty key="glassfish.home" value="${glassfish.home}"/>
+	<sysproperty key="BASEDIR" value="${ws.root}"/>
         <classfileset dir="${test.class.output}" includes="**/${testng.testclient}.class"/>
         <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
 	<jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
 	<jvmarg value="-DASADMIN=${ASADMIN}" />
-
     </testng>
 </target>
 

@@ -44,6 +44,23 @@
 	<import file="${basedir}/gfproject/utils.xml"/>
     
     <description>Builds, tests, and runs the project V3 Quicklook</description>
+
+    <target name="all_cluster">
+        <record name="allrun.output" action="start"/>
+        <antcall target="build-cluster"/>
+        <antcall target="runtest">
+            <param name="testng.xml" value="testng/testng_cluster.xml"/>
+        </antcall>
+        <antcall target="testng-summary"/>
+        <record name="allrun.output" action="stop"/>
+    </target>
+
+    <target name="build-cluster">
+        <ant dir="cluster/clustersetup" target="build"/>
+        <ant dir="cluster/helloworld" target="build"/>
+        <ant dir="cluster/clusterteardown" target="build"/>
+    </target>
+
     <!-- target name="all_wd" depends="clean" -->
     <target name="all_wd" >
         <record name="allrun.output" action="start"/>
@@ -114,6 +131,7 @@
         <antcall target="start-server-felix"/>
         <antcall target="build-deploy"/>
         <antcall target="build-deploy-gd"/>
+        <antcall target="build-cluster"/>
         <antcall target="runtest">
         <param name="testng.xml" value="testng/testng_gd.xml"/> </antcall>
         <antcall target="undeploy"/>
@@ -284,7 +302,8 @@
 	    <jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
 	    <jvmarg value="-DASADMIN=${ASADMIN}" />
 	    <jvmarg value="-DAPPCLIENT=${APPCLIENT}"/>
-            <sysproperty key="basedir" value="${basedir}"/>
+            <sysproperty key="glassfish.home" value="${glassfish.home}"/>
+            <sysproperty key="BASEDIR" value="${basedir}"/>
             <!--<classfileset dir="classes/test" includes="**/SeleniumTest.class"/>-->         
             <xmlfileset dir="." includes="${testng.xml}"/>
         </testng>

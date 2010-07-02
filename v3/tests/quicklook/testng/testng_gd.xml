@@ -175,6 +175,20 @@
       <class name="jaxwsfromwsdl.client.JaxwsFromWsdlTestNG"/>
     </classes>
   </test>
- 
+  <test name="cluster_setup">
+    <classes>
+        <class name="test.clustersetup.ClusterSetupTest"/>
+    </classes>
+  </test>
+  <test name="cluster_helloworld">
+    <classes>
+        <class name="test.hellocluster.ClusterHelloworldTest"/>
+    </classes>
+  </test>
+  <test name="cluster_teardown">
+    <classes>
+        <class name="test.clusterteardown.ClusterTeardownTest"/>
+    </classes>
+  </test>
 </suite>
 
