@@ -51,8 +51,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.glassfish.admin.rest.provider.ActionReportResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.OptionsResult;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ParameterMap;
 
 /**
@@ -104,6 +106,23 @@ public class TemplateExecCommand {
         }
 
         return optionsResult;
+    }
+
+    protected ActionReportResult executeCommand(ParameterMap data) {
+        ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),
+                ResourceUtil.getResultType(requestHeaders));
+        ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
+        ActionReportResult results = new ActionReportResult(commandName, actionReport, options());
+
+        if (exitCode == ActionReport.ExitCode.SUCCESS) {
+            results.setStatusCode(200); /*200 - ok*/
+        } else {
+            results.setStatusCode(400); /*400 - bad request*/
+            results.setIsError(true);
+            results.setErrorMessage(actionReport.getMessage());
+        }
+
+        return results;
     }
 
     protected void processCommandParams(ParameterMap data) {

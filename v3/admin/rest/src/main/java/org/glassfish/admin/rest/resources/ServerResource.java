@@ -38,6 +38,24 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.TemplateResource;
 public class ServerResource extends TemplateResource {
 
+@Path("delete-instance/")
+public ServerDeleteInstanceResource getServerDeleteInstanceResource() {
+ServerDeleteInstanceResource resource = resourceContext.getResource(ServerDeleteInstanceResource.class);
+return resource;
+}
+
+@Path("start-instance/")
+public ServerStartInstanceResource getServerStartInstanceResource() {
+ServerStartInstanceResource resource = resourceContext.getResource(ServerStartInstanceResource.class);
+return resource;
+}
+
+@Path("stop-instance/")
+public ServerStopInstanceResource getServerStopInstanceResource() {
+ServerStopInstanceResource resource = resourceContext.getResource(ServerStopInstanceResource.class);
+return resource;
+}
+
 @Path("recover-transactions/")
 public ServerRecoverTransactionsResource getServerRecoverTransactionsResource() {
 ServerRecoverTransactionsResource resource = resourceContext.getResource(ServerRecoverTransactionsResource.class);
@@ -46,7 +64,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"recover-transactions", "POST"}};
+return new String[][]{{"delete-instance", "DELETE"}, {"start-instance", "POST"}, {"stop-instance", "POST"}, {"recover-transactions", "POST"}};
 }
 
 	@Path("application-ref/")

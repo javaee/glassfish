@@ -37,10 +37,10 @@ package org.glassfish.admin.rest.resources;
 
 //generated code...;
 
-public class DomainStopInstanceResource extends org.glassfish.admin.rest.TemplateCommandPostResource {
-   public DomainStopInstanceResource() {
+public class ServerStopInstanceResource extends org.glassfish.admin.rest.TemplateCommandPostResource {
+   public ServerStopInstanceResource() {
        super(
-          "DomainStopInstance",
+          "ServerStopInstance",
           "stop-instance",
           "POST",
           "Stop Instance",

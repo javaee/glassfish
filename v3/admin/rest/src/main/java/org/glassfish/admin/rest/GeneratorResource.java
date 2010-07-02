@@ -136,9 +136,6 @@ public class GeneratorResource {
         {"Configs", "copy-config", "POST", "copy-config", "Copy Config"},
         {"ConnectionPool", "ping-connection-pool", "GET", "ping", "Ping"},
         {"Domain", "create-instance", "POST", "create-instance", "Create Instance"},
-        {"Domain", "delete-instance", "DELETE", "delete-instance", "Delete Instance"},
-        {"Domain", "start-instance", "POST", "start-instance", "Start Instance"},
-        {"Domain", "stop-instance", "POST", "stop-instance", "Stop Instance"},
         {"Domain", "get-host-and-port", "GET", "host-port", "HostPort"},
         {"Domain", "list-logger-levels", "GET", "list-logger-levels", "LogLevels"},
         {"Domain", "list-instances", "GET", "list-instances", "List Instances"},
@@ -165,6 +162,9 @@ public class GeneratorResource {
         {"Nodes", "create-node-ssh", "POST", "create-node", "Create Node"},
         {"Protocol", "create-http", "POST", "create-http", "Create", "id=$parent"},
         {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"},
+        {"Server", "delete-instance", "DELETE", "delete-instance", "Delete Instance"},
+        {"Server", "start-instance", "POST", "start-instance", "Start Instance"},
+        {"Server", "stop-instance", "POST", "stop-instance", "Stop Instance"},
         {"Server", "recover-transactions", "POST", "recover-transactions", "Recover", "id=$parent"}
     };
 

@@ -37,14 +37,14 @@ package org.glassfish.admin.rest.resources;
 
 //generated code...;
 
-public class DomainDeleteInstanceResource extends org.glassfish.admin.rest.TemplateCommandDeleteResource {
-   public DomainDeleteInstanceResource() {
+public class ServerStartInstanceResource extends org.glassfish.admin.rest.TemplateCommandPostResource {
+   public ServerStartInstanceResource() {
        super(
-          "DomainDeleteInstance",
-          "delete-instance",
-          "DELETE",
-          "Delete Instance",
-          "delete-instance",
+          "ServerStartInstance",
+          "start-instance",
+          "POST",
+          "Start Instance",
+          "start-instance",
           (java.util.HashMap<String, String>) null ,
           false);
     }

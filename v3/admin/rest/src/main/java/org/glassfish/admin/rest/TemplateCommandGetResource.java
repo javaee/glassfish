@@ -48,6 +48,7 @@ import java.util.Properties;
 
 import org.glassfish.admin.rest.provider.ActionReportResult;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ParameterMap;
 
 /**
  *
@@ -56,13 +57,13 @@ import org.glassfish.api.ActionReport;
  * that contains the logic for mapped commands RS Resources
  *
  */
-public class TemplateCommandGetResource extends TemplateExecCommand{
+public class TemplateCommandGetResource extends TemplateExecCommand {
 
     public TemplateCommandGetResource(String resourceName, String commandName, String commandMethod,
-                                      HashMap<String, String> m, boolean b) {
+            HashMap<String, String> m, boolean b) {
 
-        super ( resourceName,  commandName,  commandMethod,"","",  m,  b);
-        parameterType= Constants.QUERY_PARAMETER;
+        super(resourceName, commandName, commandMethod, "", "", m, b);
+        parameterType = Constants.QUERY_PARAMETER;
     }
 
     @GET
@@ -71,37 +72,15 @@ public class TemplateCommandGetResource extends TemplateExecCommand{
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
-    public ActionReportResult executeCommand() {
+    public ActionReportResult processGet() {
         try {
-            Properties properties = new Properties();
-            if (commandParams != null) {
-//formulate parent-link attribute for this command resource
-//Parent link attribute may or may not be the id/target attribute
-                if (isLinkedToParent) {
-                    ResourceUtil.resolveParentParamValue(commandParams, uriInfo);
-                }
-                properties.putAll(commandParams);
-            }
-            ResourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), properties);
-            String typeOfResult = ResourceUtil.getResultType(requestHeaders);
+            ParameterMap data = new ParameterMap();
+            processCommandParams(data);
+            addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
 
-
-            ActionReport actionReport = ResourceUtil.runCommand(commandName, properties, RestService.getHabitat(),typeOfResult);
-            ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-            ActionReportResult results = new ActionReportResult(commandName, actionReport, options());
-            if (exitCode == ActionReport.ExitCode.SUCCESS) {
-                results.setStatusCode(200); /*200 - ok*/
-            } else {
-                results.setStatusCode(400); /*400 - bad request*/
-                results.setIsError(true);
-                results.setErrorMessage(actionReport.getMessage());
-            }
-
-            return results;
-
+            return executeCommand(data);
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

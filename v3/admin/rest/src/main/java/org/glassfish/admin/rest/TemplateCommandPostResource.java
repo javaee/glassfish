@@ -76,7 +76,7 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
         "text/html;qs=2",
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML})
-    public ActionReportResult executeCommand(ParameterMap data) {
+    public ActionReportResult processPost(ParameterMap data) {
         try {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error", "Unable to parse the input entity. Please check the syntax.");
@@ -110,9 +110,9 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
 //Do not care what the Content-Type is.
 
     @POST
-    public ActionReportResult executeCommand() {
+    public ActionReportResult processPost() {
         try {
-            return executeCommand(new ParameterMap());
+            return processPost(new ParameterMap());
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }

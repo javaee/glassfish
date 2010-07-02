@@ -47,11 +47,11 @@ import javax.ws.rs.WebApplicationException;
 
 import com.sun.jersey.spi.container.ContainerRequest;
 import javax.ws.rs.DELETE;
+import org.glassfish.admin.rest.provider.ActionReportResult;
 import org.glassfish.admin.rest.provider.CommandResourceGetResult;
 
 
 
-import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ParameterMap;
 
 /**
@@ -73,35 +73,35 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
-    public Response executeCommand(ParameterMap data) {
+    public ActionReportResult processDelete(ParameterMap data) {
         try {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
                         "Unable to parse the input entity. Please check the syntax.");
-                return ResourceUtil.getResponse(400, /*parsing error*/
-                        errorMessage, requestHeaders, uriInfo);
+                throw new WebApplicationException(ResourceUtil.getResponse(400, /*parsing error*/ errorMessage, requestHeaders, uriInfo));
             }
 
             processCommandParams(data);
             addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
             adjustParameters(data);
             purgeEmptyEntries(data);
-            String typeOfResult = ResourceUtil.getResultType(requestHeaders);
+            return executeCommand(data);
 
-
+            /*
             ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),typeOfResult);
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
 
             if (exitCode == ActionReport.ExitCode.SUCCESS) {
                 String successMessage = localStrings.getLocalString("rest.request.success.message",
                         "{0} of {1} executed successfully.", new Object[]{commandMethod, uriInfo.getAbsolutePath()});
-                return ResourceUtil.getResponse(200, /*200 - ok*/
+                return ResourceUtil.getResponse(200, // 200 - ok
                         successMessage, requestHeaders, uriInfo);
             }
 
             String errorMessage = actionReport.getMessage();
-            return ResourceUtil.getResponse(400, /*400 - bad request*/
+            return ResourceUtil.getResponse(400, // 400 - bad request
                     errorMessage, requestHeaders, uriInfo);
+             */
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
@@ -110,9 +110,9 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
 //Do not care what the Content-Type is.
 
     @DELETE
-    public Response executeCommand() {
+    public ActionReportResult processDelete() {
         try {
-            return executeCommand(new ParameterMap());
+            return processDelete(new ParameterMap());
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
@@ -131,12 +131,11 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
-    public Response hack(ParameterMap data) {
-        if ((data.containsKey("operation"))
-                && (data.get("operation").equals("__deleteoperation"))) {
+    public ActionReportResult hack(ParameterMap data) {
+        if ((data.containsKey("operation")) && (data.get("operation").equals("__deleteoperation"))) {
             data.remove("operation");
         }
-        return executeCommand(data);
+        return processDelete(data);
     }
 
     @GET
