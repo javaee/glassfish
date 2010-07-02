@@ -87,9 +87,7 @@ public abstract class BaseDevTest {
      * @return true if successful
      */
     public boolean asadmin(final String... args) {
-        lastAsadminReturn = asadminWithOutput(args);
-        write(lastAsadminReturn.out);
-        write(lastAsadminReturn.err);
+        asadminWithOutput(args);
         return lastAsadminReturn.returnValue;
     }
 
@@ -129,6 +127,9 @@ public abstract class BaseDevTest {
         ret.outAndErr = ret.out + ret.err;
         ret.returnValue = exit == 0 && validResults(ret.out,
                 String.format("Command %s failed.", args[0]), "list-commands");
+        lastAsadminReturn = ret;
+        write(lastAsadminReturn.out);
+        write(lastAsadminReturn.err);
 
         return ret;
     }
