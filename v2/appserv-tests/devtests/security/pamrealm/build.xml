@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:./../../../config/run.xml">
+<!ENTITY testProperties SYSTEM "./build.properties">
+]>
+
+
+<project name="pamrealm" basedir="." default="usage">
+
+   &commonSetup;
+   &commonBuild;
+   &commonRun;
+    &testProperties;
+
+    <path id="pamclient.class.path">
+        <pathelement location="lib/commons-httpclient-3.1.jar"/>
+        <pathelement path="${s1astest.classpath}"/>
+    </path>
+
+
+    <target name="all" depends="build, setup, deploy, run, undeploy, unsetup"/>
+    <target name="clean" depends="init-common">
+        <delete dir="${build.classes.dir}"/>
+        <delete dir="${assemble.dir}"/>
+    </target>
+
+    <target name="compile-pam" depends="init-common">
+        <mkdir dir="${build.classes.dir}"/>
+        <echo message="Compiling test source files"
+              level="verbose"/>
+        <mkdir dir="${src}"/>
+        <javac srcdir="${src}"
+               destdir="${build.classes.dir}"                       
+               debug="on"
+               failonerror="true">
+             <classpath refid="pamclient.class.path"/>
+        </javac>
+    </target>
+
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-pam">
+            <param name="src" value="client/src"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="webclient-war-common">
+          <param name="hasWebclient" value="true"/>
+        </antcall>
+    </target>
+
+    <target name="setup" depends="init-common">
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="create-auth-realm" />
+            <param name="operand.props" value="--classname com.sun.enterprise.security.auth.realm.pam.PamRealm --property jaas-context=pamRealm pam"/>
+        </antcall>
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-war-common">
+            <param name="env.REGULAR" value="true"/>
+        </antcall>
+     </target>
+
+    <target name="run" depends="init-common">
+        <java classname="com.sun.pamrealm.test.PamBasicAuthTest">
+    <classpath>
+        <pathelement location="lib/commons-httpclient-3.1.jar"/>
+        <pathelement location="lib/commons-logging-1.1.1.jar"/>
+        <pathelement location="lib/commons-codec-1.4.jar"/>
+        <pathelement path="${s1astest.classpath}"/>
+       <!-- <pathelement location="${assemble.dir}/*.war"/>-->
+    </classpath>
+            <arg value="${host}"/>
+            <arg value="${port}"/>
+            <arg value="${username}"/>
+            <arg value="${password}"/>
+
+    </java>
+        
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-war-common">
+            <param name="env.REGULAR" value="true"/>
+        </antcall>
+    </target>
+
+    <target name="unsetup" depends="init-common">
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="delete-auth-realm" />
+            <param name="operand.props" value="pam" />
+        </antcall>
+      <!--  <antcall target="reconfig-common"/>-->
+    </target>
+
+    <target name="usage">
+        <antcall target="undeploy-war-common"/>
+                                                     
+    </target>
+
+    <target name="restart">
+      <antcall target="restart-server-instance-common"/>
+    </target>
+</project>
