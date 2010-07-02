@@ -1027,22 +1027,22 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
  <taskdef name="glassfish-embedded-admin" classname="org.glassfish.ant.embedded.tasks.AdminTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar:${env.GF_HOME}/extras/embedded/all/target/glassfish-embedded-all.jar:${env.S1AS_HOME}/modules/ant.jar"/>
 
-<target name="start-server-embedded" if="env.EMBEDDED">
+<target name="start-server-embedded" >
     <echo> === Embedded STARTING === </echo>
     <glassfish-embedded-start/>
 </target>
 
-<target name="stop-server-embedded" if="env.EMBEDDED">
+<target name="stop-server-embedded" >
     <echo> === Embedded STOPING === </echo>
     <glassfish-embedded-stop/>
 </target>
 
-<target name="glassfish-embedded-deploy" if="env.EMBEDDED">
+<target name="glassfish-embedded-deploy" >
     <echo> === EMBEDDED DEPLOYING === </echo>
     <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" name="${appname}" libraries="${libraries}"/>
 </target>
 
-<target name="glassfish-embedded-undeploy" if="env.EMBEDDED">
+<target name="glassfish-embedded-undeploy" >
     <echo> === Embedded UNDEPLOYING === </echo>
     <glassfish-embedded-undeploy name="${appname}"/>
 </target>
@@ -1559,55 +1559,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
         <antcall target="stop-server-embedded"/>
     </target>
 
-    <target name="stop-server-unix" if="isUnix" unless="env.EMBEDDED">
-        <echo message="stopping server on unix ..."/>
-        <exec executable="${env.S1AS_HOME}/bin/asadmin">
-            <arg value="stop-domain"/>
-        </exec>
-        <sleep seconds="10"/>
-    </target>
-
-    <target name="stop-server-windows" if="isWindows">
-        <echo message="Stopping server on windows ..."/>
-        <exec executable="cmd">
-            <arg value="/c"/>
-            <arg value="${env.S1AS_HOME}\bin\asadmin.bat"/>
-            <arg value="stop-domain"/>
-        </exec>
-        <sleep seconds="5"/>
-    </target>
-
-    <target name="start-server" depends="setOSConditions">
-
-        <echo>+-----------------------------+</echo>
-        <echo>| |</echo>
-        <echo>| S T A R T I N G GLASSFISH |</echo>
-        <echo>| in Felix mode |</echo>
-        <echo>| |</echo>
-        <echo>+-----------------------------+</echo>
-
-        <antcall target="start-server-unix"/>
-        <antcall target="start-server-windows"/>
-        <antcall target="start-server-embedded"/>
-    </target>
-
-    <target name="start-server-unix" if="isUnix" unless="env.EMBEDDED">
-        <exec executable="${env.S1AS_HOME}/bin/asadmin">
-            <env key="GlassFish_Platform" value="Felix"/>
-            <arg value="start-domain"/>
-        </exec>
-        <sleep seconds="10"/>
-    </target>
-
-    <target name="start-server-windows" if="isWindows">
-        <exec executable="cmd" spawn="true">
-            <env key="GlassFish_Platform" value="Felix"/>
-            <arg value="/c"/>
-            <arg value="${env.S1AS_HOME}\bin\asadmin.bat"/>
-            <arg value="start-domain"/>
-        </exec>
-        <sleep seconds="5"/>
-    </target>
 
     <target name="create-jvm-options" depends="init-common">
         <exec executable="${ASADMIN}">
