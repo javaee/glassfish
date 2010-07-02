@@ -56,11 +56,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.io.OutputStreamWriter;
+import java.net.URI;
 import java.util.zip.GZIPOutputStream;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.UriInfo;
 
 
 /**
@@ -78,6 +80,9 @@ import javax.ws.rs.core.StreamingOutput;
 public class LogViewerResource {
     @Context
     protected ResourceContext resourceContext;
+
+    @Context protected UriInfo ui;
+
     /**
      * Represents the data source of this text.
      */
@@ -119,8 +124,8 @@ public class LogViewerResource {
                         public void write(OutputStream out) throws IOException, WebApplicationException {
                         }
                     }).
-                    header("X-Text-Size", "0").
-                    header("X-More-Data", "true").build();
+                    header("X-Text-Append-Next", ui.getAbsolutePathBuilder().queryParam("start", 0).build())
+                    .build();
         }
 
 
@@ -145,8 +150,10 @@ public class LogViewerResource {
                         w.close();
                     }
                 });
-
-        return rp.header("X-Text-Size", String.valueOf(r)).header("X-More-Data", "true").build();
+        URI next = ui.getAbsolutePathBuilder().queryParam("start", r).build();
+        rp.header("X-Text-Append-Next", next);
+        return rp.build();
+     //   return rp.header("X-Text-Size", String.valueOf(r)).header("X-More-Data", "true").build();
     }
 
     public Writer getWriter(OutputStream out, ResponseBuilder rp, long size) throws IOException {
