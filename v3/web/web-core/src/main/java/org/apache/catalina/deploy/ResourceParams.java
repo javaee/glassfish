@@ -103,7 +103,7 @@ public class ResourceParams implements Serializable {
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("ResourceParams[");
+        StringBuilder sb = new StringBuilder("ResourceParams[");
         sb.append("name=");
         sb.append(name);
         sb.append(", parameters=");

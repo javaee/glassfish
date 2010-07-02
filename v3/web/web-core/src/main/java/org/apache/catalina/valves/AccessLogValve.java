@@ -625,7 +625,7 @@ public final class AccessLogValve
 
 
         Date date = getDate();
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
 
         // Check to see if we should log using the "common" access log pattern
         if (common || combined) {
@@ -714,7 +714,7 @@ public final class AccessLogValve
                      * do not enounter a closing } - then I ignore the {
                      */
                     if ('{' == ch){
-                        StringBuffer name = new StringBuffer();
+                        StringBuilder name = new StringBuilder();
                         int j = i + 1;
                         for(;j < pattern.length() && '}' != pattern.charAt(j); j++) {
                             name.append(pattern.charAt(j));
@@ -919,7 +919,7 @@ public final class AccessLogValve
                 value = "";
         } else if (pattern == 'r') {
             if (hreq != null) {
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 sb.append(hreq.getMethod());
                 sb.append(space);
                 sb.append(hreq.getRequestURI());
@@ -955,7 +955,7 @@ public final class AccessLogValve
             else
                 value = "-";
         } else if (pattern == 't') {
-            StringBuffer temp = new StringBuffer("[");
+            StringBuilder temp = new StringBuilder("[");
             temp.append(dayFormatter.get().format(date));             // Day
             temp.append('/');
             temp.append(lookup(monthFormatter.get().format(date)));   // Month
@@ -1083,7 +1083,7 @@ public final class AccessLogValve
 
 
     private String calculateTimeZoneOffset(long offset) {
-        StringBuffer tz = new StringBuffer();
+        StringBuilder tz = new StringBuilder();
         if ((offset<0))  {
             tz.append("-");
             offset = -offset;

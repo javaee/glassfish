@@ -149,7 +149,7 @@ public class ContextEnvironment extends ResourceBase implements Serializable {
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("ContextEnvironment[");
+        StringBuilder sb = new StringBuilder("ContextEnvironment[");
         sb.append("name=");
         sb.append(name);
         if (description != null) {

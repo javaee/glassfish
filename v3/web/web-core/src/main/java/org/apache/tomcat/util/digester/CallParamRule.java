@@ -228,7 +228,7 @@ public class CallParamRule extends Rule {
             
             if (digester.log.isLoggable(Level.FINE)) {
             
-                StringBuffer sb = new StringBuffer("[CallParamRule]{");
+                StringBuilder sb = new StringBuilder("[CallParamRule]{");
                 sb.append(digester.match);
                 sb.append("} Save from stack; from stack?").append(fromStack);
                 sb.append("; object=").append(param);
@@ -284,7 +284,7 @@ public class CallParamRule extends Rule {
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("CallParamRule[");
+        StringBuilder sb = new StringBuilder("CallParamRule[");
         sb.append("paramIndex=");
         sb.append(paramIndex);
         sb.append(", attributeName=");

@@ -1185,7 +1185,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      *
      */
     public String listSessionIds() {
-        StringBuffer sb=new StringBuffer();
+        StringBuilder sb=new StringBuilder();
         Iterator<String> keys=sessions.keySet().iterator();
         while( keys.hasNext() ) {
             sb.append(keys.next()).append(" ");

@@ -184,7 +184,7 @@ public class ConstructorInfo extends FeatureInfo implements Serializable {
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("ConstructorInfo[");
+        StringBuilder sb = new StringBuilder("ConstructorInfo[");
         sb.append("name=");
         sb.append(name);
         sb.append(", description=");

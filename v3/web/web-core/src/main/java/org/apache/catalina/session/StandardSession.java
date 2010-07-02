@@ -1050,7 +1050,7 @@ public class StandardSession
 
         // STARTS S1AS
         /*
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("StandardSession[");
         sb.append(id);
         sb.append("]");
@@ -1058,12 +1058,12 @@ public class StandardSession
         */
         // END S1AS
         // START S1AS
-        StringBuffer sb = null;
+        StringBuilder sb = null;
 
         if(!this.isValid) {
-            sb = new StringBuffer();
+            sb = new StringBuilder();
         } else {
-            sb = new StringBuffer(1000);
+            sb = new StringBuilder(1000);
         }
 
         sb.append("StandardSession[");

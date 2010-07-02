@@ -206,7 +206,7 @@ public class Strftime {
         boolean mark = false;
         boolean modifiedCommand = false;
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         for(int i = 0; i < pattern.length(); i++) {
             char c = pattern.charAt(i);
@@ -262,13 +262,13 @@ public class Strftime {
      * try to get the Java Date/Time formating associated with
      * the C standard provided
      *
-     * @param buf translated StringBuffer 
+     * @param buf translated StringBuilder 
      * @param pattern command to translate
      * @param index  first character index
      * @param oldInside whether to close the quotes if inside quote
      * @return The Java formatting rule to use
      */
-    protected boolean translateCommand( StringBuffer buf, String pattern, int index, boolean oldInside ) {
+    protected boolean translateCommand( StringBuilder buf, String pattern, int index, boolean oldInside ) {
         char firstChar = pattern.charAt( index );
         boolean newInside = oldInside;
 

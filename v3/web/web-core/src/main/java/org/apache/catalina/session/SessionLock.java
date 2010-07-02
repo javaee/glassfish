@@ -283,7 +283,7 @@ public class SessionLock {
      * returns String representation of the state of the lock
      */     
     public String toString() {
-        StringBuffer sb = new StringBuffer(50);
+        StringBuilder sb = new StringBuilder(50);
         sb.append("_lockType= " + _lockType);
         sb.append("\n" + "foregroundRefCount= " + _foregroundRefCount);
         return sb.toString();

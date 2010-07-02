@@ -429,7 +429,7 @@ public class StandardClassLoader
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("StandardClassLoader\r\n");
+        StringBuilder sb = new StringBuilder("StandardClassLoader\r\n");
         sb.append("  delegate: ");
         sb.append(delegate);
         sb.append("\r\n");

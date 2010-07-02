@@ -301,7 +301,7 @@ public class AttributeInfo extends FeatureInfo implements Serializable {
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("AttributeInfo[");
+        StringBuilder sb = new StringBuilder("AttributeInfo[");
         sb.append("name=");
         sb.append(name);
         sb.append(", description=");
@@ -335,7 +335,7 @@ public class AttributeInfo extends FeatureInfo implements Serializable {
      */
     private String getMethodName(String name, boolean getter, boolean is) {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (getter) {
             if (is)
                 sb.append("is");

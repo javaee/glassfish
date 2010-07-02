@@ -138,7 +138,7 @@ public class ApplicationParameter implements Serializable {
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("ApplicationParameter[");
+        StringBuilder sb = new StringBuilder("ApplicationParameter[");
         sb.append("name=");
         sb.append(name);
         if (description != null) {

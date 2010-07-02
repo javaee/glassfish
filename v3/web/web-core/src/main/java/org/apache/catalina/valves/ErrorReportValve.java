@@ -222,7 +222,7 @@ public class ErrorReportValve
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("ErrorReportValve[");
+        StringBuilder sb = new StringBuilder("ErrorReportValve[");
         sb.append(container.getName());
         sb.append("]");
         return (sb.toString());
@@ -393,7 +393,7 @@ public class ErrorReportValve
 
         String serverInfo = ServerInfo.getPublicServerInfo();
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"");
         sb.append(" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">");

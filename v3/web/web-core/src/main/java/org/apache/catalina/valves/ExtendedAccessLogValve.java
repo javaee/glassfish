@@ -609,7 +609,7 @@ public final class ExtendedAccessLogValve
 
 
         Date date = getDate(endTime);
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
 
         for (int i=0; fieldInfos!=null && i<fieldInfos.length; i++) {
             switch(fieldInfos[i].type) {
@@ -894,7 +894,7 @@ public final class ExtendedAccessLogValve
         }
 
         /* Wrap all quotes in double quotes. */
-        StringBuffer buffer = new StringBuffer(svalue.length()+2);
+        StringBuilder buffer = new StringBuilder(svalue.length()+2);
         buffer.append('"');
         int i=0;
         while (i<svalue.length()) {

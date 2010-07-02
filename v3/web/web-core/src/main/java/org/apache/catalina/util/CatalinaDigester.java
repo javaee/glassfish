@@ -145,11 +145,11 @@ public class CatalinaDigester extends Digester {
 
 
     /**
-     * Return a new StringBuffer containing the same contents as the
+     * Return a new StringBuilder containing the same contents as the
      * input buffer, except that data of form ${varname} have been
      * replaced by the value of that var as defined in the system property.
      */
-    private StringBuffer updateBodyText(StringBuffer bodyText) {
+    private StringBuilder updateBodyText(StringBuilder bodyText) {
         String in = bodyText.toString();
         String out;
         try {
@@ -163,7 +163,7 @@ public class CatalinaDigester extends Digester {
             // a new buffer
             return bodyText;
         } else {
-            return new StringBuffer(out);
+            return new StringBuilder(out);
         }
     }
 

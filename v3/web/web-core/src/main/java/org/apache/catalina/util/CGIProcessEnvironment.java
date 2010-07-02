@@ -430,7 +430,7 @@ public class CGIProcessEnvironment extends ProcessEnvironment {
      * @return  HTML string containing CGI environment info
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<TABLE border=2>");
         sb.append("<tr><th colspan=2 bgcolor=grey>");
         sb.append("ProcessEnvironment Info</th></tr>");

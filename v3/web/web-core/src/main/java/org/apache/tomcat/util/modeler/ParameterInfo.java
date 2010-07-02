@@ -173,7 +173,7 @@ public class ParameterInfo extends FeatureInfo implements Serializable {
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("ParameterInfo[");
+        StringBuilder sb = new StringBuilder("ParameterInfo[");
         sb.append("name=");
         sb.append(name);
         sb.append(", description=");

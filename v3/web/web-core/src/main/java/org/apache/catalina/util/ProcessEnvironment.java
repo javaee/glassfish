@@ -171,7 +171,7 @@ public class ProcessEnvironment {
      * @return  HTML string containing process environment info
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<TABLE border=2>");
         sb.append("<tr><th colspan=2 bgcolor=grey>");
         sb.append("ProcessEnvironment Info</th></tr>");

@@ -264,7 +264,7 @@ public class OperationInfo extends FeatureInfo implements Serializable {
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("OperationInfo[");
+        StringBuilder sb = new StringBuilder("OperationInfo[");
         sb.append("name=");
         sb.append(name);
         sb.append(", description=");

@@ -576,7 +576,7 @@ public class FormAuthenticator
             (SavedRequest) session.getNote(Constants.FORM_REQUEST_NOTE);
         if (saved == null)
             return (null);
-        StringBuffer sb = new StringBuffer(saved.getRequestURI());
+        StringBuilder sb = new StringBuilder(saved.getRequestURI());
         if (saved.getQueryString() != null) {
             sb.append('?');
             sb.append(saved.getQueryString());

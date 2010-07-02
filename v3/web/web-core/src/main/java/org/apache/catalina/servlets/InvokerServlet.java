@@ -401,7 +401,7 @@ public final class InvokerServlet
         InvokerHttpRequest wrequest =
             new InvokerHttpRequest(request);
         wrequest.setRequestURI(inRequestURI);
-        StringBuffer sb = new StringBuffer(inServletPath);
+        StringBuilder sb = new StringBuilder(inServletPath);
         sb.append("/");
         sb.append(servletClass);
         wrequest.setServletPath(sb.toString());

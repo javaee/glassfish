@@ -122,7 +122,7 @@ public class ContextResourceLink extends ResourceBase implements Serializable {
      */
     public String toString() {
 
-        StringBuffer sb = new StringBuffer("ContextResourceLink[");
+        StringBuilder sb = new StringBuilder("ContextResourceLink[");
         sb.append("name=");
         sb.append(name);
         if (type != null) {
