@@ -36,24 +36,19 @@
 
 package com.sun.logging;
 
-import java.util.logging.Logger;
-import java.util.logging.LogRecord;
-import java.util.logging.Filter;
-import java.util.logging.LogManager;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Handler;
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
 import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 /**
  * Class LogDomains
  */
-public class LogDomains
-{
+public class LogDomains {
 
     /**
      * DOMAIN_ROOT the prefix for the logger name. This is public only
@@ -67,8 +62,8 @@ public class LogDomains
     public static final String UPGRADE_LOGGER = "upgradeLogger";
 
     /**
-     * PACKAGE_ROOT the prefix for the packages where logger resource 
-     * bundles reside. This is public only so it can be accessed w/in 
+     * PACKAGE_ROOT the prefix for the packages where logger resource
+     * bundles reside. This is public only so it can be accessed w/in
      * the ias package space.
      */
     public static final String PACKAGE_ROOT = "com.sun.logging.";
@@ -94,13 +89,13 @@ public class LogDomains
     public static final String EJB_LOGGER = DOMAIN_ROOT + "enterprise.system.container.ejb";
 
     /**
-     * JavaMail Logger 
+     * JavaMail Logger
      */
     public static final String JAVAMAIL_LOGGER = DOMAIN_ROOT + "enterprise.resource.javamail";
-    
+
     /**
      * IIOP Logger
-    public static final String IIOP_LOGGER = DOMAIN_ROOT + "enterprise.resource.iiop";
+     public static final String IIOP_LOGGER = DOMAIN_ROOT + "enterprise.resource.iiop";
      */
 
 
@@ -113,7 +108,7 @@ public class LogDomains
      * Field
      */
     public static final String WEB_LOGGER = DOMAIN_ROOT + "enterprise.system.container.web";
-    
+
     /**
      * Field
      */
@@ -123,7 +118,7 @@ public class LogDomains
      * Field
      */
     public static final String JDO_LOGGER = DOMAIN_ROOT + "enterprise.resource.jdo";
-    
+
     /**
      * Field
      */
@@ -174,222 +169,257 @@ public class LogDomains
      * Field
      */
     public static final String JTA_LOGGER = DOMAIN_ROOT + "enterprise.resource.jta";
-    
+
     /**
-     * Resource Logger 
+     * Resource Logger
      */
-    
-	public static final String RSR_LOGGER = DOMAIN_ROOT + "enterprise.resource.resourceadapter";
+
+    public static final String RSR_LOGGER = DOMAIN_ROOT + "enterprise.resource.resourceadapter";
     //END OF IASRI 4660742
 
-	/**
-	* Deployment Logger 
-	*/
+    /**
+     * Deployment Logger
+     */
     public static final String DPL_LOGGER = DOMAIN_ROOT + "enterprise.system.tools.deployment";
 
     /**
      * Deployment audit logger
      */
     public static final String DPLAUDIT_LOGGER = DOMAIN_ROOT + "enterprise.system.tools.deployment.audit";
-    
+
     /**
      * Field
      */
     public static final String DIAGNOSTICS_LOGGER = DOMAIN_ROOT + "enterprise.system.tools.diagnostics";
-    
-    /** JAXRPC Logger */
-        public static final String JAXRPC_LOGGER = DOMAIN_ROOT + "enterprise.system.webservices.rpc";
 
-        /** JAXR Logger */
-        public static final String JAXR_LOGGER = DOMAIN_ROOT + "enterprise.system.webservices.registry";
+    /**
+     * JAXRPC Logger
+     */
+    public static final String JAXRPC_LOGGER = DOMAIN_ROOT + "enterprise.system.webservices.rpc";
 
-        /** SAAJ Logger */
-        public static final String SAAJ_LOGGER = DOMAIN_ROOT + "enterprise.system.webservices.saaj";
-        
-       /** Self Management Logger */
-       public static final String SELF_MANAGEMENT_LOGGER = DOMAIN_ROOT + "enterprise.system.core.selfmanagement";        
-       
-       /** SQL Tracing Logger */
-       public static final String SQL_TRACE_LOGGER = DOMAIN_ROOT + "enterprise.resource.sqltrace";
-    
-    /** 
+    /**
+     * JAXR Logger
+     */
+    public static final String JAXR_LOGGER = DOMAIN_ROOT + "enterprise.system.webservices.registry";
+
+    /**
+     * SAAJ Logger
+     */
+    public static final String SAAJ_LOGGER = DOMAIN_ROOT + "enterprise.system.webservices.saaj";
+
+    /**
+     * Self Management Logger
+     */
+    public static final String SELF_MANAGEMENT_LOGGER = DOMAIN_ROOT + "enterprise.system.core.selfmanagement";
+
+    /**
+     * SQL Tracing Logger
+     */
+    public static final String SQL_TRACE_LOGGER = DOMAIN_ROOT + "enterprise.resource.sqltrace";
+
+    /**
      * Admin Logger
-    */
-    public static final String ADMIN_LOGGER = 
+     */
+    public static final String ADMIN_LOGGER =
             DOMAIN_ROOT + "enterprise.system.tools.admin";
-	/** Server Logger */
-	public static final String SERVER_LOGGER= DOMAIN_ROOT + "enterprise.system";
-	/** core Logger */
-	public static final String CORE_LOGGER= DOMAIN_ROOT + "enterprise.system.core";
-	/** classloader Logger */
-	public static final String LOADER_LOGGER= DOMAIN_ROOT + "enterprise.system.core.classloading";
+    /**
+     * Server Logger
+     */
+    public static final String SERVER_LOGGER = DOMAIN_ROOT + "enterprise.system";
+    /**
+     * core Logger
+     */
+    public static final String CORE_LOGGER = DOMAIN_ROOT + "enterprise.system.core";
+    /**
+     * classloader Logger
+     */
+    public static final String LOADER_LOGGER = DOMAIN_ROOT + "enterprise.system.core.classloading";
 
-    /** Config Logger */
-	public static final String CONFIG_LOGGER = DOMAIN_ROOT + "enterprise.system.core.config";
+    /**
+     * Config Logger
+     */
+    public static final String CONFIG_LOGGER = DOMAIN_ROOT + "enterprise.system.core.config";
 
-    /** Process Launcher Logger */
-	public static final String PROCESS_LAUNCHER_LOGGER = DOMAIN_ROOT + "enterprise.tools.launcher";
+    /**
+     * Process Launcher Logger
+     */
+    public static final String PROCESS_LAUNCHER_LOGGER = DOMAIN_ROOT + "enterprise.tools.launcher";
 
-    /** GMS Logger */
-    public static final String GMS_LOGGER = DOMAIN_ROOT +"org.glassfish.gms";
-    
-    /** AMX Logger */
-    public static final String AMX_LOGGER = DOMAIN_ROOT +"enterprise.system.AMX";
+    /**
+     * GMS Logger
+     */
+    public static final String GMS_LOGGER = DOMAIN_ROOT + "org.glassfish.gms";
 
-    /** core/kernel Logger */
+    /**
+     * AMX Logger
+     */
+    public static final String AMX_LOGGER = DOMAIN_ROOT + "enterprise.system.AMX";
+
+    /**
+     * core/kernel Logger
+     */
     public static final String SERVICES_LOGGER = DOMAIN_ROOT + "enterprise.system.core.services";
 
-    /**webservices logger */
-    public static final String WEBSERVICES_LOGGER=DOMAIN_ROOT + "enterprise.webservices";
+    /**
+     * webservices logger
+     */
+    public static final String WEBSERVICES_LOGGER = DOMAIN_ROOT + "enterprise.webservices";
 
-    /**monitoring logger */
-    public static final String MONITORING_LOGGER=DOMAIN_ROOT + "enterprise.system.tools.monitor";
+    /**
+     * monitoring logger
+     */
+    public static final String MONITORING_LOGGER = DOMAIN_ROOT + "enterprise.system.tools.monitor";
 
 
     // Lock to ensure the Logger creation is synchronized (JDK 6U10 and before can deadlock)
     static Lock lock = new ReentrantLock();
 
 
-
     /**
      * This is temporary and needed so that IAS can run with or without
-     * the com.sun.enterprise.server.logging.ServerLogger. The subclassed 
+     * the com.sun.enterprise.server.logging.ServerLogger. The subclassed
      * addLogger() method there automatically appends the logger name.
-     **/
+     */
 
     private static String getLoggerResourceBundleName(String loggerName) {
         String result = loggerName + "." + RESOURCE_BUNDLE;
-       // System.out.println("looking for bundle "+ result.replaceFirst(DOMAIN_ROOT, PACKAGE_ROOT));
+        // System.out.println("looking for bundle "+ result.replaceFirst(DOMAIN_ROOT, PACKAGE_ROOT));
         return result.replaceFirst(DOMAIN_ROOT, PACKAGE_ROOT);
     }
 
-	
+
     /**
      * Method getLogger
      *
-     *
      * @param clazz
      * @param name
-     *
      * @return
      */
-     
+
     public static synchronized Logger getLogger(final Class clazz, final String name) {
-        final ClassLoader cloader =clazz.getClassLoader();
-            Logger l = LogManager.getLogManager().getLogger(name);
+        final ClassLoader cloader = clazz.getClassLoader();
+        Logger l = LogManager.getLogManager().getLogger(name);
 
-            if (l==null) {
-                //first time through for this logger.  create it and find the resource bundle
+        if (l == null) {
+            //first time through for this logger.  create it and find the resource bundle
 
-                // should be pass in a resource bundle?
-                l = Logger.getLogger(name);
-                    
-            };
+            // should be pass in a resource bundle?
+            l = Logger.getLogger(name);
+
+        }
+        ;
 
 
-            // now create the real logger which is the logger name with the package name
-            // this is what will be returned.
-            //look for the resource bundle only in the package if not there then the resource
-            // bundle from the parent above will be used.
-            String pkgName = clazz.getPackage().getName();
-            String loggerName = name + "."+ pkgName;
-            Logger cLogger = LogManager.getLogManager().getLogger(loggerName);
+        // now create the real logger which is the logger name with the package name
+        // this is what will be returned.
+        //look for the resource bundle only in the package if not there then the resource
+        // bundle from the parent above will be used.
+        String pkgName = clazz.getPackage().getName();
+        String loggerName = name + "." + pkgName;
+        Logger cLogger = LogManager.getLogManager().getLogger(loggerName);
 
-            // we should only add a logger of the same name at time.
+        // we should only add a logger of the same name at time.
 
-            if (cLogger == null) {
-                //first time through for this logger.  create it and find the resource bundle
-                cLogger = new Logger(loggerName, null) {
+        if (cLogger == null) {
+            //first time through for this logger.  create it and find the resource bundle
+            cLogger = new Logger(loggerName, null) {
 
-                    /*
-                       override this method to set the the thread id so all handlers get the same info
+                /*
 
-                     */
-                    private final int offValue = Level.OFF.intValue();
+                Commented this code to fix bug 12367
+                override this method to set the the thread id so all handlers get the same info
 
-                    public  void log (LogRecord record) {
-                        record.setThreadID((int)Thread.currentThread().getId());
-                        super.log(record);                        
-                    }
-                    
 
-                    /**
-                     * Retrieve the localization resource bundle for this
-                     * logger for the current default locale.  Note that if
-                     * the result is null, then the Logger will use a resource
-                     * bundle inherited from its parent.
-                     *
-                     * @return localization bundle (may be null)
-                     *
-                     */
-                 public ResourceBundle getResourceBundle() {
+                private final int offValue = Level.OFF.intValue();
 
-                        //call routine to add resource bundle if not already added
-                        // the return needs to go through all known resource bundles
+                public  void log (LogRecord record) {
+
+                  if(record.getThreadID()==(int)Thread.currentThread().getId()) {
+                      System.out.println("...Works Fine...");
+                  } else {
+                      System.out.println("...Thread ID..."+record.getThreadID());
+                      System.out.println("...New Thread ID..."+Thread.currentThread().getId());
+                  }
+
+                  record.setThreadID((int)Thread.currentThread().getId());
+                  super.log(record);
+                }*/
+
+
+                /**
+                 * Retrieve the localization resource bundle for this
+                 * logger for the current default locale.  Note that if
+                 * the result is null, then the Logger will use a resource
+                 * bundle inherited from its parent.
+                 *
+                 * @return localization bundle (may be null)
+                 *
+                 */
+                public ResourceBundle getResourceBundle() {
+
+                    //call routine to add resource bundle if not already added
+                    // the return needs to go through all known resource bundles
+                    try {
+
+                        return ResourceBundle.getBundle(getLoggerResourceBundleName(name), Locale.getDefault(), cloader);
+                    } catch (MissingResourceException e) {
+
+                        //try the parent
+                        String root = clazz.getPackage().getName();
                         try {
 
-                            return ResourceBundle.getBundle(getLoggerResourceBundleName(name), Locale.getDefault(), cloader);
-                        } catch (MissingResourceException e) {
+                            return ResourceBundle.getBundle(root + "." + RESOURCE_BUNDLE, Locale.getDefault(), cloader);
+                        } catch (MissingResourceException me) {
+                            //walk the parents to find the bundle
 
-                                //try the parent
-                                String root = clazz.getPackage().getName();
+                            String p = root;
+                            while (p != null) {
                                 try {
-
-                                    return ResourceBundle.getBundle(root + "." +RESOURCE_BUNDLE, Locale.getDefault(), cloader);
-                                } catch (MissingResourceException me) {
-                                    //walk the parents to find the bundle
-
-                                    String p = root;
-                                    while (p != null) {
-                                        try {
-                                            int i = p.lastIndexOf(".");
-                                            if (i != -1) {
-                                                p = p.substring(0, i);
-                                                return ResourceBundle.getBundle(p + "." + RESOURCE_BUNDLE, Locale.getDefault(), cloader);
-                                            } else {
-                                                p = null;
-                                            }
-                                        } catch (MissingResourceException mre) {
-                                        }
+                                    int i = p.lastIndexOf(".");
+                                    if (i != -1) {
+                                        p = p.substring(0, i);
+                                        return ResourceBundle.getBundle(p + "." + RESOURCE_BUNDLE, Locale.getDefault(), cloader);
+                                    } else {
+                                        p = null;
                                     }
+                                } catch (MissingResourceException mre) {
                                 }
-                            // look in this package for the file
-                            try {
-                                    return ResourceBundle.getBundle(getLoggerResourceBundleName(name), Locale.getDefault(),
-                                            LogDomains.class.getClassLoader());
-
-                                } catch (MissingResourceException me) {
                             }
-                            Logger l = LogManager.getLogManager().getLogger(name);
-                            l.log(Level.WARNING, "Can not find resource bundle for this logger. "+ " class name that failed: "+clazz.getName());
-                            //throw e;
-                            return null;
                         }
-                    };
+                        // look in this package for the file
+                        try {
+                            return ResourceBundle.getBundle(getLoggerResourceBundleName(name), Locale.getDefault(),
+                                    LogDomains.class.getClassLoader());
+
+                        } catch (MissingResourceException me) {
+                        }
+                        Logger l = LogManager.getLogManager().getLogger(name);
+                        l.log(Level.WARNING, "Can not find resource bundle for this logger. " + " class name that failed: " + clazz.getName());
+                        //throw e;
+                        return null;
+                    }
                 };
-
-                // let's make sure we are the only
-
-                // We must not return an orphan logger (the one we just created) if
-                // a race condition has already created one
-                if ( ! addLoggerToLogManager(cLogger) )
-                {
-                    final Logger existing = LogManager.getLogManager().getLogger(name);
-                    if ( existing == null )
-                    {
-                        // Can loggers be removed?  If not, this should be impossible
-                        // this time, make the call and hope for the best.
-                        addLoggerToLogManager(cLogger);
-                    }
-                    else
-                    {
-                        cLogger = existing;
-                    }
-
-                }
             };
 
-            return cLogger;
+            // let's make sure we are the only
+
+            // We must not return an orphan logger (the one we just created) if
+            // a race condition has already created one
+            if (!addLoggerToLogManager(cLogger)) {
+                final Logger existing = LogManager.getLogManager().getLogger(name);
+                if (existing == null) {
+                    // Can loggers be removed?  If not, this should be impossible
+                    // this time, make the call and hope for the best.
+                    addLoggerToLogManager(cLogger);
+                } else {
+                    cLogger = existing;
+                }
+
+            }
+        }
+        ;
+
+        return cLogger;
     }
 
     private static boolean addLoggerToLogManager(Logger logger) {
@@ -400,7 +430,7 @@ public class LogDomains
         // A == Logger.class, B == LogManager.class
         // I created this method to make it very very clear what is going on
 
-        synchronized(Logger.class) {
+        synchronized (Logger.class) {
             return LogManager.getLogManager().addLogger(logger);
         }
     }
