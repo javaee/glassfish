@@ -47,10 +47,12 @@
 
     <target name="all_cluster">
         <record name="allrun.output" action="start"/>
+        <antcall target="start-server-felix"/>
         <antcall target="build-cluster"/>
         <antcall target="runtest">
             <param name="testng.xml" value="testng/testng_cluster.xml"/>
         </antcall>
+        <antcall target="stop-server"/>
         <antcall target="testng-summary"/>
         <record name="allrun.output" action="stop"/>
     </target>
