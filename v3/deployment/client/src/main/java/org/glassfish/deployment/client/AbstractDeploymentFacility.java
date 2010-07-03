@@ -702,7 +702,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     private HostAndPort getHostAndPort(String target, String moduleId, 
         String virtualServer, boolean securityEnabled) throws IOException {
         ensureConnected();
-        String commandName = "get-host-and-port";
+        String commandName = "_get-host-and-port";
         Map commandParams = new HashMap();
         commandParams.put("target", target);
         if (moduleId != null) {
@@ -764,7 +764,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
 
     public TargetModuleID[] listAppRefs(Target[] targets, String state, String type) throws IOException {
         ensureConnected();
-        String commandName = "list-app-refs";
+        String commandName = "_list-app-refs";
         String targetsParam = createTargetsParam(targets);
         Map commandParams = new HashMap();
         commandParams.put("target", targetsParam);

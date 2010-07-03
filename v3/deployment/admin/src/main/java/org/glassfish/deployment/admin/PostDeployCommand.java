@@ -61,7 +61,7 @@ import org.jvnet.hk2.component.PerLookup;
  *
  * @author tjquinn
  */
-@Service(name="postdeploy")
+@Service(name="_postdeploy")
 @Supplemental(value="deploy", ifFailure=FailurePolicy.Warn)
 @Scoped(PerLookup.class)
 @Cluster(value={RuntimeType.DAS})

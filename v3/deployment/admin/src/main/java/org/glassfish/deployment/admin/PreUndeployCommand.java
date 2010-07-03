@@ -60,7 +60,7 @@ import java.util.logging.Logger;
  * It will disable the applications before the undeploy command runs.
  *
  */
-@Service(name="preundeploy")
+@Service(name="_preundeploy")
 @Supplemental(value="undeploy", on=Supplemental.Timing.Before)
 @Scoped(PerLookup.class)
 @Cluster(value={RuntimeType.DAS})

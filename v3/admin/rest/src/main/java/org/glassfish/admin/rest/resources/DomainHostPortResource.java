@@ -41,7 +41,7 @@ public class DomainHostPortResource extends org.glassfish.admin.rest.TemplateCom
    public DomainHostPortResource() {
        super(
           "DomainHostPort",
-          "get-host-and-port",
+          "_get-host-and-port",
           "GET",
           (java.util.HashMap<String, String>) null ,
           false);

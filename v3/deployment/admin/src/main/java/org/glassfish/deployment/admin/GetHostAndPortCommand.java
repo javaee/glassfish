@@ -63,7 +63,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
-@Service(name="get-host-and-port")
+@Service(name="_get-host-and-port")
 @Scoped(PerLookup.class)
 public class GetHostAndPortCommand implements AdminCommand {
 

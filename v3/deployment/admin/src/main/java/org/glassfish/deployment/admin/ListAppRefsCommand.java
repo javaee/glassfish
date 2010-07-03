@@ -55,7 +55,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import java.util.List;
 
-@Service(name="list-app-refs")
+@Service(name="_list-app-refs")
 @Scoped(PerLookup.class)
 public class ListAppRefsCommand implements AdminCommand {
 
