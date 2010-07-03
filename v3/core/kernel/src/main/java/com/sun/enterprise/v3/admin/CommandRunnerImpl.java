@@ -190,6 +190,7 @@ public class CommandRunnerImpl implements CommandRunner {
             report.setMessage(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             LogHelper.getDefaultLogger().info(msg);
+            return null;
         }
 
         Scoped scoped = command.getClass().getAnnotation(Scoped.class);
