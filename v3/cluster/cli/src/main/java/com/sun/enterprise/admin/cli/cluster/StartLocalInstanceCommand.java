@@ -147,7 +147,7 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
             launcher.launch();
 
             if (verbose || upgrade) { // we can potentially loop forever here...
-                while (launcher.getExitValue() == CLIConstants.RESTART_EXIT_VALUE) {
+                while (launcher.getExitValue() >= CLIConstants.RESTART_NORMAL) {
                     logger.printMessage(strings.get("restart"));
 
                     if (CLIConstants.debugMode)
