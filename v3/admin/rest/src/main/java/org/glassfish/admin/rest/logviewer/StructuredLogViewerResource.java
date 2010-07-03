@@ -58,8 +58,8 @@ import javax.management.Attribute;
 public class StructuredLogViewerResource {
 
     @GET
-    @Produces({MediaType.TEXT_PLAIN})
-    public String get(
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    public String getJson(
             @QueryParam("logFileName") @DefaultValue("${com.sun.aas.instanceRoot}/logs/server.log") String logFileName,
             @QueryParam("startIndex") @DefaultValue("-1") long startIndex,
             @QueryParam("searchForward") @DefaultValue("false") boolean searchForward,
@@ -68,8 +68,47 @@ public class StructuredLogViewerResource {
             @QueryParam("toTime") @DefaultValue("-1") long toTime,
             @QueryParam("logLevel") @DefaultValue("INFO") String logLevel) throws IOException {
 
+        return getWithType(
+                logFileName,
+                startIndex,
+                searchForward,
+                maximumNumberOfResults,
+                fromTime,
+                toTime,
+                logLevel, "json");
 
-        LogFilter logFilter = new LogFilter();
+    }
+
+    @GET
+    @Produces({MediaType.APPLICATION_XML})
+    public String getXML(
+            @QueryParam("logFileName") @DefaultValue("${com.sun.aas.instanceRoot}/logs/server.log") String logFileName,
+            @QueryParam("startIndex") @DefaultValue("-1") long startIndex,
+            @QueryParam("searchForward") @DefaultValue("false") boolean searchForward,
+            @QueryParam("maximumNumberOfResults") @DefaultValue("40") int maximumNumberOfResults,
+            @QueryParam("fromTime") @DefaultValue("-1") long fromTime,
+            @QueryParam("toTime") @DefaultValue("-1") long toTime,
+            @QueryParam("logLevel") @DefaultValue("INFO") String logLevel) throws IOException {
+
+        return getWithType(
+                logFileName,
+                startIndex,
+                searchForward,
+                maximumNumberOfResults,
+                fromTime,
+                toTime,
+                logLevel, "xml");
+
+    }
+
+    private String getWithType(
+            String logFileName,
+            long startIndex,
+            boolean searchForward,
+            int maximumNumberOfResults,
+            long fromTime,
+            long toTime,
+            String logLevel, String type) throws IOException {
 
 
         Properties props = new Properties();
@@ -80,14 +119,14 @@ public class StructuredLogViewerResource {
             sortAscending = false;
         }
 
-        final AttributeList result = logFilter.getLogRecordsUsingQuery(logFileName,
+        final AttributeList result = LogFilter.getLogRecordsUsingQuery(logFileName,
                 startIndex,
                 searchForward, sortAscending,
                 maximumNumberOfResults,
                 fromTime == -1 ? null : new Date(fromTime),
                 toTime == -1 ? null : new Date(toTime),
                 logLevel, true, moduleList, props);
-        return convertQueryResult (result);
+        return convertQueryResult(result, type);
 
     }
 
@@ -99,11 +138,15 @@ public class StructuredLogViewerResource {
         return "\"" + s + "\"";
     }
 
-    private String convertQueryResult(final AttributeList queryResult) {
+    private String convertQueryResult(final AttributeList queryResult, String type) {
         // extract field descriptions into a String[]
         StringBuilder sb = new StringBuilder();
-        sb.append("{\n");
-        sb.append(quoted("records")).append( ": [");
+        if (type.equals("json")) {
+            sb.append("{\n").append(quoted("records")).append(": [");
+        } else {
+            sb.append("<records>\n");
+        }
+
         final AttributeList fieldAttrs = (AttributeList) ((Attribute) queryResult.get(0)).getValue();
         String[] fieldHeaders = new String[fieldAttrs.size()];
         for (int i = 0; i < fieldHeaders.length; ++i) {
@@ -118,7 +161,7 @@ public class StructuredLogViewerResource {
             List<Serializable> record = srcRecords.get(recordIdx);
 
             assert (record.size() == fieldHeaders.length);
-            Serializable[] fieldValues = new Serializable[fieldHeaders.length];
+            //Serializable[] fieldValues = new Serializable[fieldHeaders.length];
 
             LogRecord rec = new LogRecord();
             int fieldIdx = 0;
@@ -130,12 +173,22 @@ public class StructuredLogViewerResource {
             rec.setNameValuePairs((String) record.get(fieldIdx++));
             rec.setMessageID((String) record.get(fieldIdx++));
             rec.setMessage((String) record.get(fieldIdx++));
-            sb.append(rec.toJSON());
-            sb.append(",\n");
+            if (type.equals("json")) {
+                sb.append(rec.toJSON());
+                sb.append(",\n");
+            } else {
+                sb.append(rec.toXML());
+
+            }
 
         }
-        sb.append("]\n");
-        sb.append("}\n");
+        if (type.equals("json")) {
+            sb.append("]\n");
+            sb.append("}\n");
+        } else {
+            sb.append("\n</records>\n");
+
+        }
 
         return sb.toString();
     }

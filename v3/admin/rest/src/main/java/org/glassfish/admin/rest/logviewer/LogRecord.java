@@ -35,16 +35,32 @@
  */
 package org.glassfish.admin.rest.logviewer;
 
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.regex.Matcher;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * internal REST wrapper for a log record
  * will be used to emit JSON easily with Jackson framework
-    * 
+ *
  * @author ludo
  */
- class LogRecord {
+class LogRecord {
 
     long recordNumber;
     Date loggedDateTime;
@@ -118,9 +134,11 @@ import java.util.regex.Matcher;
     public void setRecordNumber(long recordNumber) {
         this.recordNumber = recordNumber;
     }
+
     private String quoted(String s) {
         return "\"" + s + "\"";
     }
+
     public String toJSON() {
 
         StringBuilder sb = new StringBuilder();
@@ -132,8 +150,51 @@ import java.util.regex.Matcher;
         sb.append(quoted("loggerName")).append(':').append(quoted(loggerName)).append(",\n");
         sb.append(quoted("nameValuePairs")).append(':').append(quoted(nameValuePairs)).append(",\n");
         sb.append(quoted("messageID")).append(':').append(quoted(messageID)).append(",\n");
-        sb.append(quoted("Message")).append(':').append(quoted(Message.replaceAll("\n",  Matcher.quoteReplacement("\\\n")))).append("}\n");
+        sb.append(quoted("Message")).append(':').append(quoted(Message.replaceAll("\n", Matcher.quoteReplacement("\\\n")))).append("}\n");
 
         return sb.toString();
+    }
+
+    public String toXML() {
+
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+
+            Document d = db.newDocument();
+
+            Element result = d.createElement("record");
+            result.setAttribute("recordNumber", "" + recordNumber);
+            result.setAttribute("loggedDateTimeInMS", "" + loggedDateTime.getTime());
+            result.setAttribute("loggedLevel", loggedLevel);
+            result.setAttribute("productName", productName);
+            result.setAttribute("loggerName", loggerName);
+            result.setAttribute("nameValuePairs", nameValuePairs);
+            result.setAttribute("messageID", messageID);
+            result.setNodeValue(Message);
+            d.appendChild(result);
+            return xmlToString(d);
+
+        } catch (ParserConfigurationException pex) {
+            throw new RuntimeException(pex);
+        }
+    }
+    private  String xmlToString(Node node) {
+        try {
+            Source source = new DOMSource(node);
+            StringWriter stringWriter = new StringWriter();
+            Result result = new StreamResult(stringWriter);
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+
+            transformer.transform(source, result);
+            return stringWriter.getBuffer().toString();
+        } catch (TransformerConfigurationException e) {
+          //  e.printStackTrace();
+        } catch (TransformerException e) {
+          //  e.printStackTrace();
+        }
+        return null;
     }
 }
