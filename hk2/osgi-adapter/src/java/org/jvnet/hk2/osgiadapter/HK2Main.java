@@ -63,6 +63,8 @@ import java.io.File;
 
 /**
  * {@link org.osgi.framework.BundleActivator} that launches a Habitat.
+ * A habitat is a collection of inhabitants, which are configured in a certain way.
+ * So, there is a one-to-one mapping between habitat and configuration file used to configure the inhabitants.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -74,22 +76,30 @@ public class HK2Main extends Main implements
 
     private ModulesRegistry mr;
 
-    private ServiceRegistration habitatRegistration;
-    private ServiceRegistration moduleStartupRegistration;
-
-    private ServiceTracker osgiServiceTracker;
-
     private static final String pid = "org.jvnet.hk2.osgiadapter.StartupContextService";
 
-    private class StartupContextService implements ManagedService {
+    private HK2Main.StartupContextService startupContextService;
 
-        public void updated(Dictionary props) throws ConfigurationException {
+    // We can easily convert it into a ManagedServiceFactory to support
+    // creation of multiple StartupContexts and Habitats - each habitat containing inhabitants
+    // configured differently. Very useful to have multiple domains running in same JVM.
+    private class StartupContextService implements ManagedService {
+        private Habitat habitat;
+        private ServiceRegistration habitatRegistration;
+        private ServiceTracker osgiServiceTracker;
+        private ServiceRegistration moduleStartupRegistration;
+        private ModuleStartup startupService;
+
+        // It is synchronized since it can be called from HK2Main.stop as well as config admin.
+        public synchronized void updated(Dictionary props) throws ConfigurationException {
             if (props == null) {
+                if (habitat == null) {
+                    return; // initial event - ignore
+                }
+                destroyHabitat(habitat);
+                habitat = null; // GC
+                startupService = null; // GC
                 if (moduleStartupRegistration != null) {
-                    final ServiceReference reference = moduleStartupRegistration.getReference();
-                    ModuleStartup ms = (ModuleStartup)ctx.getService(reference);
-                    ms.stop();
-                    ctx.ungetService(reference);
                     moduleStartupRegistration.unregister();
                     moduleStartupRegistration = null;
                     habitatRegistration.unregister();
@@ -98,16 +108,41 @@ public class HK2Main extends Main implements
             } else {
                 StartupContext startupContext = new StartupContext(dict2Props(props));
                 try {
-                    Habitat habitat = createHabitat(mr, startupContext);
-                    ModuleStartup ms = launch(mr, habitat, startupContext.getStartupModuleName(), startupContext);
-                    createServiceTracker(habitat);
-
-                    // register essential services in service registry
-                    habitatRegistration = ctx.registerService(Habitat.class.getName(), habitat, props);
-                    moduleStartupRegistration = ctx.registerService(ModuleStartup.class.getName(), ms, props);
+                    habitat = createHabitat(mr, startupContext);
+                    startupService = findStartupService(mr, habitat, startupContext.getStartupModuleName(), startupContext);
+                    moduleStartupRegistration = ctx.registerService(ModuleStartup.class.getName(), startupService, props);
                 } catch (BootException e) {
                     throw new RuntimeException(e);
                 }
+            }
+        }
+
+        private Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
+            Habitat habitat = HK2Main.this.createHabitat(registry, context);
+            createServiceTracker(habitat);
+            // register Habitat as an OSGi service
+            habitatRegistration = ctx.registerService(Habitat.class.getName(), habitat, context.getArguments());
+            return habitat;
+        }
+
+        private void destroyHabitat(Habitat habitat) {
+            stopServiceTracker(habitat);
+            habitat.release();
+        }
+
+        private void createServiceTracker(Habitat habitat) {
+            osgiServiceTracker = new ServiceTracker(ctx, new NonHK2ServiceFilter(), new HK2ServiceTrackerCustomizer(habitat));
+            osgiServiceTracker.open(true);
+        }
+
+        /**
+         * Stop service tracker associated with the given habitat
+         * @param habitat
+         */
+        private void stopServiceTracker(Habitat habitat) {
+            if (osgiServiceTracker != null) {
+                osgiServiceTracker.close();
+                osgiServiceTracker = null;
             }
         }
 
@@ -122,13 +157,12 @@ public class HK2Main extends Main implements
         }
 
     }
+
     public void start(BundleContext context) throws Exception {
         this.ctx = context;
-        logger.logp(Level.FINE, "HK2Main", "run",
-                "Thread.currentThread().getContextClassLoader() = {0}",
-                Thread.currentThread().getContextClassLoader());
-        logger.logp(Level.FINE, "HK2Main", "run", "this.getClass().getClassLoader() = {0}", this.getClass().getClassLoader());
-        ctx.addBundleListener(this);
+        logger.entering("HK2Main", "start", new Object[]{context});
+
+//        ctx.addBundleListener(this); // used for debugging purpose
 
         OSGiFactoryImpl.initialize(ctx);
 
@@ -136,7 +170,8 @@ public class HK2Main extends Main implements
 
         Properties p = new Properties();
         p.setProperty(Constants.SERVICE_PID, pid);
-        context.registerService(ManagedService.class.getName(), new StartupContextService(), p);
+        startupContextService = new StartupContextService();
+        context.registerService(ManagedService.class.getName(), startupContextService, p);
     }
 
     protected ModulesRegistry createModulesRegistry() {
@@ -149,20 +184,33 @@ public class HK2Main extends Main implements
         // OSGi doesn't have this feature, so ignore it for now.
     }
 
-    private void createServiceTracker(Habitat habitat) {
-        osgiServiceTracker = new ServiceTracker(ctx, new NonHK2ServiceFilter(), new HK2ServiceTrackerCustomizer(habitat));
-        osgiServiceTracker.open(true);
-    }
-
     public void stop(BundleContext context) throws Exception {
-        if (osgiServiceTracker != null) {
-            osgiServiceTracker.close();
-            osgiServiceTracker = null;
-        }
+        // When OSGi framework shuts down, it shuts down all started bundles, but the order is unspecified.
+        // So, since we are going to shutdown the registry, it's better that we stop startup service just incase it is still running.
+        // Similarly, we can release the habitat.
+
         // Execute code in reverse order w.r.t. start()
+
+        if(startupContextService.startupService != null) {
+            try {
+                logger.info("Stopping " + startupContextService.startupService);
+                startupContextService.startupService.stop();
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "HK2Main:stop():Exception while stopping ModuleStartup service.", e);
+            }
+        }
+        startupContextService.updated(null);
+
+        // framework will automatically unregister when the bundle is stopped.
+        // so. just make it null to assist GC.
+        startupContextService = null;
+
         if (mr != null) {
             mr.shutdown();
+            mr = null;
         }
+//        ctx.removeBundleListener(this); // used for debugging only. see start method
+
     }
 
     public void bundleChanged(BundleEvent event) {

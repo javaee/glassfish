@@ -223,17 +223,19 @@ public final class Transactions implements PostConstruct, PreDestroy {
 
         // first, calculate the recipients.
         final Set<ConfigListener> configListeners = new HashSet<ConfigListener>();
-        for (PropertyChangeEvent event : job.mEvents) {
-            final Dom dom = (Dom) ((ConfigView) Proxy.getInvocationHandler(event.getSource())).getMasterView();
-            configListeners.addAll(dom.getListeners());
+            if (job.mEvents != null) {
+                for (PropertyChangeEvent event : job.mEvents) {
+                    final Dom dom = (Dom) ((ConfigView) Proxy.getInvocationHandler(event.getSource())).getMasterView();
+                    configListeners.addAll(dom.getListeners());
 
-            // we also notify the parent.
-            if (dom.parent()!=null) {
-                configListeners.addAll(dom.parent().getListeners());
+                    // we also notify the parent.
+                    if (dom.parent()!=null) {
+                        configListeners.addAll(dom.parent().getListeners());
+                    }
+                }
             }
-        }
 
-        return new FutureTask<UnprocessedChangeEvents>(new Callable<UnprocessedChangeEvents>() {
+            return new FutureTask<UnprocessedChangeEvents>(new Callable<UnprocessedChangeEvents>() {
             public UnprocessedChangeEvents call() throws Exception {
 
                 try {

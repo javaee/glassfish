@@ -55,11 +55,8 @@ import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
-import static com.sun.hk2.component.InhabitantsFile.CLASS_KEY;
-import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
 
 import com.sun.hk2.component.InhabitantParser;
-import com.sun.hk2.component.KeyValuePairParser;
 import com.sun.hk2.component.InhabitantsParser;
 import org.jvnet.hk2.component.*;
 
@@ -324,7 +321,22 @@ public class Main {
      * @return The ModuleStartup service
      */
     public ModuleStartup launch(ModulesRegistry registry, Habitat habitat, String mainModuleName, StartupContext context) throws BootException {
-        // now go figure out the start up module
+        // now go figure out the start up service
+        ModuleStartup startupCode = findStartupService(registry, habitat, mainModuleName, context);
+        launch(startupCode, context);
+        return startupCode;
+    }
+
+    /**
+     * Return the ModuleStartup service configured to be used to start the system.
+     * @param registry
+     * @param habitat
+     * @param mainModuleName
+     * @param context
+     * @return
+     * @throws BootException
+     */
+    public ModuleStartup findStartupService(ModulesRegistry registry, Habitat habitat, String mainModuleName, StartupContext context) throws BootException {
         ModuleStartup startupCode=null;
         final Module mainModule;
 
@@ -338,8 +350,8 @@ public class Main {
                 else
                     throw new BootException("Cannot find main module " + mainModuleName+" : no such module");
             }
-            mainModule = modules.iterator().next();           
-            String targetClassName = findModuleStartup(mainModule,context.getPlatformMainServiceName(), HABITAT_NAME);
+            mainModule = modules.iterator().next();
+            String targetClassName = findModuleStartupClassName(mainModule,context.getPlatformMainServiceName(), HABITAT_NAME);
             if (targetClassName==null) {
                 throw new BootException("Cannot find a ModuleStartup implementation in the META-INF/services/com.sun.enterprise.v3.ModuleStartup file, aborting");
             }
@@ -399,7 +411,6 @@ public class Main {
         habitat.addIndex(Inhabitants.create(startupCode),
                 ModuleStartup.class.getName(), habitat.DEFAULT_NAME);
         mainModule.setSticky(true);
-        launch(startupCode, context, mainModule);
         return startupCode;
     }
 
@@ -450,15 +461,9 @@ public class Main {
         return targetModule;
     }
 
-    protected void launch(ModuleStartup startupCode, StartupContext context, Module mainModule) throws BootException {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        try {
-            startupCode.setStartupContext(context);
-            Thread.currentThread().setContextClassLoader(mainModule.getClassLoader());
-            startupCode.start();
-        } finally {
-            Thread.currentThread().setContextClassLoader(cl);
-        }
+    protected void launch(ModuleStartup startupCode, StartupContext context) throws BootException {
+        startupCode.setStartupContext(context);
+        startupCode.start();
     }
 
     /**
@@ -467,7 +472,7 @@ public class Main {
      * <p>
      * This implementation does so by looking it up from services.
      */
-    protected String findModuleStartup(Module mainModule, String serviceName, String habitatName) throws BootException {
+    protected String findModuleStartupClassName(Module mainModule, String serviceName, String habitatName) throws BootException {
         String index = (serviceName==null || serviceName.isEmpty()?ModuleStartup.class.getName():ModuleStartup.class.getName()+":"+serviceName);
         for(InhabitantsDescriptor d : mainModule.getMetadata().getHabitats(habitatName)) {
             try {
