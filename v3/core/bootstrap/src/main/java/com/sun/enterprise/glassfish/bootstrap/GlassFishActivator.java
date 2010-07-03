@@ -125,6 +125,10 @@ public class GlassFishActivator implements BundleActivator {
     public void stop(BundleContext context) throws Exception {
         // Stopping osgi-adapter will take care of stopping ModuleStartup service, release of habitat, etc.
         stopBundle("com.sun.enterprise.osgi-adapter");
+
+        // Need to delete this so that it gets cleared from OSGi cache, else next time
+        // framework will use the one from previous run.
+        if (config != null) config.delete();
         if (caTracker != null) caTracker.close();
     }
 
