@@ -20,8 +20,7 @@ cd "$APS_HOME"
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
 cd "$APS_HOME/devtests/admin/cli"
 # run the tests twice -- e.g. Issue # 12127
-time ant -Dverbose=true -Dteststorun=list-jndi-entries all 
-#time ant all
+time ant all
 # don't run twice if we already failed!
 egrep 'FAILED *0' "$APS_HOME/count.txt" >/dev/null || exit 1
 
