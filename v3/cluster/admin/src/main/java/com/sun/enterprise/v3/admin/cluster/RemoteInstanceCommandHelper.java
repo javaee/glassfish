@@ -37,7 +37,6 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.util.StringUtils;
-import org.glassfish.api.admin.ServerEnvironment;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.grizzly.config.dom.NetworkListener;
 import java.util.*;
@@ -69,20 +68,11 @@ final class RemoteInstanceCommandHelper {
             habitat = habitatIn;
             configs = habitat.getByType(Configs.class).getConfig();
             servers = habitat.getByType(Servers.class).getServer();
-            env = habitat.getByType(ServerEnvironment.class);
             domain = habitat.getByType(Domain.class);
         }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    final boolean isDas() {
-        return env.isDas();
-    }
-
-    final boolean isInstance() {
-        return env.isInstance();
     }
 
     final String getHost(final String serverName) {
@@ -258,7 +248,6 @@ final class RemoteInstanceCommandHelper {
                 && s.endsWith("}")
                 && s.length() > 3;
     }
-    final private ServerEnvironment env;
     final private List<Server> servers;
     final private List<Config> configs;
     final private Habitat habitat;

@@ -58,6 +58,8 @@ import com.sun.enterprise.config.serverbeans.Domain;
 public class StartClusterCommand implements AdminCommand, PostConstruct {
 
     @Inject
+    private ServerEnvironment env;
+    @Inject
     private Habitat habitat;
     @Param(optional = false, primary = true)
     private String clusterName;
@@ -83,7 +85,7 @@ public class StartClusterCommand implements AdminCommand, PostConstruct {
         logger.info(Strings.get("start.cluster", clusterName));
 
         // Require that we be a DAS
-        if (!helper.isDas()) {
+        if (!env.isDas()) {
             String msg = Strings.get("cluster.command.notDas");
             logger.warning(msg);
             report.setActionExitCode(ExitCode.FAILURE);

@@ -96,7 +96,7 @@ public class StopClusterCommand implements AdminCommand, PostConstruct {
         logger.info(Strings.get("stop.cluster", clusterName));
 
         // Require that we be a DAS
-        if(!helper.isDas()) {
+        if(!env.isDas()) {
             String msg = Strings.get("cluster.command.notDas");
             logger.warning(msg);
             report.setActionExitCode(ExitCode.FAILURE);
