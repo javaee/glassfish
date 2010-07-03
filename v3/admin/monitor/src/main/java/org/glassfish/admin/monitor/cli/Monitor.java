@@ -46,6 +46,8 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport.ExitCode;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -55,6 +57,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
  * @author Prashanth Abbagani
  */
 @Service(name="monitor")
+@Scoped(PerLookup.class)
 @I18n("monitor.command")
 public class Monitor implements AdminCommand {
 

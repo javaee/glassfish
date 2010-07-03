@@ -44,6 +44,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.beans.PropertyVetoException;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -55,11 +56,13 @@ import java.util.Map;
 import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * @author Sreenivas Munnangi
  */
 @Service(name="disable-monitoring")
+@Scoped(PerLookup.class)
 @I18n("disable.monitoring")
 public class DisableMonitoring implements AdminCommand {
 

@@ -43,6 +43,7 @@ import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.module.common_impl.LogHelper;
         
 import java.io.*;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -68,10 +69,12 @@ import org.glassfish.internal.api.*;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.UnsatisfiedDependencyException;
+import org.jvnet.hk2.component.Singleton;
 import com.sun.hk2.component.InjectionResolver;
 
 import com.sun.enterprise.universal.GFBase64Decoder;
@@ -188,6 +191,32 @@ public class CommandRunnerImpl implements CommandRunner {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             LogHelper.getDefaultLogger().info(msg);
         }
+
+        Scoped scoped = command.getClass().getAnnotation(Scoped.class);
+        if (scoped == null) {
+            String msg = adminStrings.getLocalString("adapter.command.noscope",
+                    "Implementation for the command {0} exists in the " +
+                    "system,\nbut it has no @Scoped annotation", commandName);
+            report.setMessage(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            LogHelper.getDefaultLogger().info(msg);
+            command = null;
+        } else if (scoped.value() == Singleton.class) {
+            // check that there are no parameters for this command
+            CommandModel model = getModel(command);
+            if (model.getParameters().size() > 0) {
+                String msg =
+                    adminStrings.getLocalString("adapter.command.hasparams",
+                        "Implementation for the command {0} exists in the " +
+                        "system,\nbut it's a singleton that also has " +
+                        "parameters", commandName);
+                report.setMessage(msg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                LogHelper.getDefaultLogger().info(msg);
+                command = null;
+            }
+        }
+
         return command;
     }
 

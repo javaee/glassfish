@@ -38,6 +38,8 @@ package com.sun.enterprise.v3.admin;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.ActionReport;
@@ -52,6 +54,7 @@ import java.net.URI;
  * List the modules available to this instance and their status
  */
 @Service(name="list-modules")
+@Scoped(Singleton.class)        // no per-execution state
 @I18n("list.modules.command")
 public class ListModulesCommand implements AdminCommand {
 

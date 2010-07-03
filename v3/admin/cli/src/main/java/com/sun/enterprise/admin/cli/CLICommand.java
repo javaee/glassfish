@@ -558,8 +558,7 @@ public abstract class CLICommand implements PostConstruct {
     /**
      * The prepare method must ensure that the commandModel field is set.
      */
-    protected void prepare()
-            throws CommandException, CommandValidationException {
+    protected void prepare() throws CommandException {
         commandModel = new CommandModelImpl(this.getClass());
     }
 
@@ -573,8 +572,7 @@ public abstract class CLICommand implements PostConstruct {
      * @throws CommandValidationException if there's something wrong
      *          with the options or arguments
      */
-    protected void parse()
-            throws CommandException, CommandValidationException  {
+    protected void parse() throws CommandException {
         /*
          * If this is a help request, we don't need the command
          * metadata and we throw away all the other options and
@@ -645,6 +643,24 @@ public abstract class CLICommand implements PostConstruct {
      */
     protected void prevalidate()
             throws CommandException, CommandValidationException  {
+        /*
+         * First, check that the command has the proper scope.
+         * (Could check this in getCommand(), but at that point we
+         * don't have the CommandModel yet.)
+         * Remote commands are checked on the server.
+         */
+        if (!(this instanceof RemoteCommand)) {
+            Scoped scoped = this.getClass().getAnnotation(Scoped.class);
+            if (scoped == null) {
+                throw new CommandException(strings.get("NoScope", name));
+            } else if (scoped.value() == Singleton.class) {
+                // check that there are no parameters for this command
+                if (commandModel.getParameters().size() > 0) {
+                    throw new CommandException(strings.get("HasParams", name));
+                }
+            }
+        }
+
         /*
          * Check for missing options and operands.
          */

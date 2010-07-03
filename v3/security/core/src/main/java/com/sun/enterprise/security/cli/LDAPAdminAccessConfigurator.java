@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2006-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2006-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.security.cli;
 
 import com.sun.enterprise.config.serverbeans.*;
@@ -47,10 +48,12 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.component.PerLookup;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -65,6 +68,7 @@ import java.util.logging.Logger;
  * @since GlassFish V3
  */
 @Service(name="configure-ldap-for-admin")
+@Scoped(PerLookup.class)
 public class LDAPAdminAccessConfigurator implements AdminCommand {
 
     @Param (name="basedn", shortName="b", optional=false)

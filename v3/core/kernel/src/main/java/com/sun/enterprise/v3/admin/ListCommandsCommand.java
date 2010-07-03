@@ -47,9 +47,11 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.Inhabitants;
+import org.jvnet.hk2.component.Singleton;
 
 /**
  * Simple admin command to list all existing commands.
@@ -58,6 +60,7 @@ import org.jvnet.hk2.component.Inhabitants;
  * 
  */
 @Service(name="list-commands")
+@Scoped(Singleton.class)        // no per-execution state
 public class ListCommandsCommand implements AdminCommand {
 
     private static final String DEBUG_PAIR = "mode=debug";

@@ -351,6 +351,9 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
             }
             AdminCommand adminCommand = commandRunner.getCommand(command, report, logger);
             if (adminCommand==null) {
+                // maybe commandRunner already reported the failure?
+                if (report.getActionExitCode() == ActionReport.ExitCode.FAILURE)
+                    return report;
                 String message =
                     adminStrings.getLocalString("adapter.command.notfound",
                         "Command {0} not found", command);

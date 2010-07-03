@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,14 +44,14 @@ import org.glassfish.api.admin.AdminCommand;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
+
 /**
- * Created by IntelliJ IDEA.
- * User: cmott
- * Date: Apr 20, 2009
- * Time: 5:32:17 PM
- * To change this template use File | Settings | File Templates.
+ * @author cmott
  */
 @Service(name="rotate-log")
+@Scoped(Singleton.class)        // no per-execution state
 public class RotateLog implements AdminCommand {
 
     @Inject
@@ -59,6 +59,5 @@ public class RotateLog implements AdminCommand {
 
     public void execute(AdminCommandContext context) {
         gf.rotate();
-
     }
 }

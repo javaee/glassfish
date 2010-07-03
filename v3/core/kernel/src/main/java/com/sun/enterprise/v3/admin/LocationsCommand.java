@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,8 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.glassfish.bootstrap.StartupContextUtil;
 
@@ -50,6 +52,7 @@ import com.sun.enterprise.glassfish.bootstrap.StartupContextUtil;
  * @author Jerome Dochez
  */
 @Service(name="__locations")
+@Scoped(Singleton.class)
 @I18n("locations.command")
 public class LocationsCommand implements AdminCommand {
     
