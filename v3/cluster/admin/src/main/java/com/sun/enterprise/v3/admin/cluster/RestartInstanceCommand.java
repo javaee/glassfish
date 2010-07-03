@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.module.ModulesRegistry;
@@ -48,20 +47,28 @@ import org.jvnet.hk2.component.PerLookup;
  *
  * @author bnevins
  */
-
-
 @Service(name = "restart-instance")
 @Scoped(PerLookup.class)
 @Async
 @I18n("restart.instance.command")
+public class RestartInstanceCommand extends RestartServer implements AdminCommand {
 
-public class RestartInstanceCommand extends RestartServer implements AdminCommand  {
     @Inject
     ModulesRegistry registry;
+    @Inject
+    private ServerEnvironment env;
+    // no default value!  We use the Boolean as a tri-state.
+    @Param(name = "debug", optional = true)
+    private Boolean debug;
 
     @Override
     public void execute(AdminCommandContext context) {
         setRegistry(registry);
+        setServerName(env.getInstanceName());
+
+        if (debug != null)
+            setDebug(debug);
+
         doExecute(context);
     }
 }

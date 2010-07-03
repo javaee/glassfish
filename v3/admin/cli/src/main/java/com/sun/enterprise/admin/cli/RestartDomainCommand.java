@@ -38,6 +38,7 @@ package com.sun.enterprise.admin.cli;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
+import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.admin.*;
@@ -64,6 +65,8 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Scoped(PerLookup.class)
 public class RestartDomainCommand extends StopDomainCommand {
 
+    @Param(name = "debug", optional = true)
+    private Boolean debug;
     @Inject
     private Habitat habitat;
     private static final LocalStringsImpl strings =
@@ -90,7 +93,10 @@ public class RestartDomainCommand extends StopDomainCommand {
         if (pwFile != null)
             stamp = pwFile.lastModified();
 
-        cmd.executeAndReturnOutput("restart-domain");
+        if (debug != null)
+            cmd.executeAndReturnOutput("restart-domain", "--debug", debug.toString());
+        else
+            cmd.executeAndReturnOutput("restart-domain");
 
         waitForRestart(pwFile, stamp, uptimeOldServer);
 
@@ -106,16 +112,6 @@ public class RestartDomainCommand extends StopDomainCommand {
         logger.printWarning(strings.get("restart.dasNotRunning"));
         CLICommand cmd = habitat.getComponent(CLICommand.class, "start-domain");
         // XXX - assume start-domain accepts all the same options
-
-
-
-
-
-
-
-
-
-
         return cmd.execute(argv);
     }
 }

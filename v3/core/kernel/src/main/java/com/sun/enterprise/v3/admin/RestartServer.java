@@ -39,6 +39,7 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.process.JavaClassRunner;
+import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.admin.AdminCommandContext;
 
 import java.io.*;
@@ -50,15 +51,23 @@ import java.util.logging.*;
  * Stop this server, spawn a new JVM that will wait for this JVM to die.  The new JVM then starts the server again.
  *
  * For verbose mode:
- * We want the asadmin console itself to do the respawning -- so just return a 10 from
+ * We want the asadmin console itself to do the respawning -- so just return a special int from
  * System.exit().  This tells asadmin to restart.
  *
  * @author Byron Nevins
  */
 public class RestartServer {
 
+    protected final void setDebug(Boolean b) {
+        debug = b;
+    }
+
     protected final void setRegistry(final ModulesRegistry registryIn) {
         registry = registryIn;
+    }
+
+    protected final void setServerName(String serverNameIn) {
+        serverName = serverNameIn;
     }
 
     /**
@@ -67,14 +76,13 @@ public class RestartServer {
      * All running services are stopped.
      * LookupManager is flushed.
      *
-     * Client code that started us should notice the return value of 10 and restart us.
+     * Client code that started us should notice the special return value and restart us.
      */
     protected final void doExecute(AdminCommandContext context) {
         try {
             // unfortunately we can't rely on constructors with HK2...
-            if(registry == null)
-                throw new NullPointerException(new LocalStringsImpl(getClass())
-                        .get("restart.server.internalError", "registry was not set"));
+            if (registry == null)
+                throw new NullPointerException(new LocalStringsImpl(getClass()).get("restart.server.internalError", "registry was not set"));
 
             init(context);
 
@@ -82,7 +90,7 @@ public class RestartServer {
                 // do it now while we still have the Logging service running...
                 reincarnate();
             }
-            // else we just return 10 from System.exit()
+            // else we just return a special int from System.exit()
 
             Collection<Module> modules = registry.getModules(
                     "com.sun.enterprise.osgi-adapter");
@@ -98,7 +106,12 @@ public class RestartServer {
             context.getLogger().severe(strings.get("restart.server.failure", e));
         }
 
-        System.exit(10);
+        int ret = RESTART_NORMAL;
+
+        if (debug != null)
+            ret = debug ? RESTART_DEBUG_ON : RESTART_DEBUG_OFF;
+
+        System.exit(ret);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -186,8 +199,92 @@ public class RestartServer {
         }
 
         args = argsString.split(",,,");
-
+        handleDebug();
         return true;
+    }
+
+    private final void handleDebug() {
+        if (debug == null) // nothing to do!
+            return;
+
+        stripDebugFromArgs();
+        stripOperandFromArgs();
+        int oldlen = args.length;
+        int newlen = oldlen + 2;
+        String debugArg = "--debug=" + debug.toString();
+        String[] newArgs = new String[newlen];
+
+        // copy all but the last arg (domain-name)
+        System.arraycopy(args, 0, newArgs, 0, args.length);
+        newArgs[newlen - 2] = debugArg;
+        newArgs[newlen - 1] = serverName;
+        args = newArgs;
+    }
+
+    private void stripDebugFromArgs() {
+        // this is surprisingly complex!
+        // "--debug domain1" is one
+        // "--debug=true" is one
+        // "--debug false" is two
+        boolean twoArgs = false;
+        int indexOfDebug = -1;
+
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].startsWith("--debug=")) {
+                indexOfDebug = i;
+                break;
+            }
+            if (args[i].startsWith("--debug")) {
+                indexOfDebug = i;
+
+                // who knows what happens in CLI when the domain's name is "true" ?!?
+                // we could potentially be fooled by that one very unlikely scenario
+                if (args.length > i + 1) {// broken into two if's for readability...
+                    if (args[i + 1].equals("true") || args[i + 1].equals("false")) {
+                        twoArgs = true;
+                    }
+                }
+                break;
+            }
+        }
+
+        if (indexOfDebug < 0)
+            return;
+
+        int oldlen = args.length;
+        int newlen = oldlen - 1;
+
+        if (twoArgs)
+            --newlen;
+
+        String[] newArgs = new String[newlen];
+        int ctr = 0;
+
+        for (int i = 0; i < oldlen; i++) {
+            if (i == indexOfDebug)
+                continue;
+            if (twoArgs && i == (indexOfDebug + 1))
+                continue;
+
+            newArgs[ctr++] = args[i];
+        }
+
+        args = newArgs;
+    }
+
+    private void stripOperandFromArgs() {
+        // remove the domain-name operand
+        // it may not be here!
+        if(args.length < 2 || !StringUtils.ok(serverName))
+            return;
+
+        int newlen = args.length - 1;
+
+        if(serverName.equals(args[newlen])) {
+            String[] newargs = new String[newlen];
+            System.arraycopy(args, 0, newargs, 0, newlen);
+            args = newargs;
+        }
     }
 
     private boolean ok(String s) {
@@ -199,6 +296,7 @@ public class RestartServer {
     private static class RDCException extends Exception {
     }
     ModulesRegistry registry;
+    private Boolean debug = null;
     private Properties props;
     private Logger logger;
     private boolean verbose;
@@ -206,10 +304,14 @@ public class RestartServer {
     private String classname;
     private String argsString;
     private String[] args;
+    private String serverName = "";
     private static final LocalStringsImpl strings = new LocalStringsImpl(RestartServer.class);
     /////////////             static variables               ///////////////////
     private static final String magicProperty = "-DAS_RESTART=true";
     private static final String[] normalProps = {magicProperty};
+    private static final int RESTART_NORMAL = 10;
+    private static final int RESTART_DEBUG_ON = 11;
+    private static final int RESTART_DEBUG_OFF = 12;
     private static final String[] debuggerProps = {
         magicProperty,
         "-Xdebug",

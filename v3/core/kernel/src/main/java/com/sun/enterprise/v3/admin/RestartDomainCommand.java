@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -42,8 +43,10 @@ import com.sun.enterprise.universal.process.JavaClassRunner;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -68,8 +71,14 @@ import java.util.logging.*;
 @Async
 @I18n("restart.domain.command")
 public class RestartDomainCommand extends RestartServer implements AdminCommand {
+
     @Inject
     ModulesRegistry registry;
+    // no default value!  We use the Boolean as a tri-state.
+    @Param(name = "debug", optional = true)
+    private String debug;
+    @Inject
+    private ServerEnvironment env;
 
     /** version which will use injection */
     public RestartDomainCommand() {
@@ -90,6 +99,10 @@ public class RestartDomainCommand extends RestartServer implements AdminCommand 
      */
     public void execute(AdminCommandContext context) {
         setRegistry(registry);
+        setServerName(env.getInstanceRoot().getName());
+        if (debug != null)
+            setDebug(Boolean.parseBoolean(debug));
+
         doExecute(context);
     }
 }
