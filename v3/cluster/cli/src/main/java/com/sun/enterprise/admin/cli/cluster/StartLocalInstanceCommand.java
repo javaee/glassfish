@@ -52,7 +52,7 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.admin.cli.StartServerCommand;
-
+import static com.sun.enterprise.admin.cli.CLIConstants.*;
 /**
  * Start a local server instance.
  */
@@ -147,15 +147,31 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
             launcher.launch();
 
             if (verbose || upgrade) { // we can potentially loop forever here...
-                while (launcher.getExitValue() >= CLIConstants.RESTART_NORMAL) {
-                    logger.printMessage(strings.get("restart"));
+                while (true) {
+                    int returnValue = launcher.getExitValue();
 
+                    switch (returnValue) {
+                        case RESTART_NORMAL:
+                            logger.printMessage(strings.get("restart"));
+                            break;
+                        case RESTART_DEBUG_ON:
+                            logger.printMessage(strings.get("restartChangeDebug", "on"));
+                            info.setDebug(true);
+                            break;
+                        case RESTART_DEBUG_OFF:
+                            logger.printMessage(strings.get("restartChangeDebug", "off"));
+                            info.setDebug(false);
+                            break;
+                        default:
+                            return returnValue;
+                    }
+                    
                     if (CLIConstants.debugMode)
                         System.setProperty(CLIConstants.WALL_CLOCK_START_PROP,
                                             "" + System.currentTimeMillis());
                     launcher.relaunch();
                 }
-                return launcher.getExitValue();
+
             } else {
                 helper.waitForServer();
                 helper.report();
