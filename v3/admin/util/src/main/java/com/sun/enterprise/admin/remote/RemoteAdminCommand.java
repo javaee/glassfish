@@ -813,8 +813,15 @@ public class RemoteAdminCommand {
             if (cmdnode == null) {
                 Node report = doc.getElementsByTagName("action-report").item(0);
                 String cause = getAttr(report.getAttributes(), "failure-cause");
-                if (cause != null)
+                if (ok(cause))
                     errors.append(cause);
+                else {
+                    Node mp = report.getFirstChild();   // message-part
+                    if (mp != null)
+                        cause = getAttr(mp.getAttributes(), "message");
+                    if (ok(cause))
+                        errors.append(cause);
+                }
                 // no command info, must be invalid command or something
                 // wrong with command implementation
                 return null;

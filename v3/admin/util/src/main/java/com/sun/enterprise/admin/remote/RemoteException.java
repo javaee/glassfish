@@ -36,34 +36,25 @@
 
 package com.sun.enterprise.admin.remote;
 
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-
 /**
  *
  * @author bnevins
  */
 public abstract class RemoteException extends Exception {
-        //save the cause string from server 
+    // save the cause string from server 
     private String remoteCause = "";
 
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(RemoteException.class);
-    
     RemoteException(String msg) {
-            super(strings.get(msg));
+        super(msg);
     }
 
     RemoteException(String msg, String cause) {
-        super(strings.get(msg));
+        super(msg);
         if (cause != null) {
             remoteCause = cause;
         }
     }
-    
-    RemoteException(String msg, Object... objs) {
-            super(strings.get(msg, objs));
-    }
-    
+
     RemoteException(Throwable t) {
             super(t.getMessage(), t);
     }

@@ -36,15 +36,19 @@
 
 package com.sun.enterprise.admin.remote;
 
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+
 /**
  *
  * @author bnevins
  */
 class PlainTextManager implements ResponseManager{
+    private static final LocalStringsImpl strings =
+            new LocalStringsImpl(PlainTextManager.class);
+
     PlainTextManager(String response) throws RemoteException{
         this.response = response;
     }
-
 
     public void process() throws RemoteException {
         // format:
@@ -54,14 +58,13 @@ class PlainTextManager implements ResponseManager{
         String good = MAGIC + SUCCESS;
         String bad  = MAGIC + FAILURE;
         
-        if(response.startsWith(good)) {
+        if (response.startsWith(good)) {
             throw new RemoteSuccessException(response.substring(good.length()));
-        }
-        else if(response.startsWith(bad)) {
+        } else if (response.startsWith(bad)) {
             throw new RemoteSuccessException(response.substring(bad.length()));
-        }
-        else {
-            throw new RemoteFailureException("unknownFormat", response);
+        } else {
+            throw new RemoteFailureException(
+		    strings.get("unknownFormat", response));
         }
     }
 

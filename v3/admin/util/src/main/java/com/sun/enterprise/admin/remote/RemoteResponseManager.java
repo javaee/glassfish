@@ -77,7 +77,7 @@ public class RemoteResponseManager implements ResponseManager {
         response = baos.toString();
         
         if(!StringUtils.ok(response))
-            throw new RemoteFailureException("emptyResponse");
+            throw new RemoteFailureException(strings.get("emptyResponse"));
         
         logger.finer("------- RAW RESPONSE  ---------");
         logger.finer(response);
@@ -98,8 +98,7 @@ public class RemoteResponseManager implements ResponseManager {
         }
         // put a try around this if another type of response is added...
         handlePlainText();
-        throw new RemoteFailureException("internal",
-                                    strings.get("unknownResponse", response));
+        throw new RemoteFailureException(strings.get("internal", response));
     }
 
     public Map<String,String> getMainAtts() {
@@ -107,7 +106,7 @@ public class RemoteResponseManager implements ResponseManager {
     }
     private void checkCode() throws RemoteFailureException {
         if(code != HTTP_SUCCESS_CODE) {
-            throw new RemoteFailureException("badHttpCode", code); 
+            throw new RemoteFailureException(strings.get("badHttpCode", code));
         }
     }
     

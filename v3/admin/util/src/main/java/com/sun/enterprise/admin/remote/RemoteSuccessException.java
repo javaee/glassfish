@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.admin.remote;
 
-
 /**
  *
  * @author bnevins
@@ -45,9 +44,4 @@ public class RemoteSuccessException extends RemoteException {
      RemoteSuccessException(String msg) {
             super(msg);
     }
-    
-    RemoteSuccessException(String msg, Object... objs) {
-            super(msg, objs);
-    }
-
 }
