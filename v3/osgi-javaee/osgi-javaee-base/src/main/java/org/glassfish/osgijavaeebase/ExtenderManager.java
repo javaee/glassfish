@@ -53,12 +53,10 @@ import com.sun.enterprise.module.bootstrap.ModuleStartup;
 /**
  * It is responsible for starting any registered {@link Extender} service
  * after GlassFish server is started and stopping them when server is shutdown.
- * As much as we would like to use GlassFish STARTED event to be notified
- * of server startup, we can't, because the order in which bundles are started
- * is undefined. Fortunately, HK2 OSGi bundle registers Habitat in service
- * registry after ModuleStartup has been called. That's a sufficient
- * indication that server has been started.
- * For shutdown, we don't have any such issue. We use SHUTDOWN event.
+ * We use GlassFish STARTED event to be notified of server startup and shutdown.
+ * Because the order in which bundles are started is undefined, we can't just assume existence
+ * of Habitat to ask for the {@link }Events} service. Fortunately, HK2 OSGi bundle registers
+ * Habitat in service registry. So we track that service and from there we listen to GF events.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -98,9 +96,7 @@ public class ExtenderManager
         stopExtenders();
     }
 
-    public void doActualWork() {
-        events = habitat.getComponent(Events.class);
-        registerGlassFishShutdownHook();
+    public void startExtenders() {
         extenderTracker = new ExtenderTracker(context);
         extenderTracker.open();
     }
@@ -127,18 +123,6 @@ public class ExtenderManager
                     "Not able to stop all extenders", e);
         }
 
-    }
-
-    private void registerGlassFishShutdownHook() {
-        listener = new EventListener() {
-            public void event(Event event)
-            {
-                if (EventTypes.PREPARE_SHUTDOWN.equals(event.type())) {
-                    stopExtenders();
-                }
-            }
-        };
-        events.register(listener);
     }
 
     private void unregisterGlassFishShutdownHook() {
@@ -169,22 +153,34 @@ public class ExtenderManager
     }
 
     /**
-     * HK2 OSGi bundle registers ModuleStartup in service
-     * registry after ModuleStartup has been called.
+     * Tracks Habitat and obtains EVents service from it and registers a listener
+     * that takes care of actually starting and stopping other extenders.
      */
     private class GlassFishServerTracker extends ServiceTracker {
         public GlassFishServerTracker(BundleContext context)
         {
-            super(context, ModuleStartup.class.getName(), null);
+            super(context, Habitat.class.getName(), null);
         }
 
         @Override
         public Object addingService(ServiceReference reference)
         {
-            logger.logp(Level.FINE, "ExtenderManager$GlassFishServerTracker", "addingService", "GlassFish has been started");
+            logger.logp(Level.FINE, "ExtenderManager$GlassFishServerTracker", "addingService", "Habitat has been created");
             ServiceReference habitatServiceRef = context.getServiceReference(Habitat.class.getName());
             habitat = Habitat.class.cast(context.getService(habitatServiceRef));
-            doActualWork();
+            events = habitat.getComponent(Events.class);
+            listener = new EventListener() {
+                public void event(Event event)
+                {
+                    if (EventTypes.SERVER_READY.equals(event.type())) {
+                        startExtenders();
+                    } else if (EventTypes.PREPARE_SHUTDOWN.equals(event.type())) {
+                        stopExtenders();
+                    }
+                }
+            };
+            events.register(listener);
+            close(); // no need to track any more
             return super.addingService(reference);
         }
     }

@@ -37,28 +37,27 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import org.osgi.framework.*;
-import org.osgi.util.tracker.ServiceTracker;
-import org.osgi.service.cm.ManagedService;
-import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
+import org.osgi.util.tracker.ServiceTracker;
 
-import java.io.StringReader;
-import java.io.IOException;
 import java.io.File;
-import java.util.Properties;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Properties;
 import java.util.logging.Logger;
-
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
- *
- * This is the bundle activator responsible for starting GlassFish server process.
- * It also starts any bundles that's necessary for glassfish to function (e.g., file install, config admin)
+ *         <p/>
+ *         This is the bundle activator responsible for starting GlassFish server process.
+ *         It also starts any bundles that's necessary for glassfish to function (e.g., file install, config admin)
  */
 
 public class GlassFishActivator implements BundleActivator {
@@ -93,7 +92,7 @@ public class GlassFishActivator implements BundleActivator {
         } else {
             Properties p = new Properties();
             p.setProperty(org.osgi.framework.Constants.SERVICE_PID, gfpid);
-            context.registerService(ManagedService.class.getName(), new ManagedService(){
+            context.registerService(ManagedService.class.getName(), new ManagedService() {
                 public void updated(Dictionary dictionary) throws ConfigurationException {
                     try {
                         if (dictionary != null) {
@@ -109,6 +108,7 @@ public class GlassFishActivator implements BundleActivator {
                 }
             }, p);
         }
+        startGlassFish();
     }
 
     private Properties dict2Properties(Dictionary dictionary) {
@@ -123,7 +123,8 @@ public class GlassFishActivator implements BundleActivator {
     }
 
     public void stop(BundleContext context) throws Exception {
-        if (config != null) config.delete();
+        // Stopping osgi-adapter will take care of stopping ModuleStartup service, release of habitat, etc.
+        stopBundle("com.sun.enterprise.osgi-adapter");
         if (caTracker != null) caTracker.close();
     }
 
@@ -141,29 +142,41 @@ public class GlassFishActivator implements BundleActivator {
         System.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME, instanceRoot.toURI().toString());
     }
 
+    // It starts GlassFish in a different thread
+
+    private void startGlassFish() {
+        ServiceTracker gfKernelTracker = new ServiceTracker(bundleContext, ModuleStartup.class.getName(), null) {
+            @Override
+            public Object addingService(ServiceReference reference) {
+                ModuleStartup gfKernel = (ModuleStartup) context.getService(reference);
+                System.out.println("Starting " + gfKernel);
+                gfKernel.start();
+                startPostStartupBundles();
+                close(); // no need to track it any more
+                return super.addingService(reference);
+            }
+        };
+        gfKernelTracker.open();
+    }
+
     private void startBundles() {
         // 1. Start cofigadmin as we depend on its service.
         startConfigAdmin();
 
         // 2.  Start osgi-adapter (this is a hk2 bootstrap module)
         startBundle("com.sun.enterprise.osgi-adapter");
+    }
 
-        // The rest of the bundles are started only after GlassFish kernel has successfully started.
-        // This ensures that all the configuration data set as system properties in domain.xml is set
-        // in the system for these bundles to use. e.g., shell port or file install watched directory
-        // We track glassfish using service tracker. If you look at HK2Main, it registers
-        // ModuleStartup in OSGi service registry after launching it, so we track that service.
-        ServiceTracker gfTracker = new ServiceTracker(bundleContext, ModuleStartup.class.getName(), null) {
-                @Override
-                public Object addingService(ServiceReference reference) {
-                    startBundle("org.apache.felix.shell");
-                    startBundle("org.apache.felix.org.apache.felix.shell.remote");
-                    startBundle("org.apache.felix.fileinstall");
-                    close(); // we don't have to track this any more
-                    return super.addingService(reference);
-                }
-        };
-        gfTracker.open();
+    /**
+     * For various reasons, we may like to start some OSGi bundles only after server is started.
+     * e.g., we set shell port as a system property in domain.xml, so to guarantee that it is set as a system
+     * property in the environment, we would like to wait for server to be ready. More over, starting these
+     * non-essential bundles after server is ready gives faster start up time.
+     */
+    private void startPostStartupBundles() {
+        startBundle("org.apache.felix.shell");
+        startBundle("org.apache.felix.org.apache.felix.shell.remote");
+        startBundle("org.apache.felix.fileinstall");
     }
 
     /**
@@ -179,7 +192,7 @@ public class GlassFishActivator implements BundleActivator {
     }
 
     /**
-     * Start Felix shell if not already started
+     * Start a bundle if not already started
      */
     private void startBundle(String bsn) {
         Bundle b = findBundle(bsn);
@@ -188,6 +201,23 @@ public class GlassFishActivator implements BundleActivator {
                 b.start(Bundle.START_TRANSIENT);
             } catch (BundleException e) {
                 System.out.println("Failed to start: " + bsn);
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Can't locate bundle: " + bsn);
+        }
+    }
+
+    /**
+     * Stop a bundle if not already stopped
+     */
+    private void stopBundle(String bsn) {
+        Bundle b = findBundle(bsn);
+        if (b != null) {
+            try {
+                b.stop(Bundle.STOP_TRANSIENT);
+            } catch (BundleException e) {
+                System.out.println("Failed to stop: " + bsn);
                 e.printStackTrace();
             }
         } else {
@@ -204,6 +234,7 @@ public class GlassFishActivator implements BundleActivator {
 
     private class CATracker extends ServiceTracker {
         Properties properties;
+
         public CATracker(Properties properties) {
             super(bundleContext, ConfigurationAdmin.class.getName(), null);
             this.properties = properties;
@@ -213,7 +244,7 @@ public class GlassFishActivator implements BundleActivator {
         public Object addingService(ServiceReference reference) {
             try {
                 final ConfigurationAdmin ca = (ConfigurationAdmin) context.getService(reference);
-                assert(ca != null);
+                assert (ca != null);
                 updateConfig(properties, ca);
             } catch (Exception ioe) {
                 throw new RuntimeException(ioe);
@@ -223,9 +254,11 @@ public class GlassFishActivator implements BundleActivator {
     }
 
     private void updateConfig(Properties properties, ConfigurationAdmin ca) throws Exception {
+        // set env props before updating config, because configuration update may actually trigger
+        // some code to be executed which may be depending on the environment variable values.
+        setEnv(properties);
         config = ca.getConfiguration(hk2pid, null);
         config.update(properties);
-        setEnv(properties);
     }
 
     private void deleteConfig() throws IOException {
