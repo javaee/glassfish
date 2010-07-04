@@ -67,38 +67,9 @@ import org.jvnet.hk2.component.Habitat;
  * @author Byron Nevins
  */
 ////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
 // the xml parser throws runtime exceptions at the drop of a hat!  E.g. a server-ref
 // does not have a ref element and you ask for it.  **  KABOOM  **
 // recommend:  add some wrapper methods in here that will just set the variables to null!
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-
-
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
-////////  TODO TODO TODO TODO TODO
 class InstanceReaderFilter extends ServerReaderFilter {
     InstanceReaderFilter(String theServerName, Habitat theHabitat, URL theDomainXml,
             XMLInputFactory theXif) throws XMLStreamException {
@@ -114,6 +85,9 @@ class InstanceReaderFilter extends ServerReaderFilter {
      * We use this as a handy hook to get info about other elements -- which really
      * is a side-effect.
      *
+     * bnevins, July 2010 - change to keep all server elements.  Instances like
+     * to know about the existence of other instances.  the server elements are tiny
+     * compared to config elements anyway.
      * @return true to NOT parse this sub-tree
      * @throws XMLStreamException
      */
@@ -127,9 +101,6 @@ class InstanceReaderFilter extends ServerReaderFilter {
                 return true; // famous last words:  "this can not ever happen" ;-)
 
             checkIfReparseRequired(elementName);
-
-            if(elementName.equals(SERVER))
-                return handleServer(reader);
 
             if(elementName.equals(CONFIG))
                 return handleConfig(reader);
@@ -236,6 +207,7 @@ class InstanceReaderFilter extends ServerReaderFilter {
      * 
      * @return true if we want to filter out this server element
      */
+
     private boolean handleServer(XMLStreamReader r) {
         if(parsedServer)
             return true;    // we already found our server.  Filter this one out
@@ -269,7 +241,6 @@ class InstanceReaderFilter extends ServerReaderFilter {
         return false;   // No cluster found
         // todo log???  check reparse flag etc.
     }
-
     private boolean handleConfig(XMLStreamReader reader) {
         String name = reader.getAttributeValue(null, NAME);
 
