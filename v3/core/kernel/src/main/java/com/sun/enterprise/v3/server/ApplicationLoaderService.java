@@ -434,8 +434,12 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
             ApplicationRef appRef = server.getApplicationRef(app.getName());
             if (appRef != null && Boolean.valueOf(appRef.getEnabled())) {
                 Cluster cluster = server.getCluster();
-                ApplicationRef appRef2 = cluster.getApplicationRef(app.getName());
-                if (appRef2 != null && Boolean.valueOf(appRef2.getEnabled())) {
+                if (cluster != null) {
+                    ApplicationRef appRef2 = cluster.getApplicationRef(app.getName());
+                    if (appRef2 != null && Boolean.valueOf(appRef2.getEnabled())) {
+                        return true;
+                    }
+                } else {
                     return true;
                 }
             }
