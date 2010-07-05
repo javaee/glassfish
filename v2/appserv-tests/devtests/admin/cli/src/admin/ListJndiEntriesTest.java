@@ -64,6 +64,8 @@ public class ListJndiEntriesTest extends AdminBaseDevTest {
         try {
             asadmin("stop-local-instance", STANDALONE_INSTANCE_NAME);
             asadmin("delete-local-instance", STANDALONE_INSTANCE_NAME);
+            asadmin("stop-local-instance", INSTANCE1_NAME);
+            asadmin("stop-local-instance", INSTANCE2_NAME);
             asadmin("stop-cluster", CLUSTER_NAME);
             asadmin("delete-local-instance", INSTANCE1_NAME);
             asadmin("delete-local-instance", INSTANCE2_NAME);
@@ -74,12 +76,24 @@ public class ListJndiEntriesTest extends AdminBaseDevTest {
     }
 
     public void runTests() {
-        cleanup();
         startDomain();
         asadmin("create-cluster", CLUSTER_NAME);
-        asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
-        asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
-        asadmin("create-local-instance", STANDALONE_INSTANCE_NAME);
+
+        asadmin("create-local-instance", "--cluster", CLUSTER_NAME,
+                "--systemproperties",
+                "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848",
+                INSTANCE1_NAME);
+
+        asadmin("create-local-instance", "--cluster", CLUSTER_NAME,
+                "--systemproperties",
+                "HTTP_LISTENER_PORT=28080:HTTP_SSL_LISTENER_PORT=28181:IIOP_SSL_LISTENER_PORT=23800:IIOP_LISTENER_PORT=23700:JMX_SYSTEM_CONNECTOR_PORT=27676:IIOP_SSL_MUTUALAUTH_PORT=23801:JMS_PROVIDER_PORT=28686:ASADMIN_LISTENER_PORT=24848",
+                INSTANCE2_NAME);
+
+        asadmin("create-local-instance", 
+                "--systemproperties",
+                "HTTP_LISTENER_PORT=28080:HTTP_SSL_LISTENER_PORT=38181:IIOP_SSL_LISTENER_PORT=33800:IIOP_LISTENER_PORT=33700:JMX_SYSTEM_CONNECTOR_PORT=37676:IIOP_SSL_MUTUALAUTH_PORT=33801:JMS_PROVIDER_PORT=38686:ASADMIN_LISTENER_PORT=34848",
+                STANDALONE_INSTANCE_NAME);
+
         asadmin("start-cluster", CLUSTER_NAME);
         asadmin("start-local-instance", STANDALONE_INSTANCE_NAME);
         //TODO create a resource in STANDALONE_INSTANCE_NAME only
