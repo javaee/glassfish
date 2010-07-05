@@ -46,6 +46,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
 import com.sun.jersey.spi.container.ContainerRequest;
+import java.util.List;
 import javax.ws.rs.DELETE;
 import org.glassfish.admin.rest.provider.ActionReportResult;
 import org.glassfish.admin.rest.provider.CommandResourceGetResult;
@@ -132,8 +133,12 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
     public ActionReportResult hack(ParameterMap data) {
-        if ((data.containsKey("operation")) && (data.get("operation").equals("__deleteoperation"))) {
-            data.remove("operation");
+        if (data.containsKey("operation")) {
+            List<String> l = data.get("operation");
+            if (l.contains("__deleteoperation")) {
+
+                data.remove("operation");
+            }
         }
         return processDelete(data);
     }
