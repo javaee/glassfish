@@ -38,7 +38,6 @@ package com.sun.enterprise.security.cli;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -48,17 +47,27 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.types.Property;
-import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
-import com.sun.enterprise.security.auth.realm.BadRealmException;
-import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.security.common.Util;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import java.beans.PropertyVetoException;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  * Create File User Command
@@ -75,31 +84,37 @@ import com.sun.enterprise.security.common.Util;
 @Service(name="create-file-user")
 @Scoped(PerLookup.class)
 @I18n("create.file.user")
-public class CreateFileUser implements AdminCommand {
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
+public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(CreateFileUser.class);    
 
     @Param(name="groups", optional=true, separator=':')
-    List<String> groups = new ArrayList<String>(0); //by default, an empty list is better than a null
+    private List<String> groups = new ArrayList<String>(0); //by default, an empty list is better than a null
 
+    //TODO: this is still a String, need to convert to char[]
     @Param(name="userpassword", password=true)
-    String userpassword;
+    private String userpassword;
 
     @Param(name="authrealmname", optional=true)
-    String authRealmName;
+    private String authRealmName;
     
-    @Param(optional=true)
-    String target;
+    @Param(name = "target", optional = true, defaultValue =
+    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
 
     @Param(name="username", primary=true)
-    String userName;
+    private String userName;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config;
+    @Inject
+    private Domain domain;
 
     @Inject
-    Configs configs;
-
-    @Inject
-    RealmsManager realmsManager;
+    private RealmsManager realmsManager;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -110,9 +125,15 @@ public class CreateFileUser implements AdminCommand {
     public void execute(AdminCommandContext context) {
         
         final ActionReport report = context.getActionReport();
-        List <Config> configList = configs.getConfig();
-        Config config = configList.get(0);
-        SecurityService securityService = config.getSecurityService();
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
+        final SecurityService securityService = config.getSecurityService();
 
         // ensure we have the file authrealm
         AuthRealm fileAuthRealm = null;
@@ -157,6 +178,7 @@ public class CreateFileUser implements AdminCommand {
             if (fileProp.getName().equals("file"))
                 keyFile = fileProp.getValue();
         }
+        final String kf = keyFile;
         if (keyFile == null) {
             report.setMessage(
                 localStrings.getLocalString("create.file.user.keyfilenotfound",
@@ -169,7 +191,7 @@ public class CreateFileUser implements AdminCommand {
         // password is tricky. It is stored in the file passwordfile passed 
         // through the CLI options. It is stored under the name 
         // AS_ADMIN_USERPASSWORD. Fetch it from there.
-        String password = userpassword; // fetchPassword(report);
+        final String password = userpassword; // fetchPassword(report);
         if (password == null) {
             report.setMessage(localStrings.getLocalString(
                "create.file.user.keyfilenotreadable", "Password for user {0} " +
@@ -180,35 +202,48 @@ public class CreateFileUser implements AdminCommand {
             return;
         }
         
-        // We have the right impl so let's get to checking existing user and 
-        // adding one if one does not exist
-
-   
-        //fr = new FileRealm(keyFile);
-        realmsManager.createRealms();
-        FileRealm fr = (FileRealm)realmsManager.getFromLoadedRealms(authRealmName);
-      
-        
         // now adding user
         try {
-            CreateFileUser.handleAdminGroup(authRealmName, groups);
-            String[] groups1 = groups.toArray(new String[groups.size()]); 
-            fr.addUser(userName, password, groups1);
-            if(Util.isEmbeddedServer()) {
-                fr.writeKeyFile(Util.writeConfigFileToTempDir(keyFile).getAbsolutePath());
-            }
-            else {
-                fr.writeKeyFile(keyFile);
-            }
-            refreshRealm(authRealmName);
+            //even though create-file-user is not an update to the security-service
+            //do we need to make it transactional by referncing the securityservice
+            //hypothetically ?.
+            ConfigSupport.apply(new SingleConfigCode<SecurityService>() {
+
+                public Object run(SecurityService param)
+                        throws PropertyVetoException, TransactionFailure {
+                    try {
+                        realmsManager.createRealms(securityService);
+                        final FileRealm fr = (FileRealm) realmsManager.getFromLoadedRealms(authRealmName);
+                        CreateFileUser.handleAdminGroup(authRealmName, groups);
+                        String[] groups1 = groups.toArray(new String[groups.size()]);
+                        fr.addUser(userName, password.toCharArray(), groups1);
+                        if (Util.isEmbeddedServer()) {
+                            fr.writeKeyFile(Util.writeConfigFileToTempDir(kf).getAbsolutePath());
+                        } else {
+                            fr.writeKeyFile(kf);
+                        }
+                        refreshRealm(authRealmName);
+                        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                    } catch (Exception e) {
+                        report.setMessage(
+                                localStrings.getLocalString("create.file.user.useraddfailed",
+                                "Adding User {0} to the file realm {1} failed",
+                                userName, authRealmName) + "  " + e.getLocalizedMessage());
+                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                        report.setFailureCause(e);
+                    }
+                    return null;
+                }
+            }, securityService);
+
         } catch (Exception e) {
             report.setMessage(
-                localStrings.getLocalString("create.file.user.useraddfailed",
-                "Adding User {0} to the file realm {1} failed", 
-                userName, authRealmName) + "  " + e.getLocalizedMessage() );
+                    localStrings.getLocalString("create.file.user.useraddfailed",
+                    "Adding User {0} to the file realm {1} failed",
+                    userName, authRealmName) + "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
-        }        
+        }
     }
 
     /* private String fetchPassword(ActionReport report) {
@@ -265,4 +300,20 @@ public class CreateFileUser implements AdminCommand {
             lg.add(fg);
         }
     }
+
+//    @Override
+//    public ActionReport prepare(ParameterMap parameters) {
+//        //TODO: is there a way to check if in a Cluster some
+//        //instances are down
+////        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+////        if (cluster!=null) {
+////            List<Server> servers = cluster.getInstances();
+////        }
+//        final ActionReport report = new ActionReport();
+//    }
+//
+//    @Override
+//    public void undo(ParameterMap parameters) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+//    }
 }

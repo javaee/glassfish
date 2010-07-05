@@ -37,6 +37,7 @@
 package com.sun.enterprise.security.auth.realm;
 
 import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.logging.LogDomains;
 import java.util.ArrayList;
@@ -46,7 +47,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -69,6 +72,9 @@ public class RealmsManager {
     private final RealmsProbeProvider probeProvider = new RealmsProbeProvider();
     private static final Logger _logger = LogDomains.getLogger(RealmsManager.class, LogDomains.SECURITY_LOGGER);
     
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config;
+
     public RealmsManager() {
         
     }
@@ -160,6 +166,9 @@ public class RealmsManager {
        
    }
 
+   public void createRealms() {
+       createRealms(config.getSecurityService());
+   }
 
    /**
      * Load all configured realms from server.xml and initialize each
@@ -171,7 +180,7 @@ public class RealmsManager {
      * <P>This method superceeds the RI RealmManager.createRealms() method.
      *
      * */
-    public void createRealms() {
+    public void createRealms(SecurityService securityBean) {
         //check if realms are already loaded by admin GUI ?
         if (realmsAlreadyLoaded()) {
             return;
@@ -182,8 +191,10 @@ public class RealmsManager {
                 _logger.fine("Initializing configured realms from SecurityService in Domain.xml....");
             }
 
-            SecurityService securityBean = Globals.getDefaultHabitat().getComponent(SecurityService.class);
-            assert (securityBean != null);
+            if (securityBean == null) {
+                securityBean = config.getSecurityService();
+                assert (securityBean != null);
+            }
 
             // grab default realm name
             String defaultRealm = securityBean.getDefaultRealm();

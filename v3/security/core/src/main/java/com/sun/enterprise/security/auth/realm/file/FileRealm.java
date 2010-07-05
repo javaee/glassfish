@@ -659,11 +659,16 @@ public final class FileRealm extends IASRealm
                                 // create user using new name
         FileRealmUser newUser = new FileRealmUser(newName);
         
-                                // set groups as provided by parameter
-        changeGroups(oldUser.getGroups(), groups);
-        newUser.setGroups(groups);
+        // set groups as provided by parameter
+        // use old groups if no new groups given
+        if (groups != null) {
+            changeGroups(oldUser.getGroups(), groups);
+            newUser.setGroups(groups);
+        } else {
+            newUser.setGroups(oldUser.getGroups());
+        }
         
-                                // use old password if no new pwd given
+        // use old password if no new pwd given
         if (password==null) {
             newUser.setSalt(oldUser.getSalt());
             newUser.setHash(oldUser.getHash());

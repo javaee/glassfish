@@ -36,11 +36,19 @@
 
 package com.sun.enterprise.security.cli;
 
-import com.sun.enterprise.config.serverbeans.*;
+//import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.AdminService;
+import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.ldap.LDAPRealm;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -61,6 +69,12 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 
 /**  A convenience command to configure LDAP for administration. There are several properties and attributes that
  *   user needs to remember and that's rather user unfriendly. That's why this command is being developed.
@@ -69,6 +83,8 @@ import java.util.logging.Logger;
  */
 @Service(name="configure-ldap-for-admin")
 @Scoped(PerLookup.class)
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class LDAPAdminAccessConfigurator implements AdminCommand {
 
     @Param (name="basedn", shortName="b", optional=false)
@@ -82,7 +98,12 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
     public volatile String ldapGroupName;        
     
     @Inject
-    Configs allConfigs;
+    private Configs allConfigs;
+
+    //TODO: not sure what to do with --target here
+    @Param(name = "target", optional = true, defaultValue =
+    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
 
     private final static String ADMIN_SERVER = "server"; //this needs to be at central place, oh well
     private static final StringManager lsm = StringManager.getManager(LDAPAdminAccessConfigurator.class);

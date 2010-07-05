@@ -37,7 +37,6 @@
 package com.sun.enterprise.security.cli;
 
 import java.util.Enumeration;
-import java.util.List;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -49,15 +48,23 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.types.Property;
-import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.security.auth.realm.RealmsManager;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 
 /**
  * List File GroupsCommand
@@ -72,23 +79,30 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 @Service(name="list-file-groups")
 @Scoped(PerLookup.class)
 @I18n("list.file.group")
-
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
 public class ListFileGroup implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(ListFileGroup.class);
 
     @Param(name="authrealmname", optional=true)
-    String authRealmName;
+    private String authRealmName;
 
     @Param(name="name", optional=true)
-    String fileUserName;
+    private String fileUserName;
 
-    @Param(optional=true)
-    String target;
+    @Param(name = "target", optional = true, defaultValue =
+    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config;
+    @Inject
+    private Domain domain;
 
     @Inject
-    Configs configs;
+    private RealmsManager realmsManager;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -100,9 +114,15 @@ public class ListFileGroup implements AdminCommand {
 
         final ActionReport report = context.getActionReport();
 
-        List <Config> configList = configs.getConfig();
-        Config config = configList.get(0);
-        SecurityService securityService = config.getSecurityService();
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
+        final SecurityService securityService = config.getSecurityService();
 
         // ensure we have the file authrealm
         if (authRealmName == null)
@@ -125,7 +145,7 @@ public class ListFileGroup implements AdminCommand {
         try {
             // Get all users of this file realm. If a username has
             // been passed in through the --name CLI option use that
-            FileRealm fr = getFileRealm(fileAuthRealm, report);
+            FileRealm fr = getFileRealm(securityService, fileAuthRealm, report);
 
             if (fr == null) {
                 // the getFileRealm method would have filled
@@ -149,6 +169,7 @@ public class ListFileGroup implements AdminCommand {
                      report.getTopMessagePart().addChild();
                 part.setMessage((String) groups.nextElement());
             }
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (BadRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
@@ -168,7 +189,7 @@ public class ListFileGroup implements AdminCommand {
         }
     }
 
-    private FileRealm getFileRealm(AuthRealm fileAuthRealm, ActionReport report) {
+    private FileRealm getFileRealm(final SecurityService securityService, AuthRealm fileAuthRealm, ActionReport report) {
         // Get FileRealm class name, match it with what is expected.
         String fileRealmClassName = fileAuthRealm.getClassname();
 
@@ -203,16 +224,12 @@ public class ListFileGroup implements AdminCommand {
         // We have the right impl so let's try to remove one
         FileRealm fr = null;
         try {
-            fr = new FileRealm(keyFile);
-        } catch(BadRealmException e) {
-            report.setMessage(
-                localStrings.getLocalString(
-                    "list.file.user.realmcorrupted",
-                    "Configured file realm {0} is corrupted.", authRealmName) +
-                "  " + e.getLocalizedMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
-        } catch(NoSuchRealmException e) {
+            realmsManager.createRealms(securityService);
+            fr = (FileRealm) realmsManager.getFromLoadedRealms(authRealmName);
+            if (fr == null) {
+                throw new NoSuchRealmException(authRealmName);
+            }
+        }  catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
                     "list.file.user.realmnotsupported",

@@ -87,7 +87,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     private static WebSecurityDeployerProbeProvider websecurityProbeProvider = new WebSecurityDeployerProbeProvider();
     private static EjbSecurityPolicyProbeProvider ejbProbeProvider = new EjbSecurityPolicyProbeProvider();
 
-    public class AppDeployEventListener implements EventListener {
+    private class AppDeployEventListener implements EventListener {
 
         public void event(Event event) {
             Application app = null;

@@ -46,6 +46,11 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.security.store.PasswordAdapter;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.glassfish.internal.api.MasterPassword;
 import org.jvnet.hk2.annotations.Inject;
 /**
@@ -59,7 +64,7 @@ import org.jvnet.hk2.annotations.Inject;
  * <domain-dir>/<domain-name>/config/domain-passwords file gets appended with 
  * the entry of the form: aliasname=<password encrypted with masterpassword>
  *
- * A user can use this aliased password now in setting passwords in domin.xml. 
+ * A user can use this aliased password now in setting passwords in domain.xml.
  * Benefit is it is in NON-CLEAR-TEXT
  *
  * domain.xml example entry is:
@@ -74,20 +79,27 @@ import org.jvnet.hk2.annotations.Inject;
 @Service(name="create-password-alias")
 @Scoped(PerLookup.class)
 @I18n("create.password.alias")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
 public class CreatePasswordAlias implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(CreatePasswordAlias.class);    
 
     @Param(name="aliasname", primary=true)
-    String aliasName;
+    private String aliasName;
     
     @Param(name="aliaspassword", password=true)
-    String aliasPassword;
+    private String aliasPassword;
+
+    //TODO: not sure what to do with --target here
+    @Param(name = "target", optional = true, defaultValue =
+    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
 
     @Inject(name="Security SSL Password Provider Service")
     private MasterPassword masterPasswordHelper;
-    
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are paramter names and the values the parameter values
@@ -126,5 +138,5 @@ public class CreatePasswordAlias implements AdminCommand {
             "create.password.alias.success",
             "Encrypted password for the alias name {0} stored successfully",
             aliasName));        
-    }       
+    }
 }

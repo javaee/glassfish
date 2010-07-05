@@ -51,13 +51,20 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
-import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.beans.PropertyVetoException;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 
 
 /**
@@ -86,25 +93,30 @@ import java.beans.PropertyVetoException;
 @Service(name="create-auth-realm")
 @Scoped(PerLookup.class)
 @I18n("create.auth.realm")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class CreateAuthRealm implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(CreateAuthRealm.class);    
 
     @Param(name="classname")
-    String className;
+    private String className;
 
     @Param(name="authrealmname", primary=true)
-    String authRealmName;
+    private String authRealmName;
     
     @Param(optional=true, name="property", separator=':')
-    Properties properties;
+    private Properties properties;
     
-    @Param(optional=true)
-    String target;
+    @Param(name = "target", optional = true, defaultValue =
+    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
 
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config;
     @Inject
-    Configs configs;
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -115,8 +127,14 @@ public class CreateAuthRealm implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        List <Config> configList = configs.getConfig();
-        Config config = configList.get(0);
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         SecurityService securityService = config.getSecurityService();
         
         // check if there exists an auth realm byt he specified name
@@ -151,7 +169,8 @@ public class CreateAuthRealm implements AdminCommand {
                     "Creation of Authrealm {0} failed", authRealmName) +
                               "  " + e.getLocalizedMessage() );
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);        
+            report.setFailureCause(e);
+            return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }       

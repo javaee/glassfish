@@ -37,7 +37,6 @@
 package com.sun.enterprise.security.cli;
 
 
-import java.util.List;
 
 
 
@@ -50,14 +49,21 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.security.auth.realm.Realm;
-import com.sun.enterprise.security.auth.realm.RealmConfig;
+import com.sun.enterprise.security.auth.realm.RealmsManager;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.Enumeration;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 
 
 /**
@@ -72,16 +78,23 @@ import java.util.Enumeration;
 @Service(name="list-auth-realms")
 @Scoped(PerLookup.class)
 @I18n("list.auth.realm")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class ListAuthRealm implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(ListAuthRealm.class);    
 
-    @Param(optional=true)
-    String target;
+    @Param(name = "target", optional = true, defaultValue =
+    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
 
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config;
     @Inject
-    Configs configs;
+    private Domain domain;
+    @Inject
+    private RealmsManager realmsManager;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -93,20 +106,27 @@ public class ListAuthRealm implements AdminCommand {
         
         final ActionReport report = context.getActionReport();
 
-        List <Config> configList = configs.getConfig();
-        Config config = configList.get(0);
-        SecurityService securityService = config.getSecurityService();
-
-        Enumeration realms = Realm.getRealmNames();
-
-        if ( realms == null || !realms.hasMoreElements()) {
-            //Create realms
-            RealmConfig.createRealms(securityService.getDefaultRealm(), securityService.getAuthRealm());
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
         }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
+        final SecurityService securityService = config.getSecurityService();
+
+//        Enumeration realms = Realm.getRealmNames();
+//
+//        if ( realms == null || !realms.hasMoreElements()) {
+//            //Create realms
+//            realmsManager.createRealms(securityService);
+//        }
 
         for (AuthRealm authRealm : securityService.getAuthRealm()) {
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
             part.setMessage(authRealm.getName());
         }
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }

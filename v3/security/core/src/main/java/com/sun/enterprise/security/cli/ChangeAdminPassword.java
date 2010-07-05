@@ -37,7 +37,6 @@
 package com.sun.enterprise.security.cli;
 
 import java.util.Enumeration;
-import java.util.List;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -48,15 +47,22 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
-import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.security.auth.realm.RealmsManager;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 
 /**
  * Change Admin Password Command
@@ -71,22 +77,33 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 @Service(name="change-admin-password")
 @Scoped(PerLookup.class)
 @I18n("change.admin.password")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
 public class ChangeAdminPassword implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(ChangeAdminPassword.class);    
 
     @Param(name="password", password=true)
-    String oldpassword;
+    private String oldpassword;
    
     @Param(name="newpassword", password=true)
-    String newpassword;
+    private String newpassword;
 
     @Param(name="username", primary=true)
-    String userName;
+    private String userName;
+
+    @Param(name = "target", optional = true, defaultValue =
+    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config;
+    @Inject
+    private Domain domain;
 
     @Inject
-    Configs configs;
+    private RealmsManager realmsManager;
 
     private final static String ADMIN_REALM = "admin-realm";
     /**
@@ -99,10 +116,16 @@ public class ChangeAdminPassword implements AdminCommand {
         
         final ActionReport report = context.getActionReport();
 
-        List <Config> configList = configs.getConfig();
-        Config config = configList.get(0);
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         SecurityService securityService = config.getSecurityService();
-
+       
         AuthRealm fileAuthRealm = null;        
         for (AuthRealm authRealm : securityService.getAuthRealm()) {            
             if (authRealm.getName().equals(ADMIN_REALM)) {                
@@ -152,17 +175,12 @@ public class ChangeAdminPassword implements AdminCommand {
         // We have the right impl so let's get to updating existing user 
         FileRealm fr = null;
         try {
-            fr = new FileRealm(keyFile);            
-        } catch(BadRealmException e) {
-            report.setMessage(
-                localStrings.getLocalString(
-                    "change.admin.password.realmcorrupted",
-                    "Configured admin realm is corrupted.") +
-                "  " + e.getLocalizedMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
-            return;
-        } catch(NoSuchRealmException e) {
+            realmsManager.createRealms(securityService);
+            fr = (FileRealm) realmsManager.getFromLoadedRealms(fileAuthRealm.getName());
+            if (fr == null) {
+                throw new NoSuchRealmException(fileAuthRealm.getName());
+            }
+        }  catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
                     "change.admin.password.realmnotsupported",
@@ -186,7 +204,7 @@ public class ChangeAdminPassword implements AdminCommand {
             for (int i = 0; i < size; i++) {
                 groups[i] = (String) en.nextElement();
             }
-            fr.updateUser(userName, newpassword.toCharArray(), groups);
+            fr.updateUser(userName,userName, newpassword.toCharArray(), groups);
             fr.writeKeyFile(keyFile);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);            
         } catch (Exception e) {
@@ -198,5 +216,5 @@ public class ChangeAdminPassword implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }        
-    }        
+    }
 }

@@ -36,7 +36,6 @@
 package com.sun.enterprise.security.cli;
 
 import java.util.List;
-import java.util.ArrayList;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -48,14 +47,22 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.types.Property;
-import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
-import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.security.auth.realm.RealmsManager;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * Update File User Command
@@ -72,31 +79,38 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 @Service(name="update-file-user")
 @Scoped(PerLookup.class)
 @I18n("update.file.user")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
 public class UpdateFileUser implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(UpdateFileUser.class);    
 
     @Param(name="groups", optional=true, separator=':')
-    List<String> groups = new ArrayList<String>(0); //by default, an empty list is better than a null
+    private List<String> groups = null;
 
     // @Param(name="userpasswordfile", optional=true)
     // String passwordFile;
 
     @Param(name="userpassword", password=true)
-    String userpassword;
+    private String userpassword;
 
     @Param(name="authrealmname", optional=true)
-    String authRealmName;
+    private String authRealmName;
     
-    @Param(optional=true)
-    String target;
+    @Param(name = "target", optional = true, defaultValue =
+    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
 
     @Param(name="username", primary=true)
-    String userName;
+    private String userName;
 
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config;
     @Inject
-    Configs configs;
+    private Domain domain;
+    @Inject
+    private RealmsManager realmsManager;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -108,9 +122,15 @@ public class UpdateFileUser implements AdminCommand {
         
         final ActionReport report = context.getActionReport();
 
-        List <Config> configList = configs.getConfig();
-        Config config = configList.get(0);
-        SecurityService securityService = config.getSecurityService();
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
+        final SecurityService securityService = config.getSecurityService();
 
         // ensure we have the file authrealm
         if (authRealmName == null) 
@@ -175,20 +195,18 @@ public class UpdateFileUser implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-                    
-        // We have the right impl so let's get to updating existing user 
+
+        //even though update-file-user is not an update to the security-service
+        //do we need to make it transactional by referncing the securityservice
+        //hypothetically ?.
+        //TODO: check and enclose the code below inside ConfigSupport.apply(...)
         FileRealm fr = null;
         try {
-            fr = new FileRealm(keyFile);            
-        } catch(BadRealmException e) {
-            report.setMessage(
-                localStrings.getLocalString(
-                    "update.file.user.realmcorrupted",
-                    "Configured file realm {0} is corrupted.", authRealmName) +
-                "  " + e.getLocalizedMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
-            return;
+            realmsManager.createRealms(securityService);
+            fr = (FileRealm) realmsManager.getFromLoadedRealms(authRealmName);
+            if (fr == null) {
+                throw new NoSuchRealmException(authRealmName);
+            }
         } catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
@@ -203,8 +221,8 @@ public class UpdateFileUser implements AdminCommand {
         //now updating user
         try {
             CreateFileUser.handleAdminGroup(authRealmName, groups);
-            String[] groups1 = groups.toArray(new String[groups.size()]); 
-            fr.updateUser(userName, password.toCharArray(), groups1);
+            String[] groups1 = (groups == null) ? null: groups.toArray(new String[groups.size()]);
+            fr.updateUser(userName, userName, password, groups1);
             fr.writeKeyFile(keyFile);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (Exception e) {

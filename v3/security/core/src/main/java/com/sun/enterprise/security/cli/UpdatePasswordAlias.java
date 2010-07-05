@@ -46,6 +46,11 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.security.store.PasswordAdapter;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.glassfish.internal.api.MasterPassword;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -73,19 +78,27 @@ import org.jvnet.hk2.annotations.Inject;
 @Service(name="update-password-alias")
 @Scoped(PerLookup.class)
 @I18n("update.password.alias")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
 public class UpdatePasswordAlias implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CreatePasswordAlias.class);
 
     @Param(name="aliasname", primary=true)
-    String aliasName;
+    private String aliasName;
 
     @Param(name="aliaspassword", password=true)
-    String aliasPassword;
+    private String aliasPassword;
 
     @Inject(name="Security SSL Password Provider Service")
     private MasterPassword masterPasswordHelper;
+
+    //TODO: not sure what to do with --target here
+    @Param(name = "target", optional = true, defaultValue =
+    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
+
 
     /**
      * Executes the command with the command parameters passed as Properties

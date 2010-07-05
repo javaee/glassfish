@@ -37,6 +37,8 @@
 package com.sun.enterprise.security.cli;
 
 import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -50,9 +52,16 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.beans.PropertyVetoException;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 
 /**
  * Delete Auth Realm Command
@@ -67,16 +76,24 @@ import java.beans.PropertyVetoException;
 @Service(name="delete-auth-realm")
 @Scoped(PerLookup.class)
 @I18n("delete.auth.realm")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class DeleteAuthRealm implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(DeleteAuthRealm.class);
 
     @Param(name="authrealmname", primary=true)
-    String authRealmName;
+    private String authRealmName;
  
+    @Param(name = "target", optional = true, defaultValue =
+    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config;
     @Inject
-    SecurityService securityService;
+    private Domain domain;
 
     AuthRealm authRealm = null;
     
@@ -89,6 +106,15 @@ public class DeleteAuthRealm implements AdminCommand {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
 
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
+        SecurityService securityService = config.getSecurityService();
         try {            
             for (AuthRealm realm : securityService.getAuthRealm()) {
                 if (realm.getName().equals(authRealmName)) {
@@ -107,7 +133,6 @@ public class DeleteAuthRealm implements AdminCommand {
             ConfigSupport.apply(new SingleConfigCode<SecurityService>() {
                 public Object run(SecurityService param) 
                 throws PropertyVetoException, TransactionFailure {
-                    
                     param.getAuthRealm().remove(authRealm);
                     return null;
                 }
@@ -118,8 +143,8 @@ public class DeleteAuthRealm implements AdminCommand {
                 authRealmName) + "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
+            return;
         }
-
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }
