@@ -58,9 +58,10 @@ public class HTMLActionReporter extends ActionReporter {
     public HTMLActionReporter() {
     }
     
+    @Override
     public void writeReport(OutputStream os) throws IOException {
         PrintWriter writer = new PrintWriter(os);
-        writer.print("<html>");
+        writer.print("<html><head/>");
         writer.println("<body>" +
                 "<h1>GlassFish " + actionDescription + " command report</h1>" +
                 "<br><br>");
@@ -70,7 +71,9 @@ public class HTMLActionReporter extends ActionReporter {
         writer.println("<hr>");
         if (exception!=null) {
             writer.println("Exception raised during operation : <br>");
-            exception.printStackTrace(writer);
+            writer.println("<pre>");
+           exception.printStackTrace(writer);
+            writer.println("</pre>");
         }
         if (subActions.size()>0) {
             writer.println("There are " + subActions.size() + " sub operations");
@@ -80,10 +83,14 @@ public class HTMLActionReporter extends ActionReporter {
     }
 
     private void write(int level, MessagePart part, PrintWriter writer) {
+        String mess =  part.getMessage();
+        if (mess==null){
+            mess = "";//better than a null string output
+        }
         if (level>6) {
-            writer.println(part.getMessage());
+            writer.println(mess);
         } else {
-            writer.println("<h" + level + ">" + part.getMessage() + "</h" + level + ">");
+            writer.println("<h" + level + ">" + mess + "</h" + level + ">");
         }
         write(part.getProps(), writer);
 
