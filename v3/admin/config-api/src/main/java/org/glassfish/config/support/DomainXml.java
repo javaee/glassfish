@@ -34,7 +34,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.config.support;
 
 import com.sun.enterprise.universal.Duration;
@@ -67,7 +66,6 @@ import java.util.logging.Logger;
 import java.net.URL;
 import org.glassfish.api.admin.RuntimeType;
 
-
 /**
  * Locates and parses the portion of <tt>domain.xml</tt> that we care.
  *
@@ -79,31 +77,28 @@ public abstract class DomainXml implements Populator {
 
     @Inject
     StartupContext context;
-
     @Inject
     protected Habitat habitat;
-
     @Inject
     ModulesRegistry registry;
-
     @Inject
     XMLInputFactory xif;
-
     @Inject
     ServerEnvironmentImpl env;
 
     @Override
     public void run(ConfigParser parser) {
-            EarlyLogger.add(Level.FINE, "Startup class : " + this.getClass().getName());
+        EarlyLogger.add(Level.FINE, "Startup class : " + this.getClass().getName());
 
         habitat.addComponent("parent-class-loader",
                 new ExistingSingletonInhabitant<ClassLoader>(ClassLoader.class, registry.getParentClassLoader()));
 
         try {
-             parseDomainXml(parser, getDomainXml(env), env.getInstanceName());
-        } catch (IOException e) {
+            parseDomainXml(parser, getDomainXml(env), env.getInstanceName());
+        }
+        catch (IOException e) {
             // TODO: better exception handling scheme
-            throw new RuntimeException("Failed to parse domain.xml",e);
+            throw new RuntimeException("Failed to parse domain.xml", e);
         }
 
         // run the upgrades...
@@ -118,22 +113,23 @@ public abstract class DomainXml implements Populator {
 
         Server server = habitat.getComponent(Server.class, env.getInstanceName());
         habitat.addIndex(new ExistingSingletonInhabitant<Server>(server),
-                         Server.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
+                Server.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
 
         habitat.addIndex(new ExistingSingletonInhabitant<Config>(habitat.getComponent(Config.class, server.getConfigRef())),
-                         Config.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
-        
+                Config.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
+
     }
 
     protected void upgrade() {
-        
+
         // run the upgrades...
         for (Inhabitant<? extends ConfigurationUpgrade> cu : habitat.getInhabitants(ConfigurationUpgrade.class)) {
             try {
                 cu.get(); // run the upgrade                
                 EarlyLogger.add(Level.FINE, "Successful Upgrade domain.xml with " + cu.getClass());
-            } catch (Exception e) {
-                EarlyLogger.add(Level.FINE,e.toString()+e);
+            }
+            catch (Exception e) {
+                EarlyLogger.add(Level.FINE, e.toString() + e);
                 EarlyLogger.add(Level.SEVERE, cu.getClass() + " upgrading domain.xml failed " + e);
             }
         }
@@ -146,7 +142,6 @@ public abstract class DomainXml implements Populator {
         return new File(env.getConfigDirPath(), ServerEnvironmentImpl.kConfigXMLFileName).toURI().toURL();
     }
 
-
     /**
      * Parses <tt>domain.xml</tt>
      */
@@ -156,9 +151,9 @@ public abstract class DomainXml implements Populator {
         try {
             ServerReaderFilter xsr = null;
 
-            if(env.getRuntimeType() == RuntimeType.DAS || env.getRuntimeType() == RuntimeType.EMBEDDED)
+            if (env.getRuntimeType() == RuntimeType.DAS || env.getRuntimeType() == RuntimeType.EMBEDDED)
                 xsr = new DasReaderFilter(habitat, domainXml, xif);
-            else if(env.getRuntimeType() == RuntimeType.INSTANCE)
+            else if (env.getRuntimeType() == RuntimeType.INSTANCE)
                 xsr = new InstanceReaderFilter(env.getInstanceName(), habitat, domainXml, xif);
             else
                 throw new RuntimeException("Internal Error: Unknown server type: "
@@ -168,10 +163,11 @@ public abstract class DomainXml implements Populator {
             xsr.close();
             String errorMessage = xsr.configWasFound();
 
-            if(errorMessage != null)
+            if (errorMessage != null)
                 EarlyLogger.add(Level.WARNING, errorMessage);
-        } catch (Exception e) {
-            if(e instanceof RuntimeException)
+        }
+        catch (Exception e) {
+            if (e instanceof RuntimeException)
                 throw (RuntimeException) e;
             else
                 throw new RuntimeException("Fatal Error.  Unable to parse " + domainXml, e);
