@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- appserver/instancesExtraButtons.inc -->
+<!-- cluster/shared/instancesExtraButtons.inc -->
 
 
 <!define name="extraButton2">
@@ -42,9 +42,14 @@
             { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
             else {return false;} " >
         <!command
-            getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
-            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            //3.1_TODO: selectedInstanceAction(start="$boolean{true}" selectedRows="${selectedRows}");
+            getUIComponent(clientId="$pageSession{tableRowGroupId}", component="#{requestScope.tableRowGroup}");
+            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
+	    dec(number="#{requestScope.selectedRows.size()}" value="#{requestScope.endNum}");
+            forLoop(end="#{requestScope.endNum}"  varName="i"){
+		setAttribute(key="cName", value="#{requestScope.selectedRows[i]['Name']}");
+		#gf.restExecuteCommand(endpoint="#{sessionScope.REST_URL}/servers/server/#{requestScope.cName}/start-instance" attrs="#{null}" result="#{requestScope.result}",  output="#{requestScope.output}", messageParts="#{requestScope.msg}" );
+		println("====== start-instance  #{sessionScope.REST_URL}/servers/server/#{requestScope.cName}/start-instance");
+	    }
             gf.redirect(page="#{pageSession.listLink}");
         />
     </sun:button>
@@ -56,9 +61,14 @@
                     { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
                     else {return false;} " >
         <!command
-            getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
-            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            //3.1_TODO: selectedInstanceAction(start="$boolean{false}" selectedRows="${selectedRows}");
+            getUIComponent(clientId="$pageSession{tableRowGroupId}", component="#{requestScope.tableRowGroup}");
+            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
+	    dec(number="#{requestScope.selectedRows.size()}" value="#{requestScope.endNum}");
+            forLoop(end="#{requestScope.endNum}"  varName="i"){
+		setAttribute(key="cName", value="#{requestScope.selectedRows[i]['Name']}");
+		#gf.restExecuteCommand(endpoint="#{sessionScope.REST_URL}/servers/server/#{requestScope.cName}/stop-instance" attrs="#{null}" result="#{requestScope.result}",  output="#{requestScope.output}", messageParts="#{requestScope.msg}" );
+		println("====== stop-instance  #{sessionScope.REST_URL}/servers/server/#{requestScope.cName}/stop-instance");
+	    }
             gf.redirect(page="#{pageSession.listLink}");
          />
     </sun:button>

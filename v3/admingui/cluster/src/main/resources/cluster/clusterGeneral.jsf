@@ -99,7 +99,7 @@
             <sun:property id="clusterNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.ClusterName}" >
                 <sun:staticText id="clusterName"text="#{encodedClusterName}" />
             </sun:property>
-            <sun:property id="configNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.common.Configuration}" >
+            <sun:property id="configNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Configuration}" >
                 <sun:hyperlink id="configlink" text="#{pageSession.valueMap['ConfigRef']}"
                     url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.valueMap['ConfigRef']}" />
             </sun:property>

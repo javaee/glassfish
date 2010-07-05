@@ -43,7 +43,7 @@
                 <sun:staticText id="IdStatic" text="#{pageSession.valueMap['Name']}"/>
             </sun:property>
             <sun:property id="nameProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" helpText="$resource{i18ncs.node.NameHelp}">
-                <sun:textField id="name" text="#{pageSession.valueMap['Name']}" columns="$int{60}" styleClass="required" required="#{true}" />
+                <sun:textField id="name" text="#{pageSession.valueMap['Id']}" columns="$int{60}" styleClass="required" required="#{true}" />
             </sun:property>
             <sun:property id="NodeHost"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.NodeHost}" helpText="$resource{i18ncs.node.NodeHostHelp}">
                 <sun:textField id="NodeHost" columns="$int{60}" text="#{pageSession.valueMap['Nodehost']}" />
@@ -54,7 +54,7 @@
         </sun:propertySheetSection>
 
         <sun:propertySheetSection id="sshConnector" label="$resource{i18ncs.node.sshConnectorSection}" >
-            <sun:property id="sshNodeHost"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.sshHost}" helpText="$resource{i18ncs.node.sshHostHelp}">
+            <sun:property id="sshNodeHost"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.sshHost}" helpText="$resource{i18ncs.node.sshHostHelp}">
                 <sun:textField id="NodeHost"  columns="$int{60}" text="#{pageSession.valueMap['Sshhost']}" />
             </sun:property>
             <sun:property id="sshNodeHome"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.sshPort}" helpText="$resource{i18ncs.node.sshPortHelp}">

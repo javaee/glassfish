@@ -53,6 +53,8 @@
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="title" value="$resource{i18ncs.node.NewPageTitle}");
         setPageSessionAttribute(key="titleHelp" value="$resource{i18ncs.node.NewPageTitleHelp}");
+        setPageSessionAttribute(key="hasPropertySheet" value="true");
+        setPageSessionAttribute(key="showDef" value="false");
     />
     </event>
 <sun:form id="propertyForm">

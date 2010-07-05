@@ -32,8 +32,7 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
--->
-<!-- cluster/clusters.jsf -->
+-->//<!-- cluster/clusters.jsf -->
 
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
@@ -44,6 +43,38 @@
     guiTitle="$resource{i18ncs.clusters.PageTitle}"
     guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:clusters');"
 >
+<!define name="listTableDeleteButton">
+    <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
+            onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
+            { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
+            else {return false;} "
+        >
+        <!command
+            getUIComponent(clientId="$pageSession{tableableRowGroupId}", component="#{requestScope.tableRowGroup}");
+            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
+	    createMap(result="#{requestScope.attrsMap}")
+            setAttribute(key="numOfCluster" value="#{requestScope.selectedRows.size()}");
+	    dec(number="#{requestScope.numOfCluster}" value="#{requestScope.endNum}");
+            forLoop(end="#{requestScope.endNum}"  varName="i"){
+		setAttribute(key="cName", value="#{requestScope.selectedRows[i]['Name']}");
+                gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{requestScope.cName}/server-ref" id="ref"  result="#{requestScope.serverRefList}");
+		#println("############## serverRefList = #{requestScope.serverRefList}");
+                setAttribute(key="numOfServerRef" value="#{requestScope.serverRefList.size()}");
+	        dec(number="#{requestScope.numOfServerRef}" value="#{requestScope.endRef}");
+                forLoop(end="#{requestScope.endRef}"  varName="jj"){
+		    gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/#{requestScope.serverRefList[jj]}" valueMap="#{requestScope.vm}");
+		    mapPut(map="#{requestScope.attrsMap}" key="Node" value="#{requestScope.vm['Node']}");
+		    println("=== call #{sessionScope.REST_URL}/servers/server/#{requestScope.serverRefList[jj]}/delete-instance");
+		    println("=== attrs=#{requestScope.attrsMap}");
+                    #gf.restExecuteCommand(endpoint="#{sessionScope.REST_URL}/servers/server/#{requestScope.serverRefList[jj]}/delete-instance" attrs="#{requestScope.attrsMap}" result="#{requestScope.result}",  output="#{requestScope.output}", messageParts="#{requestScope.msg}" );
+                }
+		//println("==== deleteCluster #{requestScope.cName}");
+		#gf.restExecuteCommand(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{requestScope.cName}/delete-cluster" attrs="#{requestScope.attrsMap}" result="#{requestScope.result}",  output="#{requestScope.output}", messageParts="#{requestScope.msg}" );
+            }
+            gf.redirect(page="#{pageSession.listLink}");
+        />
+    </sun:button>
+</define>
 
 <!define name="extraButton2">
    <sun:button id="button2" text="$resource{i18ncs.button.startCluster} (TBD)" disabled="#{true}" primary="#{false}"
@@ -51,9 +82,14 @@
             { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
             else {return false;} " >
         <!command
-            getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
-            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            //3.1_TODO: selectedClustersAction(start="$boolean{true}" selectedRows="${selectedRows}");
+            getUIComponent(clientId="$pageSession{tableableRowGroupId}", component="#{requestScope.tableRowGroup}");
+            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
+	    dec(number="#{requestScope.selectedRows.size()}" value="#{requestScope.endNum}");
+            forLoop(end="#{requestScope.endNum}"  varName="i"){
+		setAttribute(key="cName", value="#{requestScope.selectedRows[i]['Name']}");
+		#gf.restExecuteCommand(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{requestScope.cName}/start-cluster" attrs="#{null}" result="#{requestScope.result}",  output="#{requestScope.output}", messageParts="#{requestScope.msg}" );
+		println("====== startCluster:  #{sessionScope.REST_URL}/clusters/cluster/#{requestScope.cName}/start-cluster");
+	    }
             gf.redirect(page="#{pageSession.listLink}");
         />
     </sun:button>
@@ -65,9 +101,14 @@
                     { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
                     else {return false;} " >
         <!command
-            getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
-            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            //3.1_TODO: selectedClustersAction(start="$boolean{false}" selectedRows="${selectedRows}");
+            getUIComponent(clientId="$pageSession{tableableRowGroupId}", component="#{requestScope.tableRowGroup}");
+            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
+	    dec(number="#{requestScope.selectedRows.size()}" value="#{requestScope.endNum}");
+            forLoop(end="#{requestScope.endNum}"  varName="i"){
+		setAttribute(key="cName", value="#{requestScope.selectedRows[i]['Name']}");
+		#gf.restExecuteCommand(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{requestScope.cName}/stop-cluster" attrs="#{null}" result="#{requestScope.result}",  output="#{requestScope.output}", messageParts="#{requestScope.msg}" );
+		println("====== stopCluster:  #{sessionScope.REST_URL}/clusters/cluster/#{requestScope.cName}/stop-cluster");
+	    }
             gf.redirect(page="#{pageSession.listLink}");
 
          />            
