@@ -635,14 +635,14 @@ public class UtilHandlers {
      */
     @Handler(id="forLoop",
     	input={
-	    @HandlerInput(name="start", type=Integer.class),
+	    @HandlerInput(name="start", type=String.class),
         @HandlerInput(name="end", type=Integer.class, required=true),
         @HandlerInput(name="varName", type=String.class, required=true)}
         )
     public static boolean forLoop(HandlerContext handlerCtx) {
 
-        Integer startInt = (Integer) handlerCtx.getInputValue("start");
-        int start = (startInt == null) ? 0 : startInt.intValue();
+        String startInt = (String) handlerCtx.getInputValue("start");
+        int start = (startInt == null) ? 0 : Integer.parseInt(startInt);
         int end = ((Integer) handlerCtx.getInputValue("end")).intValue();
         String varName = ((String) handlerCtx.getInputValue("varName"));
 

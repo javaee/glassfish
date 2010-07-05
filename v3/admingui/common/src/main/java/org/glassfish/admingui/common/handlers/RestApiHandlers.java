@@ -99,16 +99,21 @@ public class RestApiHandlers {
      */
     @Handler(id = "gf.getEntityAttrs",
             input = {
-                    @HandlerInput(name = "endpoint", type = String.class, required = true)},
+                    @HandlerInput(name = "endpoint", type = String.class, required = true),
+                    @HandlerInput(name = "currentMap", type = Map.class)},
             output = {
                     @HandlerOutput(name = "valueMap", type = Map.class)
             })
     public static void getEntityAttrs(HandlerContext handlerCtx) {
         try {
             String endpoint = (String) handlerCtx.getInputValue("endpoint");
+            Map currentMap = (Map) handlerCtx.getInputValue("currentMap");
             String entity = get(endpoint).getResponseBody();
-
-            handlerCtx.setOutputValue("valueMap", getEntityAttrs(entity));
+            Map valueMap =  getEntityAttrs(entity);
+            if (currentMap != null){
+                valueMap.putAll(currentMap);
+            }
+            handlerCtx.setOutputValue("valueMap",  valueMap);
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -157,7 +162,7 @@ public class RestApiHandlers {
         handlerCtx.setOutputValue("result", endpoint);
     }
 
-    @Handler(id = "gf.restExecuteCommand",
+   @Handler(id = "gf.restExecuteCommand",
             input = {
                     @HandlerInput(name = "endpoint", type = String.class, required = true),
                     @HandlerInput(name = "attrs", type = Map.class, required = true),
