@@ -104,7 +104,8 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
 
         @Override
         protected Child deepCopy() {
-            return new NodeChild(name, new Dom(dom));
+
+            return new NodeChild(name, dom.copy());
         }
 
     }
@@ -244,6 +245,15 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         attributes.putAll(source.attributes);
     }
 
+    /**
+     * Returns a copy of itself.
+     *
+     * @return a copy of itself.
+     */
+    protected Dom copy() {
+        return new Dom(this);
+    }
+    
     /**
      * Unwraps the proxy and returns the underlying {@link Dom} object.
      *
