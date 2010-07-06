@@ -51,61 +51,29 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
-
 /**
  * @author Ludovic Champenois
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class ActionReportResultJsonProvider extends ProviderUtil
-        implements MessageBodyWriter<ActionReportResult> {
+public class ActionReportResultJsonProvider extends BaseProvider<ActionReportResult> {
+    public ActionReportResultJsonProvider() {
+        super(ActionReportResult.class.getName(), MediaType.APPLICATION_JSON_TYPE);
+    }
 
-     @Context
-     protected UriInfo uriInfo;
+    @Override
+    protected String getContent(ActionReportResult proxy) {
+        String result = "";
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+        try {
+            proxy.getActionReport().writeReport(baos);
+            result = result + baos.toString();
 
-     @Override
-     public long getSize(final ActionReportResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
-     }
-
-
-     @Override
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         try {
-             if (Class.forName("org.glassfish.admin.rest.results.ActionReportResult").equals(genericType)) {
-                 return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
-             }
-         } catch (java.lang.ClassNotFoundException e) {
-             return false;
-         }
-         return false;
-     }
-
-
-     @Override
-     public void writeTo(final ActionReportResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getJson(proxy).getBytes());
-     }
-
-
-     private String getJson(ActionReportResult proxy) {
-        String result="";
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-            try {
-                proxy.getActionReport().writeReport(baos);
-                result = result + baos.toString() ;
-
-            } catch (IOException ex) {
-                //Logger.getLogger(ActionReportResultHtmlProvider.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        } catch (IOException ex) {
+            //Logger.getLogger(ActionReportResultHtmlProvider.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
 
         return result;
     }
-
 }

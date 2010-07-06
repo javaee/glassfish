@@ -36,21 +36,13 @@
 package org.glassfish.admin.rest.provider;
 
 import org.glassfish.admin.rest.results.OptionsResult;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.admin.rest.Constants;
 
@@ -61,38 +53,18 @@ import org.glassfish.admin.rest.Constants;
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class OptionsResultJsonProvider extends ProviderUtil implements MessageBodyWriter<OptionsResult> {
-
-     @Context
-     protected UriInfo uriInfo;
-
+public class OptionsResultJsonProvider extends BaseProvider<OptionsResult> {
      private static final String METHOD = "method";
      private static final String NAME = "name";
      private static final String MESSAGE_PARAMETERS = "messageParameters";
 
-
-     @Override
-     public long getSize(final OptionsResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
-     }
-
-     @Override
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         return type.equals(OptionsResult.class);
-     }
-
-     @Override
-     public void writeTo(final OptionsResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getJson(proxy).getBytes());
+     public OptionsResultJsonProvider() {
+         super(OptionsResult.class.getName(), MediaType.APPLICATION_JSON_TYPE);
      }
 
      //get json representation for the given OptionsResult object
-     private String getJson(OptionsResult proxy) {
+     @Override
+     protected String getContent(OptionsResult proxy) {
         String result;
         String indent = Constants.INDENT;
         result ="{" + quote(proxy.getName()) + ":";

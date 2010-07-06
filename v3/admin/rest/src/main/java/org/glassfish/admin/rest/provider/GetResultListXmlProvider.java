@@ -56,6 +56,7 @@ import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.admin.rest.Constants;
 import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
  *
@@ -64,42 +65,14 @@ import static org.glassfish.admin.rest.Util.*;
  */
 @Provider
 @Produces(MediaType.APPLICATION_XML)
-public class GetResultListXmlProvider extends ProviderUtil implements MessageBodyWriter<GetResultList> {
+public class GetResultListXmlProvider extends BaseProvider<GetResultList> {
 
-     @Context
-     protected UriInfo uriInfo;
+    public GetResultListXmlProvider() {
+        super(GetResultList.class.getName(), MediaType.APPLICATION_XML_TYPE);
+    }
 
-     @Override
-     public long getSize(final GetResultList proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
-     }
-
-
-     @Override
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         try {
-             if (Class.forName("org.glassfish.admin.rest.results.GetResultList").equals(genericType)) {
-                 return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
-             }
-         } catch (java.lang.ClassNotFoundException e) {
-             return false;
-         }
-         return false;
-     }
-
-
-     @Override
-     public void writeTo(final GetResultList proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getXml(proxy).getBytes());
-     }
-
-
-     private String getXml(GetResultList proxy) {
+    @Override
+    protected String getContent(GetResultList proxy) {
         StringBuilder result = new StringBuilder();
         String indent = Constants.INDENT;
 
@@ -130,12 +103,6 @@ public class GetResultListXmlProvider extends ProviderUtil implements MessageBod
         return result.toString();
     }
 
-
-//    private String getTypeKey() {
-//       return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
-//    }
-
-
     private String getResourcesLinks(List<Dom> proxyList, String[][] commandResourcesPaths, String indent) {
         StringBuilder result = new StringBuilder();
         for (Dom proxy: proxyList) { //for each element
@@ -165,6 +132,4 @@ public class GetResultListXmlProvider extends ProviderUtil implements MessageBod
 
         return result.toString();
     }
-
-
 }

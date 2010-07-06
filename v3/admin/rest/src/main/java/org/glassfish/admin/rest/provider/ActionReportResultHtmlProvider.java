@@ -59,9 +59,8 @@ import static org.glassfish.admin.rest.Util.*;
  */
 @Provider
 @Produces(MediaType.TEXT_HTML)
-public class ActionReportResultHtmlProvider extends ProviderUtil
-        implements MessageBodyWriter<ActionReportResult> {
-
+public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportResult> {
+/*
     @Context
     protected UriInfo uriInfo;
 
@@ -73,8 +72,7 @@ public class ActionReportResultHtmlProvider extends ProviderUtil
 
 
     @Override
-    public boolean isWriteable(final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType) {
+    public boolean isWriteable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
         try {
             if (Class.forName("org.glassfish.admin.rest.results.ActionReportResult").equals(genericType)) {
                 return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
@@ -93,10 +91,15 @@ public class ActionReportResultHtmlProvider extends ProviderUtil
             final OutputStream entityStream) throws IOException, WebApplicationException {
         entityStream.write(getHtml(proxy).getBytes());
     }
+*/
 
+    public ActionReportResultHtmlProvider() {
+        super(ActionReportResult.class.getName(), MediaType.TEXT_HTML_TYPE);
+    }
 
-    private String getHtml(ActionReportResult proxy) {
-        String result = getHtmlHeader();
+    @Override
+    protected String getContent(ActionReportResult proxy) {
+        String result = ProviderUtil.getHtmlHeader();
         String uri = uriInfo.getAbsolutePath().toString();
         String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
         String parentName =

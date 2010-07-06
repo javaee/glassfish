@@ -55,6 +55,7 @@ import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.admin.rest.Constants;
 import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
  *
@@ -63,39 +64,14 @@ import static org.glassfish.admin.rest.Util.*;
  */
 @Provider
 @Produces(MediaType.APPLICATION_XML)
-public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWriter<GetResult> {
+public class GetResultXmlProvider extends BaseProvider<GetResult> {
 
-    @Context
-    protected UriInfo uriInfo;
-
-    @Override
-    public long getSize(final GetResult proxy, final Class<?> type, final Type genericType,
-                        final Annotation[] annotations, final MediaType mediaType) {
-        return -1;
+    public GetResultXmlProvider() {
+        super(GetResult.class.getName(), MediaType.APPLICATION_XML_TYPE);
     }
 
     @Override
-    public boolean isWriteable(final Class<?> type, final Type genericType,
-                               final Annotation[] annotations, final MediaType mediaType) {
-        try {
-            if (Class.forName("org.glassfish.admin.rest.results.GetResult").equals(genericType)) {
-                return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
-            }
-        } catch (java.lang.ClassNotFoundException e) {
-            return false;
-        }
-        return false;
-    }
-
-    @Override
-    public void writeTo(final GetResult proxy, final Class<?> type, final Type genericType,
-                        final Annotation[] annotations, final MediaType mediaType,
-                        final MultivaluedMap<String, Object> httpHeaders,
-                        final OutputStream entityStream) throws IOException, WebApplicationException {
-        entityStream.write(getXml(proxy).getBytes());
-    }
-
-    private String getXml(GetResult proxy) {
+    protected String getContent(GetResult proxy) {
         String result;
         String indent = Constants.INDENT;
         final String typeKey = getTypeKey(getName(uriInfo.getAbsolutePath().toString(), '/'));

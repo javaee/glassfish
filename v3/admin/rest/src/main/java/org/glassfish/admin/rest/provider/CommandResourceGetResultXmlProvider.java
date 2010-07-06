@@ -36,19 +36,10 @@
 package org.glassfish.admin.rest.provider;
 
 import org.glassfish.admin.rest.results.CommandResourceGetResult;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.io.IOException;
-import java.io.OutputStream;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.admin.rest.Constants;
 import static org.glassfish.admin.rest.Util.*;
@@ -58,60 +49,28 @@ import static org.glassfish.admin.rest.Util.*;
  */
 @Provider
 @Produces(MediaType.APPLICATION_XML)
-public class CommandResourceGetResultXmlProvider extends ProviderUtil
-        implements MessageBodyWriter<CommandResourceGetResult> {
+public class CommandResourceGetResultXmlProvider extends BaseProvider<CommandResourceGetResult> {
 
-    @Context
-    protected UriInfo uriInfo;
-
-    @Override
-    public long getSize(final CommandResourceGetResult proxy,
-        final Class<?> type, final Type genericType,
-        final Annotation[] annotations, final MediaType mediaType) {
-        return -1;
+    public CommandResourceGetResultXmlProvider() {
+        super(CommandResourceGetResult.class.getName(), MediaType.APPLICATION_XML_TYPE);
     }
 
-
     @Override
-    public boolean isWriteable(final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType) {
-        try {
-            if (Class.forName("org.glassfish.admin.rest.results.CommandResourceGetResult").equals(genericType)) {
-                return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
-            }
-        } catch (java.lang.ClassNotFoundException e) {
-            return false;
-        }
-        return false;
-    }
-
-
-    @Override
-    public void writeTo(final CommandResourceGetResult proxy,
-            final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType,
-            final MultivaluedMap<String, Object> httpHeaders,
-            final OutputStream entityStream) throws IOException,
-            WebApplicationException {
-        entityStream.write(getXml(proxy).getBytes());
-    }
-
-
-    private String getXml(CommandResourceGetResult proxy) {
-        String result;
+    protected String getContent(CommandResourceGetResult proxy) {
+        StringBuilder result = new StringBuilder();
         String indent = Constants.INDENT;
 
-        String commandDisplayName =
-            upperCaseFirstLetter(eleminateHypen(proxy.getCommandDisplayName()));
-        result = getStartXmlElement(commandDisplayName);
-
-        result = result + "\n\n" + indent;
-        result = result + getStartXmlElement(getMethodsKey());
-        result = result + getXmlForMethodMetaData(proxy.getMetaData(),
-            indent + Constants.INDENT);
-        result = result + "\n" + indent + getEndXmlElement(getMethodsKey());
-
-        result = result + "\n\n" + getEndXmlElement(commandDisplayName);
-        return result;
+        String commandDisplayName = upperCaseFirstLetter(eleminateHypen(proxy.getCommandDisplayName()));
+        result.append(ProviderUtil.getStartXmlElement(commandDisplayName))
+                .append("\n\n")
+                .append(indent)
+                .append(ProviderUtil.getStartXmlElement(ProviderUtil.getMethodsKey()))
+                .append(ProviderUtil.getXmlForMethodMetaData(proxy.getMetaData(), indent + Constants.INDENT))
+                .append("\n")
+                .append(indent)
+                .append(ProviderUtil.getEndXmlElement(ProviderUtil.getMethodsKey()))
+                .append("\n\n")
+                .append(ProviderUtil.getEndXmlElement(commandDisplayName));
+        return result.toString();
     }
 }

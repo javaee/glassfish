@@ -65,64 +65,33 @@ import org.jvnet.hk2.config.ConfigModel;
  */
 @Provider
 @Produces(MediaType.TEXT_HTML)
-public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWriter<GetResult> {
+public class GetResultHtmlProvider extends BaseProvider<GetResult> {
 
-    @Context
-    protected UriInfo uriInfo;
-
-    @Override
-    public long getSize(final GetResult proxy, final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType) {
-        return -1;
+    public GetResultHtmlProvider() {
+        super(GetResult.class.getName(), MediaType.TEXT_HTML_TYPE);
     }
 
     @Override
-    public boolean isWriteable(final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType) {
-        try {
-            if (Class.forName("org.glassfish.admin.rest.results.GetResult").equals(genericType)) {
-                return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
-            }
-        } catch (java.lang.ClassNotFoundException e) {
-            return false;
-        }
-        return false;
-    }
-
-    @Override
-    public void writeTo(final GetResult proxy, final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType,
-            final MultivaluedMap<String, Object> httpHeaders,
-            final OutputStream entityStream) throws IOException, WebApplicationException {
-        entityStream.write(getHtml(proxy).getBytes());
-    }
-
-    private String getHtml(GetResult proxy) {
-        String result = getHtmlHeader();
+    protected String getContent(GetResult proxy) {
+        String result = ProviderUtil.getHtmlHeader();
         final String typeKey = upperCaseFirstLetter((decode(getName(uriInfo.getAbsolutePath().toString(), '/'))));
         result = result + "<h1>" + typeKey + "</h1>";
 
-        String attributes = getHtmlRespresentationForAttributes((ConfigBean)proxy.getDom(), uriInfo);
-        result = getHtmlForComponent(attributes, "Attributes", result);
+        String attributes = ProviderUtil.getHtmlRespresentationForAttributes((ConfigBean)proxy.getDom(), uriInfo);
+        result = ProviderUtil.getHtmlForComponent(attributes, "Attributes", result);
 
         String command = proxy.getDeleteCommand();
-        String deleteCommand = getHtmlRespresentationsForCommand(
+        String deleteCommand = ProviderUtil.getHtmlRespresentationsForCommand(
                 proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", "Delete", uriInfo);
-        result = getHtmlForComponent(deleteCommand, "Delete " + typeKey, result);
+        result = ProviderUtil.getHtmlForComponent(deleteCommand, "Delete " + typeKey, result);
 
         String childResourceLinks = getResourcesLinks(proxy.getDom(),
             proxy.getCommandResourcesPaths());
-        result = getHtmlForComponent(childResourceLinks, "Child Resources", result);
+        result = ProviderUtil.getHtmlForComponent(childResourceLinks, "Child Resources", result);
 
         result = result + "</body></html>";
         return result;
     }
-
-//    private String getTypeKey(Dom proxy) {
-//        String uri = uriInfo.getAbsolutePath().toString();
-//        return upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
-//    }
-
 
     private String getResourcesLinks(Dom proxy, String[][] commandResourcesPaths) {
         String result = "";
@@ -144,7 +113,7 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
                     List<ConfigModel> lcm = proxy.document.getAllModelsImplementing(subType);
                     if (lcm != null) {
                         for (ConfigModel cmodel : lcm) {
-                            result = result + "<a href=\"" + getElementLink(uriInfo, cmodel.getTagName()) + "\">";
+                            result = result + "<a href=\"" + ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()) + "\">";
                             result = result + cmodel.getTagName() + "</a><br>";
                         }
                     }
@@ -152,7 +121,7 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
                     e.printStackTrace();
                 }
             } else {
-                result = result + "<a href=\"" + getElementLink(uriInfo, elementName) + "\">";
+                result = result + "<a href=\"" + ProviderUtil.getElementLink(uriInfo, elementName) + "\">";
                 result = result + elementName + "</a><br>";
             }
         }
@@ -160,7 +129,7 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
         //add command resources
         for (String[] commandResourcePath : commandResourcesPaths) {
                 result = result + "<a href=\"" +
-                    getElementLink(uriInfo, commandResourcePath[0]) + "\">";
+                    ProviderUtil.getElementLink(uriInfo, commandResourcePath[0]) + "\">";
                 result = result + commandResourcePath[0];
                 result = result + "</a>";
                 result = result + "<br>";

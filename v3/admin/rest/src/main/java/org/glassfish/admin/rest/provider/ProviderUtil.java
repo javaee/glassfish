@@ -440,7 +440,7 @@ public class ProviderUtil {
 
     // Perhaps this needs to be a constant, but, for now, we'll return a String
     // from here until we're certain.
-    protected String getTypeKey(String uri) {
+    static public String getTypeKey(String uri) {
         return "entity";
 //                upperCaseFirstLetter(slashToDash(decode(uri)));
     }

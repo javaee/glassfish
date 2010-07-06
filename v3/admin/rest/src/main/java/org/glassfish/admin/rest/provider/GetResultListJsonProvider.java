@@ -55,6 +55,8 @@ import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.admin.rest.Constants;
 import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.provider.ProviderUtil.*;
+
 
 /**
  *
@@ -63,43 +65,14 @@ import static org.glassfish.admin.rest.Util.*;
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class GetResultListJsonProvider extends ProviderUtil implements MessageBodyWriter<GetResultList> {
+public class GetResultListJsonProvider extends BaseProvider<GetResultList> {
 
-     @Context
-     protected UriInfo uriInfo;
+    public GetResultListJsonProvider() {
+        super(GetResultList.class.getName(), MediaType.APPLICATION_JSON_TYPE);
+    }
 
-     @Override
-     public long getSize(final GetResultList proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
-     }
-
-
-     @Override
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         try {
-             if (Class.forName("org.glassfish.admin.rest.results.GetResultList").equals(genericType)) {
-                 return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
-             }
-         } catch (java.lang.ClassNotFoundException e) {
-             return false;
-         }
-
-         return false;
-     }
-
-
-     @Override
-     public void writeTo(final GetResultList proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getJson(proxy).getBytes());
-     }
-
-
-     private String getJson(GetResultList proxy) {
+    @Override
+    protected String getContent(GetResultList proxy) {
         String result;
         String indent = Constants.INDENT;
         result ="{" ;

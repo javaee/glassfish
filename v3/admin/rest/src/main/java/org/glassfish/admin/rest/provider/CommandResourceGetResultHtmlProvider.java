@@ -56,47 +56,15 @@ import static org.glassfish.admin.rest.Util.*;
  */
 @Provider
 @Produces("text/html;qs=2")
-public class CommandResourceGetResultHtmlProvider extends ProviderUtil 
-        implements MessageBodyWriter<CommandResourceGetResult> {
+public class CommandResourceGetResultHtmlProvider extends BaseProvider<CommandResourceGetResult> {
 
-    @Context
-    protected UriInfo uriInfo;
-
-    @Override
-    public long getSize(final CommandResourceGetResult proxy,
-        final Class<?> type, final Type genericType,
-        final Annotation[] annotations, final MediaType mediaType) {
-        return -1;
+    public CommandResourceGetResultHtmlProvider() {
+        super(CommandResourceGetResult.class.getName(), MediaType.TEXT_HTML_TYPE);
     }
 
-
     @Override
-    public boolean isWriteable(final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType) {
-        try {
-            if (Class.forName("org.glassfish.admin.rest.results.CommandResourceGetResult").equals(genericType)) {
-                return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
-            }
-        } catch (java.lang.ClassNotFoundException e) {
-            return false;
-        }
-        return false;
-    }
-
-
-    @Override
-    public void writeTo(final CommandResourceGetResult proxy,
-            final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType,
-            final MultivaluedMap<String, Object> httpHeaders,
-            final OutputStream entityStream) throws IOException,
-            WebApplicationException {
-        entityStream.write(getHtml(proxy).getBytes());
-    }
-
-
-    private String getHtml(CommandResourceGetResult proxy) {
-        String result = getHtmlHeader();
+    protected String getContent(CommandResourceGetResult proxy) {
+        String result = ProviderUtil.getHtmlHeader();
         String commandDisplayName =
             upperCaseFirstLetter(eleminateHypen(proxy.getCommandDisplayName()));
         result = result + "<h1>" + commandDisplayName + "</h1>";
@@ -104,10 +72,10 @@ public class CommandResourceGetResultHtmlProvider extends ProviderUtil
             upperCaseFirstLetter(eleminateHypen(getParentName(uriInfo.getAbsolutePath().toString())));
 
         String command = proxy.getCommand();
-        String commandRespresentation = getHtmlRespresentationsForCommand(
+        String commandRespresentation = ProviderUtil.getHtmlRespresentationsForCommand(
             proxy.getMetaData().getMethodMetaData(proxy.getCommandMethod()),
                 proxy.getCommandMethod(), proxy.getCommondAction(), uriInfo);
-        result = getHtmlForComponent(commandRespresentation, parentName +
+        result = ProviderUtil.getHtmlForComponent(commandRespresentation, parentName +
             " - " + commandDisplayName, result);
 
         result = result + "</body></html>";

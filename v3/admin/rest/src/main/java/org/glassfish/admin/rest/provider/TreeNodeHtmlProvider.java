@@ -35,11 +35,7 @@
  */
 package org.glassfish.admin.rest.provider;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
@@ -48,55 +44,38 @@ import java.util.Map;
 import org.glassfish.external.statistics.Statistic;
 import org.glassfish.external.statistics.Stats;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.flashlight.datatree.TreeNode;
 import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.provider.ProviderUtil.*;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Provider;
 
 /**
  * @author Rajeshwar Patil
  */
 @Provider
 @Produces(MediaType.TEXT_HTML)
-public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWriter<List<TreeNode>> {
+public class TreeNodeHtmlProvider extends BaseProvider<List<TreeNode>> {
 
-     @Context
-     protected UriInfo uriInfo;
+    public TreeNodeHtmlProvider() {
+        super("java.util.List<org.glassfish.flashlight.datatree.TreeNode>", MediaType.TEXT_HTML_TYPE);
+    }
 
-     @Override
-     public long getSize(final List<TreeNode> proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
-     }
+    @Override
+    public boolean isWriteable(final Class<?> type, final Type genericType,
+            final Annotation[] annotations, final MediaType mediaType) {
+        if ("java.util.List<org.glassfish.flashlight.datatree.TreeNode>".equals(genericType.toString())) {
+            return mediaType.isCompatible(supportedMediaType);
+        }
+        return false;
+    }
 
-
-     @Override
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         if ("java.util.List<org.glassfish.flashlight.datatree.TreeNode>".equals(genericType.toString())) {
-             return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
-         }
-         return false;
-     }
-
-
-     @Override
-     public void writeTo(final List<TreeNode> proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getHtml(proxy).getBytes());
-     }
-
-
-     private String getHtml(List<TreeNode> proxy) {
+    @Override
+    protected String getContent(List<TreeNode> proxy) {
         String result = getHtmlHeader();
         result = result + "<h1>" + upperCaseFirstLetter((decode(getName(uriInfo.getPath(), '/')))) + "</h1>" + "<hr>";
 
@@ -107,7 +86,7 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
         String attributes = getAttributes(proxy);
         result = getHtmlForComponent(attributes, "Attributes", result);
 
-        String childResourceLinks =  getResourcesLinks(proxy);
+        String childResourceLinks = getResourcesLinks(proxy);
         result = getHtmlForComponent(childResourceLinks, getResourcesKey(), result);
 
         result = result + "</html></body>";
@@ -115,7 +94,7 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
     }
 
     private String getAttributes(List<TreeNode> nodeList) {
-        String result ="";
+        String result = "";
         for (TreeNode node : nodeList) {
             //process only the leaf nodes, if any
             if (!node.hasChildNodes()) {
@@ -128,11 +107,10 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
         return result;
     }
 
-
     private String getResourcesLinks(List<TreeNode> nodeList) {
         String result = "";
         String elementName;
-        for (TreeNode node: nodeList) { //for each element
+        for (TreeNode node : nodeList) { //for each element
             //process only the non-leaf nodes, if any
             if (node.hasChildNodes()) {
                 try {
@@ -152,19 +130,20 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
         return result;
     }
 
-
     private String htmlForNode(String name, Object value) {
-        String result ="";
-        if (value == null) return result;
+        String result = "";
+        if (value == null) {
+            return result;
+        }
 
         try {
             if (value instanceof Statistic) {
-                Statistic statisticObject = (Statistic)value;
+                Statistic statisticObject = (Statistic) value;
                 result = result + getStatisticRepresentation(statisticObject);
 
                 if (!result.equals("")) {
-                    result = "<h3>" + name + "</h3>" +
-                        "<div><dl>" + result + "</dl></div>";
+                    result = "<h3>" + name + "</h3>"
+                            + "<div><dl>" + result + "</dl></div>";
                 }
 
                 result = result + "<br class=\"separator\">";
@@ -173,12 +152,14 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
                 String statResult;
                 boolean firstEntry = true;
                 String lineSpacing = "";
-                for (Statistic statistic: ((Stats)value).getStatistics()) {
+                for (Statistic statistic : ((Stats) value).getStatistics()) {
                     statResult = getStatisticRepresentation(statistic);
                     if (!statResult.equals("")) {
-                        if (!firstEntry) lineSpacing = "<br><br>";
-                        statResult = "<dt>" + lineSpacing + "<b>" +
-                            statistic.getName() + "</b></dt><br>" + statResult + "<br>";
+                        if (!firstEntry) {
+                            lineSpacing = "<br><br>";
+                        }
+                        statResult = "<dt>" + lineSpacing + "<b>"
+                                + statistic.getName() + "</b></dt><br>" + statResult + "<br>";
                         firstEntry = false;
                     }
                     result = result + statResult;
@@ -186,8 +167,8 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
                 }
 
                 if (!result.equals("")) {
-                    result = "<h3>" + name + "</h3>" +
-                        "<div><dl>" + result + "</dl></div>";
+                    result = "<h3>" + name + "</h3>"
+                            + "<div><dl>" + result + "</dl></div>";
                 }
 
                 result = result + "<br class=\"separator\">";
@@ -206,21 +187,20 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
         return result;
     }
 
-    
     private String getStatisticRepresentation(Statistic statistic)
             throws IllegalAccessException, InvocationTargetException {
-        String result ="";
+        String result = "";
         //Swithching to getStatistic(Statistic) method i.e Gettting the attribute
         //map provided by monitoring infrastructure instead of introspecting
         Map<String, Object> map = getStatistic(statistic);
         Set<String> attributes = map.keySet();
         Object attributeValue;
-        for (String attributeName: attributes) {
+        for (String attributeName : attributes) {
             attributeValue = map.get(attributeName);
             //for html output, string value of the object should suffice,
             //irrespective of the type of object
             result = result + "<dt><label for=\"" + attributeName + "\">"
-                + attributeName + ":&nbsp;" + "</label></dt>";
+                    + attributeName + ":&nbsp;" + "</label></dt>";
             result = result + "<dd>" + attributeValue.toString() + "</dd>";
         }
         return result;

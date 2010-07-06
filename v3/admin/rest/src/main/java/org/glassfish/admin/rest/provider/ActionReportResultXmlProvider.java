@@ -37,59 +37,24 @@ package org.glassfish.admin.rest.provider;
 
 import org.glassfish.admin.rest.results.ActionReportResult;
 import java.io.ByteArrayOutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.io.IOException;
-import java.io.OutputStream;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 
 /**
  * @author Ludovic Champenois
  */
 @Provider
 @Produces(MediaType.APPLICATION_XML)
-public class ActionReportResultXmlProvider extends ProviderUtil implements
-        MessageBodyWriter<ActionReportResult> {
-
-    @Context
-    protected UriInfo uriInfo;
-
-    @Override
-    public long getSize(final ActionReportResult proxy, final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType) {
-        return -1;
+public class ActionReportResultXmlProvider extends BaseProvider<ActionReportResult> {
+    public ActionReportResultXmlProvider() {
+        super(ActionReportResult.class.getName(), MediaType.APPLICATION_XML_TYPE);
     }
 
     @Override
-    public boolean isWriteable(final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType) {
-        try {
-            if (Class.forName("org.glassfish.admin.rest.results.ActionReportResult").equals(genericType)) {
-                return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
-            }
-        } catch (java.lang.ClassNotFoundException e) {
-            return false;
-        }
-        return false;
-    }
-
-    @Override
-    public void writeTo(final ActionReportResult proxy, final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType,
-            final MultivaluedMap<String, Object> httpHeaders,
-            final OutputStream entityStream) throws IOException, WebApplicationException {
-        entityStream.write(getXml(proxy).getBytes());
-    }
-
-    private String getXml(ActionReportResult proxy) {
+    protected String getContent(ActionReportResult proxy) {
         String result = "";
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);

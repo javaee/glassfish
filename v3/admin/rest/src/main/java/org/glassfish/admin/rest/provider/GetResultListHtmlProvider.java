@@ -53,6 +53,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
  *
@@ -61,42 +62,14 @@ import static org.glassfish.admin.rest.Util.*;
  */
 @Provider
 @Produces(MediaType.TEXT_HTML)
-public class GetResultListHtmlProvider extends ProviderUtil implements MessageBodyWriter<GetResultList> {
+public class GetResultListHtmlProvider extends BaseProvider<GetResultList> {
 
-     @Context
-     protected UriInfo uriInfo;
+    public GetResultListHtmlProvider() {
+        super(GetResultList.class.getName(), MediaType.TEXT_HTML_TYPE);
+    }
 
-     @Override
-     public long getSize(final GetResultList proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
-     }
-
-
-     @Override
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         try {
-             if (Class.forName("org.glassfish.admin.rest.results.GetResultList").equals(genericType)) {
-                 return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
-             }
-         } catch (java.lang.ClassNotFoundException e) {
-             return false;
-         }
-         return false; 
-     }
-
-
-     @Override
-     public void writeTo(final GetResultList proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getHtml(proxy).getBytes());
-     }
-
-
-     private String getHtml(GetResultList proxy) {
+    @Override
+    protected String getContent(GetResultList proxy) {
         String result = getHtmlHeader();
          final String typeKey = upperCaseFirstLetter((decode(getName(uriInfo.getPath(), '/'))));
          result = result + "<h1>" + typeKey + "</h1>";

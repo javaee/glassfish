@@ -36,63 +36,25 @@
 package org.glassfish.admin.rest.provider;
 
 import org.glassfish.admin.rest.results.StringListResult;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
  * @author Rajeshwar Patil
  */
 @Provider
 @Produces(MediaType.TEXT_HTML)
-public class StringListResultHtmlProvider extends ProviderUtil
-        implements MessageBodyWriter<StringListResult> {
-
-    @Context
-    protected UriInfo uriInfo;
-
-    @Override
-    public long getSize(final StringListResult proxy, final Class<?> type, final Type genericType,
-                final Annotation[] annotations, final MediaType mediaType) {
-        return -1;
+public class StringListResultHtmlProvider extends BaseProvider<StringListResult> {
+    public StringListResultHtmlProvider() {
+        super(StringListResult.class.getName(), MediaType.TEXT_HTML_TYPE);
     }
-
-
+    
     @Override
-    public boolean isWriteable(final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType) {
-        try {
-            if (Class.forName("org.glassfish.admin.rest.results.StringListResult").equals(genericType)) {
-                return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
-            }
-        } catch (java.lang.ClassNotFoundException e) {
-            return false;
-        }
-        return false;
-    }
-
-
-    @Override
-    public void writeTo(final StringListResult proxy, final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType,
-            final MultivaluedMap<String, Object> httpHeaders,
-            final OutputStream entityStream) throws IOException, WebApplicationException {
-        entityStream.write(getHtml(proxy).getBytes());
-    }
-
-
-    private String getHtml(StringListResult proxy) {
+    protected String getContent(StringListResult proxy) {
         String result = getHtmlHeader();
         String uri = uriInfo.getAbsolutePath().toString();
         String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));

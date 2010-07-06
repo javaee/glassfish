@@ -58,47 +58,14 @@ import static org.glassfish.admin.rest.Util.*;
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class CommandResourceGetResultJsonProvider extends ProviderUtil
-        implements MessageBodyWriter<CommandResourceGetResult> {
+public class CommandResourceGetResultJsonProvider extends BaseProvider<CommandResourceGetResult> {
 
-    @Context
-    protected UriInfo uriInfo;
-
-
-    @Override
-    public long getSize(final CommandResourceGetResult proxy,
-        final Class<?> type, final Type genericType,
-        final Annotation[] annotations, final MediaType mediaType) {
-        return -1;
+    public CommandResourceGetResultJsonProvider() {
+        super(CommandResourceGetResult.class.getName(), MediaType.APPLICATION_JSON_TYPE);
     }
 
-
     @Override
-    public boolean isWriteable(final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType) {
-        try {
-            if (Class.forName("org.glassfish.admin.rest.results.CommandResourceGetResult").equals(genericType)) {
-                return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
-            }
-        } catch (java.lang.ClassNotFoundException e) {
-            return false;
-        }
-        return false;
-    }
-
-
-    @Override
-    public void writeTo(final CommandResourceGetResult proxy,
-            final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType,
-            final MultivaluedMap<String, Object> httpHeaders,
-            final OutputStream entityStream) throws IOException,
-            WebApplicationException {
-        entityStream.write(getJson(proxy).getBytes());
-    }
-
-
-    private String getJson(CommandResourceGetResult proxy) {
+    protected String getContent(CommandResourceGetResult proxy) {
         String result;
         String indent = Constants.INDENT;
         result ="{" ;
@@ -106,14 +73,14 @@ public class CommandResourceGetResultJsonProvider extends ProviderUtil
 
         String commandDisplayName =
             upperCaseFirstLetter(eleminateHypen(proxy.getCommandDisplayName()));
-        result = result + quote(commandDisplayName) + ":{";
+        result = result + ProviderUtil.quote(commandDisplayName) + ":{";
 
         result = result + getAttributes();
         result = result + "},";
 
         result = result + "\n\n" + indent;
-        result = result + quote(getMethodsKey()) + ":{";
-        result = result + getJsonForMethodMetaData(proxy.getMetaData(),
+        result = result + ProviderUtil.quote(ProviderUtil.getMethodsKey()) + ":{";
+        result = result + ProviderUtil.getJsonForMethodMetaData(proxy.getMetaData(),
             indent + Constants.INDENT);
         result = result + "\n" + indent + "}";
 

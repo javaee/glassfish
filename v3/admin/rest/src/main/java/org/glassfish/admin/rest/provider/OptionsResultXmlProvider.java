@@ -36,23 +36,15 @@
 package org.glassfish.admin.rest.provider;
 
 import org.glassfish.admin.rest.results.OptionsResult;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.admin.rest.Constants;
+import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
  * XML provider for OptionsResult.
@@ -61,41 +53,18 @@ import org.glassfish.admin.rest.Constants;
  */
 @Provider
 @Produces(MediaType.APPLICATION_XML)
-public class OptionsResultXmlProvider extends ProviderUtil implements MessageBodyWriter<OptionsResult> {
-
-     @Context
-     protected UriInfo uriInfo;
-
+public class OptionsResultXmlProvider extends BaseProvider<OptionsResult> {
     private final static String QUERY_PARAMETERS = "queryParameters";
     private final static String MESSAGE_PARAMETERS = "messageParameters";
     private final static String METHOD = "method";
 
-
-     @Override
-     public long getSize(final OptionsResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
+     public OptionsResultXmlProvider() {
+         super(OptionsResult.class.getName(), MediaType.APPLICATION_XML_TYPE);
      }
 
-
+     //get json representation for the given OptionsResult object
      @Override
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         return type.equals(OptionsResult.class);
-     }
-
-
-     @Override
-     public void writeTo(final OptionsResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getXml(proxy).getBytes());
-     }
-
-
-     //get xml representation for the given OptionsResult object
-     private String getXml(OptionsResult proxy) {
+     protected String getContent(OptionsResult proxy) {
         String result;
         String indent = Constants.INDENT;
         result = "<" + proxy.getName() + ">" ;

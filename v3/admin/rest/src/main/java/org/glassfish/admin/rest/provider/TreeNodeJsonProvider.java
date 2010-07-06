@@ -38,64 +38,43 @@ package org.glassfish.admin.rest.provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.admin.rest.Constants;
 import org.glassfish.external.statistics.Stats;
 import org.glassfish.external.statistics.Statistic;
 import org.glassfish.flashlight.datatree.TreeNode;
 import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
  * @author Rajeshwar Patil
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWriter<List<TreeNode>> {
+public class TreeNodeJsonProvider extends BaseProvider<List<TreeNode>> {
 
-     @Context
-     protected UriInfo uriInfo;
+    public TreeNodeJsonProvider() {
+        super("java.util.List<org.glassfish.flashlight.datatree.TreeNode>", MediaType.APPLICATION_JSON_TYPE);
+    }
 
-     @Override
-     public long getSize(final List<TreeNode> proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
-     }
+    @Override
+    public boolean isWriteable(final Class<?> type, final Type genericType,
+            final Annotation[] annotations, final MediaType mediaType) {
+        if ("java.util.List<org.glassfish.flashlight.datatree.TreeNode>".equals(genericType.toString())) {
+            return mediaType.isCompatible(supportedMediaType);
+        }
+        return false;
+    }
 
-
-     @Override
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         if ("java.util.List<org.glassfish.flashlight.datatree.TreeNode>".equals(genericType.toString())) {
-             return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
-         }
-         return false;
-     }
-
-
-     @Override
-     public void writeTo(final List<TreeNode> proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getJson(proxy).getBytes());
-     }
-
-
-     private String getJson(List<TreeNode> proxy) {
+    @Override
+    protected String getContent(List<TreeNode> proxy) {
         String result;
         String indent = Constants.INDENT;
         result ="{" ;

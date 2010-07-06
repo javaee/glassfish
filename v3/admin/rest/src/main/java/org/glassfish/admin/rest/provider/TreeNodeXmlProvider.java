@@ -58,44 +58,30 @@ import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.external.statistics.Stats;
 import org.glassfish.external.statistics.Statistic;
 import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
  * @author Rajeshwar Patil
  */
 @Provider
 @Produces(MediaType.APPLICATION_XML)
-public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWriter<List<TreeNode>> {
+public class TreeNodeXmlProvider extends BaseProvider<List<TreeNode>> {
 
-     @Context
-     protected UriInfo uriInfo;
+    public TreeNodeXmlProvider() {
+        super("java.util.List<org.glassfish.flashlight.datatree.TreeNode>", MediaType.APPLICATION_XML_TYPE);
+    }
 
-     @Override
-     public long getSize(final List<TreeNode> proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
-     }
+    @Override
+    public boolean isWriteable(final Class<?> type, final Type genericType,
+            final Annotation[] annotations, final MediaType mediaType) {
+        if ("java.util.List<org.glassfish.flashlight.datatree.TreeNode>".equals(genericType.toString())) {
+            return mediaType.isCompatible(supportedMediaType);
+        }
+        return false;
+    }
 
-
-     @Override
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         if ("java.util.List<org.glassfish.flashlight.datatree.TreeNode>".equals(genericType.toString())) {
-             return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
-         }
-         return false;
-     }
-
-
-     @Override
-     public void writeTo(final List<TreeNode> proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getXml(proxy).getBytes());
-     }
-
-
-     private String getXml(List<TreeNode> proxy) {
+    @Override
+    protected String getContent(List<TreeNode> proxy) {
         String result;
          final String typeKey = getTypeKey(getName(uriInfo.getPath(), '/'));
          result ="<" + typeKey;

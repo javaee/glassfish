@@ -36,25 +36,17 @@
 package org.glassfish.admin.rest.provider;
 
 import org.glassfish.admin.rest.results.GetResult;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Set;
 
 import org.jvnet.hk2.config.Dom;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.admin.rest.Constants;
 import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
  *
@@ -63,42 +55,14 @@ import static org.glassfish.admin.rest.Util.*;
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWriter<GetResult> {
+public class GetResultJsonProvider extends BaseProvider<GetResult> {
 
-     @Context
-     protected UriInfo uriInfo;
+    public GetResultJsonProvider() {
+        super(GetResult.class.getName(), MediaType.APPLICATION_JSON_TYPE);
+    }
 
-     @Override
-     public long getSize(final GetResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-          return -1;
-     }
-
-
-     @Override
-     public boolean isWriteable(final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType) {
-         try {
-             if (Class.forName("org.glassfish.admin.rest.results.GetResult").equals(genericType)) {
-                 return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
-             }
-         } catch (java.lang.ClassNotFoundException e) {
-             return false;
-         }
-         return false;
-     }
-
-
-     @Override
-     public void writeTo(final GetResult proxy, final Class<?> type, final Type genericType,
-               final Annotation[] annotations, final MediaType mediaType,
-               final MultivaluedMap<String, Object> httpHeaders,
-               final OutputStream entityStream) throws IOException, WebApplicationException {
-         entityStream.write(getJson(proxy).getBytes());
-     }
-
-
-     private String getJson(GetResult proxy) {
+    @Override
+    protected String getContent(GetResult proxy) {
         String result;
         String indent = Constants.INDENT;
         result ="{" ;
