@@ -78,6 +78,11 @@
               <version>${project.version}</version>
           </dependency>
           <dependency>
+              <groupId>org.glassfish.admingui</groupId>
+              <artifactId>console-cluster-plugin</artifactId>
+              <version>${project.version}</version>
+          </dependency>
+          <dependency>
               <groupId>org.glassfish.cluster</groupId>
               <artifactId>cluster-admin</artifactId>
               <version>${project.version}</version>
