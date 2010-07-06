@@ -91,26 +91,26 @@ import org.jvnet.hk2.config.ConfigSupport;
  * @author Rajeshwar Patil
  */
 public class TemplateResource {
+
     @Context
     protected HttpHeaders requestHeaders;
-
     @Context
     protected UriInfo uriInfo;
-
     @Context
     protected ResourceContext resourceContext;
     protected Dom entity;
     protected Dom parent;
     protected String tagName;
-
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
+    final private static List<String> attributesToSkip = new ArrayList<String>() {
 
-    final private static List<String> attributesToSkip = new ArrayList<String>() {{
-        add("parent");
-        add("name");
-        add("children");
-        add("submit");
-    }};
+        {
+            add("parent");
+            add("name");
+            add("children");
+            add("submit");
+        }
+    };
 
     /** Creates a new instance of xxxResource */
     public TemplateResource() {
@@ -123,7 +123,7 @@ public class TemplateResource {
     public Dom getEntity() {
         return entity;
     }
-    
+
     public void setParentAndTagName(Dom parent, String tagName) {
         this.parent = parent;
         this.tagName = tagName;
@@ -147,7 +147,7 @@ public class TemplateResource {
     @Produces({"text/html;qs=2",
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public GetResult get(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
+    public GetResult getEntity(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
         if (getEntity() == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
@@ -159,14 +159,13 @@ public class TemplateResource {
 //    public ConfigBean getConfigBean() {
 //        return (ConfigBean) Dom.unwrap(getEntity());
 //    }
-
     // TODO: This is wrong. Updates are done via PUT
     @POST  //update
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     @Produces({"text/html;qs=2",
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML})
-        public Response updateEntity(HashMap<String, String> data) {
+    public Response createEntity(HashMap<String, String> data) {
         try {
             //data.remove("submit");
             removeAttributesToBeSkipped(data);
@@ -183,24 +182,28 @@ public class TemplateResource {
             //Currently, browsers do not support delete method. For html media,
             //delete operations can be supported through POST. Redirect html
             //client POST request for delete operation to DELETE method.
-            if ((data.containsKey("operation")) &&
-                    (data.get("operation").equals("__deleteoperation"))) {
+//            if ((data.containsKey("operation")) &&
+//                    (data.get("operation").equals("__deleteoperation"))) {
+//                data.remove("operation");
+//                return delete(data);
+//            }
+            if ("__deleteoperation".equals(data.get("operation"))) {
                 data.remove("operation");
                 return delete(data);
             }
 
             Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
             data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
-            mapOfChanges.put((ConfigBean)getEntity(), data);
+            mapOfChanges.put((ConfigBean) getEntity(), data);
             RestService.getConfigSupport().apply(mapOfChanges); //throws TransactionFailure
 
             String successMessage = localStrings.getLocalString("rest.resource.update.message",
-                    "\"{0}\" updated successfully.", new Object[] {uriInfo.getAbsolutePath()});
-           return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo);
+                    "\"{0}\" updated successfully.", new Object[]{uriInfo.getAbsolutePath()});
+            return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo);
         } catch (Exception ex) {
             if (ex.getCause() instanceof ValidationException) {
                 return ResourceUtil.getResponse(400, /*400 - bad request*/
-                    ex.getMessage(), requestHeaders, uriInfo);
+                        ex.getMessage(), requestHeaders, uriInfo);
             } else {
                 throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
             }
@@ -218,20 +221,20 @@ public class TemplateResource {
     public Response delete(HashMap<String, String> data) {
         if (entity == null) {//wrong resource
             String errorMessage = localStrings.getLocalString("rest.resource.erromessage.noentity",
-                   "Resource not found.");
+                    "Resource not found.");
             return ResourceUtil.getResponse(404, /*parsing error*/
                     errorMessage, requestHeaders, uriInfo);
         }
 
         if (getDeleteCommand() == null) {
-             String message = localStrings.getLocalString("rest.resource.delete.forbidden",
-                "DELETE on \"{0}\" is forbidden.", new Object[] {uriInfo.getAbsolutePath()});
+            String message = localStrings.getLocalString("rest.resource.delete.forbidden",
+                    "DELETE on \"{0}\" is forbidden.", new Object[]{uriInfo.getAbsolutePath()});
             return ResourceUtil.getResponse(403, message, requestHeaders, uriInfo); //403 - forbidden
         }
-        if (getDeleteCommand().equals("GENERIC-DELETE")){
+        if (getDeleteCommand().equals("GENERIC-DELETE")) {
             try {
-                ConfigBean p = (ConfigBean)parent;
-                if (parent==null){
+                ConfigBean p = (ConfigBean) parent;
+                if (parent == null) {
                     p = (ConfigBean) entity.parent();
                 }
                 ConfigSupport.deleteChild(p, (ConfigBean) entity);
@@ -255,7 +258,7 @@ public class TemplateResource {
             ResourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
             ResourceUtil.purgeEmptyEntries(data);
             ResourceUtil.adjustParameters(data);
-            
+
             if (data.get("DEFAULT") == null) {
                 addDefaultParameter(data);
             } else {
@@ -274,7 +277,7 @@ public class TemplateResource {
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode == ActionReport.ExitCode.SUCCESS) {
                     String successMessage = localStrings.getLocalString("rest.resource.delete.message",
-                        "\"{0}\" deleted successfully.", new Object[] {uriInfo.getAbsolutePath()});
+                            "\"{0}\" deleted successfully.", new Object[]{uriInfo.getAbsolutePath()});
                     return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo); //200 - ok
                 }
 
@@ -290,7 +293,7 @@ public class TemplateResource {
             }
 
             String message = localStrings.getLocalString("rest.resource.delete.forbidden",
-                "DELETE on \"{0}\" is forbidden.", new Object[] {uriInfo.getAbsolutePath()});
+                    "DELETE on \"{0}\" is forbidden.", new Object[]{uriInfo.getAbsolutePath()});
             return ResourceUtil.getResponse(403, message, requestHeaders, uriInfo); //403 - forbidden
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
@@ -309,7 +312,7 @@ public class TemplateResource {
 
             /////optionsResult.putMethodMetaData("POST", new MethodMetaData());
             MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(
-                (ConfigBean)getEntity());
+                    (ConfigBean) getEntity());
             postMethodMetaData.setDescription("Update");
             optionsResult.putMethodMetaData("POST", postMethodMetaData);
 
@@ -353,7 +356,7 @@ public class TemplateResource {
          *
          * */
         HashMap<String, String> data = createDataBasedOnForm(formData);
-        updateEntity(data); //execute the deploy command with a copy of the file locally
+        createEntity(data); //execute the deploy command with a copy of the file locally
 
     }
     /*
@@ -485,7 +488,7 @@ public class TemplateResource {
         if (commandName != null) {
             String typeOfResult = ResourceUtil.getResultType(requestHeaders);
 
-            return ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),typeOfResult);//processed
+            return ResourceUtil.runCommand(commandName, data, RestService.getHabitat(), typeOfResult);//processed
         }
 
         return null;//not processed
@@ -494,9 +497,9 @@ public class TemplateResource {
     // This has to be smarter, since we are encoding / in resource names now
     private void addDefaultParameter(HashMap<String, String> data) {
         int index = uriInfo.getAbsolutePath().getPath().lastIndexOf('/');
-        String defaultParameterValue = 
-            //uriInfo.getAbsolutePath().getPath().substring(index + 1);
-            getEntity().getKey();
+        String defaultParameterValue =
+                //uriInfo.getAbsolutePath().getPath().substring(index + 1);
+                getEntity().getKey();
         data.put("DEFAULT", defaultParameterValue);
     }
 
@@ -513,8 +516,7 @@ public class TemplateResource {
         }
     }
 
-
-    public void setBeanByKey(List<Dom> parentList,String id) {
+    public void setBeanByKey(List<Dom> parentList, String id) {
         for (Dom c : parentList) {
             String keyAttributeName = null;
             ConfigModel model = c.model;
