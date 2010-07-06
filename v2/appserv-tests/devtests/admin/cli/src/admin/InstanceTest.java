@@ -151,25 +151,6 @@ public class InstanceTest extends AdminBaseDevTest {
         }
     }
 
-    /**
-     *
-     * typical output as og 6/6/10
-    C:\glassfishv3\glassfish\nodeagents\vaio>asadmin list-instances
-    in_879669 not running
-    i20 running
-     */
-    private boolean isInstanceRunning(String iname) {
-        AsadminReturn ret = asadminWithOutput("list-instances");
-        String[] lines = ret.out.split("[\r\n]");
-
-        for (String line : lines) {
-            if (line.indexOf(iname) >= 0) {
-                printf("Line from list-instances = " + line);
-                return line.indexOf(iname + " running") >= 0;
-            }
-        }
-        return false;
-    }
 
     private void create() {
         printf("Create " + instanceNames.length + " instances");

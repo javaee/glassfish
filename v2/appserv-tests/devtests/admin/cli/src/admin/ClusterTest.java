@@ -131,6 +131,14 @@ public class ClusterTest extends AdminBaseDevTest {
 
 
         }
+        AsadminReturn ret = asadminWithOutput("list-instances","--verbose");
+        System.out.println("list-instances --verbose returned:");
+        System.out.println(ret.out);
+
+        AsadminReturn lc = asadminWithOutput("list-clusters");
+        System.out.println("list-clusters for 12249 returned:");
+        System.out.println(lc.out);
+
         report(testName+"list-cl1" , isClusterRunning(cname));
         report(testName +"stop-one" , asadmin("stop-local-instance",iname+1));
         report(testName+"list-cl2" , isClusterPartiallyRunning(cname));
@@ -146,31 +154,7 @@ public class ClusterTest extends AdminBaseDevTest {
 
     }
 
-    private boolean isClusterRunning(String iname) {
-        AsadminReturn ret = asadminWithOutput("list-clusters");
-        String[] lines = ret.out.split("[\r\n]");
 
-        for (String line : lines) {
-            if (line.indexOf(iname) >= 0) {
-                printf("Line from list-instances = " + line);
-                return line.indexOf(iname + " running") >= 0;
-            }
-        }
-        return false;
-    }
-
-    private boolean isClusterPartiallyRunning(String iname) {
-        AsadminReturn ret = asadminWithOutput("list-clusters");
-        String[] lines = ret.out.split("[\r\n]");
-
-        for (String line : lines) {
-            if (line.indexOf(iname) >= 0) {
-                printf("Line from list-instances = " + line);
-                return line.indexOf(iname + " partially running") >= 0;
-            }
-        }
-        return false;
-    }
 
     private void testClusterWithObsoleteOptions(){
         final String cluster = "obscl";
