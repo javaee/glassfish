@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.glassfish.admin.rest.results.StringListResult;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;

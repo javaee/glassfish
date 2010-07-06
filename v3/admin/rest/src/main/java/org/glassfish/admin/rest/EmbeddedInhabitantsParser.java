@@ -36,6 +36,8 @@
 
 package org.glassfish.admin.rest;
 
+import org.glassfish.admin.rest.adapter.RestManagementAdapter;
+import org.glassfish.admin.rest.adapter.RestMonitoringAdapter;
 import com.sun.hk2.component.*;
 import org.kohsuke.*;
 

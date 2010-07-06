@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.glassfish.admin.rest.results.GetResult;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.io.IOException;
@@ -78,7 +79,7 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
          try {
-             if (Class.forName("org.glassfish.admin.rest.provider.GetResult").equals(genericType)) {
+             if (Class.forName("org.glassfish.admin.rest.results.GetResult").equals(genericType)) {
                  return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
              }
          } catch (java.lang.ClassNotFoundException e) {

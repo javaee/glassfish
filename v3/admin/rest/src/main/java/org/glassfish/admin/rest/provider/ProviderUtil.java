@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.glassfish.admin.rest.results.OptionsResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

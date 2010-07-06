@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.glassfish.admin.rest.results.GetResult;
 import static org.glassfish.admin.rest.Util.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -79,7 +80,7 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
     public boolean isWriteable(final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType) {
         try {
-            if (Class.forName("org.glassfish.admin.rest.provider.GetResult").equals(genericType)) {
+            if (Class.forName("org.glassfish.admin.rest.results.GetResult").equals(genericType)) {
                 return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
             }
         } catch (java.lang.ClassNotFoundException e) {

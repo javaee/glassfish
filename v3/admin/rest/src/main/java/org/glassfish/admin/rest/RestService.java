@@ -165,7 +165,7 @@ public class RestService implements Startup, PostConstruct, PreDestroy, RestInte
     }
 
 
-    static String getRestUID() {
+    public static String getRestUID() {
         return _uid;
     }
 

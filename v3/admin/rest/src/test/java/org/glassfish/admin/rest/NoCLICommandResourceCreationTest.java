@@ -53,7 +53,7 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
 
     @Test
     public void testPropertyCreation() {
-        final String propertyKey  = "propertyName";
+        final String propertyKey  = "propertyName" + generateRandomString();
         final String propertyValue = "propertyValue";
 
         //Create a property
@@ -68,11 +68,9 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
         Map<String, String> entity = getEntityValues(get(propertyURL));
         assertFalse(entity.size() == 0);
 
-/*        TODO Need to uncomment once DELETE without using CLI is implemented for a TemplateResource
         //Clean up to leave domain.xml good for next run
         response = delete(propertyURL, new HashMap<String, String>());
         assertTrue(isSuccess(response));
-*/
     }
 
 }
