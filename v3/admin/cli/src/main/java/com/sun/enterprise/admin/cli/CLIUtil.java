@@ -146,12 +146,16 @@ public class CLIUtil {
 
     /**
      * Return all the commands that include pattern (just a literal
-     * string, not really a pattern) as a substring.
+     * string, not really a pattern) as a substring.  Don't match
+     * hidden commands (starting with "_") unless the pattern also
+     * starts with "_".
      */
     private static String[] getMatchedCommands(final String pattern,
                                 final String[] commands) {
         List<String> matchedCommands = new ArrayList<String>();
         for (int i = 0; i < commands.length; i++) {
+            if (commands[i].startsWith("_") && !pattern.startsWith("_"))
+		continue;
             if (commands[i].indexOf(pattern) >= 0)
                 matchedCommands.add(commands[i]);
         }
