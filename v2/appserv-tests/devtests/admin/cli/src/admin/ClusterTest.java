@@ -122,23 +122,23 @@ public class ClusterTest extends AdminBaseDevTest {
         final String iname = "12249-ins" ;
         report(testName +"create-cl" , asadmin("create-cluster", cname));
         for (int i = 0 ; i<3; i ++) {
-            report(testName +"create-li" , asadmin("create-local-instance","--cluster", cname,iname+i));
+            report(testName +"create-li"+i , asadmin("create-local-instance","--cluster", cname,iname+i));
            
         }
         report(testName+"list-cl" , !isClusterRunning(cname));
         for (int i = 0 ; i<3; i ++) {
-            report(testName +"start-li" , asadmin("start-local-instance",iname+i));
+            report(testName +"start-li"+i , asadmin("start-local-instance",iname+i));
 
 
         }
-        report(testName+"list-cl" , isClusterRunning(cname));
+        report(testName+"list-cl1" , isClusterRunning(cname));
         report(testName +"stop-one" , asadmin("stop-local-instance",iname+1));
-        report(testName+"list-cl" , isClusterPartiallyRunning(cname));
+        report(testName+"list-cl2" , isClusterPartiallyRunning(cname));
         report(testName +"start-one" , asadmin("start-local-instance",iname+1));
 
         for (int i = 0 ; i<3; i ++) {
-            report(testName +"stop-again" , asadmin("stop-local-instance",iname+i));
-            report(testName +"delete-li" , asadmin("delete-local-instance",iname+i));
+            report(testName +"stop-again"+i , asadmin("stop-local-instance",iname+i));
+            report(testName +"delete-li"+i , asadmin("delete-local-instance",iname+i));
 
 
         }
