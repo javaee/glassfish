@@ -238,7 +238,7 @@
 </target>
 
 <target name="undeploy-v3-impl" depends="setOSConditions">
-    <echo message="./${app.file}"/>
+    <echo message="${app.file}"/>
     
     <antcall target="undeploy-v3-impl-unix"/>
     <antcall target="undeploy-v3-impl-windows"/>
@@ -256,6 +256,7 @@
 <target name="undeploy-v3-impl-unix" if="isUnix">
   <exec executable="${glassfish.home}/bin/asadmin">
     <arg value="undeploy"/>
+    <arg line="--target server"/>
     <arg value="${app.file}"/>
   </exec>      
 </target>
