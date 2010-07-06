@@ -46,7 +46,7 @@
     </parent>
 
     <artifactId>upgrade-tool</artifactId>
-    <packaging>hk2-jar</packaging>
+    <packaging>jar</packaging>
     <name>Upgrade Tool</name>
 
     <build>
@@ -54,16 +54,15 @@
         <resources>
         </resources>
         <plugins>
-        <plugin>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
                         <manifest>
                             <mainClass>com.sun.enterprise.tools.upgrade.UpgradeToolMain</mainClass>
                         </manifest>
-                        <manifestEntries> 
-                        <Class-Path>common-util.jar javahelp.jar upgrade-branding.jar upgrade-tool-l10n.jar</Class-Path>
+                        <manifestEntries>
+                            <Class-Path>common-util.jar javahelp.jar upgrade-branding.jar upgrade-tool-l10n.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
