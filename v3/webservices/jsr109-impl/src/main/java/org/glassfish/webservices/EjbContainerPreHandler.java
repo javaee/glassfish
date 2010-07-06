@@ -84,7 +84,7 @@ public class EjbContainerPreHandler extends GenericHandler {
                     (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(), context);
             inv.setWebServiceMethod(method);
             if ( !inv.authorizeWebService(method)  ) {
-                throw new Exception(  format( rb.getString ("client.unauthorized ")
+                throw new Exception(  format( rb.getString ("client.unauthorized")
                         , method.toString()));
             }
 
