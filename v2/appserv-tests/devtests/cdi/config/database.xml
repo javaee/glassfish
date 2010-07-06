@@ -1,0 +1,140 @@
+<!--
+<!DOCTYPE project [
+  <!ENTITY common SYSTEM "file:../../../config/common.xml">
+  <!ENTITY testcommon SYSTEM "file:../../../config/properties.xml">
+]>
+-->
+<!-- ============================ -->
+<!-- ORACLE SETUP FOR CONPOOL     -->
+<!-- ============================ -->
+<!--
+<project name="oracle-db-settings" default="create-jdbc-conpool-connector" basedir=".">
+
+&common; 
+&testcommon;
+-->
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+ Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+
+ Contributor(s):
+
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+
+<target name="create-jdbc-conpool-connector" depends="default-jdbc-conpool, oracle-jdbc-conpool"/>
+
+<target name="default-jdbc-conpool" depends="init-common" unless="oracle">
+	<antcall target="create-jdbc-connpool-common"/>
+</target>
+	   
+<target name="oracle-jdbc-conpool" depends="init-common" if="oracle">
+<echo message="creating jdbc connection pool ${jdbc.conpool.name}"
+    level="verbose"/>
+    <exec executable="${ASADMIN}" failonerror="false">
+        <arg line="create-jdbc-connection-pool"/>
+        <arg line="--datasourceclassname ${db.class}"/>
+        <arg line="--restype ${jdbc.resource.type}"/>
+        <arg line="--target ${appserver.instance.name}"/>
+        <arg line="${as.props}"/>
+        <arg line="${jdbc.conpool.name}"/>
+    </exec>
+    <antcall target="set-oracle-props">
+	<param name="pool.type" value="jdbc"/>
+	<param name="conpool.name" value="${jdbc.conpool.name}"/>
+    </antcall>
+</target>
+
+<target name="set-oracle-props" depends="init-common" if="oracle"> 
+  <property file="${env.APS_HOME}/devtests/connector/config/oracle.properties"/>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" value="set" />
+    <param name="operand.props"
+      value="${resources.dottedname.prefix}.${pool.type}-connection-pool.${conpool.name}.property.ServerName=${oracleForConnector.host}"/>
+  </antcall>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" value="set" />
+    <param name="operand.props"
+      value="${resources.dottedname.prefix}.${pool.type}-connection-pool.${conpool.name}.property.PortNumber=${oracleForConnector.port}" />
+  </antcall>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" value="set" />
+    <param name="operand.props"
+      value="${resources.dottedname.prefix}.${pool.type}-connection-pool.${conpool.name}.property.DatabaseName='jdbc:sun:oracle://${oracleForConnector.host}:${oracleForConnector.port};SID=${oracleForConnector.sid}' " />
+  </antcall>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" value="set" />
+    <param name="operand.props"
+      value="${resources.dottedname.prefix}.${pool.type}-connection-pool.${conpool.name}.property.ClassName=${oracleForConnector.dbclass}" />
+  </antcall>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" value="set" />
+    <param name="operand.props"
+      value="${resources.dottedname.prefix}.${pool.type}-connection-pool.${conpool.name}.property.SID=${oracleForConnector.sid}" />
+  </antcall>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" value="set" />
+    <param name="operand.props"
+      value="${resources.dottedname.prefix}.${pool.type}-connection-pool.${conpool.name}.property.User=${oracleForConnector.user}" />
+  </antcall>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" value="set" />
+    <param name="operand.props"
+      value="${resources.dottedname.prefix}.${pool.type}-connection-pool.${conpool.name}.property.Password=${oracleForConnector.pwd}" />
+  </antcall>
+</target>
+
+
+<target name="execute-sql-connector" depends="init-common, default-sql, sql-oracle"/>
+
+<target name="default-sql" depends="init-common" unless="oracle" > 
+	<antcall target="execute-sql-common"/>
+</target>
+
+<target name="sql-oracle" depends="init-common" if="oracle">
+	<property file="${env.APS_HOME}/devtests/connector/config/oracle.properties"/>
+	<property name="domain.lib.ext" value="${env.S1AS_HOME}/domains/domain1/lib/ext"/>
+	<property name="oracle.driver.path" value="${domain.lib.ext}/smoracle.jar:${domain.lib.ext}/smbase.jar:${domain.lib.ext}/smresource.jar:${domain.lib.ext}/smutil.jar:${domain.lib.ext}/smspy.jar:${domain.lib.ext}/Oranxo.jar"/>
+	<echo message="${oracleForConnector.driver}"/>
+<echo message="Executing sql statement at ${basedir} from ${sql.file}"
+    level="verbose"/>
+  <sql
+    driver="${oracleForConnector.driver}"
+    url="${oracleForConnector.url}"
+    userid="${oracleForConnector.user}"
+    password="${oracleForConnector.pwd}"
+    src="${sql.file}"
+    onerror="continue"
+    print="yes"
+    classpath="${oracle.driver.path}"/>
+</target>
+<!--
+</project>
+-->

@@ -1,0 +1,5 @@
+create-jms-resource --restype javax.jms.QueueConnectionFactory jms/cdi_hello_mdb_QCF
+create-jmsdest --desttype queue cdi_hello_mdb_InQueue 
+create-jms-resource --restype javax.jms.Queue --property imqDestinationName=cdi_hello_mdb_InQueue jms/cdi_hello_mdb_InQueue
+create-jmsdest --desttype queue cdi_hello_mdb_OutQueue 
+create-jms-resource --restype javax.jms.Queue --property imqDestinationName=cdi_hello_mdb_OutQueue jms/cdi_hello_mdb_OutQueue
