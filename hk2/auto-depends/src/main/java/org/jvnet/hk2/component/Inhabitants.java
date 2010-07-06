@@ -115,7 +115,7 @@ public class Inhabitants {
      * @param i instance of inhabitant to obtain its registration name
      * @param indexName the contract name this service is implementing
      * @param <T> contract type, optional
-     * @return a collaction of names (usually there is only one) under which this service
+     * @return a collection of names (usually there is only one) under which this service
      * is registered for the passed contract name
      */
     public static <T> Collection<String> getNamesFor(Inhabitant<T> i, String indexName) {

@@ -121,6 +121,15 @@ public class ConfigBean extends Dom implements ConfigView {
     }
 
     /**
+     * Returns a copy of itself
+     *
+     * @return a copy of itself.
+     */
+    protected ConfigBean copy() {
+        return new ConfigBean(this);
+    }
+
+    /**
      * Returns an optional feature of the ConfigBean. Optional features are implemented
      * by other objects and attached to this instance. Attached features can be queried
      * using the getOptionalFeature method giving the type of the requestion optional
