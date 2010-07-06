@@ -280,6 +280,12 @@ public class ListCommandsCommand extends CLICommand {
  
     private String justify(String s, int width) {
         int numSpaces = width - s.length();
-        return SPACES.substring(0, numSpaces);
+
+        if (numSpaces > 0)
+            return SPACES.substring(0, numSpaces);
+        else
+            // the command-name is HUGE.  The formatting will be funky now but
+            // truncating it is a bad idea.  Just add a one-space separator.
+            return " "; 
     }
 }
