@@ -65,10 +65,10 @@
                         return submitAndDisable(this, '$resource{i18n.button.Processing}');
                     }" >
                 <!command
-                    saveBeanAttributes(objectNameStr="#{pageSession.profilerObjectNameStr}"  attrs="#{pageSession.valueMap}"
-                        skipAttrs="#{pageSession.skipAttrsList}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                    );
+                    gf.createEntity(endpoint="#{pageSession.selfUrl}" attrs="#{pageSession.valueMap}"
+                            skipAttrs="#{pageSession.skipAttrsList}"
+                            convertToFalse="#{pageSession.convertToFalseList}"
+                            onlyUseAttrs="#{pageSession.onlyUseAttrs}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     saveJvmOptionValues(objectNameStr="#{pageSession.profilerObjectNameStr}" options="$attribute{newList}");
