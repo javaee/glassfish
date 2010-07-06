@@ -385,7 +385,17 @@ public class CommonHandlers {
         handlerCtx.setOutputValue("unprocessedChanges", changes); 
     }
 
+    @Handler(id="gf.handleError",
+    input={
+        @HandlerInput(name="detail", type=String.class)}
+    )
+    public void handleError(HandlerContext handlerCtx) {
+        String detail = (String)handlerCtx.getInputValue("detail");
+        GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), detail);
+        handlerCtx.getFacesContext().renderResponse();
+    }
 
+    
     /**
      * <p> Test if anonymous user login is allowed <p>
      * <p> Output value: "loginUser" -- Type: <code>java.lang.String</code> the anonymous user name </p>
