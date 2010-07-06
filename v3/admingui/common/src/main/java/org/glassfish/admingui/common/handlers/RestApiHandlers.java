@@ -108,8 +108,11 @@ public class RestApiHandlers {
         try {
             String endpoint = (String) handlerCtx.getInputValue("endpoint");
             Map currentMap = (Map) handlerCtx.getInputValue("currentMap");
-            String entity = get(endpoint).getResponseBody();
-            Map valueMap =  getEntityAttrs(entity);
+            RestResponse response = get(endpoint);
+            if (!response.isSuccess()) {
+                throw new Exception (response.getResponseBody());
+            }
+            Map valueMap =  getEntityAttrs(response.getResponseBody());
             if (currentMap != null){
                 valueMap.putAll(currentMap);
             }
@@ -128,6 +131,7 @@ public class RestApiHandlers {
     public static void checkIfEndPointExist(HandlerContext handlerCtx) {
         handlerCtx.setOutputValue("exists", get((String) handlerCtx.getInputValue("endpoint")).isSuccess());
     }
+
     /**
      *
      * REST-based version of createProxy
