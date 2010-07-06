@@ -25,22 +25,18 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     @Context
     protected UriInfo uriInfo;
 
-    protected String desiredType;
+    protected Class desiredType;
     protected MediaType supportedMediaType;
 
-    public BaseProvider(String desiredType, MediaType mediaType) {
+    public BaseProvider(Class desiredType, MediaType mediaType) {
         this.desiredType = desiredType;
         this.supportedMediaType = mediaType;
     }
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] antns, MediaType mt) {
-        try {
-            if (Class.forName(desiredType).equals(genericType)) {
-                return mt.isCompatible(supportedMediaType);
-            }
-        } catch (java.lang.ClassNotFoundException e) {
-            return false;
+        if (desiredType.equals(genericType)) {
+            return mt.isCompatible(supportedMediaType);
         }
         return false;
     }

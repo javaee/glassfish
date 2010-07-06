@@ -68,7 +68,7 @@ import org.jvnet.hk2.config.ConfigModel;
 public class GetResultHtmlProvider extends BaseProvider<GetResult> {
 
     public GetResultHtmlProvider() {
-        super(GetResult.class.getName(), MediaType.TEXT_HTML_TYPE);
+        super(GetResult.class, MediaType.TEXT_HTML_TYPE);
     }
 
     @Override

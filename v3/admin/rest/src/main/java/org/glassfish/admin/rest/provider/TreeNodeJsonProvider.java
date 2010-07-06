@@ -61,7 +61,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 public class TreeNodeJsonProvider extends BaseProvider<List<TreeNode>> {
 
     public TreeNodeJsonProvider() {
-        super("java.util.List<org.glassfish.flashlight.datatree.TreeNode>", MediaType.APPLICATION_JSON_TYPE);
+        super(List.class, MediaType.APPLICATION_JSON_TYPE);
     }
 
     @Override

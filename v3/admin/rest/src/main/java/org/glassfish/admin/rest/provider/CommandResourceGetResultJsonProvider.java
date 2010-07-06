@@ -61,7 +61,7 @@ import static org.glassfish.admin.rest.Util.*;
 public class CommandResourceGetResultJsonProvider extends BaseProvider<CommandResourceGetResult> {
 
     public CommandResourceGetResultJsonProvider() {
-        super(CommandResourceGetResult.class.getName(), MediaType.APPLICATION_JSON_TYPE);
+        super(CommandResourceGetResult.class, MediaType.APPLICATION_JSON_TYPE);
     }
 
     @Override

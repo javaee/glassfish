@@ -52,7 +52,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 @Produces(MediaType.APPLICATION_JSON)
 public class StringListResultJsonProvider extends BaseProvider<StringListResult> {
     public StringListResultJsonProvider() {
-        super(StringListResult.class.getName(), MediaType.APPLICATION_JSON_TYPE);
+        super(StringListResult.class, MediaType.APPLICATION_JSON_TYPE);
     }
 
     @Override

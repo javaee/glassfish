@@ -50,7 +50,7 @@ import javax.ws.rs.Produces;
 @Produces(MediaType.APPLICATION_XML)
 public class ActionReportResultXmlProvider extends BaseProvider<ActionReportResult> {
     public ActionReportResultXmlProvider() {
-        super(ActionReportResult.class.getName(), MediaType.APPLICATION_XML_TYPE);
+        super(ActionReportResult.class, MediaType.APPLICATION_XML_TYPE);
     }
 
     @Override

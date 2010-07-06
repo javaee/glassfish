@@ -52,7 +52,7 @@ import static org.glassfish.admin.rest.Util.*;
 public class CommandResourceGetResultXmlProvider extends BaseProvider<CommandResourceGetResult> {
 
     public CommandResourceGetResultXmlProvider() {
-        super(CommandResourceGetResult.class.getName(), MediaType.APPLICATION_XML_TYPE);
+        super(CommandResourceGetResult.class, MediaType.APPLICATION_XML_TYPE);
     }
 
     @Override

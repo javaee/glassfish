@@ -59,7 +59,7 @@ public class OptionsResultJsonProvider extends BaseProvider<OptionsResult> {
      private static final String MESSAGE_PARAMETERS = "messageParameters";
 
      public OptionsResultJsonProvider() {
-         super(OptionsResult.class.getName(), MediaType.APPLICATION_JSON_TYPE);
+         super(OptionsResult.class, MediaType.APPLICATION_JSON_TYPE);
      }
 
      //get json representation for the given OptionsResult object

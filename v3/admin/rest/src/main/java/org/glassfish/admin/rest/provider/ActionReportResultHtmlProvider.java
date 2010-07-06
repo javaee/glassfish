@@ -60,41 +60,8 @@ import static org.glassfish.admin.rest.Util.*;
 @Provider
 @Produces(MediaType.TEXT_HTML)
 public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportResult> {
-/*
-    @Context
-    protected UriInfo uriInfo;
-
-    @Override
-    public long getSize(final ActionReportResult proxy, final Class<?> type, final Type genericType,
-                final Annotation[] annotations, final MediaType mediaType) {
-        return -1;
-    }
-
-
-    @Override
-    public boolean isWriteable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
-        try {
-            if (Class.forName("org.glassfish.admin.rest.results.ActionReportResult").equals(genericType)) {
-                return mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
-            }
-        } catch (java.lang.ClassNotFoundException e) {
-            return false;
-        }
-        return false;
-    }
-
-
-    @Override
-    public void writeTo(final ActionReportResult proxy, final Class<?> type, final Type genericType,
-            final Annotation[] annotations, final MediaType mediaType,
-            final MultivaluedMap<String, Object> httpHeaders,
-            final OutputStream entityStream) throws IOException, WebApplicationException {
-        entityStream.write(getHtml(proxy).getBytes());
-    }
-*/
-
     public ActionReportResultHtmlProvider() {
-        super(ActionReportResult.class.getName(), MediaType.TEXT_HTML_TYPE);
+        super(ActionReportResult.class, MediaType.TEXT_HTML_TYPE);
     }
 
     @Override

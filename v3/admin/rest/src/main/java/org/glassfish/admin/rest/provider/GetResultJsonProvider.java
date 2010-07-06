@@ -58,7 +58,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 public class GetResultJsonProvider extends BaseProvider<GetResult> {
 
     public GetResultJsonProvider() {
-        super(GetResult.class.getName(), MediaType.APPLICATION_JSON_TYPE);
+        super(GetResult.class, MediaType.APPLICATION_JSON_TYPE);
     }
 
     @Override

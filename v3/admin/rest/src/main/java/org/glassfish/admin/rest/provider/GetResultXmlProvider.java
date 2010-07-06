@@ -67,7 +67,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 public class GetResultXmlProvider extends BaseProvider<GetResult> {
 
     public GetResultXmlProvider() {
-        super(GetResult.class.getName(), MediaType.APPLICATION_XML_TYPE);
+        super(GetResult.class, MediaType.APPLICATION_XML_TYPE);
     }
 
     @Override

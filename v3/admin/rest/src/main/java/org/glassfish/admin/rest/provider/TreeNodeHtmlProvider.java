@@ -62,7 +62,7 @@ import javax.ws.rs.ext.Provider;
 public class TreeNodeHtmlProvider extends BaseProvider<List<TreeNode>> {
 
     public TreeNodeHtmlProvider() {
-        super("java.util.List<org.glassfish.flashlight.datatree.TreeNode>", MediaType.TEXT_HTML_TYPE);
+        super(List.class, MediaType.TEXT_HTML_TYPE);
     }
 
     @Override

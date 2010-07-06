@@ -52,7 +52,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 @Produces(MediaType.APPLICATION_XML)
 public class StringListResultXmlProvider extends BaseProvider<StringListResult> {
     public StringListResultXmlProvider() {
-        super(StringListResult.class.getName(), MediaType.APPLICATION_XML_TYPE);
+        super(StringListResult.class, MediaType.APPLICATION_XML_TYPE);
     }
 
     @Override

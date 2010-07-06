@@ -59,7 +59,7 @@ import static org.glassfish.admin.rest.Util.*;
 public class CommandResourceGetResultHtmlProvider extends BaseProvider<CommandResourceGetResult> {
 
     public CommandResourceGetResultHtmlProvider() {
-        super(CommandResourceGetResult.class.getName(), MediaType.TEXT_HTML_TYPE);
+        super(CommandResourceGetResult.class, MediaType.TEXT_HTML_TYPE);
     }
 
     @Override

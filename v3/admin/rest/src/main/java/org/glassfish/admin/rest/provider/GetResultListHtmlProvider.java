@@ -65,7 +65,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 public class GetResultListHtmlProvider extends BaseProvider<GetResultList> {
 
     public GetResultListHtmlProvider() {
-        super(GetResultList.class.getName(), MediaType.TEXT_HTML_TYPE);
+        super(GetResultList.class, MediaType.TEXT_HTML_TYPE);
     }
 
     @Override

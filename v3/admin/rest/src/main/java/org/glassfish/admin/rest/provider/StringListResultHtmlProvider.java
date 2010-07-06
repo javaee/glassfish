@@ -50,7 +50,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 @Produces(MediaType.TEXT_HTML)
 public class StringListResultHtmlProvider extends BaseProvider<StringListResult> {
     public StringListResultHtmlProvider() {
-        super(StringListResult.class.getName(), MediaType.TEXT_HTML_TYPE);
+        super(StringListResult.class, MediaType.TEXT_HTML_TYPE);
     }
     
     @Override

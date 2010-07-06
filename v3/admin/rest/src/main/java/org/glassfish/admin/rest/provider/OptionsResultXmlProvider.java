@@ -59,7 +59,7 @@ public class OptionsResultXmlProvider extends BaseProvider<OptionsResult> {
     private final static String METHOD = "method";
 
      public OptionsResultXmlProvider() {
-         super(OptionsResult.class.getName(), MediaType.APPLICATION_XML_TYPE);
+         super(OptionsResult.class, MediaType.APPLICATION_XML_TYPE);
      }
 
      //get json representation for the given OptionsResult object

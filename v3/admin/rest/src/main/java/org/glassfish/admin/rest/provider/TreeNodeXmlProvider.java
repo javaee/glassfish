@@ -68,7 +68,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 public class TreeNodeXmlProvider extends BaseProvider<List<TreeNode>> {
 
     public TreeNodeXmlProvider() {
-        super("java.util.List<org.glassfish.flashlight.datatree.TreeNode>", MediaType.APPLICATION_XML_TYPE);
+        super(List.class, MediaType.APPLICATION_XML_TYPE);
     }
 
     @Override

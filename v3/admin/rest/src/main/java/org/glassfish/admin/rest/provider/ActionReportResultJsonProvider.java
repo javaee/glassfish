@@ -58,7 +58,7 @@ import javax.ws.rs.WebApplicationException;
 @Produces(MediaType.APPLICATION_JSON)
 public class ActionReportResultJsonProvider extends BaseProvider<ActionReportResult> {
     public ActionReportResultJsonProvider() {
-        super(ActionReportResult.class.getName(), MediaType.APPLICATION_JSON_TYPE);
+        super(ActionReportResult.class, MediaType.APPLICATION_JSON_TYPE);
     }
 
     @Override
