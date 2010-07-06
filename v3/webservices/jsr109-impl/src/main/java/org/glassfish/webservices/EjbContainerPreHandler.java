@@ -63,7 +63,7 @@ import org.glassfish.ejb.api.EJBInvocation;
  */
 public class EjbContainerPreHandler extends GenericHandler {
 
-    private Logger logger = LogDomains.getLogger(EjbContainerPreHandler.class, LogDomains.EJB_LOGGER);
+    private Logger logger = LogDomains.getLogger(EjbContainerPreHandler.class, LogDomains.WEBSERVICES_LOGGER);
     private ResourceBundle rb = logger.getResourceBundle();
     private WsUtil wsUtil = new WsUtil();
 
