@@ -75,7 +75,7 @@ public class StringListResultXmlProvider extends ProviderUtil implements
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
          try {
-             if (Class.forName("org.glassfish.admin.rest.provider.StringListResult").equals(genericType)) {
+             if (Class.forName("org.glassfish.admin.rest.results.StringListResult").equals(genericType)) {
                  return mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE);
              }
          } catch (java.lang.ClassNotFoundException e) {

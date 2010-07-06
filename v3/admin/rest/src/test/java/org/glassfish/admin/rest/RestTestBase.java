@@ -103,6 +103,10 @@ public class RestTestBase {
         return client.resource(address).accept(RESPONSE_TYPE).get(ClientResponse.class);
     }
 
+    protected ClientResponse options(String address) {
+        return client.resource(address).accept(RESPONSE_TYPE).options(ClientResponse.class);
+    }
+
     protected ClientResponse post(String address, Map<String, String> payload) {
         return client.resource(address).post(ClientResponse.class, buildMultivalueMap(payload));
     }
