@@ -60,6 +60,7 @@ Variables Used:
     ${appname}    
     ${assemble.dir}
     ${web.xml}
+    ${beans.xml}
     ${tlds}
     ${tagfiles}
     ${APS_HOME}
@@ -144,6 +145,9 @@ Variables Used:
   <copy file="${web.xml}" 
       tofile="${build.classes.dir}/tmp/WEB-INF/web.xml"
         failonerror="false"/>
+   <copy file="${beans.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/beans.xml"
+        failonerror="false"/>
   <copy file="${context.xml}"
       tofile="${build.classes.dir}/tmp/META-INF/context.xml" failonerror="false"/>
   <copy todir="${build.classes.dir}/tmp/WEB-INF/classes">
@@ -174,6 +178,7 @@ Variables Used:
       <include name="WEB-INF/web.xml"/>
       <include name="WEB-INF/glassfish-web.xml"/>
       <include name="WEB-INF/sun-web.xml"/>
+      <include name="WEB-INF/beans.xml"/>
       <include name="WEB-INF/weblogic.xml"/>
       <include name="WEB-INF/webservices.xml"/>
       <include name="WEB-INF/tagPlugins.xml"/>
@@ -207,6 +212,7 @@ Variables Used:
     ${ejb.jar}
     ${build.classes.dir}
     ${ejb-jar.xml}    
+    ${beans.xml}
     ${persistence-orm.xml}    
     ${sun-ejb-jar.xml}    
     ${sun-cmp-mappings.xml}    
@@ -235,6 +241,9 @@ Variables Used:
   <copy file="${sun-cmp-mappings.xml}"
     tofile="${build.classes.dir}/META-INF/sun-cmp-mappings.xml"
     failonerror="false"/>
+  <copy file="${beans.xml}"
+    tofile="${build.classes.dir}/META-INF/beans.xml"
+    failonerror="false"/>
   <copy file="${dbschema}" todir="${build.classes.dir}" failonerror="false"/>
   <jar jarfile="${ejb.jar}" basedir="${ejbjar.files}" update="true"
     includes ="${ejbjar.classes}">
@@ -244,6 +253,7 @@ Variables Used:
       <include name="webservices.xml"/>
       <include name="sun-ejb-jar.xml"/>
       <include name="sun-cmp-mappings.xml"/>
+      <include name="beans.xml"/>
     </metainf>
   </jar>       
   <delete dir="${build.classes.dir}/META-INF" failonerror="false"/>
