@@ -255,7 +255,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             resizerTask = null;
         }
 
-        resizerTask = new Resizer(name, ds, this, this, preferValidateOverRecreate);
+        resizerTask = initializeResizer();
 
         if (timer == null) {
             timer = ConnectorRuntime.getRuntime().getTimer();
@@ -265,6 +265,10 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("scheduled resizer task");
         }
+    }
+
+    protected Resizer initializeResizer() {
+        return new Resizer(name, ds, this, this, preferValidateOverRecreate);
     }
 
     /**

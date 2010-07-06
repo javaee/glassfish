@@ -39,6 +39,7 @@ package com.sun.enterprise.resource.pool.datastructure;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.appserv.connectors.internal.api.PoolingException;
+import java.util.ArrayList;
 
 /**
  * Represents a pool datastructure. Helps to plug-in various implementations
@@ -109,4 +110,15 @@ public interface DataStructure {
      * @return int count
      */
     int getResourcesSize();
+
+    /**
+     * Get all resources in the datastructure
+     * Note : do not use this for normal usages as it
+     * can potentially represent all resources
+     * (including the ones in use).
+     * This is used under special circumstances where there is a need
+     * to process all resources.
+     * @return ArrayList<ResourceHandle>
+     */
+    ArrayList<ResourceHandle> getAllResources();
 }

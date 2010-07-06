@@ -41,9 +41,11 @@ import com.sun.enterprise.resource.AssocWithThreadResourceHandle;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceSpec;
 import com.sun.appserv.connectors.internal.api.PoolingException;
+import com.sun.enterprise.resource.pool.datastructure.DataStructureFactory;
+import com.sun.enterprise.resource.pool.resizer.AssocWithThreadPoolResizer;
+import com.sun.enterprise.resource.pool.resizer.Resizer;
 
 import javax.transaction.Transaction;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 /**
@@ -61,6 +63,15 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
             throws PoolingException {
         super(poolName, env);
     }
+
+    @Override
+    protected void initializePoolDataStructure() throws PoolingException {
+        ds = DataStructureFactory.getDataStructure(
+                "com.sun.enterprise.resource.pool.datastructure.ListDataStructure",
+                dataStructureParameters,
+                maxPoolSize, this, resourceSelectionStrategyClass);
+    }
+
 
     /**
      * Prefetch is called to check whether there there is a free resource is already associated with the thread
@@ -129,6 +140,12 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
         return null;
     }
 
+    @Override
+    protected Resizer initializeResizer() {
+        return new AssocWithThreadPoolResizer(name, ds, this, this,
+                preferValidateOverRecreate);
+    }
+
     /**
      * to associate a resource with the thread
      * @param h ResourceHandle
@@ -163,6 +180,18 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
         ResourceHandle result;
         result = super.getUnenlistedResource(spec, alloc, tran);
 
+        //It is possible that Resizer might have marked the resource for recycle
+        //and hence we should not use this resource.
+        if(result != null) {
+            synchronized(result.lock) {
+                if(ds.getAllResources().contains(result) &&
+                        ((AssocWithThreadResourceHandle)result).isDirty()) {
+                    //Remove the resource and set to null
+                    ds.removeResource(result);
+                    result = null;
+                }
+            }            
+        }
         //If we came here, that's because free doesn't have anything
         //to offer us. This could be because:
         //1. All free resources are associated
@@ -173,10 +202,8 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
         //DISASSOCIATE
         if (result == null) {
             synchronized (this) {
-                ResourceHandle resource;
-                ArrayList<ResourceHandle> activeResources = new ArrayList<ResourceHandle>();
-
-                while ((resource = ds.getResource()) != null) {
+                
+                for (ResourceHandle resource : ds.getAllResources()) {
                     synchronized (resource.lock) {
                         //though we are checking resources from within the free list,
                         //we could have a situation where the resource was free upto
@@ -185,14 +212,13 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
                         //so we need to check for isFree also
 
                         if (resource.getResourceState().isUnenlisted() &&
-                                resource.getResourceState().isFree()) {
+                                resource.getResourceState().isFree() && 
+                                !(((AssocWithThreadResourceHandle) resource).isDirty())) {
                             if (!matchConnection(resource, alloc)) {
-                                activeResources.add(resource);
                                 continue;
                             }
 
                             if (resource.hasConnectionErrorOccurred()) {
-                                activeResources.add(resource);
                                 continue;
                             }
                             result = resource;
@@ -202,10 +228,6 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
                             break;
                         }
                     }
-                }
-
-                for (ResourceHandle activeResource : activeResources) {
-                    ds.returnResource(activeResource);
                 }
             }
         }
@@ -225,7 +247,6 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
         if(this.cleanupResource(h)) {
             if (!((AssocWithThreadResourceHandle) h).isAssociated()) {
                 ds.returnResource(h);
-            //free.add(h);
             }
             //update monitoring data
             if(poolLifeCycleListener != null){

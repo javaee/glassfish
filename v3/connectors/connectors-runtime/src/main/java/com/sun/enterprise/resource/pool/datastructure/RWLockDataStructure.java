@@ -216,4 +216,9 @@ public class RWLockDataStructure implements DataStructure {
     public void setMaxSize(int maxSize) {
         this.maxSize = maxSize;
     }
+
+    @Override
+    public ArrayList<ResourceHandle> getAllResources() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

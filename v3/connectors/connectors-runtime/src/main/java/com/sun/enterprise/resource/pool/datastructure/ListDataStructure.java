@@ -224,6 +224,14 @@ public class ListDataStructure implements DataStructure {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ArrayList<ResourceHandle> getAllResources() {
+        return this.resources;
+    }
+
+    /**
      * Semaphore whose available permits change according to the 
      * changes in max-pool-size via a reconfiguration.
      */
