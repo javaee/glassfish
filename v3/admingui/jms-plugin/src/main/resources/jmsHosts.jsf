@@ -49,8 +49,10 @@
 
         setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
         setPageSessionAttribute(key="childType" value="jms-host");
-
-        getChildrenTable(objectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/jms-service");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
 
         setPageSessionAttribute(key="tableTitle" value="$resource{i18njms.jmsHosts.TableTitle}");
         setPageSessionAttribute(key="listPageLink" value="jmsHosts.jsf");

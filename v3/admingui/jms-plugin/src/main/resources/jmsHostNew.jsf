@@ -49,7 +49,10 @@
 
             setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
             setPageSessionAttribute(key="childType" value="jms-host");
-            getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/jms-service");
+            setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
+            setPageSessionAttribute(key="rest-api" value="true");
+            gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
         />
     </event>
     <sun:form id="propertyForm">
