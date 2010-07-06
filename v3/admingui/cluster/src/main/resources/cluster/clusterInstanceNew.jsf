@@ -43,14 +43,14 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        setPageSessionAttribute(key="configOption", value="copy");
-        setPageSessionAttribute(key="config", value="default-config");
+        getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
+        urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="forStandalone" value="#{false}");
         setPageSessionAttribute(key="helpId", value="clusterInstanceNew");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/cluster/cluster/clusters.jsf");
-        gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config", result="#{pageSession.configsList}");
+        setPageSessionAttribute(key="pageTitle", value="i18ncs.clusterInstanceNew.PageTitle");
+        setPageSessionAttribute(key="pageTitleHelp", value="i18ncs.clusterInstanceNew.PageTitleHelp");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/cluster/cluster/clusterInstances.jsf?clusterName=#{pageSession.encodedClusterName}");
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/nodes/node", result="#{pageSession.nodesList}");
-
     />
     </event>
 #include "/cluster/shared/instanceNew.inc"

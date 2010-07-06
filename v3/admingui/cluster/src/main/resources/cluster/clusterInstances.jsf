@@ -57,7 +57,7 @@
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/cluster/cluster/clusterInstances.jsf?clusterName=#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/cluster/cluster/clusterInstancesEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18ncs.cluster.instancesTableTitle}");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/cluster/cluster/clusterInstanceNew.jsf");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/cluster/cluster/clusterInstanceNew.jsf?clusterName=#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="clusterList" value="#{true}" )
         setPageSessionAttribute(key="parentUrl" value="#{sessionScope.REST_URL}/servers");
         setPageSessionAttribute(key="childType" value="server");

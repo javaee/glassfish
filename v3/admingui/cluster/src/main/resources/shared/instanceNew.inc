@@ -37,7 +37,7 @@
 
 <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
-    <sun:title id="propertyContentPage" title="$resource{i18nc.standaloneInstanceNew.PageTitle}" helpText="$resource{i18nc.standaloneInstanceNew.PageTitleHelp}">
+    <sun:title id="propertyContentPage" title="#{pageSession.pageTitle}" helpText="#{pageSession.pageTitleHelp}">
         <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="newButton" text="$resource{i18n.button.OK} (TBD)"
@@ -61,22 +61,27 @@
     <sun:propertySheet id="propertySheet">
 
         <sun:propertySheetSection id="propertSectionTextField">
-            <sun:property id="NameTextProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
+
+            <sun:property id="clusterNameProp" rendered="#{!forStandalone}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.ClusterName}" >
+                <sun:staticText id="clusterName" text="#{encodedClusterName}" />
+            </sun:property>
+
+            <sun:property id="NameTextProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.instanceName}" >
                 <sun:textField id="NameText" text="#{name}" styleClass="required" columns="$int{55}" required="#{true}" />
             </sun:property>
-            <sun:property id="node"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.clusterNew.Node}" helpText="$resource{i18nc.cluster.NodeHelp}">
+            <sun:property id="node"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.clusterNew.Node}" helpText="$resource{i18ncs.clusterNew.NodeHelp}">
                 <sun:dropDown id="node" labels="#{pageSession.nodesList}" selected="#{pageSession.Node}" >
                 </sun:dropDown>
             </sun:property>
-            <sun:property id="configProp"  rendered="#{pageSession.forStandalone}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.clusterNew.Configuration}" helpText="$resource{i18nc.clusterNew.ConfigurationHelp}">
+            <sun:property id="configProp"  rendered="#{pageSession.forStandalone}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.clusterNew.Configuration}" helpText="$resource{i18ncs.clusterNew.ConfigurationHelp}">
                 <sun:dropDown id="Config" labels="#{pageSession.configsList}" selected="#{pageSession.config}" >
                 </sun:dropDown>
             </sun:property>
 
             <sun:property id="configOptionProp" rendered="#{pageSession.forStandalone}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
-                <sun:radioButton id="optC"  name="configOptionGrp" label="$resource{i18nc.clusterNew.CopyConfig}" selected="#{configOption}" selectedValue="copy" />
+                <sun:radioButton id="optC"  name="configOptionGrp" label="$resource{i18ncs.clusterNew.CopyConfig}" selected="#{configOption}" selectedValue="copy" />
                 "<br />
-                <sun:radioButton id="optR"  name="configOptionGrp" label="$resource{i18nc.clusterNew.ReferenceConfig}" selected="#{configOption}" selectedValue="ref" />
+                <sun:radioButton id="optR"  name="configOptionGrp" label="$resource{i18ncs.clusterNew.ReferenceConfig}" selected="#{configOption}" selectedValue="ref" />
                 "<br />
             </sun:property>
         </sun:propertySheetSection>

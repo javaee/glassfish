@@ -57,9 +57,31 @@
             <sun:button id="newButton" text="$resource{i18n.button.OK} (TBD)"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
-                getUIComponent(clientId="$pageSession{clusterTableRowGroupId}", component=>$attribute{tableRowGroup});
-                getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{instances});
-                //createCluster(Name="#{name}", Config="#{config}", CopyConfig="#{configOptionGrp}" Instances="#{instances}");
+                getUIComponent(clientId="#{pageSession.clusterTableRowGroupId}", component="#{requestScope.tableRowGroup}");
+                getAllSingleMapRows(TableRowGroup="#{requestScope.tableRowGroup}",  Rows="#{requestScope.instances}");
+                println("#{pageSession.name}");
+                println("#{pageSession.config}");
+                println("#{configOptionGrp}");
+                println("====#{configOptionGrp}");
+                println("#{instances}");
+                gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.name}", exists="#{requestScope.clusterExist}");
+                if (#{requestScope.clusterExist}){
+                        gf.handleError(detail="cluster #{pageSession.name} already exist");
+                }
+                if ('#{configOptionGrp}=copy'){
+                    gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/configs/config/c", exists="#{requestScope.configExist}");
+                    if (#{requestScope.configExist}){
+                        gf.handleError(detail="#{pageSession.name}-config already exist");
+                    }
+                    createMap(result="#{requestScope.attrs}")
+                    setAttribute(key="aa" value="#{pageSession.config}");
+                    setAttribute(key="bb" value="#{pageSession.name}-config}");
+                    mapPut(key="id" value={"$attribute{aa}", "$attribute{bb}"} , map="#{requestScope.attrs}");
+                    gf.restExecuteCommand(endpoint="#{sessionScope.REST_URL}/configs/copy-config"  attrs="#{requestScope.attrs}" );
+                }
+
+                #createCluster(Name="#{name}", Config="#{config}", CopyConfig="#{configOptionGrp}" Instances="#{instances}");
+                gf.handleError(detail="Config already exist");
                 gf.redirect(page="#{request.contextPath}/cluster/cluster/clusters.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
              />
             </sun:button>
@@ -77,10 +99,10 @@
     <sun:propertySheet id="propertySheet">
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="NameTextProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.ClusterName}" >
-                <sun:textField id="NameText" text="#{name}" styleClass="required" columns="$int{55}" required="#{true}" />
+                <sun:textField id="NameText" text="#{pageSession.name}" styleClass="required" columns="$int{55}" required="#{true}" />
             </sun:property>
             <sun:property id="configProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.clusterNew.Configuration}" helpText="$resource{i18ncs.clusterNew.ConfigurationHelp}">
-                <sun:dropDown id="Config" labels="#{pageSession.configsList}" selected="#{config}" >
+                <sun:dropDown id="Config" labels="#{pageSession.configsList}" selected="#{pageSession.config}" >
                 </sun:dropDown>
             </sun:property>
             <sun:property id="configOptionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
