@@ -109,12 +109,6 @@ public class SSHLauncher {
             this.host = node.getNodeHost();
         }
 
-        try {
-            port = Integer.parseInt(connector.getSshPort());
-        } catch(NumberFormatException nfe) {
-            port = 22;
-        }
-        this.port = port == 0 ? 22 : port;
         String sshHost = connector.getSshHost();
         if (sshHost != null)
             this.host = sshHost;
@@ -125,11 +119,22 @@ public class SSHLauncher {
             userName = sshAuth.getUserName();
             this.keyFile = sshAuth.getKeyfile();            
         }
+        try {
+            port = Integer.parseInt(connector.getSshPort());
+        } catch(NumberFormatException nfe) {
+            port = 22;
+        }
+
+        init(userName, port);
+
+    }
+
+    private void init(String userName, int port) {
+
+        this.port = port == 0 ? 22 : port;
 
         this.userName = SSHUtil.checkString(userName) == null ?
                     System.getProperty("user.name") : userName;
-
-
 
         if (knownHosts == null) {
             File home = new File(System.getProperty("user.home"));
@@ -143,6 +148,7 @@ public class SSHLauncher {
             }
         }
     }
+
 
   /**
      * Opens the connection to the host and authenticates with public
@@ -213,28 +219,23 @@ public class SSHLauncher {
 
     public  boolean validate(String host, int port,
                              String userName, String keyFile, String nodeHome,
-                             Logger logger) 
+                             Logger logger) throws IOException
     {
         this.host = host;
-        this.port = port;
-        this.userName = userName;
         this.keyFile = keyFile;
         this.logger = logger;
         boolean isValid = false;
+        init(userName, port);
 
-        try {
-            openConnection();
-            logger.fine("Connection settings valid");
-            //Validate if nodeHome exists
-            SFTPClient sftpClient = new SFTPClient(connection);
-            isValid = sftpClient.exists(nodeHome);
-            logger.fine("Node home validated");
-            SSHUtil.unregister(connection);
 
-        } catch (IOException ioe) {
-            isValid = false;
-            ioe.printStackTrace();
-        }
+        openConnection();
+        logger.fine("Connection settings valid");
+        //Validate if nodeHome exists
+        SFTPClient sftpClient = new SFTPClient(connection);
+        isValid = sftpClient.exists(nodeHome);
+        logger.fine("Node home validated");
+        SSHUtil.unregister(connection);
+
         connection = null;
         return isValid;
     }
