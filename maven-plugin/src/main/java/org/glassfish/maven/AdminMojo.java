@@ -1,3 +1,4 @@
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -36,63 +37,57 @@
 
 package org.glassfish.maven;
 
-import java.io.*;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedDeployer;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.embedded.ContainerBuilder;
-import org.apache.maven.artifact.*;
-import org.apache.maven.artifact.handler.*;
-import org.apache.maven.project.MavenProject;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.ActionReport;
 
 import java.util.*;
+
 /**
- * @goal runweb
+ * @goal admin
  */
-
-public class RunWarMojo extends AbstractDeployMojo {
+public class AdminMojo extends AbstractServerMojo  {
 
 /**
- * @parameter expression="${app}"
+ * @parameter expression="${command}"
  * @required
  */
-    protected String app;
+    protected String command;
 
+/**
+ * @parameter
+ */
+    protected Map commandParameters;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        File deployArchive = new File(app);
-        if (!deployArchive.exists()) {
-            throw new MojoExecutionException ("", new java.io.FileNotFoundException(app));
+        Server server = Server.getServer(serverID);
+        if (server ==  null) {
+            throw new MojoExecutionException("Embedded Server[" + serverID + "] not running" );
         }
-
-        try {
-            super.setClassPathProperty();
-            Server server = Util.getServer(serverID, installRoot, instanceRoot, configFile, autoDelete);
-            if (port != -1)
-                server.createPort(port);
-
-            server.addContainer(ContainerBuilder.Type.web);
-
-            EmbeddedDeployer deployer = server.getDeployer();
-            DeployCommandParameters cmdParams = new DeployCommandParameters();
-            configureDeployCommandParameters(cmdParams);
-
-            while(true) {
-                String appName = deployer.deploy(deployArchive, cmdParams);
-                System.out.println("Hit ENTER to redeploy, X to exit");
-                String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
-                if (str.equalsIgnoreCase("X"))
-                    break;
-                deployer.undeploy(appName, null);
-            }
-        } catch(Exception e) {
-           throw new MojoExecutionException(e.getMessage(),e);
-       }
+        CommandRunner runner = server.getHabitat().getComponent(CommandRunner.class);
+        ActionReport report = server.getHabitat().getComponent(ActionReport.class);
+        runner.getCommandInvocation(command, report).
+                parameters(getParameterMap()).execute();
+        if (report.hasFailures())
+            throw new MojoExecutionException(report.getMessage());
+        if (report.hasWarnings())
+            System.out.println(report.getMessage());
     }
 
+    private ParameterMap getParameterMap() {
+        ParameterMap pMap = new ParameterMap();
+        if (commandParameters != null) {
+            Iterator iter = commandParameters.keySet().iterator();
+            while(iter.hasNext()) {
+                String key = (String)iter.next();
+                pMap.add(key, (String)commandParameters.get(key));
+            }
+        }
+        return pMap;
+    }
 }

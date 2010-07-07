@@ -53,6 +53,7 @@ import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.glassfish.api.embedded.ContainerBuilder;
 
 import java.util.*;
 import java.io.File;
@@ -120,6 +121,10 @@ public abstract class AbstractServerMojo extends AbstractMojo {
      */
     private ArtifactFactory factory;
 
+/**
+ * @parameter expression="${containerType}" default-value="all"
+*/
+    protected String containerType;
 
 
     public abstract void execute() throws MojoExecutionException, MojoFailureException;
@@ -139,7 +144,11 @@ public abstract class AbstractServerMojo extends AbstractMojo {
         String classPath = "";
 
         for( Artifact a : (Set<Artifact>)project.getPluginArtifacts()) {
-            a.setVersion("3.0-SNAPSHOT");
+            String version = a.getVersion();
+            // version should be specified in pom.xml, as a good practice. Default to 3.0 if none was specified ??.
+            if (version == null || version.equals("RELEASE"))
+                a.setVersion("3.0");
+            
             // get the plugin artifact and find the MavenProject (POM)
             MavenProject pluginProject = projectBuilder.buildFromRepository(a, project.getRemoteArtifactRepositories(), localRepository);
             List ea = resolveEmbeddedArtifacts(pluginProject);
@@ -179,5 +188,18 @@ public abstract class AbstractServerMojo extends AbstractMojo {
         return artifactList;
     }
 
+    ContainerBuilder.Type getContainerBuilderType() {
+        if (containerType == null || containerType.equalsIgnoreCase("all"))
+            return ContainerBuilder.Type.all;
+        else if (containerType.equalsIgnoreCase("web"))
+            return ContainerBuilder.Type.web;
+        else if (containerType.equalsIgnoreCase("ejb"))
+            return ContainerBuilder.Type.ejb;
+        else if (containerType.equalsIgnoreCase("jpa"))
+            return ContainerBuilder.Type.jpa;
+        else if (containerType.equalsIgnoreCase("webservices"))
+            return ContainerBuilder.Type.webservices;
+        return ContainerBuilder.Type.all;
+    }
 
 }

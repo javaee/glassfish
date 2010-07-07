@@ -41,11 +41,16 @@ import java.io.*;
 
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedFileSystem;
+import org.glassfish.api.embedded.web.EmbeddedWebContainer;
+import org.glassfish.api.embedded.Port;
+import org.glassfish.api.embedded.ContainerBuilder;
 
 import java.io.File;
 
 
 public  class Util {
+
+    private static final int DEFAULT_HTTP_PORT = 8080;
 
     public static Server getServer(String serverID, String installRoot, String instanceRoot, String configFile, 
             Boolean autoDelete) throws IOException {
@@ -79,4 +84,21 @@ public  class Util {
 
         return efsb.build();
     }
+
+    public static void createPort(Server server, String configFile, int port)
+        throws java.io.IOException {
+        Port http = null;
+        if (configFile != null && port == -1) {
+            http = server.createPort(DEFAULT_HTTP_PORT);
+        }
+        else if (port != -1)
+            http = server.createPort(port);
+        if (http != null) {
+            ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
+            server.addContainer(b);
+            EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
+            embedded.bind(http, "http");
+        }
+    }
+
 }

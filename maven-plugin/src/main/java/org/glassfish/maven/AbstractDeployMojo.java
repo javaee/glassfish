@@ -40,6 +40,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import org.glassfish.api.deployment.DeployCommandParameters;
+import java.io.File;
 
 public abstract class AbstractDeployMojo extends AbstractServerMojo {
 /**
@@ -48,30 +49,63 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
     protected String name;
 
 /**
- * @parameter expression="${contextroot}" 
+ * @parameter expression="${contextRoot}"
  */
-    protected String contextroot;
+    protected String contextRoot;
 /**
- * @parameter expression="${precompilejsp}" 
+ * @parameter expression="${precompileJsp}"
  */
-    protected Boolean precompilejsp;
+    protected Boolean precompileJsp;
 
 /**
- * @parameter expression="${virtualservers}"
+ * @parameter expression="${dbVendorName}"
  */
-    protected String virtualservers;
+    protected String dbVendorName;
+
+/**
+ * @parameter expression="${createTables}"
+ */
+    protected Boolean createTables;
+
+/**
+ * @parameter expression="${libraries}"
+ */
+    protected String libraries;
+/**
+ * @parameter expression="${project.build.directory}"
+*/
+     String buildDirectory;
+
+/**
+ * @parameter expression="${project.build.finalName}"
+*/
+     String fileName;
+
+     /**
+ * @parameter expression="${app}"
+ */
+    protected String app;
 
     public abstract void execute() throws MojoExecutionException, MojoFailureException;
 
     void configureDeployCommandParameters(DeployCommandParameters cmdParams) {
         if (name != null)
             cmdParams.name = name;
-        if (contextroot != null)
-            cmdParams.contextroot = contextroot;
-        if (precompilejsp != null)
-            cmdParams.precompilejsp = precompilejsp;
-        if (virtualservers != null)
-            cmdParams.virtualservers = virtualservers;
+        if (contextRoot != null)
+            cmdParams.contextroot = contextRoot;
+        if (precompileJsp != null)
+            cmdParams.precompilejsp = precompileJsp;
+        if (dbVendorName != null)
+            cmdParams.dbvendorname = dbVendorName;
+        if (createTables != null)
+            cmdParams.createtables = createTables;
+        if (libraries != null)
+            cmdParams.libraries = libraries;
     }
 
+    String getApp() {
+        if (app != null)
+            return app;
+        return app = buildDirectory + File.separator + fileName + ".war";
+    }
 }
