@@ -54,7 +54,7 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
     @Test
     public void testPropertyCreation() {
         final String propertyKey  = "propertyName" + generateRandomString();
-        final String propertyValue = "propertyValue";
+        String propertyValue = generateRandomString();
 
         //Create a property
         Map<String, String> params = new HashMap<String, String>();
@@ -65,8 +65,22 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
 
         //Verify the property got created
         String propertyURL = BASE_DOMAIN_PROPERTY_URL + "/" + propertyKey;
-        Map<String, String> entity = getEntityValues(get(propertyURL));
-        assertFalse(entity.size() == 0);
+        response = get (propertyURL);
+        assertTrue(isSuccess(response));
+        Map<String, String> entity = getEntityValues(response);
+        assertTrue(entity.get("name").equals(propertyKey));
+        assertTrue(entity.get("value").equals(propertyValue));
+
+        // Verify property update
+        propertyValue = generateRandomString();
+        params.put("value", propertyValue);
+        response = update(propertyURL, params);
+        assertTrue(isSuccess(response));
+        response = get (propertyURL);
+        assertTrue(isSuccess(response));
+        entity = getEntityValues(response);
+        assertTrue(entity.get("name").equals(propertyKey));
+        assertTrue(entity.get("value").equals(propertyValue));
 
         //Clean up to leave domain.xml good for next run
         response = delete(propertyURL, new HashMap<String, String>());
