@@ -207,7 +207,18 @@
        <dependency>
           <groupId>javax.xml.bind</groupId>
           <artifactId>jaxb-api-osgi</artifactId>
-       </dependency>   
+       </dependency>
+        <-- HA API and file store -->
+       <dependency>
+           <groupId>org.glassfish.ha</groupId>
+           <artifactId>ha-api</artifactId>
+           <version>${project.version}</version>
+       </dependency>
+       <dependency>
+           <groupId>org.glassfish.ha</groupId>
+           <artifactId>ha-file-store</artifactId>
+           <version>${project.version}</version>
+       </dependency>
         <!-- Shared OSGi support for Java EE -->
        <dependency>
             <groupId>org.glassfish</groupId>

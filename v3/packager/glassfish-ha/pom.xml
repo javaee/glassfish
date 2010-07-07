@@ -72,11 +72,6 @@
           modules to be included in this bundle
         -->       
 
-          <dependency>
-              <groupId>org.glassfish.ha</groupId>
-              <artifactId>ha-api</artifactId>
-              <version>${project.version}</version>
-          </dependency>
 <!--
           <dependency>
               <groupId>org.glassfish.ha</groupId>
@@ -84,11 +79,6 @@
               <version>${project.version}</version>
           </dependency>
 -->
-          <dependency>
-              <groupId>org.glassfish.ha</groupId>
-              <artifactId>ha-file-store</artifactId>
-              <version>${project.version}</version>
-          </dependency>
 
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
