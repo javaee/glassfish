@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.sun.enterprise.admin.util.Target;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -63,6 +64,7 @@ import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -87,19 +89,14 @@ public class DeleteProtocolFilter implements AdminCommand {
     Config config;
     @Inject
     Domain domain;
+    @Inject
+    Habitat habitat;
     private ActionReport report;
 
     @Override
     public void execute(AdminCommandContext context) {
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
-        }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
-        }
-        Config newConfig = domain.getConfigNamed(target);
+        Target targetUtil = habitat.getComponent(Target.class);
+        Config newConfig = targetUtil.getConfig(target);
         if (newConfig!=null) {
             config = newConfig;
         }

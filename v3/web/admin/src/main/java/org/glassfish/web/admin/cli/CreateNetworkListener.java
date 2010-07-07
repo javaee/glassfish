@@ -38,6 +38,7 @@ package org.glassfish.web.admin.cli;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
+import com.sun.enterprise.admin.util.Target;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -113,15 +114,8 @@ public class CreateNetworkListener implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
-        }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
-        }
-        Config newConfig = domain.getConfigNamed(target);
+        Target targetUtil = habitat.getComponent(Target.class);
+        Config newConfig = targetUtil.getConfig(target);
         if (newConfig!=null) {
             config = newConfig;
         }

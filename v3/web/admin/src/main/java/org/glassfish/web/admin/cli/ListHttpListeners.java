@@ -38,6 +38,7 @@ package org.glassfish.web.admin.cli;
 
 import java.util.List;
 
+import com.sun.enterprise.admin.util.Target;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -57,6 +58,7 @@ import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 /**
@@ -80,6 +82,9 @@ public class ListHttpListeners implements AdminCommand {
     @Inject
     Domain domain;
 
+    @Inject
+    Habitat habitat;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter
@@ -88,15 +93,8 @@ public class ListHttpListeners implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
-        }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
-        }
-        Config newConfig = domain.getConfigNamed(target);
+        Target targetUtil = habitat.getComponent(Target.class);
+        Config newConfig = targetUtil.getConfig(target);
         if (newConfig!=null) {
             config = newConfig;
         }
