@@ -44,6 +44,7 @@ import com.sun.enterprise.v3.server.ContainerStarter;
 import com.sun.grizzly.config.dom.*;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.data.ContainerRegistry;
 import org.glassfish.internal.data.EngineInfo;
@@ -102,11 +103,8 @@ public class WebContainerStarter
     @Inject
     ModulesRegistry modulesRegistry;
 
-    @Inject
-    HttpService httpService;
-
-    @Inject
-    NetworkConfig networkConfig;
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config serverConfig;
 
     @Inject
     private Habitat habitat;
@@ -119,24 +117,21 @@ public class WebContainerStarter
      */ 
     public void postConstruct() {
         boolean isStartNeeded = false;
-        List<Config> configs = domain.getConfigs().getConfig();
-        for (Config config : configs) {
-            if (isStartNeeded(config.getHttpService())) {
+        if (serverConfig != null) {
+            if (isStartNeeded(serverConfig.getHttpService())) {
                 isStartNeeded = true;
-                break;
             }
-            if (isStartNeeded(config.getNetworkConfig())) {
+            if (!isStartNeeded && isStartNeeded(serverConfig.getNetworkConfig())) {
                 isStartNeeded = true;
-                break;
             }
         }
 
         if (isStartNeeded) {
             startWebContainer();
         } else {
-            ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(httpService);
+            ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(serverConfig.getHttpService());
             bean.addListener(this);
-            bean = (ObservableBean) ConfigSupport.getImpl(networkConfig.getNetworkListeners());
+            bean = (ObservableBean) ConfigSupport.getImpl(serverConfig.getNetworkConfig().getNetworkListeners());
             bean.addListener(this);
         }
     }
