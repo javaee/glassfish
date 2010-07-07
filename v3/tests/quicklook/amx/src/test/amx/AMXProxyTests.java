@@ -170,7 +170,7 @@ public final class AMXProxyTests extends AMXTestBase
             missing.removeAll(attrNamesFromMethods);
             if ( missing.size() != 0 )
             {
-                println( clazz.getName() + " missing getters attributes: " + missing );
+                //println( clazz.getName() + " missing getters attributes: " + missing );
             }
         }
         return problems;
