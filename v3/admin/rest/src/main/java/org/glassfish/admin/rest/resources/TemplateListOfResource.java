@@ -98,7 +98,6 @@ public abstract class TemplateListOfResource {
     public TemplateListOfResource() {
     }
 
-
     @GET
     @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public GetResultList get(@QueryParam("expandLevel")
@@ -120,15 +119,14 @@ public abstract class TemplateListOfResource {
         return new GetResultList(domList, getPostCommand(), getCommandResourcesPaths(), options());
     }
 
-
     public void setEntity(List<Dom> p) {
         entity = p;
     }
 
-
     public List<Dom> getEntity() {
         return entity;
     }
+
     public void setParentAndTagName(Dom parent, String tagName) {
         this.parent = parent;
         this.tagName = tagName;

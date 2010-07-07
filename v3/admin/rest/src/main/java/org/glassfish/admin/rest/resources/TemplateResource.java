@@ -185,11 +185,6 @@ public class TemplateResource {
             //Currently, browsers do not support delete method. For html media,
             //delete operations can be supported through POST. Redirect html
             //client POST request for delete operation to DELETE method.
-//            if ((data.containsKey("operation")) &&
-//                    (data.get("operation").equals("__deleteoperation"))) {
-//                data.remove("operation");
-//                return delete(data);
-//            }
             if ("__deleteoperation".equals(data.get("operation"))) {
                 data.remove("operation");
                 return delete(data);
