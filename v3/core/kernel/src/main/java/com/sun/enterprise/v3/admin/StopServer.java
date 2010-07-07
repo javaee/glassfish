@@ -33,68 +33,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.api.Async;
-import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
-import org.glassfish.api.admin.*;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
+import java.util.logging.Logger;
 
-import java.util.Iterator;
 import java.util.Collection;
 
 /**
- * AdminCommand to stop the domain execution which mean shuting down the application
- * server.
- *
- * @author Jerome Dochez
+ * A class to house identical code for stopping instances and DAS
+ * @author Byron Nevins
  */
-@Service(name="stop-domain")
-@Scoped(PerLookup.class)
-@Async
-@I18n("stop.domain.command")
-@Cluster(RuntimeType.DAS)
-public class StopDomainCommand extends StopServer implements AdminCommand {
-
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopDomainCommand.class);
-    
-    @Inject
-    ModulesRegistry registry;
-
-    @Inject
-    ServerEnvironment env;
-
-    @Param(optional=true, defaultValue="true")
-    Boolean force;
-    
+public class StopServer {
 
     /**
-     * Shutdown of the application server : 
+     * Shutdown of the server : 
      *
      * All running services are stopped. 
      * LookupManager is flushed.
      */
-    public void execute(AdminCommandContext context) {
-
-        if(!env.isDas()) {
-            // This command is asynchronous.  We can't return anything so we just
-            // log the error and return
-            String msg = localStrings.getLocalString("stop.domain.notDas",
-                           "stop-domain only works with domains, this is a {0}",
-                           env.getRuntimeType().toString());
-
-            context.getLogger().warning(msg);
-            return;
+    protected final void doExecute(ModulesRegistry registry, Logger logger, boolean force) {
+        logger.info(localStrings.getLocalString("stop.domain.init", "Server shutdown initiated"));
+        Collection<Module> modules = registry.getModules(
+                "org.glassfish.core.glassfish");
+        if (modules.size() == 1) {
+            final Module mgmtAgentModule = modules.iterator().next();
+            mgmtAgentModule.stop();
         }
-        
-        doExecute(registry, context.getLogger(), force);
+        else {
+            logger.warning(modules.size() + " no of primordial modules found");
+        }
+        if (force) {
+            System.exit(0);
+        }
     }
+    private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopServer.class);
 }

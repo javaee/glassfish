@@ -41,15 +41,19 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.v3.admin.StopServer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -75,10 +79,10 @@ import org.jvnet.hk2.component.PerLookup;
  * @author Byron Nevins
  */
 @Service(name = "stop-instance")
-@Async
 @Scoped(PerLookup.class)
 @I18n("stop.instance.command")
-public class StopInstanceCommand implements AdminCommand, PostConstruct {
+@Cluster(RuntimeType.DAS)
+public class StopInstanceCommand extends StopServer implements AdminCommand, PostConstruct {
 
     @Inject
     private Habitat habitat;
@@ -94,32 +98,29 @@ public class StopInstanceCommand implements AdminCommand, PostConstruct {
     private String instanceName;
     private Logger logger;
     private RemoteInstanceCommandHelper helper;
+    private ActionReport report;
+    private String errorMessage = null;
 
     public void execute(AdminCommandContext context) {
+        report = context.getActionReport();
         logger = context.getLogger();
 
-        if (env.isDas()) {
+        if (env.isDas())
             callInstance();
-        }
-        else if (env.isInstance()) {
-            logger.info(Strings.get("stop.instance.init"));
-            Collection<Module> modules = registry.getModules(
-                    "org.glassfish.core.glassfish");
-            if (modules.size() == 1) {
-                final Module mgmtAgentModule = modules.iterator().next();
-                mgmtAgentModule.stop();
-            }
-            else {
-                logger.warning(modules.size() + " no of primordial modules found");
-            }
-            if (force) {
-                System.exit(0);
-            }
+        else
+            errorMessage = Strings.get("stop.instance.notDas",
+                    env.getRuntimeType().toString());
+
+        if(errorMessage != null) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(errorMessage);
         }
         else {
-            String msg = Strings.get("stop.instance.notAnInstanceOrDas",
-                    env.getRuntimeType().toString());
-            logger.warning(msg);
+            // todo -- verify it really stopped
+            // waiting for IT for Vijay to get done -- API for status
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            report.setMessage(Strings.get("stop.instance.success",
+                    env.getRuntimeType().toString()));
         }
     }
 
@@ -128,36 +129,40 @@ public class StopInstanceCommand implements AdminCommand, PostConstruct {
         helper = new RemoteInstanceCommandHelper(habitat);
     }
 
+    /**
+     * set errorMessage if there is a problem...
+     *
+     */
     private void callInstance() {
         try {
             if (!StringUtils.ok(instanceName)) {
-                logger.severe(Strings.get("stop.instance.noInstanceName"));
+                errorMessage = Strings.get("stop.instance.noInstanceName");
                 return;
             }
             final Server instance = helper.getServer(instanceName);
             if (instance == null) {
-                logger.severe(Strings.get("stop.instance.noSuchInstance", instanceName));
+                errorMessage = Strings.get("stop.instance.noSuchInstance", instanceName);
                 return;
             }
             String host = helper.getHost(instance);
             if (host == null) {
-                logger.severe(Strings.get("stop.instance.noHost", instanceName));
+                errorMessage = Strings.get("stop.instance.noHost", instanceName);
                 return;
             }
             int port = helper.getAdminPort(instance);
             if (port < 0) {
-                logger.severe(Strings.get("stop.instance.noPort", instanceName));
+                errorMessage = Strings.get("stop.instance.noPort", instanceName);
                 return;
             }
 
             // TODO username password ????
-            RemoteAdminCommand rac = new RemoteAdminCommand("stop-instance", helper.getHost(instance), helper.getAdminPort(instance), false, "admin", null, logger);
+            RemoteAdminCommand rac = new RemoteAdminCommand("_stop-instance", helper.getHost(instance), helper.getAdminPort(instance), false, "admin", null, logger);
 
             // notice how we do NOT send in the instance's name as an operand!!
             rac.executeCommand(new ParameterMap());
         }
         catch (CommandException ex) {
-            logger.severe(Strings.get("stop.instance.racError", instanceName));
+            errorMessage = Strings.get("stop.instance.racError", instanceName);
         }
     }
 }

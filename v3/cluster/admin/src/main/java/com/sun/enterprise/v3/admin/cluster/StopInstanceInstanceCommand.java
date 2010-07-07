@@ -1,4 +1,5 @@
 /*
+ *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
@@ -33,68 +34,71 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.v3.admin.cluster;
 
-package com.sun.enterprise.v3.admin;
-
+import com.sun.enterprise.admin.remote.RemoteAdminCommand;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
-import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.v3.admin.StopServer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.*;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.CommandException;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.annotations.Service;
 
 import java.util.Iterator;
 import java.util.Collection;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
- * AdminCommand to stop the domain execution which mean shuting down the application
+ * AdminCommand to stop the instance
  * server.
+ * Shutdown of an instance.
+ * This is the Async command running on the instance.
  *
- * @author Jerome Dochez
+ * note: This command is asynchronous.  We can't return anything so we just
+ * log errors and return
+
+ * @author Byron Nevins
  */
-@Service(name="stop-domain")
-@Scoped(PerLookup.class)
+@Service(name = "_stop-instance")
 @Async
-@I18n("stop.domain.command")
-@Cluster(RuntimeType.DAS)
-public class StopDomainCommand extends StopServer implements AdminCommand {
-
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopDomainCommand.class);
-    
-    @Inject
-    ModulesRegistry registry;
+@Scoped(PerLookup.class)
+@Cluster(RuntimeType.INSTANCE)
+public class StopInstanceInstanceCommand extends StopServer implements AdminCommand {
 
     @Inject
-    ServerEnvironment env;
+    private ServerEnvironment env;
+    @Inject
+    private ModulesRegistry registry;
+    @Param(optional = true, defaultValue = "true")
+    private Boolean force;
 
-    @Param(optional=true, defaultValue="true")
-    Boolean force;
-    
-
-    /**
-     * Shutdown of the application server : 
-     *
-     * All running services are stopped. 
-     * LookupManager is flushed.
-     */
     public void execute(AdminCommandContext context) {
 
-        if(!env.isDas()) {
-            // This command is asynchronous.  We can't return anything so we just
-            // log the error and return
-            String msg = localStrings.getLocalString("stop.domain.notDas",
-                           "stop-domain only works with domains, this is a {0}",
-                           env.getRuntimeType().toString());
+        if (!env.isInstance()) {
+            String msg = Strings.get("stop.instance.notInstance",
+                    env.getRuntimeType().toString());
 
             context.getLogger().warning(msg);
             return;
         }
-        
+
         doExecute(registry, context.getLogger(), force);
     }
 }
