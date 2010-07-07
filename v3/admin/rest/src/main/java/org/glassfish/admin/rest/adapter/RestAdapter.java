@@ -50,10 +50,12 @@ import com.sun.grizzly.util.http.Cookie;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Method;
 import java.net.InetAddress;
-import java.util.logging.Level;
 import javax.security.auth.login.LoginException;
+
+import org.glassfish.admin.rest.LazyJerseyInit;
+import org.glassfish.admin.rest.RestService;
+import org.glassfish.admin.rest.SessionManager;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Adapter;
@@ -62,7 +64,6 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
-import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
@@ -75,9 +76,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.glassfish.admin.rest.LazyJerseyInit;
-import org.glassfish.admin.rest.RestService;
-import org.glassfish.admin.rest.SessionManager;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.ServerContext;
 
@@ -89,9 +87,6 @@ import org.glassfish.internal.api.ServerContext;
 public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, PostConstruct, EventListener {
 
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RestAdapter.class);
-
-    @Inject
-    ServerEnvironmentImpl env;
 
     @Inject
     volatile AdminService as = null;
@@ -111,7 +106,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     ServerContext sc;
 
     @Inject
-    RestService restService;
+    ServerEnvironment serverEnvironment;
 
     private Map<Integer, String> httpStatus = new HashMap<Integer, String>() {{
         put(404, "Resource not found");
@@ -132,35 +127,33 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     @Override
     public void service(GrizzlyRequest req, GrizzlyResponse res) {
-        LogHelper.getDefaultLogger().finer("Rest monitoring adapter !");
-        LogHelper.getDefaultLogger().finer("Received monitoring resource request: " + req.getRequestURI());
+        LogHelper.getDefaultLogger().finer("Rest adapter !");
+        LogHelper.getDefaultLogger().finer("Received resource request: " + req.getRequestURI());
 
         String requestURI = req.getRequestURI();
         ActionReport report = getClientActionReport(requestURI, req);
 
         try {
             if (!latch.await(20L, TimeUnit.SECONDS)) {
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 String msg = localStrings.getLocalString("rest.adapter.server.wait",
                         "Server cannot process this command at this time, please wait");
-                report.setMessage(msg);
-                reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE);
+                reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE, msg);
                 return;
             } else {
 
+                if(serverEnvironment.isInstance()) {
+                    if(!"GET".equalsIgnoreCase(req.getRequest().method().getString() ) ) {
+                        String msg = localStrings.getLocalString("rest.resource.only.GET.on.instance", "Only Get requests are allowed on an instance that is not DAS.");
+                        reportError(res, report, HttpURLConnection.HTTP_FORBIDDEN, msg);
+                        return;
+                    }
+                }
+
                 if (!authenticate(req)) {
                     //Could not authenticate throw error
-                    String msg = localStrings.getLocalString("rest.adapter.auth.userpassword",
-                            "Invalid user name or password");
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(msg);
-                    report.setActionDescription("Authentication error");
-                    res.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
+                    String msg = localStrings.getLocalString("rest.adapter.auth.userpassword", "Invalid user name or password");
                     res.setHeader("WWW-Authenticate", "BASIC");
-                    res.setContentType(report.getContentType());
-                    report.writeReport(res.getOutputStream());
-                    res.getOutputStream().flush();
-                    res.finishResponse();
+                    reportError(res, report, HttpURLConnection.HTTP_UNAUTHORIZED, msg);
                     return;
                 }
 
@@ -168,7 +161,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 if (adapter == null) {
                     exposeContext();
                 }
-//                res.setStatus(200);
                 ((GrizzlyAdapter)adapter).service(req, res);
                 int status = res.getStatus();
                 if (status < 200 || status > 299) {
@@ -184,54 +176,34 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 //                    res.getOutputStream().flush();
 //                    res.finishResponse();
 
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(message);
-                    reportError(res, report, status);
+                    reportError(res, report, status, message);
                 }
             }
         } catch(InterruptedException e) {
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 String msg = localStrings.getLocalString("rest.adapter.server.wait",
                         "Server cannot process this command at this time, please wait");
-                report.setMessage(msg);
-                reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE); //service unavailable
+                reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE, msg); //service unavailable
                 return;
-        }
-         catch(IOException e) {
+        } catch(IOException e) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 String msg = localStrings.getLocalString("rest.adapter.server.ioexception",
                         "REST: IO Exception "+e.getLocalizedMessage());
-                report.setMessage(msg);
-                reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE); //service unavailable
+                reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE, msg); //service unavailable
                 return;
-        }
-         catch(LoginException e) {
+        } catch(LoginException e) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            String msg = localStrings.getLocalString("rest.adapter.auth.error",
-                    "Error authenticating");
-            report.setMessage(msg);
-            ///report.setActionDescription("Authentication error");
-            ///res.setHeader("WWW-Authenticate", "BASIC");
-            reportError(res, report, HttpURLConnection.HTTP_UNAUTHORIZED); //authentication error
+            String msg = localStrings.getLocalString("rest.adapter.auth.error", "Error authenticating");
+            reportError(res, report, HttpURLConnection.HTTP_UNAUTHORIZED, msg); //authentication error
             return;
         } catch (Exception e) {
             StringWriter result = new StringWriter();
             PrintWriter printWriter = new PrintWriter(result);
             e.printStackTrace(printWriter);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             String msg = localStrings.getLocalString("rest.adapter.server.exception",
                     "REST:  Exception " + result.toString());
-            report.setMessage(msg);
-            reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE); //service unavailable
+            reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE, msg); //service unavailable
             return;
         }
-
-//        try {
-//            res.getOutputStream().flush();
-//            res.finishResponse();
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
     }
 
     private boolean authenticate(GrizzlyRequest req) throws LoginException, IOException {
@@ -422,8 +394,10 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     }
 
 
-    private void reportError(GrizzlyResponse res, ActionReport report, int statusCode) {
+    private void reportError(GrizzlyResponse res, ActionReport report, int statusCode, String msg) {
         try {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
             res.setStatus(statusCode);
             res.setContentType(report.getContentType());
             report.writeReport(res.getOutputStream());
