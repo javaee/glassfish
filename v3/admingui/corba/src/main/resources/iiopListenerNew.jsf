@@ -48,10 +48,14 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/corba/iiopListeners.jsf");
         setPageSessionAttribute(key="pageTitle" value="$resource{i18n_corba.iiopListeners.newPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n_corba.iiopListeners.NewPageHelp}");
-        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/iiop-service");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="convertToFalseList" value={"SecurityEnabled" "Enabled"})
         setPageSessionAttribute(key="edit" value="#{false}" );
+        setPageSessionAttribute(key="restObjStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service,type=iiop-listener" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
@@ -61,7 +65,7 @@
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
         <sun:title id="propertyContentPage" title="$resource{i18n_corba.iiopListener.newPageTitle}" helpText="$resource{i18n_corba.iiopListener.newPageHelp}">
-#include "/common/shared/editPageButtons.inc"
+#include "/corba/iiopListenerButtons.inc"
         </sun:title>
         "<br><br>
 #include "/corba/iiopListenerAttrs.inc"

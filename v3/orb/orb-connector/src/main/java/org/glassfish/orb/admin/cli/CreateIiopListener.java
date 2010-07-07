@@ -78,16 +78,16 @@ public class CreateIiopListener implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new
             LocalStringManagerImpl(CreateIiopListener.class);
 
-    @Param(name="listeneraddress")
+    @Param(name="listeneraddress", alias="address")
     String listeneraddress;
 
-    @Param(name="iiopport", optional=true, defaultValue="1072")
+    @Param(name="iiopport", optional=true, alias="port", defaultValue="1072")
     String iiopport;
 
     @Param(optional=true, defaultValue="true")
     Boolean enabled;
 
-    @Param(name="securityenabled", optional=true, defaultValue="false")
+    @Param(name="securityenabled", optional=true, defaultValue="false", alias="security-enabled")
     Boolean securityenabled;
 
     @Param(name="property", optional=true, separator=':')
@@ -96,7 +96,7 @@ public class CreateIiopListener implements AdminCommand {
     @Param(optional=true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
-    @Param(name="listener_id", primary=true)
+    @Param(name="listener_id", primary=true, alias="id")
     String listener_id;
 
     @Inject
