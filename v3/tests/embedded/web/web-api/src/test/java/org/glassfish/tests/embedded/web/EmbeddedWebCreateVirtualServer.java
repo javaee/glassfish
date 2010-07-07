@@ -119,7 +119,7 @@ public class EmbeddedWebCreateVirtualServer {
 
         WebListener listener = embedded.createWebListener("test-listener", WebListener.class);
         listener.setPort(9090);
-        WebListener[] webListeners = new WebListener[1];
+        WebListener[] webListeners = new HttpListener[1];
         webListeners[0] = listener;
 
         embedded.createVirtualServer("test-server", root, webListeners);

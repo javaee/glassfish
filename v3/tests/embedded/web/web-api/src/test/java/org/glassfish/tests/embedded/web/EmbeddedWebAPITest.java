@@ -96,7 +96,7 @@ public class EmbeddedWebAPITest {
             embedded.setLogLevel(Level.INFO);
             embedded.setConfiguration((WebBuilder)b);
 
-            WebListener listener = embedded.createWebListener("test-listener", WebListener.class);
+            WebListener listener = embedded.createWebListener("test-listener", HttpListener.class);
             listener.setPort(9090);
             embedded.addWebListener(listener);
 
