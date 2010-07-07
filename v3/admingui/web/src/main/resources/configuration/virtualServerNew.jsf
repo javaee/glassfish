@@ -47,7 +47,10 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/configuration/virtualServers.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
         setPageSessionAttribute(key="childType" value="virtual-server");
-        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );

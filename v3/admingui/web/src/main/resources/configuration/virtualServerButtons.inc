@@ -71,13 +71,17 @@
                     mapPut(map="#{pageSession.valueMap}" key="State" value="#{requestScope.stateGp}");
                     mapPut(map="#{pageSession.valueMap}" key="SsoEnabled" value="#{requestScope.ssoGroup}");
                     mapPut(map="#{pageSession.valueMap}" key="AccessLoggingEnabled" value="#{requestScope.accessLoggingFlagGp}");
-                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                        attrs="#{pageSession.valueMap}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                        result => $attribute{objStr});
+                    gf.createEntity(endpoint="#{pageSession.selfUrl}"
+                            attrs="#{pageSession.valueMap}"
+                            skipAttrs="#{pageSession.skipAttrsList}"
+                            convertToFalse="#{pageSession.convertToFalseList}"
+                            onlyUseAttrs="#{pageSession.onlyUseAttrs}"
+                        );
                     EnsureDefaultWebModule(vsObjStr="#{requestScope.objStr}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    setPageSessionAttribute(key="restObjStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/http-service,type=virtual-server" );
+                    setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['Id']}");
                     setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                     gf.redirect(page="#{parentPage}?configName=#{configName}")
                 />
