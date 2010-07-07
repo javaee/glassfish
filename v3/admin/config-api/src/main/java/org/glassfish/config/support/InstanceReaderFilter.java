@@ -50,6 +50,7 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import org.jvnet.hk2.component.Habitat;
+import static org.glassfish.config.support.Constants.*;
 
 /**
  * This code has BIG performance optimizations.  That usually means more complex code.
@@ -388,17 +389,6 @@ class InstanceReaderFilter extends ServerReaderFilter {
     private String clusterName;
     private XMLStreamReader reparseReader;
     private final static LocalStringsImpl strings = new LocalStringsImpl(InstanceReaderFilter.class);
-
-    private static final String SERVERS = "servers";
-    private static final String SERVER = "server";
-    private static final String CLUSTERS = "clusters";
-    private static final String CLUSTER = "cluster";
-    private static final String REF = "ref";
-    private static final String SERVER_REF = "server-ref";
-    private static final String CONFIG = "config";
-    private static final String CONFIGS = "configs";
-    private static final String CONFIG_REF = "config-ref";
-    private static final String NAME = "name";
 
     // "signaling" exceptions to get back from nested locations simply
     private static class GoodException extends Exception {
