@@ -94,11 +94,15 @@ public interface ConfigBeanProxy {
 
     /**
      * Performs a deep copy of this configuration element and returns it.
+     * The parent of this configuration must be locked in a transaction and the newly created
+     * child will be automatically enrolled in the parent's transaction.
      *
+     * @param parent the writable copy of the parent
      * @return a deep copy of itself.
+     * @throws TransactionFailure if the transaction cannot be completed.
      */
     @DuckTyped
-    public ConfigBeanProxy deepCopy();
+    public ConfigBeanProxy deepCopy(ConfigBeanProxy parent) throws TransactionFailure;
 
     public class Duck {
 
@@ -124,10 +128,17 @@ public interface ConfigBeanProxy {
 
         }
 
-        public static ConfigBeanProxy deepCopy(ConfigBeanProxy self) {
+        public static ConfigBeanProxy deepCopy(ConfigBeanProxy self, ConfigBeanProxy parent) throws TransactionFailure {
             ConfigBean configBean = (ConfigBean) Dom.unwrap(self);
-            ConfigBean copy = new ConfigBean(configBean);
-            return copy.createProxy();
+            // ensure the parent is locked
+            Transaction t = Transaction.getTransaction(parent);
+
+            if (t==null) {
+                throw new TransactionFailure("Must use a locked parent config object for copying new config object");
+            }
+
+            ConfigBean copy = configBean.copy();
+            return t.enroll(copy.createProxy());
         }
 
     }
