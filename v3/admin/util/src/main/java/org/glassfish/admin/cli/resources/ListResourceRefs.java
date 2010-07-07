@@ -36,6 +36,8 @@
 
 package org.glassfish.admin.cli.resources;
 
+import com.sun.enterprise.config.serverbeans.Clusters;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.ResourceRef;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -46,6 +48,10 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -55,6 +61,8 @@ import org.jvnet.hk2.component.PerLookup;
  * List Resource Refs Command
  * 
  */
+@TargetType(value={CommandTarget.DAS, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(value={RuntimeType.DAS})
 @Service(name="list-resource-refs")
 @Scoped(PerLookup.class)
 @I18n("list.resource.refs")
@@ -63,14 +71,17 @@ public class ListResourceRefs implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListResourceRefs.class);
 
     @Param(optional=true, primary=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Inject
-    Server[] servers;
+    private Server[] servers;
+
+    @Inject
+    private Clusters clusters;
 
     /**
      * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * where the keys are the parameter names and the values the parameter values
      *
      * @param context information
      */
@@ -78,17 +89,18 @@ public class ListResourceRefs implements AdminCommand {
         final ActionReport report = context.getActionReport();
         
         try {
-            for (Server server : servers) {
-                if (server.getName().equals(target)) {
-                    List<ResourceRef> resourceRefs = server.getResourceRef();
-                    if (resourceRefs.isEmpty()) {
-                        final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                        part.setMessage(localStrings.getLocalString(
-                                "NothingToList", "Nothing to List."));
-                    } else {
-                        for (ResourceRef ref : resourceRefs) {
-                            final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                            part.setMessage(ref.getRef());
+            Server targetServer = ConfigBeansUtilities.getServerNamed(target);
+            if(targetServer != null){
+                List<ResourceRef> resourceRefs = targetServer.getResourceRef();
+                processResourceRefs(report, resourceRefs);
+            } else {
+                List<com.sun.enterprise.config.serverbeans.Cluster> clusterList = clusters.getCluster();
+                if(clusterList != null){
+                    for(com.sun.enterprise.config.serverbeans.Cluster cl : clusterList){
+                        if(cl.getName().equals(target)){
+                            List<ResourceRef> resourceRefs = cl.getResourceRef();
+                            processResourceRefs(report, resourceRefs);
+                            break;
                         }
                     }
                 }
@@ -101,5 +113,18 @@ public class ListResourceRefs implements AdminCommand {
             return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    }
+
+    private void processResourceRefs(ActionReport report, List<ResourceRef> resourceRefs) {
+        if (resourceRefs.isEmpty()) {
+            final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+            part.setMessage(localStrings.getLocalString(
+                    "NothingToList", "Nothing to List."));
+        } else {
+            for (ResourceRef ref : resourceRefs) {
+                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                part.setMessage(ref.getRef());
+            }
+        }
     }
 }

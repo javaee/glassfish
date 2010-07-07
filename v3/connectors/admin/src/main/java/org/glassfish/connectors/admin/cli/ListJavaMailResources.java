@@ -36,20 +36,23 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.MailResource;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.config.serverbeans.Domain;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +60,8 @@ import java.util.List;
  * List Mail Resources command
  *
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(value={RuntimeType.DAS})
 @Service(name="list-javamail-resources")
 @Scoped(PerLookup.class)
 @I18n("list.javamail.resources")
@@ -65,15 +70,15 @@ public class ListJavaMailResources implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ListJavaMailResources.class);
 
-    @Param(optional=true,
-    defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    String target;
+    //TODO primary=true for v2 compatibility
+    @Param(optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    private String target ;
 
     @Inject
-    MailResource[] mailResources;
+    private BindableResourcesHelper bindableResourcesHelper;
 
     @Inject
-    Domain domain;
+    private MailResource[] mailResources;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -84,14 +89,13 @@ public class ListJavaMailResources implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
 
         try {
             List<String> list = new ArrayList<String>();
 
-            for (MailResource r : mailResources) {
-                if (targetServer.isResourceRefExists(r.getJndiName())) {
-                    list.add(r.getJndiName());
+            for (MailResource mailResource : mailResources) {
+                if(bindableResourcesHelper.resourceExists(mailResource.getJndiName(), target)){
+                    list.add(mailResource.getJndiName());
                 }
             }
 
@@ -113,7 +117,6 @@ public class ListJavaMailResources implements AdminCommand {
                     e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
-            return;
         }
     }
 }

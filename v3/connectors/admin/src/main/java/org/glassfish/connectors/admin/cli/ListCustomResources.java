@@ -36,17 +36,20 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.CustomResource;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -59,6 +62,8 @@ import org.glassfish.api.Param;
  * List Custom Resources command
  *
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(value={RuntimeType.DAS})
 @Service(name="list-custom-resources")
 @Scoped(PerLookup.class)
 @I18n("list.custom.resources")
@@ -67,15 +72,15 @@ public class ListCustomResources implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ListCustomResources.class);
 
-    @Param(optional=true,
-    defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    String target;
+    //TODO primary=true for v2 compatibility
+    @Param(optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    private String target ;
 
     @Inject
-    CustomResource[] customResources;
+    private BindableResourcesHelper bindableResourcesHelper;
 
     @Inject
-    Domain domain;
+    private CustomResource[] customResources;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -86,14 +91,13 @@ public class ListCustomResources implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
 
         try {
-            List<String> list = new ArrayList();
+            List<String> list = new ArrayList<String>();
 
-            for (CustomResource r : customResources) {
-                if (targetServer.isResourceRefExists(r.getJndiName())) {
-                    list.add(r.getJndiName());
+            for (CustomResource customResource : customResources) {
+                if(bindableResourcesHelper.resourceExists(customResource.getJndiName(), target)){
+                    list.add(customResource.getJndiName());
                 }
             }
             if (list.isEmpty()) {
@@ -117,7 +121,6 @@ public class ListCustomResources implements AdminCommand {
                     e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
-            return;
         }
     }
 }

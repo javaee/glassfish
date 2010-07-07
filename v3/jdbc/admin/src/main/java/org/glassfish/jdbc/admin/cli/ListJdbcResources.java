@@ -36,20 +36,20 @@
 
 package org.glassfish.jdbc.admin.cli;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.admin.cli.resources.BindableResourcesHelper;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.Cluster;
-import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
+import org.glassfish.api.admin.Cluster;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.ArrayList;
@@ -68,15 +68,17 @@ public class ListJdbcResources implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListJdbcResources.class);    
 
-    @Param(primary = true, optional = true)
-    String target;
+    @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME, alias = "targetName")
+    private String target ;
     
     @Inject
-    JdbcResource[] resources;
+    private JdbcResource[] jdbcResources;
 
+    @Inject
+    private BindableResourcesHelper bindableResourcesHelper;
     /**
      * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * where the keys are the parameter names and the values the parameter values
      *
      * @param context information
      */
@@ -86,10 +88,12 @@ public class ListJdbcResources implements AdminCommand {
 
         try {
             JDBCResourceManager jdbcMgr = new JDBCResourceManager();
-            ArrayList<String> list = jdbcMgr.list(resources);
+            ArrayList<String> list = jdbcMgr.list(jdbcResources);
             for (String jndiName : list) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(jndiName);
+                if(bindableResourcesHelper.resourceExists(jndiName, target)){
+                    ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                    part.setMessage(jndiName);
+                }
             }
         } catch (Exception e) {
             report.setMessage(localStrings.getLocalString("list.jdbc.resources.failed",

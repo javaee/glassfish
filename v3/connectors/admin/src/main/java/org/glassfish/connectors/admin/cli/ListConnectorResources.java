@@ -35,10 +35,17 @@
  */
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.admin.cli.resources.BindableResourcesHelper;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -46,13 +53,13 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import java.util.ArrayList;
-
 
 /**
  * List Connector Resources command
  * 
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(value={RuntimeType.DAS})
 @Service(name="list-connector-resources")
 @Scoped(PerLookup.class)
 @I18n("list.connector.resources")
@@ -61,7 +68,13 @@ public class ListConnectorResources implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListConnectorResources.class);    
  
     @Inject
-    ConnectorResource[] resources;
+    private ConnectorResource[] connectorResources;
+
+    @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    private String target ;
+
+    @Inject
+    private BindableResourcesHelper bindableResourcesHelper;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -74,13 +87,11 @@ public class ListConnectorResources implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
-            ArrayList<String> list = new ArrayList();
-            for (ConnectorResource r : resources) {
-                list.add(r.getJndiName());
-            }
-            for (String jndiName : list) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(jndiName);
+            for (ConnectorResource resource : connectorResources) {
+                if(bindableResourcesHelper.resourceExists(resource.getJndiName(), target)){
+                    ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                    part.setMessage(resource.getJndiName());
+                }
             }
         } catch (Exception e) {
             report.setMessage(localStrings.getLocalString("list.connector.resources.fail",

@@ -37,16 +37,19 @@
 
 package org.glassfish.connectors.admin.cli;
 
-import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ExternalJndiResource;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -58,6 +61,8 @@ import java.util.List;
 /**
  * List Jndi Resources command
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(value={RuntimeType.DAS})
 @Service(name = "list-jndi-resources")
 @Scoped(PerLookup.class)
 @I18n("list.jndi.resources")
@@ -66,15 +71,15 @@ public class ListJndiResources implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ListJndiResources.class);
 
-    @Param(optional = true,
-            defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    String target;
+    //TODO primary=true for v2 compatibility
+    @Param(optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    private String target ;
 
     @Inject
-    ExternalJndiResource[] jndiResources;
+    private BindableResourcesHelper bindableResourcesHelper;
 
     @Inject
-    Domain domain;
+    private ExternalJndiResource[] jndiResources;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -85,15 +90,13 @@ public class ListJndiResources implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
-
 
         try {
             List<String> list = new ArrayList<String>();
 
-            for (ExternalJndiResource r : jndiResources) {
-                if (targetServer.isResourceRefExists(r.getJndiName())) {
-                    list.add(r.getJndiName());
+            for (ExternalJndiResource jndiResource : jndiResources) {
+                if(bindableResourcesHelper.resourceExists(jndiResource.getJndiName(), target)){
+                    list.add(jndiResource.getJndiName());
                 }
             }
             if (list.isEmpty()) {

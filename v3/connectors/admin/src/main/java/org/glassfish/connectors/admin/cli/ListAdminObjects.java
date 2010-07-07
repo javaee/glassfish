@@ -35,10 +35,17 @@
  */
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.admin.cli.resources.BindableResourcesHelper;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -53,15 +60,23 @@ import java.util.ArrayList;
  * List Admin Objects command
  * 
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.CONFIG, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(value={RuntimeType.DAS})
 @Service(name="list-admin-objects")
 @Scoped(PerLookup.class)
 @I18n("list.admin.objects")
 public class ListAdminObjects implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListAdminObjects.class);    
- 
+
+    @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    private String target ;
+
     @Inject
-    AdminObjectResource[] resources;
+    private BindableResourcesHelper bindableResourcesHelper;
+
+    @Inject
+    private AdminObjectResource[] adminObjects;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -74,9 +89,11 @@ public class ListAdminObjects implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
-            ArrayList<String> list = new ArrayList();
-            for (AdminObjectResource r : resources) {
-                list.add(r.getJndiName());
+            ArrayList<String> list = new ArrayList<String>();
+            for (AdminObjectResource r : adminObjects) {
+                if(bindableResourcesHelper.resourceExists(r.getJndiName(), target)){
+                    list.add(r.getJndiName());
+                }
             }
             if (list.isEmpty()) {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
