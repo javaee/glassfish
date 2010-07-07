@@ -50,12 +50,13 @@
         <antcall target="deploy-war-common"/>
     </target>
 
-    <target name="run" depends="init-common">
+    <target name="run" depends="init-common,init-security-util">
         <!-- <property name="myhttps.host" value="localhost"/>
          <property name="myhttps.port" value="8181"/> -->
         <java classname="devtests.security.WebSSLClient">
             <sysproperty key="javax.net.debug1" value="ssl,handshake,data,trustmanager"   />
-            <arg value="${http.host}"/>
+            <sysproperty key="sun.security.ssl.allowUnsafeRenegotiation" value="true"   />
+            <arg value="${s1asCN}"/>
             <arg value="${https.port}"/>
             <arg value="${contextroot}"/>
             <arg value="${mykeystore.db.file}"/>
