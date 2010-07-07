@@ -614,6 +614,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * {@link SecurityMap }
      */
     @Element
+    @NotNull
     List<SecurityMap> getSecurityMap();
     
     /**
