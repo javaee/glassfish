@@ -41,6 +41,10 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -55,6 +59,8 @@ import java.util.ArrayList;
  * List JDBC Resources command
  * 
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(value={RuntimeType.DAS})
 @Service(name="list-jdbc-resources")
 @Scoped(PerLookup.class)
 @I18n("list.jdbc.resources")

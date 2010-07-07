@@ -44,19 +44,17 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.xml.bind.*;
 
+import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.admin.Payload;
 import org.glassfish.api.admin.config.ApplicationName;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
@@ -99,6 +97,12 @@ public class SynchronizeFiles implements AdminCommand {
 
     @Inject(optional = true)
     private Servers servers;
+
+    @Inject
+    Habitat habitat;
+
+    @Inject
+    InstanceState instanceState;
 
     private URI domainRootUri;  // URI of the domain's root directory
 
@@ -161,6 +165,10 @@ logger.setLevel(Level.FINEST);
                             "Unknown server instance: {0}", sr.instance));
                 return;
             }
+
+            // Initialize a instance status object in habitat for this instance
+            //TODO : Once GMS is integrated, this state should be STARTED
+            instanceState.setState(sr.instance, InstanceState.StateType.RUNNING);
 
             // handle the request appropriately based on the directory
             if (sr.dir.equals("config"))

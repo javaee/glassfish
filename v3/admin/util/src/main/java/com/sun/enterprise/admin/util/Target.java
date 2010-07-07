@@ -102,6 +102,35 @@ public class Target {
     }
 
     /**
+     * Returns config element that represents a given server
+     * @param targetName the name of the target
+     * @return Config element representing the server instance
+     */
+    public Config getServerConfig(String targetName) {
+        Server s = domain.getServerNamed(targetName);
+        if(s == null)
+            return null;
+        return domain.getConfigNamed(s.getConfigRef());
+    }
+
+    /**
+     * Given a name (of instance or cluster or config), returns the appropriate Config object
+     * @param targetName name of target
+     * @return Config element of this target
+     */
+    public Config getConfig(String targetName) {
+        if(CommandTarget.CONFIG.isValid(habitat, targetName))
+            return domain.getConfigNamed(targetName);
+        if(CommandTarget.DAS.isValid(habitat, targetName))
+            return getServerConfig(targetName);
+        if(CommandTarget.STANDALONE_INSTANCE.isValid(habitat, targetName))
+            return getServerConfig(targetName);
+        if(CommandTarget.CLUSTER.isValid(habitat, targetName))
+                return getClusterConfig(targetName);
+        return null;
+    }
+
+    /**
      * Given an instance that is part of a cluster, returns the Cluster element of the cluster to which the
      * given instance belons
      * @param targetName name of target

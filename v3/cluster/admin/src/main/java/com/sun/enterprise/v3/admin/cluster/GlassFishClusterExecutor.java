@@ -80,10 +80,10 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
     private ExecutorService threadExecutor;
 
     @Inject
-    private Habitat habitat;
+    private InstanceState instanceState;
 
-    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    protected Server server;
+    @Inject
+    private Habitat habitat;
 
     private static final LocalStringManagerImpl strings =
                         new LocalStringManagerImpl(GlassFishClusterExecutor.class);
@@ -136,6 +136,8 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
                     aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.dynrecfgdisabled",
                             "WARNING : The command was not replicated to all cluster instances because the" +
                                     " dynamic-reconfig-enabled flag is set to false for cluster {0}", targetName));
+                    for(Server s : target.getInstances(targetName))
+                        instanceState.setState(s.getName(), InstanceState.StateType.RESTART_REQUIRED);
                     return ActionReport.ExitCode.WARNING;
                 }
             }
@@ -204,6 +206,7 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
                     aReport.setActionExitCode(finalResult);
                     if(returnValue.equals(ActionReport.ExitCode.SUCCESS))
                         returnValue = finalResult;
+                    instanceState.setState(rac.getServer().getName(), InstanceState.StateType.RESTART_REQUIRED);
                 }
             }
         } catch (Exception ex) {

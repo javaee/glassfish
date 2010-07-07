@@ -235,23 +235,13 @@ public class CommandRunnerImpl implements CommandRunner {
         return new ExecutionContext(name, report);
     }
 
-    /**
-     * Executes the provided command object.
-     *
-     * @param model model of the command (used for logging and reporting)
-     * @param command the command service to execute
-     * @param injector injector capable of populating the command parameters
-     * @param context the AdminCommandcontext that has the payload and report
-     */
-    private ActionReport doCommand(
-            final CommandModel model,
-            final AdminCommand command,
-            final InjectionResolver<Param> injector,
-            final AdminCommandContext context) {
+    private ActionReport.ExitCode injectParameters(final CommandModel model, final AdminCommand command,
+                                                    final InjectionResolver<Param> injector,
+                                                    final AdminCommandContext context) {
 
         ActionReport report = context.getActionReport();
         report.setActionDescription(model.getCommandName() + " AdminCommand");
-
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         try {
             GenericCrudCommand c = GenericCrudCommand.class.cast(command);
             c.setInjectionResolver(injector);
@@ -318,7 +308,7 @@ public class CommandRunnerImpl implements CommandRunner {
             ActionReport.MessagePart childPart =
                 report.getTopMessagePart().addChild();
             childPart.setMessage(usage);
-            return report;
+            return report.getActionExitCode();
         } catch (ComponentException e) {
             // If the cause is UnacceptableValueException -- we want the message
             // from it.  It is wrapped with a less useful Exception.
@@ -338,8 +328,26 @@ public class CommandRunnerImpl implements CommandRunner {
             ActionReport.MessagePart childPart =
                 report.getTopMessagePart().addChild();
             childPart.setMessage(getUsageText(command, model));
-            return report;
+            return report.getActionExitCode();
         }
+        return report.getActionExitCode();
+    }
+
+    /**
+     * Executes the provided command object.
+     *
+     * @param model model of the command (used for logging and reporting)
+     * @param command the command service to execute
+     * @param injector injector capable of populating the command parameters
+     * @param context the AdminCommandcontext that has the payload and report
+     */
+    private ActionReport doCommand(
+            final CommandModel model,
+            final AdminCommand command,
+            final AdminCommandContext context) {
+
+        ActionReport report = context.getActionReport();
+        report.setActionDescription(model.getCommandName() + " AdminCommand");
 
         // We need to set context CL to common CL before executing
         // the command. See issue #5596
@@ -863,7 +871,8 @@ public class CommandRunnerImpl implements CommandRunner {
                     new DelegatedInjectionResolver(model, inv.typedParams(),
                         ufm.optionNameToFileMap()
                         );
-                doCommand(model, command, injectionTarget, context);
+                if(injectParameters(model, command, injectionTarget, context).equals(ActionReport.ExitCode.SUCCESS))
+                    doCommand(model, command, context);
                 return;
             }
 
@@ -912,10 +921,12 @@ public class CommandRunnerImpl implements CommandRunner {
                 return;
             }
 
-            // initialize the injector.
+            // initialize the injector and inject
             InjectionResolver<Param> injectionMgr =
                         new MapInjectionResolver(model, parameters,
                         ufm.optionNameToFileMap());
+            if(!injectParameters(model, command, injectionMgr, context).equals(ActionReport.ExitCode.SUCCESS))
+                    return;
 
             //Do supplemental commands and the main command
             if(doReplication) {
@@ -990,7 +1001,7 @@ public class CommandRunnerImpl implements CommandRunner {
                         StringBuilder validTypes = new StringBuilder();
                         it = targetTypesAllowed.iterator();
                         while(it.hasNext()) {
-                            validTypes.append(it.next().getDescription() + " ");
+                            validTypes.append(it.next().getDescription() + ", ");
                         }
                         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                         report.setMessage(adminStrings.getLocalString("commandrunner.executor.invalidtargettype",
@@ -1025,7 +1036,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 //Run main command if it is applicable for this instance type
                 if( (serverEnv.isDas() && runtimeTypes.contains(RuntimeType.DAS)) ||
                     (serverEnv.isInstance() && runtimeTypes.contains(RuntimeType.INSTANCE)) ) {
-                    doCommand(model, command, injectionMgr, context);
+                    doCommand(model, command, context);
                 }
 
                 if(!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
@@ -1040,7 +1051,7 @@ public class CommandRunnerImpl implements CommandRunner {
                     }
                 }
             } else
-                doCommand(model, command, injectionMgr, context);
+                doCommand(model, command, context);
 
         } catch (Exception ex) {
             logger.severe(ex.getMessage());
@@ -1061,7 +1072,7 @@ public class CommandRunnerImpl implements CommandRunner {
          * Command execution completed; If this is DAS and the command succeeded,
          * time to replicate; At this point we will get the appropriate ClusterExecutor
          * and give it complete control; We will let the executor take care all considerations
-         * (like RuntimeType settings, FailurePolicy settings etc)
+         * (like FailurePolicy settings etc)
          * and just give the final execution results which we will set as is in the Final
          * Action report returned to the caller.
          */
@@ -1069,7 +1080,7 @@ public class CommandRunnerImpl implements CommandRunner {
         if(processEnv.getProcessType().isEmbedded())
             return;
         if( (!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) &&
-                (serverEnv.isDas()) &&
+                (serverEnv.isDas()) &&  runtimeTypes.contains(RuntimeType.INSTANCE) &&
                         doReplication) {
             ClusterExecutor executor = null;
             if(model.getClusteringAttributes() != null && model.getClusteringAttributes().executor() != null) {

@@ -84,15 +84,18 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
     private static final LocalStringManagerImpl strings =
                         new LocalStringManagerImpl(SupplementalCommandExecutor.class);
 
-    private Map<String, List<SupplementalCommand>> supplementalCommandsMap = null;
+    private Map<String, List<Inhabitant<? extends Supplemental>>> supplementalCommandsMap = null;
 
     public ActionReport.ExitCode execute(String commandName, Supplemental.Timing time,
                              AdminCommandContext context, ParameterMap parameters, Map<String, File> optionFileMap) {
         //TODO : Use the executor service to parallelize this
         ActionReport.ExitCode finalResult = ActionReport.ExitCode.SUCCESS;
         if(!getSupplementalCommandsList().isEmpty() && getSupplementalCommandsList().containsKey(commandName)) {
-            List<SupplementalCommand> cmds = getSupplementalCommandsList().get(commandName);
-            for(SupplementalCommand aCmd : cmds) {
+            List<Inhabitant<? extends Supplemental>> supplementalList = getSupplementalCommandsList().get(commandName);
+            for(Inhabitant<? extends Supplemental> inh : supplementalList) {
+                AdminCommand cmdObject = (AdminCommand) inh.get();
+                Supplemental ann = cmdObject.getClass().getAnnotation(Supplemental.class);
+                SupplementalCommand aCmd = new SupplementalCommand(cmdObject, ann.on(), ann.ifFailure());
                 if( (serverEnv.isDas() && aCmd.whereToRun().contains(RuntimeType.DAS)) ||
                     (serverEnv.isInstance() && aCmd.whereToRun().contains(RuntimeType.INSTANCE)) ) {
                     if( (time.equals(Supplemental.Timing.Before) && aCmd.toBeExecutedBefore()) ||
@@ -125,27 +128,24 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
     /**
      * Get list of all supplemental commands, map it to various commands and cache htis list
      */
-    private Map<String, List<SupplementalCommand>> getSupplementalCommandsList() {
+    private Map<String, List<Inhabitant<? extends Supplemental>>> getSupplementalCommandsList() {
         if(supplementalCommandsMap == null) {
             synchronized(this) {
                 if(supplementalCommandsMap == null) {
-                    supplementalCommandsMap = new ConcurrentHashMap<String, List<SupplementalCommand>>();
+                    supplementalCommandsMap = new ConcurrentHashMap<String, List<Inhabitant<? extends Supplemental>>>();
                     Collection<Inhabitant<? extends Supplemental>> supplementals = habitat.getInhabitants(Supplemental.class);
                     if(!supplementals.isEmpty()) {
                         Iterator<Inhabitant<? extends Supplemental>> iter = supplementals.iterator();
                         while(iter.hasNext()) {
                             Inhabitant<? extends Supplemental> inh = iter.next();
-                            MultiMap<String, String> map = inh.metadata();
-                            String commandName = map.getOne("target");
-                            AdminCommand cmdObject = (AdminCommand) inh.get();
-                            Supplemental ann = cmdObject.getClass().getAnnotation(Supplemental.class);
-                            SupplementalCommand cmd = new SupplementalCommand(cmdObject, ann.on(), ann.ifFailure());
+                            String commandName = inh.metadata().getOne("target");
                             if(supplementalCommandsMap.containsKey(commandName)) {
-                                supplementalCommandsMap.get(commandName).add(cmd);
+                                supplementalCommandsMap.get(commandName).add(inh);
                             } else {
-                                ArrayList<SupplementalCommand> cmdList = new ArrayList<SupplementalCommand>();
-                                cmdList.add(cmd);
-                                supplementalCommandsMap.put(commandName, cmdList);
+                                ArrayList<Inhabitant<? extends Supplemental>> inhList =
+                                        new ArrayList<Inhabitant<? extends Supplemental>>();
+                                inhList.add(inh);
+                                supplementalCommandsMap.put(commandName, inhList);
                             }
                         }
                     }
