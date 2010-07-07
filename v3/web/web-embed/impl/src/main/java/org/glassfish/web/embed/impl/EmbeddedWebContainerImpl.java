@@ -157,7 +157,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
         portNumber = port.getPortNumber();
         listenerName = getListenerName();
-        WebListener webListener = new WebListener();
+        WebListener webListener = new HttpListener();
         webListener.setId(listenerName);
         webListener.setPort(portNumber);
         listeners.add(webListener);
@@ -281,8 +281,6 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      * <tt>localhost</tt>, as well as a default <tt>WebListener</tt>
      * with id <tt>http-listener-1</tt> on port 8080 if no other virtual server 
      * or listener configuration exists.
-     * In order to change any of these default settings, 
-     * {@link #start(WebContainerConfig)} may be called.
      * 
      * @throws Exception if an error occurs during the start up of this
      * <tt>EmbeddedWebContainer</tt> or any of its registered
@@ -336,7 +334,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
                 if (log.isLoggable(Level.INFO)) {
                     log.info("Listener does not exist - creating a new listener at port 8080");
                 }
-                WebListener listener = createWebListener(listenerName, WebListener.class);
+                WebListener listener = createWebListener(listenerName, HttpListener.class);
                 listener.setPort(8080);
                 addWebListener(listener);
             }

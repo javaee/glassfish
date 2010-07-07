@@ -37,10 +37,7 @@
 
 package org.glassfish.api.embedded.web;
 
-import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.api.embedded.web.ConfigException;
 import org.glassfish.api.embedded.web.config.WebListenerConfig;
-import org.apache.catalina.connector.Connector;
 
 /**
  * Representation of a network listener for web requests.
@@ -52,27 +49,35 @@ import org.apache.catalina.connector.Connector;
  * @author Amy Roh
  */
 
-public class WebListener extends Connector implements Lifecycle  {
-
-    private WebListenerConfig config;
+public interface WebListener extends Lifecycle  {
 
     /**
      * Sets the id for this <tt>WebListener</tt>.
      *
      * @param id for this <tt>WebListener</tt>
      */
-    public void setId(String id) {
-        setName(id);
-    }
+    public void setId(String id);
 
     /**
      * Gets the id of this <tt>WebListener</tt>.
      *
      * @return id of this <tt>WebListener</tt>
      */
-    public String getId() {
-        return getName();
-    }
+    public String getId();   
+
+    /**
+     * Sets the port number for this <tt>WebListener</tt>.
+     *
+     * @param port the port number for this <tt>WebListener</tt>
+     */
+    public void setPort(int port);
+
+    /**
+     * Gets the port number of this <tt>WebListener</tt>.
+     *
+     * @return the port number of this <tt>WebListener</tt>
+     */
+    public int getPort();
 
     /**
      * Reconfigures this <tt>WebListener</tt> with the given
@@ -86,10 +91,8 @@ public class WebListener extends Connector implements Lifecycle  {
      * @throws ConfigException if the configuration requires a restart,
      * and this <tt>WebListener</tt> fails to be restarted
      */
-    public void setConfig(WebListenerConfig config) throws ConfigException {
-        this.config = config;
-        setAllowTrace(config.isTraceEnabled());
-    }
+    public void setConfig(WebListenerConfig config)
+            throws ConfigException;
 
     /**
      * Gets the current configuration of this <tt>WebListener</tt>.
@@ -98,34 +101,6 @@ public class WebListener extends Connector implements Lifecycle  {
      * or <tt>null</tt> if no special configuration was ever applied to this
      * <tt>WebListener</tt>
      */
-    public WebListenerConfig getConfig() {
-        return config;
-    }
-
-    /**
-     * Enables this component.
-     *
-     * @throws org.glassfish.api.embedded.LifecycleException if this component fails to be enabled
-     */
-    public void enable() throws LifecycleException {
-       try {
-            start();
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
-        }
-    }
-
-    /**
-     * Disables this component.
-     *
-     * @throws LifecycleException if this component fails to be disabled
-     */
-    public void disable() throws LifecycleException {
-       try {
-            stop();
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
-        }
-    }
+    public WebListenerConfig getConfig();
 
 }
