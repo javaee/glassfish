@@ -42,8 +42,8 @@
 
     <parent>
         <groupId>org.glassfish</groupId>
-        <artifactId>pom</artifactId>
-        <version>8</version>
+        <artifactId>glassfish-parent</artifactId>
+        <version>3.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.glassfish.admingui</groupId>
@@ -63,8 +63,6 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>1.4-ea01</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
