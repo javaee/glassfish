@@ -105,21 +105,21 @@ class DomainXmlPreParser {
         }
     }
 
-    String getClusterName() {
+    final String getClusterName() {
         if(!valid)
             return null;
 
         return cluster.name;
     }
 
-    List<String> getServerNames() {
+    final List<String> getServerNames() {
         if(!valid)
             return null;
 
         return cluster.serverRefs;
     }
 
-    String getConfigName() {
+    final String getConfigName() {
         if(!valid)
             return null;
 
@@ -179,6 +179,12 @@ class DomainXmlPreParser {
         if (!serverConfigRef.equals(cluster.configRef))
             throw new DomainXmlPreParserException(
                     Strings.get("dxpp.configrefnotmatch", instanceName, cluster.name));
+
+        if(!configNames.contains(serverConfigRef))
+            throw new DomainXmlPreParserException(
+                    Strings.get("dxpp.confignotfound", instanceName, serverConfigRef));
+
+
 
         valid = true;
     }
@@ -256,6 +262,7 @@ class DomainXmlPreParser {
     private void handleConfig() {
         String name = reader.getAttributeValue(null, NAME);
         printf("CONFIG: " + name);
+        configNames.add(name);
     }
 
     private boolean skipToStartButNotPast(String startName, String stopName) throws XMLStreamException {
@@ -298,6 +305,7 @@ class DomainXmlPreParser {
     }
     private XMLStreamReader reader;
     private List<ClusterData> clusters = new LinkedList<ClusterData>();
+    private List<String> configNames = new LinkedList<String>();
     private ClusterData cluster;
     private String instanceName;
     private String serverConfigRef;

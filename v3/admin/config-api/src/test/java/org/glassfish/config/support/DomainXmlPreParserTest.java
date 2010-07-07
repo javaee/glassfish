@@ -63,6 +63,7 @@ public class DomainXmlPreParserTest {
         i1i2 = loadURL("parser/i1i2.xml");
         c1i1 = loadURL("parser/c1i1.xml");
         c1i1c1i2 = loadURL("parser/c1i1c1i2.xml");
+        noconfigfori1 = loadURL("parser/noconfigfori1.xml");
         System.setProperty("AS_DEBUG", "true");
     }
 
@@ -163,7 +164,20 @@ public class DomainXmlPreParserTest {
         assertEquals(configName, "c1-config");
     }
 
-    private static URL stock, i1, i1i2, c1i1, c1i1c1i2;
+    @Test
+    public void noConfigTest() {
+        System.out.println("noConfigTest");
+        try {
+            DomainXmlPreParser pp = new DomainXmlPreParser(noconfigfori1, xif, "i1");
+            fail("Expected an exception!!!");
+        }
+        catch(DomainXmlPreParserException e) {
+            assertTrue(e.getMessage().startsWith("The config element, "));
+            System.out.println(e);
+        }
+    }
+
+    private static URL stock, i1, i1i2, c1i1, c1i1c1i2, noconfigfori1;
     private static ClassLoader classLoader = DomainXmlPreParserTest.class.getClassLoader();
     private static XMLInputFactory xif = XMLInputFactory.newInstance();
 }
