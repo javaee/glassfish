@@ -36,19 +36,10 @@
 package org.glassfish.admin.rest.provider;
 
 import org.glassfish.admin.rest.results.CommandResourceGetResult;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.io.IOException;
-import java.io.OutputStream;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import static org.glassfish.admin.rest.Util.*;
 
 /**
