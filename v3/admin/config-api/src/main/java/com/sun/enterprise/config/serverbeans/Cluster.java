@@ -350,6 +350,19 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @DuckTyped
     ApplicationRef getApplicationRef(String appName);
 
+    @DuckTyped
+    ResourceRef getResourceRef(String refName);
+
+    @DuckTyped
+    boolean isResourceRefExists(String refName);
+
+    @DuckTyped
+    void createResourceRef(String enabled, String refName) throws TransactionFailure;
+
+    @DuckTyped
+    void deleteResourceRef(String refName) throws TransactionFailure;
+
+
     class Duck {
         public static boolean isCluster(Cluster me) { return true; }
         public static boolean isServer(Cluster me)  { return false; }
@@ -386,6 +399,47 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 }
             }
             return null;
+        }
+
+        public static ResourceRef getResourceRef(Cluster cluster, String refName) {
+            for (ResourceRef ref : cluster.getResourceRef()) {
+                if (ref.getRef().equals(refName)) {
+                    return ref;
+                }
+            }
+            return null;
+        }
+
+        
+        public static boolean isResourceRefExists(Cluster cluster, String refName) {
+            return getResourceRef(cluster, refName) != null;
+        }
+
+        public static void deleteResourceRef(Cluster cluster, String refName) throws TransactionFailure {
+            final ResourceRef ref = getResourceRef(cluster, refName);
+            if (ref != null) {
+                ConfigSupport.apply(new SingleConfigCode<Cluster>() {
+
+                    public Object run(Cluster param) {
+                        return param.getResourceRef().remove(ref);
+                    }
+                }, cluster);
+            }
+        }
+
+        public static void createResourceRef(Cluster cluster, final String enabled, final String refName) throws TransactionFailure {
+
+            ConfigSupport.apply(new SingleConfigCode<Cluster>() {
+
+                public Object run(Cluster param) throws PropertyVetoException, TransactionFailure {
+
+                    ResourceRef newResourceRef = param.createChild(ResourceRef.class);
+                    newResourceRef.setEnabled(enabled);
+                    newResourceRef.setRef(refName);
+                    param.getResourceRef().add(newResourceRef);
+                    return newResourceRef;
+                }
+            }, cluster);
         }
 
     }
