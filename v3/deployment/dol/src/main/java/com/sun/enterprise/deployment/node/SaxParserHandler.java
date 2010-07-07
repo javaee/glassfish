@@ -42,7 +42,11 @@ import com.sun.enterprise.deployment.node.connector.ConnectorNode;
 import com.sun.enterprise.deployment.node.ejb.EjbBundleNode;
 import com.sun.enterprise.deployment.node.runtime.AppClientRuntimeNode;
 import com.sun.enterprise.deployment.node.runtime.EjbBundleRuntimeNode;
+import com.sun.enterprise.deployment.node.runtime.GFAppClientRuntimeNode;
+import com.sun.enterprise.deployment.node.runtime.GFEjbBundleRuntimeNode;
 import com.sun.enterprise.deployment.node.runtime.application.ApplicationRuntimeNode;
+import com.sun.enterprise.deployment.node.runtime.application.GFApplicationRuntimeNode;
+import com.sun.enterprise.deployment.node.runtime.web.GFWebBundleRuntimeNode;
 import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
 import com.sun.enterprise.deployment.node.runtime.web.WLWebBundleRuntimeNode;
 import com.sun.enterprise.deployment.node.web.WebBundleNode;
@@ -171,7 +175,27 @@ public class SaxParserHandler extends DefaultHandler {
                 AppClientRuntimeNode.registerBundle(mapping);     
             rootNodes.put(com.sun.enterprise.deployment.xml.RuntimeTagNames.S1AS_CONNECTOR_RUNTIME_TAG, com.sun.enterprise.deployment.node.runtime.connector.ConnectorNode.class);
                 com.sun.enterprise.deployment.node.runtime.connector.ConnectorNode.registerBundle(mapping);              
-            
+
+            rootNodes.put(com.sun.enterprise.deployment.xml.RuntimeTagNames.GF_APPCLIENT_RUNTIME_TAG,
+                    GFAppClientRuntimeNode.class);
+                GFAppClientRuntimeNode.registerBundle(mapping);
+
+            rootNodes.put(com.sun.enterprise.deployment.xml.RuntimeTagNames.GF_APPLICATION_RUNTIME_TAG,
+                    GFApplicationRuntimeNode.class);
+                GFApplicationRuntimeNode.registerBundle(mapping);
+
+            rootNodes.put(com.sun.enterprise.deployment.xml.RuntimeTagNames.GF_EJB_RUNTIME_TAG,
+                    GFEjbBundleRuntimeNode.class);
+                GFEjbBundleRuntimeNode.registerBundle(mapping);
+
+            rootNodes.put(com.sun.enterprise.deployment.xml.RuntimeTagNames.GF_WEB_RUNTIME_TAG,
+                    GFWebBundleRuntimeNode.class);
+                GFWebBundleRuntimeNode.registerBundle(mapping);
+
+            /*
+             * The WL descriptors use schemas, not DTDs, so 
+             * we don't need to add them to the DTD mapping.
+             */
             rootNodes.put(com.sun.enterprise.deployment.xml.RuntimeTagNames.WL_WEB_RUNTIME_TAG, WLWebBundleRuntimeNode.class);
 
             // post treatment, let's remove the URL from the DTD so we use local copies...
