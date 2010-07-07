@@ -39,10 +39,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Injectable;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * J2EE Applications look up resources registered with the Application server,
@@ -94,6 +91,9 @@ public interface Resources extends ConfigBeanProxy, Injectable  {
     @DuckTyped
     public <T> Resource getResourceByName(Class<T> type, String name);
 
+    @DuckTyped
+    public Collection<BindableResource> getResourcesOfPool(String connectionPoolName);
+
     public class Duck {
 
         public static <T> Collection<T> getResources(Resources resources, Class<T> type){
@@ -104,6 +104,26 @@ public interface Resources extends ConfigBeanProxy, Injectable  {
                 }
             }
             return filteredResources;
+        }
+
+        public static Collection<BindableResource> getResourcesOfPool(Resources resources, String connectionPoolName){
+            Set<BindableResource> resourcesReferringPool = new HashSet<BindableResource>();
+            ResourcePool pool = (ResourcePool) resources.getResourceByName(ResourcePool.class, connectionPoolName);
+            if (pool != null) {
+                Collection<BindableResource> bindableResources = getResources(resources, BindableResource.class);
+                for (BindableResource resource : bindableResources) {
+                    if (ConnectorResource.class.isAssignableFrom(resource.getClass())) {
+                        if ((((ConnectorResource) resource).getPoolName()).equals(connectionPoolName)) {
+                            resourcesReferringPool.add(resource);
+                        }
+                    } else if (JdbcResource.class.isAssignableFrom(resource.getClass())) {
+                        if ((((JdbcResource) resource).getPoolName()).equals(connectionPoolName)) {
+                            resourcesReferringPool.add(resource);
+                        }
+                    }
+                }
+            }
+            return resourcesReferringPool;
         }
 
         public static <T> Resource getResourceByName(Resources resources, Class<T> type, String name){
