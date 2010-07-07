@@ -300,6 +300,10 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
                     type.isAssignableFrom(boolean.class)) {
             String paramName = CommandModel.getParamName(param, target);
             paramValue = convertStringToBoolean(paramName, paramValStr);
+        } else if (type.isAssignableFrom(Integer.class) ||
+                    type.isAssignableFrom(int.class)) {
+            String paramName = CommandModel.getParamName(param, target);
+            paramValue = convertStringToInteger(paramName, paramValStr);
         } else if (type.isAssignableFrom(String[].class)) {
             paramValue =
                 convertStringToStringArray(paramValStr, param.separator());
@@ -373,6 +377,25 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
                 paramName, s);
 
         throw new UnacceptableValueException(msg);
+    }
+
+    /**
+     * Convert a String to an Integer.
+     *
+     * @param paramName the name of the param
+     * @param s the String to convert
+     * @return Integer
+     */
+    private static Integer convertStringToInteger(String paramName, String s) {
+        try {
+            return new Integer(s);
+        } catch (Exception ex) {
+            String msg = localStrings.getLocalString("UnacceptableIntegerValue",
+                "Invalid parameter: {0}.  This integer option must be set " +
+                    "to a valid integer.\nIts value was set to {1}",
+                    paramName, s);
+            throw new UnacceptableValueException(msg);
+        }
     }
 
     /**

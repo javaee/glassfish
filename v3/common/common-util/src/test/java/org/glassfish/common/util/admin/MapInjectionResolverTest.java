@@ -160,6 +160,13 @@ public class MapInjectionResolverTest {
         ((Properties)paramValExpected).put("prop3", "valC");
         assertEquals("Properties type", paramValExpected, paramValActual);
 
+        target = (AnnotatedElement)cl.getDeclaredField("portnum");
+        paramValueStr = "8080";
+        paramValActual = MapInjectionResolver.convertStringToObject(
+                                    target, Integer.class, paramValueStr);
+        paramValExpected = new Integer(8080);
+        assertEquals("Integer type", paramValExpected, paramValActual);
+
         paramValueStr = "server1:server2:server3";
         target = (AnnotatedElement)cl.getDeclaredField("lstr");
         paramValActual = MapInjectionResolver.convertStringToObject(
@@ -298,6 +305,8 @@ public class MapInjectionResolverTest {
         String bar;
         @Param
         String hello="world";
+        @Param
+        int portnum;
         @Param(name="prop", separator=':')
         Properties prop;
         @Param(name="lstr", separator=':')
