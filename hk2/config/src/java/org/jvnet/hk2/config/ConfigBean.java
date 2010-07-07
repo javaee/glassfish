@@ -125,6 +125,7 @@ public class ConfigBean extends Dom implements ConfigView {
      *
      * @return a copy of itself.
      */
+    @Override
     protected ConfigBean copy() {
         return new ConfigBean(this);
     }
