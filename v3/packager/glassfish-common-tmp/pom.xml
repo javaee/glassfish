@@ -208,7 +208,7 @@
           <groupId>javax.xml.bind</groupId>
           <artifactId>jaxb-api-osgi</artifactId>
        </dependency>
-        <-- HA API and file store -->
+        <!-- HA API and file store -->
        <dependency>
            <groupId>org.glassfish.ha</groupId>
            <artifactId>ha-api</artifactId>
