@@ -56,6 +56,7 @@
     setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
     setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
     setPageSessionAttribute(key="rest-api" value="true");
+    println("selfUrl = #{pageSession.selfUrl}");
     gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
         
     setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
@@ -71,7 +72,7 @@
     setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{pageSession.Name}");
     //REST related
     setPageSessionAttribute(key="childType2", value="resource-ref");
-    setPageSessionAttribute(key="selfUrl2", value="#{sessionScope.REST_URL}/servers/server/server/#{pageSession.childType2}/#{pageSession.Name}");
+    setPageSessionAttribute(key="selfUrl2", value="#{sessionScope.REST_URL}/servers/server/server/#{pageSession.childType2}/#{pageSession.encodedName}");
     gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
     
     setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
