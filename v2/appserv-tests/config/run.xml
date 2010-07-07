@@ -36,7 +36,7 @@
 
 <target name="startDomainUnix" depends="init-common" if="isUnix">
     <echo message="Starting DAS, ENABLE_REPLICATION=${ENABLE_REPLICATION}"/>
-    <exec executable="${ASADMIN}" failonerror="true">
+    <exec executable="${ASADMIN}">
         <arg line="start-domain"/>
         <env key="ENABLE_REPLICATION" value="${ENABLE_REPLICATION}"/>
     </exec>
