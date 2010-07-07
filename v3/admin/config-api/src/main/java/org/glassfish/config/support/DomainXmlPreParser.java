@@ -69,7 +69,21 @@ import static org.glassfish.config.support.Constants.*;
  */
 class DomainXmlPreParser {
 
+    static class DomainXmlPreParserException extends Exception {
+
+        DomainXmlPreParserException(Throwable t) {
+            super(t);
+        }
+
+        private DomainXmlPreParserException(String s) {
+            super(s);
+        }
+    }
+
     DomainXmlPreParser(URL domainXml, XMLInputFactory xif, String instanceNameIn) throws DomainXmlPreParserException {
+        if (domainXml == null || xif == null || !StringUtils.ok(instanceNameIn))
+            throw new IllegalArgumentException();
+
         InputStream in = null;
 
         try {
@@ -79,7 +93,6 @@ class DomainXmlPreParser {
             parse();
             postProcess();
             validate();
-
         }
         catch (DomainXmlPreParserException e) {
             throw e;
@@ -91,6 +104,32 @@ class DomainXmlPreParser {
             cleanup(in);
         }
     }
+
+    String getClusterName() {
+        if(!valid)
+            return null;
+
+        return cluster.name;
+    }
+
+    List<String> getServerNames() {
+        if(!valid)
+            return null;
+
+        return cluster.serverRefs;
+    }
+
+    String getConfigName() {
+        if(!valid)
+            return null;
+
+        return cluster.configRef;
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    ///////   Everything below here is private   //////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
     private void parse() throws XMLStreamException {
         while (reader.hasNext()) {
@@ -116,21 +155,19 @@ class DomainXmlPreParser {
 
     private void postProcess() {
         // our instance is in either zero or one cluster.  Find it and set it.
-        search:
         for (ClusterData cd : clusters) {
             for (String serverName : cd.serverRefs) {
                 if (instanceName.equals(serverName)) {
                     cluster = cd;
-                    break search;
+                    return;
                 }
             }
         }
-
-        if (cluster == null) {
-            cluster = new ClusterData();
-            cluster.configRef = serverConfigRef;
-            cluster.serverRefs.add(instanceName);
-        }
+        // if we get here that means the instance either 
+        // does not exist or it is stand-alone
+        cluster = new ClusterData();
+        cluster.configRef = serverConfigRef;
+        cluster.serverRefs.add(instanceName);
     }
 
     private void validate() throws DomainXmlPreParserException {
@@ -142,6 +179,8 @@ class DomainXmlPreParser {
         if (!serverConfigRef.equals(cluster.configRef))
             throw new DomainXmlPreParserException(
                     Strings.get("dxpp.configrefnotmatch", instanceName, cluster.name));
+
+        valid = true;
     }
 
     private void handleElement() throws XMLStreamException {
@@ -263,18 +302,9 @@ class DomainXmlPreParser {
     private String instanceName;
     private String serverConfigRef;
     private final static boolean debug = true;
+    private boolean valid = false;
     //private final static boolean debug = Boolean.parseBoolean(Utility.getEnvOrProp("AS_DEBUG"));
 
-    static class DomainXmlPreParserException extends Exception {
-
-        DomainXmlPreParserException(Throwable t) {
-            super(t);
-        }
-
-        private DomainXmlPreParserException(String s) {
-            super(s);
-        }
-    }
 
     private static class ClusterData {
 
