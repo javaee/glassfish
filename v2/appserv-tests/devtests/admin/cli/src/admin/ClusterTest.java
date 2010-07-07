@@ -217,6 +217,7 @@ public class ClusterTest extends AdminBaseDevTest {
         final String tn = "end-to-end-";
 
         final String cname = "eec1";
+        final String dasurl = "http://localhost:8080/";
         final String i1url = "http://localhost:18080/";
         final String i1murl = "http://localhost:14848/management/domain/";
         final String i1name = "eein1-with-a-very-very-very-long-name";
@@ -247,17 +248,29 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
         report(tn + "getindex2", matchString("GlassFish Enterprise Server", getURL(i2url)));
 
+	// To check fix for 12494 and stop such regressions
+	// deploy to default server before deploy to cluster and undeploy
+	// after undeploy from cluster
+        File dasapp = new File("resources", "servletonly.war");
+        report(tn + "DAS-deploy", asadmin("deploy", dasapp.getAbsolutePath()));
+        report(tn + "DAS-getapp1", matchString("So what is your lucky number?", getURL(dasurl + "war/servletonly")));
+        String x = getURL(dasurl + "war/servletonly");
+        System.out.println("output from DAS:" + x);
+
         // deploy an application to the cluster
         File webapp = new File("resources", "helloworld.war");
-        report(tn + "deploy", asadmin("deploy", "--target", cname, webapp.getAbsolutePath()));
+        report(tn + "CLUSTER-deploy", asadmin("deploy", "--target", cname, webapp.getAbsolutePath()));
 
-        report(tn + "getapp1", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp1", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
         String s1 = getURL(i2url + "helloworld/hi.jsp");
         System.out.println("output from instance 2:" + s1);
-        report(tn + "getapp2", matchString("Hello", s1));
+        report(tn + "CLUSTER-getapp2", matchString("Hello", s1));
 
-        report(tn + "undeploy", asadmin("undeploy", "--target", cname, "helloworld"));
-        report(tn + "get-del-app1", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-undeploy", asadmin("undeploy", "--target", cname, "helloworld"));
+        report(tn + "CLUSTER-get-del-app1", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+
+        report(tn + "DAS-undeploy", asadmin("undeploy", "servletonly"));
+        report(tn + "DAS-get-del-app1", !matchString("So what is your lucky number?", getURL(i1url + "war/servletonly")));
 
         report(tn + "getREST1", matchString("server/" + i1name + "/property", getURL(i1murl + "servers/server/" + i1name)));
         report(tn + "getREST1a", !matchString("eein2", getURL(i1murl + "servers/server")));
