@@ -32,9 +32,6 @@ start-node-agent L
 stop-node-agent L
 create-node-agent-config R
 delete-node-agent-config R
-create-resource-ref R
-delete-resource-ref R
-list-resource-refs R
 clear-status R
 list-status R
 configure-ha-cluster R
