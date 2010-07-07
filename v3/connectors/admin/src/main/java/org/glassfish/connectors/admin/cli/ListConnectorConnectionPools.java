@@ -46,6 +46,7 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -61,7 +62,7 @@ public class ListConnectorConnectionPools implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListConnectorConnectionPools.class);    
 
     @Inject
-    ConnectorConnectionPool[] connPools;
+    private ConnectorConnectionPool[] connPools;
     
 
     /**
@@ -74,7 +75,7 @@ public class ListConnectorConnectionPools implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
          try {
-            ArrayList<String> list = new ArrayList();
+            List<String> list = new ArrayList<String>();
             for (ConnectorConnectionPool cp : connPools) {
                 list.add(cp.getName());
             }

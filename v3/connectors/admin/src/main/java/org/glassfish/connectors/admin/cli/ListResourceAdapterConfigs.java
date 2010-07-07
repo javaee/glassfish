@@ -67,13 +67,13 @@ public class ListResourceAdapterConfigs implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListResourceAdapterConfigs.class);    
 
     @Param(name="raname", optional=true)
-    String raName;
+    private String raName;
 
     @Param(name="verbose", optional=true, defaultValue="false")
-    Boolean verbose;
+    private Boolean verbose;
 
     @Inject
-    ResourceAdapterConfig[] resources;
+    private ResourceAdapterConfig[] resourceAdapterConfigs;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -86,9 +86,9 @@ public class ListResourceAdapterConfigs implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
-            HashMap<String, List<Property>> raMap = new HashMap();
+            HashMap<String, List<Property>> raMap = new HashMap<String, List<Property>>();
             boolean raExists = false;
-            for (ResourceAdapterConfig r : resources) {
+            for (ResourceAdapterConfig r : resourceAdapterConfigs) {
                 if (raName != null && !raName.isEmpty()) {
                     if (r.getResourceAdapterName().equals(raName)) {
                         raMap.put(raName, r.getProperty());
