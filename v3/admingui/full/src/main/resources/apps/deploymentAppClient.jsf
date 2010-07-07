@@ -43,6 +43,7 @@
         createMap(result="#{pageSession.appClient}")
         mapPut(map="#{pageSession.deployMap}", key="appClient", value="#{pageSession.appClient}");
         mapPut(map="#{pageSession.appClient}", key="convertToFalseList", value={ "verify", ,"force" , "PROPERTY-javaWebStartEnabled"} );
+        mapPut(map="#{pageSession.appClient}", key="PROPERTY-javaWebStartEnabled" , value="true" );
      />
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{appClientId});
