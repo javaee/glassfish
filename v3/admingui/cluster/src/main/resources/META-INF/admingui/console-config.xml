@@ -22,4 +22,11 @@
                 parentId="tree"
                 content="/node/nodeTreeNode.jsf"
         />
+        <integration-point
+            id="deployTargetSection"
+            type="org.glassfish.admingui:uploadPropertySheetTargetSection"
+            priority="800"
+            parentId="form"
+            content="/shared/targetSectionForCreate.inc"
+        />
 </console-config>
