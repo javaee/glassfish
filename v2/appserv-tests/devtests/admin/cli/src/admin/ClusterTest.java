@@ -273,7 +273,7 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "DAS-get-del-app1", !matchString("So what is your lucky number?", getURL(i1url + "war/servletonly")));
 
         report(tn + "getREST1", matchString("server/" + i1name + "/property", getURL(i1murl + "servers/server/" + i1name)));
-        report(tn + "getREST1a", !matchString("eein2", getURL(i1murl + "servers/server")));
+        report(tn + "getREST1a", !matchString("servers/server/server", getURL(i1murl + "servers/server")));
         report(tn + "getREST2", matchString("server/" + i2name + "/property", getURL(i2murl + "servers/server/" + i2name)));
         String s = getURL(dasmurl + "servers/server");
         report(tn + "getREST3a", matchString(i1name, s));
