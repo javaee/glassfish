@@ -40,6 +40,11 @@ public class Version implements PostConstruct {
     @Inject
     private static Habitat mHabitat;
 
+	public void setBranding(Branding b) {
+        // clients without HK2 can do it themselves.
+        br = b;
+    }
+
     public void postConstruct() {
         if (br == null) {
             if (mHabitat != null) {

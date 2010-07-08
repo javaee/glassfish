@@ -44,6 +44,10 @@ import org.glassfish.api.admin.*;
 import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import org.glassfish.api.branding.Branding;
+import org.glassfish.branding.GlassFishBranding;
+
+
 
 /**
  * A local version command.
@@ -87,6 +91,13 @@ public class VersionCommand extends CLICommand {
     }
 
     private void invokeLocal() {
+
+        GlassFishBranding br = new GlassFishBranding();
+        br.postConstruct();
+        Version version = new Version();
+        version.setBranding(br);
+        version.postConstruct();
+
         logger.printMessage(
             strings.get("version.local", Version.getFullVersion()));
         if (verbose)
