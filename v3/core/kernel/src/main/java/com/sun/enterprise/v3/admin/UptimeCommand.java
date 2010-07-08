@@ -38,7 +38,6 @@ package com.sun.enterprise.v3.admin;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.InstanceState.StateType;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -48,7 +47,6 @@ import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.universal.Duration;
-import org.glassfish.api.admin.InstanceState;
 
 /**
  * uptime command
@@ -65,8 +63,6 @@ public class UptimeCommand implements AdminCommand {
     @Param(name = "milliseconds", optional = true, defaultValue = "false")
     Boolean milliseconds;
 
-    @Inject InstanceState state;
-
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         long totalTime_ms = getUptime();
@@ -78,10 +74,6 @@ public class UptimeCommand implements AdminCommand {
             message = "" + totalTime_ms;
         else
             message = localStrings.getLocalString("uptime.output.terse", "Uptime: {0}", duration);
-
-        StateType i1 = state.getState("i1");
-        StateType i2 = state.getState("i2");
-        message += "\n" + "i1= " + i1 + ", i2= " + i2;
 
         report.setMessage(message);
     }
