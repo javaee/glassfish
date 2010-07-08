@@ -113,6 +113,10 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
 //Do not care what the Content-Type is.
 
     @POST
+    @Produces({
+        "text/html;qs=2",
+        MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_XML})
     public ActionReportResult processPost() {
         try {
             return processPost(new ParameterMap());

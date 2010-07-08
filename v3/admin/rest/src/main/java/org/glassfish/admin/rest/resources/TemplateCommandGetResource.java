@@ -44,11 +44,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
 import com.sun.jersey.spi.container.ContainerRequest;
-import java.util.Properties;
 import org.glassfish.admin.rest.Constants;
 
 import org.glassfish.admin.rest.results.ActionReportResult;
-import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ParameterMap;
 
 /**

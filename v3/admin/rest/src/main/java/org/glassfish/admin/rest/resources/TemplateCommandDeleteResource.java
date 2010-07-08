@@ -64,10 +64,10 @@ import org.glassfish.api.admin.ParameterMap;
  * that contains the logic for mapped commands RS Resources
  *
  */
-public class TemplateCommandDeleteResource extends TemplateExecCommand{
+public class TemplateCommandDeleteResource extends TemplateExecCommand {
 
     public TemplateCommandDeleteResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, HashMap<String, String> m, boolean b) {
-        super ( resourceName,  commandName,  commandMethod,commandAction,commandDisplayName,  m,  b);
+        super(resourceName, commandName, commandMethod, commandAction, commandDisplayName, m, b);
         parameterType = Constants.MESSAGE_PARAMETER;
     }
 
@@ -76,6 +76,10 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
+    @Produces({
+        "text/html;qs=2",
+        MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_XML})
     public ActionReportResult processDelete(ParameterMap data) {
         try {
             if (data.containsKey("error")) {
@@ -95,15 +99,15 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
 
             if (exitCode == ActionReport.ExitCode.SUCCESS) {
-                String successMessage = localStrings.getLocalString("rest.request.success.message",
-                        "{0} of {1} executed successfully.", new Object[]{commandMethod, uriInfo.getAbsolutePath()});
-                return ResourceUtil.getResponse(200, // 200 - ok
-                        successMessage, requestHeaders, uriInfo);
+            String successMessage = localStrings.getLocalString("rest.request.success.message",
+            "{0} of {1} executed successfully.", new Object[]{commandMethod, uriInfo.getAbsolutePath()});
+            return ResourceUtil.getResponse(200, // 200 - ok
+            successMessage, requestHeaders, uriInfo);
             }
 
             String errorMessage = actionReport.getMessage();
             return ResourceUtil.getResponse(400, // 400 - bad request
-                    errorMessage, requestHeaders, uriInfo);
+            errorMessage, requestHeaders, uriInfo);
              */
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
@@ -113,6 +117,10 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
 //Do not care what the Content-Type is.
 
     @DELETE
+    @Produces({
+        "text/html;qs=2",
+        MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_XML})
     public ActionReportResult processDelete() {
         try {
             return processDelete(new ParameterMap());
@@ -134,6 +142,10 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
+    @Produces({
+        "text/html;qs=2",
+        MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_XML})
     public ActionReportResult hack(ParameterMap data) {
         if (data.containsKey("operation")) {
             List<String> l = data.get("operation");
@@ -157,5 +169,4 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand{
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

@@ -370,7 +370,7 @@ public class ProviderUtil {
             //add hidden field
             if(commandMethod.equalsIgnoreCase("DELETE")) {
                 result = result +
-                    "<input name=\"operation\" value=\"__deleteoperation\" type=\"hidden\">";
+                    "<dd><input name=\"operation\" value=\"__deleteoperation\" type=\"hidden\"></dd>";
             }
 
             result = result + "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"" + commandDisplayName + "\" type=\"submit\"></dd>";
