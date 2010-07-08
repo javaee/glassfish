@@ -334,6 +334,11 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         if(StringUtils.ok(agentsDirPath))
             return agentsDirPath;
 
+        String installRootPath = getInstallRootPath();
+        return installRootPath + "/" + "nodeagents";
+    }
+
+    private String getInstallRootPath() throws CommandException {
         String installRootPath = getSystemProperty(
                 SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
 
@@ -343,7 +348,24 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 
         if(!StringUtils.ok(installRootPath))
             throw new CommandException("Agent.noInstallDirPath");
+        return installRootPath;
+    }
 
-        return installRootPath + "/" + "nodeagents";
+    protected String getNodeHome() throws CommandException {
+        return getInstallRootPath();
+    }
+
+    protected String getInstanceHostName() throws CommandException {
+        String instanceHostName = null;
+        InetAddress localHost = null;
+        try {
+            localHost = InetAddress.getLocalHost();
+        } catch (UnknownHostException ex) {
+            throw new CommandException(strings.get("Agent.cantGetHostName", ex));
+        }
+        if (localHost != null) {
+            instanceHostName = localHost.getCanonicalHostName();
+        }
+        return instanceHostName;
     }
 }

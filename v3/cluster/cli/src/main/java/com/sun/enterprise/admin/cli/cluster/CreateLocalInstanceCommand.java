@@ -69,6 +69,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     private String INSTANCE_DOTTED_NAME;
     private String RENDEZVOUS_DOTTED_NAME;
     private boolean _rendezvousOccurred;
+    private String _node;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateLocalInstanceCommand.class);
@@ -108,6 +109,13 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     protected int executeCommand()
             throws CommandException, CommandValidationException {
         int exitCode = -1;
+
+        if (node == null) {
+            _node = getInstanceHostName();
+            createNodeImplicit(_node, getNodeHome(), _node);
+        } else {
+            _node = node;
+        }
         
         if (isRegisteredToDAS()) {
             if (!_rendezvousOccurred) {
@@ -171,9 +179,9 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             argsList.add("--nodeagent");
             argsList.add(nodeAgent);
         }
-        if (node != null) {
+        if (_node != null) {
             argsList.add("--node");
-            argsList.add(node);
+            argsList.add(_node);
         }
         if (systemProperties != null) {
             argsList.add("--systemproperties");
@@ -240,5 +248,25 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             logger.printDebugMessage(rc.toString());
         }
         return rc.execute("set", dottedName);
+    }
+
+    private int createNodeImplicit(String name, String nodeHome, String nodeHost) throws CommandException {
+        ArrayList<String> argsList = new ArrayList<String>();
+        argsList.add(0, "_create-node-implicit");
+        if (name != null) {
+            argsList.add("--name");
+            argsList.add(name);
+        }
+        if (nodeHome != null) {
+            argsList.add("--nodehome");
+            argsList.add(nodeHome);
+        }
+        argsList.add(nodeHost);
+
+        String[] argsArray = new String[argsList.size()];
+        argsArray = argsList.toArray(argsArray);
+
+        RemoteCommand rc = new RemoteCommand("_create-node-implicit", this.programOpts, this.env);
+        return rc.execute(argsArray);
     }
 }
