@@ -242,15 +242,10 @@
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
         </dependency>
-
-<dependency>
+		<dependency>
         <groupId>org.glassfish.branding</groupId>
         <artifactId>branding</artifactId>
         <version>${project.parent.version}</version>
         </dependency>
      </dependencies>
-
-
-
-    </dependencies>
 </project>
