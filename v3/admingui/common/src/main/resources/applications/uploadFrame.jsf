@@ -59,7 +59,6 @@
             </facet>
         </sun:title>
 #include "/common/applications/uploadComponent.jsf"
-   //#include "/common/shared/targetSectionForCreate.inc"
         "<br/>
 //#include "/common/shared/propertyDescTable.inc"
         <sun:title id="title2">

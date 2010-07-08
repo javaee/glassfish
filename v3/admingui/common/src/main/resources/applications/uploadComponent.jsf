@@ -63,5 +63,6 @@
     <!afterCreate
         getUIComponent(clientId="#{formId}"  component=>$attribute{component})
         includeIntegrations(type="org.glassfish.admingui:uploadPropertySheet" );
+        //includeIntegrations(type="org.glassfish.admingui:uploadPropertySheetTargetSection" );
     />
 </event>
