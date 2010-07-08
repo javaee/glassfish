@@ -47,22 +47,7 @@
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"
                         result => $attribute{objStr});
-                    if(#{pageSession.has2Objects}){
-                        if (#{pageSession.parentObjectNameStr2}){
-                            gf.createEntity(endpoint="#{pageSession.parentUrl2}/#{pageSession.childType2}"
-                                attrs="#{pageSession.valueMap2}"
-                                convertToFalse="#{pageSession.convertToFalseList2}"
-                                result => $attribute{resultEndpoint});
-                        }
-                        if (!#{pageSession.parentObjectNameStr2}){
-                            //create as a sub-element
-                            gf.createEntity(endpoint="$attribute{resultEndpoint}"
-                                attrs="#{pageSession.valueMap2}"
-                                convertToFalse="#{pageSession.convertToFalseList2}"
-                                result => $attribute{resultEndpoint2});
-                        }
-                    }
-
+   
                     ////REST-TODO  need to take care setProxyProperties()
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
@@ -73,9 +58,6 @@
                         setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                     }
 
-                    if (#{pageSession.additionalSaveHandler}){
-                        gf.invokeHandler(handler="#{pageSession.additionalSaveHandler}", args="#{pageSession.additionalSaveHandlerArgs}" );
-                    }
                     if (#{pageSession.showSuccessfulMsg}){
                         prepareSuccessfulMsg();
                         gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
@@ -92,13 +74,3 @@
             </sun:button>
         </sun:panelGroup>
 </facet>
-
-
-
-
-
-
-
-
-
-
