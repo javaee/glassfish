@@ -69,6 +69,7 @@ final class RemoteInstanceCommandHelper {
             configs = habitat.getByType(Configs.class).getConfig();
             servers = habitat.getByType(Servers.class).getServer();
             domain = habitat.getByType(Domain.class);
+            nodes = habitat.getByType(Nodes.class);
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -81,15 +82,42 @@ final class RemoteInstanceCommandHelper {
 
     final String getHost(final Server server) {
 
+        String hostName = null;
+
         if (server == null)
             return null;
 
-        String host = server.getNode();
+        // For backwards compatibility we first check node-agent-ref
+        // which in earlier builds contained the instances host name
+        hostName = server.getNodeAgentRef();
 
-        if (StringUtils.ok(host))
-            return host;
-        else
-            return Strings.get("noNode");
+        if (StringUtils.ok(hostName)) {
+            return hostName;
+        }
+
+        if (nodes == null) {
+            return null;
+        }
+
+        // No node-agent-ref. Get it from the node associated with the server
+        String nodeName = server.getNode();
+        if (StringUtils.ok(nodeName)) {
+            Node node = nodes.getNode(nodeName);
+            if (node != null) {
+                hostName = node.getNodeHost();
+            }
+            // XXX Hack to get around the fact that the default localhost
+            // node entry is malformed
+            if (hostName == null && nodeName.equals("localhost")) {
+                hostName = "localhost";
+            }
+        }
+
+        if (StringUtils.ok(hostName)) {
+            return hostName;
+        } else {
+            return null;
+        }
     }
 
     final Server getServer(final String serverName) {
@@ -250,6 +278,7 @@ final class RemoteInstanceCommandHelper {
     }
     final private List<Server> servers;
     final private List<Config> configs;
+    final private Nodes nodes;
     final private Habitat habitat;
     final private Domain domain;
 }

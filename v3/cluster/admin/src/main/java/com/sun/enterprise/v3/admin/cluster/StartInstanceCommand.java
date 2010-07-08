@@ -125,8 +125,8 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             return;
         }
         noderef = helper.getNode(instance);
-        if(noderef.equals("noNodeRef")) {
-             logger.severe(Strings.get("start.instance.noSuchNodeRef", noderef));
+        if(!StringUtils.ok(noderef)) {
+             logger.severe(Strings.get("missingNodeRef", instanceName));
             return;
         }
 
@@ -174,7 +174,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             if (output.length() > 0) {
                  logger.info(output.toString());
             }
-            if (status != 1){
+            if (status != 0){
                 ActionReport report = ctx.getActionReport();
                 String msg = Strings.get("start.remote.instance.failed", instanceName);
                 logger.warning(msg);

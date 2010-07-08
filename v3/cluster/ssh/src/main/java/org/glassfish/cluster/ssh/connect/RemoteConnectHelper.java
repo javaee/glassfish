@@ -139,10 +139,9 @@ public class RemoteConnectHelper  {
 
                 // We always pass the DAS host and port to the asadmin
                 // command we are running because some local commands like
-
-                
-                String prefix = nodeHome +"/bin/asadmin " + cmd +
-                        " --host " + dasHost + " --port " + dasPort + " ";
+                String prefix = nodeHome +"/bin/asadmin " +
+                        " --host " + dasHost + " --port " + dasPort +
+                        " " + cmd;
 
                  //get the params for the command
                 // we don't validate since called by other commands directly
