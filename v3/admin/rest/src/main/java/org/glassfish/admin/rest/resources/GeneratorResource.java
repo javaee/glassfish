@@ -70,7 +70,7 @@ public class GeneratorResource {
     private DomDocument document;
     protected String genDir;
     private static String GENERATOR_OUTPUT_DIR = System.getProperty("user.home")
-            + "/acvs/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources/generated";
+            + "/src/glassfish/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources/generated";
     private static String MappingConfigBeansToPOSTCommands[][] = {
         {"Application", "redeploy"},
         {"JavaConfig", "create-profiler"},
