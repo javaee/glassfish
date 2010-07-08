@@ -243,6 +243,7 @@ public class WoodstockHandler {
 
     }
 
+
     @Handler(id = "selectItemArrayToStrArray",
         input = {
             @HandlerInput(name = "item", type = SelectItem[].class, required = true)},
@@ -261,6 +262,24 @@ public class WoodstockHandler {
         }
         handlerCtx.setOutputValue("strAry", strAry);
     }
+
+
+    @Handler(id = "gf.convertListToOptionArray",
+        input = {
+            @HandlerInput(name = "list", type = List.class, required = true)},
+        output = {
+            @HandlerOutput(name = "optionArray", type = Option[].class)})
+    public static void convertListToOptionArray(HandlerContext handlerCtx) {
+
+        List<String> list = (List) handlerCtx.getInputValue("list");
+        if (list == null || list.isEmpty()) {
+            handlerCtx.setOutputValue("optionArray", new Option[0]);
+            return;
+        }
+        handlerCtx.setOutputValue("optionArray", SunOptionUtil.getOptionsArray( list.toArray(new String[0])));
+    }
+
+
 
     /**
      *  <p> Returns the date pattern for this calendar component.
