@@ -79,30 +79,31 @@ public abstract class CommandModel {
         return copy;
     }
 
-
-        /**
-         * get the Param name.  First it checks if the annotated Param
-         * includes a name, if not then it gets the name from the field.
-         *
-         * @param param class annotation
-         * @param annotated annotated field or method
-         * @return the name of the param
-         */
+    /**
+     * Get the Param name.  First it checks if the annotated Param
+     * includes a name, if not then it gets the name from the field.
+     * If the parameter is a password, add the prefix and change the
+     * name to upper case.
+     *
+     * @param param class annotation
+     * @param annotated annotated field or method
+     * @return the name of the param
+     */
     public static String getParamName(Param param, AnnotatedElement annotated) {
-        if (param.name().equals("")) {
+        String name = param.name();
+        if (name.equals("")) {
             if (annotated instanceof Field) {
-                return ((Field) annotated).getName();
+                name = ((Field) annotated).getName();
             }
             if (annotated instanceof Method) {
-                String name = ((Method) annotated).getName().substring(3);
-                return Introspector.decapitalize(name);
+                name = ((Method) annotated).getName().substring(3);
+                name = Introspector.decapitalize(name);
             }
-        } else if (param.password()) {
-            return ASADMIN_CMD_PREFIX + param.name().toUpperCase();
-        } else {
-            return param.name();
         }
-        return "";
+        if (param.password()) {
+            name = ASADMIN_CMD_PREFIX + name.toUpperCase();
+        }
+        return name;
     }    
 
     public static abstract class ParamModel {

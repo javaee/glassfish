@@ -45,7 +45,6 @@ import com.sun.hk2.component.InjectionResolver;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.CommandModel;
-import com.sun.enterprise.universal.GFBase64Decoder;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 
@@ -58,8 +57,6 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
     private final ParameterMap parameters;
 
     private final Map<String,File> optionNameToUploadedFileMap;
-
-    private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
 
     public static final LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(MapInjectionResolver.class);
@@ -256,20 +253,7 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
                 }
             }
         }
-
-        String value = params.getOne(key);
-        // indicates a password parameter
-        if (key.startsWith(ASADMIN_CMD_PREFIX) && (value != null)) {
-            try {               
-                  GFBase64Decoder base64Decoder =
-                        new GFBase64Decoder();
-                  value = new String(base64Decoder.decodeBuffer(value));                
-            } catch (IOException e) {
-                // ignore for now. Not much can be done anyway.
-                // todo: improve this error condition reporting
-            }
-        }
-        return value;
+        return params.getOne(key);
     }
 
     /**

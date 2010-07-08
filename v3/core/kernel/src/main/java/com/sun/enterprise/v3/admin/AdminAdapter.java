@@ -101,6 +101,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
     private static final String BASIC = "Basic ";
 
     private static final String QUERY_STRING_SEPARATOR = "&";
+    private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
 
     @Inject
     ModulesRegistry modulesRegistry;
@@ -435,6 +436,16 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
             } catch (UnsupportedEncodingException e) {
                 logger.log(Level.WARNING, adminStrings.getLocalString("adapter.param.decode",
                         "Cannot decode parameter {0} = {1}"));
+            }
+
+            // indicates a password parameter
+            if (paramName.startsWith(ASADMIN_CMD_PREFIX) && (value != null)) {
+                try {               
+                      value = new String(decoder.decodeBuffer(value));
+                } catch (IOException e) {
+                    // ignore for now. Not much can be done anyway.
+                    // todo: improve this error condition reporting
+                }
             }
             parameters.add(paramName, value);
         }
