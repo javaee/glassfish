@@ -24,7 +24,7 @@
     </server>
   </servers>
   <nodes>
-    <node name="localhost" nodehost="localhost" nodehome="${com.sun.aas.installRoot}"/>
+    <node name="localhost" node-host="localhost" node-home="${com.sun.aas.installRoot}"/>
   </nodes>
  <configs>
    <config name="%%%CONFIG_MODEL_NAME%%%">
