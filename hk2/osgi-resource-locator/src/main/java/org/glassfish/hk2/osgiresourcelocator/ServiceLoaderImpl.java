@@ -151,6 +151,7 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
             }
             return isCompatible;
         } catch (ClassNotFoundException e) {
+            debug("Unable to reach " + serviceClass + " from " + providerClass + ", which is loaded by " + providerClass.getClassLoader());
             e.printStackTrace();
             return false;
         }
