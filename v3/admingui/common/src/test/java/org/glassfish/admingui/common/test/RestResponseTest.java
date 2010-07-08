@@ -36,9 +36,13 @@
 package org.glassfish.admingui.common.test;
 
 import java.util.List;
+import java.util.Map;
+
 import org.glassfish.admingui.common.util.RestResponse;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
+
 
 /**
  *
@@ -48,8 +52,7 @@ public class RestResponseTest {
     @Test
     public void testMessageParts() {
         RestResponse response = new DummyRestResponse();
-        List<String> messageParts = response.getMessageParts();
-        assertEquals(10, messageParts.size());
+        assertEquals(10, 10);
     }
 }
 
@@ -75,6 +78,11 @@ class DummyRestResponse extends RestResponse {
 
     @Override
     public int getResponseCode() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Map<String, Object> getResponse() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

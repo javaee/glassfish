@@ -172,10 +172,7 @@ public class RestApiHandlers {
                     @HandlerInput(name = "attrs", type = Map.class, required = true),
                     @HandlerInput(name = "method", type = String.class, defaultValue = "post")},
             output = {
-                    @HandlerOutput(name = "result", type = Integer.class),
-                    @HandlerOutput(name = "output", type = String.class),
-                    @HandlerOutput(name = "messageParts", type = List.class)
-            })
+                    @HandlerOutput(name = "result", type = Map.class)})
     public static void restExecuteCommand(HandlerContext handlerCtx) {
         Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
         if (attrs == null) {
@@ -192,14 +189,12 @@ public class RestApiHandlers {
         }
 
         if (response == null) {
-            GuiUtil.handleError(handlerCtx, "An invalid method was passed to " + handlerCtx.getHandlerDefinition().getId() + ": " + method);
+            GuiUtil.handleError(handlerCtx, "An invalid method was passed to "
+		+ handlerCtx.getHandlerDefinition().getId() + ": " + method);
         } else {
-            handlerCtx.setOutputValue("result", response.getResponseCode());
-            handlerCtx.setOutputValue("output", response.getResponseBody());
-            handlerCtx.setOutputValue("messageParts", response.getMessageParts());
+            handlerCtx.setOutputValue("result", response.getResponse());
         }
     }
-
 
     /**
      *
