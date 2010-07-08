@@ -64,7 +64,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"delete-instance", "DELETE"}, {"start-instance", "POST"}, {"stop-instance", "POST"}, {"recover-transactions", "POST"}};
+return new String[][]{{"delete-instance", "DELETE", "delete-instance"}, {"start-instance", "POST", "start-instance"}, {"stop-instance", "POST", "stop-instance"}, {"recover-transactions", "POST", "recover-transactions"}};
 }
 
 	@Path("application-ref/")

@@ -55,7 +55,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"list-predefined-authrealm-classnames", "GET"}};
+return new String[][]{{"list-predefined-authrealm-classnames", "GET", "__list-predefined-authrealm-classnames"}};
 }
 
 

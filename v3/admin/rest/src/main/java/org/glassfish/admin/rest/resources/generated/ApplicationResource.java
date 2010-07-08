@@ -52,7 +52,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"disable", "POST"}, {"enable", "POST"}};
+return new String[][]{{"disable", "POST", "disable"}, {"enable", "POST", "enable"}};
 }
 
 	@Path("module/")

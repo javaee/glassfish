@@ -101,7 +101,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-instance", "POST"}, {"host-port", "GET"}, {"list-logger-levels", "GET"}, {"list-instances", "GET"}, {"restart", "POST"}, {"rotate-log", "POST"}, {"set-log-level", "POST"}, {"stop", "POST"}, {"uptime", "GET"}, {"version", "GET"}};
+return new String[][]{{"create-instance", "POST", "create-instance"}, {"host-port", "GET", "_get-host-and-port"}, {"list-logger-levels", "GET", "list-logger-levels"}, {"list-instances", "GET", "list-instances"}, {"restart", "POST", "restart-domain"}, {"rotate-log", "POST", "rotate-log"}, {"set-log-level", "POST", "set-log-level"}, {"stop", "POST", "stop-domain"}, {"uptime", "GET", "uptime"}, {"version", "GET", "version"}};
 }
 
 	@Path("resources/")

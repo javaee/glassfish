@@ -46,7 +46,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"delete-config", "POST"}};
+return new String[][]{{"delete-config", "POST", "delete-config"}};
 }
 
 	@Path("admin-service/")

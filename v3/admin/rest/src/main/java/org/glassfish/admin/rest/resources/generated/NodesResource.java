@@ -46,7 +46,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-node", "POST"}};
+return new String[][]{{"create-node", "POST", "create-node-ssh"}};
 }
 
 	@Path("node/")

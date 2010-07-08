@@ -46,7 +46,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"copy-config", "POST"}};
+return new String[][]{{"copy-config", "POST", "copy-config"}};
 }
 
 	@Path("config/")

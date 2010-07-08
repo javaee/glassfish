@@ -46,7 +46,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"delete-resource", "POST"}};
+return new String[][]{{"delete-resource", "POST", "delete-jndi-resource"}};
 }
 
 	@Path("property/")

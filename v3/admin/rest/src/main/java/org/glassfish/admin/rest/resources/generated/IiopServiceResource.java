@@ -52,7 +52,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-ssl", "POST"}, {"delete-ssl", "DELETE"}};
+return new String[][]{{"create-ssl", "POST", "create-ssl"}, {"delete-ssl", "DELETE", "delete-ssl"}};
 }
 
 	@Path("orb/")

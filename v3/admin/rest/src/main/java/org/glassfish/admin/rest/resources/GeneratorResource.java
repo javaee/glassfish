@@ -53,8 +53,6 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.RestService;
 
-import org.glassfish.api.admin.CommandModel;
-import org.glassfish.api.admin.CommandRunner;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DomDocument;
@@ -72,7 +70,7 @@ public class GeneratorResource {
     private DomDocument document;
     protected String genDir;
     private static String GENERATOR_OUTPUT_DIR = System.getProperty("user.home")
-            + "/src/glassfish/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources/generated";
+            + "/acvs/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources/generated";
     private static String MappingConfigBeansToPOSTCommands[][] = {
         {"Application", "redeploy"},
         {"JavaConfig", "create-profiler"},
@@ -608,7 +606,8 @@ public class GeneratorResource {
                 }
                 commandResourcesPaths = commandResourcesPaths + "{"
                         + "\"" + ConfigBeansToCommandResourcesMap[i][3] + "\"" + ", "
-                        + "\"" + ConfigBeansToCommandResourcesMap[i][2] + "\"" + "}";
+                        + "\"" + ConfigBeansToCommandResourcesMap[i][2] + "\"" + ", "
+                        + "\"" + ConfigBeansToCommandResourcesMap[i][1] + "\"" + "}";
 
                 String commandResourceFileName = genDir + "/" + resourceName
                         + getBeanName(ConfigBeansToCommandResourcesMap[i][3])

@@ -52,7 +52,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-http", "POST"}, {"delete-http", "DELETE"}};
+return new String[][]{{"create-http", "POST", "create-http"}, {"delete-http", "DELETE", "delete-http"}};
 }
 
 @Override

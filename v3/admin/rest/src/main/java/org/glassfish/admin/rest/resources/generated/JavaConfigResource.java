@@ -46,7 +46,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"generate-jvm-report", "POST"}};
+return new String[][]{{"generate-jvm-report", "POST", "generate-jvm-report"}};
 }
 
 	@Path("profiler/")

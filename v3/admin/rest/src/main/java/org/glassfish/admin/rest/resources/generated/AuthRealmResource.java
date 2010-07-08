@@ -70,7 +70,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"list-group-names", "GET"}, {"supports-user-management", "GET"}, {"create-user", "POST"}, {"delete-user", "DELETE"}, {"list-users", "GET"}};
+return new String[][]{{"list-group-names", "GET", "__list-group-names"}, {"supports-user-management", "GET", "__supports-user-management"}, {"create-user", "POST", "create-file-user"}, {"delete-user", "DELETE", "delete-file-user"}, {"list-users", "GET", "list-file-users"}};
 }
 
 	@Path("property/")

@@ -58,7 +58,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"delete-cluster", "POST"}, {"start-cluster", "POST"}, {"stop-cluster", "POST"}};
+return new String[][]{{"delete-cluster", "POST", "delete-cluster"}, {"start-cluster", "POST", "start-cluster"}, {"stop-cluster", "POST", "stop-cluster"}};
 }
 
 	@Path("application-ref/")

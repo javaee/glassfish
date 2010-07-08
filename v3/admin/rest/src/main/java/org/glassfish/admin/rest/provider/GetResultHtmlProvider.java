@@ -119,12 +119,17 @@ public class GetResultHtmlProvider extends BaseProvider<GetResult> {
 
         //add command resources
         for (String[] commandResourcePath : commandResourcesPaths) {
+            if (commandResourcePath[2].startsWith("_")){//hidden cli command name
+                result = result + "<!--" ;//hide the link in a comment
+            }
                 result = result + "<a href=\"" +
                     ProviderUtil.getElementLink(uriInfo, commandResourcePath[0]) + "\">";
                 result = result + commandResourcePath[0];
                 result = result + "</a>";
                 result = result + "<br>";
-
+            if (commandResourcePath[2].startsWith("_")){//hidden cli
+                result = result + "-->" ;
+            }
         }
 
         if (!result.equals("")) {

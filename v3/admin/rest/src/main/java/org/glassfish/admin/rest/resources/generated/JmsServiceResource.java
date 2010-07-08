@@ -70,7 +70,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-jmsdest", "POST"}, {"delete-jmsdest", "POST"}, {"flush-jmsdest", "POST"}, {"jms-ping", "GET"}, {"list-jmsdest", "GET"}};
+return new String[][]{{"create-jmsdest", "POST", "create-jmsdest"}, {"delete-jmsdest", "POST", "delete-jmsdest"}, {"flush-jmsdest", "POST", "flush-jmsdest"}, {"jms-ping", "GET", "jms-ping"}, {"list-jmsdest", "GET", "list-jmsdest"}};
 }
 
 	@Path("jms-host/")

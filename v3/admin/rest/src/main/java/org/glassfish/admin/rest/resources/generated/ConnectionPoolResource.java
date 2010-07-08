@@ -46,7 +46,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"ping", "GET"}};
+return new String[][]{{"ping", "GET", "ping-connection-pool"}};
 }
 
 }
