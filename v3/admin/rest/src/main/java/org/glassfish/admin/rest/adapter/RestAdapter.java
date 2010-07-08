@@ -362,7 +362,10 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 report = habitat.getComponent(ActionReport.class, userAgent.substring(userAgent.indexOf('/')+1));
             if (report==null) {
                 String accept = req.getHeader("Accept");
-                if (accept!=null) {
+                if (accept != null) {
+                    if (accept.indexOf("html") != -1) {//html is possible so get it...
+                        report = habitat.getComponent(ActionReport.class, "html");
+                    }
                     StringTokenizer st = new StringTokenizer(accept, ",");
                     while (report==null && st.hasMoreElements()) {
                         final String scheme=st.nextToken();
