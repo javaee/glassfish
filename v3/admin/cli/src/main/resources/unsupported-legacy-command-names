@@ -45,8 +45,6 @@ apply-repository-zip R (unsupported in v2 as well)
 create-http-lb-config R
 delete-http-lb-config R
 list-http-lb-configs R
-create-http-lb-ref R
-delete-http-lb-ref R
 export-http-lb-config R
 enable-http-lb-server R
 disable-http-lb-server R

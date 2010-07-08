@@ -36,6 +36,9 @@
  */
 package com.sun.enterprise.config.serverbeans;
 
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+
 import java.beans.PropertyVetoException;
 
 /**
@@ -43,7 +46,8 @@ import java.beans.PropertyVetoException;
  *
  * @author Jerome Dochez
  */
-public interface Ref {
+@Configured
+public interface Ref extends ConfigBeanProxy {
 
     public String getRef();
 

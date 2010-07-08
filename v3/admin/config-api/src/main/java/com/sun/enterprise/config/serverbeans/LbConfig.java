@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.config.support.Create;
+import org.glassfish.config.support.Delete;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
@@ -215,6 +217,8 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * {@link ServerRef }
      */
     @Element("*")
+    @Create(value="create-http-lb-ref")
+    @Delete(value="delete-http-lb-ref")            
     List<Ref> getClusterRefOrServerRef();
     
     /**
