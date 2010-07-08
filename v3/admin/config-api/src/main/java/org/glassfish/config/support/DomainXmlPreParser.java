@@ -288,17 +288,6 @@ class DomainXmlPreParser {
         return reader.getAttributeValue(null, CONFIG_REF);
     }
 
-    public static void main(String... args) {
-        try {
-            URL url = new File("c:/glassfishv3/glassfish/domains/domain1/config/domain.xml").toURI().toURL();
-            XMLInputFactory xif = XMLInputFactory.newInstance();
-            DomainXmlPreParser pp = new DomainXmlPreParser(url, xif, "c1i1");
-        }
-        catch (Exception e) {
-            System.out.println("ERROR!! " + e);
-        }
-    }
-
     private static void printf(String s) {
         if (debug)
             System.out.println(s);
