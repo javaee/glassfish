@@ -40,7 +40,6 @@
 package org.glassfish.appclient.server.core.jws;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.logging.LogDomains;
 import java.beans.PropertyChangeEvent;
@@ -51,22 +50,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.appclient.server.core.AppClientDeployerHelper;
 import org.glassfish.appclient.server.core.AppClientServerApplication;
 import org.glassfish.appclient.server.core.jws.ExtensionFileManager.Extension;
@@ -78,7 +73,6 @@ import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
-import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -144,6 +138,9 @@ public class JavaWebStartInfo implements ConfigListener {
             DOC_TEMPLATE_PREFIX + "appclientMainDocumentTemplate.jnlp";
     private static final String CLIENT_DOCUMENT_TEMPLATE =
             DOC_TEMPLATE_PREFIX + "appclientClientDocumentTemplate.jnlp";
+    public static final String DEVELOPER_EXTENSION_DOCUMENT_TEMPLATE =
+            DOC_TEMPLATE_PREFIX + "developerProvidedDocumentTemplate.jnlp";
+    
     private static final String MAIN_IMAGE_XML_PROPERTY_NAME =
             "appclient.main.information.images";
     public static final String APP_LIBRARY_EXTENSION_PROPERTY_NAME = "app.library.extension";
@@ -181,7 +178,7 @@ public class JavaWebStartInfo implements ConfigListener {
 
     private ApplicationClientDescriptor acDesc;
 
-    private String jnlpDoc;
+    private String developerJNLPDoc;
 
     private static LocalStringsImpl localStrings = new LocalStringsImpl(JavaWebStartInfo.class);
     private static LocalStringsImpl servedContentLocalStrings =
@@ -228,14 +225,15 @@ public class JavaWebStartInfo implements ConfigListener {
         final String devJNLPDoc = acDesc.getJavaWebStartAccessDescriptor().getJnlpDocument();
         final File sourceDir = acDesc.getApplication().isVirtual() ?
             dc.getSourceDir() : new File(dc.getSource().getParentArchive().getURI());
-        this.jnlpDoc = devJNLPDoc;
+        this.developerJNLPDoc = devJNLPDoc;
         signingAlias = JWSAdapterManager.signingAlias(dc);
         dch.init(dc.getClassLoader(),
                     tHelper,
                     sourceDir,
+                    dc.getSource(),
                     staticContent,
                     dynamicContent,
-                    devJNLPDoc);
+                    helper);
     }
 
     /**
@@ -303,6 +301,21 @@ public class JavaWebStartInfo implements ConfigListener {
                     resumeJWSServices();
                 }
             });
+        }
+    }
+
+    static InputStream openEntry(final ReadableArchive appClientArchive,
+                final String pathToContent) throws IOException {
+            final int bang = pathToContent.indexOf('!');
+            if (bang == -1) {
+                return appClientArchive.getEntry(pathToContent);
+            } else {
+                if (appClientArchive.getParentArchive() == null) {
+                    throw new IllegalArgumentException(pathToContent);
+                }
+                return appClientArchive.getParentArchive()
+                        .getSubArchive(pathToContent.substring(0, bang))
+                        .getEntry(pathToContent.substring(bang + 1));
         }
     }
 
@@ -442,7 +455,7 @@ public class JavaWebStartInfo implements ConfigListener {
 
         initClientDynamicContent();
 
-        dch.addDeveloperContent(jnlpDoc);
+        dch.addDeveloperContentFromPath(developerJNLPDoc);
         
         Set<Content> result = new HashSet<Content>(staticContent.values());
         result.addAll(dynamicContent.values());
@@ -700,7 +713,8 @@ public class JavaWebStartInfo implements ConfigListener {
         tHelper.setProperty(APP_CLIENT_MAIN_CLASS_ARGUMENTS_PROPERTY_NAME, "");
 
         final String mainDocument = dch.combineJNLP(
-                    textFromURL(MAIN_DOCUMENT_TEMPLATE));
+                    textFromURL(MAIN_DOCUMENT_TEMPLATE),
+                    developerJNLPDoc);
         createAndAddDynamicContentFromTemplateText(
                 dynamicContent, tHelper.mainJNLP(), mainDocument);
 

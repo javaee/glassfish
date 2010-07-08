@@ -261,6 +261,10 @@ public class ApplicationSignedJARManager {
         return new AbstractMap.SimpleEntry<URI,StaticContent>(
             jarURIRelativeToApp, content);
     }
+
+    public StaticContent staticContent(final URI jarURIRelativeToApp) {
+        return relURIToContent.get(jarURIRelativeToApp);
+    }
     
     /*
      * Returns information about an auto-signed JAR for a given absolute URI and

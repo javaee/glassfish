@@ -219,6 +219,12 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         return new File(dc().getScratchDir("xml").getParentFile(), "signed/");
     }
 
+    @Override
+    public ApplicationSignedJARManager signedJARManager() {
+        return signedJARManager;
+    }
+
+
     private String libJARRelPath(final URI absURI) {
         return JavaWebStartInfo.relativeURIForProvidedOrGeneratedAppFile(dc(), absURI, this).toASCIIString();
     }

@@ -54,6 +54,11 @@ import java.util.logging.Logger;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.appclient.server.core.AppClientDeployerHelper;
+import org.glassfish.appclient.server.core.ApplicationSignedJARManager;
+import org.glassfish.appclient.server.core.NestedAppClientDeployerHelper;
+import org.glassfish.appclient.server.core.StandaloneAppClientDeployerHelper;
 import org.glassfish.appclient.server.core.jws.servedcontent.Content;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
@@ -155,10 +160,12 @@ abstract class XPathToDeveloperProvidedContentRefs<T extends Content> {
      */
     abstract void addToContentIfInApp(
             DeveloperContentHandler dch,
+            final AppClientDeployerHelper helper,
             String referringDocument,
             URI codebase, String pathToContent,
             ClassLoader loader, Map<String, StaticContent> staticContent,
-            Map<String, DynamicContent> dynamicContent, final URI appRootURI)
+            Map<String, DynamicContent> dynamicContent, final URI appRootURI,
+            final ReadableArchive appClientArchive)
                 throws URISyntaxException, IOException;
 
 /**
@@ -174,13 +181,15 @@ abstract class XPathToDeveloperProvidedContentRefs<T extends Content> {
         @Override
         void addToContentIfInApp(
                 final DeveloperContentHandler dch,
+                final AppClientDeployerHelper helper,
                 final String referringDocument,
                 final URI codebase,
                 final String pathToContent,
                 final ClassLoader loader,
                 final Map<String,StaticContent> staticContent,
                 final Map<String,DynamicContent> dynamicContent,
-                final URI appRootURI) throws URISyntaxException {
+                final URI appRootURI,
+                final ReadableArchive appClientArchive) throws URISyntaxException {
             final URI uriToContent = new URI(pathToContent);
             final URI absURI = codebase.resolve(uriToContent);
             if (absURI.equals(uriToContent)) {
@@ -197,7 +206,24 @@ abstract class XPathToDeveloperProvidedContentRefs<T extends Content> {
                         "enterprise.deployment.appclient.jws.clientJNLPBadStaticContent",
                         new Object[] {referringDocument, pathToContent});
             } else {
-                staticContent.put(pathToContent, new FixedContent(f));
+                final ApplicationSignedJARManager signedJARManager = helper.signedJARManager();
+                if (signedJARManager == null && helper instanceof NestedAppClientDeployerHelper) {
+                    /*
+                     * The signed JAR manager should not be null when we deploy
+                     * an app client nested inside an EAR.  This is a system error.
+                     */
+                    logger.log(Level.SEVERE, "enterprise.deployment.appclient.jws.signedJARMgrNull");
+                } else if (helper instanceof StandaloneAppClientDeployerHelper) {
+                    logger.log(Level.WARNING, "enterprise.deployment.appclient.jws.userReferencedJARFromStandAloneAppClient",
+                            new Object[] {referringDocument, pathToContent});
+                } else {
+                    try {
+                        final URI signedURI = signedJARManager.addJAR(fileURI);
+                        staticContent.put(pathToContent, signedJARManager.staticContent(signedURI));
+                    } catch (IOException ex) {
+                        logger.log(Level.SEVERE, null, ex);
+                    }
+                }
             }
         }
     }
@@ -215,13 +241,15 @@ abstract class XPathToDeveloperProvidedContentRefs<T extends Content> {
         @Override
         void addToContentIfInApp(
                 final DeveloperContentHandler dch,
+                final AppClientDeployerHelper helper,
                 final String referringDocument,
                 final URI codebase,
                 final String pathToContent,
                 final ClassLoader loader,
                 final Map<String,StaticContent> staticContent,
                 final Map<String,DynamicContent> dynamicContent,
-                final URI appRootURI) throws URISyntaxException, IOException {
+                final URI appRootURI,
+                final ReadableArchive appClientArchive) throws URISyntaxException, IOException {
             final URI uriToContent = new URI(pathToContent);
             final URI absURI = codebase.resolve(uriToContent);
             if (absURI.equals(uriToContent)) {
@@ -231,22 +259,32 @@ abstract class XPathToDeveloperProvidedContentRefs<T extends Content> {
              * Find the developer-provided content.
              */
 
-            InputStream is = loader.getResourceAsStream(pathToContent);
-            if (is == null) {
-                return;
-            }
+//            InputStream is = JavaWebStartInfo.openEntry(appClientArchive, pathToContent);
+//            if (is == null) {
+//                return;
+//            }
+//
+//            final byte[] buffer = new byte[1024];
+//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//            int bytesRead;
+//
+//            while ((bytesRead = is.read(buffer)) != -1) {
+//                baos.write(buffer, 0, bytesRead);
+//            }
+//            is.close();
 
-            final byte[] buffer = new byte[1024];
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            int bytesRead;
-
-            while ((bytesRead = is.read(buffer)) != -1) {
-                baos.write(buffer, 0, bytesRead);
-            }
-            is.close();
+            /*
+             * Combine the developer's extension JNLP with the template so we
+             * can set the parts of the resulting document that we need to
+             * control.
+             */
+            final String combinedContent = dch.combineJNLP(
+                    JavaWebStartInfo.textFromURL(
+                        JavaWebStartInfo.DEVELOPER_EXTENSION_DOCUMENT_TEMPLATE),
+                    pathToContent);
             dynamicContent.put(pathToContent,
                     new SimpleDynamicContentImpl(
-                        baos.toString(),
+                        combinedContent,
                         URLConnection.guessContentTypeFromName(pathToContent)));
 
             /*
@@ -255,7 +293,7 @@ abstract class XPathToDeveloperProvidedContentRefs<T extends Content> {
              * JNLP document.  So we need to recursively process that
              * document now also.
              */
-            dch.addDeveloperContent(pathToContent);
+            dch.addDeveloperContent(pathToContent, combinedContent);
         }
 
     }

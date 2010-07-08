@@ -39,6 +39,7 @@
 
 package org.glassfish.appclient.server.core.jws;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,12 +47,15 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
-import org.glassfish.appclient.server.core.jws.XPathToDeveloperProvidedContentRefs;
+import javax.xml.xpath.XPathExpressionException;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.appclient.server.core.AppClientDeployerHelper;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
@@ -84,6 +88,7 @@ public class DeveloperContentHandler {
     DeveloperContentService dcs;
 
     private ClassLoader loader;
+    private ReadableArchive appClientArchive;
     private Map<String,StaticContent> staticContent;
     private Map<String,DynamicContent> dynamicContent;
     private TokenHelper tHelper;
@@ -99,23 +104,25 @@ public class DeveloperContentHandler {
     private Document developerDOM = null;
     private boolean noDeveloperDOM = false;
 
-    private String jnlpDoc;
+    private AppClientDeployerHelper helper;
 
     public void init(
             final ClassLoader loader,
             final TokenHelper tHelper,
             final File appRootDir,
+            final ReadableArchive appClientArchive,
             final Map<String,StaticContent> staticContent,
             final Map<String,DynamicContent> dynamicContent,
-            final String jnlpDoc) {
+            final AppClientDeployerHelper helper) {
 
         this.loader = loader;
         this.tHelper = tHelper;
         this.appRootDir = appRootDir;
         this.appRootURI = appRootDir.toURI();
+        this.appClientArchive = appClientArchive;
         this.staticContent = staticContent;
         this.dynamicContent = dynamicContent;
-        this.jnlpDoc = jnlpDoc;
+        this.helper = helper;
      }
 
     /**
@@ -127,11 +134,12 @@ public class DeveloperContentHandler {
      * the generated JNLP, unchanged
      */
     String combineJNLP(
-            final String generatedJNLPTemplate) {
+            final String generatedJNLPTemplate,
+            final String developerJNLP) {
 
         final Document devDOM;
         try {
-            devDOM = developerDOM();
+            devDOM = developerDOMFromPath(developerJNLP);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -170,26 +178,20 @@ public class DeveloperContentHandler {
         }
     }
 
-    private synchronized Document developerDOM() throws ParserConfigurationException, SAXException, IOException {
-        Document result= null;
-        if (! noDeveloperDOM) {
-            if (jnlpDoc == null) {
-                noDeveloperDOM = true;
-            } else {
-                result = developerDOM(jnlpDoc);
+    private synchronized Document developerDOMFromPath(final String devJNLPDoc) throws SAXException, IOException {
+        Document result = null;
+        if (devJNLPDoc != null) {
+            final InputStream devJNLPStream = JavaWebStartInfo.openEntry(appClientArchive, devJNLPDoc);
+            if (devJNLPStream != null) {
+                result = db.parse(devJNLPStream);
             }
         }
         return result;
     }
 
-    private synchronized Document developerDOM(final String devJNLPDoc) throws SAXException, IOException {
-        Document result = null;
-        if (devJNLPDoc != null) {
-            final InputStream devJNLPStream = loader.getResourceAsStream(devJNLPDoc);
-            if (devJNLPStream != null) {
-                result = db.parse(devJNLPStream);
-            }
-        }
+    private synchronized Document developerDOMFromContent(final String devContent) throws SAXException, IOException {
+        final InputSource is = new InputSource(new StringReader(devContent));
+        Document result = db.parse(is);
         return result;
     }
 
@@ -225,39 +227,54 @@ public class DeveloperContentHandler {
      * should not be exposed simply by using the Java Web Start-related URLs
      * and varying the path part to browse for files.
      */
-    void addDeveloperContent(final String devJNLPDoc) {
+    void addDeveloperContentFromPath(final String devJNLPDocPath) {
         /*
          * There is no work to do unless the developer specified a JNLP
          * document.
          */
-        if (devJNLPDoc == null || (devJNLPDoc.length() == 0)) {
+        if (devJNLPDocPath == null || (devJNLPDocPath.length() == 0)) {
             return;
         }
 
-        Document devDOM;
+        final Document devDOM;
         try {
-            final URI codebaseURI = new URI(tHelper.appCodebasePath());
-            devDOM = developerDOM(devJNLPDoc);
-            /*
-             * Search for hrefs to other content.  Add each that falls within
-             * the codebase to the relevant content.
-             */
-             for (XPathToDeveloperProvidedContentRefs c : dcs.xPathsToDevContentRefs()) {
-                 NodeList nodes = (NodeList) c.xPathExpr().evaluate(devDOM, XPathConstants.NODESET);
-                 if (nodes.getLength() > 0) {
-                     for (int i = 0; i < nodes.getLength(); i++) {
-                         final String href = nodes.item(i).getNodeValue();
-                         c.addToContentIfInApp(this, devJNLPDoc, codebaseURI, href, loader, staticContent,
-                                 dynamicContent, appRootURI);
-                     }
-                 }
-             }
+            devDOM = developerDOMFromPath(devJNLPDocPath);
+            addDeveloperContent(devJNLPDocPath, devDOM);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-
     }
-    
+
+    void addDeveloperContent(final String devJNLPDocPath, final String devJNLP) {
+        try {
+            final Document devDOM = developerDOMFromContent(devJNLP);
+            addDeveloperContent(devJNLPDocPath, devDOM);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private void addDeveloperContent(
+            final String contentPath,
+            final Document devDOM) throws XPathExpressionException, URISyntaxException, IOException {
+        /*
+         * Search for hrefs to other content.  Add each that falls within
+         * the codebase to the relevant content.
+         */
+        final URI codebaseURI = new URI(tHelper.appCodebasePath());
+        for (XPathToDeveloperProvidedContentRefs c : dcs.xPathsToDevContentRefs()) {
+            NodeList nodes = (NodeList) c.xPathExpr().evaluate(devDOM, XPathConstants.NODESET);
+            if (nodes.getLength() > 0) {
+                for (int i = 0; i < nodes.getLength(); i++) {
+                    final String href = nodes.item(i).getNodeValue();
+                    c.addToContentIfInApp(this, helper, contentPath,
+                            codebaseURI, href, loader, staticContent,
+                            dynamicContent, appRootURI, appClientArchive);
+                }
+            }
+        }
+    }
+
     private static DocumentBuilderFactory documentBuilderFactory() {
         final DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
         try {

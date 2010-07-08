@@ -268,6 +268,10 @@ public abstract class AppClientDeployerHelper {
 
     protected abstract String PUScanTargets();
 
+    public ApplicationSignedJARManager signedJARManager() {
+        return null;
+    }
+
     public abstract void createAndAddLibraryJNLPs(final AppClientDeployerHelper helper,
             final TokenHelper tHelper, final Map<String,DynamicContent> dynamicContent)
             throws IOException;
