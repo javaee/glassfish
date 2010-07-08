@@ -212,6 +212,57 @@
     <arg line="${appserver.instance.name}"/>
   </exec>
 </target>
+
+<!-- ================================================================ -->
+<!-- Target to create local instance -->
+<!-- ================================================================ -->
+<target name="create-local-instance-common" depends="init-common">
+<echo message="Creating local instance ${instance.name}" level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="create-local-instance"/>
+    <arg line="${as.props}"/>
+    <arg line="--cluster ${cluster.name}"/>
+    <arg line="--systemproperties HTTP_LISTENER_PORT=${http.listener1.port}:HTTP_SSL_LISTENER_PORT=${http.listener2.port}:IIOP_LISTENER_PORT=${orb.listener1.port}:IIOP_SSL_LISTENER_PORT=${ssl.port}:IIOP_SSL_MUTUALAUTH_PORT=${ssl.mutualauth.port}:JMX_SYSTEM_CONNECTOR_PORT=${jmx.system.connector.port}"/>
+    <arg line="${instance.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to start local instance  -->
+<!-- ================================================================ -->
+<target name="start-local-instance-common" depends="init-common">
+<echo message="Starting local instance " level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="start-local-instance"/>
+    <arg line="${as.props}"/>
+    <arg line="${instance.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to stop local instance  -->
+<!-- ================================================================ -->
+<target name="stop-local-instance-common" depends="init-common">
+<echo message="Stopping local instance " level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="stop-local-instance"/>
+    <arg line="${as.props}"/>
+    <arg line="${instance.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to delete local instance  -->
+<!-- ================================================================ -->
+<target name="delete-local-instance-common" depends="init-common">
+<echo message="Deleting local instance ${instance.name}" level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="delete-local-instance"/>
+    <arg line="${as.props}"/>
+    <arg line="${instance.name}"/>
+  </exec>
+</target>
+
 <!-- ================================================================ -->
 <!-- Target to create a default cluster with two instances  -->
 <!-- ================================================================ -->

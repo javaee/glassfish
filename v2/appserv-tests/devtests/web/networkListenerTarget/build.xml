@@ -37,6 +37,7 @@
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+<!ENTITY eeCommonBuild SYSTEM "./../../../config/ee-common.xml"> 
 <!ENTITY run SYSTEM "./../../../config/run.xml">
 <!ENTITY testproperties SYSTEM "./build.properties">
 ]>
@@ -45,6 +46,7 @@
 
     &commonSetup;
     &commonBuild;
+    &eeCommonBuild;
     &testproperties;
     &run;
 
@@ -57,60 +59,35 @@
       <sleep seconds="5"/>
     </target>
 
-
     <target name="create-cluster" depends="init-common">
-      <antcall target="asadmin-common-ignore-fail">
-        <param name="admin.command" value="create-cluster" />
-        <param name="operand.props"
-               value="c1"/>
-      </antcall>
+        <antcall target="create-cluster-common"/>
     </target>
 
     <target name="create-local-instance" depends="init-common">
-      <antcall target="asadmin-common-ignore-fail">
-        <param name="admin.command" value="create-local-instance" />
-        <param name="operand.props"
-               value="--cluster c1 --systemproperties HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848 in1"/> 
-      </antcall>
+        <antcall target="create-local-instance-common"/>
     </target>
 
     <target name="delete-local-instance" depends="init-common">
-      <antcall target="asadmin-common-ignore-fail">
-        <param name="admin.command" value="delete-local-instance" />
-        <param name="operand.props"
-               value="in1" />
-        </antcall>
+        <antcall target="delete-local-instance-common"/>
     </target>
 
     <target name="start-local-instance" depends="init-common">
-      <antcall target="asadmin-common-ignore-fail">
-        <param name="admin.command" value="start-local-instance" />
-        <param name="operand.props"
-               value="in1" />
-        </antcall>
+        <antcall target="start-local-instance-common"/>
     </target>
 
     <target name="stop-local-instance" depends="init-common">
-      <antcall target="asadmin-common-ignore-fail">
-        <param name="admin.command" value="stop-local-instance" />
-        <param name="operand.props"
-               value="in1" />
-        </antcall>
+        <antcall target="stop-local-instance-common"/>
     </target>
 
     <target name="delete-cluster" depends="init-common">
-      <antcall target="asadmin-common-ignore-fail">
-        <param name="admin.command" value="delete-cluster" />
-        <param name="operand.props"
-               value="c1"/>
-      </antcall>
+        <antcall target="delete-cluster-common"/>
     </target>
 
     <target name="create-virtual-server" depends="init-common">
       <antcall target="asadmin-common-ignore-fail">
         <param name="admin.command" value="create-virtual-server" />
         <param name="operand.props"
-               value="--hosts ${http.host} --target c1 c1-server"/>
+               value="--hosts ${http.host} --target ${cluster.name} c1-server"/>
       </antcall>
     </target>
 
@@ -118,7 +95,7 @@
       <antcall target="asadmin-common-ignore-fail">
         <param name="admin.command" value="create-protocol" />
         <param name="operand.props"
-               value="--target c1 c1-protocol"/>
+               value="--target ${cluster.name} c1-protocol"/>
       </antcall>
     </target>
 
@@ -126,7 +103,7 @@
       <antcall target="asadmin-common-ignore-fail">
         <param name="admin.command" value="create-http" />
         <param name="operand.props"
-               value="--target c1 --default-virtual-server c1-server c1-protocol"/>
+               value="--target ${cluster.name} --default-virtual-server c1-server c1-protocol"/>
       </antcall>
     </target>
 
@@ -134,7 +111,7 @@
       <antcall target="asadmin-common-ignore-fail">
         <param name="admin.command" value="delete-protocol" />
         <param name="operand.props"
-               value="--target c1 c1-protocol"/>
+               value="--target ${cluster.name} c1-protocol"/>
       </antcall>
     </target>
 
@@ -142,7 +119,7 @@
       <antcall target="asadmin-common-ignore-fail">
         <param name="admin.command" value="create-network-listener" />
         <param name="operand.props"
-               value="--target c1 --listenerport ${http.alternate.port} --protocol c1-protocol c1-network-listener"/>
+               value="--target ${cluster.name} --listenerport ${http.alternate.port} --protocol c1-protocol c1-network-listener"/>
       </antcall>
     </target>
 
@@ -150,7 +127,7 @@
       <antcall target="asadmin-common-ignore-fail">
         <param name="admin.command" value="delete-virtual-server" />
         <param name="operand.props"
-               value="--target c1 c1-server"/>
+               value="--target ${cluster.name} c1-server"/>
       </antcall>
     </target>
 
@@ -158,7 +135,7 @@
       <antcall target="asadmin-common-ignore-fail">
         <param name="admin.command" value="delete-network-listener" />
         <param name="operand.props"
-               value="--target c1 c1-network-listener"/>
+               value="--target ${cluster.name} c1-network-listener"/>
       </antcall>
     </target>
 
@@ -178,12 +155,10 @@
             <param name="hasWebclient" value="yes"/>
             <param name="webclient.war.classes" value="**/*.class"/> 
         </antcall>
-
          <javac
             srcdir="."
             classpath="${env.APS_HOME}/lib/reportbuilder.jar"
             includes="WebTest.java"/>
-
     </target> 
 
     <target name="build-publish-war" depends="build, publish-war-common" />
@@ -199,12 +174,11 @@
             <arg line="--precompilejsp=${precompilejsp}"/>
             <arg line="--upload=true"/>
             <arg line="--virtualservers c1-server"/>
-            <arg line="--target c1"/>
+            <arg line="--target ${cluster.name}"/>
             <arg line="${assemble.dir}/${appname}-web.war"/>
         </exec>
     </target>
 
-    
     <target name="run" depends="init-common">
         <antcall target="restart"/>
         <java classname="WebTest">
@@ -223,7 +197,7 @@
             ${assemble.dir}/${appname}-web.war from ${basedir}." level="verbose"/>
         <exec executable="${ASADMIN}" failonerror="false">
             <arg line="undeploy"/>
-            <arg line="--target c1"/>
+            <arg line="--target ${cluster.name}"/>
             <arg line="${appname}-web"/>
         </exec>
     </target>
