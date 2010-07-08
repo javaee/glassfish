@@ -43,8 +43,10 @@ import org.jvnet.hk2.component.PerLookup;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Writes command output to a json stream
@@ -66,6 +68,7 @@ public class JsonActionReporter extends ActionReporter {
     public JsonActionReporter() {
     }
 
+    @Override
     public void writeReport(OutputStream os) throws IOException {
         PrintWriter writer = new PrintWriter(os);
 
@@ -81,8 +84,6 @@ public class JsonActionReporter extends ActionReporter {
     }
 
     private void write(MessagePart part, PrintWriter writer) {
-
-
         writer.println("{ " + quote("name") + ":" + quote(part.getMessage()));
         if (top) {
             writer.println(", " + quote("command") + ":" + quote(actionDescription));
@@ -115,19 +116,62 @@ public class JsonActionReporter extends ActionReporter {
         if (props == null || props.size() == 0) {
             return;
         }
-        writer.println("," + quote("properties") + " : ");
-        boolean needComma = false;
-        writer.println("{");
+        String result = "," + quote("properties") + " : {";
+        String sep = "";
         for (Map.Entry entry : props.entrySet()) {
-            if (needComma == true) {
-                writer.println(",");
-
+            String line = quote("" + entry.getKey()) + " : ";
+            Object value = entry.getValue();
+            if (value instanceof List) {
+                line += encodeList((List)value);
+            } else if (value instanceof Map) {
+                line += encodeMap((Map)value);
+            } else {
+                line += quote("" + value.toString());
             }
-            needComma = true;
-            writer.println(quote("" + entry.getKey()) + " : " + quote("" + entry.getValue()));
-        }
-        writer.println("}");
+            result += sep + line;
 
+            sep = ",";
+        }
+        writer.println(result + "}");
+
+    }
+
+    private String encodeList (List list) {
+        String result = "[";
+        String sep = "";
+        for (Object entry : list) {
+            if (entry instanceof List) {
+                result += sep + encodeList((List)entry);
+            } else if (entry instanceof Map) {
+                result += sep + encodeMap((Map)entry);
+            } else {
+                result += sep + quote (entry.toString());
+            }
+
+            sep = ",";
+        }
+        return result + "]";
+    }
+
+    private String encodeMap (Map map) {
+        String result = "{";
+        String sep = "";
+        for (Map.Entry entry : (Set<Map.Entry>)map.entrySet()) {
+            String key = entry.getKey().toString();
+            Object value = entry.getValue();
+            result += sep + quote(key) + ":";
+
+            if (value instanceof List) {
+                result += encodeList((List) value);
+            } else if (value instanceof Map) {
+                result += encodeMap((Map) value);
+            } else {
+                result += quote(value.toString());
+            }
+            sep = ",";
+        }
+
+        return result += "}";
     }
 
     /**
@@ -143,7 +187,7 @@ public class JsonActionReporter extends ActionReporter {
         char c = 0;
         int i;
         int len = string.length();
-        StringBuffer sb = new StringBuffer(len + 4);
+        StringBuilder sb = new StringBuilder(len + 4);
         String t;
 
         sb.append('"');

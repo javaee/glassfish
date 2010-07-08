@@ -37,7 +37,9 @@
 package com.sun.enterprise.v3.common;
 
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Result;
@@ -50,7 +52,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
@@ -84,11 +85,11 @@ import org.jvnet.hk2.component.PerLookup;
 @Scoped(PerLookup.class)
 public class XMLActionReporter extends ActionReporter {
 
+    @Override
     public void writeReport(OutputStream os)  {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
-
             Document d = db.newDocument();
 
             d.appendChild(writeActionReport(d, this));
@@ -127,8 +128,6 @@ public class XMLActionReporter extends ActionReporter {
         return "text/xml"; 
     }
     
-    
-    
     private void writePart(Element actionReport, MessagePart part, String childType) {
         Document d = actionReport.getOwnerDocument();
         Element messagePart = d.createElement("message-part");
@@ -141,14 +140,61 @@ public class XMLActionReporter extends ActionReporter {
             Element p = d.createElement("property");
             messagePart.appendChild(p);
             p.setAttribute("name", prop.getKey().toString());
-            p.setAttribute("value", prop.getValue().toString());
+            Object value = prop.getValue();
+            if (value instanceof List) {
+                addListElement(p, (List)value);
+            } else if (value instanceof Map) {
+                addMapElement(p, (Map)value);
+            } else {
+                p.setAttribute("value", prop.getValue().toString());
+            }
         }
         messagePart.setAttribute("message", part.getMessage());
         for (MessagePart subPart : part.getChildren()) {
             writePart(messagePart, subPart, subPart.getChildrenType());
         }
     }
+
+    private void addListElement(Element parent, List list) {
+        Document d = parent.getOwnerDocument();
+        Element listElement = d.createElement("list");
+        parent.appendChild(listElement);
+
+        for (Object entry : list) {
+            Element entryElement = d.createElement("entry");
+            listElement.appendChild(entryElement);
+            if (entry instanceof List) {
+                addListElement(entryElement, (List) entry);
+            } else if (entry instanceof Map) {
+                addMapElement(entryElement, (Map) entry);
+            } else {
+                entryElement.setAttribute("value", entry.toString());
+            }
+        }
+    }
     
+    private void addMapElement(Element parent, Map map) {
+        Document d = parent.getOwnerDocument();
+        Element mapElement = d.createElement("map");
+        parent.appendChild(mapElement);
+
+        for (Map.Entry entry : (Set<Map.Entry>)map.entrySet()) {
+            Element entryElement = d.createElement("entry");
+            String key = entry.getKey().toString();
+            Object value = entry.getValue();
+            mapElement.appendChild(entryElement);
+            entryElement.setAttribute("key", key);
+            
+            if (value instanceof List) {
+                addListElement(entryElement, (List) value);
+            } else if (value instanceof Map) {
+                addMapElement(entryElement, (Map) value);
+            } else {
+                entryElement.setAttribute("value", value.toString());
+            }
+        }
+    }
+
     private void writeXML(Document doc, OutputStream os) throws TransformerConfigurationException, TransformerException {
         Source source = new DOMSource(doc);
 
