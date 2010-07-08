@@ -35,33 +35,25 @@
 -->
 <!-- /cluster/shared/targetSectionForCreate.inc -->
 
-"<hr/>
 <sun:propertySheet id="targetSection">
 
     <!beforeCreate
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/clusters/cluster", result="#{requestScope.clusterList}");
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/servers/server", result="#{requestScope.serverList}");
-
-        println("======= #{pageSession.targetList}");
-        println("======= #{requestScope.clusterList}");
-
         setPageSessionAttribute(key="targetList" value={});
         gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.clusterList}");
         gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.serverList}");
-        setPageSessionAttribute(key="showTargetSection",  value="#{true}");
-
-<!--
-          println ( "size=#{pageSession.targetList.size()}" )
-          if( #{pageSession.targetList.size()=1 ){
-             println("======================== server 1 ");
-             setPageSessionAttribute(key="showTargetSection",  value="#{true}");
-             setPageSessionAttribute(key="selectedTargets" value=["server"] );
-          }
-          if( !'#{pageSession.targetList.size()}=1' ){
-               println("!!!!!!!!!!!!!!!! cluster  2 ");
-              setPageSessionAttribute(key="showTargetSection",  value="#{false}");
-          }
--->
+	setAttribute(key="one" value="$int{1}");
+	setAttribute(key="targetSize" value="#{pageSession.targetList.size()}");
+        println("#{requestScope.targetSize}");
+        println("#{pageSession.targetList}");
+        if( #{requestScope.targetSize}=#{requestScope.one} ){
+         setPageSessionAttribute(key="showTargetSection",  value="#{false}");
+         setPageSessionAttribute(key="selectedTargets" value=["server"] );
+        }
+        if( #{requestScope.targetSize}>#{requestScope.one} ){
+          setPageSessionAttribute(key="showTargetSection",  value="#{true}");
+        }
         gf.convertListToOptionArray(list="#{pageSession.targetList}", optionArray="#{pageSession.availableTargets}");
     />
     <sun:propertySheetSection id="targetSectionId" visible="#{pageSession.showTargetSection}" label="$resource{i18n.common.TargetTableTitle} (TBD)"  >
@@ -72,7 +64,6 @@
             getClientId(component="$this{component}" clientId="#{pageSession.targetSectionId}");
         />
     </sun:propertySheetSection>
-
 
 </sun:propertySheet>
 
