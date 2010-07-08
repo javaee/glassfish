@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,54 +32,21 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- *
  */
 
 package com.sun.enterprise.configapi.tests.extensibility;
 
-import com.sun.enterprise.configapi.tests.ConfigApiTest;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Domain;
-import org.jvnet.hk2.component.Habitat;
-import org.glassfish.tests.utils.Utils;
-import org.glassfish.api.admin.config.Container;
-import org.junit.Test;
-import org.junit.Ignore;
-import static org.junit.Assert.*;
-
-import java.util.List;
+import org.glassfish.api.admin.config.ConfigExtension;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Configured;
 
 /**
- * @author Jerome Dochez
+ * Simple configuration
  */
-public class ContainerExtensionTest extends ConfigApiTest {
+@Configured
+public interface RandomExtension extends ConfigExtension {
 
-
-    Habitat habitat = Utils.getNewHabitat(this);
-
-    public String getFileName() {
-        return "Extensibility";
-    }
-    
-    @Test
-    public void existenceTest() {
-
-        Config config = habitat.getComponent(Domain.class).getConfigs().getConfig().get(0);
-        List<Container> containers = config.getContainers();
-        assertTrue(containers.size()==2);
-        RandomContainer container = (RandomContainer) containers.get(0);
-        assertEquals("random", container.getName());
-        assertEquals("1243", container.getNumberOfRuntime());
-        RandomElement element = container.getRandomElement();
-        assertNotNull(element);
-        assertEquals("foo", element.getAttr1());
-    }
-
-    @Test
-    public void extensionTest() {
-        Config config = habitat.getComponent(Domain.class).getConfigs().getConfig().get(0);
-        RandomExtension extension = config.getExtensionByType(RandomExtension.class);
-        assertNotNull(extension);
-        assertEquals("foo", extension.getSomeAttribute());
-    }
+    @Attribute
+    String getSomeAttribute();
+    void setSomeAttribute(String value);
 }

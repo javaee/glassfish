@@ -29,6 +29,7 @@
 			<random-element attr1="foo">
 			</random-element> 
 		</random-container>
+        <random-extension some-attribute="foo"/>
     </config>
   </configs>
   <property value="domain1" name="administrative.domain.name" />

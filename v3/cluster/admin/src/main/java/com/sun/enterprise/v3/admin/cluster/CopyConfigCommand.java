@@ -115,13 +115,13 @@ public final class CopyConfigCommand implements AdminCommand {
         }
 
         //Copy the config
-        final Config destCopy = (Config)config.deepCopy();
         final String configName = destConfig ;
 
         try {
-            ConfigSupport.apply(new ConfigCode(){
+            final Config newCopy = (Config) ConfigSupport.apply(new SingleConfigCode<Configs>(){
                 @Override
-                public Object run(ConfigBeanProxy[] w ) throws PropertyVetoException, TransactionFailure {
+                public Object run(Configs configs ) throws PropertyVetoException, TransactionFailure {
+                    final Config destCopy = (Config) config.deepCopy(configs);
                     if (systemproperties != null) {
                         final Properties properties = GenericCrudCommand.convertStringToProperties(systemproperties,':');
 
@@ -138,19 +138,18 @@ public final class CopyConfigCommand implements AdminCommand {
                             }
 
                             //Currently the systemproperties is not working due to this bug 12311
-                            SystemProperty newSysProp = ((Config)w[1]).createChild(SystemProperty.class);
+                            SystemProperty newSysProp = destCopy.createChild(SystemProperty.class);
                             newSysProp.setName(propName);
                             newSysProp.setValue(properties.getProperty(propName));
-                            ((Config)w[1]).getSystemProperty().add(newSysProp);
+                            destCopy.getSystemProperty().add(newSysProp);
                         }
                     }
-                    ((Configs) w[0]).getConfig().add(destCopy);
-                    ((Config) w[1]).setName(configName);
-                    return null;
+                    destCopy.setName(configName);
+                    configs.getConfig().add(destCopy);
+                    return destCopy;
 
                 }
-            }   ,domain.getConfigs(),destCopy);
-
+            }   ,domain.getConfigs());
 
         } catch (TransactionFailure e) {
             e.printStackTrace();

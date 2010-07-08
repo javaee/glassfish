@@ -82,6 +82,10 @@ public final class GlassFishConfigBean extends ConfigBean {
         super(habitat, document, parent, model, in);                
     }
 
+    public GlassFishConfigBean(ConfigBean source) {
+        super(source);
+    }
+
     @Override
     public <T extends ConfigBeanProxy> T createProxy(Class<T> proxyType) {
         if (defaultView==null) {
@@ -89,7 +93,17 @@ public final class GlassFishConfigBean extends ConfigBean {
         }
         return defaultView.getProxy(proxyType);
     }
-    
+
+    /**
+     * Returns a copy of itself
+     *
+     * @return a copy of itself.
+     */
+    @Override
+    protected GlassFishConfigBean copy() {
+        return new GlassFishConfigBean(this);
+    }
+
 
     @Override
     public void initializationCompleted() {

@@ -147,7 +147,7 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
 
     abstract class FakeConfigBean implements ConfigBeanProxy {
         @Override
-        public ConfigBeanProxy deepCopy() {
+        public ConfigBeanProxy deepCopy(ConfigBeanProxy parent) {
             throw new UnsupportedOperationException();
         }
 

@@ -180,7 +180,7 @@ public class DummyNetworkListener implements NetworkListener {
     }
 
     @Override
-    public ConfigBeanProxy deepCopy() {
+    public ConfigBeanProxy deepCopy(ConfigBeanProxy parent) {
         throw new UnsupportedOperationException();
     }
 

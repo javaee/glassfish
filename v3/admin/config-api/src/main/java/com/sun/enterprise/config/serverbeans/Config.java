@@ -45,12 +45,9 @@ import java.util.Map;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.grizzly.config.dom.NetworkConfig;
+import org.glassfish.api.admin.config.*;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
-import org.glassfish.api.admin.config.Container;
-import org.glassfish.api.admin.config.Named;
-import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.config.support.datatypes.Port;
 import org.glassfish.quality.ToDo;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -522,6 +519,17 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
     @DuckTyped
     Map<String, String> updateLoggingProperties( Map<String, String> properties);
 
+    /**
+     * Return an extension configuration given the extension type.
+     *
+     * @param type type of the requested extension configuration
+     * @param <T> interface subclassing the ConfigExtension type
+     * @return a configuration proxy of type T or null if there is no such
+     * configuration with that type.
+     */
+    @DuckTyped
+    <T extends ConfigExtension> T getExtensionByType(Class<T> type);
+
     class Duck {
 
         public static String setLoggingProperty(Config c, String property, String value){
@@ -564,6 +572,17 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
             } catch (IOException ex){
             }
             return map;
+        }
+
+        public static <T extends ConfigExtension> T getExtensionByType(Config c, Class<T> type) {
+            for (Container extension : c.getContainers()) {
+                try {
+                    return type.cast(extension);
+                } catch (Exception e) {
+                    // ignore, not the right type.
+                }
+            }
+            return null;
         }
 
     }

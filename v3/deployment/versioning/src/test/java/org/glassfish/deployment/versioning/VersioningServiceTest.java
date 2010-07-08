@@ -697,7 +697,7 @@ public class VersioningServiceTest {
         }
 
         @Override
-        public ConfigBeanProxy deepCopy() {
+        public ConfigBeanProxy deepCopy(ConfigBeanProxy parent) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 

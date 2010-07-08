@@ -503,6 +503,10 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Cluster.class);
             Transaction t = Transaction.getTransaction(instance);
 
+            if (t==null) {
+                throw new TransactionFailure(localStrings.getLocalString(
+                        "noTransaction", "Internal Error - Cannot obtain transaction object"));
+            }
             //There should be no instance/config with the same name as the cluster
             if ((domain.getServerNamed(instance.getName()) != null) ||
                     (domain.getConfigNamed(instance.getName()) != null)){
@@ -536,13 +540,17 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                             "No default config found, using config {0} as the default config for the cluster {1}",
                             config.getName(), instance.getName()));
                 }
+
+                Configs configs = domain.getConfigs();
+                Configs writableConfigs = t.enroll(configs);
+
                 final Config configCopy;
                 try {
-                    configCopy = (Config) config.deepCopy();
+                    configCopy = (Config) config.deepCopy(writableConfigs);
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, localStrings.getLocalString(Cluster.class,
                             "Cluster.error_while_copying",
-                            "Error while copying the default configuration {0)",
+                            "Error while copying the default configuration {0}",
                             e.toString(), e));
                     throw new TransactionFailure(e.toString(),e);
                 }
@@ -560,13 +568,8 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                     // no big deal - just ignore
                 }
 
-                if (t != null) {
-                    Configs configs = domain.getConfigs();
-                    Configs writableConfigs = t.enroll(configs);
-                    Config writableConfigCopy = t.enroll(configCopy);
-                    writableConfigCopy.setName(configName);
-                    writableConfigs.getConfig().add(writableConfigCopy);
-                }
+                configCopy.setName(configName);
+                writableConfigs.getConfig().add(configCopy);
             }  else {
 
                 // cluster using specified config
@@ -639,6 +642,11 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @Service
     @Scoped(PerLookup.class)
     class DeleteDecorator implements DeletionDecorator<Clusters, Cluster> {
+
+        // for backward compatibility, ignored.
+        @Param(name="nodeagent", optional=true)
+        String nodeagent;
+        
         @Inject
         private Domain domain;
 

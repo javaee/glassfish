@@ -65,10 +65,15 @@ public class DeepCopyTest extends ConfigApiTest {
 
     @Test
     public void configCopy() throws Exception {
-        Config config = getHabitat().getComponent(Config.class);
+        final Config config = getHabitat().getComponent(Config.class);
         Assert.assertNotNull(config);
         String configName = config.getName();
-        final Config newConfig = (Config) config.deepCopy();
+        final Config newConfig = (Config) ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
+            @Override
+            public Object run(ConfigBeanProxy parent) throws PropertyVetoException, TransactionFailure {
+                return config.deepCopy(parent);
+            }
+        }, config.getParent());
         Assert.assertNotNull(newConfig);
         try {
             newConfig.setName("some-config");

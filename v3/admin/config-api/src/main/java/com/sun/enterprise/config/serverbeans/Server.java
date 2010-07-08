@@ -358,6 +358,12 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             String configRef = instance.getConfigRef();
             Clusters clusters = domain.getClusters();
 
+            if (tx==null) {
+                throw new TransactionFailure(localStrings.getLocalString(
+                        "noTransaction", "Internal Error - Cannot obtain transaction object"));
+            }
+
+
             if(node==null)
                 instance.setNode("localhost");
             //There should be no cluster/config with the same name as the server
@@ -445,9 +451,12 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     throw new TransactionFailure(msg);
                 }
 
+                Configs configs = domain.getConfigs();
+                Configs writableConfigs = tx.enroll(configs);
+
                 final Config configCopy;
                 try {
-                    configCopy = (Config) defaultConfig.deepCopy();
+                    configCopy = (Config) defaultConfig.deepCopy(writableConfigs);
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, localStrings.getLocalString(Server.class,
                             "Cluster.error_while_copying",
@@ -467,13 +476,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     // no big deal - just ignore
                 }
 
-                if (tx != null) {
-                    Configs configs = domain.getConfigs();
-                    Configs writableConfigs = tx.enroll(configs);
-                    Config writableConfigCopy = tx.enroll(configCopy);
-                    writableConfigCopy.setName(configName);
-                    writableConfigs.getConfig().add(writableConfigCopy);
-                }
+                configCopy.setName(configName);
+                writableConfigs.getConfig().add(configCopy);
             }
 
             for (Resource resource : domain.getResources().getResources()) {
@@ -533,6 +537,10 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Scoped(PerLookup.class)
     class DeleteDecorator implements DeletionDecorator<Servers, Server> {
 
+        // for backward compatibility, ignored.
+        @Param(name="nodeagent", optional=true)
+        String nodeagent;
+        
         @Inject
         Configs configs;
         @Inject
