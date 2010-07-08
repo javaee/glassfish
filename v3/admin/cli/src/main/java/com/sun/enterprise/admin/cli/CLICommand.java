@@ -225,8 +225,7 @@ public abstract class CLICommand implements PostConstruct {
      * @throws CommandValidationException if there's something wrong
      *          with the options or arguments
      */
-    public int execute(String... argv)
-            throws CommandException, CommandValidationException  {
+    public int execute(String... argv) throws CommandException {
         this.argv = argv;
         initializePasswords();
         logger.printDebugMessage("Prepare");
@@ -461,8 +460,7 @@ public abstract class CLICommand implements PostConstruct {
      * Currently RemoteCommand does this, as well as the local commands
      * that also need to talk to the server.
      */
-    protected void processProgramOptions()
-            throws CommandException, CommandValidationException  {
+    protected void processProgramOptions() throws CommandException {
         if (!programOpts.isOptionsSet()) {
             logger.printDebugMessage("Parsing program options");
             /*
@@ -612,8 +610,7 @@ public abstract class CLICommand implements PostConstruct {
      * If this method returns true, the validate and executeCommand methods
      * won't be called.
      */
-    protected boolean checkHelp()
-            throws CommandException, CommandValidationException {
+    protected boolean checkHelp() throws CommandException {
         if (programOpts.isHelp()) {
             Reader r = getManPage();
             if (r == null)
@@ -641,8 +638,7 @@ public abstract class CLICommand implements PostConstruct {
      * @throws CommandValidationException if there's something wrong
      *          with the options or arguments
      */
-    protected void prevalidate()
-            throws CommandException, CommandValidationException  {
+    protected void prevalidate() throws CommandException {
         /*
          * First, check that the command has the proper scope.
          * (Could check this in getCommand(), but at that point we
@@ -745,11 +741,14 @@ public abstract class CLICommand implements PostConstruct {
      * @throws CommandValidationException if there's something wrong
      *          with the options or arguments
      */
-    protected void inject()
-            throws CommandException, CommandValidationException  {
+    protected void inject() throws CommandException {
         // injector expects operands to be in the ParameterMap with the key
         // "DEFAULT"
         options.set("DEFAULT", operands);
+
+        // if command has a "terse" option, set it from ProgramOptions
+        if (commandModel.getModelFor("terse") != null)
+            options.set("terse", Boolean.toString(programOpts.isTerse()));
 
         // initialize the injector.
         InjectionResolver<Param> injector =
@@ -772,8 +771,7 @@ public abstract class CLICommand implements PostConstruct {
      * @throws CommandValidationException if there's something wrong
      *          with the options or arguments
      */
-    protected void validate()
-            throws CommandException, CommandValidationException  {
+    protected void validate() throws CommandException {
     }
 
     /**
@@ -785,16 +783,14 @@ public abstract class CLICommand implements PostConstruct {
      * @throws CommandValidationException if there's something wrong
      *          with the options or arguments
      */
-    protected abstract int executeCommand()
-            throws CommandException, CommandValidationException;
+    protected abstract int executeCommand() throws CommandException;
 
     /**
      * Initialize all the passwords required by the command.
      *
      * @throws CommandException
      */
-    private void initializeCommandPassword()
-            throws CommandException, CommandValidationException {
+    private void initializeCommandPassword() throws CommandException {
         /*
          * Go through all the valid options and check for required password
          * options that weren't specified in the password file.  If option
