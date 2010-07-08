@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.rest.provider;
+package org.glassfish.admin.rest.readers;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -46,13 +46,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
+import org.glassfish.admin.rest.provider.ProviderUtil;
 
 /**
- * @author Rajeshwar Patil
+  * @author Rajeshwar Patil
  */
-@Consumes(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_XML)
 @Provider
-public class JsonHashMapProvider extends ProviderUtil implements MessageBodyReader<HashMap<String, String>> {
+public class XmlHashMapProvider extends ProviderUtil implements MessageBodyReader<HashMap<String, String>> {
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -64,14 +65,14 @@ public class JsonHashMapProvider extends ProviderUtil implements MessageBodyRead
         Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers, 
         InputStream in) throws IOException {
         try {
-            JsonInputObject jsonObject = new JsonInputObject(in);
-            return getStringMap((HashMap)jsonObject.initializeMap());
+            XmlInputObject xmlObject = new XmlInputObject(in);
+            return getStringMap((HashMap)xmlObject.initializeMap());
         } catch (InputException exception) {
             HashMap map = new HashMap();
             map.put("error", "Entity Parsing Error: " + exception.getMessage());
-
-            //throw new RuntimeException(exception);
+              
             return map;
+            ///throw new RuntimeException(exception); 
         }
     }
 }

@@ -33,45 +33,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.rest.provider;
-
-import java.io.InputStream;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.Provider;
+package org.glassfish.admin.rest.readers;
 
 /**
-  * @author Rajeshwar Patil
+ * The InputException is thrown on errors in input parsing code.
+ *
+ * @author Rajeshwar Patil
  */
-@Consumes(MediaType.APPLICATION_XML)
-@Provider
-public class XmlHashMapProvider extends ProviderUtil implements MessageBodyReader<HashMap<String, String>> {
+public class InputException extends Exception {
 
-    @Override
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type.equals(HashMap.class);
+    public InputException(String message) {
+        super(message);
     }
 
-    @Override
-    public HashMap<String, String> readFrom(Class<HashMap<String, String>> type, Type genericType,
-        Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers, 
-        InputStream in) throws IOException {
-        try {
-            XmlInputObject xmlObject = new XmlInputObject(in);
-            return getStringMap((HashMap)xmlObject.initializeMap());
-        } catch (InputException exception) {
-            HashMap map = new HashMap();
-            map.put("error", "Entity Parsing Error: " + exception.getMessage());
-              
-            return map;
-            ///throw new RuntimeException(exception); 
-        }
+
+    public InputException(Throwable t) {
+        super(t.getMessage());
+        this.cause = t;
     }
+
+
+    @Override
+    public Throwable getCause() {
+        return this.cause;
+    }
+
+
+    private Throwable cause;
 }

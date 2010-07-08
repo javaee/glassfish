@@ -111,6 +111,10 @@ public class RestTestBase {
         return client.resource(address).post(ClientResponse.class, buildMultivalueMap(payload));
     }
 
+    protected ClientResponse put(String address, Map<String, String> payload) {
+        return client.resource(address).put(ClientResponse.class, buildMultivalueMap(payload));
+    }
+
     protected ClientResponse postWithUpload(String address, Map<String, Object> payload) {
         FormDataMultiPart form = new FormDataMultiPart();
         for (Map.Entry<String, Object> entry : payload.entrySet()) {
@@ -199,6 +203,65 @@ public class RestTestBase {
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    public List<Map> getProperties(ClientResponse response) {
+        String xml = response.getEntity(String.class);
+        List<Map> results = new ArrayList<Map>();
+        Document document = getDocument(xml);
+
+        Element root = document.getDocumentElement();
+        NodeList nl = root.getElementsByTagName("property");
+        if (nl.getLength() > 0) {
+            Node child;
+            for (int i = 0; i < nl.getLength(); i++) {
+                child = nl.item(i);
+                if ("properties".equals(child.getAttributes().getNamedItem("name").getNodeValue())) {
+                    NodeList propsChildren = ((Element)child).getElementsByTagName("list");
+                    if (propsChildren.getLength() > 0) {
+                        results.addAll(processList(propsChildren));
+                    }
+//                    results.add(((Element) child).getAttribute("message"));
+                }
+            }
+        }
+
+        return results;
+    }
+
+    private List<Map> processList(NodeList nl) {
+        List<Map> results = new ArrayList<Map>();
+        Node child;
+        for (int i = 0; i < nl.getLength(); i++) {
+            child = nl.item(i);
+            NodeList entryList = ((Element) child).getElementsByTagName("entry");
+            if (entryList.getLength() > 0) {
+                Element element;
+                for (int j = 0; j < entryList.getLength(); j++) {
+                    element = (Element)entryList.item(j);
+                    Node mapElement = element.getElementsByTagName("map").item(0); // Should be only one
+                    if (mapElement != null) {
+                        results.add(processMap(mapElement));
+                    }
+                }
+            }
+        }
+        return results;
+    }
+
+    private Map processMap(Node e) {
+        Map map = new HashMap();
+
+        NodeList entries = ((Element)e).getElementsByTagName("entry");
+        Node entry;
+        for (int i = 0; i < entries.getLength(); i++) {
+            entry = entries.item(i);
+            String key = entry.getAttributes().getNamedItem("key").getNodeValue();
+            String value = entry.getAttributes().getNamedItem("value").getNodeValue();
+            map.put(key, value);
+        }
+
+        return map;
     }
 
     private MultivaluedMap buildMultivalueMap(Map<String, String> payload) {

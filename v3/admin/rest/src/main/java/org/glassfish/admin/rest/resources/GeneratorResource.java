@@ -371,7 +371,7 @@ public class GeneratorResource {
         genHeader(out);
         out.write("package org.glassfish.admin.rest.resources.generated;\n");
         out.write("import javax.ws.rs.Path;\n");
-        out.write("import org.glassfish.admin.rest.resources.TemplateResource;\n");
+        out.write("import org.glassfish.admin.rest.resources.*;\n");
 
 
 
@@ -444,7 +444,7 @@ public class GeneratorResource {
 //
 //                }
 
-                String childbeanName = childModel.targetTypeName.substring(childModel.targetTypeName.lastIndexOf(".") + 1,
+                String childBeanName = childModel.targetTypeName.substring(childModel.targetTypeName.lastIndexOf(".") + 1,
                         childModel.targetTypeName.length());
 
                 String prefix = "";
@@ -460,8 +460,7 @@ public class GeneratorResource {
                         List<ConfigModel> lcm = document.getAllModelsImplementing(subType);
                         if (lcm != null) {
                             for (ConfigModel cmodel : lcm) {
-                                String newName = cmodel.targetTypeName.substring(cmodel.targetTypeName.lastIndexOf(".") + 1,
-                                        cmodel.targetTypeName.length());
+                                String newName = cmodel.targetTypeName.substring(cmodel.targetTypeName.lastIndexOf(".") + 1, cmodel.targetTypeName.length());
                                 out.write("@Path(\"" + cmodel.getTagName() + "/\")\n");
                                 out.write("public List" + newName + "Resource get" + newName + "Resource() {\n");
                                 out.write("\tList" + newName + "Resource resource = resourceContext.getResource(List" + newName + "Resource.class);\n");
@@ -483,13 +482,23 @@ public class GeneratorResource {
                     }
                 } else {
 
-                    out.write("\t@Path(\"" + childModel.getTagName() + "/\")\n");
-                    out.write("\tpublic " + prefix + childbeanName + "Resource get" + childbeanName + "Resource() {\n");
+                    if (childBeanName.equals("Property"))  {
+                        out.write("\t@Path(\"property/\")\n");
+                        out.write("\tpublic PropertiesBagResource getProperties() {\n");
 
-                    out.write("\t\t" + prefix + childbeanName + "Resource resource = resourceContext.getResource(" + prefix + childbeanName + "Resource.class);\n");
-                    out.write("\t\tresource.setParentAndTagName(getEntity() , \"" + childModel.getTagName() + "\");\n");
-                    out.write("\t\treturn resource;\n");
-                    out.write("\t}\n");
+                        out.write("\t\tPropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);\n");
+                        out.write("\t\tresource.setParentAndTagName(getEntity() , \"property\");\n");
+                        out.write("\t\treturn resource;\n");
+                        out.write("\t}\n");
+                    } else {
+                        out.write("\t@Path(\"" + childModel.getTagName() + "/\")\n");
+                        out.write("\tpublic " + prefix + childBeanName + "Resource get" + childBeanName + "Resource() {\n");
+
+                        out.write("\t\t" + prefix + childBeanName + "Resource resource = resourceContext.getResource(" + prefix + childBeanName + "Resource.class);\n");
+                        out.write("\t\tresource.setParentAndTagName(getEntity() , \"" + childModel.getTagName() + "\");\n");
+                        out.write("\t\treturn resource;\n");
+                        out.write("\t}\n");
+                    }
 
                     if (prop.isCollection()) {
                         generateList(childModel);

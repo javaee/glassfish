@@ -35,7 +35,7 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
-import org.glassfish.admin.rest.resources.TemplateResource;
+import org.glassfish.admin.rest.resources.*;
 public class AuthRealmResource extends TemplateResource {
 
 @Path("list-group-names/")
@@ -74,8 +74,8 @@ return new String[][]{{"list-group-names", "GET", "__list-group-names"}, {"suppo
 }
 
 	@Path("property/")
-	public ListPropertyResource getPropertyResource() {
-		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+	public PropertiesBagResource getProperties() {
+		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}

@@ -35,7 +35,7 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
-import org.glassfish.admin.rest.resources.TemplateResource;
+import org.glassfish.admin.rest.resources.*;
 public class ProtocolResource extends TemplateResource {
 
 @Path("create-http/")
@@ -72,8 +72,8 @@ public String getDeleteCommand() {
 		return resource;
 	}
 	@Path("property/")
-	public ListPropertyResource getPropertyResource() {
-		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
+	public PropertiesBagResource getProperties() {
+		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}

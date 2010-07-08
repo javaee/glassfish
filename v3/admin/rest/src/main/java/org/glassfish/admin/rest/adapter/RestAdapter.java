@@ -69,6 +69,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.HttpURLConnection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,6 +161,11 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 //delegate to adapter managed by Jersey.
                 if (adapter == null) {
                     exposeContext();
+                }
+                Enumeration e = req.getHeaderNames();
+                while (e.hasMoreElements()) {
+                    String name = (String)e.nextElement();
+                    System.out.println("********* Header " + name + " = " + req.getHeader(name));
                 }
                 ((GrizzlyAdapter)adapter).service(req, res);
                 int status = res.getStatus();

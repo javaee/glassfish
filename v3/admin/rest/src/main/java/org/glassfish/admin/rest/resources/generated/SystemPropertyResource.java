@@ -35,7 +35,7 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
-import org.glassfish.admin.rest.resources.TemplateResource;
+import org.glassfish.admin.rest.resources.*;
 public class SystemPropertyResource extends TemplateResource {
 
 }

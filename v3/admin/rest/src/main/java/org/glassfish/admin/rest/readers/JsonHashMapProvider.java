@@ -33,31 +33,46 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.rest.provider;
+package org.glassfish.admin.rest.readers;
+
+import java.io.InputStream;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Provider;
+import org.glassfish.admin.rest.provider.ProviderUtil;
 
 /**
- * The InputException is thrown on errors in input parsing code.
- *
  * @author Rajeshwar Patil
  */
-public class InputException extends Exception {
-
-    public InputException(String message) {
-        super(message);
-    }
-
-
-    public InputException(Throwable t) {
-        super(t.getMessage());
-        this.cause = t;
-    }
-
+@Consumes(MediaType.APPLICATION_JSON)
+@Provider
+public class JsonHashMapProvider extends ProviderUtil implements MessageBodyReader<HashMap<String, String>> {
 
     @Override
-    public Throwable getCause() {
-        return this.cause;
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return type.equals(HashMap.class);
     }
 
+    @Override
+    public HashMap<String, String> readFrom(Class<HashMap<String, String>> type, Type genericType,
+        Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers, 
+        InputStream in) throws IOException {
+        try {
+            JsonInputObject jsonObject = new JsonInputObject(in);
+            return getStringMap((HashMap)jsonObject.initializeMap());
+        } catch (InputException exception) {
+            HashMap map = new HashMap();
+            map.put("error", "Entity Parsing Error: " + exception.getMessage());
 
-    private Throwable cause;
+            //throw new RuntimeException(exception);
+            return map;
+        }
+    }
 }
