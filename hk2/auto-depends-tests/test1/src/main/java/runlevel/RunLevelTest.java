@@ -40,10 +40,11 @@ import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+
 import test1.Test;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Test the @RunLevel annotation
@@ -70,19 +71,25 @@ public class RunLevelTest extends Test {
     }    
 
     public void run() {
-        Collection<Inhabitant<?>> annotated = habitat.getInhabitantsByContract(RunLevel.class.getName());
+        HashSet<Inhabitant<?>> annotated = new HashSet<Inhabitant<?>>(habitat.getInhabitantsByContract(RunLevel.class.getName()));
+        assertEquals(annotated.toString(), 2, annotated.size());
         for (Inhabitant<?> i : annotated) {
             System.out.println(i.typeName() + " is annotated with " + RunLevel.class.getName());
+
             RunLevel rl = getAnnotation(i.type());
-            if (rl!=null) {
-                System.out.println("and its level is " + rl.value());
-            }
+            assertNotNull(rl);
+            System.out.println("and its level is " + rl.value());
         }
-        assert(annotated.size()==2);
-        annotated = habitat.getInhabitantsByContract(ARunLevel.class.getName());
+        
+        annotated = new HashSet<Inhabitant<?>>(habitat.getInhabitantsByContract(ARunLevel.class.getName()));
+        assertEquals(annotated.toString(), 1, annotated.size());
         for (Inhabitant<?> i : annotated) {
             System.out.println(i.typeName() + " is annotated with " + ARunLevel.class.getName());    
+            assertEquals(SomeOtherServerService.class.getName(), i.typeName());    
+
+            RunLevel rl = getAnnotation(i.type());
+            assertNotNull(rl);
+            assertEquals("level", 50, rl.value());
         }
-        assert(annotated.size()==1);
     }
 }
