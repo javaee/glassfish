@@ -438,11 +438,14 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             addChangeListener(listener);
             addChangeListener(listener.findThreadPool());
             addChangeListener(listener.findTransport());
+
             final Protocol protocol = listener.findHttpProtocol();
-            addChangeListener(protocol);
-            addChangeListener(protocol.getHttp());
-            addChangeListener(protocol.getHttp().getFileCache());
-            addChangeListener(protocol.getSsl());
+            if (protocol != null) {
+                addChangeListener(protocol);
+                addChangeListener(protocol.getHttp());
+                addChangeListener(protocol.getHttp().getFileCache());
+                addChangeListener(protocol.getSsl());
+            }
         }
 
         Future<Result<Thread>> future =  proxy.start();

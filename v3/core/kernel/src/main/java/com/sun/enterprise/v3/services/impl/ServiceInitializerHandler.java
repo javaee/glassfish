@@ -58,10 +58,10 @@ import org.glassfish.internal.grizzly.LazyServiceInitializer;
  */
 public class ServiceInitializerHandler extends TCPSelectorHandler {
     private ServiceInitializerThread selectorThread;
-    private LazyServiceInitializer targetInitializer = null;
+    private volatile LazyServiceInitializer targetInitializer = null;
     private Collection<LazyServiceInitializer> initializerImplList = null;
     protected static final Logger logger = Logger.getLogger(ServiceInitializerHandler.class.getName());
-    private Object LOCK_OBJ = new Object();
+    private final Object LOCK_OBJ = new Object();
     private long timeout = 60000;
 
     public ServiceInitializerHandler(ServiceInitializerThread selectorThread) {

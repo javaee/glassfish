@@ -132,20 +132,20 @@ public class GrizzlyProxy implements NetworkProxy {
         grizzlyListener.configure(networkListener, grizzlyService.habitat);
 
         if(!grizzlyListener.isGenericListener()) {
-            final V3Mapper mapper = new V3Mapper(logger);
-            mapper.setPort(portNumber);
-            mapper.setId(networkListener.getName());
-
             final GrizzlyEmbeddedHttp embeddedHttp = grizzlyListener.getEmbeddedHttp();
-            final ContainerMapper adapter = new ContainerMapper(grizzlyService, embeddedHttp);
-            adapter.setMapper(mapper);
-            adapter.setDefaultHost(grizzlyListener.getDefaultVirtualServer());
-            adapter.configureMapper();
-            embeddedHttp.setAdapter(adapter);
-
             final Protocol httpProtocol = networkListener.findHttpProtocol();
 
             if (httpProtocol != null) {
+                final V3Mapper mapper = new V3Mapper(logger);
+                mapper.setPort(portNumber);
+                mapper.setId(networkListener.getName());
+
+                final ContainerMapper adapter = new ContainerMapper(grizzlyService, embeddedHttp);
+                adapter.setMapper(mapper);
+                adapter.setDefaultHost(grizzlyListener.getDefaultVirtualServer());
+                adapter.configureMapper();
+                embeddedHttp.setAdapter(adapter);
+
                 String ct = httpProtocol.getHttp().getDefaultResponseType();
                 adapter.setDefaultContentType(ct);
                 final Collection<VirtualServer> list = grizzlyService.getHabitat().getAllByContract(VirtualServer.class);
@@ -186,8 +186,15 @@ public class GrizzlyProxy implements NetworkProxy {
                         break;
                     }
                 }
+
+                adapter.addRootFolder(embeddedHttp.getWebAppRootPath());
+                
+                Inhabitant<Mapper> onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
+                grizzlyService.getHabitat().addIndex(onePortMapper,
+                        Mapper.class.getName(), (networkListener.getAddress() + networkListener.getPort()));
+                grizzlyService.notifyMapperUpdateListeners(networkListener, mapper);
             }
-            adapter.addRootFolder(embeddedHttp.getWebAppRootPath());
+            
             boolean autoConfigure = false;
             // Avoid overriding the default with false
             if (System.getProperty(AUTO_CONFIGURE) != null){
@@ -201,11 +208,6 @@ public class GrizzlyProxy implements NetworkProxy {
                 leaderFollower = true;
             }
             embeddedHttp.getController().useLeaderFollowerStrategy(leaderFollower);
-
-            Inhabitant<Mapper> onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
-            grizzlyService.getHabitat().addIndex(onePortMapper,
-                Mapper.class.getName(), (networkListener.getAddress() + networkListener.getPort()));
-            grizzlyService.notifyMapperUpdateListeners(networkListener, mapper);
         }
     }
 
