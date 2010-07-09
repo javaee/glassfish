@@ -48,6 +48,7 @@ import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.ScatteredArchive;
 import org.glassfish.api.embedded.ScatteredArchive.Builder;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 
 
 
@@ -56,6 +57,17 @@ import org.glassfish.api.embedded.ScatteredArchive.Builder;
  */
 
 public class RunScatteredArchive extends AbstractDeployMojo{
+
+
+
+/**
+ * @parameter expression="${cascade}"
+ */
+    Boolean cascade;
+/**
+ * @parameter expression="${dropTables}"
+*/
+     Boolean dropTables;
 
 /**
  * @parameter expression="${rootdirectory}"
@@ -79,14 +91,10 @@ public class RunScatteredArchive extends AbstractDeployMojo{
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
+        Server server = null;
+
         try {
             super.setClassPathProperty();
-            Server server = Util.getServer(serverID, instanceRoot, installRoot, configFile, autoDelete);
-
-            EmbeddedDeployer deployer = server.getDeployer();
-            DeployCommandParameters cmdParams = new DeployCommandParameters();
-            configureDeployCommandParameters(cmdParams);
-
             File f = new File(rootdirectory);
             ScatteredArchive.Builder builder = new ScatteredArchive.Builder(name, f);
             if (resources == null) 
@@ -103,28 +111,48 @@ public class RunScatteredArchive extends AbstractDeployMojo{
                 builder.addMetadata(key, value);
             }
 
-            DeployCommandParameters dp = new DeployCommandParameters(f);
-            if (name != null)
-                dp.name = name;
-            if (contextroot != null)
-                dp.contextroot = contextroot;
+            server = Server.getServer(serverID);
+            if (server == null) {
+                server = Util.getServer(serverID, installRoot, instanceRoot, configFile, autoDelete);
+                server.addContainer(getContainerBuilderType());
+            }
+            Util.createPort(server, configFile, port);
+
+            server.start();
+            EmbeddedDeployer deployer = server.getDeployer();
+            DeployCommandParameters cmdParams = new DeployCommandParameters();
+            configureDeployCommandParameters(cmdParams);
+
+            UndeployCommandParameters undeployCommandParameters =
+                    new UndeployCommandParameters();
+
+            if (dropTables != null)
+                undeployCommandParameters.droptables = dropTables;
+            if (cascade != null)
+                undeployCommandParameters.cascade = cascade;
 
             while(true) {
-                String appName = deployer.deploy(builder.buildWar(), dp);
-
-                System.out.println("Deployed Application " + appName);
-                System.out.println("");
-                System.out.println("Hit ENTER to redeploy " + appName
-                        + " X to exit");
-                // wait for enter
+                String appName = deployer.deploy(builder.buildWar(), cmdParams);
+                System.out.println("Hit ENTER to redeploy, X to exit");
                 String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
+
+                undeployCommandParameters.name = appName;
+                deployer.undeploy(appName, undeployCommandParameters);
+
                 if (str.equalsIgnoreCase("X"))
                     break;
-                deployer.undeploy(appName, null);
             }
-        } catch (Exception e) {
-           throw new MojoExecutionException(e.getMessage(), e);
-        }
+        } catch(Exception e) {
+           throw new MojoExecutionException(e.getMessage(),e);
+       } finally {
+           if (server != null) {
+            try {
+                server.stop();
+            } catch (Exception ex) {
+            }
+            }
+       }
+
     }
 }
 
