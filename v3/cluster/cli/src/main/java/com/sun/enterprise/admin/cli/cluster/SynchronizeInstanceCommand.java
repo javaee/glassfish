@@ -122,15 +122,18 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
 
         /*
          * If --syncfull, we remove all local state related to the instance,
-         * then do a sync.
+         * then do a sync.  We only remove the local directories that are
+         * synchronized from the DAS; any other local directories (logs,
+         * instance-private state) are left alone.
          */
         if (syncFull) {
             logger.printDetailMessage(
                                 Strings.get("Instance.fullsync", instanceName));
-            for (File f : FileUtils.listFiles(instanceDir)) {
-                FileUtils.whack(f);
-                logger.printDebugMessage("Removing: " + f);
-            }
+            removeSubdirectory("config");
+            removeSubdirectory("applications");
+            removeSubdirectory("generated");
+            removeSubdirectory("lib");
+            removeSubdirectory("docroot");
         }
 
         try {
@@ -317,6 +320,15 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             if (tempFile != null)
                 tempFile.delete();
         }
+    }
+
+    /**
+     * Remove the named subdirectory of the instance directory.
+     */
+    private void removeSubdirectory(String name) {
+        File subdir = new File(instanceDir, name);
+        logger.printDebugMessage("Removing: " + subdir);
+        FileUtils.whack(subdir);
     }
 
     /**
