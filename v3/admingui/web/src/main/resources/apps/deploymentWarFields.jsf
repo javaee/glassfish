@@ -68,7 +68,7 @@
     </sun:checkbox>
 </sun:property>
 
-<sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" helpText="$resource{i18n.server.PrecompileHelp}">
+<sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" helpText="$resource{i18n.deploy.PrecompileHelp}">
 	<sun:checkbox id="precompileJSP" label="$resource{i18n.common.Enabled}" selected="#{pageSession.war['precompilejsp']}" selectedValue="true" />
 </sun:property>
 
