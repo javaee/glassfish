@@ -36,16 +36,20 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
-import com.sun.enterprise.config.serverbeans.Node;
-import com.sun.enterprise.config.serverbeans.Nodes;
+import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
+import org.glassfish.api.admin.CommandValidationException;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+import com.sun.enterprise.universal.glassfish.TokenResolver;
 import java.util.logging.Logger;
+import java.io.File;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Remote AdminCommand to create and ssh node.  This command is run only on DAS.
@@ -59,47 +63,106 @@ import java.util.logging.Logger;
 @Cluster({RuntimeType.DAS})
 public class CreateNodeSshCommand implements AdminCommand  {
 
-
     @Inject
     private CommandRunner cr;
 
     @Param(name="name", primary = true)
-    String name;
+    private String name;
 
     @Param(name="nodehost")
-    String nodehost;
+    private String nodehost;
 
     @Param(name = "nodehome")
-    String nodehome;
+    private String nodehome;
 
     @Param(name="sshport", optional=true)
-    String sshport;
+    private String sshport;
 
     @Param(name = "sshuser", optional = true)
-    String sshuser;
+    private String sshuser;
 
     @Param(name = "sshkeyfile", optional = true)
-    String sshkeyfile;
+    private String sshkeyfile;
 
+    @Param(name = "force", optional = true, defaultValue = "false")
+    private boolean force;
+
+    private static final String NL = System.getProperty("line.separator");
 
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
+        StringBuilder msg = new StringBuilder();
+
+        setDefaults();
+        try {
+            validate();
+        } catch (CommandValidationException e) {
+            if (!force) {
+                report.setMessage(e.getMessage());
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            } else {
+                msg.append(e.getMessage()).append(NL);
+                msg.append(Strings.get("create.node.ssh.continue.force"));
+            }
+        }
 
         CommandInvocation ci = cr.getCommandInvocation("_create-node", report);
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
         map.add("nodehome", nodehome);
         map.add("nodehost", nodehost);
-        if (sshport == null)
-            sshport="22";
         map.add("sshport", sshport);
         map.add("sshuser", sshuser);
         map.add("sshkeyfile", sshkeyfile);
         ci.parameters(map);
         ci.execute();
 
-        
+        if (StringUtils.ok(report.getMessage())) {
+            if (msg.length() > 0) {
+                msg.append(NL);
+            }
+            msg.append(report.getMessage());
+        }
+
+        report.setMessage(msg.toString());
     }
 
+    private void setDefaults() {
+        if (sshport == null) {
+            sshport = "22";
+        }
+        if (sshuser == null) {
+            sshuser = "${user.name}";
+        }
+    }
+
+    private void validate() throws CommandValidationException {
+
+        Map<String, String> systemPropsMap =
+                new HashMap<String, String>((Map)(System.getProperties()));
+
+        TokenResolver resolver = new TokenResolver(systemPropsMap);
+
+        if (StringUtils.ok(sshkeyfile)) {
+            // User specified a key file. Make sure we get use it
+            File kfile = new File(resolver.resolve(sshkeyfile));
+            if (! kfile.isAbsolute()) {
+                throw new CommandValidationException(
+                        Strings.get("key.path.not.absolute",
+                        kfile.getPath()));
+            }
+            if (! kfile.exists()) {
+                throw new CommandValidationException(
+                        Strings.get("key.path.not.found",
+                        kfile.getPath()));
+            }
+            if (! kfile.canRead() ) {
+                throw new CommandValidationException(
+                        Strings.get("key.path.not.readable",
+                        kfile.getPath(), System.getProperty("user.name")) );
+            }
+        }
+    }
 }
