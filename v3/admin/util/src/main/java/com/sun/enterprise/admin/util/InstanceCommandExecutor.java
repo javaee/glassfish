@@ -34,7 +34,7 @@
  * holder.
  *
  */
-package com.sun.enterprise.v3.admin.cluster;
+package com.sun.enterprise.admin.util;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
@@ -71,5 +71,3 @@ public class InstanceCommandExecutor extends RemoteAdminCommand {
 
     public Server getServer() { return server;}
 }
-
-

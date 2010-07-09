@@ -858,6 +858,13 @@ public class CommandRunnerImpl implements CommandRunner {
          }
         //TODO : Remove the above flag check by MS3
 
+        // If this glassfish installation does not have stand alone instances / clusters at all, then
+        // lets not even look Supplemental command and such. A small optimization so that cluster-admin
+        // and its dependencies are not loaded for a typical developer profile
+        if( (domain.getServers().getServer().size() > 1) || (domain.getClusters().getCluster().size() != 0) ) {
+            doReplication = true;
+        }
+        
         try {
             /*
              * Extract any uploaded files and build a map from parameter names
@@ -1079,9 +1086,8 @@ public class CommandRunnerImpl implements CommandRunner {
 
         if(processEnv.getProcessType().isEmbedded())
             return;
-        if( (!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) &&
-                (serverEnv.isDas()) &&  runtimeTypes.contains(RuntimeType.INSTANCE) &&
-                        doReplication) {
+        if(doReplication && (!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) &&
+                (serverEnv.isDas()) &&  runtimeTypes.contains(RuntimeType.INSTANCE)) {
             ClusterExecutor executor = null;
             if(model.getClusteringAttributes() != null && model.getClusteringAttributes().executor() != null) {
                 executor = habitat.getComponent(model.getClusteringAttributes().executor());

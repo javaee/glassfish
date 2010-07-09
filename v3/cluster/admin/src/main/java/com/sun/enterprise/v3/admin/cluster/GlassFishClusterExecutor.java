@@ -36,6 +36,8 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.admin.util.ClusterOperationUtil;
+import com.sun.enterprise.admin.util.InstanceCommandExecutor;
 import com.sun.enterprise.admin.util.Target;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
@@ -83,6 +85,9 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
     private InstanceState instanceState;
 
     @Inject
+    private Target targetService;
+
+    @Inject
     private Habitat habitat;
 
     private static final LocalStringManagerImpl strings =
@@ -125,23 +130,21 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
         //Do replication only if this is DAS and only if the target is not "server", the default server or "domain"
         if((!CommandTarget.DAS.isValid(habitat, targetName))
                 && (!CommandTarget.DOMAIN.isValid(habitat, targetName))) {
-            Target target = habitat.getComponent(Target.class);
-
             //If the target is a cluster and dynamic reconfig enabled is false, no replication
-            if(target.isCluster(targetName)) {
-                String dynRecfg = target.getClusterConfig(targetName).getDynamicReconfigurationEnabled();
+            if(targetService.isCluster(targetName)) {
+                String dynRecfg = targetService.getClusterConfig(targetName).getDynamicReconfigurationEnabled();
                 if(Boolean.FALSE.equals(Boolean.valueOf(dynRecfg))) {
                     ActionReport aReport = context.getActionReport().addSubActionsReport();
                     aReport.setActionExitCode(ActionReport.ExitCode.WARNING);
                     aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.dynrecfgdisabled",
                             "WARNING : The command was not replicated to all cluster instances because the" +
                                     " dynamic-reconfig-enabled flag is set to false for cluster {0}", targetName));
-                    for(Server s : target.getInstances(targetName))
+                    for(Server s : targetService.getInstances(targetName))
                         instanceState.setState(s.getName(), InstanceState.StateType.RESTART_REQUIRED);
                     return ActionReport.ExitCode.WARNING;
                 }
             }
-            List<Server> instancesForReplication = target.getInstances(targetName);
+            List<Server> instancesForReplication = targetService.getInstances(targetName);
             if(instancesForReplication.size() == 0) {
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
                 aReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
@@ -150,99 +153,10 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
                 return ActionReport.ExitCode.SUCCESS;
             }
 
-            return(replicateCommand(commandName, (clAnnotation == null) ? FailurePolicy.Error : clAnnotation.ifFailure(),
+            return(ClusterOperationUtil.replicateCommand(commandName, (clAnnotation == null) ? FailurePolicy.Error : clAnnotation.ifFailure(),
                     (clAnnotation == null) ? FailurePolicy.Warn : clAnnotation.ifOffline(),
-                    instancesForReplication, context, parameters));
+                    instancesForReplication, context, parameters, habitat));
         }
         return ActionReport.ExitCode.SUCCESS;
-    }
-
-    /**
-     * Replicate a given command on given list of targ
-     */
-    private ActionReport.ExitCode replicateCommand(String commandName,
-                                                   FailurePolicy failPolicy,
-                                                   FailurePolicy offlinePolicy,
-                                                   List<Server> instancesForReplication,
-                                                   AdminCommandContext context,
-                                                   ParameterMap parameters) {
-
-        // TODO : Use Executor service to spray the commands on all instances
-
-        ActionReport.ExitCode returnValue = ActionReport.ExitCode.SUCCESS;
-        try {
-            List<InstanceCommandExecutor> execList = getInstanceCommandList(commandName,
-                                    instancesForReplication, context.getLogger());
-            for(InstanceCommandExecutor rac : execList) {
-                ActionReport aReport = context.getActionReport().addSubActionsReport();
-                try {
-                    rac.executeCommand(parameters);
-                    aReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-                    if(StringUtils.ok(rac.getCommandOutput()))
-                        aReport.setMessage(rac.getServer().getName() + " : " + rac.getCommandOutput());
-                    else
-                        aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandSuccessful",
-                            "Command {0} executed successfully on server instance {1}", commandName,
-                            rac.getServer().getName()));
-                } catch (CommandException cmdEx) {
-                    ActionReport.ExitCode finalResult;
-                    if(cmdEx.getCause() instanceof java.net.ConnectException) {
-                        finalResult = FailurePolicy.applyFailurePolicy(offlinePolicy, ActionReport.ExitCode.WARNING);
-                        if(!finalResult.equals(ActionReport.ExitCode.FAILURE))
-                            aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.warnoffline",
-                                "WARNING : Instance {0} seems to be offline; Command was not replicated to that instance",
-                                    rac.getServer().getName()));
-                    } else {
-                        finalResult = FailurePolicy.applyFailurePolicy(failPolicy, ActionReport.ExitCode.FAILURE);
-                        if(finalResult.equals(ActionReport.ExitCode.FAILURE))
-                            aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandFailed",
-                                "Command {0} failed on server instance {1} : {2}", commandName, rac.getServer().getName(),
-                                    cmdEx.getMessage()));
-                        else
-                            aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandWanring",
-                                "WARNING : Command {0} did not complete successfully on server instance {1} : {2}",
-                                    commandName, rac.getServer().getName(), cmdEx.getMessage()));
-                    }
-                    aReport.setActionExitCode(finalResult);
-                    if(returnValue.equals(ActionReport.ExitCode.SUCCESS))
-                        returnValue = finalResult;
-                    instanceState.setState(rac.getServer().getName(), InstanceState.StateType.RESTART_REQUIRED);
-                }
-            }
-        } catch (Exception ex) {
-            ActionReport aReport = context.getActionReport().addSubActionsReport();
-            ActionReport.ExitCode finalResult = FailurePolicy.applyFailurePolicy(failPolicy,
-                    ActionReport.ExitCode.FAILURE);
-            aReport.setActionExitCode(finalResult);
-            aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.replicationfailed",
-                    "Error during command replication : {0}", ex.getMessage()));
-            context.getLogger().severe("Error during command replication; Reason : " +  ex.getLocalizedMessage());
-            if(returnValue.equals(ActionReport.ExitCode.SUCCESS))
-                returnValue = finalResult;
-        }
-        return returnValue;
-    }
-
-    /**
-     * Given an list of server instances, create the InstanceCommandExecutor objects
-     */
-    private List<InstanceCommandExecutor> getInstanceCommandList(String commandName,
-                                                         List<Server> servers, Logger logger) throws CommandException {
-        ArrayList<InstanceCommandExecutor> list = new ArrayList<InstanceCommandExecutor>();
-        for(Server svr : servers) {
-            //TODO : As of now, the node-agent-ref is used to indicate host info for instance. This may change later
-            String host = svr.getNodeAgentRef();
-            //TODO : The following piece of code is kludge - pending config API changes for tokens in MS2
-            int port = 4848;
-            List<SystemProperty> sprops = svr.getSystemProperty();
-            for(SystemProperty p : sprops) {
-                if("ASADMIN_LISTENER_PORT".equals(p.getName())) {
-                    port = Integer.parseInt(p.getValue());
-                    break;
-                }
-            }
-            list.add(new InstanceCommandExecutor(commandName, svr, host, port, logger));
-        }
-        return list;
     }
 }
