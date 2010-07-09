@@ -60,9 +60,6 @@ import java.util.List;
 @Scoped(Singleton.class)
 public class WebSniffer  extends GenericSniffer implements Sniffer {
 
-    @Inject
-    ModulesRegistry registry;
-    
     public WebSniffer() {
         super("web", "WEB-INF/web.xml", null);
     }
@@ -85,7 +82,8 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
         return DeploymentUtils.isWebArchive(location);
     }
 
-    final String[] containers = { "com.sun.enterprise.web.WebContainer" };
+    private static final String[] containers = { "com.sun.enterprise.web.WebContainer" };
+
     public String[] getContainersNames() {
         return containers;
     }
