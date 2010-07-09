@@ -215,6 +215,7 @@ Variables Used:
     ${beans.xml}
     ${persistence-orm.xml}    
     ${sun-ejb-jar.xml}    
+    ${glassfish-ejb-jar.xml}    
     ${sun-cmp-mappings.xml}    
     ${metainf.dir}    
     ${ejbjar.files}
@@ -238,6 +239,9 @@ Variables Used:
   <copy file="${sun-ejb-jar.xml}" 
     tofile="${build.classes.dir}/META-INF/sun-ejb-jar.xml"
     failonerror="false"/>
+  <copy file="${glassfish-ejb-jar.xml}" 
+    tofile="${build.classes.dir}/META-INF/glassfish-ejb-jar.xml"
+    failonerror="false"/>
   <copy file="${sun-cmp-mappings.xml}"
     tofile="${build.classes.dir}/META-INF/sun-cmp-mappings.xml"
     failonerror="false"/>
@@ -252,6 +256,7 @@ Variables Used:
       <include name="persistence-orm.xml"/>
       <include name="webservices.xml"/>
       <include name="sun-ejb-jar.xml"/>
+      <include name="glassfish-ejb-jar.xml"/>
       <include name="sun-cmp-mappings.xml"/>
       <include name="beans.xml"/>
     </metainf>
