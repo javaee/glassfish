@@ -221,6 +221,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link WebContainer }
      */
     @Element(required=true)
+    @NotNull
     WebContainer getWebContainer();
 
     /**
