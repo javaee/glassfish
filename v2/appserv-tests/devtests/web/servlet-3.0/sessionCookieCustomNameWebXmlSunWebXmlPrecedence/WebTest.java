@@ -40,7 +40,7 @@ import com.sun.ejte.ccl.reporter.*;
 /*
  * Unit test for customizing the name of the session tracking cookie
  * via web.xml and sun-web.xml, and making sure that the name declared in
- * web.xml takes precedence over that declared in sun-web.xml.
+ * sun-web.xml takes precedence over that declared in web.xml, etc.
  */
 public class WebTest {
 
@@ -139,6 +139,10 @@ public class WebTest {
 
         if (line == null) {
             throw new Exception("Missing Set-Cookie response header");
+        }
+        
+        if (!line.contains("HttpOnly")) {
+            throw new Exception("Missing HttpOnly in cookie header");
         }
 
         System.out.println();

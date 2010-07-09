@@ -37,7 +37,8 @@
 <sun-web-app>
   <session-config>
     <cookie-properties>
-      <property name="cookieName" value="ABC" />
+      <property name="cookieName" value="MYJSESSIONID" />
+      <property name="cookieSecure" value="dynamic" />
     </cookie-properties>
   </session-config>
 </sun-web-app>

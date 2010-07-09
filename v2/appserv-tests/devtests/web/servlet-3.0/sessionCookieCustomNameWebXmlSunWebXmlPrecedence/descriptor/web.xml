@@ -58,7 +58,8 @@
     
   <session-config>
     <cookie-config>
-      <name>MYJSESSIONID</name>
+      <name>ABC</name>
+      <http-only>true</http-only>
     </cookie-config>
   </session-config>
 
