@@ -70,10 +70,15 @@ import javax.naming.NameNotFoundException;
 public class ImmutableNameNotFoundException
     extends NameNotFoundException {
 
+    @Override
     public void appendRemainingComponent(String name) {}
+    @Override
     public void appendRemainingName(Name name) {}
+    @Override
     public void setRemainingName(Name name) {}
-    public void setResolverName(Name name) {}
+    @Override
+    public void setResolvedName(Name name) {}
+    @Override
     public void setRootCause(Throwable e) {}
 
 }
