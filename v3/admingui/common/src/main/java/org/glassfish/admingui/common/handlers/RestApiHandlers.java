@@ -340,7 +340,15 @@ public class RestApiHandlers {
         MultivaluedMap formData = new MultivaluedMapImpl();
         for (final Map.Entry<String, Object> entry : payload.entrySet()) {
             final Object value = entry.getValue();
-            formData.putSingle(entry.getKey(), (value != null) ? value.toString() : value);
+	    if (value instanceof List) {
+		String key = entry.getKey();
+		for (Object obj : ((List) value)) {
+		    formData.add(key, obj);
+		}
+	    } else {
+		//formData.putSingle(entry.getKey(), (value != null) ? value.toString() : value);
+		formData.putSingle(entry.getKey(), value);
+	    }
         }
         return formData;
     }
