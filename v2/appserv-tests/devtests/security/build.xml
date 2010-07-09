@@ -51,6 +51,7 @@
 	<ant dir="multiRoleMapping" target="all"/>
 	<ant dir="jdbcrealm" target="all"/>
 	<ant dir="pamrealm" target="all"/>
+	<ant dir="cert-realm-custom-loginmodule" target="all"/>
         
         <ant dir="ldap/simpleweb" target="all" />
 	<ant dir="ldapRealmPerApp" target="all"/>
