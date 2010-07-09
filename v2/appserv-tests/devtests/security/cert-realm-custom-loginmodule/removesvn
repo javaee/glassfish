@@ -1,5 +1,0 @@
-for i in `find . -name .svn`
-do
-rm -rf $i
-done
-

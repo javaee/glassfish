@@ -21,7 +21,7 @@ public class WebSSLClient {
         = "security-web-mutual-ssl";    
 
     private static final String EXPECTED_RESPONSE
-        = "[Ljava.security.cert.X509Certificate;";
+        = "This is CN=SSLTest, OU=Sun Java System Application Server, O=Sun Microsystems, L=Santa Clara, ST=California, C=US from index.jsp";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
@@ -45,7 +45,7 @@ public class WebSSLClient {
                                                        trustStorePath);
             HttpsURLConnection connection = connect("https://" + host  + ":"
                                                     + port + contextRoot
-                                                    + "/TestClientCert",
+                                                    + "/index.jsp",
                                                     ssf);
             
             parseResponse(connection);

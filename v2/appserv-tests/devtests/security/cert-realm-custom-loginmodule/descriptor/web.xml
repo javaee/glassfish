@@ -5,21 +5,10 @@
          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
          version="2.4">
      
-    <servlet>
-      <display-name>TestClientCert</display-name>
-      <servlet-name>TestClientCert</servlet-name>
-      <servlet-class>devtests.security.TestClientCert</servlet-class>
-    </servlet>  
-    
-    <servlet-mapping>
-      <servlet-name>TestClientCert</servlet-name>
-      <url-pattern>/TestClientCert</url-pattern>
-    </servlet-mapping>
-
     <security-constraint>
       <web-resource-collection>
 	  <web-resource-name>Protected Area</web-resource-name>
-          <url-pattern>/TestClientCert</url-pattern>
+          <url-pattern>/index.jsp</url-pattern>
           <http-method>DELETE</http-method>
           <http-method>GET</http-method>
           <http-method>POST</http-method>
@@ -35,7 +24,6 @@
 
     <login-config>
       <auth-method>CLIENT-CERT</auth-method>
-      <realm-name>default</realm-name>
     </login-config>
 
     <security-role>

@@ -9,7 +9,7 @@
 ]>
 
 
-<project name="web-mutual-auth" basedir="." default="usage">
+<project name="cert-realm-custom-loginmodule" basedir="." default="usage">
 
     &commonSetup;
     &commonBuild;
@@ -25,9 +25,6 @@
 
     <target name="compile" depends="clean">
         <mkdir dir="build"/>
-        <antcall target="compile-common">
-            <param name="src" value="servlet"/>
-        </antcall>
         <javac srcdir="." destdir="./build" classpath="${env.APS_HOME}/lib/reporter.jar"
             includes="WebSSLClient.java"/>
     </target>
@@ -36,8 +33,14 @@
         <property name="hasWebclient" value="yes"/> 
         <antcall target="webclient-war-common">
             <param name="hasWebclient" value="yes" />
-            <param name="webclient.war.classes" value="**/*.class"/>  
         </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="src"/>
+        </antcall>
+        <mkdir dir="${assemble.dir}"/>
+        <jar jarfile="${assemble.dir}/test-${appname}.jar" excludes="tmp/**">
+            <fileset dir="${build.classes.dir}"/>
+        </jar>
     </target>
 
     <target name="build-publish-war" depends="build, publish-war-common" />
@@ -79,9 +82,11 @@
 
     <target name="setup" depends="init-common,prepare-store-common">
         <antcall target="env-check" />
-        <antcall target="generate-ca-client-certs-pe" />
-        <antcall target="generate-ca-client-certs-ee" />
-        <antcall target="asadmin-common-ignore-fail">
+<!--        <antcall target="generate-ca-client-certs-pe" />
+        <antcall target="generate-ca-client-certs-ee" />-->
+	<copy file="${assemble.dir}/test-${appname}.jar"
+            todir="${env.S1AS_HOME}/lib"/>
+	<antcall target="asadmin-common-ignore-fail">
             <param name="admin.command"
                    value="create-ssl
                          --port ${admin.port}
@@ -95,6 +100,13 @@
                    value="http-listener-2" />
         </antcall>
         <antcall target="restart-server-instance-common"/>
+	<antcall target="asadmin-common">
+            <param name="admin.command"
+                   value="set" />
+            <param name="as.props" value=""/>
+            <param name="operand.props"
+                   value="configs.config.server-config.security-service.auth-realm.certificate.property.jaas-context=certRealm" />
+	</antcall>
     </target>
  
     <target name="unsetup">
@@ -113,7 +125,15 @@
             <param name="operand.props"
                    value="http-listener-2" />
         </antcall>
+        <antcall target="asadmin-common">
+            <param name="admin.command"
+                   value="set" />
+            <param name="as.props" value=""/>
+            <param name="operand.props"
+                   value="configs.config.server-config.security-service.auth-realm.certificate.property.jaas-context=" />
+        </antcall>
         <antcall target="remove-store-common"/>
+	<delete file="${env.S1AS_HOME}/lib/test-${appname}.jar" failonerror="false"/>
         <antcall target="restart-server-instance-common"/>
     </target>
 
@@ -125,7 +145,7 @@
  <!--   <exec executable="${java.home}/bin/keytool" failonerror="false">
         <arg line="-delete -alias testcert1 -keystore ${mykeystore.db.file} -storepass ${ssl.password}"/>
     </exec>-->
-    <exec executable="${java.home}/bin/keytool" failonerror="false">
+<!--    <exec executable="${java.home}/bin/keytool" failonerror="false">
         <arg line="-delete -alias alice -keystore ${mytruststore.db.file} -storepass ${ssl.password}"/>
     </exec>
 
@@ -133,7 +153,7 @@
         <param name="cert.alias" value="alice"/>
         <param name="keystore.file" value="${mytruststore.db.file}"/>
         <param name="cert.file" value="${env.APS_HOME}/devtests/security/cert-realm-custom-loginmodule/certificate/alice.pfx"/>
-    </antcall>
+    </antcall>-->
 
   <!--  <antcall target="convert-pkcs12-to-jks">
         <param name="pkcs12.file" value="${env.APS_HOME}/devtests/security/cert-realm-custom-loginmodule/certificate/testcert1.p12"/>
