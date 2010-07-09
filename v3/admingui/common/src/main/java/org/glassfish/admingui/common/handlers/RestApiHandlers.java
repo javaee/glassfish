@@ -186,6 +186,8 @@ public class RestApiHandlers {
             response = post(endpoint, attrs);
         } else if ("get".equals(method)) {
             response = get(endpoint, attrs);
+        } else if ("delete".equals(method)) {
+            response = delete(endpoint, attrs);
         }
 
         if (response == null) {
