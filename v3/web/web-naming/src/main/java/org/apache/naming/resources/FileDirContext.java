@@ -1019,7 +1019,7 @@ public class FileDirContext extends BaseDirContext {
 
 
     /**
-     * This specialized resource implementation avoids opening the IputStream
+     * This specialized resource implementation avoids opening the InputStream
      * to the file right away (which would put a lock on the file).
      */
     protected class FileResource extends Resource {

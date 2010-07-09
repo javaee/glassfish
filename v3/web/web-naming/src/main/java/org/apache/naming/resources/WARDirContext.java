@@ -982,7 +982,9 @@ public class WARDirContext extends BaseDirContext {
             throws IOException {
             try {
                 if (binaryContent == null) {
-                    inputStream = base.getInputStream(entry);
+                    InputStream is = base.getInputStream(entry);
+                    inputStream = is;
+                    return is;
                 }
             } catch (ZipException e) {
                 throw new IOException(e.getMessage());
