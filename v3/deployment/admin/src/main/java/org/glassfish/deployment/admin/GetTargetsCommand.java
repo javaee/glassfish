@@ -36,54 +36,46 @@
 
 package org.glassfish.deployment.admin;
 
+import java.util.List;
+
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.Cluster;
-import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.api.admin.Supplemental;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.deployment.StateCommandParameters;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-/**
- * A supplemental (before) command to undeploy command. 
- * It will disable the applications before the undeploy command runs.
- *
- */
-@Service(name="_preundeploy")
-@Supplemental(value="undeploy", on=Supplemental.Timing.Before)
+@Service(name="_get-targets")
 @Scoped(PerLookup.class)
-@Cluster(value={RuntimeType.DAS})
-public class PreUndeployCommand extends StateCommandParameters implements AdminCommand {
+public class GetTargetsCommand implements AdminCommand {
 
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(PreUndeployCommand.class);
-   
-    @Inject
-    CommandRunner commandRunner;
+    @Param(optional=true, primary=true)
+    String appName = null;
+
+    @Inject 
+    Domain domain;
 
     public void execute(AdminCommandContext context) {
         
-        ActionReport report = context.getActionReport();
-        final Logger logger = context.getLogger();
+        final ActionReport report = context.getActionReport();
 
-        CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("disable", report);
+        ActionReport.MessagePart part = report.getTopMessagePart();
 
-        // convert CommandParameters to ParameterMap till we have a better 
-        // way to invoke a command on both DAS and instance with the 
-        // replication framework
-        final ParameterMap parameters = new ParameterMap();
-        parameters.add("DEFAULT", component); 
-        parameters.add("target", target);
-        inv.parameters(parameters).execute();
+        
+        List<String> targets = null;
+
+        if (appName.equals("*")) {
+            targets = domain.getAllTargets();
+        } else {
+            targets = domain.getAllReferencedTargetsForApplication(appName);
+        }
+
+        for (String target : targets) {
+            ActionReport.MessagePart childPart = part.addChild();
+            childPart.setMessage(target);
+        }
     }
 }

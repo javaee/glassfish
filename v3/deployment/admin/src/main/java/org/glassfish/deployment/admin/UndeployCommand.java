@@ -54,6 +54,8 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.config.support.TargetType;
@@ -107,6 +109,9 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
 
     @Inject
     Domain domain;
+
+    @Inject
+    CommandRunner commandRunner;
 
     public UndeployCommand() {
         origin = Origin.undeploy;
@@ -226,6 +231,26 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 }
                 return;
             }
+
+            // now start the normal undeploying
+
+            // disable the application first
+            if (env.isDas()) {
+                CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("disable", report);
+
+                final ParameterMap parameters = new ParameterMap();
+                parameters.add("DEFAULT", appName);
+                parameters.add("target", target);
+                inv.parameters(parameters).execute();
+
+                if (report.getActionExitCode().equals(
+                    ActionReport.ExitCode.FAILURE)) {
+                    // if disable application failed
+                    // we should just return
+                    report.setMessage(localStrings.getLocalString("disable.command.failed","{0} disabled failed", appName));
+                    return;
+                }
+            }   
 
             ExtendedDeploymentContext deploymentContext = null;
             try {

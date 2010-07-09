@@ -200,7 +200,7 @@ public class CreateApplicationRefCommand implements AdminCommand {
             appProps.setProperty(Application.APP_LOCATION_PROP_NAME, DeploymentUtils.relativizeWithinDomainIfPossible(new URI(appLocation)));
             String planLocation = appProps.getProperty(Application.DEPLOYMENT_PLAN_LOCATION_PROP_NAME);
             if (planLocation != null) {
-                appProps.setProperty(Application.APP_LOCATION_PROP_NAME, DeploymentUtils.relativizeWithinDomainIfPossible(new URI(planLocation)));
+                appProps.setProperty(Application.DEPLOYMENT_PLAN_LOCATION_PROP_NAME, DeploymentUtils.relativizeWithinDomainIfPossible(new URI(planLocation)));
             }
             savedAppConfig.store(appProps);
 

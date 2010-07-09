@@ -295,7 +295,7 @@ public class SunDeploymentManager implements DeploymentManager {
             for (int i = 0; i < targetList.length; i++) {
                 TargetImpl aTarget = (TargetImpl) targetList[i];
 
-                TargetModuleID[] tmids = deploymentFacility.listAppRefs(new Target[] {aTarget}, state, getTypeFromModuleType(moduleType));
+                TargetModuleID[] tmids = deploymentFacility._listAppRefs(new Target[] {aTarget}, state, getTypeFromModuleType(moduleType));
                 addToTargetModuleIDs(tmids, moduleType, aTarget, resultingTMIDs);
             }
             /*

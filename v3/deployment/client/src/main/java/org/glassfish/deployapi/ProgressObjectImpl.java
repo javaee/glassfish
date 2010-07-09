@@ -494,21 +494,15 @@ public class ProgressObjectImpl extends DFProgressObject {
 	return bos.toString();
     }
     
-    protected static final String APPS_CONFIGMBEAN_OBJNAME =
-                                  "com.sun.appserv:type=applications,category=config";    
-
-    protected String getDeploymentStatusMessage(DFDeploymentStatus status) {
-        return getDeploymentStatusMessage(status, false);
-    }
     /**
      * Parse the DeploymentStatus to get the status message within
      */
-    protected String getDeploymentStatusMessage(DFDeploymentStatus status, boolean isStartPhase) {
+    private String getDeploymentStatusMessage(DFDeploymentStatus status) {
         if(status == null) {
             return null;
         }
         // if stage status is success, return as it is
-        if (status!=null && DFDeploymentStatus.Status.SUCCESS.isWorseThan(status.getStatus())) {
+        if (status!=null && DFDeploymentStatus.Status.SUCCESS.isWorseThanOrEqual(status.getStatus())) {
             return null;
         }
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -523,45 +517,35 @@ public class ProgressObjectImpl extends DFProgressObject {
             } else {
                 warningMessages += statusString;
             }
-
-            // add additional messages if it failed at loading.
-            if (isStartPhase) { 
-                warningMessages = localStrings.getLocalString(
-                        "enterprise.deployment.client.start_failed_msg",
-                        "Error occurred during application loading phase. The application will not run properly. Please fix your application and redeploy.\n") + warningMessages;
-            }
-
             return null;
         }
         // Failed stage; return the failure message
         return statusString;
     }
 
-    // XXX should be stricter than public
     public void setupForNormalExit(
             String message, 
             TargetImpl aTarget, 
-            DFDeploymentStatus mainStatus,
             TargetModuleIDImpl[] tmids) {
-//        String i18nmsg;
-//        // If we ever got some warning during any of the stages, the the final status is warning; else status=success
-//        if(warningMessages == null) {
-//            i18nmsg = localStrings.getLocalString(
-//                    "enterprise.deployment.client.action_completed",
-//                    "{0} completed successfully",
-//                    message);
-//            finalDeploymentStatus.setStageStatus(DFDeploymentStatus.Status.SUCCESS);
-//        } else {
-//            i18nmsg = localStrings.getLocalString(
-//                    "enterprise.deployment.client.action_completed_with_warning", 
-//                    warningMessages);
-//            finalDeploymentStatus.setStageStatus(DFDeploymentStatus.Status.WARNING);            
-//        }
-//        finalDeploymentStatus.setStageStatusMessage(i18nmsg);
+        String i18nmsg;
+        // If we ever got some warning during any of the stages, the the final status is warning; else status=success
+        if(warningMessages == null) {
+            i18nmsg = localStrings.getLocalString(
+                    "enterprise.deployment.client.action_completed",
+                    "{0} completed successfully",
+                    message);
+            finalDeploymentStatus.setStageStatus(DFDeploymentStatus.Status.SUCCESS);
+        } else {
+            i18nmsg = localStrings.getLocalString(
+                    "enterprise.deployment.client.action_completed_with_warning", 
+                    "Action completed with warning message: {0}",
+                    warningMessages);
+            finalDeploymentStatus.setStageStatus(DFDeploymentStatus.Status.WARNING);            
+        }
+        finalDeploymentStatus.setStageStatusMessage(i18nmsg);
         deployActionCompleted = true;
-        finalDeploymentStatus = mainStatus;
         targetModuleIDs = tmids;
-//        fireProgressEvent(StateType.COMPLETED, i18nmsg, aTarget);
+        fireProgressEvent(StateType.COMPLETED, i18nmsg, aTarget);
         for (TargetModuleIDImpl tmid : tmids) {
             // initialize moduleID so the event can be populated with 
             // the proper moduleID.
@@ -571,46 +555,30 @@ public class ProgressObjectImpl extends DFProgressObject {
         return;
     }
     
-    // XXX should be stricter than public
-    public void setupForAbnormalExit(String errorMsg, TargetImpl aTarget, DFDeploymentStatus mainStatus) {
-//        String i18nmsg = localStrings.getLocalString(
-//                "enterprise.deployment.client.action_failed", 
-//                errorMsg);
-//        finalDeploymentStatus.setStageStatus(DFDeploymentStatus.Status.FAILURE);
-//        finalDeploymentStatus.setStageStatusMessage(i18nmsg);
-        
-        deployActionCompleted = true;
-        finalDeploymentStatus = mainStatus;
-//        fireProgressEvent(StateType.FAILED, i18nmsg, aTarget);
-        fireProgressEvent(StateType.FAILED, errorMsg, aTarget);
-        return;
-    }
-
-    private DFDeploymentStatus preSetupForAbnormalExit(String errorMsg) {
+    public void setupForAbnormalExit(String errorMsg, TargetImpl aTarget) {
         String i18nmsg = localStrings.getLocalString(
                 "enterprise.deployment.client.action_failed", 
                 "Action failed {0}",
-                errorMsg);
-        DFDeploymentStatus result = new DFDeploymentStatus();
-        result.setStageStatus(DFDeploymentStatus.Status.FAILURE);
-        result.setStageStatusMessage(i18nmsg);
+                 errorMsg);
+        finalDeploymentStatus.setStageStatus(DFDeploymentStatus.Status.FAILURE);
+        finalDeploymentStatus.setStageStatusMessage(i18nmsg);
         
         deployActionCompleted = true;
-        return result;
-    }
-    
-    // XXX should be stricter than public
-    public void setupForAbnormalExit(String errorMsg, TargetImpl aTarget) {
-        finalDeploymentStatus = preSetupForAbnormalExit(errorMsg);
-        fireProgressEvent(StateType.FAILED, finalDeploymentStatus.getStageStatusMessage(), aTarget);
+        fireProgressEvent(StateType.FAILED, i18nmsg, aTarget);
         return;
     }
 
-    // XXX should be stricter than public
-    public void setupForAbnormalExit(String errorMsg, TargetImpl aTarget, Throwable th) {
-        finalDeploymentStatus = preSetupForAbnormalExit(errorMsg);
-        finalDeploymentStatus.setStageException(th);
-        fireProgressEvent(StateType.FAILED, finalDeploymentStatus.getStageStatusMessage(), aTarget);
-        return;
+    /**
+     * Given a Deployment status, this checks if the status is success
+     */
+    public boolean checkStatusAndAddStage(TargetImpl aTarget, String action, DFDeploymentStatus currentStatus) {
+        String statusMsg = getDeploymentStatusMessage(currentStatus);
+        finalDeploymentStatus.addSubStage(currentStatus);
+        if(statusMsg == null) {
+            fireProgressEvent(StateType.RUNNING, localStrings.getLocalString("enterprise.deployment.client.action_completed", "Action {0} completed", action), aTarget);
+            return true;
+        }
+        setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.action_failed_with_message", "Action {0} failed - {1}", action, statusMsg),  aTarget);
+        return false;
     }
 }

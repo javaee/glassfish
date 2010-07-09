@@ -75,8 +75,7 @@ public class TestDeploy {
      * DeploymentFacility.  In their current form they should not be used
      * as tests, because they would require the server to be up.
      */
-    
-    @Ignore
+    @Ignore 
     @Test
     public void testDeploy() {
         DeploymentFacility df = DeploymentFacilityFactory.getDeploymentFacility();
@@ -84,13 +83,12 @@ public class TestDeploy {
         sci.setHostName("localhost");
         sci.setHostPort(4848); // 8080 for the REST client
         sci.setUserName("admin");
-        sci.setPassword("adminadmin");
+        sci.setPassword("");
         
         df.connect(sci);
         
-//        File archive = new File("C:\\tim\\asgroup\\dev-9p-fcs\\glassfish\\appserv-tests\\devtests\\deployment\\build\\servletonly.war");
-        File archive = new File("/Users/Tim/asgroup/v3/warWithPlan/servletonly-portable.war");
-        File plan = new File("/Users/Tim/asgroup/v3/warWithPlan/servletonly-deployplan.jar");
+        File archive = new File("/home/hzhang/deployment/apps/jsr88/servletonly-portable.war");
+        File plan = new File("/home/hzhang/deployment/apps/jsr88/servletonly-deployplan.jar");
         DFDeploymentProperties options = new DFDeploymentProperties();
         options.setForce(true);
         options.setUpload(true);
@@ -99,8 +97,11 @@ public class TestDeploy {
         props.setProperty("keepSessions", "true");
         props.setProperty("foo", "bar");
         options.setProperties(props);
+
+        try {
+        Target[] targets = df.listTargets(); 
         DFProgressObject prog = df.deploy(
-                new Target[0] /* ==> deploy to the default target */, 
+                targets /* ==> deploy to the default target */, 
                 archive.toURI(), 
                 plan.toURI(),
                 options);
@@ -108,6 +109,10 @@ public class TestDeploy {
         
         if (ds.getStatus() == DFDeploymentStatus.Status.FAILURE) {
             fail(ds.getAllStageMessages());
+        }
+        } catch (Exception e) {
+          e.printStackTrace();
+          fail(e.getMessage());
         }
         
     }
@@ -120,17 +125,40 @@ public class TestDeploy {
         sci.setHostName("localhost");
         sci.setHostPort(4848); 
         sci.setUserName("admin");
-        sci.setPassword("adminadmin");
+        sci.setPassword("");
         
         df.connect(sci);
         
+        try{
+        Target[] targets = df.listTargets(); 
+        Target[] clusterTarget = new Target[1];
+        Target[] dasTarget = new Target[1];
+        for (Target target : targets) {
+            if (target.getName().equals("server")) {
+                dasTarget[0] = target;
+            } else if (target.getName().equals("cluster1")) {
+                clusterTarget[0] = target;
+            }
+        }
+
+/* test negative case 
         DFProgressObject prog = df.undeploy(
-                new Target[0] /* ==> deploy to the default target */, 
+                clusterTarget, 
                 APP_NAME);
+*/
+
+        DFProgressObject prog = df.undeploy(
+                targets, 
+                APP_NAME);
+
         DFDeploymentStatus ds = prog.waitFor();
         
         if (ds.getStatus() == DFDeploymentStatus.Status.FAILURE) {
             fail(ds.getAllStageMessages());
+        }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
         }
         
     }

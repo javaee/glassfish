@@ -497,7 +497,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 parameters.add("properties", propertiesValue(undeployProperties, ':'));
             } else if (property!=null && property.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
                 Properties undeployProperties = new Properties();
-                undeployProperties.put(DeploymentProperties.KEEP_SESSIONS, properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
+                undeployProperties.put(DeploymentProperties.KEEP_SESSIONS, property.getProperty(DeploymentProperties.KEEP_SESSIONS));
                 parameters.add("properties", propertiesValue(undeployProperties, ':'));
             }
 

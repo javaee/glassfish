@@ -78,6 +78,10 @@ public class DFDeploymentStatus implements java.io.Serializable {
             public boolean isWorseThan(Status other) {
                 return (compareTo(other) < 0);
             }
+
+            public boolean isWorseThanOrEqual(Status other) {
+                return (compareTo(other) <= 0);
+            }
         }
         private static final String NEWLINE = System.getProperty("line.separator");
 

@@ -71,13 +71,12 @@ import com.sun.enterprise.deployment.deploy.shared.MemoryMappedArchive;
  * Code that needs an instance of a remote deployment facility use the
  * {@link DeploymentFacilityFactory}.
  * <p>
- * Note that GlassFish v3 only supports a single target.
  *
  * @author tjquinn
  */
 public abstract class AbstractDeploymentFacility implements DeploymentFacility, TargetOwner {
     private static final String DEFAULT_SERVER_NAME = "server";
-    protected static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RemoteDeploymentFacility.class);
+    protected static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AbstractDeploymentFacility.class);
 
     private static final String LIST_COMMAND = "list";
     private static final String LIST_SUB_COMPONENTS_COMMAND = "list-sub-components";
@@ -126,36 +125,37 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
      * @param targets targets on which the change should occur
      * @param moduleID name of the module affected
      * @param commandName enable or disable
-     * @param successStatusKey message key for successful result (one for enable, one for disable)
-     * @param successStatusDefaultMessage default message value for success
-     * @param failureStatusKey message key for failed result
-     * @param failureStatusDefaultMessage default message value for failed result
+     * @param action name enabling or disabling
      * @return DFProgressObject the caller can use to monitor progress and query final status
      */
-    protected DFProgressObject changeState(Target[] targets, String moduleID, String commandName, String successStatusKey, String successStatusDefaultMessage, String failureStatusKey, String failureStatusDefaultMessage) {
+    protected DFProgressObject changeState(Target[] targets, String moduleID, String commandName, String action) {
         ensureConnected();
         targets = prepareTargets(targets);
-        String targetsParam = createTargetsParam(targets);
-        Map commandParams = new HashMap();
-        commandParams.put("target", targetsParam);
         ProgressObjectImpl po = new ProgressObjectImpl(targets);
+        List<TargetModuleIDImpl> targetModuleIDList =
+            new ArrayList<TargetModuleIDImpl>();
         try {
-            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, new String[]{moduleID});
-            DFDeploymentStatus ds = commandRunner.run();
-            DFDeploymentStatus mainStatus = ds.getMainStatus();
-            if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
-                TargetModuleIDImpl[] targetModuleIDs = new TargetModuleIDImpl[targets.length];
-                int i = 0;
-                for (TargetImpl ti : po.toTargetImpl(targets)) {
-                    targetModuleIDs[i++] = new TargetModuleIDImpl(ti, moduleID);
+            for (Target target : targets) {
+                Map commandParams = new HashMap();
+                commandParams.put(DFDeploymentProperties.TARGET, target.getName());
+                DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, new String[]{moduleID});
+                DFDeploymentStatus ds = commandRunner.run();
+                DFDeploymentStatus mainStatus = ds.getMainStatus();
+                if(!po.checkStatusAndAddStage((TargetImpl)target, localStrings.getLocalString("enterprise.deployment.client.change_state", "{0} of {1} in target {2}", action, moduleID, target.getName()), mainStatus)) {
+                    return po;
+                } else {
+                    TargetModuleIDImpl targetModuleID =
+                        new TargetModuleIDImpl((TargetImpl)target, moduleID);
+                    targetModuleIDList.add(targetModuleID);
                 }
-                po.setupForNormalExit(localStrings.getLocalString(successStatusKey, successStatusDefaultMessage, moduleID), domain, mainStatus, targetModuleIDs);
-            } else {
-                po.setupForAbnormalExit(localStrings.getLocalString(failureStatusKey, failureStatusDefaultMessage, mainStatus.getStageStatusMessage()), domain, mainStatus);
             }
+            TargetModuleIDImpl[] targetModuleIDs =
+                new TargetModuleIDImpl[targetModuleIDList.size()];
+            targetModuleIDs = (TargetModuleIDImpl[])targetModuleIDList.toArray(targetModuleIDs);
+            po.setupForNormalExit(localStrings.getLocalString("enterprise.deployment.client.change_state_all", "{0} of application in all targets", action), (TargetImpl)targets[0],  targetModuleIDs);
             return po;
         } catch (Throwable ioex) {
-            po.setupForAbnormalExit(localStrings.getLocalString(failureStatusKey, failureStatusDefaultMessage, ioex.toString()), domain, ioex);
+            po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.state_change_failed", "Attempt to change the state of the application {0} failed - {1}", moduleID, ioex.toString()), (TargetImpl)targets[0]);
             return po;
         }
     }
@@ -198,7 +198,45 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     }
 
     public DFProgressObject createAppRef(Target[] targets, String moduleID, Map options) {
-        throw new UnsupportedOperationException("Not supported in v3 prelude");
+        return changeAppRef(targets, moduleID, "create-application-ref", "Creation", options);
+    }
+
+    public DFProgressObject deleteAppRef(Target[] targets, String moduleID, Map options) {
+        return changeAppRef(targets, moduleID, "delete-application-ref", "Removal", options);
+    }
+
+    protected DFProgressObject changeAppRef(Target[] targets, String moduleID, String commandName, String action, Map options) {
+        ensureConnected();
+        Throwable commandExecutionException = null;
+        targets = prepareTargets(targets);
+        ProgressObjectImpl po = new ProgressObjectImpl(targets);
+        List<TargetModuleIDImpl> targetModuleIDList =
+            new ArrayList<TargetModuleIDImpl>();
+        try {
+            for (Target target : targets) {
+                options.put(DFDeploymentProperties.TARGET, target.getName());
+                String[] operands = new String[] {moduleID};
+                DFDeploymentStatus mainStatus = null;
+                DFCommandRunner commandRunner = getDFCommandRunner(commandName, options, operands);
+                DFDeploymentStatus ds = commandRunner.run();
+                mainStatus = ds.getMainStatus();
+                if(!po.checkStatusAndAddStage((TargetImpl)target, localStrings.getLocalString("enterprise.deployment.client.create_reference", "Creation of reference for application in target {0}", target.getName()),  mainStatus)) {
+                    return po;
+                } else {
+                    TargetModuleIDImpl targetModuleID =
+                        new TargetModuleIDImpl((TargetImpl)target, moduleID);
+                    targetModuleIDList.add(targetModuleID);
+                }
+            }
+            TargetModuleIDImpl[] targetModuleIDs =
+                new TargetModuleIDImpl[targetModuleIDList.size()];
+            targetModuleIDs = (TargetModuleIDImpl[])targetModuleIDList.toArray(targetModuleIDs);
+            po.setupForNormalExit(localStrings.getLocalString("enterprise.deployment.client.change_reference_application", "{0} of application reference in all targets", action), (TargetImpl)targets[0], targetModuleIDs);
+            return po;
+        } catch (Throwable ioex) {
+           po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.change_reference_application_failed", "{0} of application reference failed - {1}", action, ioex.getMessage()), (TargetImpl)targets[0]);
+            return po;
+        }
     }
 
     public Target createTarget(String name) {
@@ -208,7 +246,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     public Target[] createTargets(String[] targets) {
         if (targets == null) {
             targets = new String[0];
-        } 
+        }
         TargetImpl[] result = new TargetImpl[targets.length];
         int i = 0;
         for (String name : targets) {
@@ -226,10 +264,6 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             }
         }
         return sb.toString();
-    }
-
-    public DFProgressObject deleteAppRef(Target[] targets, String moduleID, Map options) {
-        throw new UnsupportedOperationException("Not supported in v3");
     }
 
     public DFProgressObject deploy(Target[] targets, ReadableArchive source, ReadableArchive deploymentPlan, Map deploymentOptions) throws IOException {
@@ -301,12 +335,13 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     public DFProgressObject deploy(Target[] targets, URI source, URI deploymentPlan, Map deploymentOptions) {
         ensureConnected();
         targets = prepareTargets(targets);
-        String targetsParam = createTargetsParam(targets);
-        deploymentOptions.put("target", targetsParam);
         ProgressObjectImpl po = new ProgressObjectImpl(targets);
+        List<TargetModuleIDImpl> targetModuleIDList =
+            new ArrayList<TargetModuleIDImpl>();
+
         //Make sure the file permission is correct when deploying a file
         if (source == null) {
-            po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.archive_not_specified", "Archive to be deployed is not specified at all."), domain);
+            po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.archive_not_specified", "Archive to be deployed is not specified at all."), (TargetImpl)targets[0]);
             return po;
         }
         File tmpFile = new File(source.getSchemeSpecificPart());
@@ -338,38 +373,75 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             }
 
             // it's redeploy, set the enable attribute accordingly
-            if (Boolean.valueOf((String)deploymentOptions.remove(
-                DFDeploymentProperties.REDEPLOY))) {
+            boolean isRedeploy = Boolean.valueOf((String)deploymentOptions.remove(DFDeploymentProperties.REDEPLOY));
+            if (isRedeploy) {
                 String appName = (String)deploymentOptions.get(
                     DFDeploymentProperties.NAME);
+                if (!isTargetsMatched(appName, targets)) {
+                    po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.specifyAllTargets", "Application {0} is already deployed on other targets. Please remove all references or specify all targets (or domain target if using asadmin command line) before attempting {1} operation", appName, "redeploy"), domain);
+                }
+                // set the enable attribute accordingly
                 String enabledAttr = getAppRefEnabledAttr(
                     targets[0].getName(), appName);
                 deploymentOptions.put(DFDeploymentProperties.ENABLED, 
                     enabledAttr);
             }
 
+            Target[] origTargets = targets;
+
+            // first deploy to first target
+            if (isRedeploy && targets.length > 1) {
+                // if it's redeploy and having more than one target, 
+                // we should just redeploy with the special domain target
+                targets = createTargets(new String[] {"domain"});
+            }
+            deploymentOptions.put(DFDeploymentProperties.TARGET, targets[0].getName());    
             DFCommandRunner commandRunner = getDFCommandRunner(
-                    "deploy", deploymentOptions, new String[]{tmpFile.getAbsolutePath()});
+                "deploy", deploymentOptions, new String[]{tmpFile.getAbsolutePath()});
             DFDeploymentStatus ds = commandRunner.run();
             DFDeploymentStatus mainStatus = ds.getMainStatus();
-            String moduleID = mainStatus.getProperty(DFDeploymentProperties.NAME);
-            po.setModuleID(moduleID);
-
-            if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
-                // TODO: support multiple targets
-                TargetModuleIDImpl[] targetModuleIDs = new TargetModuleIDImpl[targets.length];
-                int i = 0;
-                for (TargetImpl ti : po.toTargetImpl(targets)) {
-                    targetModuleIDs[i++] = new TargetModuleIDImpl(ti, moduleID);
-                }
-
-                po.setupForNormalExit(localStrings.getLocalString("enterprise.deployment.client.deploy_application", "Deployment of application {0}", moduleID), domain, mainStatus, targetModuleIDs);
+            String moduleID;
+            if (!po.checkStatusAndAddStage((TargetImpl)targets[0], localStrings.getLocalString("enterprise.deployment.client.deploy_to_first_target", "Deploying application to target {0}", targets[0].getName()),  mainStatus)) {
+                return po;
             } else {
-                po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.deploy_application_failed", "Deployment of application failed - {0}", mainStatus.getStageStatusMessage()), domain, mainStatus);
+                moduleID = mainStatus.getProperty(DFDeploymentProperties.NAME);
+                po.setModuleID(moduleID);
             }
+
+            Map createAppRefOptions = new HashMap();
+            if (deploymentOptions.get(DFDeploymentProperties.ENABLED) != null) {
+                createAppRefOptions.put(DFDeploymentProperties.ENABLED, deploymentOptions.get(DFDeploymentProperties.ENABLED)); 
+            }
+            if (deploymentOptions.get(DFDeploymentProperties.VIRTUAL_SERVERS) != null) {
+                createAppRefOptions.put(DFDeploymentProperties.VIRTUAL_SERVERS, deploymentOptions.get(DFDeploymentProperties.VIRTUAL_SERVERS)); 
+            }
+            // then create application references to the rest of the targets
+            for (int i = 1; i < targets.length; i++) {
+                createAppRefOptions.put(DFDeploymentProperties.TARGET, targets[i].getName());    
+                DFCommandRunner commandRunner2 = getDFCommandRunner(
+                    "create-application-ref", createAppRefOptions, new String[] {moduleID});
+                DFDeploymentStatus ds2 = commandRunner2.run();
+                DFDeploymentStatus mainStatus2 = ds2.getMainStatus();
+                if (!po.checkStatusAndAddStage((TargetImpl)targets[i], 
+"create app ref", mainStatus2)) {
+                    return po;
+                } 
+            }
+ 
+            // we use origTargets to populate the targetModuleIDList 
+            // so it takes care of the redeploy using domain target case too
+            for (int i = 0; i < origTargets.length; i++) {
+                TargetModuleIDImpl targetModuleID = new TargetModuleIDImpl((TargetImpl)origTargets[i], moduleID);
+                targetModuleIDList.add(targetModuleID);
+            }
+
+            TargetModuleIDImpl[] targetModuleIDs =
+                new TargetModuleIDImpl[targetModuleIDList.size()];
+            targetModuleIDs = (TargetModuleIDImpl[])targetModuleIDList.toArray(targetModuleIDs);
+            po.setupForNormalExit(localStrings.getLocalString("enterprise.deployment.client.deploy_application", "Deployment of application {0}", moduleID), (TargetImpl)targets[0], targetModuleIDs);
             return po;
         } catch (Throwable ioex) {
-            po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.deploy_application_failed", "Deployment of application failed - {0} ", ioex.toString()), domain, ioex);
+            po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.deploy_application_failed", "Deployment of application failed - {0} ", ioex.toString()), (TargetImpl)targets[0]);
             return po;
         }
     }
@@ -381,7 +453,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
      * @return DFProgressObject for monitoring progress and querying status
      */
     public DFProgressObject disable(Target[] targets, String moduleID) {
-        return changeState(targets, moduleID, "disable", "enterprise.deployment.client.disable_application", "Application {0} disabled successfully", "enterprise.deployment.client.disable_application_failed", "Attempt to disable application {0} failed");
+        return changeState(targets, moduleID, "disable", "Disable");
     }
 
     public String downloadFile(File location, String moduleID, String moduleURI) throws IOException {
@@ -395,7 +467,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
      * @return DFProgressObject for monitoring progress and querying status
      */
     public DFProgressObject enable(Target[] targets, String moduleID) {
-        return changeState(targets, moduleID, "enable", "enterprise.deployment.client.enable_application", "Application {0} enabled successfully", "enterprise.deployment.client.enable_application_failed", "Attempt to enable application {0} failed");
+        return changeState(targets, moduleID, "enable", "Enable");
     }
 
     private void ensureConnected() {
@@ -597,9 +669,13 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     }
 
     public Target[] listTargets() throws IOException {
+        return listReferencedTargets("*");
+    }
+
+    public Target[] listReferencedTargets(String appName) throws IOException {
         ensureConnected();
-        String commandName = LIST_COMMAND;
-        String[] operands = new String[] { "servers.server" };
+        String commandName = "_get-targets";
+        String[] operands = new String[] { appName };
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;
         try {
@@ -614,9 +690,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                     DFDeploymentStatus subStage =
                         (DFDeploymentStatus) subIter.next();
                     String result = subStage.getStageStatusMessage();
-                    String targetName = 
-                        getValueFromDottedNameListResult(result);
-                    targets.add(createTarget(targetName));
+                    targets.add(createTarget(result));
                 }
                 Target[] result =
                     new Target[targets.size()];
@@ -704,7 +778,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         ensureConnected();
         String commandName = "_get-host-and-port";
         Map commandParams = new HashMap();
-        commandParams.put("target", target);
+        commandParams.put(DFDeploymentProperties.TARGET, "server");
         if (moduleId != null) {
             commandParams.put("moduleId", moduleId);
         }
@@ -750,24 +824,75 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     }
 
     public TargetModuleID[] listAppRefs(String[] targets) throws IOException {
-        return listAppRefs(targets, DFDeploymentProperties.ALL);
+        ensureConnected();
+        List<TargetModuleIDImpl> targetModuleIDList =
+            new ArrayList<TargetModuleIDImpl>();
+        Throwable commandExecutionException = null;
+        try {
+            Target[] targetImpls = prepareTargets(createTargets(targets));
+            for (Target target : targetImpls) {
+                String commandName = "list-application-refs";
+                String[] operands = new String[] { target.getName() };
+                Map commandParams = new HashMap();
+                DFDeploymentStatus mainStatus = null;
+                DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, operands);
+                DFDeploymentStatus ds = commandRunner.run();
+                mainStatus = ds.getMainStatus();
+
+                if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
+                    for (Iterator appRefIter = mainStatus.getSubStages(); appRefIter.hasNext();) {
+                        DFDeploymentStatus appRefSubStage = (DFDeploymentStatus) appRefIter.next();
+                        String moduleID = appRefSubStage.getStageStatusMessage();
+                        TargetModuleIDImpl targetModuleID =
+                            new TargetModuleIDImpl((TargetImpl)target, moduleID);
+                        targetModuleIDList.add(targetModuleID);
+                    }
+                } else {
+                /*
+                 * We received a response from the server but the status was
+                 * reported as unsuccessful.  Because listAppRefs does not
+                 * return a ProgressObject which the caller could use to find
+                 * out about the success or failure, we must throw an exception
+                 * so the caller knows about the failure.
+                 */
+                    commandExecutionException = new IOException(
+                        "remote command execution failed on the server");
+                    commandExecutionException.initCause(
+                        new RuntimeException(mainStatus.getAllStageMessages()));
+                    throw commandExecutionException;
+                }
+            }
+        } catch (Throwable ex) {
+            if (commandExecutionException == null) {
+                throw new RuntimeException("error submitting remote command", ex);
+            } else {
+                throw (IOException) ex;
+            }
+        }
+        TargetModuleIDImpl[] result =
+            new TargetModuleIDImpl[targetModuleIDList.size()];
+        return (TargetModuleIDImpl[]) targetModuleIDList.toArray(result);
     }
 
-    public TargetModuleID[] listAppRefs(String[] targets, String state) throws IOException {
-        return listAppRefs(targets, state, null);
+    public TargetModuleID[] _listAppRefs(String[] targets) throws IOException {
+        return _listAppRefs(targets, DFDeploymentProperties.ALL);
     }
 
-    public TargetModuleID[] listAppRefs(String[] targets, String state, String type) throws IOException {
+    public TargetModuleID[] _listAppRefs(String[] targets, String state) throws IOException {
+        return _listAppRefs(targets, state, null);
+    }
+
+    public TargetModuleID[] _listAppRefs(String[] targets, String state, String type) throws IOException {
         Target[] targetImpls = prepareTargets(createTargets(targets));
-        return listAppRefs(targetImpls, state, type);
+        return _listAppRefs(targetImpls, state, type);
     }
 
-    public TargetModuleID[] listAppRefs(Target[] targets, String state, String type) throws IOException {
+    public TargetModuleID[] _listAppRefs(Target[] targets, String state, String type) throws IOException {
         ensureConnected();
         String commandName = "_list-app-refs";
         String targetsParam = createTargetsParam(targets);
         Map commandParams = new HashMap();
-        commandParams.put("target", targetsParam);
+        commandParams.put(DFDeploymentProperties.TARGET, targetsParam);
         commandParams.put("state", state);
         if (type != null) {
             commandParams.put("type", type);
@@ -839,10 +964,8 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     private Target[] prepareTargets(Target[] targets) {
         if (targets == null || targets.length == 0) {
             targets = new Target[]{targetForDefaultServer()};
-        }
-        if (targets.length > 1) {
-            throw new UnsupportedOperationException("Multiple targets not supported in v3");
-        }
+        } 
+
         return targets;
     }
 
@@ -876,29 +999,56 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     public DFProgressObject undeploy(Target[] targets, String moduleID, Map undeploymentOptions) {
         ensureConnected();
         targets = prepareTargets(targets);
-        String targetsParam = createTargetsParam(targets);
-        undeploymentOptions.put("target", targetsParam);
         ProgressObjectImpl po = new ProgressObjectImpl(targets);
+        List<TargetModuleIDImpl> targetModuleIDList =
+            new ArrayList<TargetModuleIDImpl>();
         try {
-            DFCommandRunner commandRunner = getDFCommandRunner(
+            if (!isTargetsMatched(moduleID, targets)) {
+                po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.specifyAllTargets", "Application {0} is already deployed on other targets. Please remove all references or specify all targets (or domain target if using asadmin command line) before attempting {1} operation", moduleID, "undeploy"), domain);
+            }
+
+            // first remove the application references from targets except
+            // last one
+            Map deleteAppRefOptions = new HashMap();
+            if (undeploymentOptions.get(DFDeploymentProperties.CASCADE) != null) {
+                deleteAppRefOptions.put(DFDeploymentProperties.CASCADE, undeploymentOptions.get(DFDeploymentProperties.CASCADE));
+            }
+            for (int i = 0 ; i < targets.length - 1 ; i++) {
+                deleteAppRefOptions.put(DFDeploymentProperties.TARGET, targets[i].getName());
+                DFCommandRunner commandRunner = getDFCommandRunner(
+                    "delete-application-ref", deleteAppRefOptions, new String[] {moduleID});
+                DFDeploymentStatus ds = commandRunner.run();
+                DFDeploymentStatus mainStatus = ds.getMainStatus();
+                if (!po.checkStatusAndAddStage((TargetImpl)targets[i], localStrings.getLocalString("enterprise.deployment.client.undeploy_remove_ref", "While undeploying, trying to remove reference for application in target {0}", targets[i].getName()), mainStatus)) {
+                    return po;
+                } else {
+                    TargetModuleIDImpl targetModuleID =
+                       new TargetModuleIDImpl((TargetImpl)targets[i], moduleID);
+                    targetModuleIDList.add(targetModuleID);
+                }
+            }
+
+            // then undeploy from last target
+            Target lastTarget = targets[targets.length -1];
+            undeploymentOptions.put(DFDeploymentProperties.TARGET, lastTarget.getName());
+            DFCommandRunner commandRunner2 = getDFCommandRunner(
                     "undeploy",
                     undeploymentOptions,
                     new String[]{moduleID});
-            DFDeploymentStatus ds = commandRunner.run();
-            DFDeploymentStatus mainStatus = ds.getMainStatus();
-            if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
-                TargetModuleIDImpl[] targetModuleIDs = new TargetModuleIDImpl[targets.length];
-                int i = 0;
-                for (TargetImpl ti : po.toTargetImpl(targets)) {
-                    targetModuleIDs[i++] = new TargetModuleIDImpl(ti, moduleID);
-                }
-                po.setupForNormalExit(localStrings.getLocalString("enterprise.deployment.client.undeploy_application", "Undeployment of application {0}", moduleID), domain, mainStatus, targetModuleIDs);
-            } else {
-                po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.undeploy_application_failed", "Undeployment failed - {0} ", mainStatus.getStageStatusMessage()), domain, mainStatus);
+            DFDeploymentStatus ds2 = commandRunner2.run();
+            DFDeploymentStatus mainStatus2 = ds2.getMainStatus();
+            if (!po.checkStatusAndAddStage((TargetImpl)lastTarget, localStrings.getLocalString("enterprise.deployment.client.undeploy_from_target", "Trying to undeploy application from target {0}", lastTarget.getName()), mainStatus2)) {
+                return po;
             }
+
+            TargetModuleIDImpl[] targetModuleIDs =
+                new TargetModuleIDImpl[targetModuleIDList.size()];
+            targetModuleIDs = (TargetModuleIDImpl[])targetModuleIDList.toArray(targetModuleIDs);
+
+            po.setupForNormalExit(localStrings.getLocalString("enterprise.deployment.client.undeploy_application", "Undeployment of application {0}", moduleID), (TargetImpl)targets[0], targetModuleIDs);
             return po;
         } catch (Throwable ioex) {
-            po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.undeploy_application_failed", "Undeployment failed - {0} ", ioex.toString()), domain, ioex);
+            po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.undeploy_application_failed", "Undeployment failed - {0}", ioex.toString()), (TargetImpl)targets[0]);
             return po;
         }
     }
@@ -1007,5 +1157,24 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             return ".ear";
         }
         return null;
+    }
+
+    private boolean isTargetsMatched(String appName, Target[] targets) 
+        throws IOException {
+        Target[] referencedTargets = listReferencedTargets(appName);
+        if (targets.length != referencedTargets.length) {
+            return false;
+        }
+        List<String> referencedTargetNames = new ArrayList<String>();
+        for (Target target : referencedTargets) {
+            referencedTargetNames.add(target.getName());
+        } 
+        for (Target target: targets) {
+            referencedTargetNames.remove(target.getName());
+        }
+        if (referencedTargetNames.size() == 0) {
+            return true;
+        } 
+        return false;
     }
 }

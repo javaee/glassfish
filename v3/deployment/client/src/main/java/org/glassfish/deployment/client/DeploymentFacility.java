@@ -168,25 +168,30 @@ public interface DeploymentFacility {
      */
     public HostAndPort getHostAndPort(String target, String modID, boolean securityEnabled) throws IOException;
 
-    /**
+   /**
      * list all application refs that are present in the provided list of targets
      */
     public TargetModuleID[] listAppRefs(String[] targets) throws IOException;
 
     /**
+     * list all application refs that are present in the provided list of targets
+     */
+    public TargetModuleID[] _listAppRefs(String[] targets) throws IOException;
+
+    /**
      * list all application refs that are present in the provided list of targets with the specified state
      */
-    public TargetModuleID[] listAppRefs(String[] targets, String state) throws IOException;
+    public TargetModuleID[] _listAppRefs(String[] targets, String state) throws IOException;
 
     /**
      * list all application refs that are present in the provided list of targets with the specified state and specified type
      */
-    public TargetModuleID[] listAppRefs(String[] targets, String state, String type) throws IOException;
+    public TargetModuleID[] _listAppRefs(String[] targets, String state, String type) throws IOException;
 
     /**
      * list all application refs that are present in the provided list of targets with the specified state and specified type
      */
-    public TargetModuleID[] listAppRefs(Target[] targets, String state, String type) throws IOException;
+    public TargetModuleID[] _listAppRefs(Target[] targets, String state, String type) throws IOException;
 
     /**
      * Get sub module info for ear
@@ -207,6 +212,12 @@ public interface DeploymentFacility {
      * list all targets
      */
     public Target[] listTargets() throws IOException;
+
+    /**
+     * list the referenced targets for application
+     */
+    public Target[] listReferencedTargets(String appName) throws IOException;
+
     
     /**
      * Downloads a particular file from the server repository. 

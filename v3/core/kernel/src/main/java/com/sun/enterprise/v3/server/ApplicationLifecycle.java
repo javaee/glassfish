@@ -808,16 +808,6 @@ public class ApplicationLifecycle implements Deployment {
 
         events.send(new Event(Deployment.UNDEPLOYMENT_START, info));
 
-        // TODO: use this workaround till the command replication is turned on 
-        // by default
-        boolean doReplication = false;
-        if(Utility.getEnvOrProp("ENABLE_REPLICATION")!=null) {
-            doReplication = Boolean.parseBoolean(Utility.getEnvOrProp("ENABLE_REPLICATION"));
-         }
-        if (!doReplication) {
-            unload(appName, context);
-        }
-
         try {
             info.clean(context);
         } catch(Exception e) {

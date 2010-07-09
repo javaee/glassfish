@@ -78,7 +78,7 @@ public class GetClientStubsTest {
         sci.setHostName("localhost");
         sci.setHostPort(4848); // 8080 for the REST client
         sci.setUserName("admin");
-        sci.setPassword("adminadmin");
+        sci.setPassword("");
 
         df.connect(sci);
 
