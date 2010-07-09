@@ -1028,6 +1028,9 @@ public abstract class ContainerBase
      * @param child Existing child Container to be removed
      */
     public void removeChild(Container child) {
+        if (child == null) {
+            return;
+        }
 
         synchronized(children) {
             if (children.get(child.getName()) == null)
