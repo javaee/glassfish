@@ -65,6 +65,7 @@ import javax.xml.namespace.QName;
 import javax.ejb.Stateless;
 import javax.ejb.Singleton;
 
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -128,6 +129,13 @@ public class WebServiceHandler extends AbstractHandler {
 
         // Ignore @WebService annotation on an interface; process only those in an actual service impl class
         if (((Class)annElem).isInterface()) {
+            return HandlerProcessingResultImpl.getDefaultResult(getAnnotationType(), ResultType.PROCESSED);
+        }
+
+        if(isJaxwsRIDeployment(annInfo)) {
+            // Looks like JAX-WS RI specific deployment, do not process Web Service annotations otherwise would end up as two web service endpoints
+            logger.info(format(rb.getString("enterprise.webservice.deployment.disabled"),
+                    annInfo.getProcessingContext().getArchive().getName(),"WEB-INF/sun-jaxws.xml"));
             return HandlerProcessingResultImpl.getDefaultResult(getAnnotationType(), ResultType.PROCESSED);
         }
 
@@ -541,5 +549,26 @@ public class WebServiceHandler extends AbstractHandler {
         }
         return false;
 
+    }
+
+    /**
+     *   If WEB-INF/sun-jaxws.xml exists and is not processed in EJB context , then it returns true.
+     * @param annInfo
+     * @return
+     */
+    private boolean isJaxwsRIDeployment(AnnotationInfo annInfo) {
+        boolean riDeployment = false;
+        AnnotatedElementHandler annCtx = annInfo.getProcessingContext().getHandler();
+        try {
+            ReadableArchive moduleArchive = annInfo.getProcessingContext().getArchive();
+            if (moduleArchive != null && moduleArchive.exists("WEB-INF/sun-jaxws.xml")
+                    && !((Class)annInfo.getAnnotatedElement()).isInterface()
+                    && ( (annCtx instanceof WebBundleContext) || (annCtx instanceof WebComponentContext))) {
+                riDeployment = true;
+            }
+        } catch (Exception e) {
+            //continue, processing
+        }
+        return riDeployment;
     }
 }

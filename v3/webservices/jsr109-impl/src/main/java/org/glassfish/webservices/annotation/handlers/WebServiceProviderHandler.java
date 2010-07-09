@@ -36,14 +36,18 @@
 
 package org.glassfish.webservices.annotation.handlers;
 
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.annotation.Annotation;
+import java.util.logging.Logger;
 
 import javax.enterprise.deploy.shared.ModuleType;
 
+import com.sun.logging.LogDomains;
 import org.glassfish.apf.AnnotationHandler;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.AnnotatedElementHandler;
@@ -75,6 +79,7 @@ import com.sun.enterprise.deployment.util.XModuleType;
 
 import javax.xml.namespace.QName;
 
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -85,6 +90,10 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service
 public class WebServiceProviderHandler extends AbstractHandler implements AnnotationHandler {
+    
+    private Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
+
+    private ResourceBundle rb = logger.getResourceBundle();
     
     /** Creates a new instance of WebServiceHandler */
     public WebServiceProviderHandler() {
@@ -118,6 +127,14 @@ public class WebServiceProviderHandler extends AbstractHandler implements Annota
             annInfo.getProcessingContext().getErrorHandler().error(ape);
             return HandlerProcessingResultImpl.getDefaultResult(getAnnotationType(), ResultType.FAILED);                        
         }             
+
+        if(isJaxwsRIDeployment(annInfo)) {
+            // Looks like JAX-WS RI specific deployment, do not process Web Service annotations otherwise would end up as two web service endpoints
+            logger.info(format(rb.getString("enterprise.webservice.deployment.disabled"),
+                    annInfo.getProcessingContext().getArchive().getName(),"WEB-INF/sun-jaxws.xml"));
+            return HandlerProcessingResultImpl.getDefaultResult(getAnnotationType(), ResultType.PROCESSED);
+        }
+        
         // WebServiceProvider MUST implement the provider interface, let's check this
         if (!javax.xml.ws.Provider.class.isAssignableFrom((Class) annElem)) {
             AnnotationProcessorException ape = new AnnotationProcessorException(
@@ -308,5 +325,30 @@ public class WebServiceProviderHandler extends AbstractHandler implements Annota
         }
                 
         return HandlerProcessingResultImpl.getDefaultResult(getAnnotationType(), ResultType.PROCESSED);
+    }
+
+    /**
+     *   If WEB-INF/sun-jaxws.xml exists and is not processed in EJB context , then it returns true.
+     * @param annInfo
+     * @return
+     */
+    private boolean isJaxwsRIDeployment(AnnotationInfo annInfo) {
+        boolean riDeployment = false;
+        AnnotatedElementHandler annCtx = annInfo.getProcessingContext().getHandler();
+        try {
+            ReadableArchive moduleArchive = annInfo.getProcessingContext().getArchive();
+            if (moduleArchive != null && moduleArchive.exists("WEB-INF/sun-jaxws.xml")
+                    && !((Class)annInfo.getAnnotatedElement()).isInterface()
+                    && ( (annCtx instanceof WebBundleContext) || (annCtx instanceof WebComponentContext))) {
+                riDeployment = true;
+            }
+        } catch (Exception e) {
+            //continue, processing
+        }
+        return riDeployment;
+    }
+    
+    private String format(String key, String ... values){
+          return MessageFormat.format(key,values);
     }
 }
