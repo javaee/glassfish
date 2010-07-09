@@ -76,6 +76,7 @@ import com.sun.enterprise.container.common.spi.JCDIService;
 
 import com.sun.ejb.monitoring.stats.*;
 import com.sun.ejb.monitoring.probes.*;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
@@ -1173,21 +1174,32 @@ public abstract class BaseContainer
         String javaGlobalName = getJavaGlobalJndiNamePrefix();
 
         if (isRemote) {
-
-            // This is either the default glassfish-specific (non-portable)
-            // global JNDI name or the one specified via mappedName(), sun-ejb-jar.xml,
-            // etc.
-            String glassfishSpecificJndiName = ejbDescriptor.getJndiName();
-
-            // If the explicitly specified name is the same as the portable name,
-            // don't register any of the glassfish-specific names to prevent
-            // clashes. 
-            if( (glassfishSpecificJndiName != null) &&
-                    ( glassfishSpecificJndiName.equals("") ||
-                      glassfishSpecificJndiName.equals(javaGlobalName) ) ) {
-                glassfishSpecificJndiName = null;
+            boolean disableNonPortableJndiName = false;
+            Boolean disableInDD = ejbDescriptor.getEjbBundleDescriptor().getDisableNonportableJndiNames();
+            if(disableInDD != null) {  // explicitly set in glassfish-ejb-jar.xml
+                disableNonPortableJndiName = disableInDD;
+            } else {
+                String disableInServer = ejbContainerUtilImpl.getEjbContainer().
+                        getPropertyValue(RuntimeTagNames.DISABLE_NONPORTABLE_JNDI_NAMES);
+                disableNonPortableJndiName = Boolean.valueOf(disableInServer);
             }
 
+            String glassfishSpecificJndiName = null;
+            if (!disableNonPortableJndiName) {
+                // This is either the default glassfish-specific (non-portable)
+                // global JNDI name or the one specified via mappedName(), sun-ejb-jar.xml,
+                // etc.
+                glassfishSpecificJndiName = ejbDescriptor.getJndiName();
+
+                // If the explicitly specified name is the same as the portable name,
+                // don't register any of the glassfish-specific names to prevent
+                // clashes.
+                if ((glassfishSpecificJndiName != null)
+                        && (glassfishSpecificJndiName.equals("")
+                        || glassfishSpecificJndiName.equals(javaGlobalName))) {
+                    glassfishSpecificJndiName = null;
+                }
+            }
             
             if( hasRemoteHomeView ) {
                 this.ejbHomeImpl = instantiateEJBHomeImpl();
@@ -1390,10 +1402,7 @@ public abstract class BaseContainer
                 if( glassfishSpecificJndiName == null ) {
                     ejbDescriptor.setJndiName(javaGlobalName);
                 }
-
-
             }
-            
         }
 
         if (isLocal) {

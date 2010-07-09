@@ -168,6 +168,7 @@ public interface RuntimeTagNames extends TagNames {
     public static final String CMT_TIMEOUT_IN_SECONDS = "cmt-timeout-in-seconds";    
     public static final String USE_THREAD_POOL_ID = "use-thread-pool-id";    
     public static final String AVAILABILITY_ENABLED = "availability-enabled";
+    public static final String DISABLE_NONPORTABLE_JNDI_NAMES = "disable-nonportable-jndi-names";
     
     // CMP related
     public static final String CMP_RESOURCE = "cmp-resource";    

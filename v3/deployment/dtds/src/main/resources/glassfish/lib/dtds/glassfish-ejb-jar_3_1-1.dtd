@@ -13,7 +13,7 @@
 <!--
 This is the root element of the ejb module descriptor document.
 -->
-<!ELEMENT glassfish-ejb-jar (security-role-mapping*, enterprise-beans, compatibility?) >
+<!ELEMENT glassfish-ejb-jar (security-role-mapping*, enterprise-beans, compatibility?, disable-nonportable-jndi-names?) >
 
 <!-- 
 System unique object id. Automatically generated and updated at deployment/redeployment 
@@ -1117,4 +1117,11 @@ visible to various modules. Setting this element to v2
 removes these Java EE 6 restrictions.
 -->
 <!ELEMENT compatibility (#PCDATA)>
+
+<!--
+The disable-nonportable-jndi-names element indicates whether the GlassFish-
+specific, nonportable jndi names for EJB are disabled.  Acceptable values
+are true and false.  The default value is false.
+-->
+<!ELEMENT disable-nonportable-jndi-names (#PCDATA)>
 

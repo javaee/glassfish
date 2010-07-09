@@ -52,6 +52,7 @@ import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
+import org.glassfish.api.admin.config.PropertyDesc;
 
 /**
  * Configuration of EJB Container
@@ -370,7 +371,11 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
     	Properties as per {@link PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
-    @PropertiesDesc(props={})
+    @PropertiesDesc(props = {
+        @PropertyDesc(name = "disable-nonportable-jndi-names",
+        defaultValue = "false",
+        values = {"true", "false"})
+    })
     @Element
     List<Property> getProperty();
 }

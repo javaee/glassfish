@@ -63,6 +63,7 @@ public class EjbBundleDescriptor extends BundleDescriptor implements WritableJnd
     public final static String SPEC_VERSION = "2.1";
    
     private long uniqueId;    
+    private Boolean disableNonportableJndiNames;
     private Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
     private Set<RelationshipDescriptor> relationships = new HashSet<RelationshipDescriptor>();
     private String relationshipsDescription;
@@ -1185,6 +1186,14 @@ public class EjbBundleDescriptor extends BundleDescriptor implements WritableJnd
         return (getInjectionInfoByClass(clazz, this));
     }
 
+    public Boolean getDisableNonportableJndiNames() {
+        return this.disableNonportableJndiNames;
+    }
+
+    public void setDisableNonportableJndiNames(String disableOrNot) {
+        this.disableNonportableJndiNames = Boolean.valueOf(disableOrNot);
+    }
+
     //
     // There is still some redundant DOL processing of the modules that can result in these
     // being called so just treat them as no-ops.
@@ -1220,9 +1229,4 @@ public class EjbBundleDescriptor extends BundleDescriptor implements WritableJnd
     //
     //  end no-op PostConstruct/PreDestroy methods
     //
-
-
-
-
-
 }
