@@ -52,7 +52,6 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.cluster.SyncRequest;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
  * Synchronize a local server instance.
@@ -77,9 +76,6 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
 
     private static enum SyncLevel { TOP, DIRECTORY, RECURSIVE };
 
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(SynchronizeInstanceCommand.class);
-
     @Override
     protected void validate() throws CommandException {
         if (ok(instanceName0))
@@ -94,7 +90,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
         if (synchronizeInstance())
             return SUCCESS;
         else {
-            logger.printMessage(strings.get("Sync.noConnect",
+            logger.printMessage(Strings.get("Sync.noConnect",
                                     programOpts.getHost(),
                                     Integer.toString(programOpts.getPort())));
             return ERROR;
@@ -112,7 +108,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
 
         if (!dasProperties.exists()) {
             logger.printMessage(
-                strings.get("Sync.noDASConfigured", dasProperties.toString()));
+                Strings.get("Sync.noDASConfigured", dasProperties.toString()));
             return false;
         }
 
@@ -130,7 +126,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
          */
         if (syncFull) {
             logger.printDetailMessage(
-                                strings.get("Instance.fullsync", instanceName));
+                                Strings.get("Instance.fullsync", instanceName));
             for (File f : FileUtils.listFiles(instanceDir)) {
                 FileUtils.whack(f);
                 logger.printDebugMessage("Removing: " + f);
@@ -153,7 +149,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
              * If not, we're all done.
              */
             if (domainXml.lastModified() == dtime) {
-                logger.printDetailMessage(strings.get("Sync.alreadySynced"));
+                logger.printDetailMessage(Strings.get("Sync.alreadySynced"));
                 return true;
             }
 
@@ -306,16 +302,16 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             // the returned files are automatically saved by the command
         } catch (IOException ex) {
             logger.printDebugMessage("Got exception: " + ex);
-            throw new CommandException(strings.get("Sync.failed", sr.dir), ex);
+            throw new CommandException(Strings.get("Sync.failed", sr.dir), ex);
         } catch (JAXBException jex) {
             logger.printDebugMessage("Got exception: " + jex);
-            throw new CommandException(strings.get("Sync.failed", sr.dir), jex);
+            throw new CommandException(Strings.get("Sync.failed", sr.dir), jex);
         } catch (CommandException cex) {
             logger.printDebugMessage("Got exception: " + cex);
             logger.printDebugMessage("  cause: " + cex.getCause());
             if (cex.getCause() instanceof ConnectException)
                 throw (ConnectException)cex.getCause();
-            throw new CommandException(strings.get("Sync.failed", sr.dir), cex);
+            throw new CommandException(Strings.get("Sync.failed", sr.dir), cex);
         } finally {
             // remove tempFile
             if (tempFile != null)

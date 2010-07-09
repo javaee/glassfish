@@ -36,26 +36,35 @@
 package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.io.InstanceDirs;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 
-import com.sun.enterprise.admin.cli.LocalServerCommand;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 
 /**
  * A base class for local commands that manage a local server instance.
+ * This base class is used by a LOT of other classes.  There is a big comment before
+ * each section of the file -- sorted by visibility.
+ * If you specifically want a method to be overridden -- make it protected but
+ * not final.
+ * final protected means -- "call me but don't override me".  This convention is
+ * to make things less confusing.
+ * If you add a method or change whether it is final -- move it to the right section.
+ * @author Byron Nevins
  */
+// -----------------------------------------------------------------------
+// ----------------   public methods here   --------------- --------------
+// -----------------------------------------------------------------------
+
 public abstract class LocalInstanceCommand extends LocalServerCommand {
     @Param(name = "nodeagent", optional = true)
     protected String nodeAgent;
@@ -70,14 +79,15 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     protected File nodeAgentDir;        // the specific node agent dir
     protected File instanceDir;         // the specific instance dir
     private InstanceDirs instanceDirs;
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(LocalInstanceCommand.class);
-
     @Override
     protected void validate()
             throws CommandException, CommandValidationException {
         initInstance();
     }
+    
+// -----------------------------------------------------------------------
+// -------- protected methods where overriding is allowed here -----------
+// -----------------------------------------------------------------------
 
     /** 
      * override this method if your class does NOT want to create directories
@@ -100,7 +110,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 
         if(!agentsDir.isDirectory()) {
             throw new CommandException(
-                    strings.get("Instance.badAgentDir", agentsDir));
+                    Strings.get("Instance.badAgentDir", agentsDir));
         }
 
         if(nodeAgent != null) {
@@ -122,7 +132,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 
         if(!instanceDir.isDirectory()) {
             throw new CommandException(
-                    strings.get("Instance.badInstanceDir", instanceDir));
+                    Strings.get("Instance.badInstanceDir", instanceDir));
         }
         nodeAgentDir = SmartFile.sanitize(nodeAgentDir);
         instanceDir = SmartFile.sanitize(instanceDir);
@@ -143,6 +153,10 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     protected final InstanceDirs getInstanceDirs() {
         return instanceDirs;
     }
+
+// -----------------------------------------------------------------------
+// -------- protected methods where overriding is NOT allowed here -----------
+// -----------------------------------------------------------------------
 
     /**
      * Set the programOpts based on the das.properties file.
@@ -175,7 +189,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             } else if (p == null || p.equals("http"))
                 programOpts.setPort(port);
             else
-                throw new CommandException(strings.get("Instance.badProtocol",
+                throw new CommandException(Strings.get("Instance.badProtocol",
                                                     propfile.toString(), p));
             p = dasprops.getProperty("agent.das.isSecure");
             if (p != null)
@@ -186,7 +200,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             // XXX - what about the DAS admin password?
         } catch (IOException ioex) {
             throw new CommandException(
-                        strings.get("Instance.cantReadDasProperties",
+                        Strings.get("Instance.cantReadDasProperties",
                                     propfile.getPath()));
         } finally {
             if (fis != null) {
@@ -199,6 +213,43 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         }
     }
 
+    final protected void whackFilesystem() throws CommandException {
+        File whackee = getServerDirs().getServerDir();
+
+        if (whackee == null || !whackee.isDirectory()) {
+            throw new CommandException(Strings.get("DeleteInstance.noWhack",
+                    whackee));
+        }
+
+        FileUtils.whack(whackee);
+
+        if (whackee.isDirectory())
+            throw new CommandException(Strings.get("DeleteInstance.badWhack",
+                    whackee));
+    }
+
+    final protected String getNodeHome() throws CommandException {
+        return getInstallRootPath();
+    }
+
+    final protected String getInstanceHostName() throws CommandException {
+        String instanceHostName = null;
+        InetAddress localHost = null;
+        try {
+            localHost = InetAddress.getLocalHost();
+        } catch (UnknownHostException ex) {
+            throw new CommandException(Strings.get("Agent.cantGetHostName", ex));
+        }
+        if (localHost != null) {
+            instanceHostName = localHost.getCanonicalHostName();
+        }
+        return instanceHostName;
+    }
+
+// -----------------------------------------------------------------------
+// -------- everything below here is private    --------------------------
+// -----------------------------------------------------------------------
+
     /**
      * Update DAS port from an old V2 das.properties file.
      * If the old port is the standard jrmp port, just use the new
@@ -210,13 +261,13 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         Console cons;
         if (port == 8686) {     // the old JRMP port
             logger.printMessage(
-                strings.get("Instance.oldDasProperties",
+                Strings.get("Instance.oldDasProperties",
                     propfile.toString(), Integer.toString(port),
                     Integer.toString(programOpts.getPort())));
             port = programOpts.getPort();
         } else if ((cons = System.console()) != null) {
             String line = cons.readLine("%s",
-                strings.get("Instance.oldDasPropertiesPrompt",
+                Strings.get("Instance.oldDasPropertiesPrompt",
                     propfile.toString(), Integer.toString(port),
                     Integer.toString(programOpts.getPort())));
             while (line != null && line.length() > 0) {
@@ -226,12 +277,12 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                         break;
                 } catch (NumberFormatException nfex) {
                 }
-                line = cons.readLine(strings.get("Instance.reenterPort"),
+                line = cons.readLine(Strings.get("Instance.reenterPort"),
                     Integer.toString(programOpts.getPort()));
             }
         } else {
             logger.printMessage(
-                strings.get("Instance.oldDasPropertiesWrong",
+                Strings.get("Instance.oldDasPropertiesWrong",
                     propfile.toString(), Integer.toString(port),
                     Integer.toString(programOpts.getPort())));
             port = programOpts.getPort();
@@ -247,7 +298,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             bos = null;
         } catch (IOException ex2) {
             logger.printMessage(
-                strings.get("Instance.dasPropertiesUpdateFailed"));
+                Strings.get("Instance.dasPropertiesUpdateFailed"));
         } finally {
             if (bos != null) {
                 try {
@@ -275,7 +326,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         // ERROR:  more than one nodeagent directory
         if(files.length > 1) {
             throw new CommandException(
-                    strings.get("Agent.tooManyAgentDirs", parent));
+                    Strings.get("Agent.tooManyAgentDirs", parent));
         }
 
         // the usual case -- one agent dir
@@ -290,12 +341,12 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             File f = new File(parent, hostname);
 
             if(!f.mkdirs() || !f.isDirectory()) // for instance there is a regular file with that name
-                throw new CommandException(strings.get("Agent.cantCreateAgentDir", f));
+                throw new CommandException(Strings.get("Agent.cantCreateAgentDir", f));
 
             return f;
         }
         catch (UnknownHostException ex) {
-            throw new CommandException(strings.get("Agent.cantGetHostName", ex));
+            throw new CommandException(Strings.get("Agent.cantGetHostName", ex));
         }
     }
 
@@ -310,13 +361,13 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 
         if(files == null || files.length == 0) {
             throw new CommandException(
-                    strings.get("Instance.noInstanceDirs", parent));
+                    Strings.get("Instance.noInstanceDirs", parent));
         }
 
         // expect two - the "agent" directory and the instance directory
         if(files.length > 2) {
             throw new CommandException(
-                    strings.get("Instance.tooManyInstanceDirs", parent));
+                    Strings.get("Instance.tooManyInstanceDirs", parent));
         }
 
         for(File f : files) {
@@ -324,7 +375,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                 return f;
         }
         throw new CommandException(
-                strings.get("Instance.noInstanceDirs", parent));
+                Strings.get("Instance.noInstanceDirs", parent));
     }
 
     private String getAgentsDirPath() throws CommandException {
@@ -351,21 +402,4 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         return installRootPath;
     }
 
-    protected String getNodeHome() throws CommandException {
-        return getInstallRootPath();
-    }
-
-    protected String getInstanceHostName() throws CommandException {
-        String instanceHostName = null;
-        InetAddress localHost = null;
-        try {
-            localHost = InetAddress.getLocalHost();
-        } catch (UnknownHostException ex) {
-            throw new CommandException(strings.get("Agent.cantGetHostName", ex));
-        }
-        if (localHost != null) {
-            instanceHostName = localHost.getCanonicalHostName();
-        }
-        return instanceHostName;
-    }
 }

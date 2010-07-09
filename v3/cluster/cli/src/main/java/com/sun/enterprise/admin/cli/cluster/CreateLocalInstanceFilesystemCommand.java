@@ -49,7 +49,6 @@ import org.glassfish.api.admin.*;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.admin.cli.*;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.net.NetUtils;
 
@@ -102,9 +101,6 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     private File nodeagentPropsFile;
     private File loggingPropsFile;
 
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(CreateLocalInstanceFilesystemCommand.class);
-
     /**
      */
     @Override
@@ -114,11 +110,11 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         if(ok(instanceName0))
             instanceName = instanceName0;
         else
-            throw new CommandException(strings.get("Instance.badInstanceName"));
+            throw new CommandException(Strings.get("Instance.badInstanceName"));
 
         //if (agentPort != null) {
         //    if (!NetUtils.isPortStringValid(agentPort)) {
-        //        throw new CommandException(strings.get("Instance.invalidAgentPort", agentPort));
+        //        throw new CommandException(Strings.get("Instance.invalidAgentPort", agentPort));
         //    }
         //}
 
@@ -138,7 +134,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
 
         if (dasPropsFile.isFile()) {
             setDasDefaults(dasPropsFile);
-            logger.printMessage(strings.get("Instance.existingDasPropertiesWarning",
+            logger.printMessage(Strings.get("Instance.existingDasPropertiesWarning",
                     programOpts.getHost(), "" + programOpts.getPort(), nodeAgent));
         }
 
@@ -202,7 +198,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
             createDirsComplete = true;
         }
         if (badfile != null) {
-            throw new CommandException(strings.get("Instance.cannotMkDir", badfile));
+            throw new CommandException(Strings.get("Instance.cannotMkDir", badfile));
         }
         writeProperties();
         return SUCCESS;
@@ -220,7 +216,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
             filename = loggingPropsFile.getName();
             writeLoggingProperties();
         } catch (IOException ex) {
-            throw new CommandException(strings.get("Instance.cantWriteProperties", filename), ex);
+            throw new CommandException(Strings.get("Instance.cantWriteProperties", filename), ex);
         }
     }
 
@@ -233,7 +229,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         dasProperties.setProperty(K_DAS_PROTOCOL, DASProtocol);
 
         FileOutputStream fos = new FileOutputStream(dasPropsFile);
-        dasProperties.store(fos, strings.get("Instance.dasPropertyComment"));
+        dasProperties.store(fos, Strings.get("Instance.dasPropertyComment"));
         fos.close();
     }
 
@@ -266,7 +262,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         _nodeagentProps.setProperty(K_DAS_IS_SECURE, isDasSecure);
 
         FileOutputStream fos = new FileOutputStream(nodeagentPropsFile);
-        _nodeagentProps.store(fos, strings.get("Instance.nodeagentPropertiesComment"));
+        _nodeagentProps.store(fos, Strings.get("Instance.nodeagentPropertiesComment"));
         fos.close();
     }*/
 
@@ -285,7 +281,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
             port = Integer.parseInt(agentPort);
         }
         if (!NetUtils.isPortFree(port)) {
-            throw new CommandException(strings.get("AgentPortInUse",
+            throw new CommandException(Strings.get("AgentPortInUse",
                 agentPort));
         }
         logger.printDebugMessage("agentPort = " + port);

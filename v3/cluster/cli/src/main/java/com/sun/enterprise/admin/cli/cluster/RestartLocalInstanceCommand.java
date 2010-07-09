@@ -37,7 +37,6 @@ package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.admin.cli.CLICommand;
 import com.sun.enterprise.admin.cli.remote.*;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.*;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.CommandValidationException;
@@ -56,9 +55,6 @@ public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
 
     @Inject
     private Habitat habitat;
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(RestartLocalInstanceCommand.class);
-
     @Override
     protected final int doRemoteCommand() throws CommandException {
         // first, find out how long the server has been up
@@ -78,7 +74,7 @@ public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
 
     @Override
     protected int instanceNotRunning() throws CommandException {
-        logger.printWarning(strings.get("restart.instanceNotRunning"));
+        logger.printWarning(Strings.get("restart.instanceNotRunning"));
         CLICommand cmd = habitat.getComponent(CLICommand.class, "start-local-instance");
         return cmd.execute(argv);
     }

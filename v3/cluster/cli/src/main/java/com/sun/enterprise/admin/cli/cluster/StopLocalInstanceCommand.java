@@ -43,7 +43,6 @@ import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
  * Stop a local server instance.
@@ -54,10 +53,9 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Service(name = "stop-local-instance")
 @Scoped(PerLookup.class)
 public class StopLocalInstanceCommand extends LocalInstanceCommand {
+
     @Param(name = "instance_name", primary = true, optional = true)
     private String userArgInstanceName;
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(StopLocalInstanceCommand.class);
 
     @Override
     protected void validate()
@@ -93,16 +91,16 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
         // (localPassword is set by initInstance)
         File serverDir = getServerDirs().getServerDir();
 
-        if(serverDir == null || !serverDir.isDirectory())
+        if (serverDir == null || !serverDir.isDirectory())
             return noSuchInstance();
 
-        if(getServerDirs().getLocalPassword() == null)
+        if (getServerDirs().getLocalPassword() == null)
             return instanceNotRunning();
 
         String serverName = getServerDirs().getServerName();
         int adminPort = getAdminPort(serverName);
         programOpts.setPort(adminPort);
-        logger.printDebugMessage("StopInstance.stoppingMessage" +  adminPort);
+        logger.printDebugMessage("StopInstance.stoppingMessage" + adminPort);
 
         /*
          * If we're using the local password, we don't want to prompt
@@ -111,21 +109,22 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
          */
         programOpts.setInteractive(false);
 
-        if(!isThisServer(serverDir, "Instance-Root_value"))
+        if (!isThisServer(serverDir, "Instance-Root_value"))
             return instanceNotRunning();
 
         logger.printDebugMessage("It's the correct Instance");
         return doRemoteCommand();
     }
+
     /**
      * Print message and return exit code when
      * we detect that the DAS is not running.
      */
-    protected int instanceNotRunning() throws CommandException{
+    protected int instanceNotRunning() throws CommandException {
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
 
-        logger.printWarning(strings.get("StopInstance.instanceNotRunning"));
+        logger.printWarning(Strings.get("StopInstance.instanceNotRunning"));
         return 0;
     }
 
@@ -136,7 +135,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
     private int noSuchInstance() {
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
-        logger.printWarning(strings.get("Instance.noSuchInstance"));
+        logger.printWarning(Strings.get("Instance.noSuchInstance"));
         return 0;
     }
 
@@ -156,22 +155,22 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
      * Wait for the server to die.
      */
     private void waitForDeath() throws CommandException {
-        if(!programOpts.isTerse()) {
+        if (!programOpts.isTerse()) {
             // use stdout because logger always appends a newline
-            System.out.print(strings.get("StopInstance.waitForDeath") + " ");
+            System.out.print(Strings.get("StopInstance.waitForDeath") + " ");
         }
         long startWait = System.currentTimeMillis();
         boolean alive = true;
         int count = 0;
 
-        while(!timedOut(startWait)) {
-            if(!isRunning()) {
+        while (!timedOut(startWait)) {
+            if (!isRunning()) {
                 alive = false;
                 break;
             }
             try {
                 Thread.sleep(100);
-                if(!programOpts.isTerse() && count++ % 10 == 0)
+                if (!programOpts.isTerse() && count++ % 10 == 0)
                     System.out.print(".");
             }
             catch (InterruptedException ex) {
@@ -179,11 +178,11 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
             }
         }
 
-        if(!programOpts.isTerse())
+        if (!programOpts.isTerse())
             System.out.println();
 
-        if(alive) {
-            throw new CommandException(strings.get("StopInstance.instanceNotDead",
+        if (alive) {
+            throw new CommandException(Strings.get("StopInstance.instanceNotDead",
                     (CLIConstants.DEATH_TIMEOUT_MS / 1000)));
         }
     }

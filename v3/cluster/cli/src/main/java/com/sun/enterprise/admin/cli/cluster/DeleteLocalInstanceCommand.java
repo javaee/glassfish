@@ -48,7 +48,6 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 
 
@@ -64,11 +63,6 @@ import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
     @Param(name = "instance_name", primary = true, optional = true)
     private String instanceName0;
-    @Param(name = "filesystemonly", primary = false, optional = true, defaultValue = "false")
-    private boolean localOnly;
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(DeleteLocalInstanceCommand.class);
-
     @Override
     protected void validate()
             throws CommandException, CommandValidationException {
@@ -76,7 +70,7 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
         super.validate();
 
         if(!StringUtils.ok(getServerDirs().getServerName()))
-            throw new CommandException(strings.get("DeleteInstance.noInstanceName"));
+            throw new CommandException(Strings.get("DeleteInstance.noInstanceName"));
     }
 
     /**
@@ -86,13 +80,11 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
             throws CommandException, CommandValidationException {
 
         if(isRunning()) {
-            throw new CommandException(strings.get("DeleteInstance.running"));
+            throw new CommandException(Strings.get("DeleteInstance.running"));
         }
 
-        if(!localOnly)
-            doRemote();
-
-        doLocal();
+        doRemote();
+        whackFilesystem();
         return SUCCESS;
     }
 
@@ -110,7 +102,7 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
         catch(CommandException ce) {
             // Let's add our $0.02 to this Exception!
             Throwable t = ce.getCause();
-            String newString = strings.get("DeleteInstance.remoteError", 
+            String newString = Strings.get("DeleteInstance.remoteError",
                     ce.getLocalizedMessage());
 
             if(t != null)
@@ -118,21 +110,5 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
             else
                 throw new CommandException(newString);
         }
-    }
-
-    private void doLocal() throws CommandException {
-        File whackee = getServerDirs().getServerDir();
-
-        if(whackee == null || !whackee.isDirectory()) {
-            throw new CommandException(strings.get("DeleteInstance.noWhack",
-                    whackee));
-        }
-
-        FileUtils.whack(whackee);
-
-        if(whackee.isDirectory())
-            throw new CommandException(strings.get("DeleteInstance.badWhack",
-                    whackee));
-
     }
 }

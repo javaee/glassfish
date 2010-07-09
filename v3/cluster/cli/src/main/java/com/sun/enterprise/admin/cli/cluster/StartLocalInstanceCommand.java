@@ -49,7 +49,6 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.admin.cli.StartServerCommand;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
@@ -81,9 +80,6 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
 
     private String localPassword;
     
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(StartLocalInstanceCommand.class);
-
     @Override
     public RuntimeType getType() {
          return RuntimeType.INSTANCE;
@@ -104,7 +100,7 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
         File dir = getServerDirs().getServerDir();
 
         if(!dir.isDirectory())
-            throw new CommandException(strings.get("Instance.noSuchInstance"));
+            throw new CommandException(Strings.get("Instance.noSuchInstance"));
     }
 
     /**
@@ -115,16 +111,16 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
         logger.printDebugMessage(toString());
 
         if (nosync) {
-            logger.printMessage(strings.get("Instance.nosync"));
+            logger.printMessage(Strings.get("Instance.nosync"));
         } else {
             if (!synchronizeInstance()) {
                 File domainXml =
                     new File(new File(instanceDir, "config"), "domain.xml");
                 if (!domainXml.exists()) {
-                    logger.printMessage(strings.get("Instance.nodomainxml"));
+                    logger.printMessage(Strings.get("Instance.nodomainxml"));
                     return ERROR;
                 }
-                logger.printMessage(strings.get("Instance.syncFailed"));
+                logger.printMessage(Strings.get("Instance.syncFailed"));
             }
         }
 
@@ -152,14 +148,14 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
 
                     switch (returnValue) {
                         case RESTART_NORMAL:
-                            logger.printMessage(strings.get("restart"));
+                            logger.printMessage(Strings.get("restart"));
                             break;
                         case RESTART_DEBUG_ON:
-                            logger.printMessage(strings.get("restartChangeDebug", "on"));
+                            logger.printMessage(Strings.get("restartChangeDebug", "on"));
                             info.setDebug(true);
                             break;
                         case RESTART_DEBUG_OFF:
-                            logger.printMessage(strings.get("restartChangeDebug", "off"));
+                            logger.printMessage(Strings.get("restartChangeDebug", "off"));
                             info.setDebug(false);
                             break;
                         default:

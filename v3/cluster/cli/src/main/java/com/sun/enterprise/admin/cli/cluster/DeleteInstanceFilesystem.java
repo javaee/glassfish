@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,75 +33,57 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli.cluster;
 
-import java.io.File;
-import java.io.Console;
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.io.FileUtils;
+import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
+
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 
+// TODO TODO
+// wipe out the tree if this is the last instance
+// TODO TODO TODO
 /**
- *  This is a local command that creates a local instance.
+ * Delete a local server instance.
  */
-@Service(name = "create-node-agent")
+@Service(name = "_delete-instance-filesystem")
 @Scoped(PerLookup.class)
-public final class CreateNodeAgentCommand extends CLICommand {
+public class DeleteInstanceFilesystem extends LocalInstanceCommand {
 
-    @Param(name = "agentdir", optional = true)
-    private String agentDir;
+    @Param(name = "instance_name", primary = true, optional = false)
+    private String instanceName0;
 
-    @Param(name = "agentport", optional = true)
-    private String agentPort;
-
-    @Param(name = "agentproperties", optional = true, separator = ':')
-    private String agentProperties;     // XXX - should it be a Properties?
-
-    @Param(name = "savemasterpassword", optional = true, defaultValue = "false")
-    private boolean saveMasterPassword = false;
-
-    @Param(name = "filesystemonly", optional = true, defaultValue = "false")
-    private boolean filesystemOnly = false;
-
-    @Param(name = "nodeagent_name", primary = true)
-    private String nodeAgentName;
-
-    private File agentsDir;             // the parent dir of all node agents
-
-    /**
-     */
     @Override
-    protected void validate()
-            throws CommandException, CommandValidationException  {
+    final protected void validate()
+            throws CommandException, CommandValidationException {
+        instanceName = instanceName0;
+        super.validate();
 
-        if (ok(agentDir)) {
-            agentsDir = new File(agentDir);
-        } else {
-            String agentRoot = getSystemProperty(
-                                SystemPropertyConstants.AGENT_ROOT_PROPERTY);
-            // AS_DEF_NODEAGENTS_PATH might not be set on upgraded domains
-            if (agentRoot != null)
-                agentsDir = new File(agentRoot);
-            else
-                agentsDir = new File(new File(getSystemProperty(
-                                SystemPropertyConstants.INSTALL_ROOT_PROPERTY)),
-                                "nodeagents");
-        }
-
-        // XXX - validate lots more...
+        if (!StringUtils.ok(getServerDirs().getServerName()))
+            throw new CommandException(Strings.get("DeleteInstance.noInstanceName"));
     }
 
     /**
      */
     @Override
-    protected int executeCommand()
-            throws CommandException, CommandValidationException {
+    final protected int executeCommand() throws CommandException {
 
-        throw new CommandException("Not implemented");
+        if (isRunning()) {
+            throw new CommandException(Strings.get("DeleteInstance.running"));
+        }
+
+        whackFilesystem();
+
+        return SUCCESS;
     }
 }

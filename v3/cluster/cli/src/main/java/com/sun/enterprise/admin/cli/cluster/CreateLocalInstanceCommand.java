@@ -43,7 +43,6 @@ import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 
 /**
@@ -71,9 +70,6 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     private boolean _rendezvousOccurred;
     private String _node;
 
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(CreateLocalInstanceCommand.class);
-
     /**
      */
     @Override
@@ -82,7 +78,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         
         if (configName != null && clusterName != null) {
             throw new CommandException(
-                    strings.get("ConfigClusterConflict"));
+                    Strings.get("ConfigClusterConflict"));
         }
 
         super.validate();  // instanceName is validated and set in super.validate()
@@ -93,13 +89,13 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         if (!rendezvousWithDAS()) {
             instanceDir.delete();
             throw new CommandException(
-                    strings.get("Instance.rendezvousFailed", DASHost, "" + DASPort));
+                    Strings.get("Instance.rendezvousFailed", DASHost, "" + DASPort));
         }
 
         _rendezvousOccurred = rendezvousOccurred();
         if (_rendezvousOccurred) {
             throw new CommandException(
-                    strings.get("Instance.rendezvousAlready", instanceName, DASHost, "" + DASPort));
+                    Strings.get("Instance.rendezvousAlready", instanceName, DASHost, "" + DASPort));
         }
     }
 
@@ -150,12 +146,12 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
 
     private boolean rendezvousWithDAS() {
         try {
-            logger.printMessage(strings.get("Instance.rendezvousAttempt", DASHost, "" + DASPort));
+            logger.printMessage(Strings.get("Instance.rendezvousAttempt", DASHost, "" + DASPort));
             boolean success = false;
             RemoteCommand rc = new RemoteCommand("uptime", this.programOpts, this.env);
             int exitCode = rc.execute("uptime");
             if (exitCode == 0) {
-                logger.printMessage(strings.get("Instance.rendezvousSuccess", DASHost, "" + DASPort));
+                logger.printMessage(Strings.get("Instance.rendezvousSuccess", DASHost, "" + DASPort));
                 success = true;
             }
             return success;

@@ -123,7 +123,7 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
         }
 
         // We attempt to delete the instance filesystem first by running
-        // delete-local-instance --filesystemonly. We then remove the instance
+        // _delete-instance-filesystem. We then remove the instance
         // from the config no matter if we could delete the files or not.
 
         // Get the name of the node from the instance's node-ref field
@@ -173,8 +173,7 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
                     instanceName, noderef);
         } else if (!configfailure && fsfailure) {
             msg = msg + NL + Strings.get("delete.instance.filesystem.failed",
-                    instanceName, noderef,
-                    "asadmin delete-local-instance --filesystemonly");
+                    instanceName, noderef, "asadmin _delete-instance-filesystem");
         }
 
         if (configfailure || fsfailure) {
@@ -189,11 +188,10 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
          ActionReport report = ctx.getActionReport();
          StringBuilder output = new StringBuilder();
          ParameterMap map = new ParameterMap();
-         map.add("--filesystemonly","true");
          map.add("DEFAULT", instanceName);
 
          // Run the command remotely (over SSH)
-         int status = rch.runCommand(noderef, "delete-local-instance",
+         int status = rch.runCommand(noderef, "_delete-instance-filesystem",
                          map, output);
          if (output.length() > 0) {
              logger.info(output.toString());
@@ -214,8 +212,8 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
         // the command via ProcessManager.
         if (rch.isLocalhost(nodes.getNode(noderef))) {
             // Run local admin command
-            LocalAdminCommand lac = new LocalAdminCommand("delete-local-instance",
-                    "--filesystemonly", instanceName);
+            LocalAdminCommand lac = new LocalAdminCommand("_delete-instance-filesystem",
+                    instanceName);
             msg = Strings.get("deletingInstance", instanceName, LOCAL_HOST);
             logger.info(msg);
             try {
@@ -224,7 +222,7 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
                     // XXX need the commands output from lac, for now just
                     // display status code
                     msg = Strings.get("nonzero.status",
-                            "asadmin delete-local-instance --filesystemonly",
+                            "asadmin _delete-instance-filesystem",
                             "localhost");
                     throw new IOException(msg);
                 }
