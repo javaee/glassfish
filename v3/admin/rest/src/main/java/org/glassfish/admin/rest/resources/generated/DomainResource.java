@@ -99,9 +99,15 @@ DomainVersionResource resource = resourceContext.getResource(DomainVersionResour
 return resource;
 }
 
+@Path("location/")
+public DomainLocationResource getDomainLocationResource() {
+DomainLocationResource resource = resourceContext.getResource(DomainLocationResource.class);
+return resource;
+}
+
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-instance", "POST", "create-instance"}, {"host-port", "GET", "_get-host-and-port"}, {"list-logger-levels", "GET", "list-logger-levels"}, {"list-instances", "GET", "list-instances"}, {"restart", "POST", "restart-domain"}, {"rotate-log", "POST", "rotate-log"}, {"set-log-level", "POST", "set-log-level"}, {"stop", "POST", "stop-domain"}, {"uptime", "GET", "uptime"}, {"version", "GET", "version"}};
+return new String[][]{{"create-instance", "POST", "create-instance"}, {"host-port", "GET", "_get-host-and-port"}, {"list-logger-levels", "GET", "list-logger-levels"}, {"list-instances", "GET", "list-instances"}, {"restart", "POST", "restart-domain"}, {"rotate-log", "POST", "rotate-log"}, {"set-log-level", "POST", "set-log-level"}, {"stop", "POST", "stop-domain"}, {"uptime", "GET", "uptime"}, {"version", "GET", "version"}, {"location", "GET", "__locations"}};
 }
 
 	@Path("resources/")
