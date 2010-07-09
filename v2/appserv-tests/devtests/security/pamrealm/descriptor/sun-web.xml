@@ -4,6 +4,6 @@
   <context-root>/pamtest</context-root>
   <security-role-mapping>
     <role-name>tester</role-name>
-    <principal-name>guest</principal-name>
+    <principal-name>unixuser</principal-name>
   </security-role-mapping>
 </sun-web-app>
