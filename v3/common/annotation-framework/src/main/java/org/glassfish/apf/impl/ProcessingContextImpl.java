@@ -40,6 +40,7 @@ import org.glassfish.apf.Scanner;
 import java.util.Stack;
 import org.glassfish.apf.*;
 import org.glassfish.apf.context.AnnotationContext;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 
 /**
  * Minimal implementation of the ProcessingContext interface
@@ -51,7 +52,8 @@ class ProcessingContextImpl implements ProcessingContext {
     protected AnnotationProcessor processor;
     protected Stack<AnnotatedElementHandler> handlers = new Stack<AnnotatedElementHandler>();
     protected Scanner scanner;
-    
+    protected ReadableArchive archive;
+
     /** Creates a new instance of ProcessingContextHelper */
     ProcessingContextImpl(AnnotationProcessor processor) {
         this.processor = processor;
@@ -61,6 +63,14 @@ class ProcessingContextImpl implements ProcessingContext {
         return processor;
     }
         
+    public ReadableArchive getArchive() {
+        return archive;    
+    }
+
+    public void setArchive(ReadableArchive archive) {
+        this.archive = archive;
+    }
+
     public void pushHandler(AnnotatedElementHandler handler) {
         if (handler instanceof AnnotationContext) {
             ((AnnotationContext) handler).setProcessingContext(this);

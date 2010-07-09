@@ -38,6 +38,7 @@ package org.glassfish.apf;
 
 import org.glassfish.apf.Scanner;
 import java.util.Set;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 
 /**
  * This interface defines the context for the annotation procesing
@@ -61,6 +62,17 @@ public interface ProcessingContext {
      * @return scanner instance 
      */
     public Scanner getProcessingInput();
+
+    /**
+     * Returns the module archive that can be used to load files/resources,
+     *  that assist in the processing of annotations. Using the ClassLoader is
+     * preferred, but not all files can be loaded by  it and this can be handy
+     * in those cases.
+     *@return module archive
+     */
+    public ReadableArchive getArchive();
+
+    public void setArchive(ReadableArchive archive);
     
     /**
      * Sets the Scanner implementation which is responsible for accessing 

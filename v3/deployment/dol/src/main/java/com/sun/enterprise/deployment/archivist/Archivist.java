@@ -560,6 +560,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             }
             AnnotationProcessor ap = annotationFactory.getAnnotationProcessor();
             ProcessingContext ctx = ap.createContext();
+            ctx.setArchive(archive);
             if (annotationErrorHandler != null) {
                 ctx.setErrorHandler(annotationErrorHandler);
             }
