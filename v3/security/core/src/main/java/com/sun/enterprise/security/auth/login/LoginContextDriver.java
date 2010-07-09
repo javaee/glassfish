@@ -555,6 +555,9 @@ public class LoginContextDriver  {
         String userName = identityAssertion;
 
         try {
+            if (realm == null || "".equals(realm)) {
+                realm = Realm.getDefaultRealm();
+            }
             Realm realmInst = Realm.getInstance(realm);
             final Enumeration groups = realmInst.getGroupNames(userName);
             if (groups != null && groups.hasMoreElements()) {

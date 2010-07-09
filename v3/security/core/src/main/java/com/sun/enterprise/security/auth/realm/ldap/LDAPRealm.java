@@ -58,8 +58,10 @@ import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.InvalidOperationException;
 
 import com.sun.enterprise.security.auth.realm.IASRealm;
+import java.lang.StringBuffer;
 import java.util.regex.Matcher;
 import org.jvnet.hk2.annotations.Service;
+import sun.security.x509.X500Name;
 
 
 /**
@@ -345,6 +347,32 @@ public final class LDAPRealm extends IASRealm
     }
 
 
+    private List<String> getGroups(String userDN) {
+        //no authentication has happened through the realm.
+        DirContext ctx = null;
+        String srcFilter = null;
+        try {
+            ctx = new InitialDirContext(getLdapBindProps());
+            X500Name name = new X500Name(userDN);
+            String _username = name.getCommonName();
+            StringBuffer sb = new StringBuffer(getProperty(PARAM_GRP_SEARCH_FILTER));
+            substitute(sb, SUBST_SUBJECT_NAME, _username);
+            substitute(sb, SUBST_SUBJECT_DN, userDN);
+
+            srcFilter = sb.toString();
+            List<String> groupsList = new ArrayList<String>();
+            groupsList.addAll(groupSearch(ctx, getProperty(PARAM_GRPDN), srcFilter, getProperty(PARAM_GRP_TARGET)));
+            // search filter is constructed internally as
+            // as a groupofURLS
+            groupsList.addAll(dynamicGroupSearch(ctx, getProperty(PARAM_GRPDN), getProperty(PARAM_GRP_TARGET),
+                    userDN));
+            return groupsList;
+        } catch (Exception e) {
+            //dont do anything
+            e.printStackTrace();
+        }
+        return null;
+    }
     /**
      * Returns the name of all the groups that this user belongs to.
      * Note that this information is only known after the user has
@@ -363,6 +391,11 @@ public final class LDAPRealm extends IASRealm
     {
         Vector v = (Vector)groupCache.get(username);
         if (v == null) {
+            //Note : assuming the username is a userDN here
+            List<String> searchedGrps = getGroups(username);
+            if (searchedGrps != null) {
+                return Collections.enumeration(searchedGrps);
+            }
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "No groups available for: "+username);
             }
