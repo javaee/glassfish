@@ -105,7 +105,8 @@ public class GeneratorResource {
         {"NetworkListener", "delete-network-listener"},
         {"Property", "GENERIC-DELETE"},
         {"Protocol", "delete-protocol"},
-        {"Transport", "delete-transport"}
+        {"Transport", "delete-transport"},
+        {"ThreadPool", "delete-threadpool"}
     };
     //This map is used to generate CollectionLeaf resources.
     //Example: JVM Options. This information will eventually move to config bean-

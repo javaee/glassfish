@@ -38,6 +38,10 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.resources.*;
 public class ThreadPoolResource extends TemplateResource {
 
+@Override
+public String getDeleteCommand() {
+	return "delete-threadpool";
+}
 	@Path("property/")
 	public PropertiesBagResource getProperties() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
