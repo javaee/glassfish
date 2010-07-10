@@ -41,7 +41,13 @@
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                 updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['ResType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
-                mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")   
+                mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")
+
+                //TODO target
+                //The selected Targets will be available as #{pageSession.selectedTargets},  which is an array.
+                //We need to change the source-ref of the selected targets accordingly.
+                println("selected target = #{pageSession.selectedTargets}");
+
                 if(#{pageSession.hasPropertySheet}){
                     gf.updateEntity(endpoint="#{pageSession.selfUrl}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
@@ -68,7 +74,12 @@
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['ResType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
-                    mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")   
+                    mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")
+                    //TODO target
+                    //The selected Targets will be available as #{pageSession.selectedTargets},  which is an array.
+                    //We need to ensure source-ref of the selected targets are created accordingly.
+                    println("selected target = #{pageSession.selectedTargets}");
+
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"

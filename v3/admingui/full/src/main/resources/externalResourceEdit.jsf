@@ -87,9 +87,14 @@
     setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
     setPageSessionAttribute(key="has2Objects" value="#{true}" );
 
+    //TODO
+    //We should fill out selectedTargets as an array, consisting of the current targets for this particular resource.
+    //For now, i just 'assume' it is "server".
+    setPageSessionAttribute(key="selectedTargets" value=["server"] );
+
     />
 </event>
-<sun:form id="form1">
+<sun:form id="form">
 #include "/common/shared/alertMsg.inc"
     
     <!-- Page Title -->
@@ -100,6 +105,12 @@
     
 #include "/full/jndiResourceAttr.inc"
 #include "/common/shared/propertyDescTable.inc"
+    <event>
+    <!afterCreate
+        includeIntegrations(type="org.glassfish.admingui:TargetSectionForResource" );
+    />
+    </event>
+
     
     <sun:hidden id="helpKey" value="$resource{help_jmail.customResourceEdit}" />
 </sun:form>
