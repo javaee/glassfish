@@ -29,4 +29,11 @@
             parentId="form"
             content="/shared/targetSectionForCreate.inc"
         />
+        <integration-point
+            id="TargetSectionForResource"
+            type="org.glassfish.admingui:TargetSectionForResource"
+            priority="800"
+            parentId="form"
+            content="/shared/targetSectionForCreate.inc"
+        />
 </console-config>

@@ -36,7 +36,6 @@
 <!-- /cluster/shared/targetSectionForCreate.inc -->
 
 <sun:propertySheet id="targetSection">
-
     <!beforeCreate
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/clusters/cluster", result="#{requestScope.clusterList}");
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/servers/server", result="#{requestScope.serverList}");
@@ -45,18 +44,29 @@
         gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.serverList}");
 	setAttribute(key="one" value="$int{1}");
 	setAttribute(key="targetSize" value="#{pageSession.targetList.size()}");
-        println("#{requestScope.targetSize}");
-        println("#{pageSession.targetList}");
+        println("=========== #{requestScope.targetSize}");
+        println("===========#{pageSession.targetList}");
+
         if( #{requestScope.targetSize}=#{requestScope.one} ){
-         setPageSessionAttribute(key="showTargetSection",  value="#{false}");
-         setPageSessionAttribute(key="selectedTargets" value=["server"] );
+            setPageSessionAttribute(key="showTargetSection",  value="#{false}");
+            if (#{! pageSession.edit}){
+                setPageSessionAttribute(key="selectedTargets" value=["server"] );
+            }
         }
         if( #{requestScope.targetSize}>#{requestScope.one} ){
-          setPageSessionAttribute(key="showTargetSection",  value="#{true}");
+            setPageSessionAttribute(key="showTargetSection",  value="#{true}");
+            //we can remove the following when issue#12596 is fixed.  We shouldn't preselect "server"
+            if (#{! pageSession.edit}){
+                setPageSessionAttribute(key="selectedTargets" value=["server"] );
+            }
         }
+
         gf.convertListToOptionArray(list="#{pageSession.targetList}", optionArray="#{pageSession.availableTargets}");
     />
     <sun:propertySheetSection id="targetSectionId" visible="#{pageSession.showTargetSection}" label="$resource{i18n.common.TargetTableTitle} (TBD)"  >
+        <sun:property>
+            <sun:staticText id="clusterName"text="ABCDEFG" />
+        </sun:property>
         <sun:property id="addRemoveProp" noWrap="#{true}" overlapLabel="#{false}">
 #include "/common/shared/commonAddRemove.inc"
         </sun:property>
