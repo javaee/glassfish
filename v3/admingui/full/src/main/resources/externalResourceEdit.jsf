@@ -87,11 +87,6 @@
     setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
     setPageSessionAttribute(key="has2Objects" value="#{true}" );
 
-    //TODO
-    //We should fill out selectedTargets as an array, consisting of the current targets for this particular resource.
-    //For now, i just 'assume' it is "server".
-    setPageSessionAttribute(key="selectedTargets" value=["server"] );
-
     />
 </event>
 <sun:form id="form">
