@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.server;
 
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -62,23 +61,19 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
 
     @Inject
     ServerEnvironmentImpl env;
-
     @Inject
     protected Logger logger;
-    
     final XMLOutputFactory xmlFactory = XMLOutputFactory.newInstance();
 
     public synchronized void save(DomDocument doc) throws IOException {
-
-
         File destination = getDestination();
-        if (destination==null) {
+        if (destination == null) {
             logger.fine("domain.xml not persisted, null destination");
             return;
         }
         // get a temporary file
         File f = File.createTempFile("domain", ".xml", destination.getParentFile());
-        if (f==null) {
+        if (f == null) {
             throw new IOException("Cannot create temporary file when saving domain.xml");
         }
         // write to the temporary file
@@ -89,34 +84,38 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
             IndentingXMLStreamWriter indentingXMLStreamWriter = new IndentingXMLStreamWriter(writer);
             doc.writeTo(indentingXMLStreamWriter);
             indentingXMLStreamWriter.close();
-        } catch (XMLStreamException e) {
+        }
+        catch (XMLStreamException e) {
             logger.severe("Temporary file could not be created, disk full?");
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             return;
             // return after calling finally clause, because since temp file couldn't be saved,
             // renaming should not be attempted
-        } finally {
-            if (writer!=null) {
+        }
+        finally {
+            if (writer != null) {
                 try {
                     writer.close();
-                } catch (XMLStreamException e) {
+                }
+                catch (XMLStreamException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
             }
             try {
                 fos.close();
-            } catch(IOException e) {
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        
+
         // backup the current file
         File backup = new File(env.getConfigDirPath(), "domain.xml.bak");
         if (backup.exists() && !backup.delete()) {
             logger.severe("Could not delete previous backup file at " + backup.getAbsolutePath());
             return;
         }
-        if (destination!=null) {
+        if (destination != null) {
             if (!destination.renameTo(backup)) {
                 logger.severe("Could not rename " + destination.getAbsolutePath() + " to " + backup.getAbsolutePath());
                 return;
@@ -143,5 +142,4 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
     protected OutputStream getOutputStream(File destination) throws IOException {
         return new FileOutputStream(destination);
     }
-
 }
