@@ -95,6 +95,7 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
     private AdminCommandContext ctx;
     private RemoteInstanceCommandHelper helper;
     private RemoteConnectHelper rch;
+    private String instanceHost;
 
 
     @Override
@@ -121,6 +122,7 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
             report.setMessage(msg);
             return;
         }
+        instanceHost = helper.getHost(instance);
 
         // We attempt to delete the instance filesystem first by running
         // _delete-instance-filesystem. We then remove the instance
@@ -167,13 +169,14 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
         // OK, try to give a helpful message depending on the failure
         if (configfailure && fsfailure) {
             msg = msg + NL + Strings.get("delete.instance.failed",
-                    instanceName, noderef);
+                    instanceName, instanceHost);
         } else if (configfailure && !fsfailure) {
             msg = msg + NL + Strings.get("delete.instance.config.failed",
-                    instanceName, noderef);
+                    instanceName, instanceHost);
         } else if (!configfailure && fsfailure) {
             msg = msg + NL + Strings.get("delete.instance.filesystem.failed",
-                    instanceName, noderef, "asadmin _delete-instance-filesystem");
+                    instanceName, instanceHost,
+                    "asadmin _delete-instance-filesystem");
         }
 
         if (configfailure || fsfailure) {

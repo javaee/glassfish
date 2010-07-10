@@ -39,8 +39,8 @@ package com.sun.enterprise.v3.admin.cluster;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
-import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.universal.process.ProcessManagerException;
+import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.universal.process.LocalAdminCommand;
 import org.glassfish.api.I18n;
@@ -51,7 +51,6 @@ import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import java.util.logging.Logger;
-import java.io.IOException;
 
 /**
  * Remote AdminCommand to create an instance.  This command is run only on DAS.
@@ -69,8 +68,6 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     private static final String DEFAULT_NODE = "localhost";
     private static final String LOCAL_HOST = "localhost";
     private static final String NL = System.getProperty("line.separator");
-    private ParameterMap map;
-
 
     @Inject
     private CommandRunner cr;
@@ -84,7 +81,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     @Inject
     private Nodes nodes;
 
-    @Param(name="node", optional=true, defaultValue=DEFAULT_NODE)
+    @Param(name="node")
     String node;
 
     @Param(name="nodeagent", optional=true)
@@ -106,6 +103,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     private AdminCommandContext ctx;
     private RemoteInstanceCommandHelper helper;
     private RemoteConnectHelper rch;
+    private String nodeHost = null;
+    private int dasPort;
+    private String dasHost;
 
 
     @Override
@@ -119,10 +119,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         ctx = context;
         logger = context.logger;
 
-        int dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
-        String dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
-        rch = new RemoteConnectHelper(habitat, nodeList, logger, dasHost, dasPort);
-
+        // Make sure Node is valid
         if (nodes.getNode(node) == null) {
             String msg = Strings.get("noSuchNode", node);
             logger.warning(msg);
@@ -130,17 +127,57 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             report.setMessage(msg);
             return;
         }
+
+        nodeHost = getHostFromNodeName(node);
+
+        // First, update domain.xml by calling _register-instance
+
+        // XXX dipol
+        // We are transitioning from nodeAgent to node. Some parts of the code
+        // still assume the server's node-agent-ref to be the hostname for the
+        // host the server is on. If --nodeagent was not specified we use the
+        // hostname from the node.
+        // At some point we need to come back and remove all the nodeagent stuf
+        if (!StringUtils.ok(nodeAgent)) {
+            nodeAgent = nodeHost;
+        }
+
+        CommandInvocation ci = cr.getCommandInvocation("_register-instance", report);
+        ParameterMap map = new ParameterMap();
+        map.add("node", node);
+        if (nodeAgent != null) {
+            map.add("nodeagent", nodeAgent);
+        }
+        map.add("config", configRef);
+        map.add("cluster", clusterName);
+        map.add("systemproperties", systemProperties);
+        map.add("DEFAULT", instance);
+        ci.parameters(map);
+        ci.execute();
+
+        if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+            // If we couldn't update domain.xml then stop!
+            return;
+        }
+
+        dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
+        dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
+        rch = new RemoteConnectHelper(habitat, nodeList, logger, dasHost, dasPort);
         String msg;
+        // What we tell humans to run if we fail. Local version
+        String humanVersionOfCommand = "asadmin " + " create-local-instance " +
+                    " --node " + node + " " + instance;
 
 //        if (node == null || !rch.isRemoteConnectRequired(node)) {
         if (rch.isLocalhost(nodes.getNode(node))) {
-            LocalAdminCommand lac = new LocalAdminCommand("_create-instance-filesystem",instance);
+            LocalAdminCommand lac = new LocalAdminCommand("_create-instance-filesystem", "--node", node, instance);
             msg = Strings.get("creatingInstance", instance, LOCAL_HOST);
             logger.info(msg);
             try {
                  int status = lac.execute();
             }   catch (ProcessManagerException ex)  {
-                msg = Strings.get("create.instance.remote.failed", instance);
+                msg = Strings.get("create.instance.remote.failed",
+                        instance, nodeHost, humanVersionOfCommand );
                 logger.warning(msg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(msg);
@@ -150,36 +187,18 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             msg = Strings.get("creatingInstance", instance, node);
             logger.info(msg);
             int status =createInstanceRemote();
-            if (status != 0)
+            if (status != 0) {
+                // createInstanceRemote set report status and message
                 return;
+            }
         } else {
-            msg = Strings.get("create.instance.remote.failed", instance);
+            msg = Strings.get("create.instance.remote.failed",
+                    instance, nodeHost, humanVersionOfCommand );
             logger.warning(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             return;            
         }
-
-        // XXX dipol
-        // We are transitioning from nodeAgent to node. Some parts of the code
-        // still assume the server's node-agent-ref to be the hostname for the
-        // host the server is on. If --nodeagent was not specified we use the
-        // hostname from the node.
-        // At some point we need to come back and remove all the nodeagent stuf
-        if (nodeAgent == null || nodeAgent.length() == 0) {
-            nodeAgent = getHostFromNodeName(node);
-        }
-
-        CommandInvocation ci = cr.getCommandInvocation("_register-instance", report);
-        ParameterMap map = new ParameterMap();
-        map.add("node", node);
-        map.add("nodeagent", nodeAgent);
-        map.add("config", configRef);
-        map.add("cluster", clusterName);
-        map.add("systemproperties", systemProperties);
-        map.add("DEFAULT", instance);
-        ci.parameters(map);
-        ci.execute();
 
     }
 
@@ -189,17 +208,18 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
      * @return  node's host name, or "localhost" if can't find the host name
      */
     private String getHostFromNodeName(String nodeName) {
-
         Node theNode = nodes.getNode(nodeName);
+        String hostName = null;
 
-        if (theNode == null) {
-            return LOCAL_HOST;
+        if (theNode != null) {
+            hostName = theNode.getNodeHost();
         }
-        String hostName = theNode.getNodeHost();
-        if (hostName == null || hostName.length() == 0) {
+
+        if (hostName == null && nodeName.equals(LOCAL_HOST)) {
             return LOCAL_HOST;
+        } else {
+            return hostName;
         }
-        return hostName;
     }
 
     private int createInstanceRemote() {
@@ -207,7 +227,13 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         ActionReport report = ctx.getActionReport();
             StringBuilder output = new StringBuilder();
             ParameterMap map = new ParameterMap();
+            map.set("--node", node);
             map.set("DEFAULT", instance);
+
+            // What we tell humans to run if we fail
+            String humanVersionOfCommand = "asadmin --host " + dasHost +
+                    " --port " + dasPort + " create-local-instance" +
+                    " --node " + node + " " + instance;
                 
             int status = rch.runCommand(node, "_create-instance-filesystem",
                         map, output);
@@ -215,7 +241,8 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
                 logger.info(output.toString());
             }
             if (status != 0){
-                String msg = Strings.get("create.instance.remote.failed", instance);
+                String msg = Strings.get("create.instance.remote.failed",
+                        instance, nodeHost, humanVersionOfCommand);
                 logger.warning(msg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(output.toString() + NL + msg);
