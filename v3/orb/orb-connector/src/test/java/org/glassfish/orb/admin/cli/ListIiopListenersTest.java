@@ -49,14 +49,13 @@ import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.DomDocument;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Ignore
+
 public class ListIiopListenersTest extends org.glassfish.tests.utils.ConfigApiTest {
 
     private Habitat habitat;
