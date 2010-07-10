@@ -105,12 +105,6 @@
     
 #include "/full/jndiResourceAttr.inc"
 #include "/common/shared/propertyDescTable.inc"
-    <event>
-    <!afterCreate
-        includeIntegrations(type="org.glassfish.admingui:TargetSectionForResource" );
-    />
-    </event>
-
     
     <sun:hidden id="helpKey" value="$resource{help_jmail.customResourceEdit}" />
 </sun:form>
