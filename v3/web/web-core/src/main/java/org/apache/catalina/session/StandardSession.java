@@ -170,7 +170,7 @@ public class StandardSession
     /**
      * The HTTP session context associated with this session.
      */
-    protected static HttpSessionContext sessionContext = null;
+    protected static volatile HttpSessionContext sessionContext = null;
 
     /**
      * Used for serialized format versioning.
