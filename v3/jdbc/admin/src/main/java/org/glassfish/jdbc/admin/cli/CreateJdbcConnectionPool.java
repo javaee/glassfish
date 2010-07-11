@@ -35,9 +35,8 @@
  */
 package org.glassfish.jdbc.admin.cli;
 
+import org.glassfish.api.admin.*;
 import org.glassfish.resource.common.ResourceConstants;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -53,17 +52,16 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.resource.common.ResourceStatus;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.CommandRunner;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.util.HashMap;
 import java.util.Properties;
-import org.glassfish.api.admin.ParameterMap;
 
 /**
  * Create JDBC Connection Pool Command
  * 
  */
+@Cluster(RuntimeType.ALL)
 @Service(name="create-jdbc-connection-pool")
 @Scoped(PerLookup.class)
 @I18n("create.jdbc.connection.pool")

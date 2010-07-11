@@ -124,6 +124,20 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
             model = new CommandModelImpl(command.getClass());
         }
         org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
+        List<RuntimeType> runtimeTypes = new ArrayList<RuntimeType>();
+        if(clAnnotation == null) {
+            runtimeTypes.add(RuntimeType.DAS);
+            runtimeTypes.add(RuntimeType.INSTANCE);
+        } else {
+            if(clAnnotation.value().length == 0) {
+                runtimeTypes.add(RuntimeType.DAS);
+                runtimeTypes.add(RuntimeType.INSTANCE);
+            } else {
+                for(RuntimeType t : clAnnotation.value()) {
+                    runtimeTypes.add(t);
+                }
+            }
+        }
         String targetName = parameters.getOne("target");
         if(targetName == null)
                 targetName = "server";
@@ -144,7 +158,9 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
                     return ActionReport.ExitCode.WARNING;
                 }
             }
-            List<Server> instancesForReplication = targetService.getInstances(targetName);
+            List<Server> instancesForReplication = (runtimeTypes.contains(RuntimeType.ALL)) ?
+                                                        targetService.getAllInstances() :
+                                                            targetService.getInstances(targetName);
             if(instancesForReplication.size() == 0) {
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
                 aReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);

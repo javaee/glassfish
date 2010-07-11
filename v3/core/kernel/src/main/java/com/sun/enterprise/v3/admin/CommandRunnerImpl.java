@@ -861,10 +861,11 @@ public class CommandRunnerImpl implements CommandRunner {
         // If this glassfish installation does not have stand alone instances / clusters at all, then
         // lets not even look Supplemental command and such. A small optimization so that cluster-admin
         // and its dependencies are not loaded for a typical developer profile
+        //TODO : This should just wrap the supplemental check code once the ENV var is removed
         if( (domain.getServers().getServer().size() > 1) || (domain.getClusters().getCluster().size() != 0) ) {
             doReplication = true;
         }
-        
+
         try {
             /*
              * Extract any uploaded files and build a map from parameter names
@@ -960,6 +961,7 @@ public class CommandRunnerImpl implements CommandRunner {
                         targetName = "server";
 
                     // Check if the command allows this target type; first read the annotation
+                    //TODO : See is @TargetType can also be moved to the CommandModel
                     TargetType tgtTypeAnnotation = command.getClass().getAnnotation(TargetType.class);
                     if(tgtTypeAnnotation != null) {
                         for(CommandTarget c : tgtTypeAnnotation.value()) {
@@ -1041,7 +1043,8 @@ public class CommandRunnerImpl implements CommandRunner {
                     return;
                 }
                 //Run main command if it is applicable for this instance type
-                if( (serverEnv.isDas() && runtimeTypes.contains(RuntimeType.DAS)) ||
+                if( (runtimeTypes.contains(RuntimeType.ALL)) ||
+                    (serverEnv.isDas() && runtimeTypes.contains(RuntimeType.DAS)) ||
                     (serverEnv.isInstance() && runtimeTypes.contains(RuntimeType.INSTANCE)) ) {
                     doCommand(model, command, context);
                 }
@@ -1087,7 +1090,8 @@ public class CommandRunnerImpl implements CommandRunner {
         if(processEnv.getProcessType().isEmbedded())
             return;
         if(doReplication && (!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) &&
-                (serverEnv.isDas()) &&  runtimeTypes.contains(RuntimeType.INSTANCE)) {
+                (serverEnv.isDas()) &&
+                    (runtimeTypes.contains(RuntimeType.INSTANCE) || runtimeTypes.contains(RuntimeType.ALL)) ) {
             ClusterExecutor executor = null;
             if(model.getClusteringAttributes() != null && model.getClusteringAttributes().executor() != null) {
                 executor = habitat.getComponent(model.getClusteringAttributes().executor());

@@ -61,7 +61,12 @@ public enum RuntimeType {
      * Embedded
      */
 
-    EMBEDDED;
+    EMBEDDED,
+
+    /**
+     * All instances in the domain
+     */
+    ALL;
 
     public final boolean isInstance() {
         return this == INSTANCE;
@@ -77,6 +82,10 @@ public enum RuntimeType {
 
     public final boolean isEmbedded() {
         return this == EMBEDDED;
+    }
+
+    public final boolean isBroadcast() {
+        return this == ALL;
     }
     
     public final static RuntimeType getDefault() {

@@ -176,6 +176,20 @@ public class Target {
     }
 
     /**
+     * Gets all instances present in the domain
+     * @return list of Server elements that represent all instances
+     */
+    public List<Server> getAllInstances() {
+        List<Server> list = new ArrayList<Server>();
+        for(Server s : domain.getServers().getServer()) {
+            if(!CommandTarget.DAS.isValid(habitat, s.getName())) {
+                list.add(s);
+            }
+        }
+        return list;
+    }
+
+    /**
      * Given name of a target verifies if it is valid
      * @param targetName name of the target
      * @return true if the target is a valid cluster or server instance or a config
