@@ -82,6 +82,9 @@
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
 
+        //for create, we want to set a default target.  This is used by targetSectionForCreate.inc
+        setPageSessionAttribute(key="setDefaultTarget" value="#{true}" );
+
     />
     </event>
     
@@ -98,7 +101,7 @@
 
     <event>
     <!afterCreate
-        includeIntegrations(type="org.glassfish.admingui:TargetSectionForResource" );
+        //includeIntegrations(type="org.glassfish.admingui:TargetSectionForResource" );
     />
     </event>    
 

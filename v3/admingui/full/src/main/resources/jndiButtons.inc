@@ -70,15 +70,42 @@
                 <!command
                     updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['ResType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
                     mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")
-                    //TODO target
-                    //The selected Targets will be available as #{pageSession.selectedTargets},  which is an array.
-                    //We need to ensure source-ref of the selected targets are created accordingly.
-                    println("selected target = #{pageSession.selectedTargets}");
-
+                    //mapPut(map="#{pageSession.valueMap}" key="Target" value="domain")
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                        result => $attribute{resultEndPoint});
+                        convertToFalse="#{pageSession.convertToFalseList}" );
+
+                    <!--
+                        For creating any resource, we should
+                        1. create the resource with "domain" as the Target
+                        2. for each of the target choosen, create the resource-ref for it.
+
+                        The following and the above line that set domain as target has been commented out because backend throws exception
+                        when using "domain" as target.  When it is resolved, we can uncomment and code accordingly.
+
+                    //The selected Targets will be available as #{pageSession.selectedTargets},  which is an array.
+                    //We need to create source-ref of the selected targets .
+                    convertArrayToCommaString(array="#{pageSession.selectedTargets}" commaString="#{requestScope.cs}")
+                    convertStringtoList(str="#{requestScope.cs}" result="#{requestScope.targetList}");
+                    println("===========#{requestScope.targetList}");
+                    setAttribute(key="nTargets" value="#{requestScope.targetList.size()}");
+                    dec(number="#{requestScope.nTargets}" value="#{requestScope.endRef}");
+                    forLoop(end="#{requestScope.endRef}"  varName="nn"){
+                        setAttribute(key="targetName" value="#{requestScope.targetList[nn]}");
+                        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/servers/server/#{requestScope.targetName}", exists="#{requestScope.isServer}");
+                        if (#{requestScope.isServer}){
+                            setAttribute(key="endp" value="#{sessionScope.REST_URL}/servers/server/#{requestScope.targetName}/resource-ref");
+                        }
+                        if (!#{requestScope.isServer}){
+                            setAttribute(key="endp" value="#{sessionScope.REST_URL}/clusters/cluster/#{requestScope.targetName}/resource-ref");
+                        }
+                        createMap(result="#{requestScope.refsMap}")
+                        mapPut(map="#{requestScope.refsMap}" key="id" value="#{pageSession.valueMap['Name']}")
+                        mapPut(map="#{requestScope.refsMap}" key="Enabled" value="#{pageSession.valueMap2['Enabled']}")
+                        gf.createEntity(endpoint="#{requestScope.endp}" attrs="#{requestScope.refsMap}" convertToFalse={"Enabled"});
+                    }
+
+                    -->
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});

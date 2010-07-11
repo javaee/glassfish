@@ -84,7 +84,7 @@
        
     />
     </event>
-            <sun:form id="form1">
+            <sun:form id="form">
 #include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
@@ -94,6 +94,11 @@
                     "<br><br>
 #include "/full/jndiResourceAttr.inc"
 #include "/common/shared/propertyDescTable.inc"
+<event>
+<!afterCreate
+    //includeIntegrations(type="org.glassfish.admingui:TargetSectionForResource" );
+/>
+</event>
 
 
 	<sun:hidden id="helpKey" value="$resource{help_jmail.customResourceNew}" />
