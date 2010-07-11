@@ -44,29 +44,29 @@
         gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.serverList}");
 	setAttribute(key="one" value="$int{1}");
 	setAttribute(key="targetSize" value="#{pageSession.targetList.size()}");
-        println("=========== #{requestScope.targetSize}");
-        println("===========#{pageSession.targetList}");
+        //println("=========== #{requestScope.targetSize}");
+        //println("===========#{pageSession.targetList}");
 
         if( #{requestScope.targetSize}=#{requestScope.one} ){
             setPageSessionAttribute(key="showTargetSection",  value="#{false}");
-            if (#{! pageSession.edit}){
+            if (#{pageSession.setDefaultTarget}){
                 setPageSessionAttribute(key="selectedTargets" value=["server"] );
             }
         }
         if( #{requestScope.targetSize}>#{requestScope.one} ){
             setPageSessionAttribute(key="showTargetSection",  value="#{true}");
-            //we can remove the following when issue#12596 is fixed.  We shouldn't preselect "server"
-            if (#{! pageSession.edit}){
+            //when issue#12596 is fixed.  we should not preselect target.  
+            //Because for the edit case, it has been set previously.
+            //for create case, we should leave it blank and warn user to select one.
+            if (#{pageSession.setDefaultTarget}){
                 setPageSessionAttribute(key="selectedTargets" value=["server"] );
+                #setPageSessionAttribute(key="selectedTargets" value=[] );
             }
         }
 
         gf.convertListToOptionArray(list="#{pageSession.targetList}", optionArray="#{pageSession.availableTargets}");
     />
-    <sun:propertySheetSection id="targetSectionId" visible="#{pageSession.showTargetSection}" label="$resource{i18n.common.TargetTableTitle} (TBD)"  >
-        <sun:property>
-            <sun:staticText id="clusterName"text="ABCDEFG" />
-        </sun:property>
+    <sun:propertySheetSection id="targetSectionId" visible="#{pageSession.showTargetSection}" label="$resource{i18n.common.TargetTableTitle}"  >
         <sun:property id="addRemoveProp" noWrap="#{true}" overlapLabel="#{false}">
 #include "/common/shared/commonAddRemove.inc"
         </sun:property>
