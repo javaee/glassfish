@@ -909,42 +909,6 @@ public class ProxyHandlers {
     }
 
 
-    /*
-     * This handler takes in a list of rows, there should be 'Enabled' attribute in each row.
-     * Get the resource-ref of this resource and do a logical And with this Enabled attribute
-     * to get the real status
-     */
-    @Handler(id = "getResourceRealStatus",
-        input = {
-            @HandlerInput(name = "endpoint", type = String.class),
-            @HandlerInput(name = "rows", type = java.util.List.class, required = true)},
-        output = {
-            @HandlerOutput(name = "result", type = List.class)})
-    public static void getResourceRealStatus(HandlerContext handlerCtx) {
-        List<Map> rows = (List) handlerCtx.getInputValue("rows");
-        String resourceRefEndPoint = (String) handlerCtx.getInputValue("endpoint");
-        for (Map oneRow : rows) {
-            String enabled = (String) oneRow.get("Enabled");
-            String name = (String) oneRow.get("encodedName");
-            String endpoint = resourceRefEndPoint + "/" +name;
-            if (enabled == null){
-                continue;   //this should never happen.
-            }
-            String resourceRefString = RestApiHandlers.get(endpoint).getResponseBody();
-            Map<String,String> attrMp = RestApiHandlers.getEntityAttrs(resourceRefString);
-            String refStatus = (String) attrMp.get("Enabled");
-            if (refStatus.equals("true")){
-                    oneRow.put("Enabled", enabled);   //depend on the resource itself.
-            }else{
-                    oneRow.put("Enabled", false);
-            }            
-        }
-        handlerCtx.setOutputValue("result", rows);
-    }
-
-
-
-
     @Handler(id = "createResourceRef",
         input = {
             @HandlerInput(name = "resourceName", type = String.class, required = true),
