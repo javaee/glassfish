@@ -207,7 +207,7 @@ public abstract class AppservRealm extends Realm
                            String[] groups)
         throws NoSuchUserException, BadRealmException,
                                IASSecurityException {
-        updateUser(name, newName, password.toCharArray(), groups);
+        updateUser(name, newName, (password ==null)? null : password.toCharArray(), groups);
 
     }
      
