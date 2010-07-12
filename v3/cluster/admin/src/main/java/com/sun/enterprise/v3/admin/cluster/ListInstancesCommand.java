@@ -49,6 +49,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.ReferenceContainer;
@@ -62,6 +63,7 @@ import static com.sun.enterprise.v3.admin.cluster.Constants.*;
  * @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
  * @author Byron Nevins
  */
+@org.glassfish.api.admin.Cluster(RuntimeType.DAS)
 @Service(name = "list-instances")
 @I18n("list.instances.command")
 @Scoped(PerLookup.class)
