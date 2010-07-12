@@ -12,6 +12,7 @@
     &reporting;
 
     <target name="all">
+        <antcall target="disable_nonportable_jndi"/>
         <antcall target="remote1"/>
         <antcall target="remote2"/>
         <ant dir="remote1" target="undeploy"/>
@@ -23,6 +24,12 @@
         <antcall target="passact"/>
         <antcall target="embedasync"/>
         <antcall target="jcdifull"/>
+    </target>
+
+    <target name="disable_nonportable_jndi">
+        <record name="disable_nonportable_jndi.output" action="start" />
+            <ant dir="disable_nonportable_jndi" target="all"/>
+        <record name="disable_nonportable_jndi.output" action="stop" />
     </target>
 
     <target name="remote1">

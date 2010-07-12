@@ -15,7 +15,7 @@
     <!-- note that we don't undeploy as part of all target so 
     that top-level build script can run remote2 first -->
  
-    <target name="all" depends="build,deploy,run"/>
+    <target name="all" depends="build,deploy,run, undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>

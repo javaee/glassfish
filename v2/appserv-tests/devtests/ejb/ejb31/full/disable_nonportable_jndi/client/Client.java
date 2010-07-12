@@ -42,7 +42,7 @@ public class Client {
                 }
             }
             System.out.println(sb);
-	    stat.addStatus("local main", (failed ? stat.FAIL: stat.PASS));
+	    stat.addStatus("disable_nonportable_jndi", (failed ? stat.FAIL: stat.PASS));
 	} catch(Exception e) {
 	    e.printStackTrace();
 	}
