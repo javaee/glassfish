@@ -202,9 +202,11 @@ public class Commands {
         private static final Pattern pattern;
         static {
             StringBuilder sb = new StringBuilder();
-            sb.append(".*\\|");
+            sb.append(".*\\|(");
+            sb.append(Level.WARNING.getLocalizedName());
+            sb.append("|");
             sb.append(Level.SEVERE.getLocalizedName());
-            sb.append("\\|.*");
+            sb.append(")\\|.*");
             pattern = Pattern.compile(sb.toString());
         }
 
