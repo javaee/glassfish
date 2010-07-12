@@ -121,7 +121,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         super.validate();
 
         String agentPath = "agent" + File.separator + "config";
-        agentConfigDir = new File(nodeAgentDir, agentPath);
+        agentConfigDir = new File(nodeDirChild, agentPath);
         dasPropsFile = new File(agentConfigDir, "das.properties");
         nodeagentPropsFile = new File(agentConfigDir, "nodeagent.properties");
 

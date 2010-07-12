@@ -59,6 +59,24 @@ import com.sun.enterprise.universal.io.SmartFile;
  * final protected means -- "call me but don't override me".  This convention is
  * to make things less confusing.
  * If you add a method or change whether it is final -- move it to the right section.
+ *
+ * Default instance file structure.
+ * ||---- <GlassFish Install Root>
+ *          ||---- nodeagents (nodeDirRoot)
+ *                  ||---- <node-1> (nodeDirChild)
+ *                          || ---- agent
+ *                                  || ---- config
+ *                                          | ---- das.properties
+ *                          || ---- <instance-1> (instanceDir)
+ *                                  ||---- config
+ *                                  ||---- applications
+ *                                  ||---- java-web-start
+ *                                  ||---- generated
+ *                                  ||---- lib
+ *                                  ||---- docroot
+ *                          || ---- <instance-2> (instanceDir)
+ *                  ||---- <node-2> (nodeDirChild)
+ *
  * @author Byron Nevins
  */
 // -----------------------------------------------------------------------
@@ -69,14 +87,14 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     @Param(name = "nodeagent", optional = true)
     protected String nodeAgent;
     @Param(name = "nodedir", optional = true, alias="agentdir")
-    protected String nodeDir;
+    protected String nodeDir;           // nodeDirRoot
     @Param(name = "node", optional=true)
     protected String node;
     // subclasses decide whether it's optional, required, or not allowed
     //@Param(name = "instance_name", primary = true, optional = true)
     protected String instanceName;
-    protected File nodeDirFile;           // the parent dir of all node agents
-    protected File nodeAgentDir;        // the specific node agent dir
+    protected File nodeDirRoot;         // the parent dir of all node(s)
+    protected File nodeDirChild;        // the specific node dir
     protected File instanceDir;         // the specific instance dir
     private InstanceDirs instanceDirs;
     @Override
@@ -98,35 +116,35 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     }
     
     protected void initInstance() throws CommandException {
-        String nodeDirPath = null;  // normally <install-root>/nodeagents
+        String nodeDirRootPath = null;  // normally default <install-root>/nodeagents
 
         if(ok(nodeDir))
-            nodeDirPath = nodeDir;
+            nodeDirRootPath = nodeDir;
         else
-            nodeDirPath = getNodeDirPath();
+            nodeDirRootPath = getNodeDirRootDefault();
 
-        nodeDirFile = new File(nodeDirPath);
-        mkdirs(nodeDirFile);
+        nodeDirRoot = new File(nodeDirRootPath);
+        mkdirs(nodeDirRoot);
 
-        if(!nodeDirFile.isDirectory()) {
+        if(!nodeDirRoot.isDirectory()) {
             throw new CommandException(
-                    Strings.get("Instance.badAgentDir", nodeDirFile));
+                    Strings.get("Instance.badAgentDir", nodeDirRoot));
         }
 
         if(nodeAgent != null) {
-            nodeAgentDir = new File(nodeDirFile, nodeAgent);
+            nodeDirChild = new File(nodeDirRoot, nodeAgent);
         }
         else {
-            nodeAgentDir = getTheOneAndOnlyAgent(nodeDirFile);
-            nodeAgent = nodeAgentDir.getName();
+            nodeDirChild = getTheOneAndOnlyAgent(nodeDirRoot);
+            nodeAgent = nodeDirChild.getName();
         }
 
         if(instanceName != null) {
-            instanceDir = new File(nodeAgentDir, instanceName);
+            instanceDir = new File(nodeDirChild, instanceName);
             mkdirs(instanceDir);
         }
         else {
-            instanceDir = getTheOneAndOnlyInstance(nodeAgentDir);
+            instanceDir = getTheOneAndOnlyInstance(nodeDirChild);
             instanceName = instanceDir.getName();
         }
 
@@ -134,7 +152,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             throw new CommandException(
                     Strings.get("Instance.badInstanceDir", instanceDir));
         }
-        nodeAgentDir = SmartFile.sanitize(nodeAgentDir);
+        nodeDirChild = SmartFile.sanitize(nodeDirChild);
         instanceDir = SmartFile.sanitize(instanceDir);
 
         try {
@@ -146,7 +164,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             throw new CommandException(e);
         }
 
-        logger.printDebugMessage("nodeAgentDir: " + nodeAgentDir);
+        logger.printDebugMessage("nodeDirChild: " + nodeDirChild);
         logger.printDebugMessage("instanceDir: " + instanceDir);
     }
 
@@ -228,22 +246,24 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                     whackee));
     }
 
-    final protected String getNodeHome() throws CommandException {
-        return getInstallRootPath();
-    }
+    /**
+     * Gets the GlassFish installation root (using property com.sun.aas.installRoot),
+     * first from asenv.conf.  If that's not available, then from java.lang.System.
+     *
+     * @return path of GlassFish install root
+     * @throws CommandException if the GlassFish install root is not found
+     */
+    protected String getInstallRootPath() throws CommandException {
+        String installRootPath = getSystemProperty(
+                SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
 
-    final protected String getInstanceHostName() throws CommandException {
-        String instanceHostName = null;
-        InetAddress localHost = null;
-        try {
-            localHost = InetAddress.getLocalHost();
-        } catch (UnknownHostException ex) {
-            throw new CommandException(Strings.get("Agent.cantGetHostName", ex));
-        }
-        if (localHost != null) {
-            instanceHostName = localHost.getCanonicalHostName();
-        }
-        return instanceHostName;
+        if(!StringUtils.ok(installRootPath))
+            installRootPath = System.getProperty(
+                    SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+
+        if(!StringUtils.ok(installRootPath))
+            throw new CommandException("Agent.noInstallDirPath");
+        return installRootPath;
     }
 
 // -----------------------------------------------------------------------
@@ -378,28 +398,24 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                 Strings.get("Instance.noInstanceDirs", parent));
     }
 
-    private String getNodeDirPath() throws CommandException {
-        String nodeDirPath = getSystemProperty(
+    /**
+     * Return the default value for nodeDirRoot, first checking if com.sun.aas.agentRoot
+     * was specified in asenv.conf and returning this value. If not specified,
+     * then the defaut value is the {GlassFish_Install_Root}/nodeagents.
+     * nodeDirRoot is the parent directory of the node(s).
+     *
+     * @return String default nodeDirRoot - parent directory of node(s)
+     * @throws CommandException if the GlassFish install root is not found
+     */
+    private String getNodeDirRootDefault() throws CommandException {
+        String nodeDirDefault = getSystemProperty(
                 SystemPropertyConstants.AGENT_ROOT_PROPERTY);
 
-        if(StringUtils.ok(nodeDirPath))
-            return nodeDirPath;
+        if(StringUtils.ok(nodeDirDefault))
+            return nodeDirDefault;
 
         String installRootPath = getInstallRootPath();
         return installRootPath + "/" + "nodeagents";
-    }
-
-    protected String getInstallRootPath() throws CommandException {
-        String installRootPath = getSystemProperty(
-                SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
-
-        if(!StringUtils.ok(installRootPath))
-            installRootPath = System.getProperty(
-                    SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
-
-        if(!StringUtils.ok(installRootPath))
-            throw new CommandException("Agent.noInstallDirPath");
-        return installRootPath;
     }
 
 }
