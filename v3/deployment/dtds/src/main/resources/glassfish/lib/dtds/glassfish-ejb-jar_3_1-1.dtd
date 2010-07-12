@@ -13,7 +13,7 @@
 <!--
 This is the root element of the ejb module descriptor document.
 -->
-<!ELEMENT glassfish-ejb-jar (security-role-mapping*, enterprise-beans, compatibility?, disable-nonportable-jndi-names?) >
+<!ELEMENT glassfish-ejb-jar (security-role-mapping*, enterprise-beans, compatibility?, disable-nonportable-jndi-names?, keep-state?) >
 
 <!-- 
 System unique object id. Automatically generated and updated at deployment/redeployment 
@@ -1125,3 +1125,8 @@ are true and false.  The default value is false.
 -->
 <!ELEMENT disable-nonportable-jndi-names (#PCDATA)>
 
+<!--
+The keep-state element indicates whether the state information should be 
+preserved across redeployment.
+-->
+<!ELEMENT keep-state (#PCDATA)>

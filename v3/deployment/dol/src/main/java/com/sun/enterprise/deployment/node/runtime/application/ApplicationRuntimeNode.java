@@ -201,6 +201,8 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
 	    } else {
 		throw new RuntimeException("No uri provided for this context-root " + value);
 	    }
+        } else if (element.getQName().equals(RuntimeTagNames.KEEP_STATE)) {
+            descriptor.setKeepState(value);
 	} else super.setElementValue(element, value);
     }
 
@@ -280,6 +282,9 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
 
         // compatibility
         appendTextChild(appNode, RuntimeTagNames.COMPATIBILITY, application.getCompatibility());
+
+        // keep-state
+        appendTextChild(appNode, RuntimeTagNames.KEEP_STATE, String.valueOf(application.getKeepState()));
 
         return appNode;
     }

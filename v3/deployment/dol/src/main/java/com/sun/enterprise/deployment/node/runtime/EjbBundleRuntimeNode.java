@@ -144,6 +144,8 @@ public class EjbBundleRuntimeNode extends
             descriptor.setCompatibility(value);
         } else if (element.getQName().equals(RuntimeTagNames.DISABLE_NONPORTABLE_JNDI_NAMES)) {
             descriptor.setDisableNonportableJndiNames(value);
+        } else if (element.getQName().equals(RuntimeTagNames.KEEP_STATE)) {
+            descriptor.setKeepState(value);
         } else {
             super.setElementValue(element, value);
         }
@@ -210,6 +212,9 @@ public class EjbBundleRuntimeNode extends
             appendTextChild(ejbs, RuntimeTagNames.DISABLE_NONPORTABLE_JNDI_NAMES, String.valueOf(djndi));
         }
  
+        // keep-state
+        appendTextChild(ejbs, RuntimeTagNames.KEEP_STATE, String.valueOf(bundleDescriptor.getKeepState()));
+
         return ejbs;
     }
 }

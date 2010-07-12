@@ -1384,6 +1384,7 @@ public class ApplicationLifecycle implements Deployment {
             }
             appRef.setVirtualServers(sb.toString());
         }
+        appRef.setLbEnabled(deployParams.lbenabled.toString());
         appRef.setEnabled(deployParams.enabled.toString());
     }        
 

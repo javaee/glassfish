@@ -86,6 +86,8 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
 
     private String compatValue;
 
+    private boolean keepState = false; 
+
     /**
      * Construct a new BundleDescriptor
      */
@@ -915,5 +917,13 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
 
     public void setCompatibility(String compatValue) {
         this.compatValue = compatValue;
+    }
+
+    public boolean getKeepState() {
+        return keepState;
+    }
+
+    public void setKeepState(String keepStateVal) {
+        this.keepState = Boolean.valueOf(keepStateVal);
     }
 }

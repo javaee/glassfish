@@ -363,6 +363,8 @@ public class WebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescriptor>
             if ( (app == null) || (app!=null && app.isVirtual()) ) {
                 descriptor.setContextRoot(value);
             }
+        } else if (element.getQName().equals(RuntimeTagNames.KEEP_STATE)) {
+            descriptor.setKeepState(value);
         } else
 	super.setElementValue(element, value);
     }
@@ -532,6 +534,9 @@ public class WebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescriptor>
             setAttribute(web, RuntimeTagNames.HTTPSERVLET_SECURITY_PROVIDER, 
                          sunWebApp.getAttributeValue(sunWebApp.HTTPSERVLET_SECURITY_PROVIDER));
         }
+
+        // keep-state
+        appendTextChild(web, RuntimeTagNames.KEEP_STATE, String.valueOf(bundleDescriptor.getKeepState()));
 
         return web;
     }

@@ -125,6 +125,12 @@ public class DeployCommandParameters extends OpsParams {
     @Param(optional=true)
     public String type = null;
 
+    @Param(optional=true)
+    public Boolean keepstate;
+
+    @Param(optional=true, defaultValue="true")
+    public Boolean lbenabled;
+
     // todo : why is this not a param ?
     public Boolean clientJarRequested = true;
 

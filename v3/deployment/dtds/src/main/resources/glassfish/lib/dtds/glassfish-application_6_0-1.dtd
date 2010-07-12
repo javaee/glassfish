@@ -19,7 +19,7 @@
 <!--
 This is the root element of the runtime descriptor document.
 -->
-<!ELEMENT glassfish-application (web*, pass-by-reference?, unique-id?, security-role-mapping*, realm?, ejb-ref*, resource-ref*, resource-env-ref*, service-ref*, message-destination-ref*, message-destination*, archive-name?, compatibility?) >
+<!ELEMENT glassfish-application (web*, pass-by-reference?, unique-id?, security-role-mapping*, realm?, ejb-ref*, resource-ref*, resource-env-ref*, service-ref*, message-destination-ref*, message-destination*, archive-name?, compatibility?, keep-state?) >
 
 <!ELEMENT web (web-uri, context-root)>
 <!ELEMENT web-uri (#PCDATA)>
@@ -496,3 +496,9 @@ visible to various modules within an EAR file. Setting this element to v2
 removes these Java EE 6 restrictions.
 -->
 <!ELEMENT compatibility (#PCDATA)>
+
+<!--
+The keep-state element indicates whether the state information should be
+preserved across redeployment.
+-->
+<!ELEMENT keep-state (#PCDATA)>

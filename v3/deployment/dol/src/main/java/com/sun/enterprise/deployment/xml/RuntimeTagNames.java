@@ -246,6 +246,7 @@ public interface RuntimeTagNames extends TagNames {
     public static final String CONTEXT_ROOT = "context-root"; // also used in java web start support
     public final static String ARCHIVE_NAME = "archive-name";
     public final static String COMPATIBILITY = "compatibility";
+    public final static String KEEP_STATE = "keep-state";
     public final static String APPLICATION_PARAM = "application-param";
     public final static String MODULE = "module";
     public final static String TYPE = "type";

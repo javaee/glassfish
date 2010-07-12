@@ -24,7 +24,7 @@
                        ejb-ref*, resource-ref*, resource-env-ref*,  service-ref*,
                        message-destination-ref*, cache?, class-loader?,
                        jsp-config?, locale-charset-info?, parameter-encoding?,
-                       property*, valve*, message-destination*, webservice-description*)>
+                       property*, valve*, message-destination*, webservice-description*, keep-state?)>
 <!ATTLIST glassfish-web-app error-url CDATA ""
                       httpservlet-security-provider CDATA #IMPLIED>
 
@@ -798,3 +798,9 @@ of a method parameter.
 Used in: method-params
 -->
 <!ELEMENT method-param (#PCDATA)>
+
+<!--
+The keep-state element indicates whether the state information should be
+preserved across redeployment.
+-->
+<!ELEMENT keep-state (#PCDATA)>

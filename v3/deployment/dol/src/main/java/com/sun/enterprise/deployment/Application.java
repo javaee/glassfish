@@ -1936,4 +1936,17 @@ public class Application extends BundleDescriptor
     public void addWLModule(WLModuleDescriptor wlModule) {
         wlModules.add(wlModule);
     }
+
+    @Override
+    public boolean getKeepState() {
+        // for standalone module, get the keep-state value specified in 
+        // module glassfish-*.xml
+        if (isVirtual()) {
+            BundleDescriptor bundleDesc = getStandaloneBundleDescriptor();
+            if (bundleDesc != null) {
+                return bundleDesc.getKeepState();
+            }
+        }
+        return super.getKeepState();
+    }
 }
