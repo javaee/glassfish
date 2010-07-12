@@ -53,7 +53,11 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
     }
 
     public T getParent() {
-        return (T) parent.get();
+        if (parent!=null) {
+            return (T) parent.get();
+        } else {
+            return null;
+        }
     }
 
     @Override

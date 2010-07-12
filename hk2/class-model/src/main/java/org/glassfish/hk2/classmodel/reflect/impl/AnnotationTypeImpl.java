@@ -43,7 +43,7 @@ import java.util.*;
 /**
  * Implementation of an annoation model
  */
-public class AnnotationTypeImpl extends TypeImpl implements AnnotationType {
+public class AnnotationTypeImpl extends InterfaceModelImpl implements AnnotationType {
 
     private final Set<AnnotatedElement> references = new HashSet<AnnotatedElement>();
 
@@ -57,11 +57,6 @@ public class AnnotationTypeImpl extends TypeImpl implements AnnotationType {
 
     Set<AnnotatedElement> getReferences() {
         return references;
-    }
-
-    @Override
-    public void addMethod(MethodModelImpl m) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

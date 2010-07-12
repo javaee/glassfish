@@ -80,7 +80,6 @@ import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.InjectionTarget;
 import org.jvnet.hk2.config.NoopConfigInjector;
 
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
