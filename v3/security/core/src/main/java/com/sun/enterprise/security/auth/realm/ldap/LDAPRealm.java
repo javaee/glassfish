@@ -368,8 +368,7 @@ public final class LDAPRealm extends IASRealm
                     userDN));
             return groupsList;
         } catch (Exception e) {
-            //dont do anything
-            e.printStackTrace();
+             _logger.log(Level.WARNING, "ldaprealm.groupsearcherror",e);
         }
         return null;
     }

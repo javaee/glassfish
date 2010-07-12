@@ -295,7 +295,7 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
     static void handleAdminGroup(String lr, List<String> lg) {
         String fr = "admin-realm";   //this should be a constant defined at a central place -- the name of realm for admin
         String fg = "asadmin";       //this should be a constant defined at a central place -- fixed name of admin group
-        if (fr.equals(lr)) {
+        if (fr.equals(lr) && lg != null) {
             lg.clear();             //basically, we are ignoring the group specified on command line when it's admin realm
             lg.add(fg);
         }

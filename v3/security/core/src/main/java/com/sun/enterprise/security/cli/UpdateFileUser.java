@@ -92,7 +92,7 @@ public class UpdateFileUser implements AdminCommand {
     // @Param(name="userpasswordfile", optional=true)
     // String passwordFile;
 
-    @Param(name="userpassword", password=true)
+    @Param(name="userpassword", optional=true, password=true)
     private String userpassword;
 
     @Param(name="authrealmname", optional=true)
@@ -186,10 +186,10 @@ public class UpdateFileUser implements AdminCommand {
         // through the CLI options. It is stored under the name 
         // AS_ADMIN_USERPASSWORD. Fetch it from there.
         String password = userpassword; // fetchPassword(report);
-        if (password == null) {
+        if (password == null && groups == null) {
             report.setMessage(localStrings.getLocalString(
-                "update.file.user.keyfilenotreadable", "Password for user {0} " 
-              + "has to be specified in --userpassword option or supplied " 
+                "update.file.user.keyfilenotreadable", "None of password or groups have been specified for update,"
+              + "Password for user {0} has to be specified"
               + "through AS_ADMIN_USERPASSWORD property in the file specified " 
               + "in --passwordfile option", userName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
