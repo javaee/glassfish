@@ -43,7 +43,7 @@ import java.util.Map;
  *
  * @author Jerome Dochez
  */
-public interface AnnotationType extends Type {
+public interface AnnotationType extends InterfaceModel {
 
     /**
      * Returns an unmodifiable collection of annotated element with

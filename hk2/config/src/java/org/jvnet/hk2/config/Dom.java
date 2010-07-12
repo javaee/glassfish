@@ -88,6 +88,13 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
          * @return a deep copy of itself.
          */
         protected abstract Child deepCopy();
+
+        /**
+         * Returns true if it is an empty child, meaning
+         * all its attributes are either null or the default value
+         * as well as for all the descendants.
+         */
+        protected abstract boolean isEmpty();
     }
 
     static final class NodeChild extends Child {
@@ -108,6 +115,10 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             return new NodeChild(name, dom.copy());
         }
 
+        @Override
+        protected boolean isEmpty() {
+            return dom.isEmpty();
+        }
     }
 
     static final class LeafChild extends Child {
@@ -130,6 +141,11 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         @Override
         protected Child deepCopy() {
             return new LeafChild(name, value);
+        }
+
+        @Override
+        protected boolean isEmpty() {
+            return false;
         }
     }
 
@@ -163,9 +179,11 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
 
     /* package */ void ensureConstraints(List<Child> children) {
         Set<String> nullElements = new HashSet<String>(model.getElementNames());
-        nullElements.removeAll(getElementNames());
+        for (Child child : children) {
+            nullElements.remove(child.name);
+        }
 
-        for (String s : model.getElementNames()) {
+        for (String s : nullElements) {
             ConfigModel.Property p = model.getElement(s);
             for (String annotation : p.getAnnotations()) {
                 if (annotation.equals(NotNull.class.getName())) {
@@ -1037,6 +1055,50 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     }
 
     /**
+     * Returns the map of attributes names and values for attributes which
+     * value is neither null or the default value. These attributes are
+     * considered having a non default value and must be written out.
+     *
+     * @return map of attributes indexed by name that must be persisted
+     */
+    private Map<String, String> attributesToWrite() {
+
+        Map<String, String> attributesToWrite = new HashMap<String, String>();
+        Map<String, String> localAttr = new HashMap<String, String>(attributes);
+        for (Map.Entry<String, String> a : localAttr.entrySet()) {
+            ConfigModel.AttributeLeaf am = model.attributes.get(a.getKey());
+            String dv = am.getDefaultValue();
+            if (dv==null || !dv.equals(a.getValue())) {
+                attributesToWrite.put(a.getKey(), a.getValue());
+            }
+        }
+        return attributesToWrite;
+    }
+
+    /**
+     * Returns true if this element and all its decedents are empty
+     * meaning all their attributes have default values.
+     *
+     * @return true if the element is empty, false otherwise
+     */
+    private boolean isEmpty() {
+        Map<String, String> attributesToWrite = attributesToWrite();
+
+        if (!attributesToWrite.isEmpty()) {
+            return false;
+        }
+
+        // let's check the children
+        for (Child child : children) {
+            if (!child.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+
+    }
+
+    /**
      * Writes back this element.
      *
      * @param tagName
@@ -1051,26 +1113,14 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         if(tagName==null)
             throw new IllegalArgumentException("Trying t write a local element "+this+" w/o a tag name");
 
-        // let's check if this element is empty or not.
-        Map<String, String> attributesToWrite = new HashMap<String, String>();
-
-        Map<String, String> localAttr = new HashMap<String, String>(attributes);
-        for (Map.Entry<String, String> a : localAttr.entrySet()) {
-            ConfigModel.AttributeLeaf am = model.attributes.get(a.getKey());
-            String dv = am.getDefaultValue();
-            if (dv==null || !dv.equals(a.getValue())) {
-                attributesToWrite.put(a.getKey(), a.getValue());
-            }
-        }
-
         // we don't write out empty elements.
-        if (attributesToWrite.isEmpty() && children.isEmpty()) {
+        if (isEmpty()) {
             return;
         }
 
         w.writeStartElement(tagName);
         
-        for (Map.Entry<String, String> attributeToWrite : attributesToWrite.entrySet()) {
+        for (Map.Entry<String, String> attributeToWrite : attributesToWrite().entrySet()) {
             w.writeAttribute(attributeToWrite.getKey(), attributeToWrite.getValue());
         }
 
