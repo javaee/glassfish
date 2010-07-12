@@ -43,6 +43,7 @@ import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
+import javax.validation.constraints.NotNull;
 
 
 /**
@@ -64,6 +65,7 @@ public interface SessionConfig extends ConfigBeanProxy, Injectable  {
      *         {@link SessionManager }
      */
     @Element
+    @NotNull
     public SessionManager getSessionManager();
 
     /**
@@ -81,6 +83,7 @@ public interface SessionConfig extends ConfigBeanProxy, Injectable  {
      *         {@link SessionProperties }
      */
     @Element
+    @NotNull
     public SessionProperties getSessionProperties();
 
     /**
