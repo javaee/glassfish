@@ -52,6 +52,8 @@ import org.glassfish.config.support.datatypes.PositiveInteger;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
 
+import javax.validation.constraints.NotNull;
+
 
 @Configured
 public interface WebContainer extends ConfigBeanProxy, Injectable, PropertyBag {
@@ -63,6 +65,7 @@ public interface WebContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link SessionConfig }
      */
     @Element
+    @NotNull
     SessionConfig getSessionConfig();
 
     /**
