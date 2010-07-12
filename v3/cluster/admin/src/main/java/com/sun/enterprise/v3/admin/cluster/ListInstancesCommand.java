@@ -86,7 +86,7 @@ public class ListInstancesCommand implements AdminCommand {
     @Param(optional = true, defaultValue = "false")
     private boolean nostatus;
     @Param(optional = true, primary = true, defaultValue = "domain")
-    String target;
+    String whichTarget;
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
     private List<Server> serverList;
     private ActionReport report;
@@ -114,7 +114,7 @@ public class ListInstancesCommand implements AdminCommand {
         serverList = createServerList();
 
         if (serverList == null) {
-            fail(Strings.get("list.instances.badTarget", target));
+            fail(Strings.get("list.instances.badTarget", whichTarget));
             return;
         }
         // Require that we be a DAS
@@ -220,15 +220,15 @@ public class ListInstancesCommand implements AdminCommand {
     }
 
     /*
-     * return null means the target is garbage
-     * return empty list means the target was an empty cluster
+     * return null means the whichTarget is garbage
+     * return empty list means the whichTarget was an empty cluster
      */
     private List<Server> createServerList() {
-        // 1. no target specified
-        if (!StringUtils.ok(target))
+        // 1. no whichTarget specified
+        if (!StringUtils.ok(whichTarget))
             return allServers.getServer();
 
-        ReferenceContainer rc = domain.getReferenceContainerNamed(target);
+        ReferenceContainer rc = domain.getReferenceContainerNamed(whichTarget);
         // 2. Not a server or a cluster. Could be a config or a Node
         if (rc == null) {
             return getServersForNodeOrConfig();
@@ -247,7 +247,7 @@ public class ListInstancesCommand implements AdminCommand {
     }
 
     private List<Server> getServersForNodeOrConfig() {
-        if (target == null)
+        if (whichTarget == null)
             throw new NullPointerException("impossible!");
 
         List<Server> list = getServersForNode();
@@ -266,7 +266,7 @@ public class ListInstancesCommand implements AdminCommand {
             List<Node> nodeList = nodes.getNode();
             if (nodeList != null) {
                 for (Node node : nodeList) {
-                    if (target.equals(node.getName())) {
+                    if (whichTarget.equals(node.getName())) {
                         foundNode = true;
                         break;
                     }
@@ -276,11 +276,11 @@ public class ListInstancesCommand implements AdminCommand {
         if (!foundNode)
             return null;
         else
-            return domain.getInstancesOnNode(target);
+            return domain.getInstancesOnNode(whichTarget);
     }
 
     private List<Server> getServersForConfig() {
-        Config config = domain.getConfigNamed(target);
+        Config config = domain.getConfigNamed(whichTarget);
 
         if (config == null)
             return null;
@@ -300,15 +300,15 @@ public class ListInstancesCommand implements AdminCommand {
      * false means error
      */
     private boolean validateParams() {
-        // another sort of weird scenario is that if the target is set to "domain",
+        // another sort of weird scenario is that if the whichTarget is set to "domain",
         // that means ALL instances in the domains.  To make life easier -- we just
-        //set the target to zilch to signal all instances in domain
+        //set the whichTarget to zilch to signal all instances in domain
 
-        if ("domain".equals(target))
-            target = null;
+        if ("domain".equals(whichTarget))
+            whichTarget = null;
 
-        // standaloneonly AND a target are mutually exclusive
-        if (standaloneonly && StringUtils.ok(target)) {
+        // standaloneonly AND a whichTarget are mutually exclusive
+        if (standaloneonly && StringUtils.ok(whichTarget)) {
             fail(Strings.get("list.instances.targetWithStandaloneOnly"));
             return false;
         }
@@ -322,11 +322,11 @@ public class ListInstancesCommand implements AdminCommand {
         }
 
         // details details details!
-        // if the target is the weird screwy "server" then fail.
+        // if the whichTarget is the weird screwy "server" then fail.
         // TODO - we *could* show DAS status in the future but it's stupid
         // since this command ONLY runs on DAS -- it is obviously running!!
 
-        if (!notDas(target)) {
+        if (!notDas(whichTarget)) {
             fail(Strings.get("list.instances.serverTarget"));
             return false;
         }
