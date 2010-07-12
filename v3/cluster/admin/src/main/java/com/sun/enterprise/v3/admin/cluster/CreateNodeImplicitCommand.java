@@ -68,11 +68,14 @@ public class CreateNodeImplicitCommand implements AdminCommand {
     @Param(name="name", optional= true)
     String name;
 
+    @Param(name="nodedir", optional = true)
+    String nodedir;
+
     @Param(name="nodehost",  primary = true)
     String nodehost;
 
-    @Param(name = "nodehome")
-    String nodehome;
+    @Param(name = "installdir")
+    String installdir;
 
     @Override
     public void execute(AdminCommandContext context) {
@@ -88,7 +91,8 @@ public class CreateNodeImplicitCommand implements AdminCommand {
         CommandInvocation ci = cr.getCommandInvocation("_create-node", report);
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
-        map.add("nodehome", nodehome);
+        map.add("nodedir", nodedir);
+        map.add("installdir", installdir);
         map.add("nodehost", nodehost);
         ci.parameters(map);
         ci.execute();

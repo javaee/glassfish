@@ -78,7 +78,7 @@ public class LocalInstanceCommandTest extends LocalInstanceCommand{
     public void testValidate() throws Exception {
         System.out.println("test LocalInstanceCommand.validate");
         try {
-            agentDir = nodeAgentsDir.getAbsolutePath();
+            nodeDir = nodeAgentsDir.getAbsolutePath();
             instanceName = "i1";
             validate();
         }

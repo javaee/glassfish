@@ -68,14 +68,14 @@ import com.sun.enterprise.universal.io.SmartFile;
 public abstract class LocalInstanceCommand extends LocalServerCommand {
     @Param(name = "nodeagent", optional = true)
     protected String nodeAgent;
-    @Param(name = "nodehome", optional = true)
-    protected String agentDir;
+    @Param(name = "nodedir", optional = true)
+    protected String nodeDir;
     @Param(name = "node", optional=true)
     protected String node;
     // subclasses decide whether it's optional, required, or not allowed
     //@Param(name = "instance_name", primary = true, optional = true)
     protected String instanceName;
-    protected File agentsDir;           // the parent dir of all node agents
+    protected File nodeDirFile;           // the parent dir of all node agents
     protected File nodeAgentDir;        // the specific node agent dir
     protected File instanceDir;         // the specific instance dir
     private InstanceDirs instanceDirs;
@@ -98,26 +98,26 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     }
     
     protected void initInstance() throws CommandException {
-        String agentsDirPath = null;  // normally <install-root>/nodeagents
+        String nodeDirPath = null;  // normally <install-root>/nodeagents
 
-        if(ok(agentDir))
-            agentsDirPath = agentDir;
+        if(ok(nodeDir))
+            nodeDirPath = nodeDir;
         else
-            agentsDirPath = getAgentsDirPath();
+            nodeDirPath = getNodeDirPath();
 
-        agentsDir = new File(agentsDirPath);
-        mkdirs(agentsDir);
+        nodeDirFile = new File(nodeDirPath);
+        mkdirs(nodeDirFile);
 
-        if(!agentsDir.isDirectory()) {
+        if(!nodeDirFile.isDirectory()) {
             throw new CommandException(
-                    Strings.get("Instance.badAgentDir", agentsDir));
+                    Strings.get("Instance.badAgentDir", nodeDirFile));
         }
 
         if(nodeAgent != null) {
-            nodeAgentDir = new File(agentsDir, nodeAgent);
+            nodeAgentDir = new File(nodeDirFile, nodeAgent);
         }
         else {
-            nodeAgentDir = getTheOneAndOnlyAgent(agentsDir);
+            nodeAgentDir = getTheOneAndOnlyAgent(nodeDirFile);
             nodeAgent = nodeAgentDir.getName();
         }
 
@@ -378,18 +378,18 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                 Strings.get("Instance.noInstanceDirs", parent));
     }
 
-    private String getAgentsDirPath() throws CommandException {
-        String agentsDirPath = getSystemProperty(
+    private String getNodeDirPath() throws CommandException {
+        String nodeDirPath = getSystemProperty(
                 SystemPropertyConstants.AGENT_ROOT_PROPERTY);
 
-        if(StringUtils.ok(agentsDirPath))
-            return agentsDirPath;
+        if(StringUtils.ok(nodeDirPath))
+            return nodeDirPath;
 
         String installRootPath = getInstallRootPath();
         return installRootPath + "/" + "nodeagents";
     }
 
-    private String getInstallRootPath() throws CommandException {
+    protected String getInstallRootPath() throws CommandException {
         String installRootPath = getSystemProperty(
                 SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
 

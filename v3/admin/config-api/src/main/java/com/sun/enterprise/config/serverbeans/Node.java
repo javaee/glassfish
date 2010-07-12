@@ -85,7 +85,26 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      */
     @Param(name="name", primary = true)
     public void setName(String value) throws PropertyVetoException;
-    
+
+    /**
+     * points to the parent directory of the node(s) directory.
+     *
+     * @return path location of node-dir
+     */
+    @Attribute(value="node-dir")
+    String getNodeDir();
+
+    /**
+     * Sets the value of the node-dir, top-level parent directory of node(s)
+     * Default value is ${com.sun.aas.installRoot}/nodeagents.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    @Param(defaultValue="${com.sun.aas.installRoot}/nodeagents", name="nodedir", optional=true)
+    void setNodeDir(String value) throws PropertyVetoException;
+
     /**
      * points to a named host. 
      *
@@ -106,23 +125,23 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
     void setNodeHost(String value) throws PropertyVetoException;
 
     /**
-     * points to a named host.
+     * points to a GlassFish installation root
      *
-     * @return a named host name
+     * @return value of install-dir
      */
 
     @Attribute
-    String getNodeHome();
+    String getInstallDir();
 
     /**
-     * Sets the value of the name property.
+     * Sets the value of install-dir, the GlassFish installation root.
      *
      * @param value allowed object is
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name="nodehome", optional=true)
-    void setNodeHome(String value) throws PropertyVetoException;
+    @Param(name="installdir", optional=true)
+    void setInstallDir(String value) throws PropertyVetoException;
 
     @Element
     SshConnector getSshConnector();
@@ -132,11 +151,14 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
     @Service
     @Scoped(PerLookup.class)
     class Decorator implements CreationDecorator<Node> {
+        @Param(name="nodedir", optional=true)
+        String nodedir=null;
+
         @Param(name="nodehost", optional=true)
         String nodehost=null;
 
-        @Param(name="nodehome", optional=true)
-        String nodehome=null;
+        @Param(name="installdir", optional=true)
+        String installdir=null;
 
         @Param(name="sshport",optional=true)
         String sshPort="-1";
@@ -175,8 +197,10 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
         @Override
         public void decorate(AdminCommandContext context, final Node instance) throws TransactionFailure, PropertyVetoException {
 
-            if(nodehome != null)
-                instance.setNodeHome(nodehome);
+            if (nodedir != null)
+                instance.setNodeDir(nodedir);
+            if(installdir != null)
+                instance.setInstallDir(installdir);
             if (nodehost != null)
                 instance.setNodeHost(nodehost);
             

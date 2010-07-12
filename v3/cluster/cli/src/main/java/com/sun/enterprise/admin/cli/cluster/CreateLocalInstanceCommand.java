@@ -37,6 +37,8 @@
 package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.admin.cli.CLILogger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -107,8 +109,9 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         int exitCode = -1;
 
         if (node == null) {
-            _node = getInstanceHostName();
-            createNodeImplicit(_node, getNodeHome(), _node);
+            _node = getInstanceHostName(false);
+            String nodeHost = getInstanceHostName(true);
+            createNodeImplicit(_node, getInstallRootPath(), nodeHost);
         } else {
             _node = node;
         }
@@ -246,16 +249,20 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         return rc.execute("set", dottedName);
     }
 
-    private int createNodeImplicit(String name, String nodeHome, String nodeHost) throws CommandException {
+    private int createNodeImplicit(String name, String installdir, String nodeHost) throws CommandException {
         ArrayList<String> argsList = new ArrayList<String>();
         argsList.add(0, "_create-node-implicit");
         if (name != null) {
             argsList.add("--name");
             argsList.add(name);
         }
-        if (nodeHome != null) {
-            argsList.add("--nodehome");
-            argsList.add(nodeHome);
+        if (nodeDir != null) {
+            argsList.add("--nodedir");
+            argsList.add(nodeDir);
+        }
+        if (installdir != null) {
+            argsList.add("--installdir");
+            argsList.add(installdir);
         }
         argsList.add(nodeHost);
 
@@ -264,5 +271,23 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
 
         RemoteCommand rc = new RemoteCommand("_create-node-implicit", this.programOpts, this.env);
         return rc.execute(argsArray);
+    }
+
+    private String getInstanceHostName(boolean isCanonical) throws CommandException {
+        String instanceHostName = null;
+        InetAddress localHost = null;
+        try {
+            localHost = InetAddress.getLocalHost();
+        } catch (UnknownHostException ex) {
+            throw new CommandException(Strings.get("Agent.cantGetHostName", ex));
+        }
+        if (localHost != null) {
+            if (isCanonical) {
+                instanceHostName = localHost.getCanonicalHostName();
+            } else {
+                instanceHostName = localHost.getHostName();
+            }
+        }
+        return instanceHostName;
     }
 }

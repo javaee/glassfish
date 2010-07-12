@@ -74,11 +74,14 @@ public class UpdateNodeCommand implements AdminCommand {
     @Param(name="name", primary = true)
     String name;
 
+    @Param(name="nodedir", optional=true)
+    String nodedir;
+
     @Param(name="nodehost", optional=true)
     String nodehost;
 
-    @Param(name = "nodehome", optional=true)
-    String nodehome;
+    @Param(name = "installdir", optional=true)
+    String installdir;
 
     @Param(name="sshport", optional=true)
     String sshport;
@@ -129,10 +132,12 @@ public class UpdateNodeCommand implements AdminCommand {
                    Nodes nodes = ((Domain)param).getNodes();
                     Node node = nodes.getNode(nodeName);
                     Node writeableNode = t.enroll(node);
+                    if (nodedir != null)
+                        writeableNode.setNodeDir(nodedir);
                     if (nodehost != null)
                         writeableNode.setNodeHost(nodehost);
-                    if (nodehome != null)
-                        writeableNode.setNodeHome(nodehome);
+                    if (installdir != null)
+                        writeableNode.setInstallDir(installdir);
                     if (sshport != null || sshnodehost != null ||sshuser != null || sshkeyfile != null){
                         SshConnector sshC = writeableNode.getSshConnector();
                         if (sshC == null)  {

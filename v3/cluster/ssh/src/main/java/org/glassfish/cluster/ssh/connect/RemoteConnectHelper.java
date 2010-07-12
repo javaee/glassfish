@@ -124,7 +124,7 @@ public class RemoteConnectHelper  {
                 logger.severe("remote.connect.noSuchNodeRef"+ noderef);
                 return 1;
             }
-            String nodeHome = node.getNodeHome();
+            String nodeHome = node.getInstallDir();
             if( nodeHome == null) {  // what can we assume here?
                 logger.severe("remote.connect.noNodeHome"+noderef);
                 return 1;

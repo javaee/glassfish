@@ -72,8 +72,11 @@ public class CreateNodeSshCommand implements AdminCommand  {
     @Param(name="nodehost")
     private String nodehost;
 
-    @Param(name = "nodehome")
-    private String nodehome;
+    @Param(name = "installdir")
+    private String installdir;
+
+    @Param(name="nodedir", optional=true)
+    private String nodedir;
 
     @Param(name="sshport", optional=true)
     private String sshport;
@@ -111,8 +114,9 @@ public class CreateNodeSshCommand implements AdminCommand  {
         CommandInvocation ci = cr.getCommandInvocation("_create-node", report);
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
-        map.add("nodehome", nodehome);
+        map.add("installdir", installdir);
         map.add("nodehost", nodehost);
+        map.add("nodedir", nodedir);
         map.add("sshport", sshport);
         map.add("sshuser", sshuser);
         map.add("sshkeyfile", sshkeyfile);
