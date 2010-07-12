@@ -734,14 +734,24 @@ public class StandardPipeline
 
         // Stop this valve if necessary
         if (started) {
-            if (valve instanceof Lifecycle) {
+            if (valve instanceof ValveBase) {
+                if (((ValveBase)valve).isStarted()) {
+                    try {
+                        ((Lifecycle) valve).stop();
+                    } catch (LifecycleException e) {
+                        log.log(Level.SEVERE,
+                            "StandardPipeline.removeValve: stop: ", e);
+                    }
+                }
+            } else if (valve instanceof Lifecycle) {
                 try {
                     ((Lifecycle) valve).stop();
                 } catch (LifecycleException e) {
                     log.log(Level.SEVERE,
-                            "StandardPipeline.removeValve: stop: ", e);
+                        "StandardPipeline.removeValve: stop: ", e);
                 }
             }
+
             /** CR 6411114 (MBean deregistration moved to ValveBase.stop())
             // Unregister the removed valave
             unregisterValve(valve);
