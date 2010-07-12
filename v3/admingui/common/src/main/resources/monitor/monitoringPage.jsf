@@ -55,7 +55,7 @@
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"DtraceEnabled", "MonitoringEnabled", "MbeanEnabled"});
         // REST - TODO
-        getMonitorLevels(objectName="amx:pp=/domain/configs/config[server-config]/monitoring-service,type=module-monitoring-levels" monitorCompList="#{requestScope.tableList}")
+        getMonitorLevels(endpoint="#{pageSession.selfUrl}" monitorCompList="#{requestScope.tableList}")
         //getValidMonitorLevels(monitorLevelList="#{pageSession.levelList}")
         
     />
@@ -70,8 +70,8 @@
                 <!command
                     getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="${tableRowGroup}" Rows=>$attribute{allRows});
-                    updateMonitorLevels(objectName="amx:pp=/domain/configs/config[server-config]/monitoring-service,type=module-monitoring-levels", containerObjectName="amx:pp=/domain/configs/config[server-config]/monitoring-service,type=container-monitoring,name=", allRows="#{requestScope.allRows}")
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                    updateMonitorLevels(endpoint="#{pageSession.selfUrl}/module-monitoring-levels", containerEndpoint="#{pageSession.selfUrl}/container-monitoring", allRows="#{requestScope.allRows}")
+                    gf.updateEntity(endpoint="#{pageSession.selfUrl}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}"
                         onlyUseAttrs="#{pageSession.onlyUseAttrs}"

@@ -153,9 +153,11 @@ public class GuiUtil {
             if (srequest.isSecure()){
                 sessionMap.put("requestIsSecured", Boolean.TRUE);
                 sessionMap.put("REST_URL", "https://"+serverName+":"+ port + "/management/domain");
+                sessionMap.put("MONITOR_URL", "https://"+serverName+":"+ port + "/monitoring/domain");
             }else{
                 sessionMap.put("requestIsSecured", Boolean.FALSE);
                 sessionMap.put("REST_URL", "http://"+serverName+":"+ port + "/management/domain");
+                sessionMap.put("MONITOR_URL", "http://"+serverName+":"+ port + "/monitoring/domain");
             }
 
         }else{

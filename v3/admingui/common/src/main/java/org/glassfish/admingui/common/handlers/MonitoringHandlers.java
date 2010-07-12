@@ -67,6 +67,7 @@ import org.glassfish.admin.amx.base.Query;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
+import org.glassfish.admingui.common.util.RestResponse;
 
 /**
  *
@@ -77,75 +78,243 @@ public class MonitoringHandlers {
 
     @Handler(id = "getMonitorLevels",
     input = {
-        @HandlerInput(name = "objectName", type = String.class, required = true)},
+        @HandlerInput(name = "endpoint", type = String.class, required = true)},
     output = {
         @HandlerOutput(name = "monitorCompList", type = List.class)
     })
     public static void getMonitorLevels(HandlerContext handlerCtx) {
-        String objectName = (String) handlerCtx.getInputValue("objectName");
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
         List result = new ArrayList();
         try {
-            Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
-            Set data = (Set) query.queryType("monitoring-service");
-            Iterator iter = data.iterator();
-            while (iter.hasNext()) {
-                Map attrs = ((AMXProxy) iter.next()).attributesMap();
-                ObjectName[] pnames = (ObjectName[]) attrs.get("ContainerMonitoring");
-                if (pnames != null) {
-                    for (int i = 0; i < pnames.length; i++) {
-                        Map oneRow = new HashMap();
-                        String cname = null;
-                        String pname = pnames[i].getKeyProperty("name");
-                        ListIterator ci = containerDispList.listIterator();
-                        ListIterator vi = containerNameList.listIterator();
-                        while (ci.hasNext() && vi.hasNext()) {
-                            String dispName = (String) ci.next();
-                            String value = (String) vi.next();
-                            if (pname.equals(value)) {
-                                cname = dispName;
-                            }
-                        }
-                        oneRow.put("monCompName", (cname == null) ? pname : cname);
-                        oneRow.put("level", V3AMX.getAttribute(pnames[i], "Level"));
-                        oneRow.put("selected", false);
-                        result.add(oneRow);
-                    }
-                }
-            }
-            AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectName));
-            AMXConfigHelper helper = new AMXConfigHelper((AMXConfigProxy) amx);
-            final Map<String, Object> attrs = helper.simpleAttributesMap();
-            for (String oneMonComp : attrs.keySet()) {
-                if ((!oneMonComp.equals("Parent")) && (!oneMonComp.equals("Children")) && (!oneMonComp.equals("Name")) && (!oneMonComp.equals("Property"))) {
+            String monitoringServiceEndPoint = endpoint + "/monitoring-service";
+            Map attrs = RestApiHandlers.getEntityAttrs(RestApiHandlers.get(monitoringServiceEndPoint).getResponseBody());
+
+            ObjectName[] pnames = (ObjectName[]) attrs.get("ContainerMonitoring");
+            if (pnames != null) {
+                for (int i = 0; i < pnames.length; i++) {
                     Map oneRow = new HashMap();
-                    String name = null;
-                    ListIterator ni = monDisplayList.listIterator();
-                    ListIterator vi = monNamesList.listIterator();
-                    while (ni.hasNext() && vi.hasNext()) {
-                        String dispName = (String) ni.next();
+                    String cname = null;
+                    String pname = pnames[i].getKeyProperty("name");
+                    ListIterator ci = containerDispList.listIterator();
+                    ListIterator vi = containerNameList.listIterator();
+                    while (ci.hasNext() && vi.hasNext()) {
+                        String dispName = (String) ci.next();
                         String value = (String) vi.next();
-                        if ((oneMonComp.equals(value))) {
-                            name = dispName;
+                        if (pname.equals(value)) {
+                            cname = dispName;
                         }
                     }
-                    if (name == null) {
-                        name = oneMonComp;
-                    }
-                    oneRow.put("monCompName", name);
-                    oneRow.put("level", attrs.get(oneMonComp));
+                    oneRow.put("monCompName", (cname == null) ? pname : cname);
+                    oneRow.put("level", V3AMX.getAttribute(pnames[i], "Level"));
                     oneRow.put("selected", false);
                     result.add(oneRow);
-                    //}
                 }
+            }
+
+            String monitoringLevelsEndPoint = endpoint + "/module-monitoring-levels";
+            attrs = RestApiHandlers.getEntityAttrs(RestApiHandlers.get(monitoringLevelsEndPoint).getResponseBody());
+            for (Object oneMonComp : attrs.keySet()) {
+                Map oneRow = new HashMap();
+                String name = null;
+                ListIterator ni = monDisplayList.listIterator();
+                ListIterator vi = monNamesList.listIterator();
+                while (ni.hasNext() && vi.hasNext()) {
+                    String dispName = (String) ni.next();
+                    String value = (String) vi.next();
+                    if ((oneMonComp.equals(value))) {
+                        name = dispName;
+                    }
+                }
+                if (name == null) {
+                    name = (String) oneMonComp;
+                }
+                oneRow.put("monCompName", name);
+                oneRow.put("level", attrs.get(oneMonComp));
+                oneRow.put("selected", false);
+                result.add(oneRow);
             }
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
-        handlerCtx.setOutputValue("monitorCompList", result);
+        handlerCtx.setOutputValue( "monitorCompList", result);
     }
-       
-    
-  /*
+
+    /*
+     * This handler returns a list of statistical data for an endpoint.
+     * Useful for populating table
+     */
+    @Handler(id="getStats",
+    input={
+        @HandlerInput(name="endpoint",   type=String.class, required=true)},
+    output={
+        @HandlerOutput(name="result",        type=List.class),
+        @HandlerOutput(name="hasStats",        type=Boolean.class)})
+
+        public static void getStats(HandlerContext handlerCtx) {
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        Locale locale = GuiUtil.getLocale();
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, locale);
+        NumberFormat nf = NumberFormat.getNumberInstance(locale);
+        List result = new ArrayList();
+
+        try {
+            Map<String, Map> stats = RestApiHandlers.getMonitoringStatInfo(
+                    RestApiHandlers.get(endpoint).getResponseBody());
+            for (String statName : stats.keySet()) {
+                Map<String, String> monAttrs = (Map<String, String>) stats.get(statName);
+                Map<String, String> statMap = new HashMap();
+                String val = "";
+                String details = "--";
+                String desc = "--";
+                String start = "--";
+                String last = "--";
+                String unit = "";
+                String current = "";
+                String mname = null;
+                String runtimes = null;
+                String queuesize = null;
+                String thresholds = "--";
+
+                Map statsMap = new HashMap();
+                if (monAttrs.size() != 0) {
+                    
+                    if (monAttrs.containsKey("name")) {
+                        mname = (String) monAttrs.get("name");
+                    } else if (monAttrs.containsKey("appname")) {
+                        mname = (String) monAttrs.get("appname");
+                    }
+                    unit = (String) monAttrs.get("unit");
+                    desc = (String) monAttrs.get("description");
+
+                    last = (String) monAttrs.get("lastsampletime");
+                    if (Long.valueOf(last) != -1) {
+                        last = df.format(new Date(Long.valueOf(last)));
+                    }
+                    start = (String) monAttrs.get("starttime");
+                    if (Long.valueOf(start) != -1) {
+                        start = df.format(new Date(Long.valueOf(start)));
+                    }
+                    if(monAttrs.containsKey("count")) {
+                        val = (String) monAttrs.get("count") + " " + unit;
+                    } else if (monAttrs.containsKey("current")) {
+                        if (statName.equals("transaction-service")) {
+                            String str = (String) monAttrs.get("current");
+                            String formatStr = formatActiveIdsForDisplay(str);
+                            if (!formatStr.isEmpty() && !formatStr.equals("")) {
+                                val = formatStr;
+                            }
+                        } else {
+                            val = (String) monAttrs.get("current");
+                            if(unit != null && !(unit.equals("String"))) {
+                                val = val + unit;
+                            }
+                        }
+                    } else if (monAttrs.containsKey("applicationtype")) {
+                        val = (String) monAttrs.get("applicationtype");
+                    }
+                    
+                    //Update the details
+                    if (monAttrs.containsKey("appName")) {
+                        details = (GuiUtil.getMessage("msg.AppName") + ": " + monAttrs.get("appName") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("appname")) {
+                        details = (GuiUtil.getMessage("msg.AppName") + ": " + monAttrs.get("appname") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("jrubyversion")) {
+                        details = details + (GuiUtil.getMessage("msg.JrubyVersion") + ": " + monAttrs.get("jrubyversion") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("rubyframework")) {
+                        details = details + (GuiUtil.getMessage("msg.Framework") + ": " + monAttrs.get("rubyframework") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("environment")) {
+                        details = details + (GuiUtil.getMessage("msg.Environment") + ": " + monAttrs.get("environment") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("address")) {
+                        details = details + (GuiUtil.getMessage("msg.Address") + ": " + monAttrs.get("address") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("deploymenttype")) {
+                        details = details + (GuiUtil.getMessage("msg.DepType") + ": " + monAttrs.get("deploymenttype") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("endpointname")) {
+                        details = details + (GuiUtil.getMessage("msg.EndPointName") + ": " + monAttrs.get("endpointname") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("classname")) {
+                        details = (GuiUtil.getMessage("msg.ClassName") + ": " + monAttrs.get("classname") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("impltype")) {
+                        details = details + (GuiUtil.getMessage("msg.ImplClass") + ": " + monAttrs.get("implclass") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("implclass") && monAttrs.containsKey("impltype")) {
+                        details = details + (GuiUtil.getMessage("msg.ImplType") + ": " + monAttrs.get("impltype") + "<br/>");
+                    }
+
+                    if (monAttrs.containsKey("namespace")) {
+                        details = details + (GuiUtil.getMessage("msg.NameSpace") + ": " + monAttrs.get("namespace") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("portname")) {
+                        details = details + (GuiUtil.getMessage("msg.PortName") + ": " + monAttrs.get("portname") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("servicename")) {
+                        details = details + (GuiUtil.getMessage("msg.ServiceName") + ": " + monAttrs.get("servicename") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("tester")) {
+                        details = details + (GuiUtil.getMessage("msg.Tester") + ": " + monAttrs.get("tester") + "<br/>");
+                    }
+                    if (monAttrs.containsKey("wsdl")) {
+                        details = details + (GuiUtil.getMessage("msg.WSDL") + ": " + monAttrs.get("wsdl") + "<br/>");
+                    }
+
+                    if (monAttrs.containsKey("maxtime")) {
+                        details = (GuiUtil.getMessage("msg.MaxTime") + ": " + monAttrs.get("maxtime") + " " + unit + "<br/>");
+                    }
+                    if (monAttrs.containsKey("mintime")) {
+                        details = details + (GuiUtil.getMessage("msg.MinTime") + ": " + monAttrs.get("mintime") + " " + unit + "<br/>");
+                    }
+                    if (monAttrs.containsKey("totaltime")) {
+                        details = details + (GuiUtil.getMessage("msg.TotalTime") + ": " + monAttrs.get("totaltime") + " " + unit + "<br/>");
+                    }
+                    if (monAttrs.containsKey("highwatermark")) {
+                        details = (GuiUtil.getMessage("msg.HWaterMark") + ": " + monAttrs.get("highwatermark") + " " + unit + "<br/>");
+                    }
+                    if (monAttrs.containsKey("lowwatermark")) {
+                        details = details + (GuiUtil.getMessage("msg.LWaterMark") + ": " + monAttrs.get("lowwatermark") + " " + unit + "<br/>");
+                    }
+                    if (monAttrs.containsKey("activeruntimes")) {
+                        runtimes = (String) monAttrs.get("activeruntimes");
+                    }
+                    if (monAttrs.containsKey("queuesize")) {
+                        queuesize = (String) monAttrs.get("queuesize");
+                    }
+                    if (monAttrs.containsKey("hardmaximum") && monAttrs.get("hardmaximum") != null) {
+                        val = monAttrs.get("hardmaximum") + " " + "hard max " + "<br/>" + monAttrs.get("hardminimum") + " " + "hard min";
+                    }
+                    if (monAttrs.containsKey("newthreshold") && monAttrs.get("newThreshold") != null) {
+                        thresholds = monAttrs.get("newthreshold") + " " + "new " + "<br/>" + monAttrs.get("queuedownthreshold") + " " + "queue down";
+                    }
+                    if (monAttrs.containsKey("queuesize") && monAttrs.containsKey("jrubyversion")) {
+                        details = details + monAttrs.get("environment") + " " + monAttrs.get("jrubyversion");
+                    }
+
+                    statMap.put("Name", mname);
+                    statMap.put("StartTime", start);
+                    statMap.put("LastTime", last);
+                    statMap.put("Description", desc);
+                    statMap.put("Value", (val == null) ? "" : val);
+                    statMap.put("Details", (details == null) ? "--" : details);
+                    statMap.put("Thresholds", (thresholds == null) ? "--" : thresholds);
+                    statMap.put("QueueSize", (queuesize == null) ? "--" : queuesize);
+                    statMap.put("Runtimes", (runtimes == null) ? "--" : runtimes);
+                    result.add(statMap);
+                }
+            }
+            handlerCtx.setOutputValue("result", result);
+            handlerCtx.setOutputValue("hasStats", (result.size() == 0) ? false : true);
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+            
+      /*
      * This handler returns a list of statistical data for type and name of component.
      * Useful for populating table
      */
@@ -410,11 +579,11 @@ public class MonitoringHandlers {
     @Handler(id = "updateMonitorLevels",
     input = {
         @HandlerInput(name = "allRows", type = List.class, required = true),
-        @HandlerInput(name = "objectName", type = String.class),
-        @HandlerInput(name = "containerObjectName", type = String.class)})
+        @HandlerInput(name = "endpoint", type = String.class),
+        @HandlerInput(name = "containerEndpoint", type = String.class)})
     public static void updateMonitorLevels(HandlerContext handlerCtx) {
-        String objectName = (String) handlerCtx.getInputValue("objectName");
-        String cObjectName = (String) handlerCtx.getInputValue("containerObjectName");
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        String containerEndpoint = (String) handlerCtx.getInputValue("containerEndpoint");
         List<Map<String,String>> allRows = (List<Map<String,String>>) handlerCtx.getInputValue("allRows");
         String objectNameStr = null;
         for (Map<String, String> oneRow : allRows) {
@@ -427,7 +596,7 @@ public class MonitoringHandlers {
                 String mvalue = (String) vi.next();
                 if (name.equals(dispName)) {
                     value = mvalue;
-                    objectNameStr = objectName;
+                    objectNameStr = endpoint;
                 }
             }
             if (value == null) {
@@ -438,11 +607,19 @@ public class MonitoringHandlers {
                     String cName = (String) cni.next();
                     if (name.equals(cDispName)) {
                         value = "Level";
-                        objectNameStr = cObjectName+cName;
+                        objectNameStr = containerEndpoint+"/"+cName;
                     }
                 }
             }
-            V3AMX.setAttribute((objectNameStr == null) ? cObjectName+name : objectNameStr, new Attribute((value == null) ? name : value, oneRow.get("level")));
+            Map<String,Object> attrMap = new HashMap<String,Object>();
+            attrMap.put((value == null) ? name : value, oneRow.get("level"));
+            String entityUrl = (objectNameStr == null) ? containerEndpoint+"/"+name : objectNameStr ;
+            RestResponse response = RestApiHandlers.sendUpdateRequest(entityUrl, attrMap, null, null, null);
+            if (!response.isSuccess()) {
+                GuiUtil.getLogger().severe("Update monitor level failed.  parent=" + endpoint + "; attrsMap =" + attrMap);
+                GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
+                return;
+            }
         }
      }
 
@@ -509,12 +686,13 @@ public class MonitoringHandlers {
             Map<String, AMXProxy> modules = oneApp.childrenMap("module");
             for (AMXProxy oneModule : modules.values()) {
                 String moduleName = oneModule.getName();
-                    if (moduleName.equals(name)){
-                        appName = oneApp.getName();
-                        break;
-                    }
+                if (moduleName.equals(name)){
+                    appName = oneApp.getName();
+                    break;
+                }
             }
         }
+
         handlerCtx.setOutputValue("appName",  appName);
     }
 
@@ -598,6 +776,77 @@ public class MonitoringHandlers {
         }
         handlerCtx.setOutputValue("mbeanName", mbeanName);
 
+    }
+    /*
+     * Returns true if the given pool name is the child of an entity
+     * (jdbc connection pools or connector connection pools).
+     * This is used in monitoringResourceStats.jsf.
+     */
+    @Handler(id = "isPool",
+      input={
+        @HandlerInput(name="poolName",   type=String.class, required=true),
+        @HandlerInput(name="endpoint",   type=String.class, required=true)},
+       output = {
+        @HandlerOutput(name = "result", type = Boolean.class)
+       })
+    public static void isPool(HandlerContext handlerCtx) {
+        String poolName = (String) handlerCtx.getInputValue("poolName");
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        Boolean result = false;
+        try {
+            List<String> poolNames = RestApiHandlers.getChildrenNames(endpoint, "Name");
+            if (poolNames.contains(poolName)) {
+                result = true;
+            }
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+        
+        handlerCtx.setOutputValue("result", result);
+
+    }
+    
+    /*
+     * Returns the jdbc connection pools, connector connection pools,
+     * first jdbc element and first connector element for the given set of
+     * pool names  and resources endpoint. 
+     */
+    @Handler(id = "getMonitoringPools",
+      input={
+        @HandlerInput(name="poolNames",   type=List.class, required=true),
+        @HandlerInput(name="endpoint",   type=String.class, required=true)},
+       output = {
+        @HandlerOutput(name = "jdbcList", type = List.class),
+        @HandlerOutput(name = "firstJdbc", type = String.class),
+        @HandlerOutput(name = "connectorList", type = List.class),
+        @HandlerOutput(name = "firstConnector", type = String.class)
+       })
+    public static void getMonitoringPools(HandlerContext handlerCtx) {
+        List<String> poolNames = (List<String>) handlerCtx.getInputValue("poolNames");
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        List<String> jdbcMonitorList = new ArrayList<String>();
+        List<String> connectorMonitorList = new ArrayList<String>();
+        String fisrtJdbc = null;
+        String firstConnector = null;
+
+        try {
+            List<String> jdbcPools = RestApiHandlers.getChildrenNames(endpoint + "/jdbc-connection-pool", "Name");
+            List<String> connectorPools = RestApiHandlers.getChildrenNames(endpoint + "/connector-connection-pool", "Name");
+            for (String poolName : poolNames) {
+                if (jdbcPools.contains(poolName)) {
+                    jdbcMonitorList.add(poolName);
+                } else if (connectorPools.contains(poolName)) {
+                    connectorMonitorList.add(poolName);
+                }
+            }
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+
+        handlerCtx.setOutputValue("jdbcList", jdbcMonitorList);
+        handlerCtx.setOutputValue("firstJdbc", fisrtJdbc);
+        handlerCtx.setOutputValue("connectorList", connectorMonitorList);
+        handlerCtx.setOutputValue("firstConnector", firstConnector);
     }
 
 

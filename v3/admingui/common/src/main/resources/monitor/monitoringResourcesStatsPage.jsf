@@ -46,8 +46,13 @@
 <event>
     <!beforeCreate
 	getRequestValue(key="configName" value=>$page{configName} default="server-config");
-	getProxyNamesByType(type="jdbc-connection-pool-mon", end="#{true}", result="#{pageSession.jdbcList}" firstItem="#{pageSession.firstJdbc}");
-        getProxyNamesByType(type="connector-connection-pool-mon", end="#{true}", result="#{pageSession.connectorList}" firstItem="#{pageSession.firstConnector}");
+	gf.getChildrenNamesList(endpoint="#{sessionScope.MONITOR_URL}/server/resources", result="#{pageSession.poolsList}");
+        getMonitoringPools(endpoint="#{sessionScope.REST_URL}/resources",
+            poolNames = "#{pageSession.poolsList}",
+            jdbcList="#{pageSession.jdbcList}",
+            firstJdbc="#{pageSession.firstJdbc}",
+            connectorList="#{pageSession.connectorList}",
+            firstConnector="#{pageSession.firstConnector}");
         addToMonitorList(oldList="#{pageSession.jdbcList}", newList="#{pageSession.connectorList}"  result="#{pageSession.resourceList}");
         populateResourceMonitorDropDown(ResourceList="#{resourceList}", MonitorList=>$attribute{monitorList} FirstItem=>$attribute{firstVal});
         if(!#{viewVal}) {
@@ -101,7 +106,13 @@
      <sun:tableRowGroup id="jdbcStats" rendered="#{hasStatsJdbc}" data={"$attribute{jdbcStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.JDBC} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="jdbc-connection-pool-mon" name="resources/#{viewVal}", result=>$attribute{jdbcStatsList}  hasStats=>$attribute{hasStatsJdbc});
+            isPool(poolName="#{viewVal}", endpoint="#{sessionScope.REST_URL}/resources/jdbc-connection-pool", result=>$attribute{isJdbcPool});
+            if (#{isJdbcPool}) {
+                getStats(endpoint="#{sessionScope.MONITOR_URL}/server/resources/#{viewVal}", result=>$attribute{jdbcStatsList}  hasStats=>$attribute{hasStatsJdbc});
+            }
+            if (!#{isJdbcPool}) {
+                setAttribute(key="hasStatsJdbc" value="#{false}");
+            }
 
          />
 #include "/common/monitor/monitoringTableRows.inc"
@@ -110,7 +121,13 @@
      <sun:tableRowGroup id="connectionPoolStats" rendered="#{hasStatsConnectionPool}" data={"$attribute{connectionPoolStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.ConnectorConnectionPool} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="connector-connection-pool-mon" name="resources/#{viewVal}", result=>$attribute{connectionPoolStatsList}  hasStats=>$attribute{hasStatsConnectionPool});
+            isPool(poolName="#{viewVal}", endpoint="#{sessionScope.REST_URL}/resources/connector-connection-pool", result=>$attribute{isConnectorPool});
+            if (#{isConnectorPool}) {
+                getStats(endpoint="#{sessionScope.MONITOR_URL}/server/resources/#{viewVal}", result=>$attribute{connectionPoolStatsList}  hasStats=>$attribute{hasStatsConnectionPool});
+            }
+            if (!#{isConnectorPool}) {
+                setAttribute(key="hasStatsConnectionPool" value="#{false}");
+            }
 
          />
 #include "/common/monitor/monitoringTableRows.inc"
