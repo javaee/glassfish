@@ -786,9 +786,6 @@ public class ApplicationLifecycle implements Deployment {
     public void undeploy(String appName, ExtendedDeploymentContext context) {
 
         ActionReport report = context.getActionReport();
-        if (report.getExtraProperties()!=null) {
-            context.getAppProps().put("ActionReportProperties", report.getExtraProperties());
-        }
 
         ApplicationInfo info = appRegistry.get(appName);
         if (info==null) {

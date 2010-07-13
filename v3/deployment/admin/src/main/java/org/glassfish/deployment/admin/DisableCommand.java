@@ -47,6 +47,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
 import org.glassfish.api.deployment.StateCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -70,6 +71,7 @@ import java.util.logging.Logger;
 import java.beans.PropertyVetoException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import org.glassfish.deployment.versioning.VersioningService;
 import org.glassfish.deployment.versioning.VersioningException;
@@ -85,6 +87,12 @@ import org.glassfish.deployment.versioning.VersioningException;
 public class DisableCommand extends StateCommandParameters implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DisableCommand.class);    
+
+    @Param(optional=true, separator=':')
+    public Properties properties=null;
+
+    @Param(optional=true)
+    public Boolean keepstate;
 
     @Inject
     ServerEnvironment env;
@@ -183,6 +191,10 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
             commandParams.origin = this.origin;
             commandParams.name = appName;
             commandParams.target = target;
+            if (keepstate != null) {
+                commandParams.keepstate = keepstate;
+            } 
+            
             final ExtendedDeploymentContext deploymentContext = 
                     deployment.getBuilder(logger, commandParams, report).source(appInfo.getSource()).build();
             Application application = applications.getApplication(appName);
@@ -191,6 +203,14 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
                     application.getDeployProperties());
                 deploymentContext.setModulePropsMap(
                     application.getModulePropertiesMap());
+            }
+
+            if (properties!=null) {
+                deploymentContext.getAppProps().putAll(properties);
+            }
+
+            if (report.getExtraProperties()!=null) {
+                deploymentContext.getAppProps().put("ActionReportProperties", report.getExtraProperties());
             }
 
             appInfo.stop(deploymentContext, deploymentContext.getLogger());

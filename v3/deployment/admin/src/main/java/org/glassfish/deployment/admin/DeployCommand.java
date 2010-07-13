@@ -488,17 +488,20 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 parameters.add("droptables", dropandcreatetables.toString());
             }
             parameters.add("ignoreCascade", force.toString());
+            if (keepstate != null) {
+                parameters.add("keepstate", keepstate.toString());
+            }
 
             ActionReport subReport = report.addSubActionsReport();
             subReport.setExtraProperties(new Properties());
             if (properties!=null && properties.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
                 Properties undeployProperties = new Properties();
                 undeployProperties.put(DeploymentProperties.KEEP_SESSIONS, properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
-                parameters.add("properties", propertiesValue(undeployProperties, ':'));
+                parameters.add("properties", DeploymentUtils.propertiesValue(undeployProperties, ':'));
             } else if (property!=null && property.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
                 Properties undeployProperties = new Properties();
                 undeployProperties.put(DeploymentProperties.KEEP_SESSIONS, property.getProperty(DeploymentProperties.KEEP_SESSIONS));
-                parameters.add("properties", propertiesValue(undeployProperties, ':'));
+                parameters.add("properties", DeploymentUtils.propertiesValue(undeployProperties, ':'));
             }
 
             CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("undeploy", subReport);
@@ -651,17 +654,4 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             return false;
         }
     }
-
-    private String propertiesValue(final Properties props, final char sep) {
-        final StringBuilder sb = new StringBuilder();
-        String currentSep = "";
-        for (Enumeration en = props.propertyNames(); en.hasMoreElements();) {
-            final Object key = en.nextElement();
-            final Object v = props.get(key);
-            sb.append(currentSep).append(key.toString()).append("=").append(v.toString());
-            currentSep = String.valueOf(sep);
-        }
-        return sb.toString();
-    }
-
 }

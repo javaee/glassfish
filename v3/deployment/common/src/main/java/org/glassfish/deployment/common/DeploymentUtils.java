@@ -45,6 +45,7 @@ import org.glassfish.api.deployment.DeploymentContext;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Properties;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -253,4 +254,17 @@ public class DeploymentUtils {
         }
         return;
     }
+
+    public static String propertiesValue(final Properties props, final char sep) {
+        final StringBuilder sb = new StringBuilder();
+        String currentSep = "";
+        for (Enumeration en = props.propertyNames(); en.hasMoreElements();) {
+            final Object key = en.nextElement();
+            final Object v = props.get(key);
+            sb.append(currentSep).append(key.toString()).append("=").append(v.toString());
+            currentSep = String.valueOf(sep);
+        }
+        return sb.toString();
+    }
+
 }

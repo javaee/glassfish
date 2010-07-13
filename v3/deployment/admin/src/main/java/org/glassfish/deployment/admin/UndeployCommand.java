@@ -46,6 +46,8 @@ import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.Cluster;
@@ -74,6 +76,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import org.glassfish.deployment.versioning.VersioningService;
 import org.glassfish.deployment.versioning.VersioningException;
@@ -241,6 +244,15 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 final ParameterMap parameters = new ParameterMap();
                 parameters.add("DEFAULT", appName);
                 parameters.add("target", target);
+                if (keepstate != null) {
+                    parameters.add("keepstate", keepstate.toString());
+                }
+                if (properties!=null && properties.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
+                    Properties disableProperties = new Properties();
+                    disableProperties.put(DeploymentProperties.KEEP_SESSIONS, properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
+                    parameters.add("properties", DeploymentUtils.propertiesValue(disableProperties, ':'));
+                }
+
                 inv.parameters(parameters).execute();
 
                 if (report.getActionExitCode().equals(

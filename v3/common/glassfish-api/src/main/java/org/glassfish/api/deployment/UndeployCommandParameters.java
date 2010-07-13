@@ -69,6 +69,9 @@ public class UndeployCommandParameters extends OpsParams {
     @Param(optional=true, separator=':')
     public Properties properties=null;
 
+    @Param(optional=true)
+    public Boolean keepstate;
+
     public String name() {
         return name;
     }
