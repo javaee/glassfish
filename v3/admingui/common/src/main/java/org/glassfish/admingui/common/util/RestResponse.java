@@ -71,7 +71,8 @@ public abstract class RestResponse {
 
     /**
      *	<p> This method abstracts the physical response to return a consistent
-     *	    data structure.  This data structure will look like:</p>
+     *	    data structure.  For many responses, this data structure may look
+     *	    like:</p>
      *
      *	<p>
      *	<code>
@@ -107,6 +108,7 @@ public abstract class RestResponse {
 
 class JerseyRestResponse extends RestResponse {
     protected ClientResponse response;
+    private String body = null;
 
     public JerseyRestResponse(ClientResponse response) {
         this.response = response;
@@ -114,7 +116,10 @@ class JerseyRestResponse extends RestResponse {
 
     @Override
     public String getResponseBody() {
-        return response.getEntity(String.class);
+	if (body == null) {
+	    body = response.getEntity(String.class);
+	}
+        return body;
     }
 
     @Override
@@ -124,69 +129,107 @@ class JerseyRestResponse extends RestResponse {
 
     /**
      *	<p> This method abstracts the physical response to return a consistent
-     *	    data structure.  This data structure will look like:</p>
-     *
-     *	<p>
-     *	<code>
-     *	    Map&lt;String, Object&gt;
-     *	    {
-     *		"responseCode" : Integer    // HTTP Response code, ie. 200
-     *		"responseBody" : String	    // The Raw Response Body
-     *		"description"  : String	    // Command Description
-     *		"exit-code"    : String	    // Command Exit Code (i.e. SUCCESS)
-     *		// 0 or more messages returned from the command
-     *		"messages" : List&lt;Map&lt;String, Object&gt;&gt;
-     *		[
-     *		    {
-     *			"message" : String  // Raw Message String
-     *			"..."	  : String  // Additional custom attributes
-     *			// List of properties for this message
-     *			"properties" : List&lt;Map&lt;String, Object&gt;&gt;
-     *			[
-     *			    {
-     *				"name"  : String    // The Property Name
-     *				"value" : String    // The Property Value
-     *				"properties" : List // Child Properties
-     *			    }, ...
-     *			]
-     *			"messages" : List   // Child messages
-     *		    }, ...
-     *		]
-     *	    }
-     *	</code>
-     *	</p>
+     *	    data structure.</p>
      */
     @Override
     public Map<String, Object> getResponse() {
-        Document document = MiscUtil.getDocument(getResponseBody());
-        Element root = document.getDocumentElement();
-	Map<String, Object> response = new HashMap<String, Object>(5);
+	// Prepare the result object
+	Map<String, Object> result = new HashMap<String, Object>(5);
 
 	// Add the Response Code
-	response.put("responseCode", getResponseCode());
+	result.put("responseCode", getResponseCode());
 	// Add the Response Body
-	response.put("responseBody", getResponseBody());
-	// Add the Command Description
-	response.put("description", root.getAttribute("description"));
-	response.put("exit-code", root.getAttribute("exit-code"));
+	result.put("responseBody", getResponseBody());
 
-	// Add the messages
-        List<Map<String, Object>> messages = new ArrayList<Map<String, Object>>(2);
-	response.put("messages", messages);
+	String contentType = response.getHeaders().getFirst("Content-type");
+	if (contentType != null) {
+	    contentType = contentType.toLowerCase();
+	    if (contentType.endsWith("xml")) {
+		// If XML...
+		Document document = MiscUtil.getDocument(getResponseBody());
+		Element root = document.getDocumentElement();
+		if ("action-report".equalsIgnoreCase(root.getNodeName())) {
+		    // Default XML document type...
+		    // Add the Command Description
+		    result.put("description", root.getAttribute("description"));
+		    result.put("exit-code", root.getAttribute("exit-code"));
 
-	// Iterate over each node looking for message-part
-        NodeList nl = root.getChildNodes();
-	int len = nl.getLength();
-	Node child;
-	for (int idx=0; idx < len; idx++) {
-	    child = nl.item(idx);
-	    if ((child.getNodeType() == Node.ELEMENT_NODE) && (child.getNodeName().equals("message-part"))) {
-		messages.add(processMessagePart(child));
+		    // Add the messages
+		    List<Map<String, Object>> messages = new ArrayList<Map<String, Object>>(2);
+		    result.put("messages", messages);
+
+		    // Iterate over each node looking for message-part
+		    NodeList nl = root.getChildNodes();
+		    int len = nl.getLength();
+		    Node child;
+		    for (int idx=0; idx < len; idx++) {
+			child = nl.item(idx);
+			if ((child.getNodeType() == Node.ELEMENT_NODE) && (child.getNodeName().equals("message-part"))) {
+			    messages.add(processMessagePart(child));
+			}
+		    }
+		} else {
+		    // Generate a generic Java structure from the XML
+		    result.put("data", getJavaFromXML(root));
+		}
+	    } else if (contentType.endsWith("json")) {
+		// Decode JSON
+		result.put("data", JSONUtil.jsonToJava(getResponseBody()));
+	    } else {
+		// Unsupported Response Format!
+		System.out.println("Unsupported Response Format!");
 	    }
 	}
 
-	// Return the populated response data structure
-        return response;
+	// Return the populated result data structure
+        return result;
+    }
+
+    /**
+     *	<p> This method will create a Map<String, Object>.  It will add all the
+     *	    attributes of the given root Element to the Map.  It will then walk
+     *	    any child Elements and add the children as a
+     *	    <code>List&lt;Map&lt;String, Object&gt;&gt;</code> for each unique
+     *	    element name.</p>
+     */
+    private Map<String, Object> getJavaFromXML(Element element) {
+	// Create a new Map to store the properties and children.
+	Map<String, Object> result = new HashMap<String, Object>(10);
+
+	// Add all the attributes...
+	NamedNodeMap attributes = element.getAttributes();
+	int attLen = attributes.getLength();
+	for (int attIdx=0; attIdx<attLen; attIdx++) {
+	    Node attribute = attributes.item(attIdx);
+	    result.put(attribute.getNodeName(), attribute.getNodeValue());
+	}
+
+	// Now add any child Elements
+	String childName;
+	Node child;
+	List<Map<String, Object>> childList;
+        NodeList nl = element.getChildNodes();
+	int len = nl.getLength();
+	for (int idx=0; idx < len; idx++) {
+	    child = nl.item(idx);
+	    if ((child.getNodeType() == Node.ELEMENT_NODE)) {
+		// We found a child Element...
+		childName = child.getNodeName();
+		if (result.containsKey(childName)) {
+		    // Already created, add to it
+		    childList = (List<Map<String, Object>>) result.get(childName);
+		} else {
+		    // Not created yet, create it
+		    childList = new ArrayList<Map<String, Object>>(5);
+		    result.put(childName, childList);
+		}
+		// Add the child to the List
+		childList.add(getJavaFromXML((Element)child));
+	    }
+	}
+
+	// Return the fully populated Map<String, Object>
+	return result;
     }
 
     /**
