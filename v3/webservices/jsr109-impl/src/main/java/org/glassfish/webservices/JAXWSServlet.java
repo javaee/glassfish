@@ -182,7 +182,7 @@ public class JAXWSServlet extends HttpServlet {
                     endpoint.hasSecurePipeline())) {
                 String message = endpt.getDescriptor().getWebService().getName() +
                         "is a secured web service; Tester feature is not supported for secured services";
-                //TODOBM fixnew WsUtil()).writeInvalidMethodType(response, message);
+                (new WsUtil()).writeInvalidMethodType(response, message);
                 return;
             }
             if (endpt!=null && Boolean.parseBoolean(endpt.getDescriptor().getDebugging())) {
@@ -201,12 +201,12 @@ public class JAXWSServlet extends HttpServlet {
 
         // If it is not a "Tester request" and it is not a WSDL request,
         // this might be a restful service
-        /* TODO BM fix me
+
        if (!("WSDL".equalsIgnoreCase(request.getQueryString())) &&
               (HTTPBinding.HTTP_BINDING.equals(endpoint.getProtocolBinding()))) {
             doPost(request, response);
             return;
-        }*/
+        }
 
         // normal WSDL retrieval invocation
         try {
@@ -216,7 +216,7 @@ public class JAXWSServlet extends HttpServlet {
             } else {
                 String message =
                         "Invalid wsdl request " +  request.getRequestURL();
-                //(new WsUtil()).writeInvalidMethodType(response, message);
+                (new WsUtil()).writeInvalidMethodType(response, message);
             }
         } catch(Throwable t) {
             ServletException se = new ServletException();
@@ -290,41 +290,6 @@ public class JAXWSServlet extends HttpServlet {
         Collection docs = null;
         if(endpoint.getWebService().hasWsdlFile()) {
 
-            /*
-             //figure way for WEB or APP
-            BaseManager mgr;
-            if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
-                mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.WEB);
-            } else {
-                mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.APP);
-            }*/
-
-//            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
-//            ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
-//            String deployedDir = new File(servEnv.getApplicationRepositoryPath().getAbsolutePath(),
-//                    endpoint.getBundleDescriptor().getApplication().getRegistrationName()).getAbsolutePath();
-//
-//            File pkgedWsdl = null;
-//            if(deployedDir != null) {
-//                if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
-//                    pkgedWsdl = new File(deployedDir+File.separator+
-//                            endpoint.getWebService().getWsdlFileUri());
-//                } else {
-//                    pkgedWsdl = new File(deployedDir+File.separator+
-//                            endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_") +
-//                            File.separator + endpoint.getWebService().getWsdlFileUri());
-//                }
-//            } else {
-//                pkgedWsdl = new File(endpoint.getWebService().getWsdlFileUrl().getFile());
-//            }
-//            if(pkgedWsdl.exists()) {
-//                //Canonicalize the filename.  Since getWsdlsAndSchemas canonicalizes
-//                //the filenames of the metatdata documents, JAXWS might get into have
-//                //trouble detecting common root paths.
-//                //ie C://foo.wsdl and c://schema.wsdl
-//                pkgedWsdl = pkgedWsdl.getCanonicalFile();
-//
-//                primaryWsdl = SDDocumentSource.create(pkgedWsdl.toURL());
 
             URL pkgedWsdl = null;
             try {
