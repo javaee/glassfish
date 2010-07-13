@@ -52,6 +52,9 @@
         <ant dir="versioning" target="private-all">
             <property name="build" value="${build}/versioning"/>
         </ant>
+        <ant dir="webservices" target="private-all">
+            <property name="build" value="${build}/webservices"/>
+        </ant>
     </target>
 
     <target name="clobber" depends="clean">
