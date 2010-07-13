@@ -166,10 +166,13 @@ public class RestApiHandlers {
         handlerCtx.setOutputValue("result", endpoint);
     }
 
+   /**
+    *	@deprecated Please use gf.restRequest instead.
+    */
    @Handler(id = "gf.restExecuteCommand",
             input = {
                     @HandlerInput(name = "endpoint", type = String.class, required = true),
-                    @HandlerInput(name = "attrs", type = Map.class, required = true),
+                    @HandlerInput(name = "attrs", type = Map.class, required = false),
                     @HandlerInput(name = "method", type = String.class, defaultValue = "post")},
             output = {
                     @HandlerOutput(name = "result", type = Map.class)})
@@ -194,7 +197,59 @@ public class RestApiHandlers {
             GuiUtil.handleError(handlerCtx, "An invalid method was passed to "
 		+ handlerCtx.getHandlerDefinition().getId() + ": " + method);
         } else {
-            handlerCtx.setOutputValue("result", response.getResponse());
+	    try {
+		handlerCtx.setOutputValue("result", response.getResponse());
+	    } catch (Exception ex) {
+		GuiUtil.getLogger().severe(
+		    "RestResponse.getResponse() failed.  endpoint = '"
+		    + endpoint + "'; attrs = '" + attrs + "'; RestResponse: "
+		    + response);
+		throw new RuntimeException(ex);
+	    }
+        }
+    }
+
+    /**
+     *	<p> This handler can be used to execute a generic REST request.  It
+     *	    will return a Java data structure based on the response of the
+     *	    REST request.</p>
+     */
+    @Handler(id = "gf.restRequest",
+            input = {
+                    @HandlerInput(name="endpoint", type=String.class, required=true),
+                    @HandlerInput(name="attrs", type=Map.class, required=false),
+                    @HandlerInput(name="method", type=String.class, defaultValue="post")},
+            output = {
+                    @HandlerOutput(name="result", type=Map.class)})
+    public static void restRequest(HandlerContext handlerCtx) {
+        Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
+        if (attrs == null) {
+            attrs = new HashMap<String, Object>();
+        }
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        String method = ((String) handlerCtx.getInputValue("method")).toLowerCase();
+
+	// Execute the request...
+        RestResponse response = null;
+        if ("post".equals(method)) {
+            response = post(endpoint, attrs);
+        } else if ("get".equals(method)) {
+            response = get(endpoint, attrs);
+        } else if ("delete".equals(method)) {
+            response = delete(endpoint, attrs);
+        }
+
+	// Parse the response
+        if (response != null) {
+	    try {
+		handlerCtx.setOutputValue("result", response.getResponse());
+	    } catch (Exception ex) {
+		GuiUtil.getLogger().severe(
+		    "RestResponse.getResponse() failed.  endpoint = '"
+		    + endpoint + "'; attrs = '" + attrs + "'; RestResponse: "
+		    + response);
+		throw new RuntimeException(ex);
+	    }
         }
     }
 
