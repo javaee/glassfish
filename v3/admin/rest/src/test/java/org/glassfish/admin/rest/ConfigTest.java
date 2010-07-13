@@ -61,7 +61,7 @@ public class ConfigTest extends RestTestBase {
         response = get(BASE_CONFIGS_URL + "/config/" + configName);
         assertTrue(isSuccess(response));
 
-        response = post(BASE_CONFIGS_URL + "/config/" + configName + "/delete-config", null);
+        response = post(BASE_CONFIGS_URL + "/config/" + configName + "/delete-config");
         assertTrue(isSuccess(response));
 
         response = get(BASE_CONFIGS_URL + "/config/" + configName);

@@ -158,9 +158,9 @@ public class GeneratorResource {
         {"Nodes", "create-node-ssh", "POST", "create-node", "Create Node"},
         {"Protocol", "create-http", "POST", "create-http", "Create", "id=$parent"},
         {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"},
-        {"Server", "delete-instance", "DELETE", "delete-instance", "Delete Instance"},
-        {"Server", "start-instance", "POST", "start-instance", "Start Instance"},
-        {"Server", "stop-instance", "POST", "stop-instance", "Stop Instance"},
+        {"Server", "delete-instance", "DELETE", "delete-instance", "Delete Instance", "id=$parent"},
+        {"Server", "start-instance", "POST", "start-instance", "Start Instance", "id=$parent"},
+        {"Server", "stop-instance", "POST", "stop-instance", "Stop Instance", "id=$parent"},
         {"Server", "recover-transactions", "POST", "recover-transactions", "Recover", "id=$parent"}
     };
 

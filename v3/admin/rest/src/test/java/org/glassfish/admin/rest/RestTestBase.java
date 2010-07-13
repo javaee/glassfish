@@ -56,6 +56,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -63,9 +64,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class RestTestBase {
-
     public static final String BASE_URL = "http://localhost:4848/management/domain";
-
     public static final String RESPONSE_TYPE = "application/xml";
 
     protected static Client client;
@@ -108,11 +107,19 @@ public class RestTestBase {
     }
 
     protected ClientResponse post(String address, Map<String, String> payload) {
-        return client.resource(address).post(ClientResponse.class, buildMultivalueMap(payload));
+        return client.resource(address).post(ClientResponse.class, buildMultivaluedMap(payload));
+    }
+
+    protected ClientResponse post(String address) {
+        return client.resource(address).post(ClientResponse.class);
     }
 
     protected ClientResponse put(String address, Map<String, String> payload) {
-        return client.resource(address).put(ClientResponse.class, buildMultivalueMap(payload));
+        return client.resource(address).put(ClientResponse.class, buildMultivaluedMap(payload));
+    }
+
+    protected ClientResponse put(String address) {
+        return client.resource(address).put(ClientResponse.class);
     }
 
     protected ClientResponse postWithUpload(String address, Map<String, Object> payload) {
@@ -142,7 +149,7 @@ public class RestTestBase {
     }
 
     protected ClientResponse delete(String address, Map<String, String> payload) {
-        return client.resource(address).queryParams(buildMultivalueMap(payload)).delete(ClientResponse.class);
+        return client.resource(address).queryParams(buildMultivaluedMap(payload)).delete(ClientResponse.class);
     }
 
     /**
@@ -205,73 +212,18 @@ public class RestTestBase {
         }
     }
 
-    public List<Map> getProperties(ClientResponse response) {
-        String xml = response.getEntity(String.class);
-        List<Map> results = new ArrayList<Map>();
-        Document document = getDocument(xml);
-
-        Element root = document.getDocumentElement();
-        NodeList nl = root.getElementsByTagName("property");
-        if (nl.getLength() > 0) {
-            Node child;
-            for (int i = 0; i < nl.getLength(); i++) {
-                child = nl.item(i);
-                if ("properties".equals(child.getAttributes().getNamedItem("name").getNodeValue())) {
-                    NodeList propsChildren = ((Element)child).getElementsByTagName("list");
-                    if (propsChildren.getLength() > 0) {
-                        results.addAll(processList(propsChildren));
-                    }
-//                    results.add(((Element) child).getAttribute("message"));
-                }
-            }
-        }
-
-        return results;
+    public List<Map<String, String>> getProperties(ClientResponse response) {
+        return MarshallingUtils.getPropertiesFromXml(response.getEntity(String.class));
     }
 
-    private List<Map> processList(NodeList nl) {
-        List<Map> results = new ArrayList<Map>();
-        Node child;
-        for (int i = 0; i < nl.getLength(); i++) {
-            child = nl.item(i);
-            NodeList entryList = ((Element) child).getElementsByTagName("entry");
-            if (entryList.getLength() > 0) {
-                Element element;
-                for (int j = 0; j < entryList.getLength(); j++) {
-                    element = (Element)entryList.item(j);
-                    Node mapElement = element.getElementsByTagName("map").item(0); // Should be only one
-                    if (mapElement != null) {
-                        results.add(processMap(mapElement));
-                    }
-                }
-            }
-        }
-        return results;
-    }
-
-    private Map processMap(Node e) {
-        Map map = new HashMap();
-
-        NodeList entries = ((Element)e).getElementsByTagName("entry");
-        Node entry;
-        for (int i = 0; i < entries.getLength(); i++) {
-            entry = entries.item(i);
-            String key = entry.getAttributes().getNamedItem("key").getNodeValue();
-            String value = entry.getAttributes().getNamedItem("value").getNodeValue();
-            map.put(key, value);
-        }
-
-        return map;
-    }
-
-    private MultivaluedMap buildMultivalueMap(Map<String, String> payload) {
+    private MultivaluedMap buildMultivaluedMap(Map<String, String> payload) {
         if (payload instanceof MultivaluedMap) {
             return (MultivaluedMap)payload;
         }
         MultivaluedMap formData = new MultivaluedMapImpl();
         if (payload != null) {
             for (final Map.Entry<String, String> entry : payload.entrySet()) {
-                formData.putSingle(entry.getKey(), entry.getValue());
+                formData.add(entry.getKey(), entry.getValue());
             }
         }
         return formData;

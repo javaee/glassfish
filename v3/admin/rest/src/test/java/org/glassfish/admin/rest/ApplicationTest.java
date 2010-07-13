@@ -89,19 +89,19 @@ public class ApplicationTest extends RestTestBase {
         assertEquals("/" + appName, deployedApp.get("contextRoot"));
 
         try {
-            ClientResponse response = get("http://localhost:8080/" + appName + "/index.html");
+            ClientResponse response = get("http://localhost:8080/" + appName);
             assertEquals ("Test", response.getEntity(String.class).trim());
 
-            response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/disable", null);
+            response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/disable");
             assertTrue("Response was " + response.getStatus(), isSuccess(response));
 
-            response = get("http://localhost:8080/" + appName + "/index.html");
+            response = get("http://localhost:8080/" + appName);
             assertFalse("Response was " + response.getStatus(), isSuccess(response));
 
-            response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/enable", null);
+            response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/enable");
             assertTrue("Response was " + response.getStatus(), isSuccess(response));
 
-            response = get("http://localhost:8080/" + appName + "/index.html");
+            response = get("http://localhost:8080/" + appName);
             assertEquals ("Test", response.getEntity(String.class).trim());
         } finally {
             undeployApp(newApp);

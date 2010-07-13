@@ -33,38 +33,55 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.rest;
+package org.glassfish.admin.rest.readers;
 
-import com.sun.jersey.api.client.ClientResponse;
-import java.util.HashMap;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
+import javax.ws.rs.Consumes;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Provider;
+import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 
 /**
  *
  * @author jasonlee
  */
-public class ClusterTest extends RestTestBase {
-    public static final String URL_CLUSTER = BASE_URL + "/clusters/cluster";
-    @Test
-    public void testDomainCreationAndDeletion() {
-        final String clusterName = "cluster_" + generateRandomString();
-        Map<String, String> newCluster = new HashMap<String, String>() {{
-           put ("id", clusterName);
-        }};
+@Consumes(MediaType.APPLICATION_JSON)
+@Provider
+public class JsonPropertyListReader implements MessageBodyReader<List<Map<String, String>>> {
 
-        ClientResponse response = create(URL_CLUSTER, newCluster);
-        assertTrue(isSuccess(response));
+    @Override
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return type.equals(List.class);
+    }
 
-        Map<String, String> entity = getEntityValues(get(URL_CLUSTER + "/" + clusterName));
-        assertEquals(clusterName+"-config", entity.get("configRef"));
+    @Override
+    public List<Map<String, String>> readFrom(Class<List<Map<String, String>>> type, Type genericType,
+        Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers,
+        InputStream in) throws IOException {
+        try {
+            StringBuilder sb = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            String line = reader.readLine();
+            while (line != null) {
+                sb.append(line);
+                line = reader.readLine();
+            }
 
-        response = post(URL_CLUSTER + "/" + clusterName + "/delete-cluster");
-        assertTrue(isSuccess(response));
+            return MarshallingUtils.getPropertiesFromJson(sb.toString());
 
-        response = get(URL_CLUSTER + "/" + clusterName);
-        assertFalse(isSuccess(response));
+        } catch (Exception exception) {
+            throw new WebApplicationException(exception, Response.Status.INTERNAL_SERVER_ERROR);
+        }
     }
 }

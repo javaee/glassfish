@@ -129,7 +129,7 @@ public class PropertiesBagResource {
     @Produces({"text/html;qs=2",
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML})
-    public Response createProperties(HashMap<String, String> data) {
+    public Response createProperties(List<Map<String, String>> data) {
         return clearThenSaveProperties(data);
     }
 
@@ -138,13 +138,13 @@ public class PropertiesBagResource {
     @Produces({"text/html;qs=2",
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML})
-    public Response replaceProperties(HashMap<String, String> data) {
+    public Response replaceProperties(List<Map<String, String>> data) {
         return clearThenSaveProperties(data);
     }
 
     @DELETE
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_OCTET_STREAM})
-    public Response delete(HashMap<String, String> data) {
+    public Response delete() {
         try {
             deleteExistingProperties();
             String successMessage = localStrings.getLocalString("rest.resource.delete.message",
@@ -159,25 +159,11 @@ public class PropertiesBagResource {
         }
     }
 
-    protected Response clearThenSaveProperties(HashMap<String, String> data) {
+    protected Response clearThenSaveProperties(List<Map<String, String>> properties) {
         try {
-            if (data.containsKey("error")) {
-                String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
-                        "Unable to parse the input entity. Please check the syntax.");
-                return ResourceUtil.getResponse(400, /*parsing error*/
-                        errorMessage, requestHeaders, uriInfo);
-            }
-
             deleteExistingProperties();
-            for (final Map.Entry<String, String> entry : data.entrySet()) {
-                Map<String, String> properties = new HashMap<String, String>() {
-
-                    {
-                        put("name", entry.getKey());
-                        put("value", entry.getValue());
-                    }
-                };
-                ConfigSupport.createAndSet((ConfigBean) parent, Property.class, properties);
+            for (Map<String, String> property : properties) {
+                ConfigSupport.createAndSet((ConfigBean) parent, Property.class, property);
             }
 
             String successMessage = localStrings.getLocalString("rest.resource.update.message",

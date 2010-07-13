@@ -222,7 +222,7 @@ public class ProviderUtil {
         return  statsMap;
     }
 
-    static protected HashMap<String, String> getStringMap(Map map) {
+    static public HashMap<String, String> getStringMap(Map map) {
         HashMap<String, String> stringMap = new HashMap<String, String>();
         if (map != null) {
             //Convert attribute value to String if that's not the case.

@@ -67,7 +67,9 @@ public class RestManagementAdapter extends RestAdapter {
         r.add(org.glassfish.admin.rest.readers.FormReader.class);
         r.add(org.glassfish.admin.rest.readers.ParameterMapFormReader.class);
         r.add(org.glassfish.admin.rest.readers.JsonHashMapProvider.class);
+        r.add(org.glassfish.admin.rest.readers.JsonPropertyListReader.class);
         r.add(org.glassfish.admin.rest.readers.XmlHashMapProvider.class);
+        r.add(org.glassfish.admin.rest.readers.XmlPropertyListReader.class);
 
         //body writers
         r.add(org.glassfish.admin.rest.provider.GetResultListJsonProvider.class);

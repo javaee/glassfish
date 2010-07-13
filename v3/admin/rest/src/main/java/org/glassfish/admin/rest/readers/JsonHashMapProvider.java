@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,7 +53,7 @@ import org.glassfish.admin.rest.provider.ProviderUtil;
  */
 @Consumes(MediaType.APPLICATION_JSON)
 @Provider
-public class JsonHashMapProvider extends ProviderUtil implements MessageBodyReader<HashMap<String, String>> {
+public class JsonHashMapProvider implements MessageBodyReader<HashMap<String, String>> {
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -66,7 +66,7 @@ public class JsonHashMapProvider extends ProviderUtil implements MessageBodyRead
         InputStream in) throws IOException {
         try {
             JsonInputObject jsonObject = new JsonInputObject(in);
-            return getStringMap((HashMap)jsonObject.initializeMap());
+            return ProviderUtil.getStringMap((HashMap)jsonObject.initializeMap());
         } catch (InputException exception) {
             HashMap map = new HashMap();
             map.put("error", "Entity Parsing Error: " + exception.getMessage());

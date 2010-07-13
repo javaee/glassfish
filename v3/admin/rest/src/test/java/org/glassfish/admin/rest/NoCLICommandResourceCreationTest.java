@@ -36,20 +36,22 @@
 
 package org.glassfish.admin.rest;
 
+import java.util.ArrayList;
+import java.util.List;
 import com.sun.jersey.api.client.ClientResponse;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
  * @author Mitesh Meswani
  */
 public class NoCLICommandResourceCreationTest extends RestTestBase {
-    private static final String BASE_DOMAIN_PROPERTY_URL = BASE_URL+ "/property";
+    private static final String URL_DOMAIN_PROPERTY = BASE_URL+ "/property";
 
     @Test
     public void testPropertyCreation() {
@@ -57,14 +59,17 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
         String propertyValue = generateRandomString();
 
         //Create a property
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("name", propertyKey);
-        params.put("value",propertyValue);
-        ClientResponse response = create(BASE_DOMAIN_PROPERTY_URL, params);
+        Map<String, String> param = new HashMap<String, String>();
+        param.put("name", propertyKey);
+        param.put("value",propertyValue);
+        ClientResponse response = client.resource(URL_DOMAIN_PROPERTY)
+                .header("Content-Type", RESPONSE_TYPE)
+                .accept(RESPONSE_TYPE)
+                .post(ClientResponse.class, MarshallingUtils.getXmlForProperties(param));
         assertTrue(isSuccess(response));
 
         //Verify the property got created
-        String propertyURL = BASE_DOMAIN_PROPERTY_URL + "/" + propertyKey;
+        String propertyURL = URL_DOMAIN_PROPERTY + "/" + propertyKey;
         response = get (propertyURL);
         assertTrue(isSuccess(response));
         Map<String, String> entity = getEntityValues(response);
@@ -73,8 +78,11 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
 
         // Verify property update
         propertyValue = generateRandomString();
-        params.put("value", propertyValue);
-        response = update(propertyURL, params);
+        param.put("value", propertyValue);
+        response = client.resource(URL_DOMAIN_PROPERTY)
+                .header("Content-Type", RESPONSE_TYPE)
+                .accept(RESPONSE_TYPE)
+                .put(ClientResponse.class, MarshallingUtils.getXmlForProperties(param));
         assertTrue(isSuccess(response));
         response = get (propertyURL);
         assertTrue(isSuccess(response));
@@ -84,6 +92,16 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
 
         //Clean up to leave domain.xml good for next run
         response = delete(propertyURL, new HashMap<String, String>());
+        assertTrue(isSuccess(response));
+
+        // Restore domain props
+
+        param.put("name", "administrative.domain.name");
+        param.put("value", "domain1");
+        response = client.resource(URL_DOMAIN_PROPERTY)
+                .header("Content-Type", RESPONSE_TYPE)
+                .accept(RESPONSE_TYPE)
+                .post(ClientResponse.class, MarshallingUtils.getXmlForProperties(param));
         assertTrue(isSuccess(response));
     }
 
