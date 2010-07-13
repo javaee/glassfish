@@ -35,7 +35,6 @@
  */
 package org.glassfish.admin.rest;
 
-import com.sun.jersey.multipart.FormDataMultiPart;
 import com.sun.jersey.api.client.ClientResponse;
 import java.io.File;
 import java.util.HashMap;

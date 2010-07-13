@@ -69,7 +69,6 @@ import java.util.logging.Logger;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.jersey.spi.container.ContainerRequest;
 import java.util.ArrayList;
-import javax.ws.rs.core.MultivaluedMap;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
@@ -105,15 +104,12 @@ public class TemplateResource {
     protected Dom parent;
     protected String tagName;
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
-    final private static List<String> attributesToSkip = new ArrayList<String>() {
-
-        {
+    final private static List<String> attributesToSkip = new ArrayList<String>() {{
             add("parent");
             add("name");
             add("children");
             add("submit");
-        }
-    };
+        }};
 
     /** Creates a new instance of xxxResource */
     public TemplateResource() {

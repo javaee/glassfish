@@ -51,6 +51,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.results.ActionReportResult;
@@ -64,7 +65,7 @@ import org.glassfish.api.admin.ParameterMap;
  * @author ludo
  */
 public class TemplateExecCommand {
-   public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ResourceUtil.class);
+   public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateExecCommand.class);
     @Context
     protected HttpHeaders requestHeaders;
     @Context
@@ -81,14 +82,15 @@ public class TemplateExecCommand {
      *
      */
     protected int parameterType;
-    public TemplateExecCommand(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, HashMap<String, String> m, boolean b) {
+    public TemplateExecCommand(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, 
+            HashMap<String, String> commandParams, boolean isLinkedToParent) {
         this.resourceName = resourceName;
         this.commandName = commandName;
         this.commandMethod = commandMethod;
         this.commandAction = commandAction;
         this.commandDisplayName = commandDisplayName;
-        this.commandParams = m;
-        this.isLinkedToParent = b;
+        this.commandParams = commandParams;
+        this.isLinkedToParent = isLinkedToParent;
 
     }
     @OPTIONS
@@ -99,7 +101,7 @@ public class TemplateExecCommand {
     public OptionsResult options() {
         OptionsResult optionsResult = new OptionsResult(resourceName);
         try {
-//command method metadata
+            //command method metadata
             MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(
                     commandName, commandParams, parameterType , RestService.getHabitat(), RestService.logger);
             optionsResult.putMethodMetaData(commandMethod, methodMetaData);
@@ -119,9 +121,7 @@ public class TemplateExecCommand {
         if (exitCode == ActionReport.ExitCode.SUCCESS) {
             results.setStatusCode(200); /*200 - ok*/
         } else {
-            results.setStatusCode(400); /*400 - bad request*/
-            results.setIsError(true);
-            results.setErrorMessage(actionReport.getMessage());
+            throw new CliFailureException(actionReport.getMessage());
         }
 
         return results;

@@ -65,7 +65,7 @@ import org.w3c.dom.NodeList;
 
 public class RestTestBase {
     public static final String BASE_URL = "http://localhost:4848/management/domain";
-    public static final String RESPONSE_TYPE = "application/xml";
+    public static final String RESPONSE_TYPE = MediaType.APPLICATION_XML;
 
     protected static Client client;
 
@@ -132,16 +132,6 @@ public class RestTestBase {
             }
         }
         return client.resource(address).type(MediaType.MULTIPART_FORM_DATA).post(ClientResponse.class, form);
-    }
-
-    protected ClientResponse create(String address, Map<String, String> payload) {
-        return post(address, payload);
-    }
-
-    protected ClientResponse update(String address, Map<String, String> payload) {
-        // For now... :(
-        return create(address, payload);
-        //return client.resource(address).put(ClientResponse.class, buildMultivalueMap(payload));
     }
 
     protected ClientResponse delete(String address) {

@@ -46,12 +46,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.ResourceUtil;
-import org.glassfish.admin.rest.RestService;
 
 
 
 
-import org.glassfish.api.ActionReport;
 import org.glassfish.admin.rest.results.CommandResourceGetResult;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.api.admin.ParameterMap;
@@ -80,38 +78,19 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML})
     public ActionReportResult processPost(ParameterMap data) {
-        try {
-            if (data.containsKey("error")) {
-                String errorMessage = localStrings.getLocalString("rest.request.parsing.error", "Unable to parse the input entity. Please check the syntax.");
-                throw new WebApplicationException(ResourceUtil.getResponse(400, /*parsing error*/ errorMessage, requestHeaders, uriInfo));
-            }
-
-            processCommandParams(data);
-            adjustParameters(data);
-            purgeEmptyEntries(data);
-            String typeOfResult = ResourceUtil.getResultType(requestHeaders);
-
-            ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(), typeOfResult);
-            ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-            ActionReportResult results = new ActionReportResult(commandName, actionReport, options());
-
-            if (exitCode == ActionReport.ExitCode.SUCCESS) {
-                results.setStatusCode(200); /*200 - ok*/
-            } else {
-                results.setStatusCode(400); /*400 - bad request*/
-                results.setIsError(true);
-                results.setErrorMessage(actionReport.getMessage());
-            }
-
-            return results;
-
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+        if (data.containsKey("error")) {
+            String errorMessage = localStrings.getLocalString("rest.request.parsing.error", "Unable to parse the input entity. Please check the syntax.");
+            throw new WebApplicationException(ResourceUtil.getResponse(400, /*parsing error*/ errorMessage, requestHeaders, uriInfo));
         }
-    }
-//Handle POST request without any entity(input).
-//Do not care what the Content-Type is.
 
+        processCommandParams(data);
+        adjustParameters(data);
+        purgeEmptyEntries(data);
+        return super.executeCommand(data);
+    }
+
+    //Handle POST request without any entity(input).
+    //Do not care what the Content-Type is.
     @POST
     @Produces({
         "text/html;qs=2",

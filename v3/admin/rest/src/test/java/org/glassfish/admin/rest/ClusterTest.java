@@ -55,7 +55,7 @@ public class ClusterTest extends RestTestBase {
            put ("id", clusterName);
         }};
 
-        ClientResponse response = create(URL_CLUSTER, newCluster);
+        ClientResponse response = post(URL_CLUSTER, newCluster);
         assertTrue(isSuccess(response));
 
         Map<String, String> entity = getEntityValues(get(URL_CLUSTER + "/" + clusterName));

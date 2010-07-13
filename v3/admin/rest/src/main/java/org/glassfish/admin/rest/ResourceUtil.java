@@ -486,8 +486,7 @@ public class ResourceUtil {
      * @param requestHeaders request headers of the request
      * @return Response the response object to be returned to the client
      */
-    public static Response getResponse(int status, String message,
-            HttpHeaders requestHeaders, UriInfo uriInfo){
+    public static Response getResponse(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo){
         if(isBrowser(requestHeaders)) {
             message = getHtml(message, uriInfo,false);
         }

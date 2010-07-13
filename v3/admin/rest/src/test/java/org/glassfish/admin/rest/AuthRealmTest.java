@@ -71,7 +71,7 @@ public class AuthRealmTest extends RestTestBase {
            put ("AS_ADMIN_USERPASSWORD", "password");
         }};
 
-        ClientResponse response = create(URL_CREATE_USER, newUser);
+        ClientResponse response = post(URL_CREATE_USER, newUser);
         assertTrue(isSuccess(response));
 
         List<String> values = getCommandResults(get(URL_LIST_FILE_USERS));

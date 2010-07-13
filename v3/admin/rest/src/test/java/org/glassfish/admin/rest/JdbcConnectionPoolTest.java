@@ -59,7 +59,7 @@ public class JdbcConnectionPoolTest extends RestTestBase {
         Map<String, String> params = new HashMap<String, String>();
         params.put("name", poolName);
         params.put("datasourceClassname","org.apache.derby.jdbc.ClientDataSource");
-        ClientResponse response = create(BASE_JDBC_CP_URL, params);
+        ClientResponse response = post(BASE_JDBC_CP_URL, params);
         assertTrue(isSuccess(response));
 
         Map<String, String> entity = getEntityValues(get(BASE_JDBC_CP_URL + "/"+poolName));

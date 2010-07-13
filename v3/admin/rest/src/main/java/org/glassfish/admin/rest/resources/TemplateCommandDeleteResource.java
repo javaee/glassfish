@@ -81,41 +81,21 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand {
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML})
     public ActionReportResult processDelete(ParameterMap data) {
-        try {
-            if (data.containsKey("error")) {
-                String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
-                        "Unable to parse the input entity. Please check the syntax.");
-                throw new WebApplicationException(ResourceUtil.getResponse(400, /*parsing error*/ errorMessage, requestHeaders, uriInfo));
-            }
-
-            processCommandParams(data);
-            addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
-            adjustParameters(data);
-            purgeEmptyEntries(data);
-            return executeCommand(data);
-
-            /*
-            ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),typeOfResult);
-            ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-
-            if (exitCode == ActionReport.ExitCode.SUCCESS) {
-            String successMessage = localStrings.getLocalString("rest.request.success.message",
-            "{0} of {1} executed successfully.", new Object[]{commandMethod, uriInfo.getAbsolutePath()});
-            return ResourceUtil.getResponse(200, // 200 - ok
-            successMessage, requestHeaders, uriInfo);
-            }
-
-            String errorMessage = actionReport.getMessage();
-            return ResourceUtil.getResponse(400, // 400 - bad request
-            errorMessage, requestHeaders, uriInfo);
-             */
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+        if (data.containsKey("error")) {
+            String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
+                    "Unable to parse the input entity. Please check the syntax.");
+            throw new WebApplicationException(ResourceUtil.getResponse(400, /*parsing error*/ errorMessage, requestHeaders, uriInfo));
         }
-    }
-//Handle POST request without any entity(input).
-//Do not care what the Content-Type is.
 
+        processCommandParams(data);
+        addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
+        adjustParameters(data);
+        purgeEmptyEntries(data);
+        return executeCommand(data);
+    }
+
+    //Handle POST request without any entity(input).
+    //Do not care what the Content-Type is.
     @DELETE
     @Produces({
         "text/html;qs=2",

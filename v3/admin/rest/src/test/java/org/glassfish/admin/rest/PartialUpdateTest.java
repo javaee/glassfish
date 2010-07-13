@@ -53,7 +53,7 @@ public class PartialUpdateTest extends RestTestBase {
         Map<String, String> newAttrs = new HashMap<String, String>() {{
             put ("description", newDesc);
         }};
-        update(endpoint, newAttrs);
+        post(endpoint, newAttrs);
         Map<String, String> updatedAttrs = getEntityValues(get(endpoint));
         assertEquals(newDesc, updatedAttrs.get("description"));
         assertEquals(origAttrs.get("driverClassname"), updatedAttrs.get("driverClassname"));

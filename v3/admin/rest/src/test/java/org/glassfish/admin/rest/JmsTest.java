@@ -78,23 +78,23 @@ public class JmsTest extends RestTestBase {
         cr_attrs.put("poolname", poolName);
 
         // Create connection pool
-        ClientResponse response = this.create(URL_CONNECTOR_CONNECTION_POOL, ccp_attrs);
+        ClientResponse response = post(URL_CONNECTOR_CONNECTION_POOL, ccp_attrs);
         assertEquals(201, response.getStatus());
 
         // Check connection pool creation
         Map<String, String> pool = getEntityValues(get(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName));
-        assertFalse(pool.size() == 0);
+        assertFalse(pool.isEmpty());
 
         // Create connector resource
-        response = this.create(URL_CONNECTOR_RESOURCE, cr_attrs);
+        response = post(URL_CONNECTOR_RESOURCE, cr_attrs);
         assertEquals(201, response.getStatus());
 
         // Check connector resource
         Map<String, String> resource = getEntityValues(get(URL_CONNECTOR_RESOURCE + "/" + poolName));
-        assertFalse(resource.size() == 0);
+        assertFalse(resource.isEmpty());
 
         // Edit and check ccp
-        response = this.create(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName, new HashMap<String, String>() {
+        response = post(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName, new HashMap<String, String>() {
 
             {
                 put("description", poolName);
@@ -106,7 +106,7 @@ public class JmsTest extends RestTestBase {
         assertTrue(pool.get("description").equals(poolName));
 
         // Edit and check cr
-        response = this.create(URL_CONNECTOR_RESOURCE + "/" + poolName, new HashMap<String, String>() {
+        response = post(URL_CONNECTOR_RESOURCE + "/" + poolName, new HashMap<String, String>() {
 
             {
                 put("description", poolName);
@@ -141,7 +141,7 @@ public class JmsTest extends RestTestBase {
         attrs.put("raname", "jmsra");
         attrs.put("restype", "javax.jms.Topic");
 
-        ClientResponse response = this.create(URL_ADMIN_OBJECT_RESOURCE, attrs);
+        ClientResponse response = post(URL_ADMIN_OBJECT_RESOURCE, attrs);
         assertEquals(201, response.getStatus());
 
         Map<String, String> entity = getEntityValues(get(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName));
@@ -166,7 +166,7 @@ public class JmsTest extends RestTestBase {
         };
 
         // Test create
-        ClientResponse response = this.create(URL_JMS_HOST, newHost);
+        ClientResponse response = post(URL_JMS_HOST, newHost);
         assertEquals(201, response.getStatus());
 
         // Test edit
@@ -174,7 +174,7 @@ public class JmsTest extends RestTestBase {
         assertFalse(entity.isEmpty());
         assertEquals(jmsHostName, entity.get("name"));
         entity.put("port", "8686");
-        response = update(URL_JMS_HOST + "/" + jmsHostName, entity);
+        response = post(URL_JMS_HOST + "/" + jmsHostName, entity);
         assertEquals(200, response.getStatus());
         entity = getEntityValues(get(URL_JMS_HOST + "/" + jmsHostName));
         assertEquals("8686", entity.get("port"));
@@ -193,7 +193,7 @@ public class JmsTest extends RestTestBase {
         }};
 
         // Test Create
-        ClientResponse response = create(URL_CREATE_JMS_DEST, newDest);
+        ClientResponse response = post(URL_CREATE_JMS_DEST, newDest);
         // This command returns 200 instead of 201, for some reason.  Odd.
         assertEquals(200, response.getStatus());
 

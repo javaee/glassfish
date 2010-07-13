@@ -55,13 +55,31 @@ public class ConfigTest extends RestTestBase {
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("id", "default-config");
         formData.add("id", configName);
+        createAndVerifyConfig(configName, formData);
+        deleteAndVerifyConfig(configName);
+    }
+
+    @Test
+    public void duplicateCopyShouldFail() {
+        String configName = "config-" + generateRandomString();
+        MultivaluedMap formData = new MultivaluedMapImpl();
+        formData.add("id", "default-config");
+        formData.add("id", "server-config");
+
         ClientResponse response = post(BASE_CONFIGS_URL + "/copy-config", formData);
+        assertFalse(isSuccess(response));
+    }
+
+    protected void createAndVerifyConfig(String configName, MultivaluedMap configData) {
+        ClientResponse response = post(BASE_CONFIGS_URL + "/copy-config", configData);
         assertTrue(isSuccess(response));
 
         response = get(BASE_CONFIGS_URL + "/config/" + configName);
         assertTrue(isSuccess(response));
+    }
 
-        response = post(BASE_CONFIGS_URL + "/config/" + configName + "/delete-config");
+    protected void deleteAndVerifyConfig(String configName) {
+        ClientResponse response = post(BASE_CONFIGS_URL + "/config/" + configName + "/delete-config");
         assertTrue(isSuccess(response));
 
         response = get(BASE_CONFIGS_URL + "/config/" + configName);

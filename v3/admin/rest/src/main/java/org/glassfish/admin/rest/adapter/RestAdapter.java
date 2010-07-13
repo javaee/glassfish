@@ -76,6 +76,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.ServerContext;
 
@@ -158,6 +159,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 if (adapter == null) {
                     exposeContext();
                 }
+
                 ((GrizzlyAdapter)adapter).service(req, res);
                 int status = res.getStatus();
                 if (status < 200 || status > 299) {
@@ -190,6 +192,8 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             String msg = localStrings.getLocalString("rest.adapter.auth.error", "Error authenticating");
             reportError(req, res, HttpURLConnection.HTTP_UNAUTHORIZED, msg); //authentication error
             return;
+        } catch (CliFailureException e) {
+            reportError(req, res, HttpURLConnection.HTTP_INTERNAL_ERROR, e.getMessage());
         } catch (Exception e) {
             StringWriter result = new StringWriter();
             PrintWriter printWriter = new PrintWriter(result);

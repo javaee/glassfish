@@ -35,14 +35,9 @@
  */
 package org.glassfish.admin.rest;
 
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.*;
 
@@ -70,7 +65,7 @@ public class DomainTest extends RestTestBase {
 
         payload.put("locale", newLocale);
 
-        ClientResponse response = create(BASE_URL, payload);
+        ClientResponse response = post(BASE_URL, payload);
 
         // Reload the domain and make sure our new locale was saved
         Map<String, String> map = getEntityValues(this.get(BASE_URL));
