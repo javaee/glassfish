@@ -173,6 +173,8 @@ public class CoyoteAdapter
                         com.sun.grizzly.tcp.Response res)
             throws Exception {
 
+        res.setAllowCustomReasonPhrase(Constants.USE_CUSTOM_STATUS_MSG_IN_HEADER);
+
         Request request = (Request) req.getNote(ADAPTER_NOTES);
         Response response = (Response) res.getNote(ADAPTER_NOTES);
         

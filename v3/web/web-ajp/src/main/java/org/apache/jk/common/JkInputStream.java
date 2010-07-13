@@ -320,7 +320,7 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
         outputMsg.appendInt( res.getStatus() );
         
         String message = null;
-        if (Constants.USE_CUSTOM_STATUS_MSG_IN_HEADER) {
+        if (res.isAllowCustomReasonPhrase()) {
             message = res.getMessage();
         } 
         if( message==null ){
