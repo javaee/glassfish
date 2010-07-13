@@ -150,7 +150,9 @@ class LogRecord {
         sb.append(quoted("loggerName")).append(':').append(quoted(loggerName)).append(",\n");
         sb.append(quoted("nameValuePairs")).append(':').append(quoted(nameValuePairs)).append(",\n");
         sb.append(quoted("messageID")).append(':').append(quoted(messageID)).append(",\n");
-        sb.append(quoted("Message")).append(':').append(quoted(Message.replaceAll("\n", Matcher.quoteReplacement("\\\n")))).append("}\n");
+        sb.append(quoted("Message")).append(':').append(
+	    quoted(Message.replaceAll("\n", Matcher.quoteReplacement("\\\n")).
+			   replaceAll("\"", Matcher.quoteReplacement("\\\"")))).append("}\n");
 
         return sb.toString();
     }
