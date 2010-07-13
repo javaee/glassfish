@@ -256,7 +256,8 @@ public class JarHelper
                 if (read>0) {
                     byteBuffer.limit(byteBuffer.position());
                     byteBuffer.rewind();
-                    outChannel.write(byteBuffer);
+                    int written = 0;
+                    while((written += outChannel.write(byteBuffer)) < read) {}
                     logger.logp(Level.FINE, "JarHelper", "write",
                             "Copied {0} bytes", new Object[]{read});
                     byteBuffer.clear();
