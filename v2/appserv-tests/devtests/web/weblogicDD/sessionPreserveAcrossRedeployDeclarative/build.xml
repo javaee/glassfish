@@ -89,11 +89,11 @@
     </target>
     
     <target name="redeploy2" depends="init-common">
-        <echo message="Redeploying with keepSessions=false ${assemble.dir}/${appname}-web.war from ${basedir}."
+        <echo message="Redeploying with keepState=false ${assemble.dir}/${appname}-web.war from ${basedir}."
               level="verbose"/>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="redeploy"/>
-            <param name="operand.props" value="--properties keepSessions=false --name=${appname}-web ${assemble.dir}/${appname}-web.war"/>
+            <param name="operand.props" value="--keepstate=false --name=${appname}-web ${assemble.dir}/${appname}-web.war"/>
         </antcall>
     </target>
 

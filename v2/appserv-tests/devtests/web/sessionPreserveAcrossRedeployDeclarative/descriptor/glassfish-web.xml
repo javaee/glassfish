@@ -37,10 +37,6 @@
 <!DOCTYPE glassfish-web-app PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.0 Servlet 3.0//EN" "http://glassfish.org/dtds/glassfish-web-app_3_0-0.dtd">
 
 <glassfish-web-app>
-    <session-config>
-        <session-properties>
-            <property name="keepSessions" value="true" />
-        </session-properties>
-    </session-config>
+    <keep-state>true</keep-state>
 </glassfish-web-app>
 
