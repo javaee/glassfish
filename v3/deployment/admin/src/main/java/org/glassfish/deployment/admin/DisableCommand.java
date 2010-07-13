@@ -209,10 +209,6 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
                 deploymentContext.getAppProps().putAll(properties);
             }
 
-            if (report.getExtraProperties()!=null) {
-                deploymentContext.getAppProps().put("ActionReportProperties", report.getExtraProperties());
-            }
-
             appInfo.stop(deploymentContext, deploymentContext.getLogger());
             appInfo.unload(deploymentContext);
 

@@ -43,9 +43,6 @@ import com.sun.enterprise.deployment.web.InitializationParameter;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
 import com.sun.enterprise.deployment.runtime.web.ClassLoader;
-import com.sun.enterprise.deployment.runtime.web.SessionConfig;
-import com.sun.enterprise.deployment.runtime.web.SessionProperties;
-import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 
 import org.glassfish.deployment.common.DeploymentProperties;
@@ -73,11 +70,7 @@ public class WLContainerDescriptorNode extends RuntimeDescriptorNode {
             setDefaultServletInitParam("sortedBy", value);
         } else if (name.equals(RuntimeTagNames.SAVE_SESSIONS_ENABLED)) {
             WebBundleDescriptor descriptor = (WebBundleDescriptor)getParentNode().getDescriptor();
-            SessionProperties sessionProperties = getSessionProperties(descriptor, true);
-            WebProperty webProperty = new WebProperty();
-            webProperty.setAttributeValue(WebProperty.NAME, DeploymentProperties.KEEP_SESSIONS);
-            webProperty.setAttributeValue(WebProperty.VALUE, value);
-            sessionProperties.addWebProperty(webProperty);           
+            descriptor.setKeepState(value);
         } else if (name.equals(RuntimeTagNames.PREFER_WEB_INF_CLASSES)) {
             WebBundleDescriptor descriptor = (WebBundleDescriptor)getParentNode().getDescriptor();
             ClassLoader clBean = descriptor.getSunDescriptor().getClassLoader();
@@ -108,12 +101,8 @@ public class WLContainerDescriptorNode extends RuntimeDescriptorNode {
         InitializationParameter sortedByParam = getDefaultServletInitParam(
                 defaultServletDesc, "sortedBy", false);
         ClassLoader clBean = webBundleDescriptor.getSunDescriptor().getClassLoader();
-        SessionProperties sessionProperties = getSessionProperties(webBundleDescriptor, false);
 
-        if  (listingsParam != null || sortedByParam != null ||
-                clBean != null || sessionProperties != null) {
-            containerDescriptorNode = appendChild(root, RuntimeTagNames.CONTAINER_DESCRIPTOR);
-        }
+        containerDescriptorNode = appendChild(root, RuntimeTagNames.CONTAINER_DESCRIPTOR);
 
         if (listingsParam != null) {
             appendTextChild(containerDescriptorNode,
@@ -125,16 +114,8 @@ public class WLContainerDescriptorNode extends RuntimeDescriptorNode {
                     RuntimeTagNames.INDEX_DIRECTORY_SORT_BY, sortedByParam.getValue());
         }
 
-        if (sessionProperties != null && sessionProperties.sizeWebProperty() > 0) {
-            for (WebProperty prop : sessionProperties.getWebProperty()) {
-                String name = prop.getAttributeValue(WebProperty.NAME);
-                String value = prop.getAttributeValue(WebProperty.VALUE);
-                if (DeploymentProperties.KEEP_SESSIONS.equals(name)) {
-                    appendTextChild(containerDescriptorNode, RuntimeTagNames.SAVE_SESSIONS_ENABLED, value);
-                    break;
-                }
-            }
-        }
+        appendTextChild(containerDescriptorNode, RuntimeTagNames.SAVE_SESSIONS_ENABLED,
+                Boolean.toString(webBundleDescriptor.getKeepState()));
 
         if (clBean != null) {
             appendTextChild(containerDescriptorNode,
@@ -167,25 +148,5 @@ public class WLContainerDescriptorNode extends RuntimeDescriptorNode {
             initParam.setName(name);
         }
         return initParam;
-    }
-
-    private SessionProperties getSessionProperties(
-            WebBundleDescriptor webBundleDescriptor, boolean create) {
-
-        SessionProperties sessionProperties = null;
-        SessionConfig runtimeSessionConfig = webBundleDescriptor.getSunDescriptor().getSessionConfig();
-        if (runtimeSessionConfig == null && create) {
-            runtimeSessionConfig = new SessionConfig();
-            webBundleDescriptor.getSunDescriptor().setSessionConfig(runtimeSessionConfig);
-        }
-        if (runtimeSessionConfig != null) {
-            sessionProperties = runtimeSessionConfig.getSessionProperties();
-        }
-
-        if (sessionProperties == null && create) {
-            sessionProperties = new SessionProperties();
-            runtimeSessionConfig.setSessionProperties(sessionProperties);
-        }
-        return sessionProperties;
     }
 }

@@ -192,7 +192,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         }
         WebModuleConfig wmInfo = loadWebModuleConfig(dc);
         WebApplication webApp = new WebApplication(container, wmInfo,
-                dc.getAppProps(),
                 new ApplicationConfigInfo(dc.getAppProps()));
         return webApp;
     }
