@@ -73,7 +73,7 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
     }
 
     public void trackBundles() {
-        assert(bundleTracker == null);
+        assert (bundleTracker == null);
         /*
          * The reason for separating this code from constructor is that we don't want to
          * leak a partially constructed this reference via inner class called BundleTracker.
@@ -142,6 +142,22 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
 
     private boolean isCompatible(Class providerClass, Class serviceClass) {
         try {
+            // We can't do an isAssignable check, because the provider class may not be assignable to service class
+            // in cases like JAXBContextFactory. So, we try to see if provider sees the same service class or not.
+            // Apparently, they need not. e.g., consider the following situation:
+            // Bundle B contains interface p.I.class.
+            // Export-Package: p
+            //
+            // Bundle B1 contains class p1.C1.class, which implements p.I.class
+            // Export-Package: p1; uses p
+            // Import-Package: p
+            //
+            // Bundle B2 contains class p2.C2.class, which extends p1.C1.class
+            // Import-Package: p1 (Note, it does not import p)
+            //
+            // Now, p2.C2.class.getClassLoader().loadClass("p.I") will fail.
+            // In such a case, we shall return TRUE and catch any bad provider in lookupProviderInstances() method
+            // which will again do an isAssignable test. See DefaultFactory.make() for example.
             final Class<?> serviceClassSeenByProviderClass = Class.forName(serviceClass.getName(), false, providerClass.getClassLoader());
             final boolean isCompatible = serviceClassSeenByProviderClass == serviceClass;
             if (!isCompatible) {
@@ -151,9 +167,8 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
             }
             return isCompatible;
         } catch (ClassNotFoundException e) {
-            debug("Unable to reach " + serviceClass + " from " + providerClass + ", which is loaded by " + providerClass.getClassLoader());
-            e.printStackTrace();
-            return false;
+            debug("Unable to reach " + serviceClass + " from " + providerClass + ", which is loaded by " + providerClass.getClassLoader(), e);
+            return true;
         }
     }
 
@@ -320,7 +335,7 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
     private static class DefaultFactory<T> implements ProviderFactory<T> {
         public T make(Class providerClass, Class<T> serviceClass) throws Exception {
             if (serviceClass.isAssignableFrom(providerClass)) {
-                return (T)providerClass.newInstance();
+                return (T) providerClass.newInstance();
             }
             return null;
         }
@@ -329,6 +344,13 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
     private void debug(String s) {
         if (Boolean.valueOf(bundleContext.getProperty("org.glassfish.hk2.osgiresourcelocator.debug"))) {
             System.out.println("org.glassfish.hk2.osgiresourcelocator:DEBUG: " + s);
+        }
+    }
+
+    private void debug(String s, Throwable t) {
+        if (Boolean.valueOf(bundleContext.getProperty("org.glassfish.hk2.osgiresourcelocator.debug"))) {
+            System.out.println("org.glassfish.hk2.osgiresourcelocator:DEBUG: " + s);
+            t.printStackTrace(System.out);
         }
     }
 }
