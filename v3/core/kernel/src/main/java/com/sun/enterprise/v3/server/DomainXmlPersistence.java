@@ -54,6 +54,7 @@ import java.util.logging.Logger;
  * domain.xml persistence.
  *
  * @author Jerome Dochez
+ * @author Byron Nevins (I added the synch object 7/12/2010)
  */
 @Service
 @Scoped(Singleton.class)
@@ -64,8 +65,18 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
     @Inject
     protected Logger logger;
     final XMLOutputFactory xmlFactory = XMLOutputFactory.newInstance();
+    private static final Object simpleLock = new Object();
 
-    public synchronized void save(DomDocument doc) throws IOException {
+    /**
+     * synchronize on this Object to get exclusive access to the domain.xml file
+     * @return the simple lock object to use for synchronizing
+     */
+    public final static Object getLock() {
+        return simpleLock;
+    }
+
+    @Override
+    public void save(DomDocument doc) throws IOException {
         File destination = getDestination();
         if (destination == null) {
             logger.fine("domain.xml not persisted, null destination");
@@ -78,7 +89,7 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
         }
         // write to the temporary file
         XMLStreamWriter writer = null;
-        OutputStream fos = getOutputStream(f);
+        OutputStream fos = new FileOutputStream(destination);
         try {
             writer = xmlFactory.createXMLStreamWriter(new BufferedOutputStream(fos));
             IndentingXMLStreamWriter indentingXMLStreamWriter = new IndentingXMLStreamWriter(writer);
@@ -109,26 +120,28 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
             }
         }
 
-        // backup the current file
-        File backup = new File(env.getConfigDirPath(), "domain.xml.bak");
-        if (backup.exists() && !backup.delete()) {
-            logger.severe("Could not delete previous backup file at " + backup.getAbsolutePath());
-            return;
-        }
-        if (destination != null) {
-            if (!destination.renameTo(backup)) {
-                logger.severe("Could not rename " + destination.getAbsolutePath() + " to " + backup.getAbsolutePath());
+        synchronized (getLock()) {
+            // backup the current file
+            File backup = new File(env.getConfigDirPath(), "domain.xml.bak");
+            if (backup.exists() && !backup.delete()) {
+                logger.severe("Could not delete previous backup file at " + backup.getAbsolutePath());
                 return;
             }
-            // save the temp file to domain.xml
-            if (!f.renameTo(destination)) {
-                logger.severe("Could not rename " + f.getAbsolutePath() + " to " + destination.getAbsolutePath());
-                if (!backup.renameTo(destination)) {
-                    logger.severe("Could not rename backup to" + destination.getAbsolutePath());
+            if (destination != null) {
+                if (!destination.renameTo(backup)) {
+                    logger.severe("Could not rename " + destination.getAbsolutePath() + " to " + backup.getAbsolutePath());
+                    return;
+                }
+                // save the temp file to domain.xml
+                if (!f.renameTo(destination)) {
+                    logger.severe("Could not rename " + f.getAbsolutePath() + " to " + destination.getAbsolutePath());
+                    if (!backup.renameTo(destination)) {
+                        logger.severe("Could not rename backup to" + destination.getAbsolutePath());
+                    }
                 }
             }
+            saved(destination);
         }
-        saved(destination);
     }
 
     protected void saved(File destination) {
@@ -137,9 +150,5 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
 
     protected File getDestination() throws IOException {
         return new File(env.getConfigDirPath(), "domain.xml");
-    }
-
-    protected OutputStream getOutputStream(File destination) throws IOException {
-        return new FileOutputStream(destination);
     }
 }
