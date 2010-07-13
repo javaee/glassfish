@@ -48,6 +48,9 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import org.glassfish.api.Param;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 
 /**
  * The asadmin login command.
@@ -58,6 +61,8 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  */
 @Service(name = "login")
 @Scoped(PerLookup.class)
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
 public class LoginCommand extends CLICommand {
 
     private String adminUser = null;
@@ -65,6 +70,9 @@ public class LoginCommand extends CLICommand {
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(LoginCommand.class);
+    @Param(name = "target", optional = true, defaultValue =
+        SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
 
     @Override
     protected int executeCommand()

@@ -36,16 +36,7 @@
 
 package com.sun.enterprise.v3.admin;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Properties;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -56,14 +47,20 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 import com.sun.enterprise.config.serverbeans.ProviderConfig;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 /**
  * List Message Security Providers Command
  * 
@@ -78,14 +75,22 @@ import com.sun.enterprise.config.serverbeans.ProviderConfig;
 @Service(name="list-message-security-providers")
 @Scoped(PerLookup.class)
 @I18n("list.message.security.provider")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class ListMessageSecurityProvider implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(ListMessageSecurityProvider.class);    
 
-    @Param(optional=true)
-    String target;
+    @Param(name = "target", optional = true, defaultValue =
+        SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
 
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config;
+
+    @Inject
+    private Domain domain;
     // auth-layer can only be SOAP | HttpServlet
     @Param(name="layer", acceptableValues="SOAP,HttpServlet", optional=true)
     String authLayer;
@@ -103,9 +108,16 @@ public class ListMessageSecurityProvider implements AdminCommand {
         
         final ActionReport report = context.getActionReport();
 
-        List <Config> configList = configs.getConfig();
-        Config config = configList.get(0);
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         SecurityService secService = config.getSecurityService();
+        List<MessageSecurityConfig> mscs = secService.getMessageSecurityConfig();
 
         report.getTopMessagePart().setMessage(
             localStrings.getLocalString(

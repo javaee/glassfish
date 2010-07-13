@@ -43,10 +43,13 @@ import com.sun.enterprise.admin.cli.LocalDomainCommand;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -58,6 +61,8 @@ import org.jvnet.hk2.component.*;
  */
 @Service(name = "change-master-password")
 @Scoped(PerLookup.class)
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
 public class ChangeMasterPasswordCommand extends LocalDomainCommand {
     @Param(name = "savemasterpassword", optional = true, defaultValue = "false")
     private boolean savemp;
@@ -67,6 +72,10 @@ public class ChangeMasterPasswordCommand extends LocalDomainCommand {
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ChangeMasterPasswordCommand.class);
+
+    @Param(name = "target", optional = true, defaultValue =
+        SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
 
     @Override
     protected void validate()

@@ -58,9 +58,17 @@ import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 import com.sun.enterprise.config.serverbeans.ProviderConfig;
 import com.sun.enterprise.config.serverbeans.ResponsePolicy;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 import java.beans.PropertyVetoException;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 
 /**
  * Create Message Security Provider Command
@@ -97,6 +105,8 @@ import java.beans.PropertyVetoException;
 @Service(name="create-message-security-provider")
 @Scoped(PerLookup.class)
 @I18n("create.message.security.provider")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class CreateMessageSecurityProvider implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
@@ -145,8 +155,14 @@ public class CreateMessageSecurityProvider implements AdminCommand {
     @Param(name="providername", primary=true)
     String providerId;
     
-    @Param(optional=true)
-    String target;
+    @Param(name = "target", optional = true, defaultValue =
+        SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config;
+    @Inject
+    private Domain domain;
 
     @Inject
     Configs configs;
@@ -161,8 +177,14 @@ public class CreateMessageSecurityProvider implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        List <Config> configList = configs.getConfig();
-        Config config = configList.get(0);
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         SecurityService secService = config.getSecurityService();
                 
         List<MessageSecurityConfig> mscs = secService.getMessageSecurityConfig();
