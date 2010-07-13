@@ -91,18 +91,17 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      *
      * @return path location of node-dir
      */
-    @Attribute(value="node-dir")
+    @Attribute
     String getNodeDir();
 
     /**
      * Sets the value of the node-dir, top-level parent directory of node(s)
-     * Default value is ${com.sun.aas.installRoot}/nodeagents.
      *
      * @param value allowed object is
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(defaultValue="${com.sun.aas.installRoot}/nodeagents", name="nodedir", optional=true)
+    @Param(name="nodedir", optional=true)
     void setNodeDir(String value) throws PropertyVetoException;
 
     /**

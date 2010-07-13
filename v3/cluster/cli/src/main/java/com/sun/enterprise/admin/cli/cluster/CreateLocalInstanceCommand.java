@@ -37,6 +37,7 @@
 package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.admin.cli.CLILogger;
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -259,6 +260,9 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         if (nodeDir != null) {
             argsList.add("--nodedir");
             argsList.add(nodeDir);
+        } else {
+            argsList.add("--nodedir");
+            argsList.add(installdir + File.separator + "nodeagents");
         }
         if (installdir != null) {
             argsList.add("--installdir");
