@@ -64,7 +64,7 @@
     <pathconvert refid="class.path" property="test"/>
 
     <target name="debug-windows" depends="instance, cluster"/>
-    <target name="cli" depends="ports, instance, cluster, configs, sync, domain, backup, tokens, list-jndi-entries"/>
+    <target name="cli" depends="ports, instance, cluster, configs, sync, domain, backup, tokens"/>
 
     <target name="cluster">
         <java classname="admin.ClusterTest"  fork="true" classpath="${test}">
@@ -120,12 +120,6 @@
         <record name="admin.output" action="stop" />
         <antcall target="dev-report"/>
         <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
-    </target>
-
-    <target name="list-jndi-entries">
-        <java classname="admin.ListJndiEntriesTest"  fork="true" classpath="${test}">
-            <jvmarg value="${javaprops}"/>
-        </java>
     </target>
 
     <target name="all" depends="init">
