@@ -35,6 +35,8 @@
  */
 package admin;
 
+import admin.AdminBaseDevTest;
+
 /*
  * Dev test for list-jndi-entries
  * @author Cheng Fang
