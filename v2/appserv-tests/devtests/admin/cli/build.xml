@@ -52,10 +52,7 @@
     <property name="stylesheet" value="${env.APS_HOME}/config/j2eeReporter.xsl" />
     <property name="xmlfile" value="${env.APS_HOME}/test_resultsValid.xml" />
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
-    <!--
-    <property name="teststorun" value="cli_except_jndi"/>
-    -->
-    <property name="teststorun" value="debug-windows"/>
+    <property name="teststorun" value="cli"/>
     <property name="verbose" value="false"/>
     <property name="javaprops" value="-Dverbose=${verbose}"/>
 
@@ -67,7 +64,6 @@
     <pathconvert refid="class.path" property="test"/>
 
     <target name="debug-windows" depends="instance, cluster"/>
-    <target name="cli_except_jndi" depends="ports, instance, cluster, configs, sync, domain, backup, tokens"/>
     <target name="cli" depends="ports, instance, cluster, configs, sync, domain, backup, tokens, list-jndi-entries"/>
 
     <target name="cluster">
