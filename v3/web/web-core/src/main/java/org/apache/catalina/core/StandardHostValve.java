@@ -196,11 +196,13 @@ final class StandardHostValve
         // END SJSAS 6374691
     {
         try {
+            /*
             // START SJSAS 6374990
             if (((ServletResponse) response).isCommitted()) {
                 return;
             }
             // END SJSAS 6374990
+            */
 
             HttpServletRequest hreq = (HttpServletRequest) request.getRequest();
 
@@ -438,11 +440,6 @@ final class StandardHostValve
         ((HttpRequest) request).setPathInfo(errorPage.getLocation());
 
         try {
-            /*
-             * Reset the response, while keeping the real error code and
-             * message
-             */
-            response.resetBuffer(true);
             Integer statusCodeObj = (Integer) hreq.getAttribute(
                 RequestDispatcher.ERROR_STATUS_CODE);
             int statusCode = statusCodeObj.intValue();
@@ -456,10 +453,20 @@ final class StandardHostValve
                 request.getContext().getServletContext();
             ApplicationDispatcher dispatcher = (ApplicationDispatcher)
                 servletContext.getRequestDispatcher(errorPage.getLocation());
-            dispatcher.dispatch(hreq, hres, DispatcherType.ERROR, true);
 
-            // If we forward, the response is suspended again
-            response.setSuspended(false);
+            if (hres.isCommitted()) {
+                // Response is committed - including the error page is the
+                // best we can do 
+                dispatcher.include(hreq, hres);
+            } else {
+                // Reset the response (keeping the real error code and message)
+                response.resetBuffer(true);
+
+                dispatcher.dispatch(hreq, hres, DispatcherType.ERROR, true);
+
+                // If we forward, the response is suspended again
+                response.setSuspended(false);
+            }
 
             // Indicate that we have successfully processed this custom page
             return (true);
