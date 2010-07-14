@@ -38,6 +38,7 @@ package com.sun.enterprise.v3.admin;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
+import com.sun.enterprise.admin.util.Target;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -107,8 +108,6 @@ public class CreateSsl implements AdminCommand {
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
     @Inject
-    Configs configs;
-    @Inject
     Domain domain;
     @Inject
     Habitat habitat;
@@ -121,15 +120,8 @@ public class CreateSsl implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
-        }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
-        }
-        Config newConfig = domain.getConfigNamed(target);
+        Target targetUtil = habitat.getComponent(Target.class);
+        Config newConfig = targetUtil.getConfig(target);
         if (newConfig!=null) {
             config = newConfig;
         }
@@ -282,7 +274,8 @@ public class CreateSsl implements AdminCommand {
     }
 
     private Protocol findOrCreateProtocol(final String name) throws TransactionFailure {
-        Protocol protocol = habitat.getComponent(Protocol.class, name);
+        NetworkConfig networkConfig = config.getNetworkConfig();
+        Protocol protocol = networkConfig.findProtocol(name);
         if (protocol == null) {
             protocol = (Protocol) ConfigSupport.apply(new SingleConfigCode<Protocols>() {
                 public Object run(Protocols param) throws TransactionFailure {

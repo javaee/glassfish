@@ -39,6 +39,7 @@ package com.sun.enterprise.v3.admin.commands;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
+import com.sun.enterprise.admin.util.Target;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.I18n;
@@ -50,6 +51,7 @@ import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
@@ -100,10 +102,10 @@ public class CreateThreadpool implements AdminCommand {
     Config config;
 
     @Inject
-    Configs configs;
-
-    @Inject
     Domain domain;
+    
+    @Inject
+    Habitat habitat;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -114,15 +116,8 @@ public class CreateThreadpool implements AdminCommand {
 
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
-        }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
-        }
-        Config newConfig = domain.getConfigNamed(target);
+        Target targetUtil = habitat.getComponent(Target.class);
+        Config newConfig = targetUtil.getConfig(target);
         if (newConfig!=null) {
             config = newConfig;
         }

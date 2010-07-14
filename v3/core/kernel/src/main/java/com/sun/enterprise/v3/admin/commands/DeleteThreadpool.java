@@ -39,6 +39,7 @@ package com.sun.enterprise.v3.admin.commands;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
+import com.sun.enterprise.admin.util.Target;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.I18n;
@@ -89,7 +90,7 @@ public class DeleteThreadpool implements AdminCommand {
     Domain domain;
 
     @Inject
-    Habitat habitat;
+    Habitat habitat;              
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -99,16 +100,8 @@ public class DeleteThreadpool implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
-
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
-        }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
-        }
-        Config newConfig = domain.getConfigNamed(target);
+        Target targetUtil = habitat.getComponent(Target.class);
+        Config newConfig = targetUtil.getConfig(target);
         if (newConfig!=null) {
             config = newConfig;
         }
@@ -121,7 +114,13 @@ public class DeleteThreadpool implements AdminCommand {
             return;
         }
 
-        ThreadPool pool = habitat.getComponent(ThreadPool.class, threadpool_id);
+        ThreadPool pool = null;
+        for (ThreadPool tp : config.getThreadPools().getThreadPool()) {
+            if (tp.getName().equals(threadpool_id)) {
+                pool = tp;
+            }
+        }
+
         List<NetworkListener> nwlsnrList = pool.findNetworkListeners();
         for (NetworkListener nwlsnr : nwlsnrList) {
             if (pool.getName().equals(nwlsnr.getThreadPool())) {

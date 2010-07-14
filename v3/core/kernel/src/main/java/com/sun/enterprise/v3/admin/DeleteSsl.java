@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.admin.util.Target;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -53,6 +54,7 @@ import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
@@ -97,12 +99,12 @@ public class DeleteSsl implements AdminCommand {
     
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
-
-    @Inject
-    Configs configs;
     
     @Inject
     Domain domain;
+    
+    @Inject
+    Habitat habitat;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -112,15 +114,8 @@ public class DeleteSsl implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
-        }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
-        }
-        Config newConfig = domain.getConfigNamed(target);
+        Target targetUtil = habitat.getComponent(Target.class);
+        Config newConfig = targetUtil.getConfig(target);
         if (newConfig!=null) {
             config = newConfig;
         }
@@ -138,7 +133,6 @@ public class DeleteSsl implements AdminCommand {
         
         try {
             if ("http-listener".equals(type) || "network-listener".equals(type)) {
-                Config config = configs.getConfig().get(0);
                 NetworkConfig netConfig = config.getNetworkConfig();
                 NetworkListener networkListener =
                     netConfig.getNetworkListener(listenerId);
@@ -199,7 +193,6 @@ public class DeleteSsl implements AdminCommand {
                     }
                 }, iiopListener);
             } else if ("iiop-service".equals(type)) {
-                Config config = configs.getConfig().get(0);
 
                 if (config.getIiopService().getSslClientConfig() == null) {
                     report.setMessage(localStrings.getLocalString(
