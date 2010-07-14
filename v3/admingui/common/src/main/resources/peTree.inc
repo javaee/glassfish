@@ -55,9 +55,12 @@ monitoring     web  800
 
     // Parent == "tree" priorities:
     100: pluginTreeNodeRegistration.jsf
-    200: pluginTreeNodeApps.jsf
-    300: pluginTreeNodeResources.jsf
-    400: pluginTreeNodeServer.jsf
+    200: pluginTreeNodeServer.jsf
+    300: pluginTreeNodeApps.jsf
+    400: pluginTreeNodeResources.jsf
+    500: pluginTreeNodeClusters.jsf
+    530: pluginTreeNodeInstances.jsf
+    560: pluginTreeNodeNodes.jsf
     700: pluginTreeNodeConfigurations.jsf
     800: update center
 -->
@@ -111,9 +114,8 @@ monitoring     web  800
     <event>
 	<!afterCreate
 	    includeIntegrations(type="org.glassfish.admingui:navNode" root="#{pageSession.treeId}");
-// FIXME: JSFT 2.0.3 is needed for this loop... we also need to pull the actual config list instead of hard-coding it!!
-	    //foreach(var="configName" list={"default-config" "my-config"}) {
-	    foreach(var="configName" list={}) {
+	    gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config", result="#{pageSession.configsList}");
+	    foreach(var="configName" list="#{pageSession.configsList}") {
 		buildUIComponentTree(layoutElement="$attribute{configTreeNodeLE}" parent="$attribute{configsTreeNode}");
 		includeIntegrations(type="org.glassfish.admingui:navNode" root="#{pageSession.treeId}");
 	    }
