@@ -41,7 +41,6 @@ public class ClusterOperationUtil {
                                     instancesForReplication, context.getLogger());
             for(InstanceCommandExecutor rac : execList) {
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
-                parameters.set("target", rac.getServer().getName());
                 try {
                     rac.executeCommand(parameters);
                     aReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
