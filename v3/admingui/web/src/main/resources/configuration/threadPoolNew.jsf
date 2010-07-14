@@ -48,7 +48,11 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/configuration/threadPools.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=thread-pools");
         setPageSessionAttribute(key="childType" value="thread-pool");
-        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/thread-pools");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="skipAttrsList" value={"Classname"});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );

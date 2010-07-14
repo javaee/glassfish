@@ -46,7 +46,7 @@
             <sun:textField id="nameText" text="#{pageSession.valueMap['Name']}" columns="$int{55}" styleClass="required" required="#{true}" />
         </sun:property>
 
-        <sun:property id="classname"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.classname}" helpText="$resource{i18n_web.threadPool.classnameHelp}">
+        <sun:property id="classname"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.classname}" helpText="$resource{i18n_web.threadPool.classnameHelp}">
         <sun:textField id="classname" styleClass="required" columns="$int{50}" text="#{pageSession.valueMap['Classname']}" />
         </sun:property>
 

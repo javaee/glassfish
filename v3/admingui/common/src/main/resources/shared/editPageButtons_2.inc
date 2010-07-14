@@ -128,12 +128,14 @@
                     if (#{pageSession['rest-api']}){
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
+                        skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}"
                         result => $attribute{objStr});
                     if(#{pageSession.has2Objects}){
                         if (#{pageSession.parentObjectNameStr2}){
                             gf.createEntity(endpoint="#{pageSession.parentUrl2}/#{pageSession.childType2}"
                                 attrs="#{pageSession.valueMap2}"
+                                skipAttrs="#{pageSession.skipAttrsList2}"
                                 convertToFalse="#{pageSession.convertToFalseList2}"
                                 result => $attribute{resultEndpoint});
                         }
