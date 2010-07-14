@@ -34,11 +34,11 @@ own identifying information: Portions Copyright [yyyy]
 	 <antcall target="addDtds"/>
         <antcall target="rejar"/>
 	<antcall target="unjar"/>
-    	<antcall target="addRars"/>
+   	<antcall target="addRars"/>
 	<antcall target="addEjbTimer"/>
         <antcall target="jar"/>
-        
-	<attachArtifact file="${finaljar}"/>
+	
+        <attachArtifact file="${finaljar}"/>
      </target>
 
      <target name="makeJarDir">
@@ -114,18 +114,17 @@ own identifying information: Portions Copyright [yyyy]
 
     <target name="addRars" if="includeRars">
         <echo message="adding rars"/>
+        <jar jarfile="${jardir}/__cp_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__cp_jdbc_ra/**/*"/>
+        <jar jarfile="${jardir}/__ds_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__ds_jdbc_ra/**/*"/>
+        <jar jarfile="${jardir}/__dm_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__dm_jdbc_ra/**/*"/>
+        <jar jarfile="${jardir}/__xa_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__xa_jdbc_ra/**/*"/>
 	<copy todir="${rootdir}/temp">
   		<fileset dir="${jardir}">
     			<include name="*.rar"/>
   		</fileset>
         </copy>
-
-   <!--     <jar jarfile="${jardir}/__cp_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__cp_jdbc_ra/**/*"/>
-        <jar jarfile="${jardir}/__ds_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__ds_jdbc_ra/**/*"/>
-        <jar jarfile="${jardir}/__dm_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__dm_jdbc_ra/**/*"/>
-        <jar jarfile="${jardir}/__xa_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__xa_jdbc_ra/**/*"/>
-        <jar jarfile="${finaljar}" update="true" basedir="${jardir}" includes="__cp_jdbc_ra.rar, __ds_jdbc_ra.rar, __dm_jdbc_ra.rar, __xa_jdbc_ra.rar"/>
-  -->  </target>
+   <!--     <jar jarfile="${finaljar}" update="true" basedir="${jardir}" includes="__cp_jdbc_ra.rar, __ds_jdbc_ra.rar, __dm_jdbc_ra.rar, __xa_jdbc_ra.rar"/>  -->
+    </target>
 
   <target name="addEjbTimer" if="includeEjbTimer">
         <echo message="adding EJBTimer"/>
