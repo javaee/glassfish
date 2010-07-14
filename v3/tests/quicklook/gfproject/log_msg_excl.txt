@@ -155,6 +155,25 @@ amx-pref =
 Unprocessed event : UnprocessedChangeEvent
 org.apache.felix.bundlerepository.jar
 Address used:
+cannot load 
+GrizzlyNetworkManager Configuration
+BIND_INTERFACE_ADDRESS
+TCPSTARTPORT..TCPENDPORT
+MULTICAST_ADDRESS:MULTICAST_PORT:
+FAILURE_DETECT_TCP_RETRANSMIT_TIMEOUT(ms)
+ThreadPool CORE_POOLSIZE
+HIGH_WATER_MARK
+START_TIMEOUT(ms)
+MAX_WRITE_SELECTOR_POOL_SIZE
+VIRTUAL_MULTICAST_URI_LIST
+instantiated following NetworkManager
+GMS:Reporting Joined and Ready state to group
+GMS View Change Received for group
+Calling reportMyState() with READY
+Leaving GMS group
+normal termination of ViewWindow thread for group
+MessageWindow thread for group
+SignalHandler task named
 
 
 # From QL Test - No need to fix this
@@ -255,6 +274,9 @@ Probe is not yet registered: glassfish:ejb:
 The Admin Console is already installed, but not yet loaded.
 Server shutdown initiated
 Sun specific deployment descriptor
+The configured OSGi Telnet port
+Error transferring service tags
+Process executing stclient command failed
 
 
 # Waiting to be fixed: 11627
@@ -307,3 +329,6 @@ admin console: initSessionAttributes
 
 # Waiting to be fixed: 12307
 JMS Service Connection URL is
+
+# Waiting to be fixed: 12657
+SynchronizeFiles: logger
