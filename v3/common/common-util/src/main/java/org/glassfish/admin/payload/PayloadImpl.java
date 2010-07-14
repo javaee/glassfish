@@ -36,6 +36,7 @@
 
 package org.glassfish.admin.payload;
 
+import com.sun.logging.LogDomains;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -50,6 +51,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.api.admin.Payload;
 
 /**
@@ -153,7 +156,7 @@ public class PayloadImpl implements Payload {
                         contentType,
                         fileURI.getPath(),
                         enhancedProps,
-                        (file.isDirectory()) ? null : new BufferedInputStream(new FileInputStream(file))));
+                        (file.isDirectory()) ? null : file));
             }
         }
 
@@ -163,7 +166,7 @@ public class PayloadImpl implements Payload {
                 final URI fileURI, 
                 final String dataRequestName, 
                 final Properties props, 
-                final File file, 
+                final File file,
                 final boolean isRecursive) throws IOException {
             final Properties enhancedProps = new Properties();
             if (props != null) {
@@ -415,6 +418,8 @@ public class PayloadImpl implements Payload {
      */
     public static abstract class Part implements Payload.Part {
 
+        private static final Logger logger = LogDomains.getLogger(PayloadImpl.class, LogDomains.CORE_LOGGER);
+
         private String name;
         private String contentType;
         private Properties props;
@@ -486,6 +491,22 @@ public class PayloadImpl implements Payload {
                 final Properties props,
                 final String content) {
             return new Buffered(contentType, name, props, content);
+        }
+
+        /**
+         * Creates a new Part from a File.
+         * @param contentType content type for the Part
+         * @param name name of the Part
+         * @param props Properties to be associated with the Part
+         * @param file File containing the content for the Part
+         * @return
+         */
+        public static Part newInstance(
+                final String contentType,
+                final String name,
+                final Properties props,
+                final File file) {
+            return new Filed(contentType, name, props, file);
         }
 
         public void copy(final OutputStream os) throws IOException {
@@ -565,5 +586,148 @@ public class PayloadImpl implements Payload {
                 return is;
             }
         }
+
+        /**
+         * Implements Part using a File.
+         * <p>
+         * Note that directories can be added as Parts to the payload, but
+         * a null file is passed in that case.  For those, return a dummy
+         * stream with no content in response to getInputStream.
+         * <p>
+         * Further, getInputStream returns a self-closing input stream.  Calling
+         * code which passes a File to attachFile or addPart will not have access
+         * to the input stream we open here, so we need to close it ourselves.
+         * We do that automatically when we detect the end-of-stream while
+         * preserving the external behavior of the stream.
+         */
+        static class Filed extends PayloadImpl.Part {
+            private final File file;
+            private InputStream myStream;
+
+            Filed(final String contentType,
+                    final String name,
+                    final Properties props,
+                    final File file) {
+                super(contentType, name, props);
+                this.file = file;
+                validateFile(file);
+            }
+
+            @Override
+            public InputStream getInputStream() {
+                try {
+                    return (file != null
+                            ? new SelfClosingInputStream(
+                                new BufferedInputStream(
+                                    new FileInputStream(file)))
+                            : dummyStream());
+                } catch (FileNotFoundException ex) {
+                    /*
+                     * Silently return null; validateFile has already logged a message
+                     * when the original caller tried to add this file to
+                     * the payload.
+                     */
+                    return null;
+                }
+            }
+
+            private void validateFile(final File f) {
+                if ( f != null && ! f.canRead()) {
+                    logger.log(Level.WARNING, "payload.errProcFile", f.getAbsolutePath());
+                }
+            }
+
+            private InputStream dummyStream() {
+                return new ByteArrayInputStream(new byte[0]);
+            }
+
+            /**
+             * An InputStream that automatically closes itself when the
+             * wrapped stream reached end-of-stream.  The close() method
+             * is still supported but, if the wrapped stream has already been closed,
+             * acts as a no-op.
+             * <p>
+             * The read and close method implementations are interesting.  The
+             * other methods simply delegate to the wrapped stream.
+             */
+            private static class SelfClosingInputStream extends InputStream {
+
+                private final InputStream wrappedStream;
+                private boolean isWrappedStreamClosed = false;
+                private boolean isExternallyClosed = false;
+                
+                private SelfClosingInputStream(final InputStream wrappedStream) {
+                    this.wrappedStream = wrappedStream;
+                }
+                
+                @Override
+                public int read() throws IOException {
+                    if (isExternallyClosed) {
+                        /*
+                         * The API does not permit reading after the stream
+                         * has been closed.  Mimic that behavior.
+                         */
+                        throw new IOException();
+                    }
+                    if (isWrappedStreamClosed) {
+                        /*
+                         * We have closed the wrapped stream, because it
+                         * returned a -1 from read, but the stream has not
+                         * been externally closed yet.  So continue returning
+                         * the end-of-stream indiciator.
+                         */
+                        return -1;
+                    }
+
+                    final int result = wrappedStream.read();
+                    if (result == -1) {
+                        /*
+                         * We've exhausted the wrapped stream, so close it
+                         * internally.
+                         */
+                        closeInternally();
+                    }
+                    return result;
+                }
+
+                @Override
+                public long skip(long n) throws IOException {
+                    return wrappedStream.skip(n);
+                }
+
+
+                @Override
+                public int available() throws IOException {
+                    return wrappedStream.available();
+                }
+
+                @Override
+                public synchronized void mark(int readlimit) {
+                    wrappedStream.mark(readlimit);
+                }
+
+                @Override
+                public boolean markSupported() {
+                    return wrappedStream.markSupported();
+                }
+
+                @Override
+                public synchronized void reset() throws IOException {
+                    wrappedStream.reset();
+                }
+
+                @Override
+                public void close() throws IOException {
+                    closeInternally();
+                    isExternallyClosed = true;
+                }
+
+                private void closeInternally() throws IOException {
+                    wrappedStream.close();
+                    isWrappedStreamClosed = true;
+                }
+            }
+        }
     }
+
 }
