@@ -1039,7 +1039,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <target name="glassfish-embedded-deploy" >
     <echo> === EMBEDDED DEPLOYING === </echo>
-    <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" name="${appname}" libraries="${libraries}"/>
+    <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" name="${appname}" contextroot="${contextroot}" libraries="${libraries}"/>
 </target>
 
 <target name="glassfish-embedded-undeploy" >
