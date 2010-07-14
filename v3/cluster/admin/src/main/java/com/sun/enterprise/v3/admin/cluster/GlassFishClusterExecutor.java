@@ -141,9 +141,10 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
         String targetName = parameters.getOne("target");
         if(targetName == null)
                 targetName = "server";
-        //Do replication only if this is DAS and only if the target is not "server", the default server or "domain"
-        if((!CommandTarget.DAS.isValid(habitat, targetName))
-                && (!CommandTarget.DOMAIN.isValid(habitat, targetName))) {
+        //Do replication only if the RuntimeType specified is ALL or
+        //only if the target is not "server" or "domain"
+        if( (runtimeTypes.contains(RuntimeType.ALL)) ||
+            ((!CommandTarget.DAS.isValid(habitat, targetName)) && (!CommandTarget.DOMAIN.isValid(habitat, targetName))) ) {
             //If the target is a cluster and dynamic reconfig enabled is false, no replication
             if(targetService.isCluster(targetName)) {
                 String dynRecfg = targetService.getClusterConfig(targetName).getDynamicReconfigurationEnabled();
