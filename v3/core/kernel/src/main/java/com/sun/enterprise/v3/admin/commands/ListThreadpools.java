@@ -37,6 +37,7 @@
 package com.sun.enterprise.v3.admin.commands;
 
 
+import com.sun.enterprise.admin.util.Target;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.Param;
@@ -50,6 +51,7 @@ import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 import com.sun.grizzly.config.dom.ThreadPool;
@@ -79,6 +81,9 @@ public class ListThreadpools implements AdminCommand {
     @Param(name = "target", primary = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
     
+    @Inject
+    Habitat habitat;
+    
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ListThreadpools.class);
 
@@ -89,16 +94,11 @@ public class ListThreadpools implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
+        Target targetUtil = habitat.getComponent(Target.class);
+        Config newConfig = targetUtil.getConfig(target);
+        if (newConfig!=null) {
+            config = newConfig;
         }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
-        }
-
         ThreadPools threadPools = config.getThreadPools();
         try {
         List<ThreadPool> poolList = threadPools.getThreadPool();
