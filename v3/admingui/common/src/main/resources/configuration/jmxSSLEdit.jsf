@@ -50,7 +50,6 @@
         setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=system")
         setPageSessionAttribute(key="childType" value="ssl")
         setPageSessionAttribute(key="showCancelButton" value="#{false}")
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/admin-service/jmx-connector[system],type=ssl");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/admin-service/jmx-connector/system");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");

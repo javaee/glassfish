@@ -42,12 +42,13 @@
             <!command
                 convertCiphersItemsToStr(common="#{pageSession.selectedCommon}" ephemeral="#{pageSession.selectedEphemeral}" other="#{pageSession.selectedOther}" ecc="#{pageSession.selectedEcc}" ciphers="#{requestScope.ciphers}")
                 mapPut(map="#{pageSession.valueMap}" key="Ssl3TlsCiphers" value="#{requestScope.ciphers}")
-                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                    skipAttrs="#{pageSession.skipAttrsList}"
-                    convertToFalse="#{pageSession.convertToFalseList}"
+                gf.createEntity(endpoint="#{pageSession.selfUrl}"
+                            attrs="#{pageSession.valueMap}"
+                            skipAttrs="#{pageSession.skipAttrsList}"
+                            convertToFalse="#{pageSession.convertToFalseList}"
                 );
                 prepareSuccessfulMsg();
-                proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
+                gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}" exists="#{requestScope.exist}")
 
                 gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />
@@ -58,10 +59,7 @@
             <!command
                 convertCiphersItemsToStr(common="#{pageSession.selectedCommon}" ephemeral="#{pageSession.selectedEphemeral}" other="#{pageSession.selectedOther}" ecc="#{pageSession.selectedEcc}" ciphers="#{requestScope.ciphers}")
                 mapPut(map="#{pageSession.valueMap}" key="Ssl3TlsCiphers" value="#{requestScope.ciphers}")
-                createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                    attrs="#{pageSession.valueMap}"
-                    convertToFalse="#{pageSession.convertToFalseList}"
-                    result => $attribute{objStr});
+                gf.createEntity(endpoint="#{pageSession.selfUrl}" attrs="#{pageSession.valueMap}" convertToFalse="#{pageSession.convertToFalseList}");
                 prepareSuccessfulMsg();
                 gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />

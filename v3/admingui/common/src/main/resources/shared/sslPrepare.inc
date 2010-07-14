@@ -35,10 +35,10 @@
 -->
 <!-- sslPrepare.inc  -->
 
-proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
+gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}" exists="#{requestScope.exist}")
 if (#{requestScope.exist}){
     setPageSessionAttribute(key="edit" value="#{true}" )
-    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}" valueMap="#{pageSession.valueMap}");
     convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['Ssl3TlsCiphers']}"
         CommonCiphersList="#{pageSession.selectedCommon}"
         EphemeralCiphersList="#{pageSession.selectedEphemeral}"
@@ -48,7 +48,7 @@ if (#{requestScope.exist}){
 }
 if (! #{requestScope.exist}){
     setPageSessionAttribute(key="edit" value="#{false}" )
-    getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+    gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}")
     convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['Ssl3TlsCiphers']}"
         CommonCiphersList="#{pageSession.selectedCommon}"
         EphemeralCiphersList="#{pageSession.selectedEphemeral}"
