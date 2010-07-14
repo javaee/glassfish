@@ -120,7 +120,8 @@ public class AdminTask extends TaskBase {
                 pMap.set("DEFAULT", parser.getOperands());
                 runner.getCommandInvocation(args[0], report).parameters(pMap).execute();
                 if (report.hasFailures())
-                    throw new Exception(report.getMessage());
+                    throw new Exception(report.getFailureCause());
+
                 if (report.hasWarnings())
                     System.out.println(report.getMessage());
 
