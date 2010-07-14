@@ -46,7 +46,7 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkPSW()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}", attrs="#{pageSession.valueMap}");
+                    gf.createEntity(endpoint="#{pageSession.selfUrl}" attrs="#{pageSession.valueMap}");
                     prepareSuccessfulMsg();
                     gf.redirect(page="jmsHosts.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}")
                 />
@@ -55,8 +55,8 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}" 
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkPSW()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                        attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}");
+                    gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}" attrs="#{pageSession.valueMap}"
+                        convertToFalse="#{pageSession.convertToFalseList}");
                     prepareSuccessfulMsg();
                     gf.redirect(page="jmsHosts.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}")
                     />

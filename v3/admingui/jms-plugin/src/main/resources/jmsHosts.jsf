@@ -47,7 +47,6 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName});
 
-        setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
         setPageSessionAttribute(key="childType" value="jms-host");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/jms-service");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
