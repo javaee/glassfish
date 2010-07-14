@@ -183,12 +183,19 @@ public class ParameterMapExtractor {
 
     public String propertiesValue(final Properties props, final char sep) {
         final StringBuilder sb = new StringBuilder();
+        final String sepString = String.valueOf(sep);
+        final String sepQuote = new StringBuilder("\\\\").append(sep).toString();
         String currentSep = "";
         for (Enumeration en = props.propertyNames(); en.hasMoreElements();) {
             final Object key = en.nextElement();
             final Object v = props.get(key);
-            sb.append(currentSep).append(key.toString()).append("=").append(v.toString());
-            currentSep = String.valueOf(sep);
+            /*
+             * Must escape the separator character where it appears in the
+             * value...such as URIs.
+             */
+            sb.append(currentSep).append(key.toString()).append("=").
+                    append(v.toString().replaceAll(sepString, sepQuote));
+            currentSep = sepString;
         }
         return sb.toString();
     }

@@ -1450,7 +1450,8 @@ public class ApplicationLifecycle implements Deployment {
         }
 
         // always upload the archives to the instance side
-        paramMap.set("upload", "true");
+        // but not directories.
+        paramMap.set("upload", Boolean.toString( ! archiveFile.isDirectory()));
 
         // pass the params we restored from the previous deployment in case of
         // redeployment

@@ -48,6 +48,10 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.zip.Adler32;
 
 
 /** 
@@ -75,6 +79,52 @@ public class DeploymentUtils {
     
     private static final String INSTANCE_ROOT_URI_PROPERTY_NAME = "com.sun.aas.instanceRootURI";
 
+    private final static String DAS_TARGET_NAME = "server";
+    private final static String DOMAIN_TARGET_NAME = "domain";
+
+    public static boolean isDASTarget(final String targetName) {
+        return DAS_TARGET_NAME.equals(targetName);
+    }
+
+    public static boolean isDomainTarget(final String targetName) {
+        return DOMAIN_TARGET_NAME.equals(targetName);
+    }
+
+    /**
+     * Computes the checksum of the URIs of files contained in a directory.
+     * 
+     * @param directory the directory for which to compute a checksum
+     * @return checksum calculated from URIs of files in the directory
+     */
+    public static long checksum(final File directory) {
+        if ( ! directory.isDirectory()) {
+            throw new IllegalArgumentException(directory.getAbsolutePath());
+        }
+        final List<URI> uris = new ArrayList<URI>();
+        scanDirectory(directory, uris);
+        /*
+         * Sort the URIs.  File.listFiles does not guarantee any particular
+         * ordering of the visited files, and for two checksums to match we
+         * need to process the URIs in the same order.
+         */
+        Collections.sort(uris);
+
+        final Adler32 checksum = new Adler32();
+        for (URI uri : uris) {
+            checksum.update(uri.toASCIIString().getBytes());
+        }
+        return checksum.getValue();
+    }
+
+    private static void scanDirectory(final File directory, final List<URI> uris) {
+        for (File f : directory.listFiles()) {
+            uris.add(f.toURI());
+            if (f.isDirectory()) {
+                scanDirectory(f, uris);
+            }
+        }
+    }
+    
     // checking whether the archive is a web archive
     public static boolean isWebArchive(ReadableArchive archive) {
         try {

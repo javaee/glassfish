@@ -36,13 +36,12 @@
 
 package org.glassfish.deployment.admin;
 
-import java.util.Collections;
+import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.Cluster;
-import org.glassfish.api.admin.ClusterExecutor;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.Supplemental;
 import org.glassfish.api.admin.FailurePolicy;
@@ -56,6 +55,10 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * When the create-application-ref command is invoked with a remote target,
@@ -87,8 +90,9 @@ public class PostCreateApplicationRefCommand implements AdminCommand {
     private Deployment deployment;   
 
     @Inject
-    private ClusterExecutor clusterExecutor;
+    private Habitat habitat;
 
+    @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
@@ -113,8 +117,17 @@ public class PostCreateApplicationRefCommand implements AdminCommand {
 
         try {
             final ParameterMap paramMap = deployment.prepareInstanceDeployParamMap(dc);
+            final List<String> targets = new ArrayList<String>(Arrays.asList(params.target.split(",")));
 
-            clusterExecutor.execute("_deploy", this, context, paramMap);
+            ActionReport.ExitCode replicateResult = ClusterOperationUtil.replicateCommand(
+                "_deploy",
+                FailurePolicy.Error,
+                FailurePolicy.Ignore,
+                targets,
+                context,
+                paramMap,
+                habitat);
+            report.setActionExitCode(replicateResult);
         } catch (Exception e) {
             report.failure(logger, e.getMessage());
         }

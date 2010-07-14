@@ -36,6 +36,7 @@
 
 package org.glassfish.deployment.admin;
 
+import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.ArrayList;
@@ -43,7 +44,6 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.Cluster;
-import org.glassfish.api.admin.ClusterExecutor;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.Supplemental;
@@ -54,6 +54,7 @@ import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 /**
@@ -69,10 +70,10 @@ import org.jvnet.hk2.component.PerLookup;
 public class PostDeployCommand extends DeployCommandParameters implements AdminCommand {
 
     @Inject
-    private ClusterExecutor clusterExecutor;
+    private Habitat habitat;
 
-    @Inject 
-    private Deployment deployment; 
+    @Inject
+    private Deployment deployment;
 
     @Override
     public void execute(AdminCommandContext context) {
@@ -105,7 +106,15 @@ public class PostDeployCommand extends DeployCommandParameters implements AdminC
                     return;
                 }
             }
-            clusterExecutor.execute("_deploy", this, context, paramMap);
+            ActionReport.ExitCode replicateResult = ClusterOperationUtil.replicateCommand(
+                "_deploy",
+                FailurePolicy.Error,
+                FailurePolicy.Ignore,
+                targets,
+                context,
+                paramMap,
+                habitat);
+            report.setActionExitCode(replicateResult);
         } catch (Exception e) {
             report.failure(logger, e.getMessage());
         }
