@@ -199,6 +199,7 @@
         <ant dir="requestDispatcherPathWithParams" target="all"/>
         <ant dir="responseErrorMessageEncoding" target="all"/>
         <ant dir="responseExceptionMessageEncoding" target="all"/>
+        <ant dir="includeErrorPageAfterResponseCommit" target="all"/>
         <ant dir="reuseSessionId" target="all"/>
         <ant dir="securityConstraintWildcardMapping" target="all"/>
         <ant dir="servlet-3.0/absoluteOrderingWebFragments" target="all"/>
