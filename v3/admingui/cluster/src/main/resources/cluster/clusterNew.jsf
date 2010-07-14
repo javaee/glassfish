@@ -59,29 +59,25 @@
             <!command
                 getUIComponent(clientId="#{pageSession.clusterTableRowGroupId}", component="#{requestScope.tableRowGroup}");
                 getAllSingleMapRows(TableRowGroup="#{requestScope.tableRowGroup}",  Rows="#{requestScope.instances}");
-                println("#{pageSession.name}");
-                println("#{pageSession.config}");
-                println("#{configOptionGrp}");
-                println("====#{configOptionGrp}");
-                println("#{instances}");
                 gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.name}", exists="#{requestScope.clusterExist}");
                 if (#{requestScope.clusterExist}){
                         gf.handleError(detail="cluster #{pageSession.name} already exist");
                 }
                 if ('#{configOptionGrp}=copy'){
-                    gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/configs/config/c", exists="#{requestScope.configExist}");
+                    gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.name}-config", exists="#{requestScope.configExist}");
                     if (#{requestScope.configExist}){
                         gf.handleError(detail="#{pageSession.name}-config already exist");
                     }
                     createMap(result="#{requestScope.attrs}")
-                    setAttribute(key="aa" value="#{pageSession.config}");
-                    setAttribute(key="bb" value="#{pageSession.name}-config}");
-                    mapPut(key="id" value={"$attribute{aa}", "$attribute{bb}"} , map="#{requestScope.attrs}");
+                    mapPut(map="#{requestScope.attrs}" key="id"  value={"$pageSession{config}" , "$pageSession{name}-config" } );
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/copy-config"  attrs="#{requestScope.attrs}" );
+                    setPageSessionAttribute(key="config", value="#{pageSession.name}-config");
                 }
-
-                #createCluster(Name="#{name}", Config="#{config}", CopyConfig="#{configOptionGrp}" Instances="#{instances}");
-                gf.handleError(detail="Config already exist");
+                createMap(result="#{requestScope.ct}");
+                mapPut(map="#{requestScope.ct}" key="config"  value="$pageSession{config}");
+                mapPut(map="#{requestScope.ct}" key="id" value="#{pageSession.name}" );
+                gf.createEntity( endpoint="#{sessionScope.REST_URL}/clusters/cluster"   attrs="#{requestScope.ct}")
+                gf.createClusterInstances(clusterName="#{pageSession.name}", instanceRow="#{instances}");
                 gf.redirect(page="#{request.contextPath}/cluster/cluster/clusters.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
              />
             </sun:button>
