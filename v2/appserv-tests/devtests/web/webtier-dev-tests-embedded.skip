@@ -80,6 +80,10 @@ servletRequestGetPathInfoGetPathTranslated
 virtualServerSendErrorProperty
 virtualServerWithCustomValves
 webappAlternateDocroot
+webappDeployDashDashLibraries
+servlet-3.0/servletContainerInitializer/sharedLibWithWars
+servlet-3.0/servletContainerInitializer/sharedLibWithEAR
+servlet-3.0/servletContainerInitializer/sharedLibWithInterfaceImplementation
 #issue 11516
 jspCustomTaglibBundledAsJar
 jspCustomTaglibJarInsideEarWithManifestClassPath
@@ -92,3 +96,5 @@ index
 monitorHttpService
 monitorServletInstance
 monitorWebRequest
+# admin.port not supported in embedded
+singleengine

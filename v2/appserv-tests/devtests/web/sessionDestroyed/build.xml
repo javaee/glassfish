@@ -37,6 +37,7 @@
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+<!ENTITY run SYSTEM "./../../../config/run.xml">
 <!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 
@@ -45,6 +46,7 @@
     &commonSetup;
     &commonBuild;
     &testproperties;
+    &run;
 
     <target name="all" depends="build,deploy,run, undeploy"/>
 

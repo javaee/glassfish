@@ -73,7 +73,7 @@ public class WebTest {
 
     public void doTest() throws Exception {
      
-        String url = "http://" + host + ":" + port + "/" + contextRoot;
+        String url = "http://" + host + ":" + port + contextRoot;
         int code = invokeServlet(url + "/TestServlet1");
         if (code != 200) {
             throw new Exception("Incorrect return code: " + code);
