@@ -83,7 +83,7 @@
 
         <sun:button id="button1" text="$resource{i18n.button.changeLevel}" disabled="#{true}" primary="#{true}" >
         <!command
-            getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
+            getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="${tableRowGroup}" Rows=>$attribute{allRows});
             changeLoggerLevels( newLogLevel="#{changeValue}" allRows="${allRows}" newList="#{requestScope.tmpList}");
             setAttribute(key="tableList" value="#{requestScope.tmpList}")
@@ -94,7 +94,7 @@
     </facet>
     <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{tableList}"}  sourceVar="td">
         <!afterCreate
-         getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+         getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
         />
         <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col1">
             <sun:checkbox id="select"

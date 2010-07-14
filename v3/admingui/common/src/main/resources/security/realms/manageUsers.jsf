@@ -111,7 +111,7 @@
                             else {return false;} "
                         >
                         <!command
-                        getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
+                        getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                         getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                         removeUser(Realm="#{pageSession.Name}", selectedRows="${selectedRows}");
                         gf.redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
@@ -122,7 +122,7 @@
 
                    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
                      <!afterCreate
-                         getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+                         getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
                         />
                     <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
                             <sun:checkbox id="select"

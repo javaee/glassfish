@@ -15,7 +15,7 @@
         <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
             onClick="if (getConfirm(this,'$pageSession{confirmDeleteMsg}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
-            getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
+            getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
             deleteCascadeViaRest(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", dependentType="#{pageSession.dependentType}", selectedRows="${selectedRows}");
             setAttribute(key="selectedRows" value="${selectedRows}");

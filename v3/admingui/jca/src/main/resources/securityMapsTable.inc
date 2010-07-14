@@ -56,7 +56,7 @@
         <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
             onClick="if (getConfirm(this,'$pageSession{confirmDeleteMsg}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
-            getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
+            getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
             gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", selectedRows="${selectedRows}");
             gf.redirect(page="#{pageSession.listLink}");
@@ -67,7 +67,7 @@
 
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate
-         getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+         getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
         />
    <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
             <sun:checkbox id="select"

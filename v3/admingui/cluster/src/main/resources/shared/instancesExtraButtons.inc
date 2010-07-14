@@ -51,8 +51,7 @@
 <!define name="extraButton2">
    <sun:button id="button2" text="$resource{i18n.button.Start}" disabled="#{true}" primary="#{false}"
         onClick="if ( getConfirm(this,'$resource{i18ncs.msg.JS.confirmStartInstances}') )
-            { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
-            else {return false;} " >
+            { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component="#{requestScope.tableRowGroup}");
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
@@ -65,8 +64,7 @@
 <!define name="extraButton3">
     <sun:button id="button3" text="$resource{i18n.button.Stop}" disabled="#{true}" primary="#{false}"
             onClick="if ( getConfirm(this,'$resource{i18ncs.msg.JS.confirmStopInstances}') )
-                    { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
-                    else {return false;} " >
+                    { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component="#{requestScope.tableRowGroup}");
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");

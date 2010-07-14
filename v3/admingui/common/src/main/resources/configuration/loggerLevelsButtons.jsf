@@ -38,7 +38,7 @@
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton"  text="$resource{i18n.button.Save}" >
                 <!command
-                    getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
+                    getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="${tableRowGroup}" Rows=>$attribute{allRows});
                     updateLoggerLevels(allRows="#{requestScope.allRows}")
                     prepareSuccessfulMsg();

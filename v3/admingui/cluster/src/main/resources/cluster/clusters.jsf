@@ -48,7 +48,7 @@
             onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
                 { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
         <!command
-            getUIComponent(clientId="$pageSession{tableableRowGroupId}", component="#{requestScope.tableRowGroup}");
+            getUIComponent(clientId="$pageSession{tableRowGroupId}", component="#{requestScope.tableRowGroup}");
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
             gf.clusterAction(rows="#{requestScope.selectedRows}", action="delete-cluster" extraInfo="#{pageSession.clusterInstanceMap}");
             gf.redirect(page="#{pageSession.listLink}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
@@ -60,7 +60,7 @@
         onClick="if ( getConfirm(this,'$resource{i18ncs.msg.JS.confirmStartClusters}') )
                 { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
         <!command
-            getUIComponent(clientId="$pageSession{tableableRowGroupId}", component="#{requestScope.tableRowGroup}");
+            getUIComponent(clientId="$pageSession{tableRowGroupId}", component="#{requestScope.tableRowGroup}");
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
             gf.clusterAction(rows="#{requestScope.selectedRows}", action="start-cluster");
             gf.redirect(page="#{pageSession.listLink}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
@@ -73,7 +73,7 @@
             onClick="if ( getConfirm(this,'$resource{i18ncs.msg.JS.confirmStopClusters}') )
                     { return submitAndDisable(this, '$resource{i18n.button.Processing}');} else {return false;} " >
         <!command
-            getUIComponent(clientId="$pageSession{tableableRowGroupId}", component="#{requestScope.tableRowGroup}");
+            getUIComponent(clientId="$pageSession{tableRowGroupId}", component="#{requestScope.tableRowGroup}");
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
             gf.clusterAction(rows="#{requestScope.selectedRows}", action="stop-cluster");
             gf.redirect(page="#{pageSession.listLink}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
@@ -118,7 +118,7 @@
 
 <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
         <!afterCreate
-        getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+        getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
        />
 
     <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">

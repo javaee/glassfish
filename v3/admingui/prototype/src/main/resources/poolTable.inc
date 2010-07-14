@@ -48,7 +48,7 @@
 
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate
-         getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+         getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
         />
    <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
             <sun:checkbox id="select" 
