@@ -60,10 +60,6 @@ import java.util.Map;
 import java.util.List;
 import org.glassfish.admingui.common.util.GuiUtil;
 
-import org.glassfish.admingui.common.util.RestResponse;
-
-
-
 public class ClusterHandler {
 
     /** Creates a new instance of InstanceHandler */
@@ -181,6 +177,33 @@ public class ClusterHandler {
      }
 
 
+    @Handler(id = "gf.createClusterInstances",
+        input = {
+            @HandlerInput(name = "clusterName", type = String.class, required = true),
+            @HandlerInput(name = "instanceRow", type = List.class, required = true)})
+    public static void createClusterInstances(HandlerContext handlerCtx) {
+        String clusterName = (String) handlerCtx.getInputValue("clusterName");
+        List<Map> instanceRow =  (List<Map>) handlerCtx.getInputValue("instanceRow");
+        Map attrsMap = new HashMap();
+        Map response = null;
+        for (Map oneInstance : instanceRow) {
+            attrsMap.put("name", oneInstance.get("name"));
+            attrsMap.put("cluster", clusterName);
+            attrsMap.put("node", oneInstance.get("node"));
+            //ignore for now till issue# 12646 is fixed
+            //attrsMap.put("weight", oneInstance.get("weight"));
+            try{
+                response = RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/create-instance.xml" , attrsMap, "post" ,null);
+            }catch (Exception ex){
+                GuiUtil.getLogger().severe("Error in createCluster ; \nendpoint = " +
+                        GuiUtil.getSessionValue("REST_URL") + ".xml\n" +
+                        "attrsMap=" + attrsMap);
+            }
+        }
+
+    }
+
+
     /*
      * getDeploymentTargets takes in a list of cluster names, and an list of Properties that is returned from the
      * list-instances --standaloneonly=true.  Extract the instance name from this properties list.
@@ -224,7 +247,7 @@ public class ClusterHandler {
         }
         Map attrsMap = new HashMap();
         attrsMap.put("id", instanceName);
-        attrsMap.put("node", nodeName);
+        attrsMap.put("nodeagent", nodeName);
         try{
             return  RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance.xml", attrsMap, "post" ,null);
         }catch(Exception ex){
