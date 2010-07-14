@@ -67,6 +67,9 @@ import org.jvnet.hk2.component.PerLookup;
 import java.util.List;
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
 import org.glassfish.deployment.versioning.VersioningService;
 import org.glassfish.deployment.versioning.VersioningSyntaxException;
 
@@ -136,12 +139,13 @@ public class ListSubComponentsCommand implements AdminCommand {
         com.sun.enterprise.deployment.Application app = appInfo.getMetaData(com.sun.enterprise.deployment.Application.class);
 
         List<String> subComponents = new ArrayList<String>();    
+        Map<String, String> subComponentsMap = new HashMap<String, String>();
 
         if (appname == null) {
-            subComponents = getAppLevelComponents(app, type);
+            subComponents = getAppLevelComponents(app, type, subComponentsMap);
         } else {
            subComponents = getModuleLevelComponents(
-               app.getModuleByUri(modulename), type);
+               app.getModuleByUri(modulename), type, subComponentsMap);
         }
         
         // the type param can only have values "ejbs" and "servlets"
@@ -171,6 +175,12 @@ public class ListSubComponentsCommand implements AdminCommand {
             }
         }
 
+        // add the properties for GUI to display
+        Set<String> keys = subComponentsMap.keySet();
+        for (String key : keys) {
+            part.addProperty(key, subComponentsMap.get(key));
+        }
+
         if (subComponents.size() == 0) {
             part.setMessage(localStrings.getLocalString("listsubcomponents.no.elements.to.list", "Nothing to List."));
         }
@@ -193,13 +203,13 @@ public class ListSubComponentsCommand implements AdminCommand {
         return moduleInfoList;
     }
 
-    private List<String> getAppLevelComponents(com.sun.enterprise.deployment.Application application, String type) {
+    private List<String> getAppLevelComponents(com.sun.enterprise.deployment.Application application, String type, Map<String, String> subComponentsMap) {
         List<String> subComponentList = new ArrayList<String>(); 
         if (application.isVirtual()) {
             // for standalone module, get servlets or ejbs
             BundleDescriptor bundleDescriptor = 
                 application.getStandaloneBundleDescriptor();
-            subComponentList = getModuleLevelComponents(bundleDescriptor, type);
+            subComponentList = getModuleLevelComponents(bundleDescriptor, type, subComponentsMap);
         } else {
             // for ear case, get modules
             Collection<ModuleDescriptor<BundleDescriptor>> modules = 
@@ -226,16 +236,18 @@ public class ListSubComponentsCommand implements AdminCommand {
                 StringBuffer sb = new StringBuffer();    
                 sb.append(module.getArchiveUri()); 
                 sb.append(" <"); 
-                sb.append(getModuleType(module));
+                String moduleType = getModuleType(module);
+                sb.append(moduleType);
                 sb.append(">"); 
                 subComponentList.add(sb.toString());    
+                subComponentsMap.put(module.getArchiveUri(), moduleType);
             }
         }
         return subComponentList;
     }
 
     private List<String> getModuleLevelComponents(BundleDescriptor bundle, 
-        String type) {
+        String type, Map<String, String> subComponentsMap) {
         List<String> moduleSubComponentList = new ArrayList<String>(); 
         if (bundle instanceof WebBundleDescriptor) {
             WebBundleDescriptor wbd = (WebBundleDescriptor)bundle;
@@ -246,7 +258,7 @@ public class ListSubComponentsCommand implements AdminCommand {
                 EjbBundleDescriptor ejbBundle = 
                         ejbBundleDescs.iterator().next();
                 moduleSubComponentList.addAll(getModuleLevelComponents(
-                        ejbBundle, type));
+                        ejbBundle, type, subComponentsMap));
             }
 
             if (type != null && type.equals("ejbs")) {    
@@ -261,6 +273,7 @@ public class ListSubComponentsCommand implements AdminCommand {
                 sb.append(wcdType);
                 sb.append(">"); 
                 moduleSubComponentList.add(sb.toString());
+                subComponentsMap.put(wcd.getCanonicalName(), wcdType);
             }
         } else if (bundle instanceof EjbBundleDescriptor)  {
             if (type != null && type.equals("servlets")) {    
@@ -271,9 +284,11 @@ public class ListSubComponentsCommand implements AdminCommand {
                 StringBuffer sb = new StringBuffer();    
                 sb.append(ejbDesc.getName()); 
                 sb.append(" <"); 
-                sb.append(getEjbType(ejbDesc));
+                String ejbType = getEjbType(ejbDesc);
+                sb.append(ejbType);
                 sb.append(">"); 
                 moduleSubComponentList.add(sb.toString());
+                subComponentsMap.put(ejbDesc.getName(), ejbType);
             }
         }
 
