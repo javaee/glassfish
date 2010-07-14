@@ -53,8 +53,10 @@ public class ValidationTests extends AdminBaseDevTest {
     }
 
     private void runTests() {
+        startDomain();
         testClusterValidation();
         testNodeInstanceValidation();
+        stopDomain();
         stat.printSummary();
     }
 
