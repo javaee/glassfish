@@ -222,12 +222,19 @@ public class RestApiHandlers {
             output = {
                     @HandlerOutput(name="result", type=Map.class)})
     public static void restRequest(HandlerContext handlerCtx) {
+
         Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        String method = ((String) handlerCtx.getInputValue("method")).toLowerCase();
+        handlerCtx.setOutputValue("result",  restRequest(endpoint, attrs, method, handlerCtx));
+    }
+
+
+    public static Map restRequest(String endpoint, Map attrs, String method, HandlerContext handlerCtx){
         if (attrs == null) {
             attrs = new HashMap<String, Object>();
         }
-        String endpoint = (String) handlerCtx.getInputValue("endpoint");
-        String method = ((String) handlerCtx.getInputValue("method")).toLowerCase();
+        method = method.toLowerCase();
 
 	// Execute the request...
         RestResponse response = null;
@@ -242,16 +249,26 @@ public class RestApiHandlers {
 	// Parse the response
         if (response != null) {
 	    try {
-		handlerCtx.setOutputValue("result", response.getResponse());
+		return response.getResponse();
 	    } catch (Exception ex) {
 		GuiUtil.getLogger().severe(
 		    "RestResponse.getResponse() failed.  endpoint = '"
 		    + endpoint + "'; attrs = '" + attrs + "'; RestResponse: "
 		    + response);
-		throw new RuntimeException(ex);
+                if (handlerCtx != null){
+                    //If this is called from the jsf as handler, we want to stop processing and show error
+                    //instead of dumping the exception on screen.
+                    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("error.checkServerLog"));
+                }else{
+                    //if this is called by other java handler, we tell the called handle the exception.
+                    throw new RuntimeException(ex);
+                }
 	    }
         }
+        return null;
     }
+
+
 
     /**
      *
@@ -363,6 +380,16 @@ public class RestApiHandlers {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
+
+
+    public static Map getAttributesMap(String endpoint){
+        RestResponse response = get(endpoint);
+        if (!response.isSuccess()) {
+            return new HashMap();
+        }
+        return getEntityAttrs(response.getResponseBody());
+    }
+
 
     //*******************************************************************************************************************
     //*******************************************************************************************************************

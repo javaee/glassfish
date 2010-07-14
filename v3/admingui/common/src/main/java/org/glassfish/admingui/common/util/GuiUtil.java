@@ -111,20 +111,28 @@ public class GuiUtil {
         return (str == null || "".equals(str)) ? true : false;
     }
 
+    public static String getMessage(String resourceName, String key, Object[] args) {
+        return formatMessage( getMessage(resourceName, key), args);
+    }
+
     public static String getMessage(String key, Object[] args) {
         if (key == null) {
             return null;
         }
         String value = getMessage(key);
+        return formatMessage(getMessage(value), args);
+    }
+
+    private static String formatMessage(String msg, Object[] args){
         if (args != null) {
-            MessageFormat mf = new MessageFormat(value);
+            MessageFormat mf = new MessageFormat(msg);
             Object[] mfArgs = new Object[args.length];
             for (int i = 0; i < args.length; i++) {
                 mfArgs[i] = getMessage(args[i].toString());
             }
-            value = mf.format(mfArgs);
+            msg = mf.format(mfArgs);
         }
-        return value;
+        return msg;
     }
 
     
