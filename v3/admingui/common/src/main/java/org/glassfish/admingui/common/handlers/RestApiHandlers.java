@@ -154,59 +154,13 @@ public class RestApiHandlers {
         }
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
 
-        int status = sendCreateRequest(endpoint, attrs, (List) handlerCtx.getInputValue("skipAttrs"),
+        RestResponse response  = sendCreateRequest(endpoint, attrs, (List) handlerCtx.getInputValue("skipAttrs"),
                 (List) handlerCtx.getInputValue("onlyUseAttrs"), (List) handlerCtx.getInputValue("convertToFalse"));
 
-        if ((status != 200) && (status != 201)) {
-            GuiUtil.getLogger().severe("CreateProxy failed.  parent=" + endpoint + "; attrs =" + attrs);
-            GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
-            return;
-        }
-
+        Map resultMap = parseResponse(response, handlerCtx, endpoint, attrs);
+        //??? I believe this should return a Map, whats the point of returning the endpoint that was passed in.
+        //But i haven't looked through all the code, so decide to leave it for now.
         handlerCtx.setOutputValue("result", endpoint);
-    }
-
-   /**
-    *	@deprecated Please use gf.restRequest instead.
-    */
-   @Handler(id = "gf.restExecuteCommand",
-            input = {
-                    @HandlerInput(name = "endpoint", type = String.class, required = true),
-                    @HandlerInput(name = "attrs", type = Map.class, required = false),
-                    @HandlerInput(name = "method", type = String.class, defaultValue = "post")},
-            output = {
-                    @HandlerOutput(name = "result", type = Map.class)})
-    public static void restExecuteCommand(HandlerContext handlerCtx) {
-        Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
-        if (attrs == null) {
-            attrs = new HashMap<String, Object>();
-        }
-        String endpoint = (String) handlerCtx.getInputValue("endpoint");
-        String method = ((String) handlerCtx.getInputValue("method")).toLowerCase();
-        // TODO: Should these be handled differently? curl tests seem to say no...
-        RestResponse response = null;
-        if ("post".equals(method)) {
-            response = post(endpoint, attrs);
-        } else if ("get".equals(method)) {
-            response = get(endpoint, attrs);
-        } else if ("delete".equals(method)) {
-            response = delete(endpoint, attrs);
-        }
-
-        if (response == null) {
-            GuiUtil.handleError(handlerCtx, "An invalid method was passed to "
-		+ handlerCtx.getHandlerDefinition().getId() + ": " + method);
-        } else {
-	    try {
-		handlerCtx.setOutputValue("result", response.getResponse());
-	    } catch (Exception ex) {
-		GuiUtil.getLogger().severe(
-		    "RestResponse.getResponse() failed.  endpoint = '"
-		    + endpoint + "'; attrs = '" + attrs + "'; RestResponse: "
-		    + response);
-		throw new RuntimeException(ex);
-	    }
-        }
     }
 
     /**
@@ -246,10 +200,27 @@ public class RestApiHandlers {
             response = delete(endpoint, attrs);
         }
 
+        return parseResponse(response, handlerCtx, endpoint, attrs);
+    }
+
+
+    private static Map parseResponse(RestResponse response, HandlerContext handlerCtx, String endpoint, Map attrs){
 	// Parse the response
         if (response != null) {
 	    try {
+                int status = response.getResponseCode();
+                if ((status != 200) && (status != 201)) {
+                    GuiUtil.getLogger().severe(
+                        "RestResponse.getResponse() failed.  endpoint = '"
+                        + endpoint + "'; attrs = '" + attrs + "'; RestResponse: "
+                        + response);
+                    //If this is called from jsf as handler, stop processing and show error.
+                    if (handlerCtx != null){
+                        GuiUtil.handleError(handlerCtx, (String) ((Map) response.getResponse().get("messages")).get("message"));
+                    }
+                }
 		return response.getResponse();
+
 	    } catch (Exception ex) {
 		GuiUtil.getLogger().severe(
 		    "RestResponse.getResponse() failed.  endpoint = '"
@@ -435,13 +406,13 @@ public class RestApiHandlers {
         return formData;
     }
 
-    public static int sendCreateRequest(String endpoint, Map<String, Object> attrs, List<String> skipAttrs, List<String> onlyUseAttrs, List<String> convertToFalse) {
+    public static RestResponse sendCreateRequest(String endpoint, Map<String, Object> attrs, List<String> skipAttrs, List<String> onlyUseAttrs, List<String> convertToFalse) {
         removeSpecifiedAttrs(attrs, skipAttrs);
         attrs = buildUseOnlyAttrMap(attrs, onlyUseAttrs);
         attrs = convertNullValuesToFalse(attrs, convertToFalse);
         attrs = fixKeyNames(attrs);
 
-        return post(endpoint, attrs).getResponseCode();
+        return post(endpoint, attrs);
     }
 
     // This will send an update request.  Currently, this calls post just like the create does,
@@ -685,8 +656,9 @@ public class RestApiHandlers {
         WebResource webResource = JERSEY_CLIENT.resource(address);
         MultivaluedMap formData = buildMultivalueMap(payload);
         ClientResponse cr = webResource.post(ClientResponse.class, formData);
-        checkStatusForSuccess(cr);
-        return RestResponse.getRestResponse(cr);
+        //checkStatusForSuccess(cr);
+        RestResponse rr = RestResponse.getRestResponse(cr);
+        return rr;
     }
 
     // TODO: This will be implemented when the REST API is updated to use PUTs for updates as is planned
