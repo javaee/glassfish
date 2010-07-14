@@ -71,6 +71,7 @@ import org.glassfish.quality.ToDo;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * A cluster defines a homogeneous set of server instances that share the same
@@ -97,6 +98,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      */
     @Attribute
     @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")         
     String getConfigRef();
 
     /**

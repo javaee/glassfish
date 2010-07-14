@@ -64,6 +64,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+
 import org.glassfish.api.admin.ServerEnvironment;
 
 /**
@@ -93,6 +95,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")                      
     String getConfigRef();
 
     /**

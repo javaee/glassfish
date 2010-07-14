@@ -45,6 +45,7 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
@@ -72,6 +73,7 @@ public interface SystemProperty extends ConfigBeanProxy, Injectable  {
      */
     @Attribute(key=true)
     @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     public String getName();
 
     /**
@@ -90,6 +92,7 @@ public interface SystemProperty extends ConfigBeanProxy, Injectable  {
      */
     @Attribute
     @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")              
     public String getValue();
 
     /**
