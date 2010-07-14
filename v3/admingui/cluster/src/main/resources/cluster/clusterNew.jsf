@@ -77,7 +77,7 @@
                     setAttribute(key="aa" value="#{pageSession.config}");
                     setAttribute(key="bb" value="#{pageSession.name}-config}");
                     mapPut(key="id" value={"$attribute{aa}", "$attribute{bb}"} , map="#{requestScope.attrs}");
-                    gf.restExecuteCommand(endpoint="#{sessionScope.REST_URL}/configs/copy-config"  attrs="#{requestScope.attrs}" );
+                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/copy-config"  attrs="#{requestScope.attrs}" );
                 }
 
                 #createCluster(Name="#{name}", Config="#{config}", CopyConfig="#{configOptionGrp}" Instances="#{instances}");

@@ -35,41 +35,43 @@
 -->
 <!-- cluster/shared/instancesExtraButtons.inc -->
 
+<!define name="listTableDeleteButton">
+    <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
+            onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
+                { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
+        <!command
+            getUIComponent(clientId="$pageSession{tableRowGroupId}", component="#{requestScope.tableRowGroup}");
+            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
+            gf.instanceAction(rows="#{requestScope.selectedRows}", action="delete-instance" );
+            gf.redirect(page="#{pageSession.listLink}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+        />
+    </sun:button>
+</define>
 
 <!define name="extraButton2">
-   <sun:button id="button2" text="$resource{i18n.button.Start} (TBD)" disabled="#{true}" primary="#{false}"
+   <sun:button id="button2" text="$resource{i18n.button.Start}" disabled="#{true}" primary="#{false}"
         onClick="if ( getConfirm(this,'$resource{i18ncs.msg.JS.confirmStartInstances}') )
             { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
             else {return false;} " >
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component="#{requestScope.tableRowGroup}");
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
-	    dec(number="#{requestScope.selectedRows.size()}" value="#{requestScope.endNum}");
-            forLoop(end="#{requestScope.endNum}"  varName="i"){
-		setAttribute(key="cName", value="#{requestScope.selectedRows[i]['Name']}");
-		#gf.restExecuteCommand(endpoint="#{sessionScope.REST_URL}/servers/server/#{requestScope.cName}/start-instance" attrs="#{null}" result="#{requestScope.result}",  output="#{requestScope.output}", messageParts="#{requestScope.msg}" );
-		println("====== start-instance  #{sessionScope.REST_URL}/servers/server/#{requestScope.cName}/start-instance");
-	    }
-            gf.redirect(page="#{pageSession.listLink}");
+            gf.instanceAction(rows="#{requestScope.selectedRows}", action="start-instance");
+            gf.redirect(page="#{pageSession.listLink}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         />
     </sun:button>
 </define>
 
 <!define name="extraButton3">
-    <sun:button id="button3" text="$resource{i18n.button.Stop} (TBD)" disabled="#{true}" primary="#{false}"
+    <sun:button id="button3" text="$resource{i18n.button.Stop}" disabled="#{true}" primary="#{false}"
             onClick="if ( getConfirm(this,'$resource{i18ncs.msg.JS.confirmStopInstances}') )
                     { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
                     else {return false;} " >
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component="#{requestScope.tableRowGroup}");
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
-	    dec(number="#{requestScope.selectedRows.size()}" value="#{requestScope.endNum}");
-            forLoop(end="#{requestScope.endNum}"  varName="i"){
-		setAttribute(key="cName", value="#{requestScope.selectedRows[i]['Name']}");
-		#gf.restExecuteCommand(endpoint="#{sessionScope.REST_URL}/servers/server/#{requestScope.cName}/stop-instance" attrs="#{null}" result="#{requestScope.result}",  output="#{requestScope.output}", messageParts="#{requestScope.msg}" );
-		println("====== stop-instance  #{sessionScope.REST_URL}/servers/server/#{requestScope.cName}/stop-instance");
-	    }
-            gf.redirect(page="#{pageSession.listLink}");
+            gf.instanceAction(rows="#{requestScope.selectedRows}", action="stop-instance");
+            gf.redirect(page="#{pageSession.listLink}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
          />
     </sun:button>
 </define>

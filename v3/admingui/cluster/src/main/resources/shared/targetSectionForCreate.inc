@@ -38,11 +38,12 @@
 <sun:propertySheet id="targetSection">
     <!beforeCreate
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/clusters/cluster", result="#{requestScope.clusterList}");
-        gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/servers/server", result="#{requestScope.serverList}");
-        setPageSessionAttribute(key="targetList" value={});
-        gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.clusterList}");
-        gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.serverList}");
-	setAttribute(key="one" value="$int{1}");
+        gf.restRequest(
+            endpoint="#{sessionScope.REST_URL}/list-instances.xml"
+            method="GET"
+            result="#{pageSession.listInstanceResult}");
+        gf.getDeploymentTargets(listInstanceProps="#{pageSession.listInstanceResult.messages[0]['properties']}" clusterList="#{requestScope.clusterList}" result="#{pageSession.targetList}" );
+        setAttribute(key="one" value="$int{1}");
 	setAttribute(key="targetSize" value="#{pageSession.targetList.size()}");
         //println("=========== #{requestScope.targetSize}");
         //println("===========#{pageSession.targetList}");

@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -72,7 +72,19 @@
         <sun:hyperlink id="nodeAgentlink" text="#{td.value.Node}"  url="#{request.contextPath}/cluster/node/nodeEdit.jsf?nodeName=#{td.value.Node}" />
     </sun:tableColumn>
    <sun:tableColumn headerText="$resource{i18n.common.Status}" rowHeader="$boolean{true}" id="col6">
-        <staticText id="statusCol" value="TBD" />
+        <staticText id="statusCol" value="#{requestScope.statusString}" >
+            <!beforeEncode
+                createMap(result="#{pageSession.statusAttrs}")
+                mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{td.value.Name}" );
+                gf.restRequest(
+                    endpoint="#{sessionScope.REST_URL}/list-instances.xml"
+                    attrs="#{pageSession.statusAttrs}"
+                    method="GET"
+                    result="#{pageSession.listInstanceResult}");
+                gf.getInstanceStatus(listInstanceProps="#{pageSession.listInstanceResult.messages[0]['properties']}" instanceName="#{td.value.Name}" status="#{requestScope.status}" );
+                setAttribute(key="statusString" value="$resource{i18ncs.status.$attribute{status}}  &nbsp; $resource{i18ncs.status.image.$attribute{status}}");
+                />
+        </staticText>
     </sun:tableColumn>
 </sun:tableRowGroup>
 
