@@ -1042,6 +1042,11 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" name="${appname}" contextroot="${contextroot}" libraries="${libraries}"/>
 </target>
 
+<target name="glassfish-embedded-deploy-no-context-root" >
+    <echo> === EMBEDDED DEPLOYING === </echo>
+    <glassfish-embedded-deploy app="${assemble.dir}/${appname}-web.war" name="${appname}" libraries="${libraries}"/>
+</target>
+
 <target name="glassfish-embedded-undeploy" >
     <echo> === Embedded UNDEPLOYING === </echo>
     <glassfish-embedded-undeploy name="${appname}"/>
@@ -1052,7 +1057,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
      sun-web.xml takes effect
 -->
 <target name="deploy-war-no-context-root" depends="init-common">
-    <antcall target ="glassfish-embedded-deploy"/>
+    <antcall target ="glassfish-embedded-deploy-no-context-root"/>
 </target>
 
 <!-- deploy the standalone jar in AppServ  -->
