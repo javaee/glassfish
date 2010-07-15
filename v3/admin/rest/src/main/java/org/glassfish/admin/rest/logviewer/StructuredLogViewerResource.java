@@ -64,6 +64,7 @@ public class StructuredLogViewerResource {
             @QueryParam("startIndex") @DefaultValue("-1") long startIndex,
             @QueryParam("searchForward") @DefaultValue("false") boolean searchForward,
             @QueryParam("maximumNumberOfResults") @DefaultValue("40") int maximumNumberOfResults,
+            @QueryParam("onlyLevel") @DefaultValue("true") boolean onlyLevel,
             @QueryParam("fromTime") @DefaultValue("-1") long fromTime,
             @QueryParam("toTime") @DefaultValue("-1") long toTime,
             @QueryParam("logLevel") @DefaultValue("INFO") String logLevel) throws IOException {
@@ -75,7 +76,7 @@ public class StructuredLogViewerResource {
                 maximumNumberOfResults,
                 fromTime,
                 toTime,
-                logLevel, "json");
+                logLevel, onlyLevel, "json");
 
     }
 
@@ -86,6 +87,7 @@ public class StructuredLogViewerResource {
             @QueryParam("startIndex") @DefaultValue("-1") long startIndex,
             @QueryParam("searchForward") @DefaultValue("false") boolean searchForward,
             @QueryParam("maximumNumberOfResults") @DefaultValue("40") int maximumNumberOfResults,
+            @QueryParam("onlyLevel") @DefaultValue("true") boolean onlyLevel,
             @QueryParam("fromTime") @DefaultValue("-1") long fromTime,
             @QueryParam("toTime") @DefaultValue("-1") long toTime,
             @QueryParam("logLevel") @DefaultValue("INFO") String logLevel) throws IOException {
@@ -97,7 +99,7 @@ public class StructuredLogViewerResource {
                 maximumNumberOfResults,
                 fromTime,
                 toTime,
-                logLevel, "xml");
+                logLevel,onlyLevel, "xml");
 
     }
 
@@ -108,7 +110,7 @@ public class StructuredLogViewerResource {
             int maximumNumberOfResults,
             long fromTime,
             long toTime,
-            String logLevel, String type) throws IOException {
+            String logLevel, boolean onlyLevel, String type) throws IOException {
 
 
         Properties props = new Properties();
@@ -125,7 +127,7 @@ public class StructuredLogViewerResource {
                 maximumNumberOfResults,
                 fromTime == -1 ? null : new Date(fromTime),
                 toTime == -1 ? null : new Date(toTime),
-                logLevel, true, moduleList, props);
+                logLevel, onlyLevel, moduleList, props);
         return convertQueryResult(result, type);
 
     }
