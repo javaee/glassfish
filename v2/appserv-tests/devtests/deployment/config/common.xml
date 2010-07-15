@@ -25,17 +25,13 @@
 <property name="junit-anttask.jar" value="${testsRoot}/extlib/junit-anttask.jar"/>
 <property name="annotation.report.dir" value="${testsRoot}/annotation/report"/> 
 <property name="testDomain" value="depltest-domain"/>
-<property name="testAgent" value="depltest-agent"/>
 <property name="testServer" value="depltest-server"/>
 <property name="testCluster" value="depltest-cluster"/>
 <property name="testClusterServer1" value="depltest-cluster-server1"/>
-<property name="testClusterServer2" value="depltest-cluster-server2"/>
 
 <property name="deploy.clusterinstance1.httpport" value="2001"/>
-<property name="deploy.clusterinstance2.httpport" value="2002"/>
 <property name="deploy.serverinstance.httpport" value="2000"/>
 <property name="deploy.clusterinstance1.orbport" value="2201"/>
-<property name="deploy.clusterinstance2.orbport" value="2202"/>
 <property name="deploy.serverinstance.orbport" value="2200"/>
 
 <!--
@@ -77,13 +73,30 @@
     <condition property="doCluster">
         <equals arg1="${env.DEPL_TARGET}" arg2="CLUSTER"/>
     </condition>
+
+    <condition property="doInstance">
+        <equals arg1="${env.DEPL_TARGET}" arg2="SERVER"/>
+    </condition>
     
+    <condition property="doDAS">
+        <and>
+            <not>
+                <equals arg1="${targetPlatform}" arg2="SERVER"/>
+            </not>
+            <not>
+                <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
+            </not>
+        </and>
+    </condition>
+
+<!--
     <condition property="s1as.secure" value="true">
       <or>
         <equals arg1="${EE}" arg2="true"/>
         <equals arg1="${env.SECURE}" arg2="true"/>
       </or>
     </condition>
+-->
     <property name="s1as.secure" value="false"/>
 
     <condition property="run.jsr88" value="false">
@@ -340,30 +353,38 @@ AS_ADMIN_MASTERPASSWORD=changeit
         <param name="arg.list" 
                value="${deploy} ${ASADMIN-ARGS} ${arg.list}"/>
     </antcall>
+<!--
     <antcall target="createAppRef">
         <param name="testName" value="${testName}"/>
     </antcall>
+-->
 </target>
 
 <target name="common.redeploy.asadmin" depends="setAsadminArgs">
+<!--
     <antcall target="delAppRef">
         <param name="testName" value="${testName}"/>
     </antcall>
+-->
     <antcall target="common.run.asadmin">
         <param name="arg.list" 
                value="${deploy} ${ASADMIN-ARGS} --force=true ${arg.list}"/>
     </antcall>
+<!--
     <antcall target="createAppRef">
         <param name="testName" value="${testName}"/>
     </antcall>
+-->
 </target>
 
 <!-- undeploy using asadmin -->
 <!-- @param ${arg.list} (required) -->
 <target name="common.undeploy.asadmin" depends="setAsadminArgs">
+<!--
     <antcall target="delAppRef">
         <param name="testName" value="${testName}"/>
     </antcall>
+-->
     <antcall target="common.run.asadmin">
         <param name="arg.list" 
                value="${undeploy} ${ASADMIN-ARGS} ${arg.list}"/>
@@ -534,6 +555,17 @@ AS_ADMIN_MASTERPASSWORD=changeit
 </target>
 
 <target name="common.run" depends="setHttpPort">
+    <antcall target="checkAppOnServer"/>
+    <antcall target="checkAppOnInstance"/>
+    <antcall target="checkAppOnCluster">
+        <param name="link" value="${sub-url}"/>
+        <param name="state" value="${state}"/>
+        <param name="log.id" value="${log-file}"/>
+        <param name="details" value="${test-details}"/>
+    </antcall>
+</target>
+
+<target name="checkAppOnInstance" if="doInstance">
     <antcall target="declare-test">
         <param name="description" value="${test-details} (server)"/>
     </antcall>
@@ -542,13 +574,19 @@ AS_ADMIN_MASTERPASSWORD=changeit
         <param name="arg.list" value="${url} ${state} ${extra.args}"/>
         <param name="log.id" value="${log-file}"/>
     </antcall>
-    <antcall target="checkAppOnCluster">
-        <param name="link" value="${sub-url}"/>
-        <param name="state" value="${state}"/>
+</target>
+
+<target name="checkAppOnServer" if="doDAS">
+    <antcall target="declare-test">
+        <param name="description" value="${test-details} (server)"/>
+    </antcall>
+    <property name="url" value="http://${http.host}:${depltest.port}/${sub-url}"/>
+    <antcall target="runclient">
+        <param name="arg.list" value="${url} ${state} ${extra.args}"/>
         <param name="log.id" value="${log-file}"/>
-        <param name="details" value="${test-details}"/>
     </antcall>
 </target>
+
 
 <target name="checkAppOnCluster" depends="init" if="doCluster">
     <antcall target="declare-test">
@@ -558,14 +596,6 @@ AS_ADMIN_MASTERPASSWORD=changeit
     <antcall target="runclient">
         <param name="arg.list" value="${clurl1} ${state}"/>
         <param name="log.id" value="${log.id}CL1"/>
-    </antcall>
-    <antcall target="declare-test">
-        <param name="description" value="${desc} (cluster-inst2)"/>
-    </antcall>
-    <property name="clurl2" value="http://${http.host}:${deploy.clusterinstance2.httpport}/${link}"/>
-    <antcall target="runclient">
-        <param name="arg.list" value="${clurl2} ${state}"/>
-        <param name="log.id" value="${log.id}CL2"/>
     </antcall>
 </target>
 
@@ -782,36 +812,36 @@ AS_ADMIN_MASTERPASSWORD=changeit
 </target>
 
 <target name="setup" depends="init" unless="cluster.exists">
-    <echo message="Running... asadmin create-domain"/>
-    <exec executable="${ASADMIN}" failonerror="true">
-        <arg line="create-domain --adminport ${admin.port} --adminuser ${admin.user} --passwordfile ${passwordFile} ${testDomain}"/>
-    </exec>
-    <echo message="Running... asadmin start-domain"/>
-    <antcall target="start-process">
-        <param name="line" value="start-domain --user ${admin.user} --passwordfile ${passwordFile} ${testDomain}"/>
-    </antcall>
-    <echo message="Running... asadmin create-node-agent"/>
-    <exec executable="${ASADMIN}" failonerror="true">
-        <arg line="create-node-agent --host ${admin.host} --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --savemasterpassword ${testAgent}"/>
-    </exec>
-    <echo message="Running... asadmin start-node-agent"/>
-    <antcall target="start-process">
-        <param name="line" value="start-node-agent --user ${admin.user} --passwordfile ${passwordFile} ${testAgent}"/>
-    </antcall>
-    <echo message="Running... asadmin create-instance"/>
-    <exec executable="${ASADMIN}" failonerror="true">
-        <arg line="create-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --nodeagent ${testAgent} --systemproperties HTTP_LISTENER_PORT=${deploy.serverinstance.httpport}:HTTP_SSL_LISTENER_PORT=2100:IIOP_LISTENER_PORT=2200:IIOP_SSL_LISTENER_PORT=2300:IIOP_SSL_MUTUALAUTH_PORT=2400:JMX_SYSTEM_CONNECTOR_PORT=2500 ${testServer}"/>
-    </exec>
-    <echo message="Running... asadmin start-instance"/>
-    <antcall target="start-process">
-        <param name="line" value="start-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testServer}"/>
-    </antcall>
+    <antcall target="setupDomain"/>
+    <antcall target="setupInstance"/>
     <antcall target="setupCluster"/>
     <echo message="Running... asadmin list-instance"/>
     <exec executable="${ASADMIN}" failonerror="true">
         <arg line="list-instances --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile}"/>
     </exec>
     <mkdir dir="${build}/setupdone"/>    
+</target>
+
+<target name="setupDomain">
+    <echo message="Running... asadmin create-domain"/>
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="create-domain --user ${admin.user} --nopassword=true --passwordfile ${passwordFile} --adminport ${admin.port} ${testDomain}"/>
+    </exec>
+    <echo message="Running... asadmin start-domain"/>
+    <antcall target="start-process">
+        <param name="line" value="start-domain --user ${admin.user} --passwordfile ${passwordFile} ${testDomain}"/>
+    </antcall>
+</target>
+
+<target name="setupInstance" if="doInstance">
+    <echo message="Running... asadmin create-instance"/>
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="create-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --systemproperties HTTP_LISTENER_PORT=${deploy.serverinstance.httpport}:HTTP_SSL_LISTENER_PORT=2100:IIOP_LISTENER_PORT=2200:IIOP_SSL_LISTENER_PORT=2300:IIOP_SSL_MUTUALAUTH_PORT=2400:JMX_SYSTEM_CONNECTOR_PORT=2500:JMS_PROVIDER_PORT=2600:ASADMIN_LISTENER_PORT=2700 ${testServer}"/>
+    </exec>
+    <echo message="Running... asadmin start-instance"/>
+    <antcall target="start-process">
+        <param name="line" value="start-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testServer}"/>
+    </antcall>
 </target>
 
 <target name="setupCluster" if="doCluster">
@@ -821,16 +851,10 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </exec>
     <echo message="Running... asadmin create-cluster-instance"/>
     <exec executable="${ASADMIN}" failonerror="true">
-        <arg line="create-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --nodeagent ${testAgent} --cluster ${testCluster} --systemproperties HTTP_LISTENER_PORT=${deploy.clusterinstance1.httpport}:HTTP_SSL_LISTENER_PORT=2101:IIOP_LISTENER_PORT=2201:IIOP_SSL_LISTENER_PORT=2301:IIOP_SSL_MUTUALAUTH_PORT=2401:JMX_SYSTEM_CONNECTOR_PORT=2501 ${testClusterServer1}"/>
-    </exec>
-    <echo message="Running... asadmin create-cluster-instance"/>
-    <exec executable="${ASADMIN}" failonerror="true">
-        <arg line="create-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --nodeagent ${testAgent} --cluster ${testCluster} --systemproperties HTTP_LISTENER_PORT=${deploy.clusterinstance2.httpport}:HTTP_SSL_LISTENER_PORT=2102:IIOP_LISTENER_PORT=2202:IIOP_SSL_LISTENER_PORT=2302:IIOP_SSL_MUTUALAUTH_PORT=2402:JMX_SYSTEM_CONNECTOR_PORT=2502 ${testClusterServer2}"/>
+        <arg line="create-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --cluster ${testCluster} --systemproperties HTTP_LISTENER_PORT=${deploy.clusterinstance1.httpport}:HTTP_SSL_LISTENER_PORT=2101:IIOP_LISTENER_PORT=2201:IIOP_SSL_LISTENER_PORT=2301:IIOP_SSL_MUTUALAUTH_PORT=2401:JMX_SYSTEM_CONNECTOR_PORT=2501:JMS_PROVIDER_PORT=2601:ASADMIN_LISTENER_PORT=2701 ${testClusterServer1}"/>
     </exec>
     <echo message="Running... asadmin start-cluster"/>
-    <antcall target="start-process">
-        <param name="line" value="start-cluster --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testCluster}"/>
-    </antcall>
+    <antcall target="startCluster"/>
 </target>
 
 <target name="start" depends="init" unless="SetupStarted">
@@ -838,15 +862,15 @@ AS_ADMIN_MASTERPASSWORD=changeit
     <antcall target="start-process">
         <param name="line" value="start-domain --user ${admin.user} --passwordfile ${passwordFile} ${testDomain}"/>
     </antcall>
-    <echo message="Running... asadmin start-node-agent"/>
-    <antcall target="start-process">
-        <param name="line" value="start-node-agent --user ${admin.user} --passwordfile ${passwordFile} --startinstances=false ${testAgent}"/>
-    </antcall>
+    <antcall target="startInstance"/>
+    <antcall target="startCluster"/>
+</target>
+
+<target name="startInstance" if="doInstance">
     <echo message="Running... asadmin start-instance"/>
     <antcall target="start-process">
-        <param name="line" value="start-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testServer}"/>
+        <param name="line" value="start-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testServer}"/>
     </antcall>
-    <antcall target="startCluster"/>
 </target>
 
 <target name="startCluster" if="doCluster">
@@ -857,18 +881,18 @@ AS_ADMIN_MASTERPASSWORD=changeit
 </target>
 
 <target name="stop" depends="init">
-    <echo message="Running... asadmin stop-instance"/>
-    <exec executable="${ASADMIN}">
-        <arg line="stop-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testServer}"/>
-    </exec>
+    <antcall target="stopInstance"/>
     <antcall target="stopCluster"/>
-    <echo message="Running... asadmin stop-agent"/>
-    <exec executable="${ASADMIN}">
-        <arg line="stop-node-agent ${testAgent}"/>
-    </exec>
     <echo message="Running... asadmin stop-domain"/>
     <exec executable="${ASADMIN}">
         <arg line="stop-domain ${testDomain}"/>
+    </exec>
+</target>
+
+<target name="stopInstance" if="doInstance">
+    <echo message="Running... asadmin stop-instance"/>
+    <exec executable="${ASADMIN}">
+        <arg line="stop-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testServer}"/>
     </exec>
 </target>
 
@@ -880,13 +904,15 @@ AS_ADMIN_MASTERPASSWORD=changeit
 </target>
 
 <target name="deleteCluster" if="doCluster">
-    <echo message="Running... asadmin delete-instance"/>
+    <!-- stop-cluster does not work so use stop-instance to make sure 
+         instance is stopped before deleting it -->
+    <echo message="Running... asadmin stop-instance"/>
     <exec executable="${ASADMIN}">
-        <arg line="delete-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testClusterServer1}"/>
+        <arg line="stop-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testClusterServer1}"/>
     </exec>
     <echo message="Running... asadmin delete-instance"/>
     <exec executable="${ASADMIN}">
-        <arg line="delete-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testClusterServer2}"/>
+        <arg line="delete-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testClusterServer1}"/>
     </exec>
     <echo message="Running... asadmin delete-cluster"/>
     <exec executable="${ASADMIN}">
@@ -894,31 +920,14 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </exec>
 </target>
 
-<target name="unsetup" depends="init">
-    <echo message="Cleaning up all the test setup"/>
-    <echo message="Running... asadmin stop-instance"/>
+
+<target name="deleteInstance" if="doInstance">
     <exec executable="${ASADMIN}">
-        <arg line="stop-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testServer}"/>
+        <arg line="delete-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testServer}"/>
     </exec>
-    <antcall target="stopCluster"/>
-    <echo message="Running... asadmin delete-instance"/>
-    <exec executable="${ASADMIN}">
-        <arg line="delete-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testServer}"/>
-    </exec>
-    <antcall target="deleteCluster"/>
-    <echo message="Running... asadmin stop-node-agent"/>
-    <exec executable="${ASADMIN}">
-        <arg line="stop-node-agent ${testAgent}"/>
-    </exec>
-    <echo message="Running... asadmin delete-node-agent"/>
-    <exec executable="${ASADMIN}">
-        <arg line="delete-node-agent ${testAgent}"/>
-    </exec>
-    <echo message="Running... asadmin delete-node-agent-config"/>
-    <exec executable="${ASADMIN}">
-        <arg line="delete-node-agent-config --user ${admin.user} --passwordfile ${passwordFile} --port ${admin.port} ${testAgent}"/>
-    </exec>
-    <delete dir="${s1as.home}/nodeagents/${testAgent}"/>
+</target>
+
+<target name="unsetupDomain">
     <echo message="Running... asadmin stop-domain"/>
     <exec executable="${ASADMIN}">
         <arg line="stop-domain ${testDomain}"/>
@@ -928,6 +937,16 @@ AS_ADMIN_MASTERPASSWORD=changeit
         <arg line="delete-domain ${testDomain}"/>
     </exec>
     <delete dir="${s1as.home}/domains/${testDomain}"/>
+</target>
+
+<target name="unsetup" depends="init">
+    <echo message="Cleaning up all the test setup"/>
+    <antcall target="stopInstance"/>
+    <antcall target="stopCluster"/>
+    <antcall target="deleteInstance"/>
+    <antcall target="deleteCluster"/>
+    <delete dir="${s1as.home}/nodeagents"/>
+    <antcall target="unsetupDomain"/>
 </target>
 
 <target name="postTestsRun">
