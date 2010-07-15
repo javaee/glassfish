@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package admin;
+package listjndi;
 
 import admin.AdminBaseDevTest;
 
@@ -78,7 +78,7 @@ public class ListJndiEntriesTest extends AdminBaseDevTest {
     }
 
     public void runTests() {
-        startDomain();
+        asadmin("start-domain");
         asadmin("create-cluster", CLUSTER_NAME);
 
         asadmin("create-local-instance", "--cluster", CLUSTER_NAME,
@@ -110,7 +110,7 @@ public class ListJndiEntriesTest extends AdminBaseDevTest {
         testListJndiEntriesTargetStandaloneInstance();
 
         cleanup();
-        stopDomain();
+        asadmin("stop-domain");
         stat.printSummary();
     }
 

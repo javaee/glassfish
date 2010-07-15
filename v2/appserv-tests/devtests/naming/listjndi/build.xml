@@ -63,7 +63,7 @@
     <pathconvert refid="class.path" property="classpath"/>
 
     <target name="listjndi">
-         <java classname="admin.ListJndiEntriesTest"  fork="true" classpath="${classpath}">
+         <java classname="listjndi.ListJndiEntriesTest"  fork="true" classpath="${classpath}">
             <jvmarg line="${javaprops}"/>
             <classpath id="classpath" />
         </java>

@@ -50,9 +50,9 @@ import java.net.URLConnection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-abstract class AdminBaseDevTest extends BaseDevTest {
+public abstract class AdminBaseDevTest extends BaseDevTest {
     
-    AdminBaseDevTest() {
+    protected AdminBaseDevTest() {
         boolean verbose = false;
         try {
             verbose = Boolean.parseBoolean(System.getProperty("verbose"));
@@ -117,22 +117,22 @@ abstract class AdminBaseDevTest extends BaseDevTest {
         report(step, ret.returnValue);
     }
 
-    void startDomain(String domainname) {
+    protected void startDomain(String domainname) {
         report(getTestName() + "-start-domain" + startstops++,
                 asadmin("start-domain", domainname));
     }
 
-    void startDomain() {
+    protected void startDomain() {
         report(getTestName() + "-start-def-domain" + startstops++,
                 asadmin("start-domain"));
     }
 
-    void stopDomain(String domainname) {
+    protected void stopDomain(String domainname) {
         report(getTestName() + "-stop-domain" + startstops++,
                 asadmin("stop-domain", domainname));
     }
 
-    void stopDomain() {
+    protected void stopDomain() {
         report(getTestName() + "-stop-def-domain" + startstops++,
                 asadmin("stop-domain"));
     }
