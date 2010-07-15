@@ -119,6 +119,7 @@ public class GeneratorResource {
         //{config-bean, command, method, resource-path, command-action, command-params...}
         {"Application", "disable", "POST", "disable", "Disable", "id=$parent"},
         {"Application", "enable", "POST", "enable", "Enable", "id=$parent"},
+        {"Application", "list-sub-components", "GET", "sub-components", "List Subcomponents", "id=$parent"},
         {"AuthRealm", "__list-group-names", "GET", "list-group-names", "List Group Names", "realmName=$parent"},
         {"AuthRealm", "__supports-user-management", "GET", "supports-user-management", "Check Support", "realmName=$parent"},
         {"AuthRealm", "create-file-user", "POST", "create-user", "Create", "authrealmname=$parent"},

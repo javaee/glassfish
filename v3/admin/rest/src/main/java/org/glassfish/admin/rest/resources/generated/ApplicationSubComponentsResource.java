@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,54 +33,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.rest.resources;
+package org.glassfish.admin.rest.resources.generated;
 
-import java.util.HashMap;
+//generated code...;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-
-import com.sun.jersey.spi.container.ContainerRequest;
-import org.glassfish.admin.rest.Constants;
-
-import org.glassfish.admin.rest.results.ActionReportResult;
-import org.glassfish.api.admin.ParameterMap;
-
-/**
- *
- * @author ludovic champenois ludo@dev.java.net
- * Code moved from generated classes to here. Gen code inherits from this template class
- * that contains the logic for mapped commands RS Resources
- *
- */
-public class TemplateCommandGetResource extends TemplateExecCommand {
-
-    public TemplateCommandGetResource(String resourceName, String commandName, String commandMethod,
-            HashMap<String, String> m, boolean b) {
-
-        super(resourceName, commandName, commandMethod, "", "", m, b);
-        parameterType = Constants.QUERY_PARAMETER;
-    }
-
-    @GET
-    @Produces({
-        "text/html;qs=2",
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_FORM_URLENCODED})
-    public ActionReportResult processGet() {
-        try {
-            ParameterMap data = new ParameterMap();
-            processCommandParams(data);
-            addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
-            adjustParameters(data);
-
-            return executeCommand(data);
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
+public class ApplicationSubComponentsResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource {
+   public ApplicationSubComponentsResource() {
+       super(
+          "ApplicationSubComponents",
+          "list-sub-components",
+          "GET",
+          new java.util.HashMap<String, String>() {{
+                    put("id","$parent");
+       }},
+          true);
     }
 }

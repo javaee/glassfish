@@ -50,9 +50,15 @@ ApplicationEnableResource resource = resourceContext.getResource(ApplicationEnab
 return resource;
 }
 
+@Path("sub-components/")
+public ApplicationSubComponentsResource getApplicationSubComponentsResource() {
+ApplicationSubComponentsResource resource = resourceContext.getResource(ApplicationSubComponentsResource.class);
+return resource;
+}
+
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"disable", "POST", "disable"}, {"enable", "POST", "enable"}};
+return new String[][]{{"disable", "POST", "disable"}, {"enable", "POST", "enable"}, {"sub-components", "GET", "list-sub-components"}};
 }
 
 	@Path("module/")
