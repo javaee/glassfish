@@ -38,6 +38,17 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.resources.*;
 public class NodeResource extends TemplateResource {
 
+@Path("delete-node/")
+public NodeDeleteNodeResource getNodeDeleteNodeResource() {
+NodeDeleteNodeResource resource = resourceContext.getResource(NodeDeleteNodeResource.class);
+return resource;
+}
+
+@Override
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"delete-node", "POST", "delete-node-ssh"}};
+}
+
 	@Path("application-ref/")
 	public ListApplicationRefResource getApplicationRefResource() {
 		ListApplicationRefResource resource = resourceContext.getResource(ListApplicationRefResource.class);

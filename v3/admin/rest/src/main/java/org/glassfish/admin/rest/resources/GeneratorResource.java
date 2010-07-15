@@ -158,6 +158,7 @@ public class GeneratorResource {
         {"ListAuthRealm", "__list-predefined-authrealm-classnames", "GET", "list-predefined-authrealm-classnames", "List Auth Realms"},
         {"NetworkListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
         {"NetworkListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"},
+        {"Node", "delete-node-ssh", "POST", "delete-node", "Delete Node", "id=$parent"},
         {"Nodes", "create-node-ssh", "POST", "create-node", "Create Node"},
         {"Protocol", "create-http", "POST", "create-http", "Create", "id=$parent"},
         {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"},
