@@ -50,9 +50,6 @@
 	    url="/configuration/configuration.jsf?configName=${configName}"
 	    imageURL="/resource/common/images/configurations.gif"
 	    expanded="false">
-	<!beforeCreate
-	    gf.encodeId(id="${configName}" result="#{requestScope.configNameId}");
-	/>
 	<!afterCreate
 	    setAttribute(key="configTreeNodeLE" value="$this{layoutElement}");
 	/>

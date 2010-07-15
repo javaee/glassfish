@@ -70,10 +70,9 @@ monitoring     web  800
 
   <sun:form id="treeForm">
     <!beforeCreate
-	#getConfigNameOfTarget(target="server" configName=>$attribute{configName});
-	// FIXME: "server-config" should not be hard-coded, it should be
-	// FIXME: the 0th element of this config list
-	setAttribute(key="configName" value="server-config");
+	gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config", result="#{pageSession.configsList}");
+	setAttribute(key="configName" value="#{pageSession.configsList[0]}");
+	gf.encodeId(id="${configName}" result="#{requestScope.configNameId}");
     />
     <h:commandButton id="update" style="display: none;">
 	<!command
@@ -114,7 +113,6 @@ monitoring     web  800
     <event>
 	<!afterCreate
 	    includeIntegrations(type="org.glassfish.admingui:navNode" root="#{pageSession.treeId}");
-	    gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config", result="#{pageSession.configsList}");
 	    foreach(var="configName" list="#{pageSession.configsList}") {
 		gf.encodeId(id="${configName}" result="#{requestScope.configNameId}");
 		buildUIComponentTree(layoutElement="$attribute{configTreeNodeLE}" parent="$attribute{configsTreeNode}");
