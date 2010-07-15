@@ -75,6 +75,7 @@ public class ClusterHandler {
             @HandlerOutput(name = "status", type = String.class)
         })
     public static void getInstanceStatus(HandlerContext handlerCtx) {
+        //If restRequest() change to output json,  this needs to be changed.
         String instanceName = (String) handlerCtx.getInputValue("instanceName");
         List<Map<String, String>> props = (List<Map<String, String>>) handlerCtx.getInputValue("listInstanceProps");
         try{
@@ -90,6 +91,74 @@ public class ClusterHandler {
          }
      }
     
+    
+    /**
+     * This method takes in a list of instances with status, which is the output of list-instances
+     * and count the # of instance that is running and non running.
+     * @param handlerCtx
+     */
+    @Handler(id = "gf.getClusterStatusSummary",
+        input = {
+            @HandlerInput(name = "listInstanceProps", type = List.class, required = true)
+        },
+        output = {
+            @HandlerOutput(name = "numRunning", type = String.class),
+            @HandlerOutput(name = "numNotRunning", type = String.class)
+        })
+    public static void getClusterStatusSummary(HandlerContext handlerCtx) {
+        //If restRequest() change to output json,  this needs to be changed.
+        List<Map<String, String>> props = (List<Map<String, String>>) handlerCtx.getInputValue("listInstanceProps");
+        int running=0;
+        int notRunning=0;
+        try{
+            for(Map<String, String> oneProp : props){
+                if (oneProp.get("value").equals(RUNNING)){
+                    running++;
+                }else{
+                    notRunning++;
+                }
+            }
+
+            handlerCtx.setOutputValue( "numRunning" , GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.running", new String[]{""+running}));
+            handlerCtx.setOutputValue( "numNotRunning" , GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.notRunning", new String[]{""+notRunning}));
+        }catch(Exception ex){
+            //Log exception ?
+             handlerCtx.setOutputValue("status", GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.status.unknown"));
+         }
+     }
+
+
+    @Handler(id = "gf.saveInstanceWeight",
+        input = {
+            @HandlerInput(name = "rows", type = List.class, required = true)})
+    public static void saveInstanceWeight(HandlerContext handlerCtx) {
+        List<Map> rows =  (List<Map>) handlerCtx.getInputValue("rows");
+        List errorInstances = new ArrayList();
+        Map response = null;
+
+        String prefix = GuiUtil.getSessionValue("REST_URL") + "/servers/server/";
+        for (Map oneRow : rows) {
+            String instanceName = (String) oneRow.get("Name");
+            String endpoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/instanceName" ;
+            Map attrsMap = new HashMap();
+            attrsMap.put("lbWeight", oneRow.get("LbWeight"));
+            try{
+                response = RestApiHandlers.restRequest( prefix+instanceName , attrsMap, "post" , null);
+            }catch (Exception ex){
+                GuiUtil.getLogger().severe("Error in saveInstanceWeight ; \nendpoint = " + prefix + instanceName + "attrsMap=" + attrsMap);
+                response = null;
+            }
+            if (response ==null){
+                errorInstances.add(instanceName);
+            }
+        }
+        if (errorInstances.size() > 0){
+            String details = GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "instance.error.updateWeight" , new String[]{""+errorInstances});
+            GuiUtil.handleError(handlerCtx, details);
+        }
+     }
+
+
     @Handler(id = "gf.clusterAction",
         input = {
             @HandlerInput(name = "rows", type = List.class, required = true),
@@ -100,6 +169,7 @@ public class ClusterHandler {
         List<Map> rows =  (List<Map>) handlerCtx.getInputValue("rows");
         List errorClusters = new ArrayList();
         Map response = null;
+        String prefix = GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster/";
 
         for (Map oneRow : rows) {
             String clusterName = (String) oneRow.get("Name");
@@ -122,10 +192,9 @@ public class ClusterHandler {
                 }
             }
             try{
-                response = RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster/" + clusterName + "/" + action + ".xml", null, "post" ,null);
+                response = RestApiHandlers.restRequest( prefix + clusterName + "/" + action + ".xml", null, "post" ,null);
             }catch (Exception ex){
-                GuiUtil.getLogger().severe("Error in clusterAction ; \nendpoint = " +
-                            GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + clusterName + "/" + action + ".xml\n" );
+                GuiUtil.getLogger().severe("Error in clusterAction ; \nendpoint = " + prefix + clusterName + "/" + action + ".xml\n" );
                 response = null;
             }
             if (response == null) {
@@ -149,6 +218,7 @@ public class ClusterHandler {
         List<Map> rows =  (List<Map>) handlerCtx.getInputValue("rows");
         List errorInstances = new ArrayList();
         Map response = null;
+        String prefix = GuiUtil.getSessionValue("REST_URL") + "/servers/server/";
 
         for (Map oneRow : rows) {
             String instanceName = (String) oneRow.get("Name");
@@ -158,10 +228,9 @@ public class ClusterHandler {
                 Map attrsMap = new HashMap();
                 attrsMap.put("id", instanceName);
                 try{
-                    response = RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/" + action + ".xml", attrsMap, "post" ,null);
+                    response = RestApiHandlers.restRequest(prefix + instanceName + "/" + action + ".xml", attrsMap, "post" ,null);
                 }catch (Exception ex){
-                    GuiUtil.getLogger().severe("Error in instanceAction ; \nendpoint = " +
-                            GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/" + action + ".xml\n" +
+                    GuiUtil.getLogger().severe("Error in instanceAction ; \nendpoint = " + prefix + instanceName + "/" + action + ".xml\n" +
                             "attrsMap=" + attrsMap);
                     response = null;
                 }
@@ -186,6 +255,7 @@ public class ClusterHandler {
         List<Map> instanceRow =  (List<Map>) handlerCtx.getInputValue("instanceRow");
         Map attrsMap = new HashMap();
         Map response = null;
+        String endpoint = GuiUtil.getSessionValue("REST_URL") + "/create-instance.xml";
         for (Map oneInstance : instanceRow) {
             attrsMap.put("name", oneInstance.get("name"));
             attrsMap.put("cluster", clusterName);
@@ -193,11 +263,9 @@ public class ClusterHandler {
             //ignore for now till issue# 12646 is fixed
             //attrsMap.put("weight", oneInstance.get("weight"));
             try{
-                response = RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/create-instance.xml" , attrsMap, "post" ,null);
+                response = RestApiHandlers.restRequest( endpoint , attrsMap, "post" ,null);
             }catch (Exception ex){
-                GuiUtil.getLogger().severe("Error in createCluster ; \nendpoint = " +
-                        GuiUtil.getSessionValue("REST_URL") + ".xml\n" +
-                        "attrsMap=" + attrsMap);
+                GuiUtil.getLogger().severe("Error in createCluster ; \nendpoint = " + endpoint + "attrsMap=" + attrsMap);
             }
         }
 
@@ -259,6 +327,11 @@ public class ClusterHandler {
     }
 
     public static String CLUSTER_RESOURCE_NAME = "org.glassfish.cluster.admingui.Strings";
+
+    //The following is defined in v3/cluster/admin/src/main/java/..../cluster/Constants.java
+    public static String RUNNING = "RUNNING";
+    public static String NOT_RUNNING = "NOT_RUNNING";
+    public static String PARTIALLY_RUNNING = "PARTIALLY_RUNNING";
 }
         
  
