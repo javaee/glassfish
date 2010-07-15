@@ -43,7 +43,7 @@
 />
 <!composition template="/templates/default.layout"  
     guiTitle="$resource{i18n_web.vs.ListPageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:virtualServers');">
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configurations:#{pageSession.configName}:virtualServers');">
 
 <!define name="content">
     <event>
