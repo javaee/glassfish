@@ -58,7 +58,12 @@ public interface ManagedBeanManager {
 
     public Object createManagedBean(Class managedBean) throws Exception;
 
+    public Object createManagedBean(Class managedBean, boolean invokePostConstruct) throws Exception;
+
     public Object createManagedBean(ManagedBeanDescriptor managedBeanDesc, Class managedBeanClass) throws Exception;
+
+    public Object createManagedBean(ManagedBeanDescriptor managedBeanDesc, Class managedBeanClass,
+        boolean invokePostConstruct) throws Exception;
 
     public boolean isManagedBean(Object object);
 

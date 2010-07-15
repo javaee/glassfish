@@ -424,6 +424,23 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
         return createManagedBean(managedBeanDesc, managedBeanClass);
     }
 
+    public Object createManagedBean(Class managedBeanClass, boolean invokePostConstruct) throws Exception {
+
+        JCDIService jcdiService = habitat.getByContract(JCDIService.class);
+
+        ManagedBeanDescriptor managedBeanDesc = null;
+
+        try {
+            BundleDescriptor bundle = getBundle();
+
+            managedBeanDesc = getManagedBeanDescriptor(bundle, managedBeanClass);
+        } catch(Exception e) {
+            // OK.  Can mean that it's not annotated with @ManagedBean but 299 can handle it.
+        }
+
+        return createManagedBean(managedBeanDesc, managedBeanClass, invokePostConstruct);
+    }
+
     /**
      *
      * @param desc can be null if JCDI enabled bundle.
@@ -458,6 +475,80 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
                 jcdiService.createManagedObject(managedBeanClass, bundleDescriptor);
             callerObject = jcdiContext.getInstance();
 
+            // Need to keep track of context in order to destroy properly
+            Map<Object, JCDIService.JCDIInjectionContext> bundleNonManagedObjs =
+                jcdiManagedBeanInstanceMap.get(bundleDescriptor);
+            bundleNonManagedObjs.put(callerObject, jcdiContext);
+
+        } else {
+
+
+            JavaEEInterceptorBuilder interceptorBuilder = (JavaEEInterceptorBuilder)
+                desc.getInterceptorBuilder();
+
+            // This is the managed bean class instance
+            Object managedBean = managedBeanClass.newInstance();
+
+            InterceptorInvoker interceptorInvoker =
+                    interceptorBuilder.createInvoker(managedBean);
+
+            // This is the object passed back to the caller.
+            callerObject = interceptorInvoker.getProxy();
+
+            Object[] interceptorInstances = interceptorInvoker.getInterceptorInstances();
+
+            inject(managedBean, desc);
+
+            // Inject interceptor instances
+            for(int i = 0; i < interceptorInstances.length; i++) {
+                inject(interceptorInstances[i], desc);
+            }
+
+            interceptorInvoker.invokePostConstruct();
+
+            desc.addBeanInstanceInfo(managedBean, interceptorInvoker);
+
+        }
+
+        return callerObject;
+
+    }
+
+    /**
+     *
+     * @param desc can be null if JCDI enabled bundle.
+     * @param managedBeanClass
+     * @param invokePostConstruct
+     * @return
+     * @throws Exception
+     */
+    public Object createManagedBean(ManagedBeanDescriptor desc, Class managedBeanClass,
+        boolean invokePostConstruct) throws Exception {
+
+        JCDIService jcdiService = habitat.getByContract(JCDIService.class);
+
+        BundleDescriptor bundleDescriptor = null;
+
+        if( desc == null ) {
+            bundleDescriptor = getBundle();
+        } else {
+            bundleDescriptor = desc.getBundleDescriptor();
+        }
+
+        if( bundleDescriptor == null ) {
+            throw new IllegalStateException
+                ("Class " + managedBeanClass + " is not a valid EE ManagedBean class");
+        }
+
+        Object callerObject = null;
+
+        if( (jcdiService != null) && jcdiService.isJCDIEnabled(bundleDescriptor)) {
+
+            // Have 299 create, inject, and call PostConstruct (if desired) on managed bean
+
+            JCDIService.JCDIInjectionContext jcdiContext =
+                jcdiService.createManagedObject(managedBeanClass, bundleDescriptor, invokePostConstruct);
+            callerObject = jcdiContext.getInstance();
             // Need to keep track of context in order to destroy properly
             Map<Object, JCDIService.JCDIInjectionContext> bundleNonManagedObjs =
                 jcdiManagedBeanInstanceMap.get(bundleDescriptor);

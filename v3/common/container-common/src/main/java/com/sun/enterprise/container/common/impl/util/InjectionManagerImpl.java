@@ -316,6 +316,71 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
         return managedObject;
     }
 
+     /**
+     * Create a managed object for the given class.  The object will be
+     * injected and if invokePostConstruct is true, any @PostConstruct
+     * methods on the instance's class(and super-classes) will be invoked
+     * after injection.  The returned
+     * object can be cast to the clazz type but is not necessarily a direct
+     * reference to the managed instance.  All invocations on the returned
+     * object should be on its public methods.
+     *
+     * It is the responsibility of the caller to destroy the returned object
+     * by calling destroyManagedObject(Object managedObject).
+     *
+     * @param clazz  Class to be instantiated
+     * @param invokePostConstruct if true, invoke any @PostConstruct methods
+     * on the instance's class(and super-classes) after injection.
+     * @return managed object
+     * @throws InjectionException
+     */
+    public Object createManagedObject(Class clazz, boolean invokePostConstruct)
+        throws InjectionException {
+
+        Object managedObject = null;
+
+        try {
+
+            ManagedBean managedBeanAnn = (ManagedBean) clazz.getAnnotation(ManagedBean.class);
+
+            ManagedBeanManager managedBeanMgr = habitat.getByContract(ManagedBeanManager.class);
+
+            if( managedBeanAnn != null ) {
+
+                // EE style @ManagedBean
+
+                // Create , inject, and call PostConstruct (if necessary) via managed bean manager
+                managedObject = managedBeanMgr.createManagedBean(clazz, invokePostConstruct);
+
+            } else {
+
+                JCDIService jcdiService = habitat.getByContract(JCDIService.class);
+
+                if( (jcdiService != null) && jcdiService.isCurrentModuleJCDIEnabled() ) {
+
+                    // Create , inject, and call PostConstruct (if necessary)  via managed bean manager
+                    managedObject = managedBeanMgr.createManagedBean(clazz, invokePostConstruct);
+
+                } else {
+                    // Not in a 299-enabled module and not annoated with @ManagedBean, so
+                    // just instantiate using new and perform injection
+                    Constructor noArgCtor = clazz.getConstructor();
+
+                    managedObject = noArgCtor.newInstance();
+
+                    // Inject and call PostConstruct if necessary
+                    injectInstance(managedObject, invokePostConstruct);
+
+                }
+            }
+
+        } catch(Exception e) {
+            throw new InjectionException("Error creating managed object for " + clazz, e);
+        }
+
+        return managedObject;
+    }
+
     /**
      * Destroy a managed object that was created via createManagedObject.  Any
      * PreDestroy methods will be called.

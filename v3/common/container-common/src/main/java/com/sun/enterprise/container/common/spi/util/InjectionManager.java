@@ -241,6 +241,27 @@ public interface InjectionManager {
         throws InjectionException;
 
     /**
+     * Create a managed object for the given class.  The object will be
+     * injected and if invokePostConstruct is true, any @PostConstruct 
+     * methods on the instance's class(and super-classes) will be invoked 
+     * after injection.  The returned
+     * object can be cast to the clazz type but is not necessarily a direct
+     * reference to the managed instance.  All invocations on the returned
+     * object should be on its public methods.
+     *
+     * It is the responsibility of the caller to destroy the returned object
+     * by calling destroyManagedObject(Object managedObject).
+     *
+     * @param clazz  Class to be instantiated
+     * @param invokePostConstruct if true, invoke any @PostConstruct methods
+     * on the instance's class(and super-classes) after injection.
+     * @return managed object
+     * @throws InjectionException
+     */
+    public Object createManagedObject(Class clazz, boolean invokePostConstruct)
+        throws InjectionException;
+
+    /**
      * Destroy a managed object that was created via createManagedObject.  Any
      * PreDestroy methods will be called.  
      *
