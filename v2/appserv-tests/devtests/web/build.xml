@@ -214,6 +214,7 @@
         <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnError" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/>
+        <ant dir="servlet-3.0/asyncListenerOnTimeoutDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncStartOutsideAsyncDispatchScope" target="all"/>
         <ant dir="servlet-3.0/asyncSupportedFalse" target="all"/>
         <ant dir="servlet-3.0/asyncSupportedTrueDeclarative" target="all"/>
