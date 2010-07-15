@@ -34,37 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
-import javax.ws.rs.Path;
-import org.glassfish.admin.rest.resources.*;
-public class NodeResource extends TemplateResource {
 
-@Path("delete-node/")
-public NodeDeleteNodeResource getNodeDeleteNodeResource() {
-NodeDeleteNodeResource resource = resourceContext.getResource(NodeDeleteNodeResource.class);
-return resource;
-}
+//generated code...;
 
-@Override
-public String[][] getCommandResourcesPaths() {
-return new String[][]{{"delete-node", "DELETE", "delete-node-ssh"}};
-}
-
-	@Path("application-ref/")
-	public ListApplicationRefResource getApplicationRefResource() {
-		ListApplicationRefResource resource = resourceContext.getResource(ListApplicationRefResource.class);
-		resource.setParentAndTagName(getEntity() , "application-ref");
-		return resource;
-	}
-	@Path("ssh-connector/")
-	public SshConnectorResource getSshConnectorResource() {
-		SshConnectorResource resource = resourceContext.getResource(SshConnectorResource.class);
-		resource.setParentAndTagName(getEntity() , "ssh-connector");
-		return resource;
-	}
-	@Path("resource-ref/")
-	public ListResourceRefResource getResourceRefResource() {
-		ListResourceRefResource resource = resourceContext.getResource(ListResourceRefResource.class);
-		resource.setParentAndTagName(getEntity() , "resource-ref");
-		return resource;
-	}
+public class NodeDeleteNodeResource extends org.glassfish.admin.rest.resources.TemplateCommandDeleteResource {
+   public NodeDeleteNodeResource() {
+       super(
+          "NodeDeleteNode",
+          "delete-node-ssh",
+          "DELETE",
+          "Delete Node",
+          "delete-node",
+          new java.util.HashMap<String, String>() {{
+                    put("id","$parent");
+       }},
+          true);
+    }
 }

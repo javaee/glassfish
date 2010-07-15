@@ -155,8 +155,7 @@ public abstract class CollectionLeafResource {
     @OPTIONS
     @Produces({MediaType.APPLICATION_JSON, "text/html;qs=2", MediaType.APPLICATION_XML})
     public OptionsResult options() {
-        OptionsResult optionsResult =
-                new OptionsResult(Util.getResourceName(uriInfo));
+        OptionsResult optionsResult = new OptionsResult(Util.getResourceName(uriInfo));
 
         try {
             //GET meta data
