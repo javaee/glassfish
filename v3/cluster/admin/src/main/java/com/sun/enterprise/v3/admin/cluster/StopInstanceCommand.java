@@ -118,9 +118,10 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         else {
             // todo -- verify it really stopped
             // waiting for IT for Vijay to get done -- API for status
+            // we are GUARANTEED that instanceName is set...
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             report.setMessage(Strings.get("stop.instance.success",
-                    env.getRuntimeType().toString()));
+                    instanceName));
         }
     }
 
