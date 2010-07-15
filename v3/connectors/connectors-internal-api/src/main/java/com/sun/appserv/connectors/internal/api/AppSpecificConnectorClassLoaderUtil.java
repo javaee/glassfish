@@ -206,7 +206,7 @@ public class AppSpecificConnectorClassLoaderUtil {
 
             // find all the standalone connector modules
             List<com.sun.enterprise.config.serverbeans.Application> applications =
-                    getApplications().getApplicationsWithSnifferType("connector", true);
+                    getApplications().getApplicationsWithSnifferType(com.sun.enterprise.config.serverbeans.Application.CONNECTOR_SNIFFER_TYPE, true);
             Iterator itr = applications.iterator();
             while (itr.hasNext()) {
                 com.sun.enterprise.config.serverbeans.Application application =

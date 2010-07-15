@@ -70,6 +70,12 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
 
     public static final String APP_LOCATION_PROP_NAME = "appLocation";
     public static final String DEPLOYMENT_PLAN_LOCATION_PROP_NAME = "deploymentPlanLocation";
+    public static final String WEB_SNIFFER_TYPE = "web";
+    public static final String EJB_SNIFFER_TYPE = "ejb";
+    public static final String CONNECTOR_SNIFFER_TYPE = "connector";
+    public static final String APPCLIENT_SNIFFER_TYPE = "appclient";
+    public static final String JPA_SNIFFER_TYPE = "jpa";
+    public static final String WEBSERVICE_SNIFFER_TYPE = "webservices";
 
     /**
      * Gets the value of the contextRoot property.

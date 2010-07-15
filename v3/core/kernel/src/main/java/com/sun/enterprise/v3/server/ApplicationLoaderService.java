@@ -164,11 +164,14 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         List<Application> allApplications = applications.getApplications();
 
         List<Application> standaloneAdapters =
-            applications.getApplicationsWithSnifferType("connector", true);
+            applications.getApplicationsWithSnifferType(Application.CONNECTOR_SNIFFER_TYPE, true);
 
         // load standalone resource adapters first
         for (Application standaloneAdapter : standaloneAdapters) {
-            if (isAppEnabled(standaloneAdapter)) {
+            // load the referenced enabled applications on this instance 
+            // and always (partially) load on DAS so the application
+            // information is available on DAS
+            if (isAppEnabled(standaloneAdapter) || server.isDas()) {
                 ApplicationRef appRef = server.getApplicationRef(standaloneAdapter.getName());
                 processApplication(standaloneAdapter, appRef, logger);
             }
@@ -177,10 +180,13 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         // then the rest of the applications
         for (Application app : allApplications) {
             if (app.isStandaloneModule() && 
-                app.containsSnifferType("connector")) {
+                app.containsSnifferType(Application.CONNECTOR_SNIFFER_TYPE)) {
                 continue;
             }
-            if (isAppEnabled(app)) {
+            // load the referenced enabled applications on this instance 
+            // and always (partially) load on DAS so the application
+            // information is available on DAS
+            if (isAppEnabled(app) || server.isDas()) {
                 ApplicationRef appRef = server.getApplicationRef(app.getName());
                 processApplication(app, appRef, logger);
             }
@@ -330,6 +336,10 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                         app.getDeployParameters(appRef);
                     deploymentParams.target = server.getName();
                     deploymentParams.origin = DeployCommandParameters.Origin.load;
+                    // partial load on DAS case
+                    if (appRef == null) {
+                        deploymentParams.enabled = false; 
+                    }
 
                     archive = archiveFactory.get().openArchive(sourceFile, deploymentParams);
 
