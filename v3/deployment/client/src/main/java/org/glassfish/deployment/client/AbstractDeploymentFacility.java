@@ -1041,6 +1041,10 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                 return po;
             }
 
+            TargetModuleIDImpl targetModuleID =
+                new TargetModuleIDImpl((TargetImpl)lastTarget, moduleID);
+            targetModuleIDList.add(targetModuleID);
+
             TargetModuleIDImpl[] targetModuleIDs =
                 new TargetModuleIDImpl[targetModuleIDList.size()];
             targetModuleIDs = (TargetModuleIDImpl[])targetModuleIDList.toArray(targetModuleIDs);
