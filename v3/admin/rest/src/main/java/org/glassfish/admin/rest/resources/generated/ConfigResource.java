@@ -79,6 +79,12 @@ return new String[][]{{"delete-config", "POST", "delete-config"}};
 		resource.setParentAndTagName(getEntity() , "java-config");
 		return resource;
 	}
+@Path("config-extension/")
+public ListConfigExtensionResource getConfigExtensionResource() {
+	ListConfigExtensionResource resource = resourceContext.getResource(ListConfigExtensionResource.class);
+	resource.setParentAndTagName(getEntity() , "config-extension");
+	return resource;
+}
 @Path("jruby-container/")
 public ListJrubyContainerResource getJrubyContainerResource() {
 	ListJrubyContainerResource resource = resourceContext.getResource(ListJrubyContainerResource.class);

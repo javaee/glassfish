@@ -135,7 +135,9 @@ public abstract class TemplateListOfResource {
     }
 
     @POST //create
-    @Produces(MediaType.TEXT_HTML)
+    @Produces({"text/html;qs=2",
+        MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
     public Response createResource(HashMap<String, String> data) {
@@ -177,6 +179,7 @@ public abstract class TemplateListOfResource {
                 // create it on the fly without a create CLI command.
 
                 Class<? extends ConfigBeanProxy> proxy = getElementTypeByName(parent, tagName);
+                data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
                 ConfigBean createdBean = ConfigSupport.createAndSet((ConfigBean) parent, proxy, data);
                 String successMessage =
                         localStrings.getLocalString("rest.resource.create.message",

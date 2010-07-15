@@ -34,20 +34,8 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import org.glassfish.admin.rest.resources.*;
+public class ConfigExtensionResource extends TemplateResource {
 
-//generated code...;
-
-public class ServerDeleteInstanceResource extends org.glassfish.admin.rest.resources.TemplateCommandDeleteResource {
-   public ServerDeleteInstanceResource() {
-       super(
-          "ServerDeleteInstance",
-          "delete-instance",
-          "DELETE",
-          "Delete Instance",
-          "delete-instance",
-          new java.util.HashMap<String, String>() {{
-                    put("id","$parent");
-       }},
-          true);
-    }
 }

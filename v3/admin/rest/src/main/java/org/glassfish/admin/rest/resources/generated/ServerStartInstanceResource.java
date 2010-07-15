@@ -45,7 +45,9 @@ public class ServerStartInstanceResource extends org.glassfish.admin.rest.resour
           "POST",
           "Start Instance",
           "start-instance",
-          (java.util.HashMap<String, String>) null ,
-          false);
+          new java.util.HashMap<String, String>() {{
+                    put("id","$parent");
+       }},
+          true);
     }
 }

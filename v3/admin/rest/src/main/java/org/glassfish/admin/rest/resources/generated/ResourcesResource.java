@@ -38,16 +38,16 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.resources.*;
 public class ResourcesResource extends TemplateResource {
 
-@Path("connector-resource/")
-public ListConnectorResourceResource getConnectorResourceResource() {
-	ListConnectorResourceResource resource = resourceContext.getResource(ListConnectorResourceResource.class);
-	resource.setParentAndTagName(getEntity() , "connector-resource");
+@Path("jdbc-resource/")
+public ListJdbcResourceResource getJdbcResourceResource() {
+	ListJdbcResourceResource resource = resourceContext.getResource(ListJdbcResourceResource.class);
+	resource.setParentAndTagName(getEntity() , "jdbc-resource");
 	return resource;
 }
-@Path("mail-resource/")
-public ListMailResourceResource getMailResourceResource() {
-	ListMailResourceResource resource = resourceContext.getResource(ListMailResourceResource.class);
-	resource.setParentAndTagName(getEntity() , "mail-resource");
+@Path("connector-connection-pool/")
+public ListConnectorConnectionPoolResource getConnectorConnectionPoolResource() {
+	ListConnectorConnectionPoolResource resource = resourceContext.getResource(ListConnectorConnectionPoolResource.class);
+	resource.setParentAndTagName(getEntity() , "connector-connection-pool");
 	return resource;
 }
 @Path("admin-object-resource/")
@@ -62,16 +62,10 @@ public ListExternalJndiResourceResource getExternalJndiResourceResource() {
 	resource.setParentAndTagName(getEntity() , "external-jndi-resource");
 	return resource;
 }
-@Path("custom-resource/")
-public ListCustomResourceResource getCustomResourceResource() {
-	ListCustomResourceResource resource = resourceContext.getResource(ListCustomResourceResource.class);
-	resource.setParentAndTagName(getEntity() , "custom-resource");
-	return resource;
-}
-@Path("jdbc-connection-pool/")
-public ListJdbcConnectionPoolResource getJdbcConnectionPoolResource() {
-	ListJdbcConnectionPoolResource resource = resourceContext.getResource(ListJdbcConnectionPoolResource.class);
-	resource.setParentAndTagName(getEntity() , "jdbc-connection-pool");
+@Path("mail-resource/")
+public ListMailResourceResource getMailResourceResource() {
+	ListMailResourceResource resource = resourceContext.getResource(ListMailResourceResource.class);
+	resource.setParentAndTagName(getEntity() , "mail-resource");
 	return resource;
 }
 @Path("persistence-manager-factory-resource/")
@@ -86,10 +80,16 @@ public ListWorkSecurityMapResource getWorkSecurityMapResource() {
 	resource.setParentAndTagName(getEntity() , "work-security-map");
 	return resource;
 }
-@Path("connector-connection-pool/")
-public ListConnectorConnectionPoolResource getConnectorConnectionPoolResource() {
-	ListConnectorConnectionPoolResource resource = resourceContext.getResource(ListConnectorConnectionPoolResource.class);
-	resource.setParentAndTagName(getEntity() , "connector-connection-pool");
+@Path("connector-resource/")
+public ListConnectorResourceResource getConnectorResourceResource() {
+	ListConnectorResourceResource resource = resourceContext.getResource(ListConnectorResourceResource.class);
+	resource.setParentAndTagName(getEntity() , "connector-resource");
+	return resource;
+}
+@Path("custom-resource/")
+public ListCustomResourceResource getCustomResourceResource() {
+	ListCustomResourceResource resource = resourceContext.getResource(ListCustomResourceResource.class);
+	resource.setParentAndTagName(getEntity() , "custom-resource");
 	return resource;
 }
 @Path("resource-adapter-config/")
@@ -98,10 +98,10 @@ public ListResourceAdapterConfigResource getResourceAdapterConfigResource() {
 	resource.setParentAndTagName(getEntity() , "resource-adapter-config");
 	return resource;
 }
-@Path("jdbc-resource/")
-public ListJdbcResourceResource getJdbcResourceResource() {
-	ListJdbcResourceResource resource = resourceContext.getResource(ListJdbcResourceResource.class);
-	resource.setParentAndTagName(getEntity() , "jdbc-resource");
+@Path("jdbc-connection-pool/")
+public ListJdbcConnectionPoolResource getJdbcConnectionPoolResource() {
+	ListJdbcConnectionPoolResource resource = resourceContext.getResource(ListJdbcConnectionPoolResource.class);
+	resource.setParentAndTagName(getEntity() , "jdbc-connection-pool");
 	return resource;
 }
 }

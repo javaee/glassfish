@@ -132,18 +132,10 @@
             <artifactId>metainf-services</artifactId>
             <optional>true</optional>
         </dependency>
-
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.glassfish.security</groupId>
             <artifactId>security</artifactId>
             <version>${project.version}</version>
-
         </dependency>
     </dependencies>
     <build>

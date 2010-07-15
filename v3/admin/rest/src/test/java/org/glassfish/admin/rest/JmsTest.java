@@ -147,40 +147,7 @@ public class JmsTest extends RestTestBase {
         Map<String, String> entity = getEntityValues(get(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName));
         assertFalse(entity.isEmpty());
 
-        response = delete(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName, null);
-        assertEquals(200, response.getStatus());
-    }
-
-    @Test
-    public void testJmsHosts() {
-        final String jmsHostName = "jmshost" + generateRandomString();
-        Map<String, String> newHost = new HashMap<String, String>() {
-
-            {
-                put("id", jmsHostName);
-                put("adminPassword", "admin");
-                put("port", "7676");
-                put("adminUserName", "admin");
-                put("host", "localhost");
-            }
-        };
-
-        // Test create
-        ClientResponse response = post(URL_JMS_HOST, newHost);
-        assertEquals(201, response.getStatus());
-
-        // Test edit
-        Map<String, String> entity = getEntityValues(get(URL_JMS_HOST + "/" + jmsHostName));
-        assertFalse(entity.isEmpty());
-        assertEquals(jmsHostName, entity.get("name"));
-        entity.put("port", "8686");
-        response = post(URL_JMS_HOST + "/" + jmsHostName, entity);
-        assertEquals(200, response.getStatus());
-        entity = getEntityValues(get(URL_JMS_HOST + "/" + jmsHostName));
-        assertEquals("8686", entity.get("port"));
-
-        // Test delete
-        response = delete(URL_JMS_HOST + "/" + jmsHostName, null);
+        response = delete(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName);
         assertEquals(200, response.getStatus());
     }
 
@@ -223,6 +190,36 @@ public class JmsTest extends RestTestBase {
         }};
 
         ClientResponse response = post(URL_FLUSH_JMS_DEST, payload);
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    public void testJmsHosts() {
+        final String jmsHostName = "jmshost" + generateRandomString();
+        Map<String, String> newHost = new HashMap<String, String>() {{
+                put("id", jmsHostName);
+                put("adminPassword", "admin");
+                put("port", "7676");
+                put("adminUserName", "admin");
+                put("host", "localhost");
+            }};
+
+        // Test create
+        ClientResponse response = post(URL_JMS_HOST, newHost);
+        assertEquals(201, response.getStatus());
+
+        // Test edit
+        Map<String, String> entity = getEntityValues(get(URL_JMS_HOST + "/" + jmsHostName));
+        assertFalse(entity.isEmpty());
+        assertEquals(jmsHostName, entity.get("name"));
+        entity.put("port", "8686");
+        response = post(URL_JMS_HOST + "/" + jmsHostName, entity);
+        assertEquals(200, response.getStatus());
+        entity = getEntityValues(get(URL_JMS_HOST + "/" + jmsHostName));
+        assertEquals("8686", entity.get("port"));
+
+        // Test delete
+        response = delete(URL_JMS_HOST + "/" + jmsHostName);
         assertEquals(200, response.getStatus());
     }
 }

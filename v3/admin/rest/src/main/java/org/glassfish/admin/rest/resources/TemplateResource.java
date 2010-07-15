@@ -143,9 +143,8 @@ public class TemplateResource {
     }
 
     @GET
-    @Produces({"text/html;qs=2",
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+    @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public GetResult getEntity(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
         if (getEntity() == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -249,7 +248,7 @@ public class TemplateResource {
                         errorMessage, requestHeaders, uriInfo);
             }
 
-            ResourceUtil.addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
+            ResourceUtil.addQueryString(uriInfo.getQueryParameters(), data);
             ResourceUtil.purgeEmptyEntries(data);
             ResourceUtil.adjustParameters(data);
 

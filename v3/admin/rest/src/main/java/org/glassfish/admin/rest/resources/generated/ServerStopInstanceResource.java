@@ -45,7 +45,9 @@ public class ServerStopInstanceResource extends org.glassfish.admin.rest.resourc
           "POST",
           "Stop Instance",
           "stop-instance",
-          (java.util.HashMap<String, String>) null ,
-          false);
+          new java.util.HashMap<String, String>() {{
+                    put("id","$parent");
+       }},
+          true);
     }
 }

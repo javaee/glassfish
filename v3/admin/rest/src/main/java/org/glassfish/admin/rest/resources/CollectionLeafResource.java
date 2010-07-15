@@ -122,9 +122,8 @@ public abstract class CollectionLeafResource {
 
 
     @POST //create
-    @Produces("text/html;qs=2")
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_FORM_URLENCODED})
+    @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public Response create(HashMap<String, String> data) {
         //hack-1 : support delete method for html
         //Currently, browsers do not support delete method. For html media,
@@ -143,10 +142,10 @@ public abstract class CollectionLeafResource {
 
 
     @DELETE //delete
-    @Produces("text/html;qs=2")
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_FORM_URLENCODED})
+    @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public Response delete(HashMap<String, String> data) {
+        ResourceUtil.addQueryString(uriInfo.getQueryParameters(), data);
         return runCommand(getDeleteCommand(), data, "rest.resource.delete.message",
             "\"{0}\" deleted successfully.", "rest.resource.delete.forbidden",
                  "DELETE on \"{0}\" is forbidden.");

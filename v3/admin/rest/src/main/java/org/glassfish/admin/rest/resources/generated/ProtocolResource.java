@@ -59,6 +59,12 @@ return new String[][]{{"create-http", "POST", "create-http"}, {"delete-http", "D
 public String getDeleteCommand() {
 	return "delete-protocol";
 }
+	@Path("http-redirect/")
+	public HttpRedirectResource getHttpRedirectResource() {
+		HttpRedirectResource resource = resourceContext.getResource(HttpRedirectResource.class);
+		resource.setParentAndTagName(getEntity() , "http-redirect");
+		return resource;
+	}
 	@Path("port-unification/")
 	public PortUnificationResource getPortUnificationResource() {
 		PortUnificationResource resource = resourceContext.getResource(PortUnificationResource.class);

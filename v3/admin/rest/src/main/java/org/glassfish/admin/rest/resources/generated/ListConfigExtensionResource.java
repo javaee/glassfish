@@ -34,20 +34,22 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.TemplateListOfResource;
+public class ListConfigExtensionResource extends TemplateListOfResource {
 
-//generated code...;
 
-public class ServerDeleteInstanceResource extends org.glassfish.admin.rest.resources.TemplateCommandDeleteResource {
-   public ServerDeleteInstanceResource() {
-       super(
-          "ServerDeleteInstance",
-          "delete-instance",
-          "DELETE",
-          "Delete Instance",
-          "delete-instance",
-          new java.util.HashMap<String, String>() {{
-                    put("id","$parent");
-       }},
-          true);
-    }
+	@Path("{ThisIsAModelBug:NoKeyAttr}/")
+	public ConfigExtensionResource getConfigExtensionResource(@PathParam("ThisIsAModelBug:NoKeyAttr") String id) {
+		ConfigExtensionResource resource = resourceContext.getResource(ConfigExtensionResource.class);
+		resource.setBeanByKey(entity, id);
+		return resource;
+	}
+
+
+@Override
+public String getPostCommand() {
+	return null;
+}
 }
