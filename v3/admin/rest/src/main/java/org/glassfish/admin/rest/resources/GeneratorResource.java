@@ -147,6 +147,8 @@ public class GeneratorResource {
         {"IiopListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=iiop-listener"},
         {"IiopService", "create-ssl", "POST", "create-ssl", "Create", "type=iiop-service"},
         {"IiopService", "delete-ssl", "DELETE", "delete-ssl", "Delete", "type=iiop-service"},
+        {"JavaConfig", "create-profiler", "POST", "create-profiler", "Create Profiler"},
+        {"JavaConfig", "delete-profiler", "DELETE", "delete-profiler", "Delete Profiler"},
         {"JavaConfig", "generate-jvm-report", "POST", "generate-jvm-report", "Generate Report"},
         {"JmsService", "create-jmsdest", "POST", "create-jmsdest", "Create"},
         {"JmsService", "delete-jmsdest", "POST", "delete-jmsdest", "Delete"},

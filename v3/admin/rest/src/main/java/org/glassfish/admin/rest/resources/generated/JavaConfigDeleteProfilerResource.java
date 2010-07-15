@@ -34,49 +34,18 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
-import javax.ws.rs.Path;
-import org.glassfish.admin.rest.resources.*;
-public class JavaConfigResource extends TemplateResource {
 
-@Path("create-profiler/")
-public JavaConfigCreateProfilerResource getJavaConfigCreateProfilerResource() {
-JavaConfigCreateProfilerResource resource = resourceContext.getResource(JavaConfigCreateProfilerResource.class);
-return resource;
-}
+//generated code...;
 
-@Path("delete-profiler/")
-public JavaConfigDeleteProfilerResource getJavaConfigDeleteProfilerResource() {
-JavaConfigDeleteProfilerResource resource = resourceContext.getResource(JavaConfigDeleteProfilerResource.class);
-return resource;
-}
-
-@Path("generate-jvm-report/")
-public JavaConfigGenerateJvmReportResource getJavaConfigGenerateJvmReportResource() {
-JavaConfigGenerateJvmReportResource resource = resourceContext.getResource(JavaConfigGenerateJvmReportResource.class);
-return resource;
-}
-
-@Override
-public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-profiler", "POST", "create-profiler"}, {"delete-profiler", "DELETE", "delete-profiler"}, {"generate-jvm-report", "POST", "generate-jvm-report"}};
-}
-
-	@Path("profiler/")
-	public ProfilerResource getProfilerResource() {
-		ProfilerResource resource = resourceContext.getResource(ProfilerResource.class);
-		resource.setParentAndTagName(getEntity() , "profiler");
-		return resource;
-	}
-	@Path("property/")
-	public PropertiesBagResource getProperties() {
-		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
-		resource.setParentAndTagName(getEntity() , "property");
-		return resource;
-	}
-	@Path("jvm-options/")
-	public JvmOptionsResource getJvmOptionsResource() {
-		JvmOptionsResource resource = resourceContext.getResource(JvmOptionsResource.class);
-		resource.setParentAndTagName(getEntity() , "jvm-options");
-		return resource;
-	}
+public class JavaConfigDeleteProfilerResource extends org.glassfish.admin.rest.resources.TemplateCommandDeleteResource {
+   public JavaConfigDeleteProfilerResource() {
+       super(
+          "JavaConfigDeleteProfiler",
+          "delete-profiler",
+          "DELETE",
+          "Delete Profiler",
+          "delete-profiler",
+          (java.util.HashMap<String, String>) null ,
+          false);
+    }
 }
