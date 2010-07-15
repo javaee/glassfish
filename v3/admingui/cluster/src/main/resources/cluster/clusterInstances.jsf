@@ -75,19 +75,7 @@
 
 <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.InstancesTitle}"
                  helpText="$resource{i18ncs.cluster.InstancesTitleHelp}" >
-    <!facet pageButtonsTop>
-        <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" text="$resource{i18n.button.Save}" disabled="true" >
-                <!command
-                getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
-                getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                prepareSuccessfulMsg();
-                //saveStandaloneInstanceWeight(TableRowGroup="${tableRowGroup}" );
-                setAttribute(key="selectedRows" value="${selectedRows}");
-                />
-            </sun:button>
-        </sun:panelGroup>
-        </facet>
+#include "/cluster/shared/saveInstanceWtButton.inc"
 </sun:title>
 "<br /> <br />
 

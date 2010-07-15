@@ -43,8 +43,30 @@
             <sun:button id="newButton" text="$resource{i18n.button.OK} (TBD)"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
-                //createInstance(Name="#{name}", Config="#{pageSession.config}", Node="#{pageSession.Node}", forCluster=#{pageSession.forCluster}" CopyConfig="#{configOptionGrp}");
-                gf.redirect(page="#{pageSession.listLink}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                createMap(result="#{requestScope.attrs}")
+                mapPut(map="#{requestScope.attrs}" key="name"  value="#{pageSession.name}" )
+                mapPut(map="#{requestScope.attrs}" key="node"  value="#{pageSession.node}" )
+                if (#{forStandalone}){
+                    if ('#{configOptionGrp}=copy'){
+                        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.name}-config", exists="#{requestScope.configExist}");
+                        if (#{requestScope.configExist}){
+                            gf.handleError(detail="#{pageSession.name}-config already exist");
+                        }
+                        createMap(result="#{requestScope.copyAttrs}")
+                        mapPut(map="#{requestScope.copyAttrs}" key="id"  value={"$pageSession{config}" , "$pageSession{name}-config" } );
+                        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/copy-config"  attrs="#{requestScope.copyAttrs}" );
+                        mapPut(map="#{requestScope.attrs}" key="config"  value="#{pageSession.name}-config" )
+                    }
+                    if ("!(#{configOptionGrp}=copy)"){
+                        mapPut(map="#{requestScope.attrs}" key="config"  value="#{pageSession.config}" )
+                    }
+                }
+                if (!#{forStandalone}){
+                    mapPut(map="#{requestScope.attrs}" key="cluster"  value="#{pageSession.clusterName}" )
+                }
+
+                gf.restRequest(endpoint="#{sessionScope.REST_URL}/create-instance"  attrs="#{requestScope.attrs}" method="post"  result="#{requestScope.result}");
+                gf.redirect(page="#{pageSession.listLink}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
              />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}" >
@@ -67,10 +89,10 @@
             </sun:property>
 
             <sun:property id="NameTextProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.instanceName}" >
-                <sun:textField id="NameText" text="#{name}" styleClass="required" columns="$int{55}" required="#{true}" />
+                <sun:textField id="NameText" text="#{pageSession.name}" styleClass="required" columns="$int{55}" required="#{true}" />
             </sun:property>
             <sun:property id="node"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.clusterNew.Node}" helpText="$resource{i18ncs.clusterNew.NodeHelp}">
-                <sun:dropDown id="node" labels="#{pageSession.nodesList}" selected="#{pageSession.Node}" >
+                <sun:dropDown id="node" labels="#{pageSession.nodesList}" selected="#{pageSession.node}" >
                 </sun:dropDown>
             </sun:property>
             <sun:property id="configProp"  rendered="#{pageSession.forStandalone}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.clusterNew.Configuration}" helpText="$resource{i18ncs.clusterNew.ConfigurationHelp}">

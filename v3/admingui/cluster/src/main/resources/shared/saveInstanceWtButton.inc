@@ -1,8 +1,8 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-
+ 
  Copyright 2010 Sun Microsystems, Inc. All rights reserved.
-
+ 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
  and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  language governing permissions and limitations under the License.
-
+ 
  When distributing the software, include this License Header Notice in each
  file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  Header, with the fields enclosed by brackets [] replaced by your own
  identifying information: "Portions Copyrighted [year]
  [name of copyright owner]"
-
+ 
  Contributor(s):
-
+ 
  If you wish your version of this file to be governed by only the CDDL or
  only the GPL Version 2, indicate your decision by adding "[Contributor]
  elects to include this software in this distribution under the [CDDL or GPL
@@ -33,26 +33,20 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
+<!-- shared/saveInstanceWtButton.inc -->
 
-<!initPage
-    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
-    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
-/>
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.clusterInstanceNew.PageTitle}" >
-<!define name="content">
-    <event>
-    <!beforeCreate
-        getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
-        urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
-        setPageSessionAttribute(key="forStandalone" value="#{false}");
-        setPageSessionAttribute(key="helpId", value="clusterInstanceNew");
-        setPageSessionAttribute(key="pageTitle", value="$resource{i18ncs.clusterInstanceNew.PageTitle}");
-        setPageSessionAttribute(key="pageTitleHelp", value="$resource{i18ncs.clusterInstanceNew.PageTitleHelp}");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/cluster/cluster/clusterInstances.jsf?clusterName=#{pageSession.encodedClusterName}");
-        gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/nodes/node", result="#{pageSession.nodesList}");
-    />
-    </event>
-#include "/cluster/shared/instanceNew.inc"
-</define>
-</composition>
+<!facet pageButtonsTop>
+    <sun:panelGroup id="topButtons">
+        <sun:button id="saveButton" text="$resource{i18n.button.Save}"  >
+            <!command
+            getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
+            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
+            prepareSuccessfulMsg();
+            gf.saveInstanceWeight(rows="#{requestScope.selectedRows}" );
+            setAttribute(key="selectedRows" value="${selectedRows}");
+            />
+        </sun:button>
+    </sun:panelGroup>
+</facet>
+
+

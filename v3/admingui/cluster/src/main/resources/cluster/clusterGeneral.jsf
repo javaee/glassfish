@@ -90,7 +90,6 @@
         </sun:panelGroup>
     </facet>
 </sun:title>
-        "<br><br>
 
     <sun:propertySheet id="propertySheet">
 
@@ -120,11 +119,22 @@
             </sun:property>
 
             <sun:property id="instanceStatusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}" >
-                <sun:staticText id="instanceStatusRunning" text="? instance(s) running (TBD)" />
+                <event>
+                <!beforeCreate
+                    createMap(result="#{pageSession.statusAttrs}")
+                    mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{td.value.clusterName}" );
+                    gf.restRequest(
+                        endpoint="#{sessionScope.REST_URL}/list-instances.xml"
+                        attrs="#{pageSession.statusAttrs}"
+                        method="GET"
+                        result="#{pageSession.listInstanceResult}");
+                    gf.getClusterStatusSummary(listInstanceProps="#{pageSession.listInstanceResult.messages[0]['properties']}"
+                    numRunning="#{pageSession.numRunning}"  numNotRunning="#{pageSession.numNotRunning}"  );
+                />
+                </event>
+                <sun:staticText id="instanceStatusRunning"text="#{pageSession.numRunning}" />
                 "<br />
-                <sun:staticText id="instanceStatusStopped" text="? instance(s) stopped (TBD)" />
-                //<sun:staticText id="instanceStatusRunning"text="#{numRunning}" /> "<br />
-                //<sun:staticText id="instanceStatusStopped"text="#{numStopped}" />
+                <sun:staticText id="instanceStatusStopped"text="#{pageSession.numNotRunning}" />
             </sun:property>
         </sun:propertySheetSection>
 

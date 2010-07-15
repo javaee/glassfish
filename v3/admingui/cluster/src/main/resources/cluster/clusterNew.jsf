@@ -54,7 +54,7 @@
     <sun:title id="propertyContentPage" title="$resource{i18ncs.clusterNew.PageTitle}" helpText="$resource{i18ncs.clusterNew.PageTitleHelp}">
         <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
-            <sun:button id="newButton" text="$resource{i18n.button.OK} (TBD)"
+            <sun:button id="newButton" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
                 getUIComponent(clientId="#{pageSession.clusterTableRowGroupId}", component="#{requestScope.tableRowGroup}");
