@@ -40,7 +40,7 @@
     <sun:title id="propertyContentPage" title="#{pageSession.pageTitle}" helpText="#{pageSession.pageTitleHelp}">
         <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
-            <sun:button id="newButton" text="$resource{i18n.button.OK} (TBD)"
+            <sun:button id="newButton" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
                 createMap(result="#{requestScope.attrs}")
