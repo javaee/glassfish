@@ -116,6 +116,7 @@ monitoring     web  800
 	    includeIntegrations(type="org.glassfish.admingui:navNode" root="#{pageSession.treeId}");
 	    gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config", result="#{pageSession.configsList}");
 	    foreach(var="configName" list="#{pageSession.configsList}") {
+		gf.encodeId(id="${configName}" result="#{requestScope.configNameId}");
 		buildUIComponentTree(layoutElement="$attribute{configTreeNodeLE}" parent="$attribute{configsTreeNode}");
 		includeIntegrations(type="org.glassfish.admingui:navNode" root="#{pageSession.treeId}");
 	    }

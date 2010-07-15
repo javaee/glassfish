@@ -45,11 +45,14 @@
     <!afterCreate
 	setAttribute(key="configsTreeNode" value="$this{component}");
     />
-    <sun:treeNode id="${configName}" 
+    <sun:treeNode id="${configNameId}" 
 	    text="${configName}"
 	    url="/configuration/configuration.jsf?configName=${configName}"
 	    imageURL="/resource/common/images/configurations.gif"
 	    expanded="false">
+	<!beforeCreate
+	    gf.encodeId(id="${configName}" result="#{requestScope.configNameId}");
+	/>
 	<!afterCreate
 	    setAttribute(key="configTreeNodeLE" value="$this{layoutElement}");
 	/>

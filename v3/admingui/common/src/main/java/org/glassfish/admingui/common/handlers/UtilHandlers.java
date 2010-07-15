@@ -727,5 +727,20 @@ public class UtilHandlers {
         handlerCtx.setOutputValue("viewRoot", newVR);
     }
 
+    /**
+     *	<p> This handler invokes the {@link GuiUtil#genId(String)} method and
+     *	    returns the result.</p>
+     */
+    @Handler(id="gf.encodeId",
+    	input={
+            @HandlerInput(name="id", type=String.class, required=true)},
+        output={
+            @HandlerOutput(name="result", type=String.class)})
+    public static void encodeId(HandlerContext handlerCtx) {
+        String id = ((String) handlerCtx.getInputValue("id"));
+	handlerCtx.setOutputValue("result", GuiUtil.genId(id));
+    }
+
+
     private static final String PATH_SEPARATOR = "${path.separator}";
 }

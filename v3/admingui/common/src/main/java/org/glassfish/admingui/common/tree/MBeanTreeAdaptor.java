@@ -394,28 +394,7 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
 	    return getLayoutComponent().getId(
 		FacesContext.getCurrentInstance(), getParentUIComponent());
 	}
-	return genId(nodeObject.toString());
-    }
-
-    /**
-     *	<p> This method generates an ID that is safe for JSF for the given
-     *	    String.  It does not guarantee that the id is unique, it is the
-     *	    responsibility of the caller to pass in a String that will result
-     *	    in a UID.  All non-ascii characters will be stripped.</p>
-     *
-     *	@param	uid	A non-null String.
-     */
-    private String genId(String uid) {
-	char [] chArr = uid.toCharArray();
-	int len = chArr.length;
-	int newIdx = 0;
-	for (int idx=0; idx<len; idx++) {
-            char test = chArr[idx];
-	    if (Character.isLetterOrDigit(test) || test=='_' || test=='-' ) {
-		chArr[newIdx++] = test;
-	    }
-	}
-	return new String(chArr, 0, newIdx);
+	return GuiUtil.genId(nodeObject.toString());
     }
 
     /**
