@@ -6,7 +6,7 @@
         id="jruby_container"
         type="org.glassfish.admingui:navNode"
         priority="280"
-        parentId="#{configName}"
+        parentId="#{configNameId}"
         content="pluginTreeNodeJruby.jsf"
     />
 

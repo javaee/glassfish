@@ -5,7 +5,7 @@
                 id="web_container"
                 type="org.glassfish.admingui:navNode" 
                 priority="200"
-                parentId="#{configName}" 
+                parentId="#{configNameId}" 
                 content="configuration/pluginTreeNodeWebContainer.jsf"
         />
 
@@ -13,7 +13,7 @@
                 id="web_httpService"
                 type="org.glassfish.admingui:navNode"
                 priority="450"
-                parentId="#{configName}"
+                parentId="#{configNameId}"
                 content="configuration/pluginTreeNodeHttpService.jsf"
         />
 
@@ -21,7 +21,7 @@
                 id="web_virtualServer"
                 type="org.glassfish.admingui:navNode"
                 priority="500"
-                parentId="#{configName}"
+                parentId="#{configNameId}"
                 content="configuration/pluginTreeNodeVS.jsf"
         />
 
@@ -29,7 +29,7 @@
                 id="web_grizzly"
                 type="org.glassfish.admingui:navNode"
                 priority="550"
-                parentId="#{configName}"
+                parentId="#{configNameId}"
                 content="grizzly/pluginTreeNodeGrizzly.jsf"
         />
 
@@ -37,7 +37,7 @@
                 id="web_threadPool"
                 type="org.glassfish.admingui:navNode"
                 priority="600"
-                parentId="#{configName}"
+                parentId="#{configNameId}"
                 content="configuration/pluginTreeNodeThreadPool.jsf"
         />
 

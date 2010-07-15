@@ -20,7 +20,7 @@
             id="jca_connectorService"
             type="org.glassfish.admingui:navNode"
             priority="750"
-            parentId="#{configName}"
+            parentId="#{configNameId}"
             content="pluginTreeNodeConnectorService.jsf"
     />
 
