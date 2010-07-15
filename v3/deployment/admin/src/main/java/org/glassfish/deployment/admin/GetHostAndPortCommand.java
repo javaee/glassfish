@@ -151,13 +151,10 @@ public class GetHostAndPortCommand implements AdminCommand {
         ApplicationRef appRef = domain.getApplicationRefInTarget(
             moduleId, target); 
 
-        if (appRef == null) {
-            throw new Exception("Application : " + moduleId + 
-                " does not exist on target " + target);
+        List<String> vsList = null;
+        if (appRef != null) {
+            vsList = StringUtils.parseStringList(appRef.getVirtualServers(), " ,");
         }
-        
-        List<String> vsList = StringUtils.parseStringList(
-            appRef.getVirtualServers(), " ,");
 
         if (vsList==null) {
             return getHostAndPort(httpService, securityEnabled);
