@@ -47,7 +47,6 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.jvnet.hk2.component.Habitat;
 
-import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -66,12 +65,6 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
             "org.glassfish.servlet.habitat";
     private InjectionManager injectionManager;
     private InvocationManager invokeMgr;
-
-    /**
-     * A non null value of this attribute indicates that the bean has had 
-     * injection performed on it.
-     */
-    private static final String INJECTED_BEAN = "com.sun.faces.injectedBean";
 
     /**
      * <p>Constructs a new <code>GlassFishInjectionProvider</code> instance.</p>
@@ -98,9 +91,9 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
      */
     public void inject(Object managedBean) throws InjectionProviderException {
         try {
-            Object bean = injectionManager.createManagedObject(managedBean.getClass(), false);
-            FacesContext context = FacesContext.getCurrentInstance();
-            context.getAttributes().put(INJECTED_BEAN, bean);
+            injectionManager.injectInstance(managedBean,
+                                            getNamingEnvironment(),
+                                            false);
         } catch (InjectionException ie) {
             throw new InjectionProviderException(ie);
         }
@@ -144,6 +137,7 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
 
     }
 
+
     // --------------------------------------------------------- Private Methods
 
     /**
@@ -175,6 +169,7 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
             throw new InjectionException("null invocation context");
         }
     }
+
 
     /**
      * <p>This is based off of code in <code>InjectionManagerImpl</code>.</p>
