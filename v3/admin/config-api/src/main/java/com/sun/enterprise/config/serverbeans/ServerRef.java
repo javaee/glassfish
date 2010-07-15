@@ -65,6 +65,7 @@ public interface ServerRef extends ConfigBeanProxy, Injectable, Ref  {
      * @return possible object is
      *         {@link String }
      */
+    @Override
     @Attribute(key=true)
     @NotNull
     @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_.;]*")
@@ -76,6 +77,7 @@ public interface ServerRef extends ConfigBeanProxy, Injectable, Ref  {
      * @param value allowed object is
      *              {@link String }
      */
+    @Override
     public void setRef(String value) throws PropertyVetoException;
 
     /**
@@ -107,7 +109,7 @@ public interface ServerRef extends ConfigBeanProxy, Injectable, Ref  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false",dataType=Boolean.class)
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     public String getLbEnabled();
 
     /**

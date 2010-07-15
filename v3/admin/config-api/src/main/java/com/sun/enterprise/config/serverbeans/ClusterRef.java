@@ -36,18 +36,13 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.*;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
 
 /**
  * Element relating a reference to a cluster to be load balanced to an
@@ -68,6 +63,7 @@ public interface ClusterRef extends ConfigBeanProxy, Injectable, Ref  {
      * @return possible object is
      *         {@link String }
      */
+    @Override
     @Attribute(key=true)
     @NotNull
     @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
@@ -79,6 +75,7 @@ public interface ClusterRef extends ConfigBeanProxy, Injectable, Ref  {
      * @param value allowed object is
      *              {@link String }
      */
+    @Override
     public void setRef(String value) throws PropertyVetoException;
 
     /**
@@ -147,7 +144,4 @@ public interface ClusterRef extends ConfigBeanProxy, Injectable, Ref  {
      *              {@link HealthChecker }
      */
     public void setHealthChecker(HealthChecker value) throws PropertyVetoException;
-
-
-
 }

@@ -332,6 +332,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @DuckTyped
     List<Server> getInstances();
 
+    @DuckTyped
+    public ServerRef getServerRefByRef(String ref);
+
     // four trivial methods that ReferenceContainer's need to implement
     @DuckTyped
     @Override
@@ -391,6 +394,15 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 }
             }
             return instances;
+        }
+
+        public static ServerRef getServerRefByRef(Cluster c, String name) {
+            for (ServerRef ref : c.getServerRef()) {
+                if (ref.getRef().equals(name)) {
+                    return ref;
+                }
+            }
+            return null;
         }
 
         public static ApplicationRef getApplicationRef(Cluster cluster,

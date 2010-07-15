@@ -40,6 +40,9 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.DuckTyped;
+
+import org.glassfish.config.support.*;
 
 import java.util.List;
 
@@ -76,8 +79,29 @@ public interface LoadBalancers extends ConfigBeanProxy, Injectable  {
      * {@link LoadBalancer }
      */
     @Element
+    @Delete(value="delete-http-lb", resolver= TypeAndNameResolver.class, decorator=LoadBalancer.DeleteDecorator.class)
+    @Listing(value="list-http-lbs")
     public List<LoadBalancer> getLoadBalancer();
 
+    /**
+     * Return the load balancer config with the given name,
+     * or null if no such load balancer exists.
+     *
+     * @param   name    the name of the lb config
+     * @return          the LoadBalancer object, or null if no such lb config
+     */
 
+    @DuckTyped
+    public LoadBalancer getLoadBalancer(String name);
 
+    class Duck {
+        public static LoadBalancer getLoadBalancer(LoadBalancers instance, String name) {
+            for (LoadBalancer lb : instance.getLoadBalancer()) {
+                if (lb.getName().equals(name)) {
+                    return lb;
+                }
+            }
+            return null;
+        }
+    }
 }

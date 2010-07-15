@@ -272,6 +272,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link LbConfigs }
      */
     @Element
+    @NotNull
     LbConfigs getLbConfigs();
 
     /**
@@ -289,6 +290,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link LoadBalancers }
      */
     @Element
+    @NotNull
     LoadBalancers getLoadBalancers();
 
     /**
@@ -397,6 +399,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
 
     @DuckTyped
     Server getServerNamed(String name);
+
+    @DuckTyped
+    boolean isServer(String name);
 
     @DuckTyped
     Config getConfigNamed(String name);
@@ -827,6 +832,11 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                 }
             }
             return null;
+        }
+
+        public static boolean isServer(Domain d, String name) {
+            final Server server = d.getServerNamed(name);
+            return (server != null ? true : false);
         }
     }
 }

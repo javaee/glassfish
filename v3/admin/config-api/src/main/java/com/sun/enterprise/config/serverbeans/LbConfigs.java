@@ -36,13 +36,14 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.config.support.*;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.component.Injectable;
 
 import java.util.List;
-
 
 /**
  *
@@ -77,8 +78,29 @@ public interface LbConfigs extends ConfigBeanProxy, Injectable  {
      * {@link LbConfig }
      */
     @Element
+    @Create(value="create-http-lb-config", decorator=LbConfig.Decorator.class)
+    @Delete(value="delete-http-lb-config", resolver= TypeAndNameResolver.class, decorator=LbConfig.DeleteDecorator.class)
+    @Listing(value="list-http-lb-configs")
     public List<LbConfig> getLbConfig();
 
+    /**
+     * Return the lb config with the given name, or null if no such lb config exists.
+     *
+     * @param   name    the name of the lb config
+     * @return          the LbConfig object, or null if no such lb config
+     */
+    
+    @DuckTyped
+    public LbConfig getLbConfig(String name);
 
-
+    class Duck {
+        public static LbConfig getLbConfig(LbConfigs instance, String name) {
+            for (LbConfig lbconfig : instance.getLbConfig()) {
+                if (lbconfig.getName().equals(name)) {
+                    return lbconfig;
+                }
+            }
+            return null;
+        }
+    }  
 }

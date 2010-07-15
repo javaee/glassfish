@@ -36,21 +36,33 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.glassfish.config.support.Create;
-import org.glassfish.config.support.Delete;
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.types.Property;
-import org.jvnet.hk2.component.Injectable;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 import java.beans.PropertyVetoException;
-import java.util.List;
 
-import org.glassfish.api.admin.config.PropertiesDesc;
-import org.jvnet.hk2.config.types.PropertyBag;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
+
+import org.glassfish.config.support.*;
 import org.glassfish.quality.ToDo;
+
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.*;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
+
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.config.PropertiesDesc;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Min;
@@ -85,6 +97,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
+    @Param (name = "name", optional=true)
     void setName(String value) throws PropertyVetoException;
 
     /**
@@ -108,6 +121,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
+    @Param(name = "responsetimeout", optional=true)
     void setResponseTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
@@ -131,6 +145,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
+    @Param(name = "httpsrouting", optional=true)
     void setHttpsRouting(String value) throws PropertyVetoException;
 
     /**
@@ -153,6 +168,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
+    @Param(name = "reloadinterval", optional=true)
     void setReloadPollIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
@@ -173,6 +189,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
+    @Param(name = "monitor", optional=true)
     void setMonitoringEnabled(String value) throws PropertyVetoException;
 
     /**
@@ -193,6 +210,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
+    @Param(name = "routecookie", optional=true)
     void setRouteCookieEnabled(String value) throws PropertyVetoException;
 
     /**
@@ -217,15 +235,174 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * {@link ServerRef }
      */
     @Element("*")
-    @Create(value="create-http-lb-ref")
-    @Delete(value="delete-http-lb-ref")            
     List<Ref> getClusterRefOrServerRef();
-    
+
     /**
     	Properties as per {@link PropertyBag}
      */
+    @Override
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})
     @Element
     List<Property> getProperty();
+
+    @DuckTyped
+    <T> List<T> getRefs(Class<T> type);
+
+    @DuckTyped
+    <T> T getRefByRef(Class<T> type, String ref);   
+
+    public class Duck {
+        public static <T> List<T> getRefs(LbConfig lc, Class<T> type) {
+            List<T> refs = new ArrayList<T>();
+            for (Object r : lc.getClusterRefOrServerRef()) {
+                if (type.isInstance(r)) {
+                    refs.add(type.cast(r));
+                }
+            }
+            // you have to return an umodifiable list since this list
+            // is not the real list of elements as maintained by this config bean
+            return Collections.unmodifiableList(refs);
+        }
+
+        public static <T> T getRefByRef(LbConfig lc, Class<T> type, String ref) {
+            if (ref == null) {
+                return null;
+            }
+
+            for (Ref r : lc.getClusterRefOrServerRef())
+                if (type.isInstance(r) && r.getRef().equals(ref))
+                    return type.cast(r);
+
+            return null;
+        }
+    }
+    
+    @Service
+    @Scoped(PerLookup.class)
+    class Decorator implements CreationDecorator<LbConfig> {
+
+        @Param(primary=true, optional=true)
+        String target;
+
+        @Param (optional=true)
+        String config;
+
+        @Param (optional=true, defaultValue="60")
+        String responsetimeout;
+
+        @Param (optional=true, defaultValue="false")
+        String httpsrouting;
+
+        @Param (optional=true, defaultValue="60")
+        String reloadinterval;
+
+        @Param (optional=true, defaultValue="false")
+        String monitor;
+
+        @Param (optional=true, defaultValue="true")
+        String routecookie;
+
+        @Param(optional=true, name="property", separator=':')
+        Properties properties;
+
+        @Inject
+        Habitat habitat;
+
+        @Inject
+        Domain domain;
+
+        @Inject
+        LbConfigs lbconfigs;
+
+        /**
+         * Create lb-config entries
+         * tasks :
+         *      - ensures that it references an existing cluster
+
+         * @param context administration command context
+         * @param instance newly created configuration element
+         * @throws TransactionFailure
+         * @throws PropertyVetoException
+         *
+         */
+        @Override
+        public void decorate(AdminCommandContext context, final LbConfig instance) throws TransactionFailure, PropertyVetoException {
+            Logger logger = LogDomains.getLogger(LbConfig.class, LogDomains.ADMIN_LOGGER);
+            LocalStringManagerImpl localStrings = new LocalStringManagerImpl(LbConfig.class);            
+
+            if (config == null && target == null) {
+                String msg = localStrings.getLocalString("RequiredTargetOrConfig", "Neither LB config name nor target specified");
+                throw new TransactionFailure(msg);
+            }
+
+            // generate lb config name if not specified
+            if (config == null) {
+                config = target + "_LB_CONFIG";
+            }
+
+            if (lbconfigs.getLbConfig(config) != null) {
+                String msg = localStrings.getLocalString("LbConfigExists", config);
+                throw new TransactionFailure(msg);
+            }
+
+            instance.setName(config);
+            instance.setResponseTimeoutInSeconds(responsetimeout);
+            instance.setReloadPollIntervalInSeconds(reloadinterval);
+            instance.setMonitoringEnabled(monitor);
+            instance.setRouteCookieEnabled(routecookie);
+            instance.setHttpsRouting(httpsrouting);
+
+            // creates a reference to the target
+            if (target != null) {                
+                if (domain.getClusterNamed(target) != null) {
+                   ClusterRef cRef = instance.createChild(ClusterRef.class);
+                   cRef.setRef(target);
+                   instance.getClusterRefOrServerRef().add(cRef);
+                } else if (domain.isServer(target)) {
+                    ServerRef sRef = instance.createChild(ServerRef.class);
+                    sRef.setRef(target);
+                    instance.getClusterRefOrServerRef().add(sRef);
+                } else {
+                    String msg = localStrings.getLocalString("InvalidTarget", target);
+                    throw new TransactionFailure(msg);
+                }
+            }
+
+            // add properties
+            if (properties != null) {
+                for (Object propname: properties.keySet()) {
+                    Property newprop = instance.createChild(Property.class);
+                    newprop.setName((String) propname);
+                    newprop.setValue(properties.getProperty((String) propname));
+                    instance.getProperty().add(newprop);
+                }
+            }
+            logger.info(localStrings.getLocalString("http_lb_admin.LbConfigCreated", config));
+        }
+    }
+
+    @Service
+    @Scoped(PerLookup.class)
+    class DeleteDecorator implements DeletionDecorator<LbConfigs, LbConfig> {
+        @Inject
+        private Domain domain;
+
+        @Override
+        public void decorate(AdminCommandContext context, LbConfigs parent, LbConfig child)
+                throws PropertyVetoException, TransactionFailure {
+            Logger logger = LogDomains.getLogger(LbConfig.class, LogDomains.ADMIN_LOGGER);
+            LocalStringManagerImpl localStrings = new LocalStringManagerImpl(LbConfig.class);
+
+            String lbConfigName = child.getName();
+            LbConfig lbConfig = domain.getLbConfigs().getLbConfig(lbConfigName);
+
+            //Ensure there are no refs 
+            if ( (lbConfig.getClusterRefOrServerRef().size() != 0 ) ) {
+                String msg = localStrings.getLocalString("LbConfigNotEmpty", lbConfigName);
+                throw new TransactionFailure(msg);
+            }
+            logger.info(localStrings.getLocalString("http_lb_admin.LbConfigDeleted", lbConfigName));
+        }
+   }
 }
