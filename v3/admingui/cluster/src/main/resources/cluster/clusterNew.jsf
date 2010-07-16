@@ -44,7 +44,7 @@
     <event>
     <!beforeCreate
         setPageSessionAttribute(key="configOption", value="copy");
-        setAttribute(key="config", value="default-config");
+        setPageSessionAttribute(key="config", value="default-config");
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config", result="#{pageSession.configsList}");
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/nodes/node", result="#{pageSession.nodesList}");
     />
