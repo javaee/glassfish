@@ -177,11 +177,11 @@ public class VersioningService {
     public static final Boolean isUntagged(String appName) {
        Boolean isUntagged = false;
        try {
-           String untaggedName = getUntaggedName(appName);
+           String untaggedName = VersioningDeploymentUtil.getUntaggedName(appName);
            if(untaggedName != null && untaggedName.equals(appName)){
                isUntagged = true;
            }
-       } catch (VersioningSyntaxException e) {
+       } catch (VersioningDeploymentSyntaxException e) {
        }
 
        return isUntagged;
