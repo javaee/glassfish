@@ -41,7 +41,7 @@
 />
 <!composition template="/templates/default.layout"  
     guiTitle="$resource{i18n_web.transport.listPageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:transports');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configurations:#{pageSession.configName}:networkConfig:transports');"
 >
 <!define name="content">
     <event>
@@ -57,7 +57,7 @@
         setPageSessionAttribute(key="tableTitle"  value="$resource{i18n_web.transport.tableName}");
     />
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configuration:networkConfig:transports");</script>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configurations:#{pageSession.configName}:networkConfig:transports");</script>
 
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"

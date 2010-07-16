@@ -39,7 +39,7 @@
 <sun:treeNode id="configurations"
 	text="$resource{i18n.tree.configurations}"
 // FIXME: Should be configurations.jsf
-	url="/common/configuration/configuration.jsf"
+	url="/common/configuration/configurations.jsf"
 	imageURL="/resource/images/configurations.gif"
 	expanded="true">
     <!afterCreate

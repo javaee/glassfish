@@ -288,7 +288,24 @@ public class UtilHandlers {
         }
     }
 
-    
+    /**
+     * <p> Test if a list <code>List</code>contains the string </p>
+     * <p> Input value: "list" -- Type: <code>java.util.List</code>
+     * <p> Input value: "testStr" -- Type: <code>String</code>
+     * <p> Output value: "contain" -- Type: <code>Boolean</code>
+     */
+    @Handler(id="gf.containedIn",
+    	input={
+            @HandlerInput(name="list", type=List.class, required=true),
+            @HandlerInput(name="testStr", type=String.class, required=true)},
+        output={
+        @HandlerOutput(name="contain", type=Boolean.class)})
+    public static void containedIn(HandlerContext handlerCtx) {
+        List list = (List)handlerCtx.getInputValue("list");
+
+        boolean contain = (list==null) ? false : list.contains(handlerCtx.getInputValue("testStr"));
+        handlerCtx.setOutputValue("contain",  contain);
+    }
 
 
     /**
@@ -740,6 +757,8 @@ public class UtilHandlers {
         String id = ((String) handlerCtx.getInputValue("id"));
 	handlerCtx.setOutputValue("result", GuiUtil.genId(id));
     }
+
+
 
 
     private static final String PATH_SEPARATOR = "${path.separator}";

@@ -41,7 +41,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18nc.msgSecurity.ListPageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:security:messageSecurity');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configurations:#{pageSession.configName}:security:messageSecurity');"
 >
 <!define name="content">
     <event>
@@ -57,7 +57,7 @@
         setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.msgSecurity.TableTitle}");
     />
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configuration:security:messageSecurity");</script>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configurations:#{pageSession.configName}:security:messageSecurity");</script>
 
 <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"

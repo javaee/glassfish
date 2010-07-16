@@ -87,7 +87,7 @@ public class ClusterHandler {
             }
          }catch(Exception ex){
              //Log error ?
-             handlerCtx.setOutputValue("status", "UNKNOWN");
+             handlerCtx.setOutputValue("status", GuiUtil.getMessage("status.Unknown"));
          }
      }
     
@@ -325,6 +325,41 @@ public class ClusterHandler {
             return null;
         }
     }
+
+
+    /*
+     * This handler takes in the result from list-instances command, go through the Property list and extract the
+     * "Name" from the properties.
+     */
+    @Handler(id = "gf.getMessageProps",
+        input = {
+            @HandlerInput(name = "messageListProps", type = List.class, required = true)
+        },
+        output = {
+            @HandlerOutput(name = "keyList", type = List.class),
+            @HandlerOutput(name = "propsMap", type = Map.class),
+            @HandlerOutput(name = "listEmpty", type = Boolean.class)
+        })
+    public static void getMessageProps(HandlerContext handlerCtx) {
+        //If restRequest() change to output json,  this needs to be changed.
+        List<Map<String, String>> props = (List<Map<String, String>>) handlerCtx.getInputValue("messageListProps");
+        List keyList = new ArrayList();
+        Map propsMap = new HashMap();
+        try{
+            for(Map<String, String> oneProp : props){
+                keyList.add(oneProp.get("name"));
+                propsMap.put(oneProp.get("name"), oneProp.get("value"));
+            }
+         }catch(Exception ex){
+             //log error ?
+         }
+        handlerCtx.setOutputValue("keyList",  keyList);
+        handlerCtx.setOutputValue("propsMap",  propsMap);
+        handlerCtx.setOutputValue("listEmpty",  (keyList.size()==0));
+        
+     }
+
+
 
     public static String CLUSTER_RESOURCE_NAME = "org.glassfish.cluster.admingui.Strings";
 

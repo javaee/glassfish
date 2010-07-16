@@ -42,7 +42,7 @@
 <!composition
 	template="/templates/default.layout"
 	guiTitle="$resource{i18njms.jmsPhysDestinations.pageTitle}"
-	guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configurations:#{configName}:jmsConfiguration:jmsPhysDest');">
+	guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configurations:#{pageSession.configName}:jmsConfiguration:jmsPhysDest');">
 <!define name="content">
     <event>
         <!beforeCreate

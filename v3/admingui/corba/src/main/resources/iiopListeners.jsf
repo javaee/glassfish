@@ -43,7 +43,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18n_corba.iiopListeners.ListPageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:orb:iiopListeners');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configurations:#{pageSession.configName}:orb:iiopListeners');"
 >
 <!define name="content">
     <event>
@@ -61,7 +61,7 @@
         setPageSessionAttribute(key="tableTitle" value="$resource{i18n_corba.iiopListeners.TableTitle}");
     />
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configuration:orb:iiopListeners");</script>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configurations:#{pageSession.configName}:orb:iiopListeners");</script>
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
          <sun:title id="propertyContentPage" title="$resource{i18n_corba.iiopListeners.ListPageTitle}"

@@ -235,7 +235,7 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
                 }
 
             }catch (Exception ex3){
-                ex3.printStackTrace();
+                //ex3.printStackTrace();
 
             }
            

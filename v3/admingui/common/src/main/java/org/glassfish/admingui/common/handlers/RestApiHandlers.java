@@ -190,6 +190,8 @@ public class RestApiHandlers {
         }
         method = method.toLowerCase();
 
+        //we can move to fine level later.
+        GuiUtil.getLogger().info("restRequest: endpoint=" + endpoint + "\nattrs="+attrs + "\nmethod="+method);
 	// Execute the request...
         RestResponse response = null;
         if ("post".equals(method)) {

@@ -43,8 +43,8 @@
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18n_web.grizzly.networkListenersPageTitle}"
     guiTemplateOnLoad="
-        admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:protocols');
-        admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:networkListeners');"
+        admingui.nav.refreshTree('treeForm:tree:configurations:#{pageSession.configName}:networkConfig:protocols');
+        admingui.nav.refreshTree('treeForm:tree:configurations:#{pageSession.configName}:networkConfig:networkListeners');"
 >
 <!define name="listTableDeleteButton">
     <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
@@ -73,7 +73,7 @@
         setPageSessionAttribute(key="protocolStrEl", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols");
     />
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configuration:networkConfig:networkListeners");</script>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configurations:#{pageSession.configName}:networkConfig:networkListeners");</script>
     <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
      <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenersPageTitle}"

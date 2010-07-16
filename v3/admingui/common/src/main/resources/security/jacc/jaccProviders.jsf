@@ -42,7 +42,7 @@
 />
 <!composition template="/templates/default.layout"  
     guiTitle="$resource{i18nc.jacc.PageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:security:jaccProviders');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configurations:#{pageSession.configName}:security:jaccProviders');"
 >
 <!define name="content">
     <event>
@@ -58,7 +58,7 @@
         setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.jacc.TableTitle}");
     />
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configuration:security:jaccProviders");</script>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configurations:#{pageSession.configName}:security:jaccProviders");</script>
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
          <sun:title id="propertyContentPage" title="$resource{i18nc.jacc.PageTitle}"
