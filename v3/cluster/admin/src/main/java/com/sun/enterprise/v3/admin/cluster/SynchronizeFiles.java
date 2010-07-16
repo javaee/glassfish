@@ -100,8 +100,6 @@ public class SynchronizeFiles implements AdminCommand {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         logger = context.getLogger();
-System.out.println("SynchronizeFiles: logger " + logger.getName());
-logger.setLevel(Level.FINEST);
         SyncRequest sr = null;
         try {
             /*
