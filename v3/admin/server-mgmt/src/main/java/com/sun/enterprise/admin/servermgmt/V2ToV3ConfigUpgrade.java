@@ -35,11 +35,6 @@
  *
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.sun.enterprise.admin.servermgmt;
 
 import java.beans.PropertyVetoException;
@@ -64,7 +59,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 @Service
 @Scoped(PerLookup.class)
-public class V2ToV3ConfigUpgrade  implements ConfigurationUpgrade, PostConstruct {
+public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
     @Inject
     JavaConfig jc;
 
@@ -117,18 +112,13 @@ public class V2ToV3ConfigUpgrade  implements ConfigurationUpgrade, PostConstruct
     private         List<String> oldJvmOptions;
     private final   List<String> newJvmOptions = new ArrayList<String>();
 
-    private static final String[] REMOVAL_LIST = new String[] {
+    private static final String[] BASE_REMOVAL_LIST = new String[] {
             "-Djavax.management.builder.initial",
             "-Dsun.rmi.dgc.server.gcInterval",
             "-Dsun.rmi.dgc.client.gcInterval",
             "-Dcom.sun.enterprise.taglibs",
             "-Dcom.sun.enterprise.taglisteners",
-
-            // the following are items from the add list...
-            "-XX:+UnlockDiagnosticVMOptions",
-            "-XX:+LogVMOutput",
             "-XX:LogFile",
-            "-DANTLR_USE_DIRECT_CLASS_LOADING",
         };
 
     private static final String[] ADD_LIST = new String[] {
@@ -136,7 +126,22 @@ public class V2ToV3ConfigUpgrade  implements ConfigurationUpgrade, PostConstruct
         "-XX:+LogVMOutput",
         "-XX:LogFile=${com.sun.aas.instanceRoot}/logs/jvm.log",
         "-DANTLR_USE_DIRECT_CLASS_LOADING=true",
+        "-Dosgi.shell.telnet.port=6666",
+        "-Dosgi.shell.telnet.maxconn=1",
+        "-Dosgi.shell.telnet.ip=127.0.0.1",
+        "-Dfelix.fileinstall.dir=${com.sun.aas.installRoot}/modules/autostart/",
+        "-Dfelix.fileinstall.poll=5000",
+        "-Dfelix.fileinstall.debug=1",
+        "-Dfelix.fileinstall.bundles.new.start=true",
+        "-Dorg.glassfish.web.rfc2109_cookie_names_enforced=false",
     };
+
+    private static final List<String> REMOVAL_LIST = new ArrayList<String>();
+
+    static {
+        Collections.addAll(REMOVAL_LIST, BASE_REMOVAL_LIST);
+        Collections.addAll(REMOVAL_LIST, ADD_LIST);
+    }
 
     private class JavaConfigChanger implements SingleConfigCode<JavaConfig> {
         public Object run(JavaConfig jc) throws PropertyVetoException, TransactionFailure {
