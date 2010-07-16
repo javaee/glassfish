@@ -82,7 +82,7 @@
                     method="GET"
                     result="#{pageSession.listInstanceResult}");
                 gf.getInstanceStatus(listInstanceProps="#{pageSession.listInstanceResult.messages[0]['properties']}" instanceName="#{td.value.Name}" status="#{requestScope.status}" );
-                setAttribute(key="statusString" value="$resource{i18ncs.status.$attribute{status}}  &nbsp; $resource{i18ncs.status.image.$attribute{status}}");
+                setAttribute(key="statusString" value="$resource{i18nc.status.$attribute{status}}  &nbsp; $resource{i18nc.status.image.$attribute{status}}");
                 />
         </staticText>
     </sun:tableColumn>

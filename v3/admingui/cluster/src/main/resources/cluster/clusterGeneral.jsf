@@ -122,7 +122,7 @@
                 <event>
                 <!beforeCreate
                     createMap(result="#{pageSession.statusAttrs}")
-                    mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{td.value.clusterName}" );
+                    mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{pageSession.clusterName}" );
                     gf.restRequest(
                         endpoint="#{sessionScope.REST_URL}/list-instances.xml"
                         attrs="#{pageSession.statusAttrs}"
