@@ -528,7 +528,7 @@ public abstract class PersistentManagerBase
      * false, any sessions found in the Store may still be picked up when
      * the Manager is started again.
      *
-     * @param save true if sessions should be saved on restart, false if
+     * @param saveOnRestart true if sessions should be saved on restart, false if
      *     they should be ignored.
      */
     public void setSaveOnRestart(boolean saveOnRestart) {
