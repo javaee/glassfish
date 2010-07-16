@@ -77,19 +77,19 @@ public class CreateThreadpool implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new
             LocalStringManagerImpl(CreateThreadpool.class);
 
-    @Param(name="maxthreadpoolsize", optional=true)
+    @Param(name="maxthreadpoolsize", optional=true, alias="maxThreadPoolSize")
     String maxthreadpoolsize;
 
-    @Param(name="minthreadpoolsize", optional=true)
+    @Param(name="minthreadpoolsize", optional=true, alias="minThreadPoolSize")
     String minthreadpoolsize;
 
-    @Param(name= "idletimeout", optional=true)
+    @Param(name= "idletimeout", optional=true, alias="idleThreadTimeoutSeconds")
     String idletimeout;
 
     @Param(name="workqueues", optional=true)
     String workqueues;
 
-    @Param(name="maxqueuesize", optional=true)
+    @Param(name="maxqueuesize", optional=true, alias="maxQueueSize")
     String maxQueueSize;
 
     @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
