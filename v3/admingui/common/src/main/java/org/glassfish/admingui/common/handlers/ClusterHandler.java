@@ -192,7 +192,7 @@ public class ClusterHandler {
                 }
             }
             try{
-                response = RestApiHandlers.restRequest( prefix + clusterName + "/" + action + ".xml", null, "post" ,null);
+                response = RestApiHandlers.restRequest( prefix + clusterName + "/" + action, null, "post" ,null);
             }catch (Exception ex){
                 GuiUtil.getLogger().severe("Error in clusterAction ; \nendpoint = " + prefix + clusterName + "/" + action + ".xml\n" );
                 response = null;
@@ -225,13 +225,11 @@ public class ClusterHandler {
             if(action.equals("delete-instance")){
                 response = deleteInstance(instanceName, (String) oneRow.get("Node"));
             }else{
-                Map attrsMap = new HashMap();
-                attrsMap.put("id", instanceName);
                 try{
-                    response = RestApiHandlers.restRequest(prefix + instanceName + "/" + action + ".xml", attrsMap, "post" ,null);
+                       response = RestApiHandlers.restRequest(prefix + instanceName + "/" + action + ".xml", null, "post" ,null);
                 }catch (Exception ex){
                     GuiUtil.getLogger().severe("Error in instanceAction ; \nendpoint = " + prefix + instanceName + "/" + action + ".xml\n" +
-                            "attrsMap=" + attrsMap);
+                            "attrsMap=" + null);
                     response = null;
                 }
             }
@@ -314,7 +312,7 @@ public class ClusterHandler {
             nodeName = (String) iMap.get("Node");
         }
         Map attrsMap = new HashMap();
-        attrsMap.put("id", instanceName);
+        //attrsMap.put("id", instanceName);
         attrsMap.put("nodeagent", nodeName);
         try{
             return  RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance.xml", attrsMap, "post" ,null);

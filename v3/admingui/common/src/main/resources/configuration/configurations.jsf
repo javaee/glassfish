@@ -126,21 +126,25 @@
                     result="#{pageSession.listInstanceResult}");
                 gf.getMessageProps(messageListProps="#{pageSession.listInstanceResult.messages[0]['properties']}" ,
                     keyList="#{requestScope.instanceList}" propsMap="#{requestScope.propsMap}"  listEmpty="#{requestScope.listEmpty}");
+                if(#{pageSession.configName}=server-config){
+                    listAdd(list="#{requestScope.instanceList}" value="server" index="0");
+                }
             />
          </event>
             <foreach key="instance" list="#{requestScope.instanceList}">
                 <event>
                 <!beforeEncode
-                    setAttribute(key="status" value="#{requestScope.propsMap[ '${instance}']}");
-                    setAttribute(key="statusString" value="$resource{i18nc.status.$attribute{status}}  &nbsp; $resource{i18nc.status.image.$attribute{status}}");
-                    if (#{instance}=server){
+                    setAttribute(key="isAdminServer" value="#{false}");
+                     if (#{instance}=server){
                         setAttribute(key="iurl" value="#{request.contextPath}/common/appServer/serverInstGeneralPe.jsf");
                         setAttribute(key="isAdminServer" value="#{true}");
+                        //TODO:  need to check if restart is required.
+                        setAttribute(key="status" value="RUNNING");
                     }
 
-                    if (! #{requestScope.isAdminServer}){
+                    if (!#{requestScope.isAdminServer}){
+                        setAttribute(key="status" value="#{requestScope.propsMap[ '${instance}']}");
                         gf.containedIn(list="#{pageSession.standaloneList}" testStr="#{instance}" contain="#{requestScope.isStandalone}" );
-
                         if (#{requestScope.isStandalone}){
                             setAttribute(key="iurl" value="#{request.contextPath}/cluster/standalone/standaloneInstanceEdit.jsf?instanceName=#{instance}");
                         }
@@ -149,6 +153,9 @@
                             setAttribute(key="iurl" value="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?instanceName=#{instance}" );
                         }
                     }
+
+                    setAttribute(key="statusString" value="$resource{i18nc.status.$attribute{status}}  &nbsp; $resource{i18nc.status.image.$attribute{status}}");
+
                 />
                 </event>
                 <sun:hyperlink url="#{requestScope.iurl}" text="#{instance}" />
