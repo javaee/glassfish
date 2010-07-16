@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,30 +32,63 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ *
  */
+package org.glassfish.common.util.admin.locking;
 
-package org.glassfish.config.support;
+import org.glassfish.common.util.admin.ManagedFile;
+import org.junit.Ignore;
 
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.config.DomDocument;
-
-import javax.xml.stream.XMLStreamException;
+import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.Lock;
 
 /**
- * Contract defining services capable of persisting the configuration.
+ * Standalone test to hold a read or write lock.
  *
- * @author Jerome Dochez
+ * usage java cp ... TestClient [ read | write ]
+ *
+ * By default a read lock is obtained.
+ *
  */
-@Contract
-public interface ConfigurationPersistence {
+@Ignore
+public class TestClient {
 
-    /**
-     * callback when the new {@link DomDocument} instance should be saved to an
-     * external media like a file
-     * @param doc the new document instance
-     * @throws IOException if the file cannot be opened/written/closed
-     * @throws XMLStreamException if the xml cannot be written out successfully
-     */
-    public void save(DomDocument doc) throws IOException, XMLStreamException;
+    public static void main(String[] args) {
+        FileLockTest test = new FileLockTest();
+        byte bytes[] = new byte[100];
+        String mode = "read";
+        if (args.length>0) {
+            mode = args[0];
+        }
+        try {
+            File f = test.getFile();
+            ManagedFile managed = new ManagedFile(f, -1, -1);
+            Lock lock = null;
+            try {
+                if (mode.equals("read")) {
+                    lock = managed.accessRead();
+                } else
+                if (mode.equals("write")) {
+                    lock = managed.accessWrite();
+                } else {
+                    System.out.println("usage : TestClient [ read | write ]. Invalid option : " + mode);
+                    return;
+                }
+
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+                return;
+            }
+            System.out.println("I have the lock in "+ mode +" mode, press enter to release ");
+            System.in.read(bytes);
+            lock.unlock();
+            System.out.println("released");
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return;
+        }
+
+    }
 }

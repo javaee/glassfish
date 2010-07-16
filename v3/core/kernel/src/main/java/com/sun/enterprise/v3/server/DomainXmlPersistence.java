@@ -35,6 +35,10 @@
  */
 package com.sun.enterprise.v3.server;
 
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.common.util.admin.ManagedFile;
+import org.glassfish.common.util.admin.ParamTokenizer;
+import org.glassfish.config.support.ConfigurationAccess;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -48,6 +52,9 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.Lock;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -57,75 +64,132 @@ import java.util.logging.Logger;
  */
 @Service
 @Scoped(Singleton.class)
-public class DomainXmlPersistence implements ConfigurationPersistence {
+public class DomainXmlPersistence implements ConfigurationPersistence, ConfigurationAccess {
 
     @Inject
     ServerEnvironmentImpl env;
     @Inject
     protected Logger logger;
+
     final XMLOutputFactory xmlFactory = XMLOutputFactory.newInstance();
+
+    final static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(ParamTokenizer.class);    
+
+
+    private ManagedFile getConfigFile() throws IOException {
+        File location=null;
+        try {
+            // I am locking indefinitely with a 2 seconds timeOut.
+            location = getDestination();
+            return new ManagedFile(location, 2000, -1);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE,
+                    localStrings.getLocalString("InvalidLocation",
+                            "Cannot obtain configuration location {0}, configuration changes will not be persisted",
+                            location), e);
+            throw e;
+        }
+    }
+
+    @Override
+    public Lock accessRead() throws IOException, TimeoutException {
+        return getConfigFile().accessRead();
+    }
+
+    @Override
+    public Lock accessWrite() throws IOException, TimeoutException {
+        return getConfigFile().accessWrite();        
+    }
 
     public synchronized void save(DomDocument doc) throws IOException {
         File destination = getDestination();
         if (destination == null) {
-            logger.fine("domain.xml not persisted, null destination");
+            logger.severe(localStrings.getLocalString("NoLocation",
+                    "domain.xml cannot be persisted, null destination"));
             return;
         }
-        // get a temporary file
-        File f = File.createTempFile("domain", ".xml", destination.getParentFile());
-        if (f == null) {
-            throw new IOException("Cannot create temporary file when saving domain.xml");
-        }
-        // write to the temporary file
-        XMLStreamWriter writer = null;
-        OutputStream fos = getOutputStream(f);
+        Lock writeLock=null;
         try {
-            writer = xmlFactory.createXMLStreamWriter(new BufferedOutputStream(fos));
-            IndentingXMLStreamWriter indentingXMLStreamWriter = new IndentingXMLStreamWriter(writer);
-            doc.writeTo(indentingXMLStreamWriter);
-            indentingXMLStreamWriter.close();
-        }
-        catch (XMLStreamException e) {
-            logger.severe("Temporary file could not be created, disk full?");
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            return;
-            // return after calling finally clause, because since temp file couldn't be saved,
-            // renaming should not be attempted
-        }
-        finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                }
-                catch (XMLStreamException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-            }
             try {
-                fos.close();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+                writeLock = accessWrite();
+            } catch (TimeoutException e) {
+                logger.log(Level.SEVERE, localStrings.getLocalString("Timeout",
+                        "Timed out when waiting for write lock on configuration file, changes not persisted"));
+                return;
 
-        // backup the current file
-        File backup = new File(env.getConfigDirPath(), "domain.xml.bak");
-        if (backup.exists() && !backup.delete()) {
-            logger.severe("Could not delete previous backup file at " + backup.getAbsolutePath());
-            return;
-        }
-        if (destination != null) {
-            if (!destination.renameTo(backup)) {
-                logger.severe("Could not rename " + destination.getAbsolutePath() + " to " + backup.getAbsolutePath());
+            }
+
+            // get a temporary file
+            File f = File.createTempFile("domain", ".xml", destination.getParentFile());
+            if (f == null) {
+                throw new IOException(localStrings.getLocalString("NoTmpFile",
+                        "Cannot create temporary file when saving domain.xml"));
+            }
+            // write to the temporary file
+            XMLStreamWriter writer = null;
+            OutputStream fos = getOutputStream(f);
+            try {
+                writer = xmlFactory.createXMLStreamWriter(new BufferedOutputStream(fos));
+                IndentingXMLStreamWriter indentingXMLStreamWriter = new IndentingXMLStreamWriter(writer);
+                doc.writeTo(indentingXMLStreamWriter);
+                indentingXMLStreamWriter.close();
+            }
+            catch (XMLStreamException e) {
+                logger.log(Level.SEVERE,
+                        localStrings.getLocalString("TmpFileNotSaved",
+                                "Configuration could not be saved to temporary file"),e);
+                return;
+                // return after calling finally clause, because since temp file couldn't be saved,
+                // renaming should not be attempted
+            }
+            finally {
+                if (writer != null) {
+                    try {
+                        writer.close();
+                    }
+                    catch (XMLStreamException e) {
+                        logger.log(Level.SEVERE, localStrings.getLocalString("CloseFailed", 
+                                "Cannot close configuration writer stream"), e);
+                    }
+                }
+                try {
+                    fos.close();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // backup the current file
+            File backup = new File(env.getConfigDirPath(), "domain.xml.bak");
+            if (backup.exists() && !backup.delete()) {
+                logger.severe(localStrings.getLocalString("BackupDeleteFailed",
+                        "Could not delete previous backup file at {0}, configuration changes not persisted" , backup.getAbsolutePath()));
                 return;
             }
-            // save the temp file to domain.xml
-            if (!f.renameTo(destination)) {
-                logger.severe("Could not rename " + f.getAbsolutePath() + " to " + destination.getAbsolutePath());
-                if (!backup.renameTo(destination)) {
-                    logger.severe("Could not rename backup to" + destination.getAbsolutePath());
+            if (destination != null) {
+                if (!destination.renameTo(backup)) {
+                    logger.severe(localStrings.getLocalString("TmpRenameFailed",
+                            "Could not rename {0} to {1}, configuration changes not persisted",  destination.getAbsolutePath() , backup.getAbsolutePath()));
+                    return;
                 }
+                // save the temp file to domain.xml
+                if (!f.renameTo(destination)) {
+                    logger.severe(localStrings.getLocalString("TmpRenameFailed",
+                            "Could not rename {0} to {1}, configuration changes not persisted",  f.getAbsolutePath() , destination.getAbsolutePath()));
+                    if (!backup.renameTo(destination)) {
+                        logger.severe(localStrings.getLocalString("RenameFailed",
+                                "Could not rename backup to {0}, configuration changes not persisted", destination.getAbsolutePath()));
+                    }
+                }
+            }
+        } catch(IOException e) {
+            logger.log(Level.SEVERE, localStrings.getLocalString("ioexception",
+                    "IOException while saving the configuration, changes not persisted"), e);
+        } finally {
+            if (writeLock!=null) {
+                writeLock.unlock();
             }
         }
         saved(destination);
