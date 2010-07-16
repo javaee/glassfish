@@ -264,6 +264,9 @@ public class EjbDeployer
             if (cmpDeployer != null) {
                 cmpDeployer.clean(dc);
             }
+        }
+        //Security related cleanup is to be done for the undeploy event
+        if( params.origin.isUndeploy()) {
 
             //Removing EjbSecurityManager for undeploy case
             String appName = params.name();
