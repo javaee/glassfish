@@ -53,6 +53,8 @@ import org.jvnet.hk2.config.types.PropertyBag;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.JavaClassName;
+
 /**
  * The provider-config element defines the configuration of an authentication
  * provider
@@ -81,6 +83,7 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, PropertyBag
      *         {@link String }
      */
     @Attribute(key=true)
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     @NotNull
     public String getProviderId();
 
@@ -133,6 +136,7 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, PropertyBag
      */
     @Attribute
     @NotNull
+    @JavaClassName
     public String getClassName();
 
     /**

@@ -47,6 +47,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
@@ -105,6 +106,7 @@ public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     public String getDefaultProvider();
 
     /**
@@ -125,6 +127,7 @@ public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     public String getDefaultClientProvider();
 
     /**

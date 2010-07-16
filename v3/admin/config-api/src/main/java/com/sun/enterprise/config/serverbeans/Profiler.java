@@ -52,6 +52,7 @@ import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  *
@@ -82,6 +83,7 @@ public interface Profiler extends ConfigBeanProxy, Injectable, PropertyBag, JvmO
      */
     @Attribute(key=false)   // bizarre case of having a name, but it's not a key; it's a singleton
     @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     public String getName();
 
     /**

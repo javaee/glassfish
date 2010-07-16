@@ -55,6 +55,8 @@ import org.glassfish.quality.ToDo;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.NotNull;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.JavaClassName;
+
 /**
  * An audit-module specifies an optional plug-in module which implements audit
  * capabilities.
@@ -100,7 +102,7 @@ public interface AuditModule extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     @Attribute
     @NotNull
-    @Pattern(regexp="^[\\S]*$")
+    @JavaClassName
     String getClassname();
 
     /**

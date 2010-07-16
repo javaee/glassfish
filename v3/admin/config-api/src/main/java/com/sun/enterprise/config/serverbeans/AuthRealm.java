@@ -36,26 +36,20 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.*;
+import org.glassfish.api.admin.RestRedirect;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.config.PropertyDesc;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.*;
-
-import java.beans.PropertyVetoException;
-import java.util.List;
-
-import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.admin.config.PropertiesDesc;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
-import org.glassfish.api.admin.RestRedirects;
-import org.glassfish.api.admin.RestRedirect;
 
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.NotNull;
-
-import com.sun.enterprise.config.serverbeans.customvalidators.FileRealmPropertyCheck;
-import com.sun.enterprise.config.serverbeans.customvalidators.LDAPRealmPropertyCheck;
-import com.sun.enterprise.config.serverbeans.customvalidators.JDBCRealmPropertyCheck;
-import com.sun.enterprise.config.serverbeans.customvalidators.SolarisRealmPropertyCheck;
+import javax.validation.constraints.Pattern;
+import java.beans.PropertyVetoException;
+import java.util.List;
 
 @Configured
 @FileRealmPropertyCheck
@@ -105,6 +99,7 @@ public interface AuthRealm extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     @Attribute
     @NotNull
+    @JavaClassName
     String getClassname();
 
     /**
