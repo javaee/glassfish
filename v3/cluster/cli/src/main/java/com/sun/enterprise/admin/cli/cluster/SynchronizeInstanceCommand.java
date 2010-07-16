@@ -74,7 +74,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
 
     private RemoteCommand syncCmd;
 
-    private static enum SyncLevel { TOP, DIRECTORY, RECURSIVE };
+    private static enum SyncLevel { TOP, FILES, DIRECTORY, RECURSIVE };
 
     @Override
     protected void validate() throws CommandException {
@@ -144,7 +144,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
                 new File(new File(instanceDir, "config"), "domain.xml");
             long dtime = domainXml.lastModified();
 
-            SyncRequest sr = getModTimes("config", SyncLevel.DIRECTORY);
+            SyncRequest sr = getModTimes("config", SyncLevel.FILES);
             synchronizeFiles(sr);
 
             /*
@@ -262,17 +262,20 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             long time = f.lastModified();
             if (time == 0)
                 continue;
-            if (f.isDirectory() && level == SyncLevel.RECURSIVE)
-                getFileModTimes(f, baseDir, sr, level);
-            else {
-                String name = baseDir.toURI().relativize(f.toURI()).getPath();
-                // if name is a directory, it will end with "/"
-                if (name.endsWith("/"))
-                    name = name.substring(0, name.length() - 1);
-                SyncRequest.ModTime mt = new SyncRequest.ModTime(name, time);
-                sr.files.add(mt);
-                logger.printDebugMessage(f + ": mod time " + mt.time);
+            if (f.isDirectory()) {
+                if (level == SyncLevel.RECURSIVE) {
+                    getFileModTimes(f, baseDir, sr, level);
+                    continue;
+                } else if (level == SyncLevel.FILES)
+                    continue;
             }
+            String name = baseDir.toURI().relativize(f.toURI()).getPath();
+            // if name is a directory, it will end with "/"
+            if (name.endsWith("/"))
+                name = name.substring(0, name.length() - 1);
+            SyncRequest.ModTime mt = new SyncRequest.ModTime(name, time);
+            sr.files.add(mt);
+            logger.printDebugMessage(f + ": mod time " + mt.time);
         }
     }
 
