@@ -89,6 +89,7 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
+import org.glassfish.deployment.common.VersioningDeploymentUtil;
 
 import org.glassfish.deployment.versioning.VersioningService;
 
@@ -222,7 +223,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
                 if ( versionIdentifier != null ) {
                   StringBuilder sb = new StringBuilder(name).
-                          append(VersioningService.EXPRESSION_SEPARATOR).
+                          append(VersioningDeploymentUtil.EXPRESSION_SEPARATOR).
                           append(versionIdentifier);
                   name = sb.toString();
                 }
