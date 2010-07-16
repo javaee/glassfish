@@ -41,9 +41,11 @@ import org.apache.catalina.Context;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.session.FileStore;
 import org.apache.catalina.session.PersistentManager;
+import org.jvnet.hk2.annotations.Service;
 
 import java.util.logging.Level;
 
+@Service(name="file")
 public class FileStrategyBuilder extends BasePersistenceStrategyBuilder {
     
     public void initializePersistenceStrategy(

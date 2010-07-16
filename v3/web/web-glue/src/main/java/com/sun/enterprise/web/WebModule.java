@@ -71,6 +71,8 @@ import org.glassfish.web.admin.monitor.SessionProbeProvider;
 import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
 import org.glassfish.web.loader.ServletContainerInitializerUtil;
 import org.glassfish.web.valve.GlassFishValve;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.types.Property;
 
 import javax.annotation.security.DeclareRoles;
@@ -166,11 +168,18 @@ public class WebModule extends PwcWebModule implements Context {
     // true if standalone WAR, false if embedded in EAR file
     private boolean isStandalone = true;
 
+     Habitat habitat;
+
     /**
      * Constructor.
      */
     public WebModule() {
+        this(null);
+    }
+
+    public WebModule(Habitat habitat) {
         super();
+        this.habitat = habitat;
         this.adHocPaths = new HashMap<String,AdHocServletInfo>();
         this.adHocSubtrees = new HashMap<String,AdHocServletInfo>();
 
@@ -179,6 +188,7 @@ public class WebModule extends PwcWebModule implements Context {
 
         notifyContainerListeners = false;
     }
+
 
     /**
      * set the sun-web.xml config bean
@@ -1754,7 +1764,7 @@ public class WebModule extends PwcWebModule implements Context {
 
         PersistenceStrategyBuilderFactory factory =
             new PersistenceStrategyBuilderFactory(
-                webContainer.getServerConfigLookup());
+                webContainer.getServerConfigLookup(), habitat);
         PersistenceStrategyBuilder builder =
             factory.createPersistenceStrategyBuilder(persistence.getType(),
                                                      frequency, scope, this);

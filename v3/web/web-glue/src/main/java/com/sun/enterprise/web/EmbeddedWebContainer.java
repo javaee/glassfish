@@ -182,7 +182,8 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
         if (!configFile.exists()) {
             configFile = new File(location, Constants.WEB_CONTEXT_XML);
         }
-        WebModule context = new WebModule();
+        
+        WebModule context = new WebModule(habitat);
         context.setID(id);
         context.setWebContainer(webContainer);
         context.setDebug(debug);
