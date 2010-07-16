@@ -67,8 +67,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.deployment.versioning.VersioningService;
-import org.glassfish.deployment.versioning.VersioningSyntaxException;
+import org.glassfish.deployment.common.VersioningDeploymentUtil;
 
 /**
  * Objects of this type encapsulate the data and behaviour of a J2EE
@@ -250,14 +249,14 @@ public class Application extends BundleDescriptor
 
         }
         if (name != null) {
-            application.setDisplayName(name);
-            application.setName(name);
-            application.setAppName(name);
+            application.setDisplayName(VersioningDeploymentUtil.getUntaggedName(name));
+            application.setName(VersioningDeploymentUtil.getUntaggedName(name));
+            application.setAppName(VersioningDeploymentUtil.getUntaggedName(name));
         }
 
         // add the module to it
         newModule.setStandalone(true);
-        newModule.setArchiveUri(name);
+        newModule.setArchiveUri(VersioningDeploymentUtil.getUntaggedName(name));
         if (newModule.getDescriptor() != null) {
             newModule.getDescriptor().setApplication(application);
         }
@@ -662,12 +661,7 @@ public class Application extends BundleDescriptor
      * @return the EE app name of this application
      */
     public String getAppName() {
-        try {
-            return VersioningService.getUntaggedName(appName);
-        } catch (VersioningSyntaxException ex) {
-            Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return appName;
+        return VersioningDeploymentUtil.getUntaggedName(appName);
     }
 
     /**
@@ -675,7 +669,7 @@ public class Application extends BundleDescriptor
      * @param appName the EE app name of this application
      */
     public void setAppName(String appName) {
-        this.appName = appName;
+        this.appName = VersioningDeploymentUtil.getUntaggedName(appName);
     }
 
     /**

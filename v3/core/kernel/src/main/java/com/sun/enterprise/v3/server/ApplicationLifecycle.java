@@ -93,9 +93,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.URI;
-
-import org.glassfish.deployment.versioning.VersioningService;
-import org.glassfish.deployment.versioning.VersioningSyntaxException;
+import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
+import org.glassfish.deployment.common.VersioningDeploymentUtil;
 
 /**
  * Application Loader is providing utitily methods to load applications
@@ -313,8 +312,7 @@ public class ApplicationLifecycle implements Deployment {
                     // todo : we should come up with a general Composite API solution
                     ModuleInfo moduleInfo = null;
                     try {
-                        moduleInfo = prepareModule(sortedEngineInfos, appName, context, tracker);
-
+                          moduleInfo = prepareModule(sortedEngineInfos, appName, context, tracker);
                     } catch(Exception prepareException) {
                         report.failure(logger, "Exception while preparing the app", prepareException);
                         tracker.actOn(logger);
@@ -1271,8 +1269,8 @@ public class ApplicationLifecycle implements Deployment {
 
             String repositoryBitName = copy.params().name();
             try {
-                repositoryBitName = VersioningService.getRepositoryName(repositoryBitName);
-            } catch (VersioningSyntaxException e) {
+                repositoryBitName = VersioningDeploymentUtil.getRepositoryName(repositoryBitName);
+            } catch (VersioningDeploymentSyntaxException e) {
                 ActionReport report = copy.report();
                 report.setMessage(e.getMessage());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);

@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.deployment.versioning;
+package org.glassfish.deployment.common;
 
 /**
  * This class is an exception used when application name that complies
@@ -43,9 +43,9 @@ package org.glassfish.deployment.versioning;
  * @author Romain GRECOURT - SERLI (romain.grecourt@serli.com)
  */
 
-public class VersioningSyntaxException extends VersioningException{
+public class VersioningDeploymentException extends RuntimeException{
 
-    VersioningSyntaxException(String msg) {
+    public VersioningDeploymentException(String msg) {
         super(msg);
     }
 }

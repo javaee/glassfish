@@ -52,8 +52,8 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.deployment.admin.DeployCommand;
 import org.glassfish.deployment.common.DownloadableArtifacts;
-import org.glassfish.deployment.versioning.VersioningService;
-import org.glassfish.deployment.versioning.VersioningSyntaxException;
+import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
+import org.glassfish.deployment.common.VersioningDeploymentUtil;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -90,8 +90,8 @@ public class GetClientStubsCommand implements AdminCommand {
         final Logger logger = context.getLogger();
 
         try {
-            VersioningService.checkIdentifier(appname);
-        } catch (VersioningSyntaxException ex) {
+            VersioningDeploymentUtil.checkIdentifier(appname);
+        } catch (VersioningDeploymentSyntaxException ex) {
             report.failure(logger,ex.getMessage());
             return;
         }

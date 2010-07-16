@@ -70,8 +70,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
-import org.glassfish.deployment.versioning.VersioningService;
-import org.glassfish.deployment.versioning.VersioningSyntaxException;
+import org.glassfish.deployment.common.VersioningDeploymentUtil;
+import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
 
 /**
  * list-sub-components command
@@ -114,8 +114,8 @@ public class ListSubComponentsCommand implements AdminCommand {
         }
 
         try {
-            VersioningService.checkIdentifier(applicationName);
-        } catch (VersioningSyntaxException ex) {
+            VersioningDeploymentUtil.checkIdentifier(applicationName);
+        } catch (VersioningDeploymentSyntaxException ex) {
             report.setMessage(ex.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;

@@ -47,8 +47,7 @@ import java.util.Vector;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.deployment.versioning.VersioningService;
-import org.glassfish.deployment.versioning.VersioningSyntaxException;
+import org.glassfish.deployment.common.VersioningDeploymentUtil;
 
 /**
  * This class describes a module information for an applicaiton module
@@ -190,14 +189,10 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
      */
     public String getModuleName() {
         String name = moduleName;
-        try{
         if (moduleName == null) {
-                name = VersioningService.getUntaggedName(DeploymentUtils.getDefaultEEName(path));
-            } else{
-                name = VersioningService.getUntaggedName(moduleName);
-        }
-        } catch (VersioningSyntaxException ex) {
-            Logger.getLogger(ModuleDescriptor.class.getName()).log(Level.SEVERE, null, ex);
+            name = VersioningDeploymentUtil.getUntaggedName(DeploymentUtils.getDefaultEEName(path));
+        } else{
+            name = VersioningDeploymentUtil.getUntaggedName(moduleName);
         }
         return name;
     }

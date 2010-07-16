@@ -88,9 +88,9 @@ import org.glassfish.api.admin.Payload;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
 import org.glassfish.deployment.common.DownloadableArtifacts;
+import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
 
 import org.glassfish.deployment.versioning.VersioningService;
-import org.glassfish.deployment.versioning.VersioningSyntaxException;
 
 
 /**
@@ -232,7 +232,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 // try to disable the enabled version, if exist
                 try {
                     versioningService.handleDisable(name,target, report);
-                } catch (VersioningSyntaxException e) {
+                } catch (VersioningDeploymentSyntaxException e) {
                     report.failure(logger, e.getMessage());
                     return;
                 }

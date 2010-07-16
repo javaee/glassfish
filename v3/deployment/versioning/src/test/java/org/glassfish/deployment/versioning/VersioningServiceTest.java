@@ -49,6 +49,9 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.deployment.common.VersioningDeploymentException;
+import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
+import org.glassfish.deployment.common.VersioningDeploymentUtil;
 
 /**
  *
@@ -60,7 +63,7 @@ public class VersioningServiceTest {
     private static final String APPLICATION_NAME = "foo";
 
     /**
-     * Test of {@link org.glassfish.deployment.versioning.VersioningService.getUntaggedName}
+     * Test of {@link org.glassfish.deployment.versioning.VersioningDeploymentUtil.getUntaggedName}
      *
      * Check the extraction of untagged names from different application names
      * as version identifier, version expression or untagged application name.
@@ -69,45 +72,45 @@ public class VersioningServiceTest {
      *  critical patterns.
      */
     @Test
-    public void testGetUntaggedName() throws VersioningSyntaxException {
+    public void testGetUntaggedName() throws VersioningDeploymentSyntaxException {
 
         // test an application name that contains a version expression
         // application name : foo:RC-*
         String expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-"
-                + VersioningService.EXPRESSION_WILDCARD;
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-"
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD;
 
-        String result = VersioningService.getUntaggedName(expression);
+        String result = VersioningDeploymentUtil.getUntaggedName(expression);
         assertEquals(APPLICATION_NAME, result);
 
         // test an application name that contains a version identifier
         // application name : foo:RC-1.0.0
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.0.0";
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.0.0";
 
-        result = VersioningService.getUntaggedName(expression);
+        result = VersioningDeploymentUtil.getUntaggedName(expression);
         assertEquals(APPLICATION_NAME, result);
 
         // test an application name that is an untagged version name
         // application name : foo
         expression = APPLICATION_NAME;
 
-        result = VersioningService.getUntaggedName(expression);
+        result = VersioningDeploymentUtil.getUntaggedName(expression);
         assertEquals(APPLICATION_NAME, result);
 
         // test an application name containing a critical pattern
         // application name : foo:
-        expression = APPLICATION_NAME + VersioningService.EXPRESSION_SEPARATOR;
+        expression = APPLICATION_NAME + VersioningDeploymentUtil.EXPRESSION_SEPARATOR;
 
         try {
-            result = VersioningService.getUntaggedName(expression);
-            fail("the getUntagged method did not throw a VersioningSyntaxException");
+            result = VersioningDeploymentUtil.getUntaggedName(expression);
+            fail("the getUntagged method did not throw a VersioningDeploymentSyntaxException");
         }
-        catch(VersioningSyntaxException e){}
+        catch(VersioningDeploymentSyntaxException e){}
     }
 
     /**
-     * Test of {@link org.glassfish.deployment.versioning.VersioningService.getExpression}
+     * Test of {@link org.glassfish.deployment.versioning.VersioningDeploymentUtil.getExpression}
      *
      * Check the extraction of version expression / identifier from different
      * application names.
@@ -116,46 +119,46 @@ public class VersioningServiceTest {
      *  critical patterns.
      */
     @Test
-    public void testGetExpression() throws VersioningSyntaxException {
+    public void testGetExpression() throws VersioningDeploymentSyntaxException {
 
         // test an application name containing a critical pattern
         // application name : foo:
         String expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR;
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR;
 
         try {
-            String result = VersioningService.getExpression(expression);
+            String result = VersioningDeploymentUtil.getExpression(expression);
             fail("the getExpression method did not throw a VersioningSyntaxException");
-        } catch (VersioningSyntaxException e) {}
+        } catch (VersioningDeploymentSyntaxException e) {}
 
         // test an application name containing a critical pattern
         // application name : foo:RC-1;0.0
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR
                 + "RC-1"
-                + VersioningService.EXPRESSION_SEPARATOR
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR
                 + "0.0";
 
         try {
-            String result = VersioningService.getExpression(expression);
+            String result = VersioningDeploymentUtil.getExpression(expression);
             //fail("the getExpression method did not throw a VersioningSyntaxException");
-        } catch (VersioningSyntaxException e) {}
+        } catch (VersioningDeploymentSyntaxException e) {}
     }
 
     /**
-     * Test of {@link org.glassfish.deployment.versioning.VersioningService.getVersions}
+     * Test of {@link org.glassfish.deployment.versioning.VersioningDeploymentUtil.getVersions}
      *
      * Check the extraction of a set of version(s) from a set of applications.
      */
     @Test
-    public void testGetVersions() throws VersioningException {
+    public void testGetVersions() throws VersioningDeploymentException {
         // the set of applications
         List<Application> listApplications = new ArrayList<Application>();
         listApplications.add(new ApplicationTest(APPLICATION_NAME));
         listApplications.add(new ApplicationTest(APPLICATION_NAME+
-                VersioningService.EXPRESSION_SEPARATOR+"BETA-1.0.0"));
+                VersioningDeploymentUtil.EXPRESSION_SEPARATOR+"BETA-1.0.0"));
         listApplications.add(new ApplicationTest(APPLICATION_NAME+
-                VersioningService.EXPRESSION_SEPARATOR+"RC-1.0.0"));
+                VersioningDeploymentUtil.EXPRESSION_SEPARATOR+"RC-1.0.0"));
         listApplications.add(new ApplicationTest(APPLICATION_NAME+
                 "_RC-1.0.0"));
         listApplications.add(new ApplicationTest(APPLICATION_NAME+
@@ -171,16 +174,16 @@ public class VersioningServiceTest {
         List<String> expResult = new ArrayList<String>();
         expResult.add(APPLICATION_NAME);
         expResult.add(APPLICATION_NAME+
-                VersioningService.EXPRESSION_SEPARATOR+"BETA-1.0.0");
+                VersioningDeploymentUtil.EXPRESSION_SEPARATOR+"BETA-1.0.0");
         expResult.add(APPLICATION_NAME+
-                VersioningService.EXPRESSION_SEPARATOR+"RC-1.0.0");
+                VersioningDeploymentUtil.EXPRESSION_SEPARATOR+"RC-1.0.0");
 
-        List result = VersioningService.getVersions(APPLICATION_NAME, listApplications);
+        List result = VersioningDeploymentUtil.getVersions(APPLICATION_NAME, listApplications);
         assertEquals(expResult, result);
     }
     
     /**
-     * Test of {@link org.glassfish.deployment.versioning.VersioningService.matchExpression}
+     * Test of {@link org.glassfish.deployment.versioning.VersioningDeploymentUtil.matchExpression}
      *
      * Check the matching of version expression over a set of version
      * 
@@ -189,48 +192,48 @@ public class VersioningServiceTest {
      *  critical patterns.
      */
     @Test
-    public void testMatchExpression() throws VersioningException {
+    public void testMatchExpression() throws VersioningDeploymentException {
         // the set of all foo versions
         List<String> listVersion = new ArrayList<String>();
         // ALPHA versions
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "ALPHA-1.0.0");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "ALPHA-1.0.0");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "ALPHA-1.0.1");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "ALPHA-1.0.1");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "ALPHA-1.0.2");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "ALPHA-1.0.2");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "ALPHA-1.1.0");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "ALPHA-1.1.0");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "ALPHA-1.1.1");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "ALPHA-1.1.1");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "ALPHA-1.1.2");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "ALPHA-1.1.2");
         // BETA versions
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "BETA-1.0.0");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "BETA-1.0.0");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "BETA-1.0.1");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "BETA-1.0.1");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "BETA-1.0.2");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "BETA-1.0.2");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "BETA-1.1.0");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "BETA-1.1.0");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "BETA-1.1.1");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "BETA-1.1.1");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "BETA-1.1.2");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "BETA-1.1.2");
         // RC versions
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.0.0");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.0.0");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.0.1");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.0.1");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.0.2");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.0.2");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.1.0");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.1.0");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.1.1");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.1.1");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.1.2");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.1.2");
 
         // **************************************************
         // TEST TYPE 1 : expression matching all the versions
@@ -244,10 +247,10 @@ public class VersioningServiceTest {
         // ------------------------
 
         String expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR
-                + VersioningService.EXPRESSION_WILDCARD;
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD;
 
-        List result = VersioningService.matchExpression(listVersion, expression);
+        List result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // -----------------------------
@@ -255,15 +258,15 @@ public class VersioningServiceTest {
         // -----------------------------
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD;
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD;
 
-        result = VersioningService.matchExpression(listVersion, expression);
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // *****************************************************
@@ -271,27 +274,27 @@ public class VersioningServiceTest {
         // *****************************************************
         expResult.clear();
         expResult.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.0.0");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.0.0");
         expResult.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.0.1");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.0.1");
         expResult.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.0.2");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.0.2");
         expResult.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.1.0");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.1.0");
         expResult.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.1.1");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.1.1");
         expResult.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.1.2");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.1.2");
 
         // --------------------------
         // application name foo:RC*
         // --------------------------
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC"
-                + VersioningService.EXPRESSION_WILDCARD;
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC"
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD;
 
-        result = VersioningService.matchExpression(listVersion, expression);
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // --------------------------
@@ -299,11 +302,11 @@ public class VersioningServiceTest {
         // --------------------------
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR
-                + VersioningService.EXPRESSION_WILDCARD + "RC"
-                + VersioningService.EXPRESSION_WILDCARD;
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD + "RC"
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD;
 
-        result = VersioningService.matchExpression(listVersion, expression);
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // -------------------------------
@@ -311,15 +314,15 @@ public class VersioningServiceTest {
         // -------------------------------
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD + "RC"
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD;
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD + "RC"
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD;
 
-        result = VersioningService.matchExpression(listVersion, expression);
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // ********************************************************
@@ -327,21 +330,21 @@ public class VersioningServiceTest {
         // ********************************************************
         expResult.clear();
         expResult.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "ALPHA-1.0.2");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "ALPHA-1.0.2");
         expResult.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "BETA-1.0.2");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "BETA-1.0.2");
         expResult.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "RC-1.0.2");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "RC-1.0.2");
 
         // ------------------------------
         // application name foo:*-1.0.2
         // ------------------------------
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR
-                + VersioningService.EXPRESSION_WILDCARD + "-1.0.2";
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD + "-1.0.2";
 
-        result = VersioningService.matchExpression(listVersion, expression);
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // ----------------------------------
@@ -349,14 +352,14 @@ public class VersioningServiceTest {
         // ----------------------------------
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD + "-1.0.2"
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD;
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD + "-1.0.2"
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD;
 
-        result = VersioningService.matchExpression(listVersion, expression);
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // ----------------------------------
@@ -364,17 +367,17 @@ public class VersioningServiceTest {
         // ----------------------------------
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD + "1"
-                + VersioningService.EXPRESSION_WILDCARD + "0"
-                + VersioningService.EXPRESSION_WILDCARD + "2"
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD
-                + VersioningService.EXPRESSION_WILDCARD;
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD + "1"
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD + "0"
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD + "2"
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD
+                + VersioningDeploymentUtil.EXPRESSION_WILDCARD;
 
-        result = VersioningService.matchExpression(listVersion, expression);
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // **************************************
@@ -382,16 +385,16 @@ public class VersioningServiceTest {
         // **************************************
         expResult.clear();
         expResult.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "ALPHA-1.0.2");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "ALPHA-1.0.2");
 
         // ----------------------------------
         // application name foo:ALPHA-1.0.2
         // ----------------------------------
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "ALPHA-1.0.2";
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "ALPHA-1.0.2";
 
-        result = VersioningService.matchExpression(listVersion, expression);
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(expResult, result);
 
         // *****************************************
@@ -400,101 +403,105 @@ public class VersioningServiceTest {
 
         listVersion.clear();
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "abc-1");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "abc-1");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "abc-2");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "abc-2");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "abc-3");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "abc-3");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "bac-4");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "bac-4");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "cab-5");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "cab-5");
         listVersion.add(APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "cba-6");
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "cba-6");
         
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "a*";
-        result = VersioningService.matchExpression(listVersion, expression);
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "a*";
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(result.size(), 3);
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "*a";
-        result = VersioningService.matchExpression(listVersion, expression);
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "*a";
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(result.size(), 0);
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "a****1";
-        result = VersioningService.matchExpression(listVersion, expression);
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "a****1";
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(result.size(), 1);
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "*-*";
-        result = VersioningService.matchExpression(listVersion, expression);
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "*-*";
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(result.size(), 6);
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "*-4";
-        result = VersioningService.matchExpression(listVersion, expression);
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "*-4";
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(result.size(), 1);
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "b*";
-        result = VersioningService.matchExpression(listVersion, expression);
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "b*";
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(result.size(), 1);
 
         expression = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR + "b*";
-        result = VersioningService.matchExpression(listVersion, expression);
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + "b*";
+        result = VersioningDeploymentUtil.matchExpression(listVersion, expression);
         assertEquals(result.size(), 1);
     }
 
     /**
-     * Test of getIdentifier method, of class VersioningService.
+     * Test of getIdentifier method, of class VersioningDeploymentUtil.
      * @throws VersioningException
      */
     @Test
-    public void testGetIdentifier() throws VersioningException {
+    public void testGetIdentifier() throws VersioningDeploymentException {
         // *****************************************
         // check for getIdentifier with and without '*'
         // *****************************************
         String versionIdentifier = "BETA-1";
-        String appName = "foo" + VersioningService.EXPRESSION_SEPARATOR + versionIdentifier;
+        String appName = "foo" + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + versionIdentifier;
         try{
-            VersioningService.checkIdentifier(appName);
-        } catch (VersioningSyntaxException e){
+            VersioningDeploymentUtil.checkIdentifier(appName);
+        } catch (VersioningDeploymentSyntaxException e){
             fail(e.getMessage());
         }
 
         String versionExpression = "BETA-*";
-        appName = "foo" + VersioningService.EXPRESSION_SEPARATOR + versionExpression;
+        appName = "foo" + VersioningDeploymentUtil.EXPRESSION_SEPARATOR + versionExpression;
         try {
-            VersioningService.checkIdentifier(appName);
+            VersioningDeploymentUtil.checkIdentifier(appName);
             fail("the getIdentifier method should not accept version with '*' in it.");
-        } catch (VersioningException e) {}
+        } catch (VersioningDeploymentException e) {}
      }
     /**
-     * Test of getRepositoryName method, of class VersioningService.
+     * Test of getRepositoryName method, of class VersioningDeploymentUtil.
      * @throws VersioningSyntaxException
      */
     @Test
-    public void testGetRepositoryName() throws VersioningSyntaxException {
+    public void testGetRepositoryName() throws VersioningDeploymentSyntaxException {
         String versionIdentifier = "RC-1.0.0";
 
         // application name foo:RC-1.0.0
         String appName = APPLICATION_NAME
-                + VersioningService.EXPRESSION_SEPARATOR
+                + VersioningDeploymentUtil.EXPRESSION_SEPARATOR
                 + versionIdentifier;
 
         String expectedResult = APPLICATION_NAME
-                + VersioningService.REPOSITORY_DASH
+                + VersioningDeploymentUtil.REPOSITORY_DASH
                 + versionIdentifier;
 
-        String result = VersioningService.getRepositoryName(appName);
+        String result = "";
+        try {
+            result = VersioningDeploymentUtil.getRepositoryName(appName);
+        } catch (VersioningDeploymentSyntaxException ex) {
+        }
         assertEquals(expectedResult, result);
     }
 
     // this class is used to fake the List<Application> 
-    // so we can call the VersioningService.matchExpression
+    // so we can call the VersioningDeploymentUtil.matchExpression
     // with an home made set of applications.
     private class ApplicationTest implements Application {
         private String name;

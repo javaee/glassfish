@@ -173,10 +173,5 @@
             <artifactId>security</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>deployment-versioning</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

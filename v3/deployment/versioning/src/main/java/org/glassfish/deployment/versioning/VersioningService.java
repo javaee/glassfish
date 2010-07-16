@@ -42,11 +42,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.deployment.common.VersioningDeploymentException;
+import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
+import org.glassfish.deployment.common.VersioningDeploymentUtil;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -63,130 +65,10 @@ import org.jvnet.hk2.component.PerLookup;
 @Scoped(PerLookup.class)
 public class VersioningService {
 
-    private static final LocalStringManagerImpl LOCALSTRINGS =
-            new LocalStringManagerImpl(VersioningService.class);
     @Inject
     private CommandRunner commandRunner;
     @Inject
     private Domain domain;
-    static final String REPOSITORY_DASH = "-";
-    public static final String EXPRESSION_SEPARATOR = ":";
-    public static final String EXPRESSION_WILDCARD = "*";
-
-    /**
-     * Extract the untagged name for a given application name that complies
-     * with versioning rules (version identifier / expression) or not.
-     *
-     * If the application name is using versioning rules, the method will split
-     * the application names with the colon character and retrieve the
-     * untagged name from the first token.
-     *
-     * Else the given application name is an untagged name.
-     * 
-     * @param appName the application name
-     * @return the untagged version name
-     * @throws VersioningSyntaxException if the given application name had some
-     * critical patterns.
-     */
-    public static final String getUntaggedName(String appName)
-            throws VersioningSyntaxException {
-
-        if(appName != null && !appName.isEmpty()){
-            int colonIndex = appName.indexOf(EXPRESSION_SEPARATOR);
-            // if versioned
-            if (colonIndex != -1) {
-
-                // if appName is ending with a colon
-                if (colonIndex == (appName.length() - 1)) {
-                    throw new VersioningSyntaxException(
-                            LOCALSTRINGS.getLocalString("invalid.appname",
-                            "excepted version identifier after colon: {0}",
-                            appName));
-                }
-                return appName.substring(0, colonIndex);
-            }
-        }
-        // not versioned
-        return appName;
-    }
-
-    /**
-     * Extract the version identifier / expression for a given application name
-     * that complies with versioning rules.
-     *
-     * The method splits the application name with the colon character
-     * and retrieve the 2nd token.
-     *
-     * @param appName the application name
-     * @return the version identifier / expression extracted from application name
-     * @throws VersioningSyntaxException if the given application name had some
-     * critical patterns.
-     */
-    public static final String getExpression(String appName)
-            throws VersioningSyntaxException {
-
-        int colonIndex = appName.indexOf(EXPRESSION_SEPARATOR);
-        // if versioned
-        if (colonIndex != -1) {
-            if (colonIndex == (appName.length() - 1)) {
-                throw new VersioningSyntaxException(
-                        LOCALSTRINGS.getLocalString("invalid.appName",
-                        "excepted version expression/identifier after colon: {0}",
-                        appName));
-            }
-            return appName.substring(colonIndex + 1, appName.length());
-        }
-        // not versioned
-        return null;
-    }
-
-    /**
-     * Check a versionned application name.
-     *
-     * This method is used to provide consistant error messages for identifier
-     * aware operations.
-     *
-     * @param appName the application name
-     * @throws VersioningSyntaxException if the given application name had some
-     * critical patterns.
-     */
-    public static final void checkIdentifier(String appName)
-            throws VersioningSyntaxException {
-        String identifier = getExpression(appName);
-        if (identifier != null && identifier.contains(EXPRESSION_WILDCARD)) {
-            throw new VersioningSyntaxException(
-                    LOCALSTRINGS.getLocalString("versioning.service.wildcard.not.allowed",
-                    "Wildcard character(s) are not allowed in a version identifier."));
-        }
-    }
-
-    /**
-     * Extract the set of version(s) of the given application from a set of
-     * applications. This method is used by unit tests.
-     *
-     * @param untaggedName the application name as an untagged version : an
-     * application name without version identifier
-     * @param allApplications the set of applications
-     * @return all the version(s) of the given application in the given set of
-     * applications
-     */
-    public static final List<String> getVersions(String untaggedName,
-            List<Application> allApplications) {
-
-        List<String> allVersions = new ArrayList<String>();
-        Iterator<Application> it = allApplications.iterator();
-
-        while (it.hasNext()) {
-            Application app = it.next();
-
-            // if a tagged version or untagged version of the app
-            if (app.getName().startsWith(untaggedName + EXPRESSION_SEPARATOR)
-                    || app.getName().equals(untaggedName)) {
-                allVersions.add(app.getName());
-            }
-        }
-        return allVersions;
-    }
 
     /**
      * Extract the set of version(s) of the given application represented as
@@ -200,7 +82,7 @@ public class VersioningService {
     public final List<String> getAllversions(String untaggedName, String target) {
         List<Application> allApplications =
             domain.getApplicationsInTarget(target);
-        return getVersions(untaggedName, allApplications);
+        return VersioningDeploymentUtil.getVersions(untaggedName, allApplications);
     }
 
     /**
@@ -213,9 +95,9 @@ public class VersioningService {
      * @throws VersioningSyntaxException if getUntaggedName throws an exception
      */
     public final String getEnabledVersion(String name, String target)
-            throws VersioningSyntaxException {
+            throws VersioningDeploymentSyntaxException {
 
-        String untaggedName = getUntaggedName(name);
+        String untaggedName = VersioningDeploymentUtil.getUntaggedName(name);
         List<String> allVersions = getAllversions(untaggedName, target);
 
         if (allVersions != null) {
@@ -233,95 +115,6 @@ public class VersioningService {
         // no enabled version found
         return null;
     }
-
-    /**
-     * Search for the version(s) matched by the expression contained in the given
-     * application name. This method is used by unit tests.
-     *
-     * @param listVersion the set of all versions of the application
-     * @param appName the application name containing the expression
-     * @return the expression matched list
-     * @throws VersioningException if the expression is an identifier matching
-     * a version not registered, or if getExpression throws an exception
-     */
-    public static final List<String> matchExpression(List<String> listVersion, String appName)
-            throws VersioningException {
-
-        if (listVersion.size() == 0) {
-            return Collections.EMPTY_LIST;
-        }
-
-        String expressionVersion = getExpression(appName);
-        //List<String> matchedVersions = new ArrayList<String>(listVersion);
-
-        // if using an untagged version
-        if (expressionVersion == null) {
-            // return the matched version if exist
-            if (listVersion.contains(appName)) {
-                return listVersion.subList(listVersion.indexOf(appName),
-                        listVersion.indexOf(appName) + 1);
-            } else {
-                throw new VersioningException(
-                        LOCALSTRINGS.getLocalString("version.notreg",
-                        "version {0} not registered",
-                        appName));
-            }
-        }
-
-        // if using an identifier
-        if (expressionVersion.indexOf(EXPRESSION_WILDCARD) == -1) {
-            // return the matched version if exist
-            if (listVersion.contains(appName)) {
-                return listVersion.subList(listVersion.indexOf(appName),
-                        listVersion.indexOf(appName) + 1);
-            } else {
-                throw new VersioningException(
-                        LOCALSTRINGS.getLocalString("version.notreg",
-                        "Version {0} not registered",
-                        appName));
-            }
-        }
-
-        StringTokenizer st = new StringTokenizer(expressionVersion,
-                EXPRESSION_WILDCARD);
-        String lastToken = null;
-        List<String> matchedVersions = new ArrayList<String>(listVersion);
-
-        while (st.hasMoreTokens()) {
-            String token = st.nextToken();
-            Iterator it = listVersion.iterator();
-
-            while (it.hasNext()) {
-                String app = (String) it.next();
-                String identifier = getExpression(app);
-
-                // get the position of the last token in the current identifier
-                int lastTokenIndex = -1;
-                if (lastToken != null) {
-                    lastTokenIndex = identifier.indexOf(lastToken);
-                }
-                // matching expression on the current identifier
-                if (identifier != null) {
-                    if ( expressionVersion.startsWith(token)
-                            && ! identifier.startsWith(token) ) {
-                        matchedVersions.remove(app);
-                    } else if ( expressionVersion.endsWith(token)
-                            && !identifier.endsWith(token) ) {
-                        matchedVersions.remove(app);
-                    } else if ( !identifier.contains(token.subSequence(0, token.length() - 1))
-                            || identifier.indexOf(token) <= lastTokenIndex ) {
-                        matchedVersions.remove(app);
-                    }
-                } else {
-                    matchedVersions.remove(app);
-                }
-
-            }
-            lastToken = token;
-        }
-        // returns matched version(s)
-        return matchedVersions;
-    }
     
     /**
      * Process the expression matching operation of the given application name.
@@ -333,49 +126,23 @@ public class VersioningService {
      * or if getUntaggedName throws an exception
      */
     public final List<String> getMatchedVersions(String name, String target)
-            throws VersioningException {
+            throws VersioningDeploymentSyntaxException, VersioningDeploymentException {
 
-        String untagged = getUntaggedName(name);
+        String untagged = VersioningDeploymentUtil.getUntaggedName(name);
         List<String> allVersions = getAllversions(untagged, target);
 
         if (allVersions.size() == 0) {
             // if versionned
             if(!name.equals(untagged)){
-                throw new VersioningException(
-                        LOCALSTRINGS.getLocalString("application.noversion",
+                throw new VersioningDeploymentException(
+                        VersioningDeploymentUtil.LOCALSTRINGS.getLocalString("versioning.deployment.application.noversion",
                         "Application {0} has no version registered",
                         untagged));  
             }
             return Collections.EMPTY_LIST;
         }
 
-        return matchExpression(allVersions, name);
-    }
-
-    /**
-     * Replaces the colon with a dash in the given application name.
-     *
-     * @param appName
-     * @return return a valid repository name
-     * @throws VersioningSyntaxException if getEpression and getUntaggedName
-     * throws exception
-     */
-    public static final String getRepositoryName(String appName)
-            throws VersioningSyntaxException {
-
-        String expression = getExpression(appName);
-        String untaggedName = getUntaggedName(appName);
-
-        if (expression != null) {
-
-            StringBuilder repositoryNameBuilder = new StringBuilder(untaggedName);
-            repositoryNameBuilder.append(REPOSITORY_DASH);
-            repositoryNameBuilder.append(expression);
-            return repositoryNameBuilder.toString();
-
-        } else {
-            return untaggedName;
-        }
+        return VersioningDeploymentUtil.matchExpression(allVersions, name);
     }
 
     /**
@@ -388,7 +155,7 @@ public class VersioningService {
      *  @param report ActionReport, report object to send back to client.
      */
     public void handleDisable(final String appName, final String target,
-            final ActionReport report) throws VersioningSyntaxException {
+            final ActionReport report) throws VersioningDeploymentSyntaxException {
 
         // retrieve the currently enabled version of the application
         String enabledVersion = getEnabledVersion(appName, target);
