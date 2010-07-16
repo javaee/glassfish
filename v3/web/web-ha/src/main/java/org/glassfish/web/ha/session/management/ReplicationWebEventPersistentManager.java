@@ -48,6 +48,7 @@ import com.sun.logging.LogDomains;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Session;
+import org.glassfish.gms.bootstrap.GMSAdapterService;
 import org.glassfish.ha.store.api.BackingStoreConfiguration;
 import org.glassfish.ha.store.api.BackingStoreException;
 import org.glassfish.ha.store.api.BackingStoreFactory;
@@ -79,6 +80,14 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
 
     @Inject
     Config config;
+
+    @Inject
+    GMSAdapterService gmsAdapterService;
+
+    String clusterName = "";
+
+    String instanceName = "";
+
     /**
      * The logger to use for logging ALL web container related messages.
      */
@@ -282,11 +291,16 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
         BackingStoreConfiguration<String, SimpleMetadata> conf = new BackingStoreConfiguration<String, SimpleMetadata>();
         config.getWebContainer().getSessionConfig().getSessionManager().getStoreProperties().getDirectory();
 
-        
-        conf.setShortUniqueName("Unique1")
-                .setClusterName("c1").setStoreType(persistenceType)
+        if(gmsAdapterService.isGmsEnabled()) {
+            clusterName = gmsAdapterService.getGMSAdapter().getClusterName();
+            instanceName = gmsAdapterService.getGMSAdapter().getModule().getInstanceName();
+        }
+        conf.setStoreName("Name")
+                .setClusterName(clusterName)
+                .setInstanceName(instanceName)
+                .setStoreType(persistenceType)
                 .setKeyClazz(String.class).setValueClazz(SimpleMetadata.class)
-                .setBaseDirectory(new File("foo"));
+                .setBaseDirectory(new File(config.getWebContainer().getSessionConfig().getSessionManager().getStoreProperties().getDirectory()));
 
         try {
             this.backingStore = factory.createBackingStore(conf);
