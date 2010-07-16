@@ -73,18 +73,18 @@ public class MethodMetaData {
     }
 
 
-    public ParameterMetaData getQureyParamMetaData(String param) {
+    public ParameterMetaData getQueryParamMetaData(String param) {
         return __queryParamMetaData.get(param);
     }
 
 
-    public ParameterMetaData putQureyParamMetaData(String param,
+    public ParameterMetaData putQueryParamMetaData(String param,
             ParameterMetaData queryParamMetaData) {
         return __queryParamMetaData.put(param, queryParamMetaData);
     }
 
 
-    public ParameterMetaData removeQureyParamMetaData(String param) {
+    public ParameterMetaData removeQueryParamMetaData(String param) {
         return __queryParamMetaData.remove(param);
     }
 

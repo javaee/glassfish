@@ -133,7 +133,7 @@ public class OptionsResultJsonProvider extends BaseProvider<OptionsResult> {
 
                 queryParam = iterator.next();
                 ParameterMetaData parameterMetaData =
-                    methodMetaData.getQureyParamMetaData(queryParam);
+                    methodMetaData.getQueryParamMetaData(queryParam);
                 result = result + getParameter(queryParam, parameterMetaData,
                     indent + Constants.INDENT);
                 first = false;

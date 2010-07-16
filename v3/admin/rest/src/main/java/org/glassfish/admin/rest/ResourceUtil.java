@@ -276,7 +276,7 @@ public class ResourceUtil {
                 }
 
                 if (parameterType == Constants.QUERY_PARAMETER) {
-                    methodMetaData.putQureyParamMetaData(parameterName, parameterMetaData);
+                    methodMetaData.putQueryParamMetaData(parameterName, parameterMetaData);
                 } else {
                     //message parameter
                     methodMetaData.putParameterMetaData(parameterName, parameterMetaData);
@@ -349,7 +349,7 @@ public class ResourceUtil {
                             //camelCase the attributeName before passing out
                             attributeName = eleminateHypen(attributeName);
                             if (parameterType == Constants.QUERY_PARAMETER) {
-                                methodMetaData.putQureyParamMetaData(attributeName, parameterMetaData);
+                                methodMetaData.putQueryParamMetaData(attributeName, parameterMetaData);
                             } else {
                                 //message parameter
                                 methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
@@ -386,7 +386,7 @@ public class ResourceUtil {
                         //camelCase the attributeName before passing out
                         attributeName = eleminateHypen(attributeName);
                         if (parameterType == Constants.QUERY_PARAMETER) {
-                            methodMetaData.putQureyParamMetaData(attributeName, parameterMetaData);
+                            methodMetaData.putQueryParamMetaData(attributeName, parameterMetaData);
                         } else {
                             //message parameter
                             methodMetaData.putParameterMetaData(attributeName, parameterMetaData);

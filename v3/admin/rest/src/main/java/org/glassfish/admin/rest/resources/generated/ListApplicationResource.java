@@ -47,6 +47,17 @@ public class ListApplicationResource extends TemplateListOfResource {
 		return resource;
 	}
 
+@Path("list-sub-components/")
+public ListApplicationListSubComponentsResource getListApplicationListSubComponentsResource() {
+ListApplicationListSubComponentsResource resource = resourceContext.getResource(ListApplicationListSubComponentsResource.class);
+return resource;
+}
+
+@Override
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"list-sub-components", "GET", "list-sub-components"}};
+}
+
 
 @Override
 public String getPostCommand() {

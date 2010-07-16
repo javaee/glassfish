@@ -38,6 +38,17 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.resources.*;
 public class ProfilerResource extends TemplateResource {
 
+@Path("delete-profiler/")
+public ProfilerDeleteProfilerResource getProfilerDeleteProfilerResource() {
+ProfilerDeleteProfilerResource resource = resourceContext.getResource(ProfilerDeleteProfilerResource.class);
+return resource;
+}
+
+@Override
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"delete-profiler", "DELETE", "delete-profiler"}};
+}
+
 	@Path("property/")
 	public PropertiesBagResource getProperties() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);

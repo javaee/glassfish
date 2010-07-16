@@ -37,15 +37,13 @@ package org.glassfish.admin.rest.resources.generated;
 
 //generated code...;
 
-public class ApplicationSubComponentsResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource {
-   public ApplicationSubComponentsResource() {
+public class ListApplicationListSubComponentsResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource {
+   public ListApplicationListSubComponentsResource() {
        super(
-          "ApplicationSubComponents",
+          "ListApplicationListSubComponents",
           "list-sub-components",
           "GET",
-          new java.util.HashMap<String, String>() {{
-                    put("id","$parent");
-       }},
-          true);
+          (java.util.HashMap<String, String>) null ,
+          false);
     }
 }

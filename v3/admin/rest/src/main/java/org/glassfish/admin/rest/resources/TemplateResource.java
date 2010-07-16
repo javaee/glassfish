@@ -304,8 +304,7 @@ public class TemplateResource {
             optionsResult.putMethodMetaData("GET", new MethodMetaData());
 
             /////optionsResult.putMethodMetaData("POST", new MethodMetaData());
-            MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(
-                    (ConfigBean) getEntity());
+            MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData((ConfigBean) getEntity());
             postMethodMetaData.setDescription("Update");
             optionsResult.putMethodMetaData("POST", postMethodMetaData);
 

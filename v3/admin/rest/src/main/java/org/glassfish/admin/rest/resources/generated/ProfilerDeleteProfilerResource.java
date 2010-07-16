@@ -37,15 +37,17 @@ package org.glassfish.admin.rest.resources.generated;
 
 //generated code...;
 
-public class JavaConfigDeleteProfilerResource extends org.glassfish.admin.rest.resources.TemplateCommandDeleteResource {
-   public JavaConfigDeleteProfilerResource() {
+public class ProfilerDeleteProfilerResource extends org.glassfish.admin.rest.resources.TemplateCommandDeleteResource {
+   public ProfilerDeleteProfilerResource() {
        super(
-          "JavaConfigDeleteProfiler",
+          "ProfilerDeleteProfiler",
           "delete-profiler",
           "DELETE",
           "Delete Profiler",
           "delete-profiler",
-          (java.util.HashMap<String, String>) null ,
-          false);
+          new java.util.HashMap<String, String>() {{
+                    put("id","$parent");
+       }},
+          true);
     }
 }

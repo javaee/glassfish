@@ -130,7 +130,7 @@ public class OptionsResultXmlProvider extends BaseProvider<OptionsResult> {
             while (iterator.hasNext()) {
                 queryParam = iterator.next();
                 ParameterMetaData parameterMetaData =
-                    methodMetaData.getQureyParamMetaData(queryParam);
+                    methodMetaData.getQueryParamMetaData(queryParam);
                 result = result + getParameter(queryParam, parameterMetaData,
                     indent + Constants.INDENT);
             }

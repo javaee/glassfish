@@ -49,18 +49,16 @@ import static org.junit.Assert.*;
 public class ApplicationTest extends RestTestBase {
 
     public static final String URL_APPLICATION_DEPLOY = BASE_URL + "/applications/application";
+    public static final String URL_SUB_COMPONENTS = BASE_URL + "/applications/application/list-sub-components";
 
     @Test
     public void testApplicationDeployment() {
         final String appName = "testApp" + generateRandomString();
-        Map<String, Object> newApp = new HashMap<String, Object>() {
-
-            {
+        Map<String, Object> newApp = new HashMap<String, Object>() {{
                 put("id", new File("src/test/resources/test.war"));
                 put("contextroot", appName);
                 put("name", appName);
-            }
-        };
+        }};
 
         Map<String, String> deployedApp = deployApp(newApp);
         assertEquals(appName, deployedApp.get("name"));
@@ -102,6 +100,31 @@ public class ApplicationTest extends RestTestBase {
 
             response = get("http://localhost:8080/" + appName);
             assertEquals ("Test", response.getEntity(String.class).trim());
+        } finally {
+            undeployApp(newApp);
+        }
+    }
+
+    @Test
+    public void listSubComponents() {
+        final String appName = "testApp" + generateRandomString();
+        Map<String, Object> newApp = new HashMap<String, Object>() {{
+                put("id", new File("src/test/resources/stateless-simple.ear"));
+                put("contextroot", appName);
+                put("name", appName);
+        }};
+
+        try {
+            deployApp(newApp);
+            ClientResponse response = get(URL_SUB_COMPONENTS + "?id=" + appName);
+            assertTrue(isSuccess(response));
+            String subComponents = response.getEntity(String.class);
+            assertTrue(subComponents.contains("stateless-simple.war"));
+
+            response = get(URL_SUB_COMPONENTS + "?id=stateless-simple.war&appname=" + appName);
+            assertTrue(isSuccess(response));
+            subComponents = response.getEntity(String.class);
+            assertTrue(subComponents.contains("GreeterServlet"));
         } finally {
             undeployApp(newApp);
         }

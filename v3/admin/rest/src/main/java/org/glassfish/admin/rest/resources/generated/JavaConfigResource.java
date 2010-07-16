@@ -44,12 +44,6 @@ JavaConfigCreateProfilerResource resource = resourceContext.getResource(JavaConf
 return resource;
 }
 
-@Path("delete-profiler/")
-public JavaConfigDeleteProfilerResource getJavaConfigDeleteProfilerResource() {
-JavaConfigDeleteProfilerResource resource = resourceContext.getResource(JavaConfigDeleteProfilerResource.class);
-return resource;
-}
-
 @Path("generate-jvm-report/")
 public JavaConfigGenerateJvmReportResource getJavaConfigGenerateJvmReportResource() {
 JavaConfigGenerateJvmReportResource resource = resourceContext.getResource(JavaConfigGenerateJvmReportResource.class);
@@ -58,7 +52,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-profiler", "POST", "create-profiler"}, {"delete-profiler", "DELETE", "delete-profiler"}, {"generate-jvm-report", "POST", "generate-jvm-report"}};
+return new String[][]{{"create-profiler", "POST", "create-profiler"}, {"generate-jvm-report", "POST", "generate-jvm-report"}};
 }
 
 	@Path("profiler/")
