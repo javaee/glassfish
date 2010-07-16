@@ -47,7 +47,6 @@ import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 
-import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.admin.config.ApplicationName;
@@ -90,6 +89,7 @@ public class ServerSynchronizer implements PostConstruct {
     private final static LocalStringManagerImpl strings =
         new LocalStringManagerImpl(ServerSynchronizer.class);
 
+    @Override
     public void postConstruct() {
         domainRootUri = env.getDomainRoot().toURI();
     }
