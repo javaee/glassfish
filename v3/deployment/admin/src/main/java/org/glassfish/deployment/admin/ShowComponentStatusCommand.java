@@ -143,6 +143,7 @@ public class ShowComponentStatusCommand implements AdminCommand {
             ActionReport.MessagePart childPart = part.addChild();
             String message = localStrings.getLocalString("component.status","Status of {0} is {1}.", appName, status);
             childPart.setMessage(message);
+            childPart.addProperty("state", status);
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }

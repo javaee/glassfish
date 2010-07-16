@@ -532,14 +532,14 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
 
     private String getAppRefEnabledAttr(String target, String moduleName) throws IOException {
         ensureConnected();
-        String commandName = GET_COMMAND;
-        String patternParam = "servers.server." + target + ".application-ref." 
-            + moduleName + ".enabled";
-        String[] operands = new String[] { patternParam };
+        String commandName = "show-component-status";
+        Map commandParams = new HashMap();
+        commandParams.put(DFDeploymentProperties.TARGET, target);
+        String[] operands = new String[] { moduleName };
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;
         try {
-            DFCommandRunner commandRunner = getDFCommandRunner(commandName, null, operands);
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, operands);
             DFDeploymentStatus ds = commandRunner.run();
             mainStatus = ds.getMainStatus();
             String enabledAttr = null;
@@ -549,9 +549,12 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                 if (subIter.hasNext()) {
                     DFDeploymentStatus subStage =
                         (DFDeploymentStatus) subIter.next();
-                    String result = subStage.getStageStatusMessage();
-                    enabledAttr = 
-                        getValueFromDottedNameGetResult(result);
+                    String result = subStage.getProperty("state");
+                    if (result.equals("enabled")) {
+                        enabledAttr = "true";
+                    } else {
+                        enabledAttr = "false";
+                    }
                 }
             } else {
                 /*
