@@ -280,6 +280,22 @@
 
     </target>
 
+    <target name="addInstanceRef" depends="prepare" if="doInstance">
+       <!-- create-app-ref to remote instance server -->
+       <antcall target="common.run.asadmin">
+           <param name="arg.list"
+                  value="create-application-ref --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target ${testServer} ${appName}"/>
+       </antcall>
+    </target>
+
+    <target name="delInstanceRef" depends="prepare" if="doInstance">
+        <!-- delete-app-ref to remote instance server -->
+        <antcall target="common.run.asadmin">
+            <param name="arg.list"
+                   value="delete-application-ref --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target ${testServer} ${appName}"/>
+        </antcall>
+    </target>
+
     <target name="addClusterRefs" depends="prepare" if="doCluster">
         <!-- create-app-ref to cluster -->
         <antcall target="common.run.asadmin">
@@ -306,22 +322,14 @@
                    value="deploy --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target domain ${all.ear}"/>
         </antcall>
 
-        <!-- create-app-ref to remote instance server -->
-        <antcall target="common.run.asadmin">
-            <param name="arg.list" 
-                   value="create-application-ref --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target ${testServer} ${appName}"/>
-        </antcall>
+        <antcall target="addInstanceRef"/>
         <antcall target="addClusterRefs"/>
         <antcall target="run.positive">
             <param name="log.id" value="10"/>
             <param name="desc" value="ear/earwithall2 Test create-application-ref"/>
         </antcall>
 
-        <!-- delete-app-ref to remote instance server -->
-        <antcall target="common.run.asadmin">
-            <param name="arg.list" 
-                   value="delete-application-ref --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target ${testServer} ${appName}"/>
-        </antcall>
+        <antcall target="delInstanceRef"/>
         <antcall target="delClusterRefs"/>
         <antcall target="run.negative">
             <param name="log.id" value="11"/>
