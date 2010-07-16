@@ -203,6 +203,7 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
 	    }
         } else if (element.getQName().equals(RuntimeTagNames.KEEP_STATE)) {
             descriptor.setKeepState(value);
+        } else if (element.getQName().equals(RuntimeTagNames.VERSION_IDENTIFIER)) {
 	} else super.setElementValue(element, value);
     }
 

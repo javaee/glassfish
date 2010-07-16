@@ -37,6 +37,7 @@
 
 package com.sun.enterprise.glassfish.web;
 
+import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 import com.sun.logging.LogDomains;
 import org.apache.naming.resources.FileDirContext;
@@ -84,6 +85,19 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
 
     public String getArchiveType() {
         return "war";               
+    }
+
+    public String getVersionIdentifier(ReadableArchive archive) {
+        String versionIdentifierValue = null;
+        try {
+            GlassFishWebXmlParser gfWebXMLParser = new GlassFishWebXmlParser(null);
+            versionIdentifierValue = gfWebXMLParser.extractVersionIdentifierValue(archive);
+        } catch (XMLStreamException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return versionIdentifierValue;
     }
 
     public boolean handles(ReadableArchive archive) {
@@ -454,8 +468,51 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
     }
 
     protected class GlassFishWebXmlParser extends SunWebXmlParser {
+
         GlassFishWebXmlParser(String baseStr) throws XMLStreamException, FileNotFoundException {
             super(baseStr);
+        }
+
+        protected String extractVersionIdentifierValue(ReadableArchive archive) throws XMLStreamException, IOException{
+
+            InputStream input = null;
+            String versionIdentifierValue = null;
+
+            try
+            {
+                input = archive.getEntry( getXmlFileName() );
+
+                if (input != null) {
+
+                    // parse elements only from glassfish-web
+                    parser = xmlIf.createXMLStreamReader(input);
+
+                    int event = 0;
+                    skipRoot(getRootElementName());
+
+                    while (parser.hasNext() && (event = parser.next()) != END_DOCUMENT) {
+                         if (event == START_ELEMENT) {
+                             String name = parser.getLocalName();
+                            if ("version-identifier".equals(name)) {
+                                versionIdentifierValue = parser.getElementText();
+                            } else {
+                                 skipSubTree(name);
+                            }
+                         }
+                    }
+                }
+            }
+            finally {
+                if (input != null) {
+                    try {
+                        input.close();
+                    } catch(Exception e) {
+                        // ignore
+                    }
+                }
+            }
+
+            return  versionIdentifierValue;
         }
 
         protected String getXmlFileName() {

@@ -71,6 +71,16 @@ public interface ArchiveHandler {
     public String getDefaultApplicationName(ReadableArchive archive, DeploymentContext context);
 
     /**
+     * Returns the version identifier by which the specified archive can be
+     * deployed.<p>
+     * The version identifier is used during deployment if no version identifier
+     * was specified <code>null</code> must be returned
+     * @param archive the archive for which to provide the version identifier
+     * @return the version identifier for versioning the deployment archive or <code>null</code>
+     */
+    public String getVersionIdentifier(ReadableArchive archive);
+
+    /**
      * Returns true if this handler understands the specified archive and
      * can process it.
      *

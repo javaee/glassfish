@@ -20,7 +20,7 @@
 glassfish-application-client is the root element describing all the runtime bindings of a single application client
 -->
 <!ELEMENT glassfish-application-client (ejb-ref*, resource-ref*, resource-env-ref*, service-ref*,
-	message-destination-ref*, message-destination*, java-web-start-access?)>
+	message-destination-ref*, message-destination*, java-web-start-access?, version-identifier?)>
 
 <!--
 name of a resource reference.
@@ -512,3 +512,9 @@ Used in: java-web-start-access
 -->
 <!ELEMENT jnlp-doc EMPTY>
 <!ATTLIST jnlp-doc href CDATA #REQUIRED>
+
+<!--
+The version-identifier element contains the version information. The value is
+ retrieved at deployment.
+-->
+<!ELEMENT version-identifier (#PCDATA)>

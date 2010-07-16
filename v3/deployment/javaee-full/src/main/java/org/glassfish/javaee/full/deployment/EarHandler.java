@@ -123,6 +123,19 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         return "ear";
     }
 
+    public String getVersionIdentifier(ReadableArchive archive) {
+        String versionIdentifier = null;
+        try {
+            GFApplicationXmlParser gfApplicationXMLParser = new GFApplicationXmlParser(null);
+            versionIdentifier = gfApplicationXMLParser.extractVersionIdentifierValue(archive);
+        } catch (XMLStreamException e) {
+            _logger.log(Level.SEVERE, e.getMessage());
+        } catch (IOException e) {
+            _logger.log(Level.SEVERE, e.getMessage());
+        }
+        return versionIdentifier;
+    }
+
     public boolean handles(ReadableArchive archive) throws IOException {
         return DeploymentUtils.isEAR(archive);
     }
@@ -446,6 +459,48 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                     }
                 }
             }
+        }
+
+        protected String extractVersionIdentifierValue(ReadableArchive archive) throws XMLStreamException, IOException{
+
+            InputStream input = null;
+            String versionIdentifierValue = null;
+
+            try
+            {
+                input = archive.getEntry("META-INF/glassfish-application.xml");
+
+                if (input != null) {
+
+                    // parse elements only from glassfish-web
+                    parser = xmlIf.createXMLStreamReader(input);
+
+                    int event = 0;
+                    skipRoot("glassfish-application");
+
+                    while (parser.hasNext() && (event = parser.next()) != END_DOCUMENT) {
+                         if (event == START_ELEMENT) {
+                             String name = parser.getLocalName();
+                            if ("version-identifier".equals(name)) {
+                                versionIdentifierValue = parser.getElementText();
+                            } else {
+                                 skipSubTree(name);
+                            }
+                         }
+                    }
+                }
+            }
+            finally {
+                if (input != null) {
+                    try {
+                        input.close();
+                    } catch(Exception e) {
+                        // ignore
+                    }
+                }
+            }
+
+            return  versionIdentifierValue;
         }
 
         private void read(InputStream input) throws XMLStreamException {

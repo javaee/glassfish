@@ -78,6 +78,19 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
         return "jar";
     }
 
+    public String getVersionIdentifier(ReadableArchive archive) {
+        String versionIdentifier = null;
+        try {
+            GFEjbJarXMLParser gfXMLParser = new GFEjbJarXMLParser(null);
+            versionIdentifier = gfXMLParser.extractVersionIdentifierValue(archive);
+        } catch (XMLStreamException e) {
+            _logger.log(Level.SEVERE, e.getMessage());
+        } catch (IOException e) {
+            _logger.log(Level.SEVERE, e.getMessage());
+        }
+        return versionIdentifier;
+    }
+
     public boolean handles(ReadableArchive archive) {
         if (DeploymentUtils.isEAR(archive)) {
             // I should not handle ear, so ear support must not be available
@@ -174,6 +187,54 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
                     }
                 }
             }
+        }
+
+        protected String extractVersionIdentifierValue(ReadableArchive archive) throws XMLStreamException, IOException{
+
+            InputStream input = null;
+            String versionIdentifierValue = null;
+            String rootElement = null;
+
+            try
+            {
+                rootElement = "glassfish-application-client";
+                input = archive.getEntry( "META-INF/glassfish-application-client.xml" );
+                if (input == null) {
+                    rootElement = "glassfish-ejb-jar";
+                    input = archive.getEntry( "META-INF/glassfish-ejb-jar.xml" );
+                }
+
+                if (input != null) {
+
+                    // parse elements only from glassfish-web
+                    parser = xmlIf.createXMLStreamReader(input);
+
+                    int event = 0;
+                    skipRoot(rootElement);
+
+                    while (parser.hasNext() && (event = parser.next()) != END_DOCUMENT) {
+                         if (event == START_ELEMENT) {
+                             String name = parser.getLocalName();
+                            if ("version-identifier".equals(name)) {
+                                versionIdentifierValue = parser.getElementText();
+                            } else {
+                                 skipSubTree(name);
+                            }
+                         }
+                    }
+                }
+            } 
+            finally {
+                if (input != null) {
+                    try {
+                        input.close();
+                    } catch(Exception e) {
+                        // ignore
+                    }
+                }
+            }
+
+            return  versionIdentifierValue;
         }
 
         private void read(InputStream input) throws XMLStreamException {

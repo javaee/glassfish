@@ -146,6 +146,7 @@ public class EjbBundleRuntimeNode extends
             descriptor.setDisableNonportableJndiNames(value);
         } else if (element.getQName().equals(RuntimeTagNames.KEEP_STATE)) {
             descriptor.setKeepState(value);
+        } else if (element.getQName().equals(RuntimeTagNames.VERSION_IDENTIFIER)) {
         } else {
             super.setElementValue(element, value);
         }

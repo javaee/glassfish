@@ -24,7 +24,7 @@
                        ejb-ref*, resource-ref*, resource-env-ref*,  service-ref*,
                        message-destination-ref*, cache?, class-loader?,
                        jsp-config?, locale-charset-info?, parameter-encoding?,
-                       property*, valve*, message-destination*, webservice-description*, keep-state?)>
+                       property*, valve*, message-destination*, webservice-description*, keep-state?, version-identifier?)>
 <!ATTLIST glassfish-web-app error-url CDATA ""
                       httpservlet-security-provider CDATA #IMPLIED>
 
@@ -804,3 +804,9 @@ The keep-state element indicates whether the state information should be
 preserved across redeployment.
 -->
 <!ELEMENT keep-state (#PCDATA)>
+
+<!--
+The version-identifier element contains the version information. The value is
+ retrieved at deployment.
+-->
+<!ELEMENT version-identifier (#PCDATA)>

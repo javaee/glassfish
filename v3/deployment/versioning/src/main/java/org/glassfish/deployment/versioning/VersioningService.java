@@ -406,4 +406,17 @@ public class VersioningService {
             inv.parameters(parameters).execute();
         }
     }
+
+    public static final Boolean isUntagged(String appName) {
+       Boolean isUntagged = false;
+       try {
+           String untaggedName = getUntaggedName(appName);
+           if(untaggedName != null && untaggedName.equals(appName)){
+               isUntagged = true;
+           }
+       } catch (VersioningSyntaxException e) {
+       }
+
+       return isUntagged;
+   }
 }

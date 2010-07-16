@@ -149,4 +149,17 @@ public class AppClientRuntimeNode extends
         JavaWebStartAccessNode.writeJavaWebStartInfo(appClient, bundleDescriptor.getJavaWebStartAccessDescriptor());
         return appClient;
     }
+
+   /**
+     * receives notification of the value for a particular tag
+     *
+     * @param element the xml element
+     * @param value it's associated value
+     */
+    public void setElementValue(XMLElement element, String value) {
+        if (element.getQName().equals(RuntimeTagNames.VERSION_IDENTIFIER)) {
+        } else {
+            super.setElementValue(element, value);
+        }
+    }
 }

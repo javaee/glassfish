@@ -215,6 +215,19 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 DeploymentUtils.validateApplicationName(name);
             }
 
+            // if no version information embedded as part of application name
+            // we try to retrieve the version-identifier element's value from DD
+            if ( VersioningService.isUntagged(name) ){
+                String versionIdentifier = archiveHandler.getVersionIdentifier(archive);
+
+                if ( versionIdentifier != null ) {
+                  StringBuilder sb = new StringBuilder(name).
+                          append(VersioningService.EXPRESSION_SEPARATOR).
+                          append(versionIdentifier);
+                  name = sb.toString();
+                }
+            }
+            
             if (!target.equals("domain") && enabled) {
                 // try to disable the enabled version, if exist
                 try {

@@ -146,6 +146,17 @@ public abstract class GenericHandler implements ArchiveHandler {
     }
 
     /**
+     * Returns the default value for versionIdentifier. This allows us to
+     * override the method only where thhe version-identifier element is
+     * supported.
+     *
+     * @return null
+     */
+    public String getVersionIdentifier(ReadableArchive archive){
+        return null;
+    }
+
+    /**
      * Returns the manifest file for this archive, this file is usually located at
      * the META-INF/MANIFEST location, however, certain archive type can change this
      * default location or use another mean of expressing manifest information.
