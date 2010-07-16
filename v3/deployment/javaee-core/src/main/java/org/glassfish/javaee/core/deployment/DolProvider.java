@@ -171,8 +171,7 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
             }
         }
 
-        application.setRegistrationName(application.getAppName());
-
+        application.setRegistrationName(name);
         // write out xml files if needed
         if (Boolean.valueOf(WRITEOUT_XML)) {
             saveAppDescriptor(application, dc);

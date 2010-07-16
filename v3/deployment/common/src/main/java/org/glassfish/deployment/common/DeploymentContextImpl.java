@@ -247,7 +247,14 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
         File rootScratchDir = env.getApplicationStubPath();
         if (subDirName != null )
             rootScratchDir = new File(rootScratchDir, subDirName);
-        return new File(rootScratchDir, parameters.name());
+        String appDirName = parameters.name();
+        try {
+            appDirName = VersioningDeploymentUtil.getRepositoryName(parameters.name());
+        } catch (VersioningDeploymentSyntaxException ex) {
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
+            actionReport.failure(logger, ex.getMessage(), ex);
+        }
+        return new File(rootScratchDir, appDirName);
     }
 
     /**

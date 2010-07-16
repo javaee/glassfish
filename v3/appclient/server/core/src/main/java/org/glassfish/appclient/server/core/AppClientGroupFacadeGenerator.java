@@ -61,12 +61,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.ClientArtifactsManager;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DownloadableArtifacts;
+import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
+import org.glassfish.deployment.common.VersioningDeploymentUtil;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -167,7 +171,7 @@ public class AppClientGroupFacadeGenerator {
             generateAndRecordEARFacade(
                     dc,
                     dc.getScratchDir("xml").getParentFile(),
-                    generatedEARFacadeName(application.getRegistrationName()), 
+                    generatedEARFacadeName(application.getAppName()),
                         appClientGroupListSB.toString());
             recordGroupFacadeGeneration();
         } catch (Exception e) {
@@ -175,10 +179,16 @@ public class AppClientGroupFacadeGenerator {
         }
     }
 
-    private String earDirUserURIText(final DeploymentContext dc) {
+    private String earDirUserURIText(final DeploymentContext dc)  {
         final DeployCommandParameters deployParams = dc.getCommandParameters(DeployCommandParameters.class);
         final String appName = deployParams.name();
-        return appName + "Client/";
+        try {
+            return VersioningDeploymentUtil.getUntaggedName(appName) + "Client/";
+        } catch (VersioningDeploymentSyntaxException ex) {
+            Logger.getLogger(AppClientGroupFacadeGenerator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return appName;
+
     }
 
     private String appClientFacadeUserURI(String appClientModuleURIText) {

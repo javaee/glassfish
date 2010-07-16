@@ -55,6 +55,7 @@ import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -67,6 +68,8 @@ import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
 import org.glassfish.deployment.common.DownloadableArtifacts;
+import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
+import org.glassfish.deployment.common.VersioningDeploymentUtil;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -423,11 +426,15 @@ public abstract class AppClientDeployerHelper {
     
     private String relativePathToGroupFacade() {
         final StringBuilder sb = new StringBuilder(anchorDirRelativeToClient());
-        /*
-         * One more level up because the group facade will reside in the
-         * download directory.
-         */
-        sb.append("../").append(appName()).append("Client.jar");
+        try {
+            /*
+             * One more level up because the group facade will reside in the
+             * download directory.
+             */
+            sb.append("../").append(VersioningDeploymentUtil.getUntaggedName(appName)).append("Client.jar");
+        } catch (VersioningDeploymentSyntaxException ex) {
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
         return sb.toString();
     }
 

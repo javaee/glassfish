@@ -39,6 +39,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
+import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -50,6 +51,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -58,6 +61,8 @@ import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
+import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
+import org.glassfish.deployment.common.VersioningDeploymentUtil;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.jvnet.hk2.component.Habitat;
 
@@ -73,6 +78,8 @@ import org.jvnet.hk2.component.Habitat;
  * @author tjquinn
  */
 public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
+
+    private static Logger logger = LogDomains.getLogger(StandaloneAppClientDeployerHelper.class, LogDomains.ACC_LOGGER);
 
     StandaloneAppClientDeployerHelper(final DeploymentContext dc, 
             final ApplicationClientDescriptor bundleDesc,
@@ -95,6 +102,11 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
     private String facadeNameOnly(DeploymentContext dc) {
         DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
         final String appName = params.name();
+        try {
+            return VersioningDeploymentUtil.getUntaggedName(appName) + "Client";
+        } catch (VersioningDeploymentSyntaxException ex) {
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
         return appName + "Client";
     }
 
@@ -222,9 +234,25 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
     public URI appClientURIWithinApp(DeploymentContext dc) {
 
         String uriText = appClientDesc().getModuleDescriptor().getArchiveUri();
-        if ( ! uriText.endsWith(".jar")) {
-            uriText += ".jar";
+        String uriRoot = "";
+        String archiveName = uriText;
+        int lastIndex = uriText.lastIndexOf("/");
+        if(lastIndex > -1) {
+            uriRoot = uriText.substring(0, lastIndex);
+            archiveName = uriText.substring(lastIndex);
         }
+        try {
+            archiveName = VersioningDeploymentUtil.getUntaggedName(archiveName);
+        } catch (VersioningDeploymentSyntaxException ex) {
+           logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+//        if ( ! uriText.endsWith(".jar")) {
+//            uriText += ".jar";
+//        }
+        if ( ! archiveName.endsWith(".jar")) {
+            archiveName += ".jar";
+        }
+        uriText = uriRoot + archiveName;
         return URI.create(uriText);
     }
 
