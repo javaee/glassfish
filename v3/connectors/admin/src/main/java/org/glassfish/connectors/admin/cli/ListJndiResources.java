@@ -71,7 +71,6 @@ public class ListJndiResources implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ListJndiResources.class);
 
-    //TODO primary=true for v2 compatibility
     @Param(optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     private String target ;
 

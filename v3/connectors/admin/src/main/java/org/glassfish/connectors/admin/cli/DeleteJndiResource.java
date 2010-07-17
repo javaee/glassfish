@@ -37,11 +37,16 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -54,11 +59,14 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.*;
 
 import java.beans.PropertyVetoException;
+import java.util.Set;
 
 /**
  * Delete Jndi Resource object
  *
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@org.glassfish.api.admin.Cluster(value={RuntimeType.ALL})
 @Service(name="delete-jndi-resource")
 @Scoped(PerLookup.class)
 @I18n("delete.jndi.resource")
@@ -67,21 +75,23 @@ public class DeleteJndiResource implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(DeleteJndiResource.class);
 
-    @Param(optional=true,
-    defaultValue= SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    String target;
+    @Param(optional=true, defaultValue= SystemPropertyConstants.DAS_SERVER_NAME)
+    private String target;
 
     @Param(name="jndi_name", primary=true)
-    String jndiName;
+    private String jndiName;
 
     @Inject
-    Resources resources;
+    private Resources resources;
 
     @Inject
-    ExternalJndiResource[] jndiResources;
+    private Domain domain;
 
     @Inject
-    Domain domain;
+    private ServerEnvironment environment;
+
+    @Inject
+    private ResourceUtil resourceUtil;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -92,7 +102,6 @@ public class DeleteJndiResource implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
 
         // ensure we already have this resource
         if (!isResourceExists(resources, jndiName)) {
@@ -103,24 +112,55 @@ public class DeleteJndiResource implements AdminCommand {
             return;
         }
 
+        if (environment.isDas()) {
+            if ("domain".equals(target)) {
+                if (resourceUtil.getTargetsReferringResourceRef(jndiName).size() > 0) {
+                    report.setMessage(localStrings.getLocalString("delete.jndi.resource.resource-ref.exist",
+                            "external-jndi-resource [ {0} ] is referenced in an" +
+                                    "instance/cluster target, Use delete-resource-ref on appropriate target",
+                            jndiName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            } else {
+                if (!resourceUtil.isResourceRefInTarget(jndiName, target)) {
+                    report.setMessage(localStrings.getLocalString("delete.jndi.resource.no.resource-ref",
+                            "external-jndi-resource [ {0} ] is not referenced in target [ {1} ]",
+                            jndiName, target));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+
+                }
+
+                if (resourceUtil.getTargetsReferringResourceRef(jndiName).size() > 1) {
+                    report.setMessage(localStrings.getLocalString("delete.jndi.resource.multiple.resource-refs",
+                            "external-jndi-resource [ {0} ] is referenced in multiple " +
+                                    "instance/cluster targets, Use delete-resource-ref on appropriate target",
+                            jndiName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            }
+        }
+
         try {
-            // delete admin-object-resource
+
+            // delete resource-ref
+            resourceUtil.deleteResourceRef(jndiName, target);
+
+            // delete external-jndi-resource
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
                 public Object run(Resources param) throws PropertyVetoException,
                         TransactionFailure {
-                    for (ExternalJndiResource resource : jndiResources) {
-                        if (resource.getJndiName().equals(jndiName)) {
-                            param.getResources().remove(resource);
-                            break;
-                        }
+                    ExternalJndiResource resource = (ExternalJndiResource)
+                            resources.getResourceByName(ExternalJndiResource.class, jndiName);
+                    if (resource.getJndiName().equals(jndiName)) {
+                        return param.getResources().remove(resource);
                     }
-                    return jndiResources;
+                    return null;
                 }
             }, resources);
-
-            // delete resource-ref
-            targetServer.deleteResourceRef(jndiName);
 
             report.setMessage(localStrings.getLocalString("" +
                     "delete.jndi.resource.success",
@@ -138,14 +178,6 @@ public class DeleteJndiResource implements AdminCommand {
     }
 
     private boolean isResourceExists(Resources resources, String jndiName) {
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof ExternalJndiResource) {
-                if (((ExternalJndiResource) resource).getJndiName().equals(jndiName))
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return resources.getResourceByName(ExternalJndiResource.class, jndiName) != null;
     }
 }

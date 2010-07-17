@@ -37,8 +37,12 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -60,45 +64,48 @@ import java.beans.PropertyVetoException;
 /**
  * Create Jndi Resource
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@org.glassfish.api.admin.Cluster(RuntimeType.ALL)
 @Service(name = "create-jndi-resource")
 @Scoped(PerLookup.class)
 @I18n("create.jndi.resource")
-
 public class CreateJndiResource implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(CreateJndiResource.class);
 
     @Param(name = "restype")
-    String resType;
+    private String resType;
 
     @Param(name = "factoryclass")
-    String factoryClass;
+    private String factoryClass;
 
     @Param(name = "jndilookupname")
-    String jndiLookupName;
+    private String jndiLookupName;
 
     @Param(optional = true, defaultValue = "true")
-    Boolean enabled;
+    private Boolean enabled;
 
     @Param(optional = true)
-    String description;
+    private String description;
 
     @Param(name = "property", optional = true, separator = ':')
-    Properties properties;
+    private Properties properties;
 
-    @Param(optional = true,
-            defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    String target;
+    @Param(optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    private String target;
 
     @Param(name = "jndi_name", primary = true)
-    String jndiName;
+    private String jndiName;
 
     @Inject
-    Resources resources;
+    private Resources resources;
 
     @Inject
-    Domain domain;
+    private Domain domain;
+
+    @Inject
+    private ResourceUtil resourceRefUtil;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -109,21 +116,14 @@ public class CreateJndiResource implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        Server targetServer = domain.getServerNamed(target);
-
         // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if ((resource instanceof BindableResource)) {
-                if (((BindableResource) resource).getJndiName().equals(jndiName))
-                {
-                    report.setMessage(localStrings.getLocalString(
-                            "create.jndi.resource.duplicate.1",
-                            "Resource named {0} already exists.",
-                            jndiName));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
-                }
-            }
+        if (resources.getResourceByName(BindableResource.class, jndiName) != null){
+            report.setMessage(localStrings.getLocalString(
+                    "create.jndi.resource.duplicate.1",
+                    "Resource named {0} already exists.",
+                    jndiName));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         }
 
         try {
@@ -156,9 +156,7 @@ public class CreateJndiResource implements AdminCommand {
                 }
             }, resources);
 
-            if (!targetServer.isResourceRefExists(jndiName)) {
-                targetServer.createResourceRef(enabled.toString(), jndiName);
-            }
+            resourceRefUtil.createResourceRef(jndiName, enabled.toString(), target);
             report.setMessage(localStrings.getLocalString(
                     "create.jndi.resource.success",
                     "JNDI resource {0} created.", jndiName));
