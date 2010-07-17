@@ -43,6 +43,9 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import static org.glassfish.resource.common.ResourceConstants.*;
+
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -55,6 +58,9 @@ import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import static org.glassfish.connectors.admin.cli.CLIConstants.RAC.*;
+import static org.glassfish.connectors.admin.cli.CLIConstants.*;
+
 import java.util.Properties;
 import java.util.HashMap;
 
@@ -62,34 +68,36 @@ import java.util.HashMap;
  * Create RA Config Command
  *
  */
-@Service(name="create-resource-adapter-config")
+@Cluster(RuntimeType.ALL)
+@Service(name=RAC_CREATE_RAC_COMMAND)
 @Scoped(PerLookup.class)
 @I18n("create.resource.adapter.config")
 public class CreateResourceAdapterConfig implements AdminCommand {
 
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateResourceAdapterConfig.class);
+    final private static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(CreateResourceAdapterConfig.class);
 
+    @Param(name=RAC_RA_NAME, primary=true)
+    private String raName;
 
-    @Param(name="raname", primary=true)
-    String raName;
+    @Param(name=PROPERTY, optional=true, separator=':')
+    private Properties properties;
 
-    @Param(name="property", optional=true, separator=':')
-    Properties properties;
+    //TODO deprecated ?
+    @Param(name=TARGET, optional=true)
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
-    @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    @Param(name=RAC_THREAD_POOL_ID, optional=true, alias="threadPoolIds")
+    private String threadPoolIds;
 
-    @Param(name="threadpoolid", optional=true, alias="threadPoolIds")
-    String threadPoolIds;
-
-    @Param(name="objecttype", defaultValue="user", optional=true)
-    String objectType;
-
-    @Inject
-    Resources resources;
+    @Param(name=OBJECT_TYPE, defaultValue="user", optional=true)
+    private String objectType;
 
     @Inject
-    Domain domain;
+    private Resources resources;
+
+    @Inject
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -99,8 +107,6 @@ public class CreateResourceAdapterConfig implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-
-        Server targetServer = domain.getServerNamed(target);
 
         HashMap attrList = new HashMap();
         attrList.put(RESOURCE_ADAPTER_CONFIG_NAME, raName);
@@ -112,7 +118,7 @@ public class CreateResourceAdapterConfig implements AdminCommand {
 
         ResourceAdapterConfigManager resAdapterConfigMgr = new ResourceAdapterConfigManager();
         try {
-            rs = resAdapterConfigMgr.create(resources, attrList, properties, targetServer, true);
+            rs = resAdapterConfigMgr.create(resources, attrList, properties, target, true, false);
         } catch (Exception ex) {
             Logger.getLogger(CreateResourceAdapterConfig.class.getName()).log(
                     Level.SEVERE,

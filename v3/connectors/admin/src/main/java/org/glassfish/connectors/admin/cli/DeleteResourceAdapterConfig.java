@@ -36,8 +36,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -58,27 +57,23 @@ import java.beans.PropertyVetoException;
  * Delete RA Config command
  *
  */
+@org.glassfish.api.admin.Cluster(RuntimeType.ALL)
 @Service(name="delete-resource-adapter-config")
 @Scoped(PerLookup.class)
 @I18n("delete.resource.adapter.config")
 public class DeleteResourceAdapterConfig implements AdminCommand {
 
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteResourceAdapterConfig.class);
+    final private static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(DeleteResourceAdapterConfig.class);
 
     @Param(name="raname", primary=true)
-    String raName;
+    private String raName;
 
     @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Inject
-    Resources resources;
-
-    @Inject
-    ResourceAdapterConfig[] raConfigs;
-
-    @Inject
-    Domain domain;
+    private Resources resources;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -89,7 +84,6 @@ public class DeleteResourceAdapterConfig implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
         if (raName== null) {
             report.setMessage(localStrings.getLocalString("delete.resource.adapter.config.noRARName",
                             "No RAR name defined for resource adapter config."));
@@ -98,7 +92,7 @@ public class DeleteResourceAdapterConfig implements AdminCommand {
         }
 
         // ensure we already have this resource
-        if (!isResourceExists(resources, raName)) {
+        if(resources.getResourceByName(ResourceAdapterConfig.class, raName) == null){
             report.setMessage(localStrings.getLocalString("delete.resource.adapter.config.notfound",
                     "Resource-Adapter-Config for {0} does not exist.", raName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -109,10 +103,10 @@ public class DeleteResourceAdapterConfig implements AdminCommand {
             // delete resource-adapter-config
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    for (ResourceAdapterConfig resource : raConfigs) {
-                        if (resource.getResourceAdapterName().equals(raName)) {
-                            return param.getResources().remove(resource);
-                        }
+                    ResourceAdapterConfig resource = (ResourceAdapterConfig)
+                            resources.getResourceByName(ResourceAdapterConfig.class, raName);
+                    if (resource != null && resource.getResourceAdapterName().equals(raName)) {
+                        return param.getResources().remove(resource);
                     }
                     // not found
                     return null;
@@ -123,10 +117,6 @@ public class DeleteResourceAdapterConfig implements AdminCommand {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
-
-            // delete resource-ref
-            targetServer.deleteResourceRef(raName);
-
         } catch(TransactionFailure tfe) {
             report.setMessage(localStrings.getLocalString("delete.resource.adapter.config.fail",
                             "Unable to delete resource adapter config {0}", raName)
@@ -138,17 +128,5 @@ public class DeleteResourceAdapterConfig implements AdminCommand {
         //report.setMessage(localStrings.getLocalString("delete.resource.adapter.config.success",
         //        "Resource adapter config {0} deleted", raName));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-    }
-
-    private boolean isResourceExists(Resources resources, String raName) {
-
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof ResourceAdapterConfig) {
-                if (((ResourceAdapterConfig) resource).getResourceAdapterName().equals(raName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

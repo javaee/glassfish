@@ -56,6 +56,7 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
+
 import static org.glassfish.resource.common.ResourceConstants.*;
 import org.glassfish.resource.common.ResourceStatus;
 import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
@@ -89,24 +90,19 @@ public class ResourceAdapterConfigManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
-
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef) throws Exception {
         setParams(attributes);
-        
+
         if (raName == null) {
             String msg = localStrings.getLocalString("create.resource.adapter.confignoRAName",
                             "No RA Name defined for resource adapter config.");
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
         // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof ResourceAdapterConfig) {
-                if (((ResourceAdapterConfig) resource).getResourceAdapterName().equals(raName)) {
-                    String msg = localStrings.getLocalString("create.resource.adapter.config.duplicate",
-                            "Resource adapter config already exists for RAR", raName);
-                    return new ResourceStatus(ResourceStatus.FAILURE, msg);
-                }
-            }
+        if (resources.getResourceByName(ResourceAdapterConfig.class, raName) != null) {
+            String msg = localStrings.getLocalString("create.resource.adapter.config.duplicate",
+                    "Resource adapter config already exists for RAR", raName);
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
         if (requiresNewTransaction) {
             try {
@@ -134,7 +130,6 @@ public class ResourceAdapterConfigManager implements ResourceManager {
                 "create.resource.adapter.config.success", "Resource adapter config {0} created successfully",
                 raName);
         return new ResourceStatus(ResourceStatus.SUCCESS, msg);
-         
     }
 
     private ResourceAdapterConfig createConfigBean(Resources param, Properties properties) throws PropertyVetoException,
