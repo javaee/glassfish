@@ -35,9 +35,11 @@
  */
 package org.glassfish.connectors.admin.cli;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.jvnet.hk2.config.types.Property;
+import org.glassfish.api.admin.*;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.resource.common.ResourceConstants;
+import org.glassfish.resource.common.ResourceStatus;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -45,20 +47,23 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import java.beans.PropertyVetoException;
+import java.util.HashMap;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.glassfish.resource.common.ResourceConstants.JNDI_NAME;
 
 /**
  * Create Custom Resource
  *
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@org.glassfish.api.admin.Cluster(RuntimeType.ALL)
 @Service(name="create-custom-resource")
 @Scoped(PerLookup.class)
 @I18n("create.custom.resource")
@@ -68,118 +73,75 @@ public class CreateCustomResource implements AdminCommand {
             new LocalStringManagerImpl(CreateCustomResource.class);
 
     @Param(name = "restype")
-    String resType;
+    private String resType;
 
     @Param(name = "factoryclass")
-    String factoryClass;
+    private String factoryClass;
 
     @Param(optional = true, defaultValue = "true")
-    Boolean enabled;
+    private Boolean enabled;
 
     @Param(optional = true)
-    String description;
+    private String description;
 
     @Param(name = "property", optional = true, separator = ':')
-    Properties properties;
+    private Properties properties;
 
-    @Param(optional = true,
-    defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    String target;
+    @Param(optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    private String target;
 
     @Param(name = "jndi_name", primary = true)
-    String jndiName;
+    private String jndiName;
 
     @Inject
-    Resources resources;
+    private Resources resources;
 
     @Inject
-    Domain domain;
+    private CustomResourceManager customResMgr;
 
     /**
      * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * where the keys are the parameter names and the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        Server targetServer = domain.getServerNamed(target);
+        HashMap attrList = new HashMap();
+        attrList.put("factory-class", factoryClass);
+        attrList.put("res-type", resType);
+        attrList.put(ResourceConstants.ENABLED, enabled.toString());
+        attrList.put(JNDI_NAME, jndiName);
+        attrList.put(ServerTags.DESCRIPTION, description);
 
-        if (resType == null) {
-            report.setMessage(localStrings.getLocalString(
-                    "create.custom.resource.noResType",
-                    "No type defined for Custom Resource."));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
-        if (factoryClass == null) {
-            report.setMessage(localStrings.getLocalString(
-                    "create.custom.resource.noFactoryClassName",
-                    "No Factory class name defined for Custom Resource."));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
-        // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof BindableResource) {
-                if (((BindableResource) resource).getJndiName().equals(jndiName))
-                {
-                    report.setMessage(localStrings.getLocalString(
-                            "create.custom.resource.duplicate.1",
-                            "Resource named {0} already exists.",
-                            jndiName));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
-                }
-            } 
-        }
+        ResourceStatus rs;
 
         try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
-                public Object run(Resources param) throws PropertyVetoException,
-                        TransactionFailure {
-
-                    CustomResource newResource =
-                            param.createChild(CustomResource.class);
-                    newResource.setJndiName(jndiName);
-                    newResource.setFactoryClass(factoryClass);
-                    newResource.setResType(resType);
-                    newResource.setEnabled(enabled.toString());
-                    if (description != null) {
-                        newResource.setDescription(description);
-                    } 
-                    if (properties != null) {
-                        for (java.util.Map.Entry e : properties.entrySet()) {
-                            Property prop = newResource.createChild(
-                                    Property.class);
-                            prop.setName((String) e.getKey());
-                            prop.setValue((String) e.getValue());
-                            newResource.getProperty().add(prop);
-                        }
-                    }
-                    param.getResources().add(newResource);
-                    return newResource;
-                }
-            }, resources);
-
-            if (!targetServer.isResourceRefExists(jndiName)) {
-                targetServer.createResourceRef(enabled.toString(), jndiName);
-            }
-            report.setMessage(localStrings.getLocalString(
-                    "create.custom.resource.success",
-                    "Custom Resource {0} created.", jndiName));
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        } catch (TransactionFailure tfe) {
-            report.setMessage(localStrings.getLocalString(
-                    "create.custom.resource.fail",
-                    "Unable to create custom resource {0}.", jndiName) +
-                    " " + tfe.getLocalizedMessage());
+            rs = customResMgr.create(resources, attrList, properties, target, true, true);
+        } catch(Exception e) {
+            Logger.getLogger(CreateCustomResource.class.getName()).log(Level.SEVERE,
+                    "Unable to create custom resource " + jndiName, e);
+            String def = "Cusstom resource: {0} could not be created, reason: {1}";
+            report.setMessage(localStrings.getLocalString("create.custom.resource.fail",
+                    def, jndiName) + " " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(tfe);
+            report.setFailureCause(e);
+            return;
         }
+        ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
+        if (rs.getStatus() == ResourceStatus.FAILURE) {
+            ec = ActionReport.ExitCode.FAILURE;
+            if (rs.getMessage() == null) {
+                 report.setMessage(localStrings.getLocalString("create.custom.resource.fail",
+                    "Custom resource {0} creation failed", jndiName, ""));
+            }
+            if (rs.getException() != null)
+                report.setFailureCause(rs.getException());
+        }
+        if(rs.getMessage() != null){
+            report.setMessage(rs.getMessage());
+        }
+        report.setActionExitCode(ec);
     }
 }

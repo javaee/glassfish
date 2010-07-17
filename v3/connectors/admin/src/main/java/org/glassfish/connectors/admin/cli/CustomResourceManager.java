@@ -37,9 +37,13 @@
 package org.glassfish.connectors.admin.cli;
 
 import org.glassfish.admin.cli.resources.ResourceManager;
+import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.resource.common.ResourceStatus;
 import static org.glassfish.resource.common.ResourceConstants.*;
 import org.glassfish.api.I18n;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.types.Property;
 
 import com.sun.enterprise.config.serverbeans.*;
@@ -57,25 +61,30 @@ import java.beans.PropertyVetoException;
 
 
 @Service(name= ServerTags.CUSTOM_RESOURCE)
-@I18n("add.resources")
+@Scoped(PerLookup.class)
+@I18n("create.custom.resource")
 public class CustomResourceManager implements ResourceManager {
 
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(CustomResourceManager.class);
     private static final String DESCRIPTION = ServerTags.DESCRIPTION;
 
-    String resType = null;
-    String factoryClass = null;
-    String enabled = null;
-    String description = null;
-    String jndiName = null;
+    @Inject
+    private ResourceUtil resourceRefUtil;
+
+    private String resType = null;
+    private String factoryClass = null;
+    private String enabled = null;
+    private String description = null;
+    private String jndiName = null;
 
     public String getResourceType() {
         return ServerTags.CUSTOM_RESOURCE;
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef)
+            throws Exception {
         setAttributes(attributes);
 
         if (resType == null) {
@@ -93,16 +102,12 @@ public class CustomResourceManager implements ResourceManager {
         }
 
         // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof BindableResource) {
-                if (((BindableResource) resource).getJndiName().equals(jndiName)) {
-                    String msg = localStrings.getLocalString(
-                            "create.custom.resource.duplicate",
-                            "A Custom Resource named {0} already exists.",
-                            jndiName);
-                    return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-                }
-            }
+        if (resources.getResourceByName(BindableResource.class, jndiName) != null) {
+            String msg = localStrings.getLocalString(
+                    "create.custom.resource.duplicate",
+                    "A Custom Resource named {0} already exists.",
+                    jndiName);
+            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
 
         if (requiresNewTransaction) {
@@ -116,8 +121,8 @@ public class CustomResourceManager implements ResourceManager {
                     }
                 }, resources);
 
-                if (!targetServer.isResourceRefExists(jndiName)) {
-                    targetServer.createResourceRef(enabled, jndiName);
+                if(createResourceRef){
+                    resourceRefUtil.createResourceRef(jndiName, enabled, target);
                 }
             } catch (TransactionFailure tfe) {
                 String msg = localStrings.getLocalString(
@@ -144,7 +149,8 @@ public class CustomResourceManager implements ResourceManager {
         description = (String) attrList.get(DESCRIPTION);
     }
 
-    private Object createResource(Resources param, Properties properties) throws PropertyVetoException, TransactionFailure {
+    private Object createResource(Resources param, Properties properties) throws PropertyVetoException,
+            TransactionFailure {
         CustomResource newResource = createConfigBean(param, properties);
         param.getResources().add(newResource);
         return newResource;
@@ -156,7 +162,7 @@ public class CustomResourceManager implements ResourceManager {
         newResource.setJndiName(jndiName);
         newResource.setFactoryClass(factoryClass);
         newResource.setResType(resType);
-        newResource.setEnabled(enabled.toString());
+        newResource.setEnabled(enabled);
         if (description != null) {
             newResource.setDescription(description);
         }
