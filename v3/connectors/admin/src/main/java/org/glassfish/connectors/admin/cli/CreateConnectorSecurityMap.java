@@ -35,6 +35,8 @@
  */
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -45,13 +47,10 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.config.serverbeans.BackendPrincipal;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.SecurityMap;
+
+import static org.glassfish.connectors.admin.cli.CLIConstants.SM.*;
 
 import java.util.*;
 import java.beans.PropertyVetoException;
@@ -59,7 +58,8 @@ import java.beans.PropertyVetoException;
 /**
  * Create Connector SecurityMap command
  */
-@Service(name="create-connector-security-map")
+@org.glassfish.api.admin.Cluster(RuntimeType.ALL)
+@Service(name=SM_CREATE_COMMAND_NAME)
 @Scoped(PerLookup.class)
 @I18n("create.connector.security.map")
 public class CreateConnectorSecurityMap extends ConnectorSecurityMap implements AdminCommand {
@@ -67,32 +67,32 @@ public class CreateConnectorSecurityMap extends ConnectorSecurityMap implements 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateConnectorSecurityMap.class);
 
     @Param(optional = true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
-    @Param(name = "poolname")
-    String poolName;
+    @Param(name = SM_POOL_NAME)
+    private String poolName;
 
-    @Param(name = "principals", optional = true)
-    List<String> principals;
+    @Param(name = SM_PRINCIPALS, optional = true)
+    private List<String> principals;
 
-    @Param(name = "usergroups", optional = true)
-    List<String> userGroups;
+    @Param(name = SM_USER_GROUPS, optional = true)
+    private List<String> userGroups;
 
-    @Param(name = "mappedusername")
-    String mappedusername;
+    @Param(name = SM_MAPPED_NAME)
+    private String mappedusername;
 
-    @Param(name="mappedpassword", password = true, optional = true)
-    String mappedpassword; 
+    @Param(name=SM_MAPPED_PASSWORD, password = true, optional = true)
+    private String mappedpassword;
 
-    @Param(name = "mapname", primary = true)
-    String securityMapName;
+    @Param(name = SM_MAP_NAME, primary = true)
+    private String securityMapName;
 
     @Inject
-    ConnectorConnectionPool[] ccPools;
+    private ConnectorConnectionPool[] ccPools;
 
     /**
      * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * where the keys are the parameter names and the values the parameter values
      *
      * @param context information
      */
@@ -107,15 +107,18 @@ public class CreateConnectorSecurityMap extends ConnectorSecurityMap implements 
         }
 
         if (principals == null && userGroups == null) {
-            report.setMessage(localStrings.getLocalString("create.connector.security.map.noPrincipalsOrGroupsMap",
-                    "Either the principal or the user group has to be specified while creating a security map. Both cannot be null."));
+            report.setMessage
+                    (localStrings.getLocalString("create.connector.security.map.noPrincipalsOrGroupsMap",
+                    "Either the principal or the user group has to be specified while creating a security map." +
+                            " Both cannot be null."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
         if (principals != null && userGroups != null) {
             report.setMessage(localStrings.getLocalString("create.connector.security.map.specifyPrincipalsOrGroupsMap",
-                    "A work-security-map can have either (any number of) group mapping or (any number of) principals mapping but not both. Specify --principalsmap or --groupsmap."));
+                    "A work-security-map can have either (any number of) group mapping or (any number of) principals" +
+                            " mapping but not both. Specify --principalsmap or --groupsmap."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
@@ -129,7 +132,8 @@ public class CreateConnectorSecurityMap extends ConnectorSecurityMap implements 
 
         if (doesMapNameExist(poolName, securityMapName, ccPools)) {
             report.setMessage(localStrings.getLocalString("create.connector.security.map.duplicate",
-                    "A security map named {0} already exists for connector connection pool {1}. Please give a different map name.",
+                    "A security map named {0} already exists for connector connection pool {1}. Please give a" +
+                            " different map name.",
                     securityMapName, poolName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
@@ -142,7 +146,8 @@ public class CreateConnectorSecurityMap extends ConnectorSecurityMap implements 
             for (String principal : principals) {
                 if (isPrincipalExisting(principal, maps)) {
                     report.setMessage(localStrings.getLocalString("create.connector.security.map.principal_exists",
-                            "The principal {0} already exists in connector connection pool {1}. Please give a different principal name.",
+                            "The principal {0} already exists in connector connection pool {1}. Please give a " +
+                                    "different principal name.",
                             principal, poolName));
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
@@ -153,7 +158,8 @@ public class CreateConnectorSecurityMap extends ConnectorSecurityMap implements 
             for (String userGroup : userGroups) {
                 if (isUserGroupExisting(userGroup, maps)) {
                     report.setMessage(localStrings.getLocalString("create.connector.security.map.usergroup_exists",
-                            "The user-group {0} already exists in connector connection pool {1}. Please give a different user-group name.",
+                            "The user-group {0} already exists in connector connection pool {1}. Please give a" +
+                                    " different user-group name.",
                             userGroup, poolName));
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
@@ -208,86 +214,9 @@ public class CreateConnectorSecurityMap extends ConnectorSecurityMap implements 
                     " " + tfe.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(tfe);
+            return;
         }
 
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
-
-    /*private boolean doesPoolNameExist(String poolName) {
-        //check if the poolname exists.If it does not then throw an exception.
-        boolean doesPoolExist = false;
-        if (ccPools != null) {
-            for (ConnectorConnectionPool ccp : ccPools) {
-                if (ccp.getName().equals(poolName)) {
-                    doesPoolExist = true;
-                }
-            }
-        }
-        return doesPoolExist;
-    }
-
-    private boolean doesMapNameExist(String poolName, String mapname) {
-        //check if the mapname exists for the given pool name..
-        List<SecurityMap> maps = getAllSecurityMapsForPool(poolName);
-
-        boolean doesMapNameExist = false;
-        if (maps != null) {
-            for (SecurityMap sm : maps) {
-                String name = sm.getName();
-                if (name.equals(mapname)) {
-                    doesMapNameExist = true;
-                }
-            }
-        }
-        return doesMapNameExist;
-    }
-
-    private List<SecurityMap> getAllSecurityMapsForPool(String poolName ) {
-         List<SecurityMap> securityMaps = null;
-         for (ConnectorConnectionPool ccp : ccPools) {
-            if (ccp.getName().equals(poolName)) {
-                securityMaps = ccp.getSecurityMap();
-            }
-         }
-         return securityMaps;
-    }
-
-    private boolean isPrincipalExisting(String principal, List<SecurityMap> maps) {
-        boolean exists = false;
-        List<String> existingPrincipals = null;
-
-        if (maps != null) {
-            for (SecurityMap sm : maps) {
-                existingPrincipals = sm.getPrincipal();
-                if (existingPrincipals != null && principal != null) {
-                    for (String ep : existingPrincipals) {
-                        if (ep.equals(principal)) {
-                            exists = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return exists;
-    }
-
-    private boolean isUserGroupExisting(String usergroup, List<SecurityMap> maps) {
-        boolean exists = false;
-        List<String> existingUserGroups = null;
-        if (maps != null) {
-            for (SecurityMap sm : maps) {
-                existingUserGroups = sm.getUserGroup();
-                if (existingUserGroups != null && usergroup != null) {
-                    for (String eug : existingUserGroups) {
-                        if (eug.equals(usergroup)) {
-                            exists = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return exists;
-    }*/
 }
