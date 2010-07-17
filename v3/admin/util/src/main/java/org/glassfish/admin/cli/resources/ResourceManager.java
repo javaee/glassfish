@@ -57,13 +57,13 @@ public interface ResourceManager {
      * @param resources parent for the resource to be created
      * @param attributes resource configuration
      * @param properties properties
-     * @param targetServer target
+     * @param target target 
      * @param requiresNewTransaction indicates whether the resource need to be created under a new transaction
      * @return ResourceStatus indicating the status of resource creation
      * @throws Exception when unable to create the resource
      */
-    ResourceStatus create(Resources resources, HashMap attributes, Properties properties, Server targetServer,
-                           boolean requiresNewTransaction) throws Exception;
+    ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef) throws Exception ;
 
     /**
      * creates config-bean equivalent for the resource configuration provided as attributes and properties<br>
