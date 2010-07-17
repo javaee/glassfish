@@ -35,6 +35,10 @@
  */
 package org.glassfish.jdbc.admin.cli;
 
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.glassfish.resource.common.ResourceConstants;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -60,6 +64,8 @@ import java.util.Properties;
  * Create JDBC Resource Command
  * 
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(RuntimeType.ALL)
 @Service(name="create-jdbc-resource")
 @Scoped(PerLookup.class)
 @I18n("create.jdbc.resource")
@@ -68,28 +74,31 @@ public class CreateJdbcResource implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJdbcResource.class);    
 
     @Param(name="connectionpoolid", alias="poolName")
-    String connectionPoolId;
+    private String connectionPoolId;
 
     @Param(optional=true, defaultValue="true")
-    Boolean enabled;
+    private Boolean enabled;
 
     @Param(optional=true)
-    String description;
+    private String description;
     
     @Param(name="property", optional=true, separator=':')
-    Properties properties;
+    private Properties properties;
     
     @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Param(name="jndi_name", primary=true)
-    String jndiName;
+    private String jndiName;
     
     @Inject
-    Resources resources;
+    private Resources resources;
     
     @Inject
-    Domain domain;
+    private Domain domain;
+
+    @Inject
+    private JDBCResourceManager jdbcMgr;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -100,9 +109,6 @@ public class CreateJdbcResource implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        Server targetServer = domain.getServerNamed(target);
-        
-        JDBCResourceManager jdbcMgr = new JDBCResourceManager();
         HashMap attrList = new HashMap();
         attrList.put(ResourceConstants.JNDI_NAME, jndiName);
         attrList.put(ResourceConstants.POOL_NAME, connectionPoolId);
@@ -111,7 +117,7 @@ public class CreateJdbcResource implements AdminCommand {
         ResourceStatus rs;
  
         try {
-            rs = jdbcMgr.create(resources, attrList, properties, targetServer, true);
+            rs = jdbcMgr.create(resources, attrList, properties, target, true, true);
         } catch(Exception e) {
             report.setMessage(localStrings.getLocalString("create.jdbc.resource.failed",
                     "JDBC resource {0} creation failed", jndiName));

@@ -76,6 +76,10 @@ public class ListJdbcResources implements AdminCommand {
 
     @Inject
     private BindableResourcesHelper bindableResourcesHelper;
+
+    @Inject
+    private JDBCResourceManager jdbcMgr;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the parameter names and the values the parameter values
@@ -87,13 +91,17 @@ public class ListJdbcResources implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
-            JDBCResourceManager jdbcMgr = new JDBCResourceManager();
             ArrayList<String> list = jdbcMgr.list(jdbcResources);
             for (String jndiName : list) {
                 if(bindableResourcesHelper.resourceExists(jndiName, target)){
                     ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                     part.setMessage(jndiName);
                 }
+            }
+            if(report.getTopMessagePart().getChildren().size() == 0){
+                ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                part.setMessage(localStrings.getLocalString("list.jdbc.resources.empty",
+                    "Nothing to list."));
             }
         } catch (Exception e) {
             report.setMessage(localStrings.getLocalString("list.jdbc.resources.failed",

@@ -37,33 +37,29 @@
 package org.glassfish.jdbc.admin.cli;
 
 import java.beans.PropertyVetoException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.Map;
+import java.util.*;
 
 import static org.glassfish.resource.common.ResourceConstants.*;
+
+import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.admin.cli.resources.ResourceUtil;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.resource.common.ResourceStatus;
-import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.I18n;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
-import com.sun.enterprise.config.serverbeans.BindableResource;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.config.ConfiguredBy;
 import org.glassfish.admin.cli.resources.ResourceManager;
 
 /**
  *
- * @author Prashanth Abbagani
+ * @author Prashanth Abbagani, Jagadish Ramu
  *
  * The JDBC resource manager allows you to create and delete the config element
  * Will be used by the add-resources, deployment and CLI command
@@ -82,12 +78,19 @@ public class JDBCResourceManager implements ResourceManager {
     private String poolName = null;
     private String enabled = Boolean.TRUE.toString();
 
+    @Inject
+    private ResourceUtil resourceUtil;
+
+    @Inject
+    private ServerEnvironment environment;
+
     public String getResourceType () {
         return ServerTags.JDBC_RESOURCE;
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef)
+            throws Exception {
 
         setAttributes(attributes);
 
@@ -97,21 +100,16 @@ public class JDBCResourceManager implements ResourceManager {
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
         // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof BindableResource) {
-                if (((BindableResource) resource).getJndiName().equals(jndiName)) {
-                    String msg = localStrings.getLocalString("create.jdbc.resource.duplicate",
-                            "A resource named {0} already exists.", jndiName);
-                    return  new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-                }
-            }
+        if (resources.getResourceByName(BindableResource.class, jndiName) != null) {
+            String msg = localStrings.getLocalString("create.jdbc.resource.duplicate",
+                    "A resource named {0} already exists.", jndiName);
+            return  new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
 
-        if (!isConnPoolExists(resources, poolName)) {
+        if(resources.getResourceByName(ResourcePool.class, poolName) == null){
             String msg = localStrings.getLocalString("create.jdbc.resource.connPoolNotFound",
                 "Attribute value (pool-name = {0}) is not found in list of jdbc connection pools.", poolName);
-            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
-            return status;
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
 
         if (requiresNewTransaction) {
@@ -123,8 +121,8 @@ public class JDBCResourceManager implements ResourceManager {
                     }
                 }, resources);
 
-                if (!targetServer.isResourceRefExists(jndiName)) {
-                    targetServer.createResourceRef(enabled, jndiName);
+                if(createResourceRef){
+                    resourceUtil.createResourceRef(jndiName, enabled, target);
                 }
             } catch (TransactionFailure tfe) {
                 String msg = localStrings.getLocalString("create.jdbc.resource.fail",
@@ -149,13 +147,15 @@ public class JDBCResourceManager implements ResourceManager {
         enabled = (String) attributes.get(ENABLED);
     }
 
-    private JdbcResource createResource(Resources param, Properties properties) throws PropertyVetoException, TransactionFailure {
+    private JdbcResource createResource(Resources param, Properties properties) throws PropertyVetoException,
+            TransactionFailure {
         JdbcResource newResource = createConfigBean(param, properties);
         param.getResources().add(newResource);
         return newResource;
     }
 
-    private JdbcResource createConfigBean(Resources param, Properties properties) throws PropertyVetoException, TransactionFailure {
+    private JdbcResource createConfigBean(Resources param, Properties properties) throws PropertyVetoException,
+            TransactionFailure {
         JdbcResource jdbcResource = param.createChild(JdbcResource.class);
         jdbcResource.setJndiName(jndiName);
         if (description != null) {
@@ -174,13 +174,13 @@ public class JDBCResourceManager implements ResourceManager {
         return jdbcResource;
     }
 
-    public Resource createConfigBean(final Resources resources, HashMap attributes, final Properties properties) throws Exception{
+    public Resource createConfigBean(final Resources resources, HashMap attributes, final Properties properties)
+            throws Exception{
         setAttributes(attributes);
         return createConfigBean(resources, properties);
     }
 
-    public ResourceStatus delete (Resources resources, final JdbcResource[] jdbcResources,  
-            final String jndiName, final Server targetServer) 
+    public ResourceStatus delete (final Resources resources, final String jndiName, final String target) 
             throws Exception {
         
         if (jndiName == null) {
@@ -190,33 +190,55 @@ public class JDBCResourceManager implements ResourceManager {
         }
 
         // ensure we already have this resource
-        if (!isResourceExists(resources, jndiName)) {
+        if(resources.getResourceByName(JdbcResource.class, jndiName) == null){
             String msg = localStrings.getLocalString("delete.jdbc.resource.notfound",
                     "A JDBC resource named {0} does not exist.", jndiName);
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
 
+        if (environment.isDas()) {
+
+            if ("domain".equals(target)) {
+                if (resourceUtil.getTargetsReferringResourceRef(jndiName).size() > 0) {
+                    String msg = localStrings.getLocalString("delete.jdbc.resource.resource-ref.exist",
+                            "jdbc-resource [ {0} ] is referenced in an" +
+                                    "instance/cluster target, Use delete-resource-ref on appropriate target",
+                            jndiName);
+                    return new ResourceStatus(ResourceStatus.FAILURE, msg);
+                }
+            } else {
+                if (!resourceUtil.isResourceRefInTarget(jndiName, target)) {
+                    String msg = localStrings.getLocalString("delete.jdbc.resource.no.resource-ref",
+                            "jdbc-resource [ {0} ] is not referenced in target [ {1} ]",
+                            jndiName, target);
+                    return new ResourceStatus(ResourceStatus.FAILURE, msg);
+                }
+
+                if (resourceUtil.getTargetsReferringResourceRef(jndiName).size() > 1) {
+                    String msg = localStrings.getLocalString("delete.jdbc.resource.multiple.resource-refs",
+                            "jdbc resource [ {0} ] is referenced in multiple " +
+                                    "instance/cluster targets, Use delete-resource-ref on appropriate target",
+                            jndiName);
+                    return new ResourceStatus(ResourceStatus.FAILURE, msg);
+                }
+            }
+        }
+
         try {
+            // delete resource-ref
+            resourceUtil.deleteResourceRef(jndiName, target);
+            
             // delete jdbc-resource
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    for (JdbcResource resource : jdbcResources) {
-                        if (resource.getJndiName().equals(jndiName)) {
-                            return param.getResources().remove(resource);
-                        }
-                    }
-                    // not found
-                    return null;
+                    JdbcResource resource = (JdbcResource) resources.getResourceByName(JdbcResource.class, jndiName);
+                    return param.getResources().remove(resource);
                 }
             }, resources) == null) {
                 String msg = localStrings.getLocalString("jdbc.resource.deletionFailed", 
                                 "JDBC resource {0} delete failed ", jndiName);
                 return new ResourceStatus(ResourceStatus.FAILURE, msg);
             }
-            
-            // delete resource-ref
-            targetServer.deleteResourceRef(jndiName);
-            
         } catch(TransactionFailure tfe) {
             String msg = localStrings.getLocalString("jdbc.resource.deletionFailed", 
                             "JDBC resource {0} delete failed ", jndiName);
@@ -237,27 +259,4 @@ public class JDBCResourceManager implements ResourceManager {
         }
         return list;
     } 
-    
-    private boolean isResourceExists(Resources resources, String jndiName) {
-        
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof JdbcResource) {
-                if (((JdbcResource) resource).getJndiName().equals(jndiName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
-    private boolean isConnPoolExists(Resources resources, String poolName) {
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof JdbcConnectionPool) {
-                if (((JdbcConnectionPool)resource).getName().equals(poolName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

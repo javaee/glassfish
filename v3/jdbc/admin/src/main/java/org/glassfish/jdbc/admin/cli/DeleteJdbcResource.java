@@ -41,6 +41,10 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -58,6 +62,8 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
  * Delete JDBC Resource command
  * 
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(RuntimeType.ALL)
 @Service(name="delete-jdbc-resource")
 @Scoped(PerLookup.class)
 @I18n("delete.jdbc.resource")
@@ -66,19 +72,19 @@ public class DeleteJdbcResource implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteJdbcResource.class);    
 
     @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
     
     @Param(name="jdbc_resource_name", primary=true)
-    String jndiName;
+    private String jndiName;
 
     @Inject
-    Resources resources;
+    private Resources resources;
     
     @Inject
-    JdbcResource[] jdbcResources;
-    
+    private Domain domain;
+
     @Inject
-    Domain domain;
+    private JDBCResourceManager jdbcResMgr ;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -89,10 +95,8 @@ public class DeleteJdbcResource implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
         try {
-            JDBCResourceManager jdbcResMgr = new JDBCResourceManager();
-            ResourceStatus rs = jdbcResMgr.delete(resources, jdbcResources, jndiName, targetServer);
+            ResourceStatus rs = jdbcResMgr.delete(resources, jndiName, target);
             if (rs.getStatus() == ResourceStatus.SUCCESS) {
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);       
             } else {
