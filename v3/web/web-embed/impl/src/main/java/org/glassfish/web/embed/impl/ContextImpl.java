@@ -106,7 +106,7 @@ public class ContextImpl extends StandardContext implements Context {
     /**
      * Set the security related configuration for this context
      *
-     * @see org.glassfish.web.embed.config.SecurityConfig
+     * @see org.glassfish.api.embedded.web.config.SecurityConfig
      *
      * @param config the security configuration for this context
      */
@@ -118,7 +118,7 @@ public class ContextImpl extends StandardContext implements Context {
     /**
      * Gets the security related configuration for this context
      *
-     * @see org.glassfish.web.embed.config.SecurityConfig
+     * @see org.glassfish.api.embedded.web.config.SecurityConfig
      *
      * @return the security configuration for this context
      */
