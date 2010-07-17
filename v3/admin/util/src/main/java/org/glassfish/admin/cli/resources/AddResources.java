@@ -43,6 +43,10 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -62,6 +66,8 @@ import java.util.Iterator;
  * Create add-resources Command
  * 
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(RuntimeType.ALL)
 @Service(name="add-resources")
 @Scoped(PerLookup.class)
 @I18n("add.resources")
@@ -70,19 +76,19 @@ public class AddResources implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AddResources.class);    
 
     @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Param(name="xml_file_name", primary=true)
-    File xmlFile;
+    private File xmlFile;
     
     @Inject
-    Resources resources;
+    private Resources resources;
     
     @Inject
-    Domain domain;
+    private Domain domain;
 
     @Inject
-    ResourceFactory resourceFactory;
+    private ResourceFactory resourceFactory;
     
     /**
      * Executes the command with the command parameters passed as Properties
@@ -92,8 +98,6 @@ public class AddResources implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        
-        Server targetServer = domain.getServerNamed(target);
         
         // Check if the path xmlFile exists
         if (!xmlFile.exists()) {
@@ -105,7 +109,7 @@ public class AddResources implements AdminCommand {
         
         try {
             final ArrayList results = ResourcesManager.createResources(
-                    resources, xmlFile, targetServer, resourceFactory);
+                    resources, xmlFile, target, resourceFactory);
             final Iterator resultsIter = results.iterator();
             report.getTopMessagePart().setChildrenType("Command");
             boolean isSuccess = false;

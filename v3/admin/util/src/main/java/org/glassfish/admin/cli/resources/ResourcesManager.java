@@ -62,7 +62,7 @@ public class ResourcesManager {
      * resources
      */
     static ArrayList createResources(Resources resources, File resourceXMLFile,
-            Server targetServer, ResourceFactory resourceFactory) throws Exception {
+            String target, ResourceFactory resourceFactory) throws Exception {
         ArrayList results = new ArrayList();
         ResourcesXMLParser resourcesParser =
             new ResourcesXMLParser(resourceXMLFile);
@@ -81,7 +81,7 @@ public class ResourcesManager {
             ResourceStatus rs;
             try {
                 ResourceManager rm = resourceFactory.getResourceManager(resource);
-                rs = rm.create(resources, attrList, props, targetServer, true);
+                rs = rm.create(resources, attrList, props, target, true, true);
             } catch (Exception e) {
                 String msg = e.getMessage();
                 rs = new ResourceStatus(ResourceStatus.FAILURE, msg);
@@ -103,7 +103,7 @@ public class ResourcesManager {
             ResourceStatus rs;
             try {
                 ResourceManager rm = resourceFactory.getResourceManager(resource);
-                rs = rm.create(resources, attrList, props, targetServer, true);
+                rs = rm.create(resources, attrList, props, target, true, true);
             } catch (Exception e) {
                 String msg = e.getMessage();
                 rs = new ResourceStatus(ResourceStatus.FAILURE, msg);
