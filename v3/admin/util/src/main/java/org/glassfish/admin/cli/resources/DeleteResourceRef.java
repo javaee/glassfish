@@ -36,8 +36,8 @@
 
 package org.glassfish.admin.cli.resources;
 
-import com.sun.enterprise.config.serverbeans.ResourceRef;
-import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.admin.util.Target;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.admin.AdminCommand;
@@ -45,16 +45,25 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.TransactionFailure;
 
+import java.util.List;
+
 /**
  * Delete Resource Ref Command
- * 
+ *
+ * @author Jennifer Chou, Jagadish Ramu 
  */
+@TargetType(value={CommandTarget.DAS, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@org.glassfish.api.admin.Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @Service(name="delete-resource-ref")
 @Scoped(PerLookup.class)
 @I18n("delete.resource.ref")
@@ -63,63 +72,75 @@ public class DeleteResourceRef implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteResourceRef.class);
 
     @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Param(name="reference_name", primary=true)
-    String refName;
-    
+    private String refName;
+
+    //not needed, but mvn based test might not have initialized ConfigBeanUtilities
     @Inject
-    Server[] servers;
+    private ConfigBeansUtilities configBeanUtilities;
+
+    @Inject
+    private Habitat habitat;
+
+    @Inject
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * where the keys are the parameter names and the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         
-        // ensure we already have this resource
-        if (!isResourceRefExists()) {
-            report.setMessage(localStrings.getLocalString("delete.resource.ref.doesNotExist",
-                    "A resource ref named {0} does not exist.", refName));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-        
         try {
-            for (final Server server : servers) {
-                if (server.getName().equals(target)) {
+            Server server = ConfigBeansUtilities.getServerNamed(target);
+            if (server != null) {
+                if (server.isResourceRefExists(refName)) {
+                    // delete ResourceRef as a child of Server
                     server.deleteResourceRef(refName);
+                }else{
+                    setResourceRefDoNotExistMessage(report);
+                    return;
+                }
+            } else {
+                Cluster cluster = domain.getClusterNamed(target);
+                if (cluster.isResourceRefExists(refName)) {
+                    // delete ResourceRef as a child of Cluster
+                    cluster.deleteResourceRef(refName);
+                }else{
+                    setResourceRefDoNotExistMessage(report);
+                    return;
+                }
+
+                // delete ResourceRef for all instances of Cluster
+                Target tgt = habitat.getComponent(Target.class);
+                List<Server> instances = tgt.getInstances(target);
+                for (Server svr : instances) {
+                    svr.deleteResourceRef(refName);
                 }
             }
-        } catch(TransactionFailure tfe) {
-            report.setMessage(localStrings.getLocalString("delete.resource.ref.failed",
-                    "Resource ref {0} deletion failed", refName));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(tfe);
-            return;
         } catch(Exception e) {
-            report.setMessage(localStrings.getLocalString("delete.resource.ref.failed",
-                    "Resource ref {0} deletion failed", refName));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
+            setFailureMessage(report, e);
             return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
-    
-    private boolean isResourceRefExists() {
-        for (Server server : servers) {
-            if (server.getName().equals(target)) {
-                for (ResourceRef ref : server.getResourceRef()) {
-                    if (ref.getRef().equals(refName)) {
-                        return true;
-                     }
-                }
-            }
-        }
-        return false;
+
+    private void setResourceRefDoNotExistMessage(ActionReport report) {
+        report.setMessage(localStrings.getLocalString("delete.resource.ref.doesNotExist",
+                "A resource ref named {0} does not exist.", refName));
+        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        return;
+    }
+
+    private void setFailureMessage(ActionReport report, Exception e) {
+        report.setMessage(localStrings.getLocalString("delete.resource.ref.failed",
+                "Resource ref {0} deletion failed", refName));
+        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        report.setFailureCause(e);
     }
 }

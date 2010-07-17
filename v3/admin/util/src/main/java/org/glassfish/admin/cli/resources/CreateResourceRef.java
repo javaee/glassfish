@@ -36,31 +36,34 @@
 
 package org.glassfish.admin.cli.resources;
 
-import com.sun.enterprise.config.serverbeans.AdminObjectResource;
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
-import com.sun.enterprise.config.serverbeans.CustomResource;
-import com.sun.enterprise.config.serverbeans.ExternalJndiResource;
-import com.sun.enterprise.config.serverbeans.JdbcResource;
-import com.sun.enterprise.config.serverbeans.MailResource;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.admin.util.Target;
+import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.TransactionFailure;
 
+import java.util.List;
+
 /**
  * Create Resource Ref Command
+ *
+ * @author Jennifer Chou, Jagadish Ramu
  * 
  */
+@TargetType(value={CommandTarget.DAS, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@org.glassfish.api.admin.Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @Service(name="create-resource-ref")
 @Scoped(PerLookup.class)
 @I18n("create.resource.ref")
@@ -69,84 +72,80 @@ public class CreateResourceRef implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateResourceRef.class);
     
     @Param(optional=true, defaultValue="true")
-    Boolean enabled;
+    private Boolean enabled;
     
     @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Param(name="reference_name", primary=true)
-    String refName;
-    
-    /* no target support
-    @Inject
-    Server server;
-     */
-    
-    /* target support */
-    @Inject
-    Server[] servers;
+    private String refName;
     
     @Inject
-    AdminObjectResource[] adminObjectResources;
+    private Domain domain;
     
     @Inject
-    ConnectorResource[] connectorResources;
-    
+    private Resources resources;
+
     @Inject
-    CustomResource[] customResources;
-        
+    private ServerEnvironment environment;
+
     @Inject
-    ExternalJndiResource[] externalJndiResources;
-    
-    @Inject
-    JdbcResource[] jdbcResources;
-    
-    @Inject
-    MailResource[] mailResources;
-    
-    @Inject
-    Resources resources;
-    
-    
+    private Habitat habitat;
+
     /**
      * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * where the keys are the parameter names and the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        
+
         // check if the resource exists before creating a reference
-        if (!isResourceExists()) {
+        if (!isResourceExists(refName)) {
             report.setMessage(localStrings.getLocalString("create.resource.ref.resourceDoesNotExist",
-            "Resource {0} does not exist", refName));
+                    "Resource {0} does not exist", refName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-        
+
         try {
-            for (Server server : servers) {
-                if (server.getName().equals(target)) {
-                    // ensure we don't already have one of this name
-                    if (server.isResourceRefExists( refName)) {
-                        report.setMessage(localStrings.getLocalString("create.resource.ref.existsAlready",
-                        "Resource ref {0} already exists", refName));
-                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                        return;
-                    }
-                    
-                    // create new ResourceRef as a child of Server
-                    server.createResourceRef( enabled.toString(), refName);
+
+            Server server = ConfigBeansUtilities.getServerNamed(target);
+            if (server != null) {
+                if (server.isResourceRefExists(refName)) {
+                    report.setMessage(localStrings.getLocalString("create.resource.ref.existsAlready",
+                            "Resource ref {0} already exists", refName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+                // create new ResourceRef as a child of Server
+                server.createResourceRef(enabled.toString(), refName);
+            } else {
+                Cluster cluster = domain.getClusterNamed(target);
+                if (cluster.isResourceRefExists(refName)) {
+                    report.setMessage(localStrings.getLocalString("create.resource.ref.existsAlready",
+                            "Resource ref {0} already exists", refName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+                // create new ResourceRef as a child of Cluster
+                cluster.createResourceRef(enabled.toString(), refName);
+
+                // create new ResourceRef for all instances of Cluster
+                Target tgt = habitat.getComponent(Target.class);
+                List<Server> instances = tgt.getInstances(target);
+                for (Server svr : instances) {
+                    svr.createResourceRef(enabled.toString(), refName);
                 }
             }
-        } catch(TransactionFailure tfe) {
+        } catch (TransactionFailure tfe) {
             report.setMessage(localStrings.getLocalString("create.resource.ref.failed",
                     "Resource ref {0} creation failed", refName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(tfe);
             return;
-        } catch(Exception e) {
+        } catch (Exception e) {
             report.setMessage(localStrings.getLocalString("create.resource.ref.failed",
                     "Resource ref {0} creation failed", refName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -156,38 +155,9 @@ public class CreateResourceRef implements AdminCommand {
         ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
         report.setActionExitCode(ec);
     }
-    
-    private boolean isResourceExists() {
-        for (AdminObjectResource resource : adminObjectResources) {
-            if (resource.getJndiName().equals(refName)) {
-                return true;
-            }
-        }
-        for (ConnectorResource resource : connectorResources) {
-            if (resource.getJndiName().equals(refName)) {
-                return true;
-            }
-        }
-        for (CustomResource resource : customResources) {
-            if (resource.getJndiName().equals(refName)) {
-                return true;
-            }
-        }
-        for (ExternalJndiResource resource : externalJndiResources) {
-            if (resource.getJndiName().equals(refName)) {
-                return true;
-            }
-        }
-        for (JdbcResource resource : jdbcResources) {
-            if (resource.getJndiName().equals(refName)) {
-                return true;
-            }
-        }
-        for (MailResource resource : mailResources) {
-            if (resource.getJndiName().equals(refName)) {
-                return true;
-            }
-        }
-        return false;
+
+    private boolean isResourceExists(String jndiName) {
+        //resource-ref is created only for a BindableResource
+        return resources.getResourceByName(BindableResource.class, jndiName) != null;
     }
 }
