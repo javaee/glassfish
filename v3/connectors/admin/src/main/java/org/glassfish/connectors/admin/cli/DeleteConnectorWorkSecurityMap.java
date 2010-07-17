@@ -41,6 +41,8 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -61,6 +63,7 @@ import java.util.logging.Logger;
  * Delete Connector Work Security Map
  *
  */
+@Cluster(RuntimeType.ALL)
 @Service(name="delete-connector-work-security-map")
 @Scoped(PerLookup.class)
 @I18n("delete.connector.work.security.map")
@@ -70,16 +73,16 @@ public class DeleteConnectorWorkSecurityMap implements AdminCommand {
             new LocalStringManagerImpl(DeleteConnectorWorkSecurityMap.class);
 
     @Param(name="raname")
-    String raName;
+    private String raName;
 
     @Param(name="mapname", primary=true)
-    String mapName;
+    private String mapName;
 
     @Inject
-    Resources resources;
+    private Resources resources;
 
     @Inject
-    WorkSecurityMap[] workSecurityMaps;
+    private WorkSecurityMap[] workSecurityMaps;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -101,7 +104,7 @@ public class DeleteConnectorWorkSecurityMap implements AdminCommand {
         }
 
         try {
-            // delete admin-object-resource
+            // delete connector-work-security-map
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
                 public Object run(Resources param) throws PropertyVetoException,

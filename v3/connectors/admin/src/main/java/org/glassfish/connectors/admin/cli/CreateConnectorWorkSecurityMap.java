@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,9 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -54,6 +57,9 @@ import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.WorkSecurityMap;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import static org.glassfish.connectors.admin.cli.CLIConstants.*;
+import static org.glassfish.connectors.admin.cli.CLIConstants.WSM.*;
+
 import java.beans.PropertyVetoException;
 import java.util.Map;
 import java.util.Properties;
@@ -64,6 +70,7 @@ import java.util.logging.Logger;
  * Create Connector Work Security Map
  *
  */
+@Cluster(RuntimeType.ALL)
 @Service(name="create-connector-work-security-map")
 @Scoped(PerLookup.class)
 @I18n("create.connector.work.security.map")
@@ -72,24 +79,25 @@ public class CreateConnectorWorkSecurityMap implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(CreateConnectorWorkSecurityMap.class);
 
-    @Param(name="raname")
-    String raName;
+    @Param(name=WSM_RA_NAME)
+    private String raName;
 
-    @Param(name="principalsmap", optional=true)
-    Properties principalsMap;
+    @Param(name=WSM_PRINCIPALS_MAP, optional=true)
+    private Properties principalsMap;
 
-    @Param(name = "groupsmap", optional=true)
-    Properties groupsMap;
+    @Param(name = WSM_GROUPS_MAP, optional=true)
+    private Properties groupsMap;
 
-    @Param(name="description", optional=true)
-    String description;
+    @Param(name=DESCRIPTION, optional=true)
+    private String description;
 
-    @Param(name="mapname", primary=true)
-    String mapName;
+    @Param(name= WSM_MAP_NAME, primary=true)
+    private String mapName;
 
     @Inject
-    Resources resources;
+    private Resources resources;
 
+    //TODO common code replicated in ConnectorWorkSecurityMapManager
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -137,8 +145,7 @@ public class CreateConnectorWorkSecurityMap implements AdminCommand {
         for (Resource resource : resources.getResources()) {
             if (resource instanceof WorkSecurityMap) {
                 if (((WorkSecurityMap) resource).getName().equals(mapName) &&
-                        ((WorkSecurityMap) resource).getResourceAdapterName().equals(raName))
-                {
+                    ((WorkSecurityMap) resource).getResourceAdapterName().equals(raName)){
                     report.setMessage(localStrings.getLocalString(
                             "create.connector.work.security.map.duplicate",
                             "A connector work security map named {0} for resource adapter {1} already exists.",

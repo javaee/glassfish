@@ -61,18 +61,19 @@ public class ConnectorWorkSecurityMapResourceManager implements ResourceManager 
 
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ConnectorWorkSecurityMapResourceManager.class);
-    String raName;
-    Properties principalsMap;
-    Properties groupsMap;
-    String description;
-    String mapName;
+    private String raName;
+    private Properties principalsMap;
+    private Properties groupsMap;
+    private String description;
+    private String mapName;
 
     public String getResourceType() {
         return ResourceConstants.WORK_SECURITY_MAP;
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef)
+            throws Exception {
 
         setAttributes(attributes);
 
@@ -124,9 +125,7 @@ public class ConnectorWorkSecurityMapResourceManager implements ResourceManager 
                 ConfigSupport.apply(new SingleConfigCode<Resources>() {
                     public Object run(Resources param) throws PropertyVetoException,
                             TransactionFailure {
-
-                        WorkSecurityMap workSecurityMap = createResource(param, properties);
-                        return workSecurityMap;
+                        return createResource(param, properties);
                     }
                 }, resources);
             } catch (TransactionFailure tfe) {
