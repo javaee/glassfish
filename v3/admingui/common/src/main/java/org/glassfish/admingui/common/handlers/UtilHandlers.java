@@ -283,6 +283,9 @@ public class UtilHandlers {
     public static void listCombine(HandlerContext handlerCtx) {
         List list = (List)handlerCtx.getInputValue("list");
         List list2 = (List)handlerCtx.getInputValue("list2");
+        if (list == null || list2 == null){
+            return;
+        }
         for(Object one : list2) {
                 list.add(one);
         }

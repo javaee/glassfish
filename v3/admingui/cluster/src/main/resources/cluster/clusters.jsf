@@ -160,12 +160,12 @@
             <event>
             <!beforeEncode
                 mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{instance}" );
-                gf.restRequest(
+                gf.callRestAndExtractMsgProps(
                     endpoint="#{sessionScope.REST_URL}/list-instances.xml"
                     attrs="#{pageSession.statusAttrs}"
                     method="GET"
-                    result="#{pageSession.listInstanceResult}");
-                gf.getInstanceStatus(listInstanceProps="#{pageSession.listInstanceResult.messages[0]['properties']}" instanceName="#{instance}" status="#{requestScope.status}" );
+                    propsMap="#{pageSession.propsMap}");
+                setAttribute(key="status" value="#{pageSession.propsMap['${instance}']}");
                 setAttribute(key="statusString" value="$resource{i18nc.status.$attribute{status}}  &nbsp; $resource{i18nc.status.image.$attribute{status}}");
                 />
             </event>

@@ -56,17 +56,10 @@
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/configuration/configurations.jsf");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/configuration/configuration.jsf");
         createMap(result="#{pageSession.statusAttrs}");
-
         createMap(result="#{requestScope.stAttrs}");
         mapPut(map="#{requestScope.stAttrs}" key="standaloneonly" value="true" );
-        gf.restRequest(
-            endpoint="#{sessionScope.REST_URL}/list-instances.xml"
-            attrs="#{requestScope.stAttrs}"
-            method="GET"
-            result="#{pageSession.standaloneMsgList}");
-
-         gf.getMessageProps(messageListProps="#{pageSession.standaloneMsgList.messages[0]['properties']}" ,
-                            keyList="#{pageSession.standaloneList}"  );
+        gf.callRestAndExtractMsgProps(  endpoint="#{sessionScope.REST_URL}/list-instances.xml" , attrs="#{requestScope.stAttrs}", method="GET",
+            keyList="#{pageSession.standaloneList}"  );
 
         setAttribute(key="one" value="$int{1}");
 
@@ -119,13 +112,12 @@
          <event>
             <!beforeEncode
                 mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{pageSession.configName}" );
-                gf.restRequest(
+                gf.callRestAndExtractMsgProps(
                     endpoint="#{sessionScope.REST_URL}/list-instances.xml"
                     attrs="#{pageSession.statusAttrs}"
                     method="GET"
-                    result="#{pageSession.listInstanceResult}");
-                gf.getMessageProps(messageListProps="#{pageSession.listInstanceResult.messages[0]['properties']}" ,
-                    keyList="#{requestScope.instanceList}" propsMap="#{requestScope.propsMap}"  listEmpty="#{requestScope.listEmpty}");
+                    keyList="#{requestScope.instanceList}" propsMap="#{requestScope.propsMap}");
+
                 if(#{pageSession.configName}=server-config){
                     listAdd(list="#{requestScope.instanceList}" value="server" index="0");
                 }

@@ -41,20 +41,14 @@
         
         createMap(result="#{requestScope.stAttrs}");
         mapPut(map="#{requestScope.stAttrs}" key="standaloneonly" value="true" );
-        gf.restRequest(
+        gf.callRestAndExtractMsgProps(
             endpoint="#{sessionScope.REST_URL}/list-instances.xml"
             attrs="#{requestScope.stAttrs}"
             method="GET"
-            result="#{pageSession.standaloneMsgList}");
-
-         gf.getMessageProps(messageListProps="#{pageSession.standaloneMsgList.messages[0]['properties']}" ,
-                            keyList="#{pageSession.standaloneList}"  );
-         setPageSessionAttribute(key="targetList" value="#{pageSession.standaloneList}");
+            keyList="#{pageSession.targetList}");
 
          gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.clusterList}");
          listAdd(list="#{pageSession.targetList}", value="server" index="0");
-
-        //gf.getDeploymentTargets(listInstanceProps="#{pageSession.listInstanceResult.messages[0]['properties']}" clusterList="#{requestScope.clusterList}" result="#{pageSession.targetList}" );
 
         setAttribute(key="one" value="$int{1}");
 	setAttribute(key="targetSize" value="#{pageSession.targetList.size()}");
