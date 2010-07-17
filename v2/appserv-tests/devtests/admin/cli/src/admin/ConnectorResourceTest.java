@@ -173,10 +173,6 @@ public class ConnectorResourceTest extends AdminBaseDevTest {
         testListConnectorConnectionPoolsNothingToList();
         testListConnectorResourcesNothingToList();
 
-        //TODO delete without removing resource and look for failure
-        //TODO try --cascade and then list-connector-resource ?
-
-
         cleanup();
         stopDomain();
         stat.printSummary();
