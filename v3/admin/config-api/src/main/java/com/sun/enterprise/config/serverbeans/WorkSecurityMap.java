@@ -111,6 +111,7 @@ public interface WorkSecurityMap  extends Named, ConfigBeanProxy, Injectable, Re
      *
      */
     @Element
+    @NotNull
     public List<GroupMap> getGroupMap();
 
     /**
@@ -118,6 +119,7 @@ public interface WorkSecurityMap  extends Named, ConfigBeanProxy, Injectable, Re
      * @return principal map
      */
     @Element
+    @NotNull
     public List<PrincipalMap> getPrincipalMap();
 
 }
