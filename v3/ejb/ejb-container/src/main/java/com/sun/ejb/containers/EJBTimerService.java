@@ -1079,6 +1079,11 @@ public class EJBTimerService
             }
         }
 
+        if( logger.isLoggable(Level.FINE) ) {
+            logger.log(Level.FINE, "@@@ Created timer [" + timerId + 
+                    "] with the first expiration set to: " + initialExpiration);
+        }
+
         if (timerConfig == null) {
             // Easier create one than check everywhere for null...
             timerConfig = new TimerConfig();
