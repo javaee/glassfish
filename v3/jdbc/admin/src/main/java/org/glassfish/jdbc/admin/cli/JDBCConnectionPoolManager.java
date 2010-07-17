@@ -119,9 +119,8 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         return ServerTags.JDBC_CONNECTION_POOL;
     }
 
-    public ResourceStatus create(Resources resources, final HashMap attributes,
-                                 final Properties properties, Server targetServer, boolean requiresNewTransaction)
-            throws Exception {
+    public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef) throws Exception {
         setAttributes(attributes);
         if (jdbcconnectionpoolid == null) {
             String msg = localStrings.getLocalString("add.resources.noJdbcConnectionPoolId",
@@ -281,23 +280,20 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         driverclassname = (String) attrList.get(DRIVER_CLASSNAME);
     }
 
-    public ResourceStatus delete(Server[] servers, Resources resources,
-                                 final JdbcConnectionPool[] connPools, final String cascade,
-                                 final String jdbcconnectionpoolid) throws Exception {
+    public ResourceStatus delete(Server[] servers, final Resources resources, final String cascade,
+                                 final String poolName) throws Exception {
 
-        if (jdbcconnectionpoolid == null) {
+        if (poolName == null) {
             String msg = localStrings.getLocalString("jdbcConnPool.resource.noJndiName",
                     "No id defined for JDBC Connection pool.");
-            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
-            return status;
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
 
         // ensure we already have this resource
-        if (!isResourceExists(resources, jdbcconnectionpoolid)) {
+        if (!isResourceExists(resources, poolName)) {
             String msg = localStrings.getLocalString("delete.jdbc.connection.pool.notfound",
-                    "A JDBC connection pool named {0} does not exist.", jdbcconnectionpoolid);
-            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
-            return status;
+                    "A JDBC connection pool named {0} does not exist.", poolName);
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
 
         try {
@@ -305,86 +301,69 @@ public class JDBCConnectionPoolManager implements ResourceManager {
             // if cascade=true delete all the resources associated with this pool 
             // if cascade=false don't delete this connection pool if a resource is referencing it
             Object obj = deleteAssociatedResources(servers, resources,
-                    Boolean.parseBoolean(cascade), jdbcconnectionpoolid);
+                    Boolean.parseBoolean(cascade), poolName);
             if (obj instanceof Integer &&
                     (Integer) obj == ResourceStatus.FAILURE) {
                 String msg = localStrings.getLocalString(
                         "delete.jdbc.connection.pool.pool_in_use",
-                        "JDBC Connection pool {0} delete failed ", jdbcconnectionpoolid);
-                ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
-                return status;
+                        "JDBC Connection pool {0} delete failed ", poolName);
+                return new ResourceStatus(ResourceStatus.FAILURE, msg);
             }
 
             // delete jdbc connection pool
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    for (JdbcConnectionPool cp : connPools) {
-                        if (cp.getName().equals(jdbcconnectionpoolid)) {
-                            return param.getResources().remove(cp);
-                        }
-                    }
-                    // not found
-                    return null;
+                    JdbcConnectionPool cp = (JdbcConnectionPool)
+                            resources.getResourceByName(JdbcConnectionPool.class, poolName);
+                    return param.getResources().remove(cp);
                 }
             }, resources) == null) {
                 String msg = localStrings.getLocalString("delete.jdbc.connection.pool.notfound",
-                        "A JDBC connection pool named {0} does not exist.", jdbcconnectionpoolid);
-                ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
-                return status;
+                        "A JDBC connection pool named {0} does not exist.", poolName);
+                return new ResourceStatus(ResourceStatus.FAILURE, msg);
             }
 
         } catch (TransactionFailure tfe) {
             String msg = tfe.getMessage() != null ? tfe.getMessage() :
                     localStrings.getLocalString("jdbcConnPool.resource.deletionFailed",
-                            "JDBC Connection pool {0} delete failed ", jdbcconnectionpoolid);
+                            "JDBC Connection pool {0} delete failed ", poolName);
             ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
             status.setException(tfe);
             return status;
         }
 
         String msg = localStrings.getLocalString("jdbcConnPool.resource.deleteSuccess",
-                "JDBC Connection pool {0} deleted successfully", jdbcconnectionpoolid);
-        ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, msg);
-        return status;
+                "JDBC Connection pool {0} deleted successfully", poolName);
+        return new ResourceStatus(ResourceStatus.SUCCESS, msg);
     }
 
     public ArrayList list(JdbcConnectionPool[] connPools) {
-        ArrayList<String> list = new ArrayList();
+        ArrayList<String> list = new ArrayList<String>();
         for (JdbcConnectionPool cp : connPools) {
             list.add(cp.getName());
         }
         return list;
     }
 
-    private boolean isResourceExists(Resources resources, String jdbcConnectionPoolID) {
-
-        // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof JdbcConnectionPool) {
-                if (((JdbcConnectionPool) resource).getName().equals(jdbcConnectionPoolID)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+    private boolean isResourceExists(Resources resources, String poolName) {
+        return resources.getResourceByName(JdbcConnectionPool.class, poolName) != null;
     }
 
     private Object deleteAssociatedResources(final Server[] servers, Resources resources,
-                                             final boolean cascade, final String connectionPoolID) throws TransactionFailure {
+                                             final boolean cascade, final String poolName) throws TransactionFailure {
         return ConfigSupport.apply(new SingleConfigCode<Resources>() {
             public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                 Resource res = null;
                 for (Resource resource : param.getResources()) {
                     if (resource instanceof JdbcResource) {
-                        if (((JdbcResource) resource).getPoolName().equals(connectionPoolID)) {
+                        if (((JdbcResource) resource).getPoolName().equals(poolName)) {
                             if (cascade) {
                                 // delete resource-refs
                                 deleteResourceRefs(servers, ((JdbcResource) resource).getJndiName());
                                 res = resource;
                                 break;
                             } else {
-                                return Integer.valueOf(ResourceStatus.FAILURE);
+                                return ResourceStatus.FAILURE;
                             }
                         }
                     }

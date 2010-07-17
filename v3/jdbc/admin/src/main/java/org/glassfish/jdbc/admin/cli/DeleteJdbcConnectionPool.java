@@ -52,7 +52,6 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
@@ -68,23 +67,20 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteJdbcConnectionPool.class);    
 
     @Param(optional=true, defaultValue="false")
-    Boolean cascade;
+    private Boolean cascade;
     
     @Param(name="jdbc_connection_pool_id", primary=true)
-    String jdbc_connection_pool_id;
+    private String poolName;
 
     @Param(optional=true)
-    String target; /*depracated - remove after QA,doc,CCC approval*/
+    private String target; /*deprecated - remove after QA,doc,CCC approval*/
     
     @Inject
-    Resources resources;
+    private Resources resources;
     
     @Inject
-    Server[] servers;
+    private Server[] servers;
     
-    @Inject
-    JdbcConnectionPool[] connPools;
-
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -96,8 +92,7 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
 
         try {
             JDBCConnectionPoolManager jdbcConnMgr = new JDBCConnectionPoolManager();
-            ResourceStatus rs = jdbcConnMgr.delete(servers, resources, connPools, 
-                    cascade.toString(), jdbc_connection_pool_id);
+            ResourceStatus rs = jdbcConnMgr.delete(servers, resources, cascade.toString(), poolName);
             if (rs.getStatus() == ResourceStatus.SUCCESS) {
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);       
             } else {
@@ -114,7 +109,7 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
                     "Something went wrong in delete-jdbc-connection-pool", e);
             String msg = e.getMessage() != null ? e.getMessage() : 
                 localStrings.getLocalString("delete.jdbc.connection.pool.fail", 
-                    "{0} delete failed ", jdbc_connection_pool_id);
+                    "{0} delete failed ", poolName);
             report.setMessage(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);

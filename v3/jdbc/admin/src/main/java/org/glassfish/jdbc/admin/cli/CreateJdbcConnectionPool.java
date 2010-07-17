@@ -181,8 +181,8 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
     
     @Param(name="jdbc_connection_pool_id", alias = "name" /*Mapped to ResourceConstants.CONNECTION_POOL_NAME below */,  primary=true)
-    String jdbc_connection_pool_id; 
-  
+    String jdbc_connection_pool_id;
+
     @Inject
     Resources resources;
     
@@ -201,8 +201,6 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
        
-        Server targetServer = domain.getServerNamed(target);
-
         HashMap attrList = new HashMap();
         attrList.put(ResourceConstants.CONNECTION_POOL_NAME, jdbc_connection_pool_id);
         attrList.put(ResourceConstants.DATASOURCE_CLASS, datasourceclassname);
@@ -245,7 +243,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
 
         try {
             JDBCConnectionPoolManager connPoolMgr = new JDBCConnectionPoolManager();
-            rs = connPoolMgr.create(resources, attrList, properties, targetServer, true);
+            rs = connPoolMgr.create(resources, attrList, properties, target, true, false);
         } catch(Exception e) {
             String actual = e.getMessage();
             String def = "JDBC connection pool: {0} could not be created, reason: {1}";
@@ -267,6 +265,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
             if (rs.getException() != null)
                 report.setFailureCause(rs.getException());
         } else {
+            //TODO only for DAS
             if ("true".equalsIgnoreCase(ping.toString())) {
                 ActionReport subReport = report.addSubActionsReport();
                 ParameterMap parameters = new ParameterMap();
