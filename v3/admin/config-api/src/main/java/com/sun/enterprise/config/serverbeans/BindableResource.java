@@ -62,4 +62,21 @@ public interface BindableResource extends Resource{
      *              {@link String }
      */
     public void setJndiName(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the enabled property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="true",dataType=Boolean.class)
+    String getEnabled();
+
+    /**
+     * Sets the value of the enabled property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setEnabled(String value) throws PropertyVetoException;
 }
