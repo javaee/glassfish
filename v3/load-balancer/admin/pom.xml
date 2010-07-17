@@ -66,14 +66,6 @@
                 <role>developer</role>
             </roles>
         </developer>
-        <developer>
-            <id>yaminikb</id>
-            <name>Yamini K B</name>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
     </developers>
     <build>
 	<resources>
