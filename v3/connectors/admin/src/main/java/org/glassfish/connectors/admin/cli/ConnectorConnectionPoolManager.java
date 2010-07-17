@@ -50,6 +50,7 @@ import java.util.Properties;
 
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.I18n;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -70,7 +71,7 @@ import org.glassfish.admin.cli.resources.ResourceManager;
 
 /**
  *
- * @author Jennifer Chou
+ * @author Jennifer Chou, Jagadish Ramu
  */
 @Service (name=ServerTags.CONNECTOR_CONNECTION_POOL)
 @Scoped(PerLookup.class)
@@ -78,10 +79,13 @@ import org.glassfish.admin.cli.resources.ResourceManager;
 public class ConnectorConnectionPoolManager implements ResourceManager {
 
     @Inject
-    Applications applications;
+    private Applications applications;
 
     @Inject
-    ConnectorRuntime connectorRuntime;
+    private ConnectorRuntime connectorRuntime;
+
+    @Inject
+    private ServerEnvironment environment;
 
     private static final String DESCRIPTION = ServerTags.DESCRIPTION;
 
@@ -122,45 +126,45 @@ public class ConnectorConnectionPoolManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
-
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef)
+            throws Exception {
         setParams(attributes);
-        
+
         if (poolname == null) {
             String msg = localStrings.getLocalString("create.connector.connection.pool.noJndiName",
                             "No pool name defined for connector connection pool.");
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
         // ensure we don't already have one of this name
-        for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
-            if (resource instanceof ConnectorConnectionPool) {
-                if (((ResourcePool) resource).getName().equals(poolname)) {
-                    String msg = localStrings.getLocalString("create.connector.connection.pool.duplicate",
-                            "A resource named {0} already exists.", poolname);
-                    return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        if(resources.getResourceByName(ConnectorConnectionPool.class, poolname) != null){
+            String errMsg = localStrings.getLocalString("create.connector.connection.pool.duplicate",
+                    "A resource named {0} already exists.", poolname);
+            return new ResourceStatus(ResourceStatus.FAILURE, errMsg);
+        }
+
+        //no need to validate in remote instance as the validation would have happened in DAS.
+        if(environment.isDas()){
+
+            if (applications == null) {
+                String msg = localStrings.getLocalString("noApplications",
+                        "No applications found.");
+                return new ResourceStatus(ResourceStatus.FAILURE, msg);
+            }
+
+            try {
+                ResourceStatus status = validateConnectorConnPoolAttributes(raname, connectiondefinition);
+                if (status.getStatus() == ResourceStatus.FAILURE) {
+                    return status;
                 }
+            } catch(ConnectorRuntimeException cre) {
+                Logger.getLogger(ConnectorConnectionPoolManager.class.getName()).log(Level.SEVERE,
+                        "Could not find connection definitions from ConnectorRuntime for resource adapter "+ raname, cre);
+                String msg = localStrings.getLocalString(
+                      "create.connector.connection.pool.noConnDefs",
+                      "Could not find connection definitions for resource adapter {0}",
+                      raname) + " " + cre.getLocalizedMessage();
+                return new ResourceStatus(ResourceStatus.FAILURE, msg);
             }
-        }
-
-        if (applications == null) {
-            String msg = localStrings.getLocalString("noApplications",
-                    "No applications found.");
-            return new ResourceStatus(ResourceStatus.FAILURE, msg);
-        }
-
-        try {
-            ResourceStatus status = validateConnectorConnPoolAttributes(raname, connectiondefinition);
-            if (status.getStatus() == ResourceStatus.FAILURE) {
-                return status;
-            }
-        } catch(ConnectorRuntimeException cre) {
-            Logger.getLogger(ConnectorConnectionPoolManager.class.getName()).log(Level.SEVERE,
-                    "Could not find connection definitions from ConnectorRuntime for resource adapter "+ raname, cre);
-            String msg = localStrings.getLocalString(
-                  "create.connector.connection.pool.noConnDefs",
-                  "Could not find connection definitions for resource adapter {0}",
-                  raname) + " " + cre.getLocalizedMessage();
-            return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
 
         if (requiresNewTransaction) {
@@ -189,7 +193,7 @@ public class ConnectorConnectionPoolManager implements ResourceManager {
                 "create.connector.connection.pool.success", "Connector connection pool {0} created successfully",
                 poolname);
         return new ResourceStatus(ResourceStatus.SUCCESS, msg);
-         
+
     }
 
     private ConnectorConnectionPool createResource(Resources param, Properties properties) throws PropertyVetoException,

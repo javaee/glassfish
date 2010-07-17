@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,10 +35,9 @@
  */
 package org.glassfish.connectors.admin.cli;
 
+import org.glassfish.api.admin.*;
 import org.glassfish.resource.common.ResourceStatus;
 import org.glassfish.resource.common.ResourceConstants;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -58,111 +57,111 @@ import java.util.Properties;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.CommandRunner;
-import org.jvnet.hk2.annotations.Inject;
+
+import static org.glassfish.connectors.admin.cli.CLIConstants.CCP.*;
+import static org.glassfish.connectors.admin.cli.CLIConstants.*;
 
 /**
  * Create Connector Connection Pool Command
  *
  */
-@Service(name="create-connector-connection-pool")
+@Cluster(RuntimeType.ALL)
+@Service(name=CCP_CREATE_COMMAND_NAME)
 @Scoped(PerLookup.class)
 @I18n("create.connector.connection.pool")
 public class CreateConnectorConnectionPool implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateConnectorConnectionPool.class);
 
-    @Param(name="raname", alias="resourceAdapterName")
+    @Param(name=CCP_RA_NAME, alias= "resourceAdapterName")
     String raname;
 
-    @Param(name="connectiondefinition", alias="connectiondefinitionname")
+    @Param(name=CCP_CON_DEFN_NAME, alias="connectiondefinitionname")
     String connectiondefinition;
 
-    @Param(name="steadypoolsize", optional=true)
+    @Param(name=CCP_STEADY_POOL_SIZE, optional=true)
     String steadypoolsize = "8";
 
-    @Param(name="maxpoolsize", optional=true)
+    @Param(name=CCP_MAX_POOL_SIZE, optional=true)
     String maxpoolsize = "32";
 
-    @Param(name="maxwait", optional=true, alias="maxWaitTimeInMillis")
+    @Param(name=CCP_MAX_WAIT_TIME, optional=true, alias="maxWaitTimeInMillis")
     String maxwait = "60000";
 
-    @Param(name="poolresize", optional=true, alias="poolResizeQuantity")
+    @Param(name=CCP_POOL_RESIZE_QTY, optional=true, alias="poolResizeQuantity")
     String poolresize = "2";
 
-    @Param(name="idletimeout", optional=true, alias="idleTimeoutInSeconds")
+    @Param(name=CCP_IDLE_TIMEOUT, optional=true, alias="idleTimeoutInSeconds")
     String idletimeout = "300";
 
-    @Param(name="isconnectvalidatereq", optional=true, defaultValue="false", alias="isConnectionValidationRequired")
+    @Param(name=CCP_IS_VALIDATION_REQUIRED, optional=true, defaultValue="false", alias="isConnectionValidationRequired")
     Boolean isconnectvalidatereq;
 
-    @Param(name="failconnection", optional=true, defaultValue="false", alias="failAllConnections")
+    @Param(name=CCP_FAIL_ALL_CONNS, optional=true, defaultValue="false", alias="failAllConnections")
     Boolean failconnection;
 
-    @Param(name="leaktimeout", optional=true)
+    @Param(name=CCP_LEAK_TIMEOUT, optional=true)
     String leaktimeout = "0";
 
-    @Param(name="leakreclaim", optional=true, defaultValue="false")
+    @Param(name=CCP_LEAK_RECLAIM, optional=true, defaultValue="false")
     Boolean leakreclaim;
 
-    @Param(name="creationretryattempts", optional=true)
+    @Param(name=CCP_CON_CREATION_RETRY_ATTEMPTS, optional=true)
     String creationretryattempts = "0";
 
-    @Param(name="creationretryinterval", optional=true)
+    @Param(name=CCP_CON_CREATION_RETRY_INTERVAL, optional=true)
     String creationretryinterval = "10";
 
-    @Param(name="lazyconnectionenlistment", optional=true, defaultValue="false")
+    @Param(name=CCP_LAZY_CON_ENLISTMENT, optional=true, defaultValue="false")
     Boolean lazyconnectionenlistment;
 
-    @Param(name="lazyconnectionassociation", optional=true, defaultValue="false")
+    @Param(name=CCP_LAZY_CON_ASSOC, optional=true, defaultValue="false")
     Boolean lazyconnectionassociation;
 
-    @Param(name="associatewiththread", optional=true, defaultValue="false")
+    @Param(name=CCP_ASSOC_WITH_THREAD, optional=true, defaultValue="false")
     Boolean associatewiththread;
 
-    @Param(name="matchconnections", optional=true, defaultValue="true")
+    @Param(name=CCP_MATCH_CONNECTIONS, optional=true, defaultValue="true")
     Boolean matchconnections;
 
-    @Param(name="maxconnectionusagecount", optional=true)
+    @Param(name=CCP_MAX_CON_USAGE_COUNT, optional=true)
     String maxconnectionusagecount = "0";
 
-    @Param(optional=true, defaultValue="false")
+    @Param(name=CCP_PING, optional=true, defaultValue="false")
     Boolean ping;
 
-    @Param(optional=true, defaultValue="true")
+    @Param(name=CCP_POOLING, optional=true, defaultValue="true")
     Boolean pooling;
 
-    @Param(name="validateatmostonceperiod", optional=true)
+    @Param(name=CCP_VALIDATE_ATMOST_PERIOD, optional=true)
     String validateatmostonceperiod;
 
-    @Param(name="transactionsupport", acceptableValues="XATransaction,LocalTransaction,NoTransaction", optional=true)
+    @Param(name=CCP_TXN_SUPPORT, acceptableValues="XATransaction,LocalTransaction,NoTransaction", optional=true)
     String transactionsupport;
 
-    @Param(name="description", optional=true)
+    @Param(name=DESCRIPTION, optional=true)
     String description;
 
-    @Param(name="property", optional=true, separator=':')
+    @Param(name= PROPERTY, optional=true, separator=':')
     Properties properties;
 
-    @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    @Param(name= TARGET, optional=true)
+    String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
-    @Param(name="poolname", primary=true)
+    @Param(name=CCP_POOL_NAME, primary=true)
     String poolname;
 
     @Inject
-    Resources resources;
+    private Resources resources;
 
     @Inject
-    Domain domain;
+    private Domain domain;
 
     @Inject
     private Habitat habitat;
 
     @Inject
-    CommandRunner commandRunner;    
+    private CommandRunner commandRunner;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -173,8 +172,6 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        Server targetServer = domain.getServerNamed(target);
-        
         HashMap attrList = new HashMap();
         attrList.put(ResourceConstants.RES_ADAPTER_NAME, raname);
         attrList.put(ResourceConstants.CONN_DEF_NAME, connectiondefinition);
@@ -205,7 +202,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
 
         try {
             ConnectorConnectionPoolManager connPoolMgr = habitat.getComponent(ConnectorConnectionPoolManager.class);
-            rs = connPoolMgr.create(resources, attrList, properties, targetServer, true);
+            rs = connPoolMgr.create(resources, attrList, properties, target, true, false);
         } catch(Exception e) {
             Logger.getLogger(CreateConnectorConnectionPool.class.getName()).log(Level.SEVERE,
                     "Unable to create connector connection pool " + poolname, e);
@@ -228,6 +225,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
             if (rs.getException() != null)
                 report.setFailureCause(rs.getException());
         } else {
+            //TODO only for DAS ?
             if ("true".equalsIgnoreCase(ping.toString())) {
                 ActionReport subReport = report.addSubActionsReport();
                 ParameterMap parameters = new ParameterMap();

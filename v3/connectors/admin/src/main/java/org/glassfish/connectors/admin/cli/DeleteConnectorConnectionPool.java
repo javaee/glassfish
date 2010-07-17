@@ -36,11 +36,14 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -49,11 +52,6 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
@@ -65,31 +63,30 @@ import java.util.logging.Logger;
  * Delete Connector Connection Pool Command
  * 
  */
+@Cluster(RuntimeType.ALL)
 @Service(name="delete-connector-connection-pool")
 @Scoped(PerLookup.class)
 @I18n("delete.connector.connection.pool")
 public class DeleteConnectorConnectionPool implements AdminCommand {
     
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteConnectorConnectionPool.class);    
+    final private static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(DeleteConnectorConnectionPool.class);
 
-    @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    private @Param(optional=true)
+    String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Param(optional=true, defaultValue="false")
-    Boolean cascade;
+    private Boolean cascade;
     
     @Param(name="poolname", primary=true)
-    String poolname;
+    private String poolname;
     
     @Inject
-    Resources resources;
+    private Resources resources;
     
     @Inject
-    Server[] servers;
+    private Server[] servers;
     
-    @Inject
-    ConnectorConnectionPool[] connPools;
-
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -107,7 +104,7 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
         }
 
         // ensure we already have this resource
-        if (!isResourceExists(resources, poolname)) {
+        if(resources.getResourceByName(ConnectorConnectionPool.class, poolname) == null){
             report.setMessage(localStrings.getLocalString("delete.connector.connection.pool.notfound",
                     "A connector connection pool named {0} does not exist.", poolname));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -124,7 +121,8 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
                     (Integer) obj == ResourceStatus.FAILURE) {
                 report.setMessage(localStrings.getLocalString(
                     "delete.connector.connection.pool.pool_in_use",
-                    "Some connector resources are referencing connection pool {0}. Use 'cascade' option to delete them as well.", poolname));
+                    "Some connector resources are referencing connection pool {0}. Use 'cascade' " +
+                            "option to delete them as well.", poolname));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
@@ -132,10 +130,10 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
             // delete connector connection pool
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    for (ConnectorConnectionPool cp : connPools) {
-                        if (cp.getName().equals(poolname)) {
-                            return param.getResources().remove(cp);
-                        }
+                    ConnectorConnectionPool cp = (ConnectorConnectionPool)
+                            resources.getResourceByName(ConnectorConnectionPool.class, poolname);
+                    if(cp != null){
+                        return param.getResources().remove(cp);
                     }
                     // not found
                     return null;
@@ -160,20 +158,6 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
         report.setMessage(localStrings.getLocalString("delete.connector.connection.pool.success",
                 "Connector connection pool {0} deleted successfully", poolname));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-    }
-
-    private boolean isResourceExists(Resources resources, String poolname) {
-
-        // ensure we don't already have one of this name
-        for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
-            if (resource instanceof ConnectorConnectionPool) {
-                if (((ConnectorConnectionPool) resource).getName().equals(poolname)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     private Object deleteAssociatedResources(final Server[] servers, Resources resources,
@@ -203,15 +187,12 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
                  return null;
             }
         }, resources);
-
     }
 
     private void deleteResourceRefs(Server[] servers, final String refName)
             throws TransactionFailure {
-
         for (Server server : servers) {
            server.deleteResourceRef(refName);
         }
-
     }
 }

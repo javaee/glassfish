@@ -74,15 +74,21 @@ public class ListConnectorConnectionPools implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-         try {
+        try {
             List<String> list = new ArrayList<String>();
             for (ConnectorConnectionPool cp : connPools) {
                 list.add(cp.getName());
             }
-            for (String cpName : list) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(cpName);
+            if (list.isEmpty()) {
+                report.setMessage(localStrings.getLocalString(
+                        "list.connector.connection.pools.empty", "Nothing to list."));
+            } else {
+                for (String cpName : list) {
+                    final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                    part.setMessage(cpName);
+                }
             }
+
         } catch (Exception e) {
             Logger.getLogger(ListConnectorConnectionPools.class.getName()).log(Level.SEVERE,
                     "Something went wrong in list-connector-connection-pools", e);
