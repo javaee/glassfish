@@ -284,6 +284,12 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
      * delete-jdbc-resource --target invalid jdbc/foo
      */
     @Test
+    @Ignore 
+    //disabling the test.
+    //in v3, this test was expecting the Command to return failure code.
+    //in 3.1 --target validation is done by CLI framework (as part of command replication)
+    //as of now command replication is not enabled by default and as a result,
+    //the modified command does not fail when an invalid target is specified
     public void testExecuteFailInvalidTarget() {
         // Set operand
         parameters.add("target", "invalid");
@@ -299,7 +305,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
                 JdbcResource jr = (JdbcResource)resource;
                 if (jr.getJndiName().equals("jdbc/foo")) {
                     isDeleted = false;
-                    logger.fine("JdbcResource config bean jdbc/foo is deleted.");
+                    logger.fine("JdbcResource config bean jdbc/foo is not deleted.");
                     continue;
                 }
             }
