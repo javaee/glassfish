@@ -38,6 +38,7 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -101,18 +102,42 @@ public class DeleteNodeConfigCommand implements AdminCommand, PostConstruct {
         int dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
         String dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
         rch = new RemoteConnectHelper(habitat, nodeList, logger, dasHost, dasPort);
-        
-        if (rch.isRemoteConnectRequired(name))
-            return;
 
+        if (!isConfigNode(name)) {
+            String msg = Strings.get("notConfigNode", name);
+            logger.warning(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
+        }
+        
         // for now delete-node-ssh deletes all types of nodes so can call it.  that needs to be fixed.
         CommandInvocation ci = cr.getCommandInvocation("delete-node-ssh", report);
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
         ci.parameters(map);
         ci.execute();
+    }
 
-        
+    private boolean isConfigNode(String nodeName) {
+
+        if (! StringUtils.ok(nodeName)) {
+            return false;
+        }
+
+        Node node = nodes.getNode(name);
+        if (node == null) {
+            return false;
+        }
+
+        // If the node has no node-host and no install-dir then consider
+        // it a config node
+        if (! StringUtils.ok(node.getNodeHost()) &&
+            ! StringUtils.ok(node.getInstallDir())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
