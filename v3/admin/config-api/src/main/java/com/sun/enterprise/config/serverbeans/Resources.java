@@ -157,7 +157,7 @@ public interface Resources extends ConfigBeanProxy, Injectable  {
                 } else if(poolResource){
                     resourceName = ((ResourcePool)res).getName();
                 } else if(rac){
-                    resourceName = ((ResourceAdapterConfig)res).getName();
+                    resourceName = ((ResourceAdapterConfig)res).getResourceAdapterName();
                 } else if(workSecurityMap){
                     resourceName = ((WorkSecurityMap)res).getName();
                 }
