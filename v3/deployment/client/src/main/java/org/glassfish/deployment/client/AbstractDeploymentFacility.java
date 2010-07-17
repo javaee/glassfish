@@ -405,6 +405,9 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                 return po;
             } else {
                 moduleID = mainStatus.getProperty(DFDeploymentProperties.NAME);
+                if (moduleID == null) {
+                    moduleID = (String)deploymentOptions.get(DFDeploymentProperties.NAME);
+                }
                 po.setModuleID(moduleID);
             }
 
