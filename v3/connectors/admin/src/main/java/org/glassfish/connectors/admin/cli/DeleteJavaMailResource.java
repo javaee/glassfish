@@ -36,11 +36,17 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -53,12 +59,15 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
+import java.util.Set;
 
 /**
  * Delete Mail Resource object
  *
  */
 
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@org.glassfish.api.admin.Cluster(value={RuntimeType.ALL})
 @Service(name = "delete-javamail-resource")
 @Scoped(PerLookup.class)
 @I18n("delete.javamail.resource")
@@ -67,21 +76,23 @@ public class DeleteJavaMailResource implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(DeleteJavaMailResource.class);
 
-    @Param(optional = true,
-    defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    String target;
+    @Param(optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    private String target;
 
     @Param(name = "jndi_name", primary = true)
-    String jndiName;
+    private String jndiName;
 
     @Inject
-    Resources resources;
+    private Resources resources;
 
     @Inject
-    MailResource[] mailResources;
+    private Domain domain;
 
     @Inject
-    Domain domain;
+    private ServerEnvironment environment;
+
+    @Inject
+    private ResourceUtil resourceUtil;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -92,7 +103,6 @@ public class DeleteJavaMailResource implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
 
         // ensure we already have this resource
         if (!isResourceExists(resources, jndiName)) {
@@ -103,23 +113,50 @@ public class DeleteJavaMailResource implements AdminCommand {
             return;
         }
 
+        if (environment.isDas()) {
+
+            if ("domain".equals(target)) {
+                if (resourceUtil.getTargetsReferringResourceRef(jndiName).size() > 0) {
+                    report.setMessage(localStrings.getLocalString("delete.mail.resource.resource-ref.exist",
+                            "mail-resource [ {0} ] is referenced in an" +
+                                    "instance/cluster target, Use delete-resource-ref on appropriate target",
+                            jndiName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            } else {
+                if (!resourceUtil.isResourceRefInTarget(jndiName, target)) {
+                    report.setMessage(localStrings.getLocalString("delete.mail.resource.no.resource-ref",
+                            "mail-resource [ {0} ] is not referenced in target [ {1} ]",
+                            jndiName, target));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+
+                }
+
+                if (resourceUtil.getTargetsReferringResourceRef(jndiName).size() > 1) {
+                    report.setMessage(localStrings.getLocalString("delete.mail.resource.multiple.resource-refs",
+                            "mail-resource [ {0} ] is referenced in multiple " +
+                                    "instance/cluster targets, Use delete-resource-ref on appropriate target",
+                            jndiName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            }
+        }
+
         try {
+            // delete resource-ref
+            resourceUtil.deleteResourceRef(jndiName, target);
+
             // delete java-mail-resource
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException,
                         TransactionFailure {
-                    for (MailResource resource : mailResources) {
-                        if (resource.getJndiName().equals(jndiName)) {
-                             param.getResources().remove(resource);
-                             break;
-                        }
-                    }
-                    return mailResources;
+                    MailResource resource = (MailResource)resources.getResourceByName(MailResource.class, jndiName);
+                    return param.getResources().remove(resource);
                 }
             }, resources);
-
-            // delete resource-ref
-            targetServer.deleteResourceRef(jndiName);
 
             report.setMessage(localStrings.getLocalString(
                     "delete.mail.resource.success",
@@ -132,18 +169,10 @@ public class DeleteJavaMailResource implements AdminCommand {
                     tfe.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(tfe);
-            return;
         }
     }
 
     private boolean isResourceExists(Resources resources, String jndiName) {
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof MailResource) {
-                if (((MailResource) resource).getJndiName().equals(jndiName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return resources.getResourceByName(MailResource.class, jndiName) != null;
     }
 }

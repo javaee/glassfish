@@ -36,6 +36,8 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import org.glassfish.admin.cli.resources.ResourceUtil;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
@@ -63,24 +65,28 @@ public class JavaMailResourceManager implements ResourceManager {
             new LocalStringManagerImpl(JavaMailResourceManager.class);
     private static final String DESCRIPTION = ServerTags.DESCRIPTION;
 
-    String mailHost = null;
-    String mailUser = null;
-    String fromAddress = null;
-    String jndiName = null;
-    String storeProtocol = null;
-    String storeProtocolClass = null;
-    String transportProtocol = null;
-    String transportProtocolClass = null;
-    String enabled = null;
-    String debug = null;
-    String description = null;
+    private String mailHost = null;
+    private String mailUser = null;
+    private String fromAddress = null;
+    private String jndiName = null;
+    private String storeProtocol = null;
+    private String storeProtocolClass = null;
+    private String transportProtocol = null;
+    private String transportProtocolClass = null;
+    private String enabled = null;
+    private String debug = null;
+    private String description = null;
+
+    @Inject
+    private ResourceUtil resourceRefUtil;
 
     public String getResourceType() {
         return ServerTags.MAIL_RESOURCE;
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef)
+            throws Exception {
         setAttributes(attributes);
 
         if (mailHost == null) {
@@ -103,16 +109,12 @@ public class JavaMailResourceManager implements ResourceManager {
 
 
         // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof BindableResource) {
-                if (((BindableResource) resource).getJndiName().equals(jndiName)) {
-                    String msg = localStrings.getLocalString(
-                            "create.mail.resource.duplicate.1",
-                            "A Mail Resource named {0} already exists.",
-                            jndiName);
-                    return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-                }
-            }
+        if (resources.getResourceByName(BindableResource.class, jndiName) != null) {
+            String msg = localStrings.getLocalString(
+                    "create.mail.resource.duplicate.1",
+                    "A Mail Resource named {0} already exists.",
+                    jndiName);
+            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
 
         try {
@@ -126,9 +128,10 @@ public class JavaMailResourceManager implements ResourceManager {
                 }
             }, resources);
 
-            if (!targetServer.isResourceRefExists(jndiName)) {
-                targetServer.createResourceRef(enabled, jndiName);
+            if(createResourceRef){
+                resourceRefUtil.createResourceRef(jndiName, enabled, target);
             }
+
             String msg = localStrings.getLocalString(
                     "create.mail.resource.success",
                     "Mail Resource {0} created.", jndiName);

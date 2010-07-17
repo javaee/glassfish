@@ -35,8 +35,12 @@
  */
 package org.glassfish.connectors.admin.cli;
 
+import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -58,6 +62,8 @@ import java.util.Properties;
  * Create Java Mail Resource
  *
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@org.glassfish.api.admin.Cluster(RuntimeType.ALL)
 @Service(name="create-javamail-resource")
 @Scoped(PerLookup.class)
 @I18n("create.javamail.resource")
@@ -67,52 +73,55 @@ public class CreateJavaMailResource implements AdminCommand {
             new LocalStringManagerImpl(CreateJavaMailResource.class);
 
     @Param(name="mailhost", alias="host")
-    String mailHost;
+    private String mailHost;
 
     @Param(name="mailuser", alias="user")
-    String mailUser;
+    private String mailUser;
 
     @Param(name="fromaddress",alias="from")
-    String fromAddress;
+    private String fromAddress;
 
     @Param(name="jndi_name", primary=true)
-    String jndiName;
+    private String jndiName;
 
     @Param(name="storeprotocol", optional=true, defaultValue="imap")
-    String storeProtocol;
+    private String storeProtocol;
 
     @Param(name="storeprotocolclass", optional=true,
     defaultValue="com.sun.mail.imap.IMAPStore" )
-    String storeProtocolClass;
+    private String storeProtocolClass;
 
     @Param(name="transprotocol", optional=true, defaultValue="smtp")
-    String transportProtocol;
+    private String transportProtocol;
 
     @Param(name="transprotocolclass", optional=true,
     defaultValue="com.sun.mail.smtp.SMTPTransport")
-    String transportProtocolClass;
+    private String transportProtocolClass;
 
     @Param(optional=true, defaultValue="true")
-    Boolean enabled;
+    private Boolean enabled;
 
     @Param(optional=true, defaultValue="false")
-    Boolean debug;
+    private Boolean debug;
 
     @Param(name="property", optional=true, separator=':')
-    Properties properties;
+    private Properties properties;
 
     @Param(optional=true,
-    defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    String target;
+    defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    private String target;
 
     @Param(optional=true)
-    String description;
+    private String description;
 
     @Inject
-    Resources resources;
+    private Resources resources;
 
     @Inject
-    Domain domain;
+    private Domain domain;
+
+    @Inject
+    private ResourceUtil resourceRefUtil;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -122,8 +131,6 @@ public class CreateJavaMailResource implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-
-        Server targetServer = domain.getServerNamed(target);
 
          if (mailHost == null) {
             report.setMessage(localStrings.getLocalString("create.mail.resource.noHostName",
@@ -146,19 +153,14 @@ public class CreateJavaMailResource implements AdminCommand {
             return;
         }
 
-
         // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof BindableResource) {
-                if (((BindableResource) resource).getJndiName().equals(jndiName)) {
-                    report.setMessage(localStrings.getLocalString(
-                            "create.mail.resource.duplicate.1",
-                            "Resource named {0} already exists.",
-                            jndiName));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
-                }
-            } 
+        if (resources.getResourceByName(BindableResource.class, jndiName) != null) {
+            report.setMessage(localStrings.getLocalString(
+                    "create.mail.resource.duplicate.1",
+                    "Resource named {0} already exists.",
+                    jndiName));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         }
         //TODO use JavaMailResourceManager ?
         try {
@@ -197,9 +199,8 @@ public class CreateJavaMailResource implements AdminCommand {
                 }
             }, resources);
 
-            if (!targetServer.isResourceRefExists( jndiName)) {
-                targetServer.createResourceRef( enabled.toString(), jndiName);
-            }
+            resourceRefUtil.createResourceRef(jndiName, enabled.toString(), target);
+
             report.setMessage(localStrings.getLocalString(
                     "create.mail.resource.success",
                     "Mail Resource {0} created.", jndiName));
