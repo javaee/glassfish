@@ -36,11 +36,15 @@
 
 package org.glassfish.connectors.admin.cli;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.admin.cli.resources.ResourceUtil;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -48,20 +52,20 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
+import java.util.Set;
 
 /**
  * Delete Connector Resource command
+ *
+ * @author Jennifer Chou, Jagadish Ramu
  * 
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(value={RuntimeType.ALL})
 @Service(name="delete-connector-resource")
 @Scoped(PerLookup.class)
 @I18n("delete.connector.resource")
@@ -70,30 +74,33 @@ public class DeleteConnectorResource implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteConnectorResource.class);
 
     @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
     
     @Param(name="connector_resource_name", primary=true)
-    String jndiName;
+    private String jndiName;
 
     @Inject
-    Resources resources;
+    private Resources resources;
     
     @Inject
-    ConnectorResource[] connectorResources;
+    private ResourceUtil resourceUtil;
     
     @Inject
-    Domain domain;
+    private Domain domain;
+
+    @Inject
+    private ServerEnvironment environment;
 
     /**
      * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * where the keys are the parameter names and the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
+
         if (jndiName == null) {
             report.setMessage(localStrings.getLocalString("delete.connector.resource.noJndiName",
                             "No JNDI name defined for connector resource."));
@@ -109,17 +116,48 @@ public class DeleteConnectorResource implements AdminCommand {
             return;
         }
 
+        if (environment.isDas()) {
+
+            if ("domain".equals(target)) {
+                if (resourceUtil.getTargetsReferringResourceRef(jndiName).size() > 0) {
+                    report.setMessage(localStrings.getLocalString("delete.connector.resource.resource-ref.exist",
+                            "connector-resource [ {0} ] is referenced in an" +
+                                    "instance/cluster target, Use delete-resource-ref on appropriate target",
+                            jndiName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            } else {
+                if (!resourceUtil.isResourceRefInTarget(jndiName, target)) {
+                    report.setMessage(localStrings.getLocalString("delete.connector.resource.no.resource-ref",
+                            "connector-resource [ {0} ] is not referenced in target [ {1} ]",
+                            jndiName, target));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+
+                }
+
+                if (resourceUtil.getTargetsReferringResourceRef(jndiName).size() > 1) {
+                    report.setMessage(localStrings.getLocalString("delete.connector.resource.multiple.resource-refs",
+                            "connector resource [ {0} ] is referenced in multiple " +
+                                    "instance/cluster targets, Use delete-resource-ref on appropriate target",
+                            jndiName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            }
+        }
+
         try {
+            //delete resource-ref
+            resourceUtil.deleteResourceRef(jndiName, target);
+
             // delete connector-resource
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    for (ConnectorResource resource : connectorResources) {
-                        if (resource.getJndiName().equals(jndiName)) {
-                            return param.getResources().remove(resource);
-                        }
-                    }
-                    // not found
-                    return null;
+                    ConnectorResource resource = (ConnectorResource)
+                            resources.getResourceByName(ConnectorResource.class, jndiName );
+                    return param.getResources().remove(resource);
                 }
             }, resources) == null) {
                 report.setMessage(localStrings.getLocalString("delete.connector.resource.fail",
@@ -127,10 +165,6 @@ public class DeleteConnectorResource implements AdminCommand {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
-
-            // delete resource-ref
-            targetServer.deleteResourceRef(jndiName);
-
         } catch(TransactionFailure tfe) {
             report.setMessage(localStrings.getLocalString("delete.connector.resource.fail",
                             "Connector resource {0} delete failed ", jndiName)
@@ -145,14 +179,6 @@ public class DeleteConnectorResource implements AdminCommand {
     }
 
     private boolean isResourceExists(Resources resources, String jndiName) {
-
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof ConnectorResource) {
-                if (((ConnectorResource) resource).getJndiName().equals(jndiName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return resources.getResourceByName(ConnectorResource.class, jndiName) != null;
     }
 }

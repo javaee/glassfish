@@ -35,24 +35,30 @@
  */
 package org.glassfish.connectors.admin.cli;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+
 import static org.glassfish.resource.common.ResourceConstants.*;
+
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.resource.common.ResourceConstants;
 import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.ServerTags;
-import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import static org.glassfish.connectors.admin.cli.CLIConstants.CR.*;
+import static org.glassfish.connectors.admin.cli.CLIConstants.*;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Properties;
@@ -61,8 +67,12 @@ import java.util.HashMap;
 
 /**
  * Create Connector Resource Command
+ *
+ * @author Jennifer Chou, Jagadish Ramu
  * 
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(RuntimeType.ALL)
 @Service(name="create-connector-resource")
 @Scoped(PerLookup.class)
 @I18n("create.connector.resource")
@@ -70,32 +80,32 @@ public class CreateConnectorResource implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateConnectorResource.class);    
 
-    @Param(name="poolname")
-    String poolName;
+    @Param(name=CR_POOL_NAME)
+    private String poolName;
 
-    @Param(optional=true, defaultValue="true")
-    Boolean enabled;
+    @Param(name=CLIConstants.ENABLED, optional=true, defaultValue="true")
+    private Boolean enabled;
 
-    @Param(optional=true)
-    String description;
+    @Param(name=DESCRIPTION, optional=true)
+    private String description;
 
-    @Param(name="objecttype", defaultValue="user", optional=true)
-    String objectType;
+    @Param(name=CR_OBJECT_TYPE, defaultValue="user", optional=true)
+    private String objectType;
     
-    @Param(name="property", optional=true, separator=':')
-    Properties properties;
+    @Param(name=PROPERTY, optional=true, separator=':')
+    private Properties properties;
     
-    @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    @Param(name=TARGET, optional=true)
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
-    @Param(name="jndi_name", primary=true)
-    String jndiName;
-    
+    @Param(name=CR_JNDI_NAME, primary=true)
+    private String jndiName;
+
     @Inject
-    Resources resources;
-    
+    private Resources resources;
+
     @Inject
-    Domain domain;
+    private ConnectorResourceManager connResMgr;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -106,11 +116,9 @@ public class CreateConnectorResource implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        Server targetServer = domain.getServerNamed(target);
-        
         HashMap attrList = new HashMap();
         attrList.put(POOL_NAME, poolName);
-        attrList.put(ENABLED, enabled.toString());
+        attrList.put(ResourceConstants.ENABLED, enabled.toString());
         attrList.put(JNDI_NAME, jndiName);
         attrList.put(ServerTags.DESCRIPTION, description);
         attrList.put(ServerTags.OBJECT_TYPE, objectType);
@@ -118,8 +126,7 @@ public class CreateConnectorResource implements AdminCommand {
         ResourceStatus rs;
 
         try {
-            ConnectorResourceManager connResMgr = new ConnectorResourceManager();
-            rs = connResMgr.create(resources, attrList, properties, targetServer, true);
+            rs = connResMgr.create(resources, attrList, properties, target, true, true);
         } catch(Exception e) {
             Logger.getLogger(CreateConnectorResource.class.getName()).log(Level.SEVERE,
                     "Unable to create connector resource " + jndiName, e);
@@ -133,14 +140,15 @@ public class CreateConnectorResource implements AdminCommand {
         ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
         if (rs.getStatus() == ResourceStatus.FAILURE) {
             ec = ActionReport.ExitCode.FAILURE;
-            if (rs.getMessage() != null) {
-                report.setMessage(rs.getMessage());
-            } else {
+            if (rs.getMessage() == null) {
                  report.setMessage(localStrings.getLocalString("create.connector.resource.fail",
                     "Connector resource {0} creation failed", jndiName, ""));
             }
             if (rs.getException() != null)
                 report.setFailureCause(rs.getException());
+        }
+        if(rs.getMessage() != null){
+            report.setMessage(rs.getMessage());
         }
         report.setActionExitCode(ec);
     }

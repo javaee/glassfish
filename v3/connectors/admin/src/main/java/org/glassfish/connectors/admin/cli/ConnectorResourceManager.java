@@ -35,20 +35,21 @@
  * holder.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.glassfish.connectors.admin.cli;
 
 import java.beans.PropertyVetoException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.api.I18n;
+import org.glassfish.resource.common.ResourceConstants;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
@@ -56,19 +57,12 @@ import org.jvnet.hk2.config.TransactionFailure;
 import static org.glassfish.resource.common.ResourceConstants.*;
 import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.config.types.Property;
-import com.sun.enterprise.config.serverbeans.BindableResource;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.admin.cli.resources.ResourceManager;
 
 
 /**
- * @author Jennifer Chou
+ * @author Jennifer Chou, Jagadish Ramu
  */
 @Service(name = ServerTags.CONNECTOR_RESOURCE)
 @Scoped(PerLookup.class)
@@ -86,6 +80,15 @@ public class ConnectorResourceManager implements ResourceManager {
     private String description = null;
     private String objectType = "user";
 
+    @Inject
+    private Domain domain;
+
+    @Inject
+    private Habitat habitat;
+
+    @Inject
+    private ResourceUtil resourceRefUtil;
+
     public ConnectorResourceManager() {
     }
 
@@ -94,7 +97,9 @@ public class ConnectorResourceManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef)
+            throws Exception {
+
         setAttributes(attributes);
 
         if (jndiName == null) {
@@ -103,14 +108,11 @@ public class ConnectorResourceManager implements ResourceManager {
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
         // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof BindableResource) {
-                if (((BindableResource) resource).getJndiName().equals(jndiName)) {
-                    String msg = localStrings.getLocalString("create.connector.resource.duplicate",
-                            "A resource named {0} already exists.", jndiName);
-                    return new ResourceStatus(ResourceStatus.FAILURE, msg);
-                }
-            }
+        if (resources.getResourceByName(BindableResource.class, jndiName) != null) {
+            String msg = localStrings.getLocalString("create.connector.resource.duplicate",
+                    "A resource named {0} already exists. In order to make the resource available in " +
+                            "instances/clusters, use create-resource-ref", jndiName);
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
 
         if (!isConnPoolExists(resources, poolName)) {
@@ -124,13 +126,12 @@ public class ConnectorResourceManager implements ResourceManager {
                 ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
                     public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                        ConnectorResource newResource = createResource(param, properties);
-                        return newResource;
+                        return createResource(param, properties);
                     }
                 }, resources);
 
-                if (!targetServer.isResourceRefExists(jndiName)) {
-                    targetServer.createResourceRef(enabled, jndiName);
+                if(createResourceRef){
+                    resourceRefUtil.createResourceRef(jndiName, enabled, target);
                 }
 
             } catch (TransactionFailure tfe) {
@@ -181,21 +182,14 @@ public class ConnectorResourceManager implements ResourceManager {
 
     private void setAttributes(HashMap attributes) {
         poolName = (String) attributes.get(POOL_NAME);
-        enabled = (String) attributes.get(ENABLED);
+        enabled = (String) attributes.get(ResourceConstants.ENABLED);
         jndiName = (String) attributes.get(JNDI_NAME);
         description = (String) attributes.get(DESCRIPTION);
         objectType = (String) attributes.get(ServerTags.OBJECT_TYPE);
     }
 
     private boolean isConnPoolExists(Resources resources, String poolName) {
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof ConnectorConnectionPool) {
-                if (((ConnectorConnectionPool) resource).getName().equals(poolName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return resources.getResourceByName(ConnectorConnectionPool.class, poolName) != null;
     }
 
     public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception {
