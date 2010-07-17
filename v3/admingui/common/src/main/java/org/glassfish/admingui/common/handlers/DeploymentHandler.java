@@ -266,20 +266,16 @@ public class DeploymentHandler {
         DFProgressObject progressObject = null;
         DeploymentFacility df = GuiUtil.getDeploymentFacility();
         //Hard coding to server, fix me for actual targets in EE.
-        String[] targetNames = new String[]{"server"};
         for (int i = 0; i < selectedRows.size(); i++) {
             Map oneRow = (Map) selectedRows.get(i);
             String appName = (String) oneRow.get("name");
-            //Undeploy the app here.
-//            if(V3AMX.getInstance().isEE()){
-//                List<String> refList = TargetUtil.getDeployedTargets(appName, true);
-//                if(refList.size() > 0)
-//                    targetNames = refList.toArray(new String[refList.size()]);
-//                else
-//                    targetNames=new String[]{"domain"};
-//            }
+            List targets = DeployUtil.getApplicationTarget(appName);
+            if (targets.isEmpty()){
+                targets.add("domain");
+            }
 
-            progressObject = df.undeploy(df.createTargets(targetNames), appName, dProps);
+            String[] targetArray = (String[])targets.toArray(new String[targets.size()]);
+            progressObject = df.undeploy(df.createTargets(targetArray), appName, dProps);
             progressObject.waitFor();
             DFDeploymentStatus status = progressObject.getCompletedStatus();
             //we DO want it to continue and call the rest handlers, ie navigate(). This will

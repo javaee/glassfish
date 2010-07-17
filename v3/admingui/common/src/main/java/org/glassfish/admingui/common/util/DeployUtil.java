@@ -43,6 +43,10 @@ package org.glassfish.admingui.common.util;
 
 import java.io.*;
 import java.util.Properties;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.glassfish.deployment.client.DFDeploymentStatus;
 import org.glassfish.deployment.client.DeploymentFacility;
@@ -52,7 +56,7 @@ import org.glassfish.deployment.client.DFDeploymentProperties;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.net.URI;
 import javax.enterprise.deploy.spi.Target;
-
+import org.glassfish.admingui.common.handlers.RestApiHandlers;
 /**
  *
  * @author anilam
@@ -157,5 +161,31 @@ public class DeployUtil {
         boolean ret = checkDeployStatus(status, handlerCtx, false);
         return ret;
     }
- 
+
+    //This method returns the list of targets (clusters and standalone instances) of any deployed application
+    static public List getApplicationTarget(String appName){
+        List targets = new ArrayList();
+        try{
+            //check if any cluster has this application-ref
+            List<String> clusters = RestApiHandlers.getChildrenNames(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster" , "Name");
+            for(String oneCluster:  clusters){
+                List appRefs = RestApiHandlers.getChildrenNames(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+oneCluster+"/application-ref" , "Ref");
+                if (appRefs.contains(appName)){
+                    targets.add(oneCluster);
+                }
+            }
+            List<String> servers = TargetUtil.getStandaloneInstances();
+            servers.add("server");
+            for(String oneServer:  servers){
+                List appRefs = RestApiHandlers.getChildrenNames(GuiUtil.getSessionValue("REST_URL")+"/servers/server/"+oneServer+"/application-ref" , "Ref");
+                if (appRefs.contains(appName)){
+                    targets.add(oneServer);
+                }
+            }
+
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return targets;
+    }
 }

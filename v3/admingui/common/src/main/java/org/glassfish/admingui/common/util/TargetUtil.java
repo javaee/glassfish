@@ -42,6 +42,12 @@
 
 package org.glassfish.admingui.common.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.glassfish.admingui.common.handlers.RestApiHandlers;
+
 /**
  *
  * @author anilam
@@ -52,4 +58,24 @@ public class TargetUtil {
         return false;
     }
 
+    public static List getStandaloneInstances(){
+        List result = new ArrayList();
+        String endpoint = GuiUtil.getSessionValue("REST_URL") + "/list-instances" ;
+        Map attrsMap = new HashMap();
+        attrsMap.put("standaloneonly", "true");
+        try{
+            //TODO:  need to change when switching to json
+            Map responseMap = RestApiHandlers.restRequest( endpoint , attrsMap, "get" , null);
+            ArrayList  messages = (ArrayList) responseMap.get("messages");
+            Map message = (Map) messages.get(0);
+            List<Map<String, String>> props = (List<Map<String, String>>) message.get("properties");
+            for(Map<String, String> oneProp : props){
+                result.add(oneProp.get("name"));
+            }
+        }catch (Exception ex){
+            GuiUtil.getLogger().severe("Error in getStandaloneInstances ; \nendpoint = " +endpoint + "attrsMap=" + attrsMap);
+        }
+
+        return result;
+    }
 }

@@ -55,6 +55,7 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import java.util.Map;
 import java.util.List;
@@ -65,32 +66,6 @@ public class ClusterHandler {
     /** Creates a new instance of InstanceHandler */
     public ClusterHandler() {
     }
-
-    @Handler(id = "gf.getInstanceStatus",
-        input = {
-            @HandlerInput(name = "instanceName", type = String.class, required = true),
-            @HandlerInput(name = "listInstanceProps", type = List.class, required = true)
-        },
-        output = {
-            @HandlerOutput(name = "status", type = String.class)
-        })
-    public static void getInstanceStatus(HandlerContext handlerCtx) {
-        //If restRequest() change to output json,  this needs to be changed.
-        String instanceName = (String) handlerCtx.getInputValue("instanceName");
-        List<Map<String, String>> props = (List<Map<String, String>>) handlerCtx.getInputValue("listInstanceProps");
-        try{
-            for(Map<String, String> oneProp : props){
-                if (oneProp.get("name").equals(instanceName)){
-                    handlerCtx.setOutputValue("status", oneProp.get("value"));
-                    return;
-                }
-            }
-         }catch(Exception ex){
-             //Log error ?
-             handlerCtx.setOutputValue("status", GuiUtil.getMessage("status.Unknown"));
-         }
-     }
-    
     
     /**
      * This method takes in a list of instances with status, which is the output of list-instances
@@ -99,20 +74,21 @@ public class ClusterHandler {
      */
     @Handler(id = "gf.getClusterStatusSummary",
         input = {
-            @HandlerInput(name = "listInstanceProps", type = List.class, required = true)
+            @HandlerInput(name = "listInstancePropsMap", type = Map.class, required = true)
         },
         output = {
             @HandlerOutput(name = "numRunning", type = String.class),
             @HandlerOutput(name = "numNotRunning", type = String.class)
         })
     public static void getClusterStatusSummary(HandlerContext handlerCtx) {
-        //If restRequest() change to output json,  this needs to be changed.
-        List<Map<String, String>> props = (List<Map<String, String>>) handlerCtx.getInputValue("listInstanceProps");
+        Map propsMap = (Map) handlerCtx.getInputValue("listInstancePropsMap");
         int running=0;
         int notRunning=0;
         try{
-            for(Map<String, String> oneProp : props){
-                if (oneProp.get("value").equals(RUNNING)){
+
+            for (Iterator it=propsMap.values().iterator(); it.hasNext(); ) {
+                Object value = it.next();
+                if (value.toString().equals(RUNNING)){
                     running++;
                 }else{
                     notRunning++;
