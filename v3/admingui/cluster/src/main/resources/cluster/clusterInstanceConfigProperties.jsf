@@ -41,7 +41,8 @@
         setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
         getRequestValue(key="clusterName" value=>$page{clusterName});
         getRequestValue(key="instanceName" value=>$page{instanceName});
-        getConfigName(target="#{instanceName}", configName=>$attribute{configName});
+        //The following handler has been removed. convert to REST when work on this page.
+        //getConfigName(target="#{instanceName}", configName=>$attribute{configName});
         setPageSessionAttribute(key="PageTitleHelp" value="$resource{i18n.inst.ConfigPropsPageHelp, ${configName}}");
         getInstanceSystemProperties(instanceName="#{instanceName}", result=>$attribute{listOfRows} );
     />

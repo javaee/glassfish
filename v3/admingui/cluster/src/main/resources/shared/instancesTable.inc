@@ -76,12 +76,13 @@
             <!beforeEncode
                 createMap(result="#{pageSession.statusAttrs}")
                 mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{td.value.Name}" );
-                gf.restRequest(
+                setAttribute(key="in", value="#{td.value.Name}" );
+                gf.callRestAndExtractMsgProps(
                     endpoint="#{sessionScope.REST_URL}/list-instances.xml"
                     attrs="#{pageSession.statusAttrs}"
                     method="GET"
-                    result="#{pageSession.listInstanceResult}");
-                gf.getInstanceStatus(listInstanceProps="#{pageSession.listInstanceResult.messages[0]['properties']}" instanceName="#{td.value.Name}" status="#{requestScope.status}" );
+                    propsMap="#{pageSession.propsMap}");
+                setAttribute(key="status" value="#{pageSession.propsMap['${in}']}");
                 setAttribute(key="statusString" value="$resource{i18nc.status.$attribute{status}}  &nbsp; $resource{i18nc.status.image.$attribute{status}}");
                 />
         </staticText>

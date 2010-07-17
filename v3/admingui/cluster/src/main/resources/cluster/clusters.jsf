@@ -161,7 +161,7 @@
             <!beforeEncode
                 mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{instance}" );
                 gf.callRestAndExtractMsgProps(
-                    endpoint="#{sessionScope.REST_URL}/list-instances.xml"
+                    endpoint="#{sessionScope.REST_URL}/list-instances"
                     attrs="#{pageSession.statusAttrs}"
                     method="GET"
                     propsMap="#{pageSession.propsMap}");

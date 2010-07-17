@@ -123,13 +123,13 @@
                 <!beforeCreate
                     createMap(result="#{pageSession.statusAttrs}")
                     mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{pageSession.clusterName}" );
-                    gf.restRequest(
+                    gf.callRestAndExtractMsgProps(
                         endpoint="#{sessionScope.REST_URL}/list-instances.xml"
                         attrs="#{pageSession.statusAttrs}"
                         method="GET"
-                        result="#{pageSession.listInstanceResult}");
-                    gf.getClusterStatusSummary(listInstanceProps="#{pageSession.listInstanceResult.messages[0]['properties']}"
-                    numRunning="#{pageSession.numRunning}"  numNotRunning="#{pageSession.numNotRunning}"  );
+                        propsMap="#{pageSession.propsMap}");
+                    gf.getClusterStatusSummary(listInstancePropsMap="#{pageSession.propsMap}" ,
+                        numRunning="#{pageSession.numRunning}"  numNotRunning="#{pageSession.numNotRunning}"  );
                 />
                 </event>
                 <sun:staticText id="instanceStatusRunning"text="#{pageSession.numRunning}" />
