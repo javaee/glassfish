@@ -36,11 +36,13 @@
 
 package org.glassfish.connectors.admin.cli;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.admin.cli.resources.ResourceUtil;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -51,17 +53,19 @@ import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.AdminObjectResource;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
+import java.util.Set;
 
 /**
  * Delete Admin Object command
  * 
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.CONFIG, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(value={RuntimeType.ALL})
 @Service(name="delete-admin-object")
 @Scoped(PerLookup.class)
 @I18n("delete.admin.ojbect")
@@ -70,19 +74,23 @@ public class DeleteAdminObject implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteAdminObject.class);
 
     @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
     
     @Param(name="jndi_name", primary=true)
-    String jndiName;
+    private String jndiName;
 
     @Inject
-    Resources resources;
-    
+    private Resources resources;
+
     @Inject
-    AdminObjectResource[] adminObjectResources;
-    
+    private ResourceUtil resourceUtil;
+
     @Inject
-    Domain domain;
+    private Domain domain;
+
+    @Inject
+    private ServerEnvironment environment;
+    
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -93,7 +101,6 @@ public class DeleteAdminObject implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
         if (jndiName == null) {
             report.setMessage(localStrings.getLocalString("delete.admin.object.noJndiName",
                             "No JNDI name defined for administered object."));
@@ -109,17 +116,46 @@ public class DeleteAdminObject implements AdminCommand {
             return;
         }
 
+        if (environment.isDas()) {
+            if (domain.getConfigNamed(target)!=null) {
+                if (resourceUtil.getTargetsReferringResourceRef(jndiName).size() > 0) {
+                    report.setMessage(localStrings.getLocalString("delete.admin.object.resource-ref.exist",
+                            "admin-object [ {0} ] is referenced in an" +
+                                    "instance/cluster target, Use delete-resource-ref on appropriate target",
+                            jndiName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            } else {
+                if (!resourceUtil.isResourceRefInTarget(jndiName, target)) {
+                    report.setMessage(localStrings.getLocalString("delete.admin.object.no.resource-ref",
+                            "admin-object [ {0} ] is not referenced in target [ {1} ]",
+                            jndiName, target));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+
+                }
+
+                if (resourceUtil.getTargetsReferringResourceRef(jndiName).size() > 1) {
+                    report.setMessage(localStrings.getLocalString("delete.admin.object.multiple.resource-refs",
+                            "admin-object [ {0} ] is referenced in multiple " +
+                                    "instance/cluster targets, Use delete-resource-ref on appropriate target",
+                            jndiName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            }
+        }
+
         try {
+            // delete resource-ref
+            resourceUtil.deleteResourceRef(jndiName, target);
+
             // delete admin-object-resource
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    for (AdminObjectResource resource : adminObjectResources) {
-                        if (resource.getJndiName().equals(jndiName)) {
-                            return param.getResources().remove(resource);
-                        }
-                    }
-                    // not found
-                    return null;
+                    Resource resource = resources.getResourceByName(AdminObjectResource.class, jndiName);
+                    return param.getResources().remove(resource);
                 }
             }, resources) == null) {
                 report.setMessage(localStrings.getLocalString("delete.admin.object.fail",
@@ -127,10 +163,6 @@ public class DeleteAdminObject implements AdminCommand {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
-
-            // delete resource-ref
-            targetServer.deleteResourceRef(jndiName);
-
         } catch(TransactionFailure tfe) {
             report.setMessage(localStrings.getLocalString("delete.admin.object.fail",
                             "Unable to delete administered object {0}", jndiName)
@@ -145,14 +177,6 @@ public class DeleteAdminObject implements AdminCommand {
     }
 
     private boolean isResourceExists(Resources resources, String jndiName) {
-
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof AdminObjectResource) {
-                if (((AdminObjectResource) resource).getJndiName().equals(jndiName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return resources.getResourceByName(AdminObjectResource.class, jndiName) != null;
     }
 }

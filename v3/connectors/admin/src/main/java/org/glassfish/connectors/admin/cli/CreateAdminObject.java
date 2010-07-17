@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,12 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import static org.glassfish.resource.common.ResourceConstants.*;
+
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.resource.common.ResourceConstants;
 import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -54,6 +60,9 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import static org.glassfish.connectors.admin.cli.CLIConstants.AOR.*;
+import static org.glassfish.connectors.admin.cli.CLIConstants.*;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Properties;
@@ -61,44 +70,47 @@ import java.util.HashMap;
 
 /**
  * Create Admin Object Command
- * 
+ *
+ * @author Jennifer Chou, Jagadish Ramu 
  */
-@Service(name="create-admin-object")
+@TargetType(value={CommandTarget.DAS,CommandTarget.CONFIG, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@Cluster(RuntimeType.ALL)
+@Service(name=AOR_CREATE_COMMAND_NAME)
 @Scoped(PerLookup.class)
 @I18n("create.admin.object")
 public class CreateAdminObject implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateAdminObject.class);    
 
-    @Param(name="restype")
-    String resType;
+    @Param(name=AOR_RES_TYPE)
+    private String resType;
 
-    @Param(name="classname", optional=true)
-    String className;
+    @Param(name=AOR_CLASS_NAME, optional=true)
+    private String className;
 
-    @Param(name="raname", alias="resAdapter")
-    String raName;
+    @Param(name=AOR_RA_NAME, alias="resAdapter")
+    private String raName;
 
-    @Param(optional=true, defaultValue="true")
-    Boolean enabled;
+    @Param(name=CLIConstants.ENABLED, optional=true, defaultValue="true")
+    private Boolean enabled;
 
-    @Param(optional=true)
-    String description;
+    @Param(name=DESCRIPTION, optional=true)
+    private String description;
     
-    @Param(name="property", optional=true, separator=':')
-    Properties properties;
+    @Param(name=PROPERTY, optional=true, separator=':')
+    private Properties properties;
     
     @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
-    @Param(name="jndi_name", primary=true)
-    String jndiName;
+    @Param(name=AOR_JNDI_NAME, primary=true)
+    private String jndiName;
     
     @Inject
-    Resources resources;
+    private Resources resources;
     
     @Inject
-    Domain domain;
+    private Domain domain;
 
     @Inject
     private Habitat habitat;
@@ -112,12 +124,10 @@ public class CreateAdminObject implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        Server targetServer = domain.getServerNamed(target);
-        
         HashMap attrList = new HashMap();
         attrList.put(RES_TYPE, resType);
         attrList.put(ADMIN_OBJECT_CLASS_NAME, className);
-        attrList.put(ENABLED, enabled.toString());
+        attrList.put(ResourceConstants.ENABLED, enabled.toString());
         attrList.put(JNDI_NAME, jndiName);
         attrList.put(ServerTags.DESCRIPTION, description);
         attrList.put(RES_ADAPTER, raName);
@@ -126,7 +136,7 @@ public class CreateAdminObject implements AdminCommand {
 
         try {
             AdminObjectManager adminObjMgr = habitat.getComponent(AdminObjectManager.class);
-            rs = adminObjMgr.create(resources, attrList, properties, targetServer, true);
+            rs = adminObjMgr.create(resources, attrList, properties, target, true, true );
         } catch(Exception e) {
             Logger.getLogger(CreateAdminObject.class.getName()).log(Level.SEVERE,
                     "Something went wrong in create-admin-object", e);

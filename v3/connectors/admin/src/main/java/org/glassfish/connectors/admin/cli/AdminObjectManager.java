@@ -48,7 +48,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.api.I18n;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -84,10 +87,13 @@ import org.glassfish.admin.cli.resources.ResourceManager;
 public class AdminObjectManager implements ResourceManager {
 
     @Inject
-    Applications applications;
+    private Applications applications;
 
     @Inject
-    ConnectorRuntime connectorRuntime;
+    private ConnectorRuntime connectorRuntime;
+
+    @Inject
+    private ResourceUtil resourceRefUtil;
 
     private static final String DESCRIPTION = ServerTags.DESCRIPTION;
 
@@ -101,6 +107,9 @@ public class AdminObjectManager implements ResourceManager {
     private String jndiName = null;
     private String description = null;
 
+    @Inject
+    private ServerEnvironment environment;
+
     public AdminObjectManager() {
     }
 
@@ -109,34 +118,33 @@ public class AdminObjectManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 Server targetServer, boolean requiresNewTransaction) throws Exception {
-
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef)
+            throws Exception {
         setAttributes(attributes);
-        
+
         if (jndiName == null) {
             String msg = localStrings.getLocalString("create.admin.object.noJndiName",
                             "No JNDI name defined for administered object.");
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
         // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof BindableResource) {
-                if (((BindableResource) resource).getJndiName().equals(jndiName)) {
-                    String msg = localStrings.getLocalString("create.admin.object.duplicate",
-                            "A resource named {0} already exists.", jndiName);
-                    return new ResourceStatus(ResourceStatus.FAILURE, msg);
-                }
+        if (resources.getResourceByName(BindableResource.class, jndiName) != null) {
+            String msg = localStrings.getLocalString("create.admin.object.duplicate",
+                    "A resource named {0} already exists.", jndiName);
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        }
+
+        //no need to validate in remote instance as the validation would have happened in DAS.
+        if(environment.isDas()){
+            ResourceStatus status = isValidRAName();
+            if (status.getStatus() == ResourceStatus.FAILURE) {
+                return status;
             }
-        }
 
-        ResourceStatus status = isValidRAName();
-        if (status.getStatus() == ResourceStatus.FAILURE) {
-            return status;
-        }
-
-        status = isValidAdminObject();
-        if (status.getStatus() == ResourceStatus.FAILURE) {
-            return status;
+            status = isValidAdminObject();
+            if (status.getStatus() == ResourceStatus.FAILURE) {
+                return status;
+            }
         }
 
         if (requiresNewTransaction) {
@@ -148,8 +156,8 @@ public class AdminObjectManager implements ResourceManager {
                     }
                 }, resources);
 
-                if (!targetServer.isResourceRefExists(jndiName)) {
-                    targetServer.createResourceRef(enabled.toString(), jndiName);
+                if (createResourceRef) {
+                    resourceRefUtil.createResourceRef(jndiName, enabled, target);
                 }
 
             } catch (TransactionFailure tfe) {
@@ -168,7 +176,7 @@ public class AdminObjectManager implements ResourceManager {
                 "create.admin.object.success",
                 "Administered object {0} created.", jndiName);
         return new ResourceStatus(ResourceStatus.SUCCESS, msg);
-         
+
     }
 
     private AdminObjectResource createResource(Resources param, Properties props) throws PropertyVetoException,
