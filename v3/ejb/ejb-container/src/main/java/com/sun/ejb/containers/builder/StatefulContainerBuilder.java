@@ -38,6 +38,7 @@ package com.sun.ejb.containers.builder;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -61,14 +62,14 @@ import com.sun.ejb.containers.util.cache.NRUSessionCache;
 import com.sun.ejb.containers.util.cache.UnBoundedSessionCache;
 
 import com.sun.ejb.spi.sfsb.store.SFSBBeanState;
-import com.sun.enterprise.config.serverbeans.AvailabilityService;
-import com.sun.enterprise.config.serverbeans.EjbContainer;
-import com.sun.enterprise.config.serverbeans.EjbContainerAvailability;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deployment.EjbDescriptor;
 
 import com.sun.ejb.spi.container.SFSBContainerInitialization;
 
 import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.gms.bootstrap.GMSAdapter;
+import org.glassfish.gms.bootstrap.GMSAdapterService;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreConfiguration;
 import org.glassfish.ha.store.api.BackingStoreException;
@@ -112,14 +113,20 @@ public class StatefulContainerBuilder
     @Inject
     private EJBServerConfigLookup ejbConfigLookup;
 
-    @Inject
+    @Inject(optional = true)
     private AvailabilityService availabilityService;
 
-    @Inject
+    @Inject(optional = true)
     private EjbContainerAvailability ejbAvailability;
 
     @Inject
     EjbContainer ejbContainerConfig;
+
+    @Inject(optional = true)
+    GMSAdapterService gmsAdapterService;
+
+    @Inject
+    Applications applications;
     
     private LruSessionCache sessionCache;
 
@@ -144,8 +151,45 @@ public class StatefulContainerBuilder
 
     public void buildComponents()
             throws Exception {
-        this.HAEnabled =
-                ejbConfigLookup.calculateEjbAvailabilityEnabledFromConfig();
+        if (availabilityService != null) {
+            this.HAEnabled = Boolean.valueOf(availabilityService.getAvailabilityEnabled());
+            _logger.log(Level.INFO, "TopLevel AvailabilityService.getAvailabilityEnabled => " + this.HAEnabled);
+            if ((this.HAEnabled) && (ejbAvailability != null)) {
+                this.HAEnabled = Boolean.valueOf(ejbAvailability.getAvailabilityEnabled());
+                _logger.log(Level.INFO, "TopLevel EjbAvailabilityService.getAvailabilityEnabled => " + this.HAEnabled);
+            }
+
+            boolean appLevelHAEnabled = false;
+            try {
+//                for (Application app1 : applications.getApplications()) {
+//                    _logger.log(Level.INFO, "\t Iterator for app1 " + app1.getName() + "; ==> " + app1.getAvailabilityEnabled());
+//                }
+
+                if (HAEnabled) {
+                    com.sun.enterprise.deployment.Application dolApp = ejbDescriptor.getApplication();
+                    if (dolApp != null) {
+                        boolean isVirtual = dolApp.isVirtual();
+                        Application app = applications.getApplication(dolApp.getRegistrationName());
+                        if (app != null) {
+                            appLevelHAEnabled = Boolean.valueOf(app.getAvailabilityEnabled());
+                        }
+
+                        _logger.log(Level.INFO, "**Global AvailabilityEnabled => " + this.HAEnabled
+                            + "; regName: " + dolApp.getRegistrationName()
+                            + "; isVirtual: " + isVirtual
+                            + "; isAppHAEnabled: " + appLevelHAEnabled);
+                    }
+                }
+            } catch (Exception ex) {
+                _logger.log(Level.WARNING, "Exception while trying to determine availability-enabled settings for this app", ex);
+                appLevelHAEnabled = false;
+            }
+
+            HAEnabled = HAEnabled && appLevelHAEnabled;
+            _logger.log(Level.INFO, "StatefulContainerBuilder AvailabilityEnabled for this app => " + this.HAEnabled);
+        }
+
+
 
         buildCheckpointPolicy(this.HAEnabled);
         buildSFSBUUIDUtil();
@@ -178,30 +222,16 @@ public class StatefulContainerBuilder
     private void buildStoreManager()
         throws BackingStoreException {
 
-        String persistenceStoreType =
-                ejbConfigLookup.getPersistenceStoreType();
-
-        //Workaround till we figure out if the app itself is ha enabled or not
-        boolean haEnabled = false;
-        try {
-            String haSysProp = System.getProperty("com.sun.ejb.container.ha.enabled", "false");
-            haEnabled = Boolean.valueOf(haSysProp);
-            if (haEnabled) {
-                String ejbContainerAvailability = availabilityService.getEjbContainerAvailability().getAvailabilityEnabled();
-                haEnabled = Boolean.valueOf(ejbContainerAvailability);
-                if (haEnabled) {
-                    persistenceStoreType = "replicated";
-                }
-            }
-        } catch (Throwable th) {
-        }
+        String persistenceStoreType = HAEnabled
+                ? "replication" : ejbConfigLookup.getPersistenceStoreType();
 
 
-        BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, persistenceStoreType);
 
         BackingStoreConfiguration<Serializable, SFSBBeanState> conf = new BackingStoreConfiguration<Serializable, SFSBBeanState>();
-        String storeName = ejbDescriptor.getName() + "BackingStore";
+        String storeName = ejbDescriptor.getName() + "-" + ejbDescriptor.getUniqueId() + "-BackingStore";
 
+        _logger.log(Level.INFO, "StatefulContainerBuilder.buildStoreManager() storeName: " + storeName);
+        
         String subDirName = "";
 
         if (ejbDescriptor.getApplication().isVirtual()) {
@@ -221,12 +251,36 @@ public class StatefulContainerBuilder
                 .setKeyClazz(Serializable.class)
                 .setValueClazz(SFSBBeanState.class);
 
-        if (factory == null) {
-            factory = habitat.getComponent(BackingStoreFactory.class, "noop");
+
+        Map<String, Object> vendorMap = conf.getVendorSpecificSettings();
+        vendorMap.put("local.caching", true);
+        vendorMap.put("start.gms", false);
+        
+        if (gmsAdapterService != null) {
+            GMSAdapter gmsAdapter = gmsAdapterService.getGMSAdapter();
+            if (gmsAdapter != null) {
+                conf.setClusterName(gmsAdapter.getClusterName());
+                conf.setInstanceName(gmsAdapter.getModule().getInstanceName());
+            }
         }
-        this.backingStore = factory.createBackingStore(conf);
+        
+        BackingStoreFactory factory = null;
+        try {
+            factory = habitat.getComponent(BackingStoreFactory.class, persistenceStoreType);
+        } catch (Exception ex) {
+            _logger.log(Level.WARNING, "Could not instantiate backing store for type: " + persistenceStoreType, ex);
+        }
+
+        try {
+            if (factory == null) {
+                factory = habitat.getComponent(BackingStoreFactory.class, "noop");
+            }
+            this.backingStore = factory.createBackingStore(conf);
+        } catch (Exception ex) {
+            _logger.log(Level.WARNING, "Could not instantiate BackingStore for persistence type: " + persistenceStoreType, ex);
+        }
         _logger.log(Level.WARNING, "StatefulContainerbuilder instantiated store: " +
-            backingStore + "; ha-enabled: " + haEnabled + " ==> " + conf);
+            backingStore + "; ha-enabled: " + HAEnabled + " ==> " + conf);
     }
 
     private void buildCache() {

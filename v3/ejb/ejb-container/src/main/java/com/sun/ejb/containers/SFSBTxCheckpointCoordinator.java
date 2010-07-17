@@ -86,8 +86,7 @@ public class SFSBTxCheckpointCoordinator {
         }
 
         if (states.size() > 0) {
-            SFSBBeanState[] beanStates = (SFSBBeanState[]) states.toArray(
-                    new SFSBBeanState[0]);
+            StoreAndBeanState[] beanStates = states.toArray(new StoreAndBeanState[0]);
 
             try {
                 for (StoreAndBeanState st : states) {
