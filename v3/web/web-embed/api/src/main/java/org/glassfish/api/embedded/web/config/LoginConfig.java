@@ -35,7 +35,7 @@
  *
  */
 
-package org.glassfish.api.embedded.web.config;;
+package org.glassfish.api.embedded.web.config;
 
 import org.glassfish.api.embedded.web.config.FormLoginConfig;
 import org.glassfish.api.embedded.web.config.AuthMethod;
