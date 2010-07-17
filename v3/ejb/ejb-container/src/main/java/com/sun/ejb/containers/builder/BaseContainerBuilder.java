@@ -54,6 +54,7 @@ import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.util.Utility;
 
 import com.sun.logging.LogDomains;
+import org.glassfish.api.deployment.DeploymentContext;
 
 /**
  * (Abstract)Base class for all ContainerBuilders
@@ -73,12 +74,16 @@ public abstract class BaseContainerBuilder {
     private byte[]			    ipAddress;
     private int				    port;
 
+    private DeploymentContext dynamicDeploymentContext;
+
     public BaseContainerBuilder() {
     }
 
-    public final void buildContainer(EjbDescriptor ejbDescriptor, ClassLoader loader)
+    public final void buildContainer(DeploymentContext dynamicDeploymentContext,
+                                     EjbDescriptor ejbDescriptor, ClassLoader loader)
 	throws Exception
     {
+        this.dynamicDeploymentContext = dynamicDeploymentContext;
 	this.ejbDescriptor = ejbDescriptor;
 	this.loader = loader;
 
@@ -118,6 +123,10 @@ public abstract class BaseContainerBuilder {
 
     protected int getPort() {
 	return this.port;
+    }
+
+    protected DeploymentContext getDynamicDeploymentContext() {
+        return dynamicDeploymentContext;
     }
 
     ////////////////// Private methods //////////////////

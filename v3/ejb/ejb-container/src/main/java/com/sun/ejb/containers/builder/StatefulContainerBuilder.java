@@ -68,6 +68,8 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.ejb.spi.container.SFSBContainerInitialization;
 
 import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.gms.bootstrap.GMSAdapter;
 import org.glassfish.gms.bootstrap.GMSAdapterService;
 import org.glassfish.ha.store.api.BackingStore;
@@ -124,9 +126,6 @@ public class StatefulContainerBuilder
 
     @Inject(optional = true)
     GMSAdapterService gmsAdapterService;
-
-    @Inject
-    Applications applications;
     
     private LruSessionCache sessionCache;
 
@@ -161,24 +160,17 @@ public class StatefulContainerBuilder
 
             boolean appLevelHAEnabled = false;
             try {
-//                for (Application app1 : applications.getApplications()) {
-//                    _logger.log(Level.INFO, "\t Iterator for app1 " + app1.getName() + "; ==> " + app1.getAvailabilityEnabled());
-//                }
-
                 if (HAEnabled) {
-                    com.sun.enterprise.deployment.Application dolApp = ejbDescriptor.getApplication();
-                    if (dolApp != null) {
-                        boolean isVirtual = dolApp.isVirtual();
-                        Application app = applications.getApplication(dolApp.getRegistrationName());
-                        if (app != null) {
-                            appLevelHAEnabled = Boolean.valueOf(app.getAvailabilityEnabled());
+                    DeploymentContext dc = getDynamicDeploymentContext();
+                    if (dc != null) {
+                        DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
+                        if (params != null) {
+                            appLevelHAEnabled = params.availabilityenabled;
                         }
-
-                        _logger.log(Level.INFO, "**Global AvailabilityEnabled => " + this.HAEnabled
-                            + "; regName: " + dolApp.getRegistrationName()
-                            + "; isVirtual: " + isVirtual
-                            + "; isAppHAEnabled: " + appLevelHAEnabled);
                     }
+                    
+                    _logger.log(Level.INFO, "**Global AvailabilityEnabled => " + this.HAEnabled
+                        + "; isAppHAEnabled: " + appLevelHAEnabled);
                 }
             } catch (Exception ex) {
                 _logger.log(Level.WARNING, "Exception while trying to determine availability-enabled settings for this app", ex);
@@ -222,8 +214,15 @@ public class StatefulContainerBuilder
     private void buildStoreManager()
         throws BackingStoreException {
 
-        String persistenceStoreType = HAEnabled
-                ? "replication" : ejbConfigLookup.getPersistenceStoreType();
+        String persistenceStoreType = "file";
+
+        if (ejbAvailability != null) {
+            persistenceStoreType = HAEnabled
+                ? ejbAvailability.getSfsbHaPersistenceType() : ejbAvailability.getSfsbPersistenceType();
+            if ("ha".equals(persistenceStoreType)) {
+                persistenceStoreType = "replication";
+            }
+        }
 
 
 
@@ -278,6 +277,7 @@ public class StatefulContainerBuilder
             this.backingStore = factory.createBackingStore(conf);
         } catch (Exception ex) {
             _logger.log(Level.WARNING, "Could not instantiate BackingStore for persistence type: " + persistenceStoreType, ex);
+            throw new BackingStoreException("Could not instantiate BackingStore for persistence type: " + persistenceStoreType, ex);
         }
         _logger.log(Level.WARNING, "StatefulContainerbuilder instantiated store: " +
             backingStore + "; ha-enabled: " + HAEnabled + " ==> " + conf);

@@ -48,6 +48,7 @@ import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.logging.LogDomains;
 
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.jvnet.hk2.annotations.Service;
@@ -102,7 +103,7 @@ public final class ContainerFactoryImpl implements ContainerFactory {
                 } else if( sd.isStateful() ) {
                     StatefulContainerBuilder sfsbBuilder = habitat.getComponent(
                             StatefulContainerBuilder.class);
-                    sfsbBuilder.buildContainer(ejbDescriptor, loader);
+                    sfsbBuilder.buildContainer(dynamicConfigContext, ejbDescriptor, loader);
                     container = sfsbBuilder.getContainer();
                 } else {
 
