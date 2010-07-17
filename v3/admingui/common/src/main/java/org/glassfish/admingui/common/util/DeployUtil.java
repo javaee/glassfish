@@ -78,7 +78,7 @@ public class DeployUtil {
      	}
         
         if (targets == null){
-            String defaultTarget =  (V3AMX.getInstance().isEE()) ? "domain" : "server";
+            String defaultTarget =  "domain" ;
             targets = new String[] {defaultTarget};
         }
         

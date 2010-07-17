@@ -87,6 +87,7 @@ public class DeploymentHandler {
         @HandlerInput(name = "origPath", type = String.class),
         @HandlerInput(name = "allMaps", type = Map.class),
         @HandlerInput(name = "appType", type = String.class),
+        @HandlerInput(name="targets", type=String[].class, required=true ),
         @HandlerInput(name = "propertyList", type = List.class)
     })
     public static void deploy(HandlerContext handlerCtx) {
@@ -108,6 +109,9 @@ public class DeploymentHandler {
         }catch(Exception ex){
             //ignore
         }
+        String[] targets = (String[])handlerCtx.getInputValue("targets");
+        if (targets == null || targets.length==0)
+            targets = null;
 
         DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
 
@@ -183,7 +187,7 @@ public class DeploymentHandler {
         }
 
         try {
-            DeployUtil.deploy(null, deploymentProps, filePath, handlerCtx);
+            DeployUtil.deploy(targets, deploymentProps, filePath, handlerCtx);
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }

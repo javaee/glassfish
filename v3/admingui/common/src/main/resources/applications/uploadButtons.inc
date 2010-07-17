@@ -67,6 +67,7 @@
               allMaps = "#{pageSession.deployMap}"
               appType = "#{pageSession.appType}"
               propertyList="$attribute{newList}"
+              targets = "#{pageSession.selectedTargets}"
         );
 	gf.redirect(page="#{request.contextPath}/common/removeFrame.jsf?#{request.contextPath}/common/applications/applications.jsf&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&bare=true");
     />
