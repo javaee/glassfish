@@ -282,11 +282,11 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     @Scoped(PerLookup.class)
     class Decorator implements CreationDecorator<LbConfig> {
 
-        @Param(primary=true, optional=true)
-        String target;
+        @Param (primary=true, optional=true)
+        String config_name;
 
-        @Param (optional=true)
-        String config;
+        @Param(optional=true)
+        String target;        
 
         @Param (optional=true, defaultValue="60")
         String responsetimeout;
@@ -331,22 +331,22 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
             Logger logger = LogDomains.getLogger(LbConfig.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(LbConfig.class);            
 
-            if (config == null && target == null) {
+            if (config_name == null && target == null) {
                 String msg = localStrings.getLocalString("RequiredTargetOrConfig", "Neither LB config name nor target specified");
                 throw new TransactionFailure(msg);
             }
 
             // generate lb config name if not specified
-            if (config == null) {
-                config = target + "_LB_CONFIG";
+            if (config_name == null) {
+                config_name = target + "_LB_CONFIG";
             }
 
-            if (lbconfigs.getLbConfig(config) != null) {
-                String msg = localStrings.getLocalString("LbConfigExists", config);
+            if (lbconfigs.getLbConfig(config_name) != null) {
+                String msg = localStrings.getLocalString("LbConfigExists", config_name);
                 throw new TransactionFailure(msg);
             }
 
-            instance.setName(config);
+            instance.setName(config_name);
             instance.setResponseTimeoutInSeconds(responsetimeout);
             instance.setReloadPollIntervalInSeconds(reloadinterval);
             instance.setMonitoringEnabled(monitor);
@@ -378,7 +378,8 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
                     instance.getProperty().add(newprop);
                 }
             }
-            logger.info(localStrings.getLocalString("http_lb_admin.LbConfigCreated", config));
+            logger.info(localStrings.getLocalString("http_lb_admin.LbConfigCreated",
+                    "Load balancer configuration {0} created.", config_name));
         }
     }
 
