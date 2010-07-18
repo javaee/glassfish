@@ -38,7 +38,7 @@ public class ClusterOperationUtil {
         InstanceState instanceState = habitat.getComponent(InstanceState.class);
         try {
             List<InstanceCommandExecutor> execList = getInstanceCommandList(commandName,
-                                    instancesForReplication, context.getLogger());
+                                    instancesForReplication, context.getLogger(), habitat);
             for(InstanceCommandExecutor rac : execList) {
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
                 try {
@@ -112,20 +112,12 @@ public class ClusterOperationUtil {
      * Given an list of server instances, create the InstanceCommandExecutor objects
      */
     private static List<InstanceCommandExecutor> getInstanceCommandList(String commandName,
-                                                         List<Server> servers, Logger logger) throws CommandException {
+                                                         List<Server> servers, Logger logger, Habitat habitat) throws CommandException {
         ArrayList<InstanceCommandExecutor> list = new ArrayList<InstanceCommandExecutor>();
+        RemoteInstanceCommandHelper rich = new RemoteInstanceCommandHelper(habitat);
         for(Server svr : servers) {
-            //TODO : As of now, the node-agent-ref is used to indicate host info for instance. This may change later
-            String host = svr.getNodeAgentRef();
-            //TODO : The following piece of code is kludge - pending config API changes for tokens in MS2
-            int port = 4848;
-            List<SystemProperty> sprops = svr.getSystemProperty();
-            for(SystemProperty p : sprops) {
-                if("ASADMIN_LISTENER_PORT".equals(p.getName())) {
-                    port = Integer.parseInt(p.getValue());
-                    break;
-                }
-            }
+            String host = rich.getHost(svr);
+            int port = rich.getAdminPort(svr);
             list.add(new InstanceCommandExecutor(commandName, svr, host, port, logger));
         }
         return list;
