@@ -239,7 +239,7 @@ public class ReplicationStore extends HAStoreBase {
         }         
         SimpleMetadata simpleMetadata =
             SimpleMetadataFactory.createSimpleMetadata(session.getVersion(),  //version
-                ((BaseHASession)session).getLastAccessedTimeInternal(), //lastaccesstime
+                session.getLastAccessedTime(), //lastaccesstime
                 session.getMaxInactiveInterval(), //maxinactiveinterval
                 sessionState); //state
                
