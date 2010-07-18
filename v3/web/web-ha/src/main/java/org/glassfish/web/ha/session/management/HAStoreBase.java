@@ -48,6 +48,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPOutputStream;
 
+import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
 import com.sun.enterprise.naming.util.ObjectInputOutputStreamFactory;
 import com.sun.enterprise.naming.util.ObjectInputOutputStreamFactoryFactory;
 import com.sun.logging.LogDomains;
@@ -65,6 +66,8 @@ public abstract class HAStoreBase extends StoreBase {
 
     protected ServerConfigLookup serverConfigLookup;
 
+    protected JavaEEIOUtils ioUtils;
+
     /**
      * The logger to use for logging ALL web container related messages.
      */
@@ -73,7 +76,8 @@ public abstract class HAStoreBase extends StoreBase {
 
 
     /** Creates a new instance of HAStoreBase */
-    public HAStoreBase(ServerConfigLookup serverConfigLookup) {
+    public HAStoreBase(ServerConfigLookup serverConfigLookup, JavaEEIOUtils ioUtils) {
+        this.ioUtils =  ioUtils;
         this.serverConfigLookup = serverConfigLookup;
     }
     
@@ -189,33 +193,21 @@ public abstract class HAStoreBase extends StoreBase {
       throws IOException {
         ByteArrayOutputStream bos = null;
         ObjectOutputStream oos = null;
-        //FIXME removed after review
-        //((StandardSession) session).notifyHttpSessionActivationListenersSessionWillPassivate();
 
 
 
         byte[] obs;
         try {
             bos = new ByteArrayOutputStream();
-            ObjectInputOutputStreamFactory oiosf = ObjectInputOutputStreamFactoryFactory.getFactory();
+            // ObjectInputOutputStreamFactory oiosf = ObjectInputOutputStreamFactoryFactory.getFactory();
             
             
-            //HERCULES FIXME - for now reverting back
-            //need to re-examine EJBUtils and related serialization classes
-            //Bug 4832603 : EJB Reference Failover
-            /*  was this
-            oos = new ObjectOutputStream(new BufferedOutputStream(bos));
-             end was this */
-              //oos = EJBUtils.getOutputStream(new BufferedOutputStream(bos), true);	
-            //end - Bug 4832603 
-            
-
             try {
                 if (compress) {
-                    oos = oiosf.createObjectOutputStream(
-                        new GZIPOutputStream(new BufferedOutputStream(bos)));
+                    oos = ioUtils.createObjectOutputStream(
+                        new GZIPOutputStream(new BufferedOutputStream(bos)), true);
                 } else {
-                    oos = oiosf.createObjectOutputStream(new BufferedOutputStream(bos));
+                    oos = ioUtils.createObjectOutputStream(new BufferedOutputStream(bos), true);
                 }
             } catch (Exception ex) {}
 

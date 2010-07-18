@@ -42,6 +42,7 @@
 package org.glassfish.web.ha.session.management;
 
 
+import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
 import com.sun.enterprise.naming.util.ObjectInputOutputStreamFactory;
 import com.sun.enterprise.naming.util.ObjectInputOutputStreamFactoryFactory;
 import com.sun.enterprise.web.ServerConfigLookup;
@@ -77,8 +78,8 @@ public class ReplicationStore extends HAStoreBase {
     /**
      * Creates a new instance of ReplicationStore
      */
-    public ReplicationStore(ServerConfigLookup serverConfigLookup) {
-        super(serverConfigLookup);
+    public ReplicationStore(ServerConfigLookup serverConfigLookup, JavaEEIOUtils ioUtils) {
+        super(serverConfigLookup, ioUtils);
         //setLogLevel();        
     }
     
@@ -485,7 +486,7 @@ public class ReplicationStore extends HAStoreBase {
 //            return getSession(metaData.getState(),
 //                    ssoId, metaData.getVersion());
             return getSession(metaData.getState(),
-                     metaData.getVersion());
+                     metaData.getVersion(), metaData.getClass().getClassLoader());
 
 
         }
@@ -493,17 +494,16 @@ public class ReplicationStore extends HAStoreBase {
 
 
     //public Session getSession(byte[] state, String ssoId, long version) throws IOException {
-    public Session getSession(byte[] state,  long version) throws IOException {
+    public Session getSession(byte[] state,  long version, ClassLoader classLoader) throws IOException {
         Session _session = null;
         InputStream is = null;
         BufferedInputStream bis = null;
         ByteArrayInputStream bais = null;
         Loader loader = null;    
-        ClassLoader classLoader = null;
         ObjectInputStream ois = null;
         Container container = manager.getContainer();
         java.security.Principal pal=null; //MERGE chg added
-        ObjectInputOutputStreamFactory factory = ObjectInputOutputStreamFactoryFactory.getFactory();
+        //ObjectInputOutputStreamFactory factory = ObjectInputOutputStreamFactoryFactory.getFactory();
             
         try
         {
@@ -522,7 +522,8 @@ public class ReplicationStore extends HAStoreBase {
 
                 try {
                    
-                    factory.createObjectInputStream(is);
+                    //factory.createObjectInputStream(is);
+                    ioUtils.createObjectInputStream(is,true,classLoader);
                 } catch (Exception ex) {}
             
 
@@ -558,7 +559,7 @@ public class ReplicationStore extends HAStoreBase {
             //}
             throw e;
         }
-        String username = ((HASession)_session).getUserName();
+/*        String username = ((HASession)_session).getUserName();
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("ReplicationStore>>getSession: username=" + username + " principal=" + _session.getPrincipal());                                  
         }        
@@ -579,7 +580,7 @@ public class ReplicationStore extends HAStoreBase {
                     debug("getSession principal="+pal+" was added to session="+_session); 
                 }                
             }
-        }
+        }*/
         //--SRI        
         
         _session.setNew(false);
@@ -587,9 +588,11 @@ public class ReplicationStore extends HAStoreBase {
 //            _logger.fine("ReplicationStore>>getSession:ssoId=" + ssoId);
 //        }
 
+/*
         ((HASession)_session).setVersion(version);
         ((HASession)_session).setDirty(false);
         ((HASession)_session).setPersistent(false);        
+*/
         return _session;
     }
     
