@@ -141,7 +141,7 @@
                 <sun:textField columns="$int{35}" id="name" value="#{td.value.name}" />
             </sun:tableColumn>
             <sun:tableColumn headerText="$resource{i18ncs.clusterNew.WeightCol}" rowHeader="$boolean{false}" id="col3">
-                <sun:textField columns="$int{25}" id="weight" value="#{td.value.weight}" />
+                <sun:textField columns="$int{25}" id="weight" value="#{td.value.weight}"  toolTip="100" />
             </sun:tableColumn>
             <sun:tableColumn headerText="$resource{i18ncs.clusterNew.NodeCol}" rowHeader="$boolean{false}" id="col4">
                 <sun:dropDown id="node" labels="#{pageSession.nodesList}" selected="#{td.value.node}">
