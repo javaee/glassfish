@@ -59,11 +59,13 @@ public interface ResourceManager {
      * @param properties properties
      * @param target target 
      * @param requiresNewTransaction indicates whether the resource need to be created under a new transaction
+     * @param createResourceRef flag indicating whether to create resource-ref for the resource or not
      * @return ResourceStatus indicating the status of resource creation
      * @throws Exception when unable to create the resource
      */
     ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef) throws Exception ;
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef) 
+            throws Exception ;
 
     /**
      * creates config-bean equivalent for the resource configuration provided as attributes and properties<br>
