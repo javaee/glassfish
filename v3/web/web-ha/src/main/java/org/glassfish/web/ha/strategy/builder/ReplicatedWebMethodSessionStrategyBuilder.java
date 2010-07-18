@@ -47,15 +47,17 @@ import org.glassfish.web.ha.session.management.HASessionStoreValve;
 import org.glassfish.web.ha.session.management.ReplicationStore;
 import org.glassfish.web.ha.session.management.ReplicationWebEventPersistentManager;
 import org.glassfish.web.valve.GlassFishValve;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 
 @Service(name="replicated")
 public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceStrategyBuilder {
-
-
+    @Inject
+    ReplicationWebEventPersistentManager rwepMgr;
+    
     public ReplicatedWebMethodSessionStrategyBuilder() {
-        
+        super();    
     }
 
     public void initializePersistenceStrategy(
@@ -66,7 +68,7 @@ public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceSt
 
         super.initializePersistenceStrategy(ctx, smBean, serverConfigLookup);
         super.setPassedInPersistenceType("replicated");
-        ReplicationWebEventPersistentManager rwepMgr = new ReplicationWebEventPersistentManager();
+
         rwepMgr.setSessionFactory(new FullSessionFactory());
 
 
