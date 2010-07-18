@@ -52,6 +52,7 @@ import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
+import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.List;
@@ -578,4 +579,57 @@ public class ResourcesUtil {
         }
         return null;
     }
+
+    /**
+     * Determines if a connector connection pool is referred in a
+     * server-instance via resource-refs
+     *
+     * @param poolName
+     * @return boolean true if pool is referred in this server instance, false
+     * otherwise
+     * @throws ConfigException
+     */
+    public boolean isPoolReferredInServerInstance(String poolName) {
+
+        Collection<ConnectorResource> connectorResources = runtime.getResources().getResources(ConnectorResource.class);
+        for (ConnectorResource resource : connectorResources) {
+            _logger.fine("poolname " + resource.getPoolName() + "resource " + resource.getJndiName());
+            if ((resource.getPoolName().equalsIgnoreCase(poolName))){
+                _logger.fine("Connector resource "  + resource.getJndiName() + "refers "
+                        + poolName + "in this server instance");
+                return true;
+            }
+        }
+        _logger.fine("No Connector resource refers " + poolName + "in this server instance");
+        return false;
+    }
+
+    /**
+     * Determines if a JDBC connection pool is referred in a
+     * server-instance via resource-refs
+     *
+     * @param poolName
+     * @return boolean true if pool is referred in this server instance, false
+     * otherwise
+     * @throws ConfigException
+     */
+    public boolean isJdbcPoolReferredInServerInstance(String poolName) {
+
+        Collection<JdbcResource> jdbcResources = runtime.getResources().getResources(JdbcResource.class);
+
+        for (JdbcResource resource : jdbcResources) {
+            _logger.fine("poolname " + resource.getPoolName() + "resource " + resource.getJndiName()
+            /*TODO v3.1 + " referred " + isReferenced(resource.getJndiName())*/);
+            //Have to check isReferenced here!
+            if ((resource.getPoolName().equalsIgnoreCase(poolName))
+                /*TODO v3.1 && isReferenced(resource.getJndiName())*/){
+                _logger.fine("JDBC resource "  + resource.getJndiName() + "refers " + poolName +
+                        "in this server instance");
+                return true;
+            }
+        }
+        _logger.fine("No JDBC resource refers " + poolName + "in this server instance");
+        return false;
+    }
+
 }

@@ -39,6 +39,7 @@ package com.sun.enterprise.connectors.service;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.naming.ConnectorResourceNamingEventNotifier;
 import com.sun.appserv.connectors.internal.spi.ConnectorNamingEvent;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
@@ -46,6 +47,10 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
 import javax.naming.*;
+import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
@@ -201,5 +206,64 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
         //To pass suffix that will be used by connector runtime during lookup
         Context ic = new InitialContext(ht);
         return ic.lookup(name);
+    }
+
+    /**
+     * Get a wrapper datasource specified by the jdbcjndi name
+     * This API is intended to be used in the DAS. The motivation for having this
+     * API is to provide the CMP backend/ JPA-Java2DB a means of acquiring a connection during
+     * the codegen phase. If a user is trying to deploy an JPA-Java2DB app on a remote server,
+     * without this API, a resource reference has to be present both in the DAS
+     * and the server instance. This makes the deployment more complex for the
+     * user since a resource needs to be forcibly created in the DAS Too.
+     * This API will mitigate this need.
+     *
+     * @param jndiName the jndi name of the resource
+     * @return DataSource representing the resource.
+     */
+    public Object lookupDataSourceInDAS(String jndiName){
+        MyDataSource myDS = new MyDataSource();
+        myDS.setJndiName(jndiName);
+        return myDS;
+    }
+
+    class MyDataSource implements DataSource {
+        private String jndiName ;
+        private PrintWriter logWriter;
+        private int loginTimeout;
+
+        public void setJndiName(String name){
+            jndiName = name;
+        }
+
+        public Connection getConnection() throws SQLException {
+            return ConnectorRuntime.getRuntime().getConnection(jndiName);
+        }
+
+        public Connection getConnection(String username, String password) throws SQLException {
+            return ConnectorRuntime.getRuntime().getConnection(jndiName,username,password);
+        }
+
+        public PrintWriter getLogWriter() throws SQLException {
+            return logWriter;
+        }
+
+        public void setLogWriter(PrintWriter out) throws SQLException {
+           this.logWriter = out;
+        }
+
+        public void setLoginTimeout(int seconds) throws SQLException {
+           loginTimeout = seconds;
+        }
+
+        public int getLoginTimeout() throws SQLException {
+            return loginTimeout;
+        }
+        public boolean isWrapperFor(Class<?> iface) throws SQLException{
+           throw new SQLException("Not supported operation");
+        }
+        public <T> T unwrap(Class<T> iface) throws SQLException{
+           throw new SQLException("Not supported operation");
+        }
     }
 }

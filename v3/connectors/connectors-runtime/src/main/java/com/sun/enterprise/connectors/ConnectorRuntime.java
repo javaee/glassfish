@@ -40,6 +40,8 @@ import com.sun.enterprise.connectors.util.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -423,23 +425,104 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * {@inheritDoc}
      */
     public Object lookupPMResource(String jndiName, boolean force) throws NamingException {
-        //TODO handle clustering later (  --createtables, nonDAS)
-        if (force) {
-            _logger.log(Level.INFO, "lookup PM Resource [ " + jndiName + " ] with force=true is not supported");
+        Object result ;
+        try{
+            result = connectorResourceAdmService.lookup(jndiName + PM_JNDI_SUFFIX);
+        }catch(NamingException ne){
+            if(force && isDAS()){
+                _logger.log(Level.FINE, "jdbc.unable_to_lookup_resource",new Object[] {jndiName});
+                result = lookupDataSourceInDAS(jndiName);
+            }else{
+                throw ne;
+            }
         }
-        return connectorResourceAdmService.lookup(jndiName + PM_JNDI_SUFFIX);
+        return result;
+
     }
 
     /**
      * {@inheritDoc}
      */
     public Object lookupNonTxResource(String jndiName, boolean force) throws NamingException {
-        //TODO handle clustering later (  --createtables, nonDAS)
-        if (force) {
-            _logger.log(Level.INFO, "lookup NonTx Resource [ " + jndiName + " ] with force=true is not supported");
+        Object result ;
+        try{
+            result = connectorResourceAdmService.lookup(jndiName + NON_TX_JNDI_SUFFIX);
+        }catch(NamingException ne){
+            if(force && isDAS()){
+                _logger.log(Level.FINE, "jdbc.unable_to_lookup_resource",new Object[] {jndiName});
+                result = lookupDataSourceInDAS(jndiName);
+            }else{
+                throw ne;
+            }
         }
-        return connectorResourceAdmService.lookup(jndiName + NON_TX_JNDI_SUFFIX);
+        return result;
     }
+
+    private boolean isDAS(){
+        return env.isDas();
+    }
+
+    /**
+     * Get a wrapper datasource specified by the jdbcjndi name
+     * This API is intended to be used in the DAS. The motivation for having this
+     * API is to provide the CMP backend/ JPA-Java2DB a means of acquiring a connection during
+     * the codegen phase. If a user is trying to deploy an JPA-Java2DB app on a remote server,
+     * without this API, a resource reference has to be present both in the DAS
+     * and the server instance. This makes the deployment more complex for the
+     * user since a resource needs to be forcibly created in the DAS Too.
+     * This API will mitigate this need.
+     *
+     * @param jndiName  jndi name of the resource
+     * @return DataSource representing the resource.
+     */
+    private Object lookupDataSourceInDAS(String jndiName){
+        return connectorResourceAdmService.lookupDataSourceInDAS(jndiName);
+    }
+
+    /**
+     * Get a sql connection from the DataSource specified by the jdbcJndiName.
+     * This API is intended to be used in the DAS. The motivation for having this
+     * API is to provide the CMP backend a means of acquiring a connection during
+     * the codegen phase. If a user is trying to deploy an app on a remote server,
+     * without this API, a resource reference has to be present both in the DAS
+     * and the server instance. This makes the deployment more complex for the
+     * user since a resource needs to be forcibly created in the DAS Too.
+     * This API will mitigate this need.
+     *
+     * @param jndiName the jndi name of the resource being used to get Connection from
+     *                 This resource can either be a pmf resource or a jdbc resource
+     * @param user  the user used to authenticate this request
+     * @param password  the password used to authenticate this request
+     *
+     * @return a java.sql.Connection
+     * @throws java.sql.SQLException in case of errors
+     */
+    public Connection getConnection(String jndiName, String user, String password)
+            throws SQLException{
+	    return ccPoolAdmService.getConnection( jndiName, user, password );
+    }
+
+    /**
+     * Get a sql connection from the DataSource specified by the jdbcJndiName.
+     * This API is intended to be used in the DAS. The motivation for having this
+     * API is to provide the CMP backend a means of acquiring a connection during
+     * the codegen phase. If a user is trying to deploy an app on a remote server,
+     * without this API, a resource reference has to be present both in the DAS
+     * and the server instance. This makes the deployment more complex for the
+     * user since a resource needs to be forcibly created in the DAS Too.
+     * This API will mitigate this need.
+     *
+     * @param jndiName the jndi name of the resource being used to get Connection from
+     *                 This resource can either be a pmf resource or a jdbc resource
+     *
+     * @return a java.sql.Connection
+     * @throws java.sql.SQLException in case of errors
+     */
+    public Connection getConnection(String jndiName)
+            throws SQLException{
+	    return ccPoolAdmService.getConnection( jndiName );
+    }
+
 
     /**
      * Gets the properties of the Java bean connection definition class that
@@ -1131,6 +1214,11 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      */
     public List<WorkSecurityMap> getWorkSecurityMap(String raName){
         return ConnectorsUtil.getWorkSecurityMaps(raName, allResources.getComponent(Resources.class));
+    }
+
+    public Resources getResources(){
+        //TODO revisit when app-scoped-resources is introduced
+        return habitat.getComponent(Resources.class);
     }
 
     /**

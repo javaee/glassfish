@@ -102,11 +102,13 @@ public class JdbcAdminServiceImpl extends ConnectorService {
      */
     public Set<String> getValidationTableNames(String poolName)
             throws ResourceException {
-        ManagedConnectionFactory mcf = ccPoolAdmService.getManagedConnectionFactory(poolName);
-        final Subject defaultSubject = ccPoolAdmService.getDefaultSubject(poolName, mcf, null);
+        ManagedConnectionFactory mcf = null;
+        Subject defaultSubject = null;
         ManagedConnection mc = null;
         java.sql.Connection con = null;
         try {
+            mcf = ccPoolAdmService.obtainManagedConnectionFactory(poolName);
+            defaultSubject = ccPoolAdmService.getDefaultSubject(poolName, mcf, null);
             mc = ccPoolAdmService.getManagedConnection(mcf, defaultSubject, null);
 
             if (mc != null) {
