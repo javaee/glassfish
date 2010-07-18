@@ -37,6 +37,7 @@
 
 package org.glassfish.web.ha.strategy.builder;
 
+import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
 import com.sun.enterprise.web.BasePersistenceStrategyBuilder;
 import com.sun.enterprise.web.ServerConfigLookup;
@@ -55,6 +56,9 @@ import org.jvnet.hk2.annotations.Service;
 public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceStrategyBuilder {
     @Inject
     ReplicationWebEventPersistentManager rwepMgr;
+
+    @Inject
+    JavaEEIOUtils ioUtils;
     
     public ReplicatedWebMethodSessionStrategyBuilder() {
         super();    
@@ -74,7 +78,7 @@ public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceSt
 
         rwepMgr.createBackingStore(this.getPassedInPersistenceType());
 
-        ReplicationStore store = new ReplicationStore(serverConfigLookup);
+        ReplicationStore store = new ReplicationStore(serverConfigLookup, ioUtils);
         
         rwepMgr.setStore(store);
         ctx.setManager(rwepMgr);
