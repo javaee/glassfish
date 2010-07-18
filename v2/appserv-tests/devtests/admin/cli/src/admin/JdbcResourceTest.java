@@ -40,6 +40,8 @@ package admin;
  */
 public class JdbcResourceTest extends AdminBaseDevTest {
 
+    //TODO test-case for IT 12614 
+
     public static final String CLUSTER_NAME = "cluster1";
     public static final String INSTANCE1_NAME = "instance1";
     public static final String INSTANCE2_NAME = "instance2";
