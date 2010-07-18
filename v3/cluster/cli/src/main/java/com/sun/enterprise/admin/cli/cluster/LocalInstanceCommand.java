@@ -62,8 +62,8 @@ import com.sun.enterprise.universal.io.SmartFile;
  *
  * Default instance file structure.
  * ||---- <GlassFish Install Root>
- *          ||---- nodeagents (nodeDirRoot)
- *                  ||---- <node-1> (nodeDirChild)
+ *          ||---- nodeagents (nodeDirRoot, --nodedir)
+ *                  ||---- <node-1> (nodeDirChild, --node)
  *                          || ---- agent
  *                                  || ---- config
  *                                          | ---- das.properties
@@ -84,11 +84,9 @@ import com.sun.enterprise.universal.io.SmartFile;
 // -----------------------------------------------------------------------
 
 public abstract class LocalInstanceCommand extends LocalServerCommand {
-    @Param(name = "nodeagent", optional = true)
-    protected String nodeAgent;
     @Param(name = "nodedir", optional = true, alias="agentdir")
     protected String nodeDir;           // nodeDirRoot
-    @Param(name = "node", optional=true)
+    @Param(name = "node", optional=true, alias="nodeagent")
     protected String node;
     // subclasses decide whether it's optional, required, or not allowed
     //@Param(name = "instance_name", primary = true, optional = true)
@@ -131,12 +129,11 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                     Strings.get("Instance.badAgentDir", nodeDirRoot));
         }
 
-        if(nodeAgent != null) {
-            nodeDirChild = new File(nodeDirRoot, nodeAgent);
+        if(node != null) {
+            nodeDirChild = new File(nodeDirRoot, node);
         }
         else {
             nodeDirChild = getTheOneAndOnlyAgent(nodeDirRoot);
-            nodeAgent = nodeDirChild.getName();
         }
 
         if(instanceName != null) {

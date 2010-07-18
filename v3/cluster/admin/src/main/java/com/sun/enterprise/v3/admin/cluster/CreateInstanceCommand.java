@@ -81,11 +81,8 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     @Inject
     private Nodes nodes;
 
-    @Param(name="node")
+    @Param(name="node", alias="nodeagent")
     String node;
-
-    @Param(name="nodeagent", optional=true)
-    String nodeAgent;
 
     @Param(name = "config", optional=true)
     String configRef;
@@ -104,6 +101,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     private RemoteInstanceCommandHelper helper;
     private RemoteConnectHelper rch;
     private String nodeHost = null;
+    private String nodeDir = null;
     private int dasPort;
     private String dasHost;
 
@@ -129,25 +127,13 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         }
 
         nodeHost = getHostFromNodeName(node);
+        nodeDir = getNodeDir(node);
 
         // First, update domain.xml by calling _register-instance
-
-        // XXX dipol
-        // We are transitioning from nodeAgent to node. Some parts of the code
-        // still assume the server's node-agent-ref to be the hostname for the
-        // host the server is on. If --nodeagent was not specified we use the
-        // hostname from the node.
-        // At some point we need to come back and remove all the nodeagent stuf
-        if (!StringUtils.ok(nodeAgent)) {
-            nodeAgent = nodeHost;
-        }
 
         CommandInvocation ci = cr.getCommandInvocation("_register-instance", report);
         ParameterMap map = new ParameterMap();
         map.add("node", node);
-        if (nodeAgent != null) {
-            map.add("nodeagent", nodeAgent);
-        }
         map.add("config", configRef);
         map.add("cluster", clusterName);
         map.add("systemproperties", systemProperties);
@@ -170,7 +156,12 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
 
 //        if (node == null || !rch.isRemoteConnectRequired(node)) {
         if (rch.isLocalhost(nodes.getNode(node))) {
-            LocalAdminCommand lac = new LocalAdminCommand("_create-instance-filesystem", "--node", node, instance);
+            LocalAdminCommand lac = null;
+            if (nodeDir == null) {
+                lac = new LocalAdminCommand("_create-instance-filesystem", "--node", node, instance);
+            } else {
+                lac = new LocalAdminCommand("_create-instance-filesystem", "--node", node, "--nodedir", nodeDir, instance);
+            }
             msg = Strings.get("creatingInstance", instance, LOCAL_HOST);
             logger.info(msg);
             try {
@@ -222,12 +213,29 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         }
     }
 
+     /**
+     * Given a node name return the node's node-dir
+     * @param nodeName  name of node
+     * @return  node's node-dir, or null if not specified
+     */
+    private String getNodeDir(String nodeName) {
+        Node theNode = nodes.getNode(nodeName);
+        String dir = null;
+        if (theNode != null) {
+            dir = theNode.getNodeDir();
+        }
+        return dir;
+    }
+
     private int createInstanceRemote() {
 
         ActionReport report = ctx.getActionReport();
             StringBuilder output = new StringBuilder();
             ParameterMap map = new ParameterMap();
             map.set("--node", node);
+            if (nodeDir != null) {
+                map.set("--nodedir", nodeDir);
+            }
             map.set("DEFAULT", instance);
 
             // What we tell humans to run if we fail

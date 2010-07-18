@@ -108,6 +108,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
 
     private AdminCommandContext ctx;
     private String noderef;
+    private String nodedir;
     private Server instance;
 
     private static final String NL = System.getProperty("line.separator");
@@ -129,6 +130,15 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
              logger.severe(Strings.get("missingNodeRef", instanceName));
             return;
         }
+        if (nodes != null) {
+            Node n = nodes.getNode(noderef);
+            if (n != null) {
+                nodedir = n.getNodeDir();
+            } else {
+                logger.severe(Strings.get("missingNode", noderef));
+                return;
+            }
+        }
 
         if(env.isDas()) {
             callInstance();
@@ -149,7 +159,12 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     }
 
     private void startInstance()  {
-        LocalAdminCommand lac = new LocalAdminCommand("start-local-instance",instanceName);
+        LocalAdminCommand lac = null;
+        if (nodedir == null) {
+            lac = new LocalAdminCommand("start-local-instance", "--node", noderef, instanceName);
+        } else {
+            lac = new LocalAdminCommand("start-local-instance", "--node", noderef, "--nodedir", nodedir, instanceName);
+        }
         try {
             int status = lac.execute();
         } catch (ProcessManagerException ex) {
@@ -169,6 +184,10 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             StringBuilder output = new StringBuilder();
             ParameterMap map = new ParameterMap();
             map.set("DEFAULT", instanceName);
+            map.set("node", noderef);
+            if (nodedir != null) {
+                map.set("nodedir", nodedir);
+            }
             int status = rch.runCommand(noderef, "start-local-instance",
                      map, output);
             if (output.length() > 0) {

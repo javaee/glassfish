@@ -110,7 +110,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         int exitCode = -1;
 
         if (node == null) {
-            _node = getInstanceHostName(false);
+            _node = nodeDirChild.getName();
             String nodeHost = getInstanceHostName(true);
             createNodeImplicit(_node, getInstallRootPath(), nodeHost);
         } else {
@@ -174,10 +174,6 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         if (configName != null) {
             argsList.add("--config");
             argsList.add(configName);
-        }
-        if (nodeAgent != null) {
-            argsList.add("--nodeagent");
-            argsList.add(nodeAgent);
         }
         if (_node != null) {
             argsList.add("--node");

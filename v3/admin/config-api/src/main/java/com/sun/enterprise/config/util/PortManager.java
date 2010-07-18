@@ -63,7 +63,7 @@ public final class PortManager {
             newServer = theNewServer;
             domain = theDomain;
             serverName = newServer.getName();
-            host = newServer.getNodeAgentRef();
+            host = newServer.getNode();
             allPorts = new ArrayList<Integer>();
             newServerPorts = new ServerPorts(cluster, config, domain, newServer);
 
@@ -151,7 +151,7 @@ public final class PortManager {
         for (Server server : allServers) {
             if (server.isDas())
                 serversOnHost.add(new ServerPorts(domain, server));
-            else if (NetUtils.IsThisHostLocal(server.getNodeAgentRef()))
+            else if (NetUtils.IsThisHostLocal(server.getNode()))
                 serversOnHost.add(new ServerPorts(domain, server));
         }
     }
@@ -165,7 +165,7 @@ public final class PortManager {
     }
 
     private boolean sameHost(Server server) {
-        return NetUtils.isEqual(server.getNodeAgentRef(), host);
+        return NetUtils.isEqual(server.getNode(), host);
     }
 
     private Map<String, Integer> reassignPorts() throws TransactionFailure {

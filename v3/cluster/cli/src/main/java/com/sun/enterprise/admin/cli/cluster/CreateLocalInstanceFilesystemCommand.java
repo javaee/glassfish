@@ -98,7 +98,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     private File docrootDir;
     private File dasPropsFile;
     private Properties dasProperties;
-    private File nodeagentPropsFile;
+    //private File nodeagentPropsFile;
     private File loggingPropsFile;
 
     /**
@@ -123,7 +123,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         String agentPath = "agent" + File.separator + "config";
         agentConfigDir = new File(nodeDirChild, agentPath);
         dasPropsFile = new File(agentConfigDir, "das.properties");
-        nodeagentPropsFile = new File(agentConfigDir, "nodeagent.properties");
+        //nodeagentPropsFile = new File(agentConfigDir, "nodeagent.properties");
 
         applicationsDir = new File(instanceDir, "applications");
         configDir = new File(instanceDir, "config");
@@ -135,7 +135,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         if (dasPropsFile.isFile()) {
             setDasDefaults(dasPropsFile);
             logger.printMessage(Strings.get("Instance.existingDasPropertiesWarning",
-                    programOpts.getHost(), "" + programOpts.getPort(), nodeAgent));
+                    programOpts.getHost(), "" + programOpts.getPort(), node));
         }
 
         DASHost = programOpts.getHost();

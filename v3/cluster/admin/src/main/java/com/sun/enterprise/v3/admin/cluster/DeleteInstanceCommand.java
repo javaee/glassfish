@@ -56,8 +56,6 @@ import java.io.IOException;
 
 /**
  * Remote AdminCommand to delete an instance.  This command is run only on DAS.
- *  1. Register the instance on DAS
- *  2. Create the file system on the instance node via ssh, node agent, or other
  *
  * @author Jennifer Chou
  */
@@ -83,14 +81,12 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
     @Inject
     private Nodes nodes;
 
-    @Param(name="nodeagent", optional=true)
-    String nodeAgent;
-
     @Param(name = "instance_name", primary = true)
     private String instanceName;
 
     private Server instance;
     private String noderef;
+    private String nodedir;
     private Logger logger;    
     private AdminCommandContext ctx;
     private RemoteInstanceCommandHelper helper;
@@ -139,6 +135,7 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
         }
 
         if (!fsfailure) {
+            nodedir = nodes.getNode(noderef).getNodeDir();
             try {
                 // Delete the instance files
                 deleteInstanceFilesystem();
@@ -192,6 +189,10 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
          StringBuilder output = new StringBuilder();
          ParameterMap map = new ParameterMap();
          map.add("DEFAULT", instanceName);
+         map.add("node", noderef);
+         if (nodedir != null) {
+            map.add("nodedir", nodedir);
+         }
 
          // Run the command remotely (over SSH)
          int status = rch.runCommand(noderef, "_delete-instance-filesystem",
@@ -215,8 +216,12 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
         // the command via ProcessManager.
         if (rch.isLocalhost(nodes.getNode(noderef))) {
             // Run local admin command
-            LocalAdminCommand lac = new LocalAdminCommand("_delete-instance-filesystem",
-                    instanceName);
+            LocalAdminCommand lac = null;
+            if (nodedir == null) {
+                lac = new LocalAdminCommand("_delete-instance-filesystem", "--node", noderef, instanceName);
+            } else {
+                lac = new LocalAdminCommand("_delete-instance-filesystem", "--node", noderef, "--nodedir", nodedir, instanceName);
+            }
             msg = Strings.get("deletingInstance", instanceName, LOCAL_HOST);
             logger.info(msg);
             try {

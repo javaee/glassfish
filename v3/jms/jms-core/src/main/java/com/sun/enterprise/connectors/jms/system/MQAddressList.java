@@ -136,7 +136,7 @@ public class MQAddressList {
         }
     }
     public String getNodeAgentHostName(final Server as) throws Exception{
-        return as.getNodeAgentRef();
+        return as.getNode();
         /*Domain domain = Globals.get(Domain.class);
         NodeAgents nodeAgents = domain.getNodeAgents();
         List nodeAgentsList = nodeAgents.getNodeAgent();

@@ -1436,7 +1436,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
        for (int i =0; i < serversList.size(); i++){
            Server aserver = (Server) serversList.get(i);
            if (getServerContext().getInstanceName().equals(aserver.getName()))
-                return (aserver.getNodeAgentRef() == null);
+                return (aserver.getNode() == null);
        }
         return false;
     }
