@@ -249,7 +249,9 @@ public class CreateCustomResourceTest extends ConfigApiTest {
                 if (r.getJndiName().equals("sample_custom_resource")) {
                     assertEquals("topic", r.getResType());
                     assertEquals("javax.naming.spi.ObjectFactory", r.getFactoryClass());
-                    assertEquals("false", r.getEnabled());
+                    //expect enabled for the resource to be true as resource-ref's enabled
+                    //would be set to false
+                    assertEquals("true", r.getEnabled());
                     assertEquals("Administered Object", r.getDescription());
                     isCreated = true;
                     logger.fine("Custom Resource config bean sample_custom_resource is created.");

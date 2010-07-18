@@ -71,7 +71,6 @@ import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.admin.cli.resources.ResourceManager;
@@ -93,7 +92,7 @@ public class AdminObjectManager implements ResourceManager {
     private ConnectorRuntime connectorRuntime;
 
     @Inject
-    private ResourceUtil resourceRefUtil;
+    private ResourceUtil resourceUtil;
 
     private static final String DESCRIPTION = ServerTags.DESCRIPTION;
 
@@ -104,6 +103,7 @@ public class AdminObjectManager implements ResourceManager {
     private String className = null;
     private String raName = null;
     private String enabled = Boolean.TRUE.toString();
+    private String enabledValueForTarget = Boolean.TRUE.toString();
     private String jndiName = null;
     private String description = null;
 
@@ -120,7 +120,7 @@ public class AdminObjectManager implements ResourceManager {
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
                                  String target, boolean requiresNewTransaction, boolean createResourceRef)
             throws Exception {
-        setAttributes(attributes);
+        setAttributes(attributes, target);
 
         if (jndiName == null) {
             String msg = localStrings.getLocalString("create.admin.object.noJndiName",
@@ -157,7 +157,7 @@ public class AdminObjectManager implements ResourceManager {
                 }, resources);
 
                 if (createResourceRef) {
-                    resourceRefUtil.createResourceRef(jndiName, enabled, target);
+                    resourceUtil.createResourceRef(jndiName, enabledValueForTarget, target);
                 }
 
             } catch (TransactionFailure tfe) {
@@ -208,13 +208,18 @@ public class AdminObjectManager implements ResourceManager {
         return newResource;
     }
 
-    public void setAttributes(HashMap attrList) {
-        resType = (String) attrList.get(RES_TYPE);
-        className = (String)attrList.get(ADMIN_OBJECT_CLASS_NAME);
-        enabled = (String) attrList.get(ENABLED);
-        jndiName = (String) attrList.get(JNDI_NAME);
-        description = (String) attrList.get(DESCRIPTION);
-        raName = (String) attrList.get(RES_ADAPTER);
+    public void setAttributes(HashMap attributes, String target) {
+        resType = (String) attributes.get(RES_TYPE);
+        className = (String)attributes.get(ADMIN_OBJECT_CLASS_NAME);
+        if(target != null){
+            enabled = resourceUtil.computeEnabledValueForResourceBasedOnTarget((String)attributes.get(ENABLED), target);
+        }else{
+            enabled = (String) attributes.get(ENABLED);
+        }
+        enabledValueForTarget = (String) attributes.get(ENABLED);
+        jndiName = (String) attributes.get(JNDI_NAME);
+        description = (String) attributes.get(DESCRIPTION);
+        raName = (String) attributes.get(RES_ADAPTER);
     }
     
      //TODO Error checking taken from v2, need to refactor for v3
@@ -327,7 +332,7 @@ public class AdminObjectManager implements ResourceManager {
         return status;
     }
     public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception{
-        setAttributes(attributes);
+        setAttributes(attributes, null);
         return createConfigBean(resources, properties);
     }
 }

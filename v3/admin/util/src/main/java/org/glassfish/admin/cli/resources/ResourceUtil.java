@@ -101,6 +101,41 @@ public class ResourceUtil {
         }
     }
 
+    /**
+     * When <i>enabled=false</i> for <i>create-***-resource</i> (a resource that will have <i>resource-ref</i>)
+     * and the --target is not <i>domain</i> or <i>config</i>, <i>enabled</i> value for <i>resource</i>
+     * should be true and <i>enabled</i> value for the <i>resource-ref</i> should be false.
+     * @param enabledValue enabled
+     * @param target target
+     * @return computed value for <i>enabled</i>
+     */
+    public String computeEnabledValueForResourceBasedOnTarget(String enabledValue, String target) {
+        String result = enabledValue;
+        boolean enabled = Boolean.valueOf(enabledValue);
+        if(!isNonResourceRefTarget(target) && !enabled ){
+            result = Boolean.toString(!enabled);
+        }
+        return result;
+    }
+
+    /**
+     * Determines whether the target is of type "domain" or "config"
+     * where resource-ref will not be created.
+     * @param target target-name
+     * @return boolean
+     */
+    private boolean isNonResourceRefTarget(String target){
+        boolean isNonResourceRefTarget = false;
+        if(DOMAIN.equals(target)){
+            isNonResourceRefTarget = true;
+        }else{
+            if(domain.getConfigNamed(target)!=null){
+                isNonResourceRefTarget = true;
+            }
+        }
+        return isNonResourceRefTarget;
+    }
+
     public boolean isResourceRefInTarget(String refName, String target){
         Set<String> targets = getTargetsReferringResourceRef(refName);
         boolean resourceRefInTarget = false;

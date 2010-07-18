@@ -67,6 +67,7 @@ public class CreateJndiResourceTest extends ConfigApiTest {
     private ParameterMap parameters;
     private AdminCommandContext context;
     private CommandRunner cr;
+    private Server server;
 
     public DomDocument getDocument(Habitat habitat) {
         return new TestDocument(habitat);
@@ -80,6 +81,7 @@ public class CreateJndiResourceTest extends ConfigApiTest {
     public void setUp() {
         habitat = getHabitat();
         resources = habitat.getComponent(Resources.class);
+        server = habitat.getComponent(Server.class);
         parameters = new ParameterMap();
         context = new AdminCommandContext(
                 LogDomains.getLogger(CreateJndiResourceTest.class, LogDomains.ADMIN_LOGGER),
@@ -108,6 +110,18 @@ public class CreateJndiResourceTest extends ConfigApiTest {
                 return null;
             }
         }, resources);
+
+/*
+        ParameterMap refParameters = new ParameterMap();
+
+        refParameters.set("reference_name", "sample_jndi_resource");
+        CreateJndiResource command = habitat.getComponent(CreateJndiResource.class);
+        cr.getCommandInvocation("delete-resource-ref", context.getActionReport()).parameters(refParameters).execute(command);
+
+        refParameters.set("reference_name", "dupRes");
+        cr.getCommandInvocation("delete-resource-ref", context.getActionReport()).parameters(refParameters).execute(command);
+*/
+
     }
 
     /**
@@ -228,7 +242,9 @@ public class CreateJndiResourceTest extends ConfigApiTest {
                     assertEquals("queue", r.getResType());
                     assertEquals("sampleClass", r.getFactoryClass());
                     assertEquals("sample_jndi", r.getJndiLookupName());
-                    assertEquals("false", r.getEnabled());
+                    //expect enabled for the resource to be true as resource-ref's enabled
+                    //would be set to false
+                    assertEquals("true", r.getEnabled());
                     assertEquals("External JNDI Resource", r.getDescription());
                     isCreated = true;
                     logger.fine("Jndi Resource config bean sample_jndi_resource is created.");
@@ -237,6 +253,12 @@ public class CreateJndiResourceTest extends ConfigApiTest {
             }
         }
         assertTrue(isCreated);
+/*
+        ResourceRef ref = server.getResourceRef("sample_jndi_resource");
+        assertTrue(ref != null);
+        assertEquals("false", ref.getEnabled());
+*/
+
         logger.fine("msg: " + context.getActionReport().getMessage());
     }
 

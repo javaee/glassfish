@@ -70,11 +70,12 @@ public class CustomResourceManager implements ResourceManager {
     private static final String DESCRIPTION = ServerTags.DESCRIPTION;
 
     @Inject
-    private ResourceUtil resourceRefUtil;
+    private ResourceUtil resourceUtil;
 
     private String resType = null;
     private String factoryClass = null;
     private String enabled = null;
+    private String enabledValueForTarget = null;
     private String description = null;
     private String jndiName = null;
 
@@ -85,7 +86,7 @@ public class CustomResourceManager implements ResourceManager {
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
                                  String target, boolean requiresNewTransaction, boolean createResourceRef)
             throws Exception {
-        setAttributes(attributes);
+        setAttributes(attributes, target);
 
         if (resType == null) {
             String msg = localStrings.getLocalString(
@@ -122,7 +123,7 @@ public class CustomResourceManager implements ResourceManager {
                 }, resources);
 
                 if(createResourceRef){
-                    resourceRefUtil.createResourceRef(jndiName, enabled, target);
+                    resourceUtil.createResourceRef(jndiName, enabledValueForTarget, target);
                 }
             } catch (TransactionFailure tfe) {
                 String msg = localStrings.getLocalString(
@@ -141,12 +142,17 @@ public class CustomResourceManager implements ResourceManager {
         return new ResourceStatus(ResourceStatus.SUCCESS, msg, true);
     }
 
-    private void setAttributes(HashMap attrList) {
-        jndiName = (String) attrList.get(JNDI_NAME);
-        resType =  (String) attrList.get(RES_TYPE);
-        factoryClass = (String) attrList.get(FACTORY_CLASS);
-        enabled = (String) attrList.get(ENABLED);
-        description = (String) attrList.get(DESCRIPTION);
+    private void setAttributes(HashMap attributes, String target) {
+        jndiName = (String) attributes.get(JNDI_NAME);
+        resType =  (String) attributes.get(RES_TYPE);
+        factoryClass = (String) attributes.get(FACTORY_CLASS);
+        if(target != null){
+            enabled = resourceUtil.computeEnabledValueForResourceBasedOnTarget((String)attributes.get(ENABLED), target);
+        }else{
+            enabled = (String) attributes.get(ENABLED);
+        }
+        enabledValueForTarget = (String) attributes.get(ENABLED);
+        description = (String) attributes.get(DESCRIPTION);
     }
 
     private Object createResource(Resources param, Properties properties) throws PropertyVetoException,
@@ -178,7 +184,7 @@ public class CustomResourceManager implements ResourceManager {
     }
 
     public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception{
-        setAttributes(attributes);
+        setAttributes(attributes, null);
         return createConfigBean(resources, properties);
     }
 }

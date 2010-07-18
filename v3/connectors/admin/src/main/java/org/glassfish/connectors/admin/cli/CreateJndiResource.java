@@ -61,6 +61,8 @@ import com.sun.enterprise.config.serverbeans.*;
 import java.util.Properties;
 import java.beans.PropertyVetoException;
 
+import static org.glassfish.resource.common.ResourceConstants.ENABLED;
+
 /**
  * Create Jndi Resource
  */
@@ -105,7 +107,7 @@ public class CreateJndiResource implements AdminCommand {
     private Domain domain;
 
     @Inject
-    private ResourceUtil resourceRefUtil;
+    private ResourceUtil resourceUtil;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -126,6 +128,7 @@ public class CreateJndiResource implements AdminCommand {
             return;
         }
 
+        Boolean enabledValueForTarget = enabled;
         try {
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
@@ -138,6 +141,10 @@ public class CreateJndiResource implements AdminCommand {
                     newResource.setFactoryClass(factoryClass);
                     newResource.setResType(resType);
                     newResource.setJndiLookupName(jndiLookupName);
+                    if(target != null){
+                        enabled = Boolean.valueOf(
+                                resourceUtil.computeEnabledValueForResourceBasedOnTarget(enabled.toString(), target));
+                    }
                     newResource.setEnabled(enabled.toString());
                     if (description != null) {
                         newResource.setDescription(description);
@@ -156,7 +163,7 @@ public class CreateJndiResource implements AdminCommand {
                 }
             }, resources);
 
-            resourceRefUtil.createResourceRef(jndiName, enabled.toString(), target);
+            resourceUtil.createResourceRef(jndiName, enabledValueForTarget.toString(), target);
             report.setMessage(localStrings.getLocalString(
                     "create.jndi.resource.success",
                     "JNDI resource {0} created.", jndiName));

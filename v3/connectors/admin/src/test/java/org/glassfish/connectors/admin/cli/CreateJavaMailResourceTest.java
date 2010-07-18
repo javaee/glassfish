@@ -242,7 +242,9 @@ public class CreateJavaMailResourceTest extends ConfigApiTest {
             if (resource instanceof MailResource) {
                 MailResource r = (MailResource) resource;
                 if (r.getJndiName().equals("mail/MyMailSession")) {
-                    assertEquals("false", r.getEnabled());
+                    //expect enabled for the resource to be true as resource-ref's enabled
+                    //would be set to false
+                    assertEquals("true", r.getEnabled());
                     assertEquals("true", r.getDebug());
                     assertEquals("pop", r.getStoreProtocol());
                     assertEquals("com.sun.mail.pop.POPStore", r.getStoreProtocolClass());

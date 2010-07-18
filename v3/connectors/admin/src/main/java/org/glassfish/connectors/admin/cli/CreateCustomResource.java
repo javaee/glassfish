@@ -122,7 +122,7 @@ public class CreateCustomResource implements AdminCommand {
         } catch(Exception e) {
             Logger.getLogger(CreateCustomResource.class.getName()).log(Level.SEVERE,
                     "Unable to create custom resource " + jndiName, e);
-            String def = "Cusstom resource: {0} could not be created, reason: {1}";
+            String def = "Custom resource: {0} could not be created, reason: {1}";
             report.setMessage(localStrings.getLocalString("create.custom.resource.fail",
                     def, jndiName) + " " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

@@ -45,7 +45,6 @@ import java.util.Properties;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.api.I18n;
-import org.glassfish.resource.common.ResourceConstants;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -76,6 +75,7 @@ public class ConnectorResourceManager implements ResourceManager {
 
     private String poolName = null;
     private String enabled = Boolean.TRUE.toString();
+    private String enabledValueForTarget = Boolean.TRUE.toString();
     private String jndiName = null;
     private String description = null;
     private String objectType = "user";
@@ -87,7 +87,7 @@ public class ConnectorResourceManager implements ResourceManager {
     private Habitat habitat;
 
     @Inject
-    private ResourceUtil resourceRefUtil;
+    private ResourceUtil resourceUtil;
 
     public ConnectorResourceManager() {
     }
@@ -100,7 +100,7 @@ public class ConnectorResourceManager implements ResourceManager {
                                  String target, boolean requiresNewTransaction, boolean createResourceRef)
             throws Exception {
 
-        setAttributes(attributes);
+        setAttributes(attributes, target);
 
         if (jndiName == null) {
             String msg = localStrings.getLocalString("create.connector.resource.noJndiName",
@@ -131,7 +131,7 @@ public class ConnectorResourceManager implements ResourceManager {
                 }, resources);
 
                 if(createResourceRef){
-                    resourceRefUtil.createResourceRef(jndiName, enabled, target);
+                    resourceUtil.createResourceRef(jndiName, enabledValueForTarget, target);
                 }
 
             } catch (TransactionFailure tfe) {
@@ -180,9 +180,14 @@ public class ConnectorResourceManager implements ResourceManager {
         return newResource;
     }
 
-    private void setAttributes(HashMap attributes) {
+    private void setAttributes(HashMap attributes, String target) {
         poolName = (String) attributes.get(POOL_NAME);
-        enabled = (String) attributes.get(ResourceConstants.ENABLED);
+        if(target != null){
+            enabled = resourceUtil.computeEnabledValueForResourceBasedOnTarget((String)attributes.get(ENABLED), target);
+        }else{
+            enabled = (String) attributes.get(ENABLED);
+        }
+        enabledValueForTarget = (String) attributes.get(ENABLED);
         jndiName = (String) attributes.get(JNDI_NAME);
         description = (String) attributes.get(DESCRIPTION);
         objectType = (String) attributes.get(ServerTags.OBJECT_TYPE);
@@ -193,7 +198,7 @@ public class ConnectorResourceManager implements ResourceManager {
     }
 
     public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception {
-        setAttributes(attributes);
+        setAttributes(attributes, null);
         return createConfigBean(resources, properties);
     }
 }

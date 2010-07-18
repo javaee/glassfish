@@ -77,6 +77,7 @@ public class JDBCResourceManager implements ResourceManager {
     private String description = null;
     private String poolName = null;
     private String enabled = Boolean.TRUE.toString();
+    private String enabledValueForTarget = Boolean.TRUE.toString();
 
     @Inject
     private ResourceUtil resourceUtil;
@@ -92,7 +93,7 @@ public class JDBCResourceManager implements ResourceManager {
                                  String target, boolean requiresNewTransaction, boolean createResourceRef)
             throws Exception {
 
-        setAttributes(attributes);
+        setAttributes(attributes, target);
 
         if (jndiName == null) {
             String msg = localStrings.getLocalString("create.jdbc.resource.noJndiName",
@@ -122,7 +123,7 @@ public class JDBCResourceManager implements ResourceManager {
                 }, resources);
 
                 if(createResourceRef){
-                    resourceUtil.createResourceRef(jndiName, enabled, target);
+                    resourceUtil.createResourceRef(jndiName, enabledValueForTarget, target);
                 }
             } catch (TransactionFailure tfe) {
                 String msg = localStrings.getLocalString("create.jdbc.resource.fail",
@@ -140,11 +141,16 @@ public class JDBCResourceManager implements ResourceManager {
         return new ResourceStatus(ResourceStatus.SUCCESS, msg);
     }
 
-    private void setAttributes(HashMap attributes) {
+    private void setAttributes(HashMap attributes, String target) {
         jndiName = (String) attributes.get(JNDI_NAME);
         description = (String) attributes.get(DESCRIPTION);
         poolName = (String) attributes.get(POOL_NAME);
-        enabled = (String) attributes.get(ENABLED);
+        if(target != null){
+            enabled = resourceUtil.computeEnabledValueForResourceBasedOnTarget((String)attributes.get(ENABLED), target);
+        }else{
+            enabled = (String) attributes.get(ENABLED);
+        }
+        enabledValueForTarget = (String) attributes.get(ENABLED); 
     }
 
     private JdbcResource createResource(Resources param, Properties properties) throws PropertyVetoException,
@@ -176,7 +182,7 @@ public class JDBCResourceManager implements ResourceManager {
 
     public Resource createConfigBean(final Resources resources, HashMap attributes, final Properties properties)
             throws Exception{
-        setAttributes(attributes);
+        setAttributes(attributes, null);
         return createConfigBean(resources, properties);
     }
 

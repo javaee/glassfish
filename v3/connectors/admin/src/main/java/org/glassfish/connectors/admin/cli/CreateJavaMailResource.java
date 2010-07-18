@@ -41,7 +41,8 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
-import org.jvnet.hk2.config.types.Property;
+import org.glassfish.resource.common.ResourceConstants;
+import org.glassfish.resource.common.ResourceStatus;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -49,14 +50,13 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import java.beans.PropertyVetoException;
+import java.util.HashMap;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Create Java Mail Resource
@@ -114,104 +114,64 @@ public class CreateJavaMailResource implements AdminCommand {
     @Param(optional=true)
     private String description;
 
+
     @Inject
     private Resources resources;
 
     @Inject
-    private Domain domain;
-
-    @Inject
-    private ResourceUtil resourceRefUtil;
+    private JavaMailResourceManager mailResMgr;
 
     /**
      * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * where the keys are the parameter names and the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
+
         final ActionReport report = context.getActionReport();
 
-         if (mailHost == null) {
-            report.setMessage(localStrings.getLocalString("create.mail.resource.noHostName",
-                            "No host name defined for Mail Resource."));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
+        HashMap attributes = new HashMap();
+        attributes.put(ResourceConstants.JNDI_NAME, jndiName);
+        attributes.put(ResourceConstants.MAIL_HOST, mailHost);
+        attributes.put(ResourceConstants.MAIL_USER, mailUser);
+        attributes.put(ResourceConstants.MAIL_FROM_ADDRESS, fromAddress);
+        attributes.put(ResourceConstants.MAIL_STORE_PROTO, storeProtocol);
+        attributes.put(ResourceConstants.MAIL_STORE_PROTO_CLASS, storeProtocolClass);
+        attributes.put(ResourceConstants.MAIL_TRANS_PROTO, transportProtocol);
+        attributes.put(ResourceConstants.MAIL_TRANS_PROTO_CLASS, transportProtocolClass);
+        attributes.put(ResourceConstants.MAIL_DEBUG, debug.toString());
+        attributes.put(ResourceConstants.ENABLED, enabled.toString());
+        attributes.put(ServerTags.DESCRIPTION, description);
 
-        if (mailUser == null) {
-            report.setMessage(localStrings.getLocalString("create.mail.resource.noUserName",
-                            "No user name defined for Mail Resource."));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
+        ResourceStatus rs;
 
-        if (fromAddress == null) {
-            report.setMessage(localStrings.getLocalString("create.mail.resource.noFrom",
-                            "From not defined for Mail Resource."));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
-        // ensure we don't already have one of this name
-        if (resources.getResourceByName(BindableResource.class, jndiName) != null) {
-            report.setMessage(localStrings.getLocalString(
-                    "create.mail.resource.duplicate.1",
-                    "Resource named {0} already exists.",
-                    jndiName));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-        //TODO use JavaMailResourceManager ?
         try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
-                public Object run(Resources param) throws PropertyVetoException,
-                        TransactionFailure {
-
-                    MailResource newResource = param.createChild(
-                            MailResource.class);
-                    newResource.setJndiName(jndiName);
-                    newResource.setFrom(fromAddress);
-                    newResource.setUser(mailUser);
-                    newResource.setHost(mailHost);
-                    newResource.setEnabled(enabled.toString());
-                    newResource.setStoreProtocol(storeProtocol);
-                    newResource.setStoreProtocolClass(storeProtocolClass);
-                    newResource.setTransportProtocol(transportProtocol);
-                    newResource.setTransportProtocolClass(
-                            transportProtocolClass);
-                    newResource.setDebug(debug.toString());
-                    if (description != null) {
-                        newResource.setDescription(description);
-                    }
-                    if (properties != null) {
-                        for ( java.util.Map.Entry e : properties.entrySet()) {
-                            Property prop = newResource.createChild(
-                                    Property.class);
-                            prop.setName((String)e.getKey());
-                            prop.setValue((String)e.getValue());
-                            newResource.getProperty().add(prop);
-                        }
-                    }
-                    param.getResources().add(newResource);
-                    return newResource;
-                }
-            }, resources);
-
-            resourceRefUtil.createResourceRef(jndiName, enabled.toString(), target);
-
-            report.setMessage(localStrings.getLocalString(
-                    "create.mail.resource.success",
-                    "Mail Resource {0} created.", jndiName));
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        } catch(TransactionFailure tfe) {
-            report.setMessage(localStrings.getLocalString("" +
-                    "create.mail.resource.fail",
-                    "Unable to create Mail Resource {0}.", jndiName) +
-                    " " + tfe.getLocalizedMessage());
+            rs = mailResMgr.create(resources, attributes, properties, target, true, true);
+        } catch(Exception e) {
+            Logger.getLogger(CreateJavaMailResource.class.getName()).log(Level.SEVERE,
+                    "Unable to create Mail Resource " + jndiName, e);
+            String def = "Mail resource: {0} could not be created";
+            report.setMessage(localStrings.getLocalString("create.mail.resource.fail",
+                    def, jndiName) + " " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(tfe);
+            report.setFailureCause(e);
+            return;
         }
+        ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
+        if (rs.getStatus() == ResourceStatus.FAILURE) {
+            ec = ActionReport.ExitCode.FAILURE;
+            if (rs.getMessage() == null) {
+                 report.setMessage(localStrings.getLocalString("create.mail.resource.fail",
+                    "Unable to create Mail Resource {0}.", jndiName));
+                
+            }
+            if (rs.getException() != null)
+                report.setFailureCause(rs.getException());
+        }
+        if(rs.getMessage() != null){
+            report.setMessage(rs.getMessage());
+        }
+        report.setActionExitCode(ec);
     }
 }

@@ -74,11 +74,12 @@ public class JavaMailResourceManager implements ResourceManager {
     private String transportProtocol = null;
     private String transportProtocolClass = null;
     private String enabled = null;
+    private String enabledValueForTarget = null;
     private String debug = null;
     private String description = null;
 
     @Inject
-    private ResourceUtil resourceRefUtil;
+    private ResourceUtil resourceUtil;
 
     public String getResourceType() {
         return ServerTags.MAIL_RESOURCE;
@@ -87,7 +88,7 @@ public class JavaMailResourceManager implements ResourceManager {
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
                                  String target, boolean requiresNewTransaction, boolean createResourceRef)
             throws Exception {
-        setAttributes(attributes);
+        setAttributes(attributes, target);
 
         if (mailHost == null) {
             String msg = localStrings.getLocalString("create.mail.resource.noHostName",
@@ -129,7 +130,7 @@ public class JavaMailResourceManager implements ResourceManager {
             }, resources);
 
             if(createResourceRef){
-                resourceRefUtil.createResourceRef(jndiName, enabled, target);
+                resourceUtil.createResourceRef(jndiName, enabledValueForTarget, target);
             }
 
             String msg = localStrings.getLocalString(
@@ -173,22 +174,27 @@ public class JavaMailResourceManager implements ResourceManager {
         return newResource;
     }
 
-    private void setAttributes(HashMap attrList) {
-        jndiName = (String) attrList.get(JNDI_NAME);
-        mailHost = (String) attrList.get(MAIL_HOST);
-        mailUser = (String) attrList.get(MAIL_USER);
-        fromAddress = (String) attrList.get(MAIL_FROM_ADDRESS);
-        storeProtocol = (String) attrList.get(MAIL_STORE_PROTO);
-        storeProtocolClass = (String) attrList.get(MAIL_STORE_PROTO_CLASS);
-        transportProtocol = (String) attrList.get(MAIL_TRANS_PROTO);
-        transportProtocolClass = (String) attrList.get(MAIL_TRANS_PROTO_CLASS);
-        debug = (String) attrList.get(MAIL_DEBUG);
-        enabled = (String) attrList.get(ENABLED);
-        description = (String) attrList.get(DESCRIPTION);
+    private void setAttributes(HashMap attributes, String target) {
+        jndiName = (String) attributes.get(JNDI_NAME);
+        mailHost = (String) attributes.get(MAIL_HOST);
+        mailUser = (String) attributes.get(MAIL_USER);
+        fromAddress = (String) attributes.get(MAIL_FROM_ADDRESS);
+        storeProtocol = (String) attributes.get(MAIL_STORE_PROTO);
+        storeProtocolClass = (String) attributes.get(MAIL_STORE_PROTO_CLASS);
+        transportProtocol = (String) attributes.get(MAIL_TRANS_PROTO);
+        transportProtocolClass = (String) attributes.get(MAIL_TRANS_PROTO_CLASS);
+        debug = (String) attributes.get(MAIL_DEBUG);
+        if(target != null){
+            enabled = resourceUtil.computeEnabledValueForResourceBasedOnTarget((String)attributes.get(ENABLED), target);
+        }else{
+            enabled = (String) attributes.get(ENABLED);
+        }
+        enabledValueForTarget = (String) attributes.get(ENABLED);
+        description = (String) attributes.get(DESCRIPTION);
     }
 
     public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception {
-        setAttributes(attributes);
+        setAttributes(attributes, null);
         return createConfigBean(resources, properties);
     }
 }
