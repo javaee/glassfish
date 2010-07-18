@@ -34,7 +34,25 @@
  holder.
 -->
     <sun:title id="propertyContentPage" title="#{pageSession.title}" helpText="#{pageSession.titleHelp}">
-#include "/common/shared/editPageButtons.inc"
+
+<!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="newButton" text="$resource{i18n.button.OK}"
+                onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+            <!command
+                gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/create-node"   attrs="#{pageSession.valueMap}")
+                gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+             />
+            </sun:button>
+            <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}" >
+                <!command
+                    gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf");
+                />
+            </sun:button>
+
+        </sun:panelGroup>
+        </facet>
+
     </sun:title>
 
     <sun:propertySheet id="propertySheet">
@@ -46,10 +64,13 @@
                 <sun:textField id="name" text="#{pageSession.valueMap['Id']}" columns="$int{60}" styleClass="required" required="#{true}" />
             </sun:property>
             <sun:property id="NodeHost"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.NodeHost}" helpText="$resource{i18ncs.node.NodeHostHelp}">
-                <sun:textField id="NodeHost" columns="$int{60}" text="#{pageSession.valueMap['Nodehost']}" />
+                <sun:textField id="NodeHost" columns="$int{60}" text="#{pageSession.valueMap['NodeHost']}" />
             </sun:property>
             <sun:property id="NodeHome"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.NodeHome}" helpText="$resource{i18ncs.node.NodeHomeHelp}">
                 <sun:textField id="NodeHome" columns="$int{60}" text="#{pageSession.valueMap['Nodehome']}" />
+            </sun:property>
+            <sun:property id="installdir"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.InstallDir}" helpText="$resource{i18ncs.node.InstallDirHelp}">
+                <sun:textField id="NodeHome" columns="$int{60}" text="#{pageSession.valueMap['InstallDir']}" />
             </sun:property>
         </sun:propertySheetSection>
 
