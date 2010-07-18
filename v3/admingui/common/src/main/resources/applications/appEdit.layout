@@ -42,6 +42,7 @@
         setSessionAttribute(key="appGeneralTabs" value="general");
         getRequestValue(key="appName" value="#{pageSession.appName}");
         urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
+        gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}");
         //test is the app is still available.
         proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
@@ -64,6 +65,7 @@
         }
         setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
+        
     />
     </event>
         <sun:form id="propertyForm">

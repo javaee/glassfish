@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -51,10 +51,23 @@
             setPageSessionAttribute(key="tableTitle" value="$resource{i18n.deployTable.applications}");
             setPageSessionAttribute(key="editLink" value="/common/applications/applicationEdit.jsf");
             setPageSessionAttribute(key="listPageLink" value="/common/applications/applications.jsf");
+            setPageSessionAttribute(key="targetLink" value="/common/applications/targetListing.jsf");
+
             setPageSessionAttribute(key="hasContextRoot" value="#{true}" );
             setPageSessionAttribute(key="nextPageLink" value="#{request.contextPath}/common/applications/upload.jsf?cancelPage=#{listPageLink}");
             setPageSessionAttribute(key="isLifecycle" value="#{false}");
             setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmUndeploy}");
+            gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
+            <!--
+            setPageSessionAttribute(key="viewKey" value="$pageSession{viewKeyValue}");
+            setPageSessionAttribute(key="showDetail" value="$boolean{false}");
+            setPageSessionAttribute(key="viewValue" value="summary");
+            if ( !$session{$pageSession{viewKeyValue}} ){
+                setPageSessionAttribute(key="showDetail" value="$boolean{true}");
+                setPageSessionAttribute(key="viewValue" value="detail");
+            }
+            -->
+
         />
     </event>
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":applications");</script>

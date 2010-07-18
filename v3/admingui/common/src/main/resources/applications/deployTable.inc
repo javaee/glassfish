@@ -65,19 +65,15 @@
         <sun:hyperlink id="link" text="#{td.value.name}" url="#{editLink}?appName=#{td.value.name}" />
     </sun:tableColumn>
 
-    <!-- sun:tableColumn rendered="$session{supportCluster}" headerText="$resource{i18n.deployTable.colStatus}" sort="enabled" rowHeader="$boolean{true}" id="col2">
-        <sun:hyperlink rendered="$session{supportCluster}" id="targetLink" text="#{td.value.enabled}" url="#{targetLink}?appName=#{td.value.name}" />
-    </sun:tableColumn -->
-
-    <sun:tableColumn  headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col22">
-        <sun:image id="enCol" value="#{td.value.enableURL}" />
+    <sun:tableColumn rendered="#{!pageSession.onlyDASExist}" headerText="$resource{i18n.deployTable.colStatus}" sort="enabled" rowHeader="$boolean{true}" id="col2">
+        <sun:hyperlink rendered="#{!pageSession.onlyDASExist}" id="targetLink" text="#{td.value.enableURL}" url="#{targetLink}?appName=#{td.value.name}" />
     </sun:tableColumn>
 
-<!--
-    <sun:tableColumn headerText="$resource{i18n.deployTable.colComposite}"  sort="composite"  rowHeader="$boolean{true}" id="col33">
-        <staticText id="composite" value="#{td.value.composite}" />
+    <sun:tableColumn  rendered="#{pageSession.onlyDASExist}" headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col22">
+        <sun:image rendered="#{pageSession.onlyDASExist}" id="enCol" value="#{td.value.enableURL}" />
     </sun:tableColumn>
--->
+
+
     <sun:tableColumn headerText="$resource{i18n.deployTable.ColEngines}"  sort="sniffers"  rowHeader="$boolean{true}" id="colsnif">
         <staticText id="sniffer" value="#{td.value.sniffers}" />
     </sun:tableColumn>

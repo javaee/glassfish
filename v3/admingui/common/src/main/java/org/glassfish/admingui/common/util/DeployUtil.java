@@ -188,4 +188,45 @@ public class DeployUtil {
         }
         return targets;
     }
+    
+    public static String getTargetEnableInfo(String appName){
+        String prefix = (String) GuiUtil.getSessionValue("REST_URL");
+        List clusters = TargetUtil.getClusters();
+        List standalone = TargetUtil.getStandaloneInstances();
+        String enabled = "true";
+        int numEnabled = 0;
+        int numDisabled = 0;
+        if (clusters.isEmpty() && standalone.isEmpty()){
+            //just return Enabled or not.
+            enabled = (String)RestApiHandlers.getAttributesMap(prefix  +"/servers/server/server/application-ref/"+appName).get("Enabled");
+            return (Boolean.getBoolean(enabled))? "/resource/images/enabled.png" : "/resource/images/disabled.png";
+        }
+        standalone.add("server");  
+        List<String> targetList = getApplicationTarget(appName);
+        for(String oneTarget : targetList){
+            if (clusters.contains(oneTarget)){
+                enabled = (String)RestApiHandlers.getAttributesMap(prefix  +"/clusters/cluster/" + oneTarget + "/application-ref/" + appName).get("Enabled");
+            }else{
+                enabled = (String)RestApiHandlers.getAttributesMap(prefix  +"/servers/server/" + oneTarget + "/application-ref/" + appName).get("Enabled");
+            }
+            if (Boolean.parseBoolean(enabled)){
+                numEnabled++;
+            }else{
+                numDisabled++;
+            }
+        }
+        
+        int numTargets = targetList.size();
+        if (numEnabled == numTargets){
+            return GuiUtil.getMessage("deploy.allEnabled");
+        }
+        if (numDisabled == numTargets){
+            return GuiUtil.getMessage("deploy.allDisabled");
+        }
+        return GuiUtil.getMessage("deploy.someEnabled", new String[]{""+numEnabled});
+        
+    }
+
+    private static final String COMMON_BUNDLE = "org.glassfish.common.admingui.Strings";
+
 }

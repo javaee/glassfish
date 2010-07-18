@@ -49,4 +49,12 @@
             gf.redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{pageSession.encodedAppName}");
         />
     </sun:tab>
+
+     <sun:tab id="targetTab" rendered="#{!pageSession.onlyDASExist}" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}" toolTip="$resource{i18n.common.TargetTab} Tab">
+        <!command
+            setSessionAttribute(key="appGeneralTabs" value="targetTab");
+println("#{request.contextPath}/common/applications/targetListing.jsf?appName=#{pageSession.encodedAppName}");
+            gf.redirect(page="#{request.contextPath}/common/applications/targetListing.jsf?appName=#{pageSession.encodedAppName}");
+        />
+    </sun:tab>
 </sun:tabSet>

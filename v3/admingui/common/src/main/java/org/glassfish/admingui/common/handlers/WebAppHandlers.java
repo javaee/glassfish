@@ -55,6 +55,7 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,6 @@ import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.V3AMXUtil;
 import org.glassfish.deployment.client.DFDeploymentProperties;
 
-import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.intf.config.ApplicationRef;
@@ -79,6 +79,9 @@ import org.glassfish.admin.amx.intf.config.Property;
 import org.glassfish.admin.amx.intf.config.VirtualServer;
 import org.glassfish.admin.amx.monitoring.ServerMon;
 import org.glassfish.admingui.common.util.DeployUtil;
+import org.glassfish.admingui.common.util.TargetUtil;
+import org.glassfish.admingui.common.handlers.RestApiHandlers;
+
 
 
 public class WebAppHandlers {
@@ -307,6 +310,9 @@ public class WebAppHandlers {
         if (GuiUtil.isEmpty(filterValue))
             filterValue = null;
         List result = new ArrayList();
+
+        //TODO REST
+        //convert after issue#12712 is resolved.
         Map<String, AMXProxy> application = V3AMX.getInstance().getApplications().childrenMap("application");
         for (AMXProxy oneApp : application.values()) {
             if(V3AMX.getPropValue(oneApp, DFDeploymentProperties.IS_LIFECYCLE) != null){
@@ -315,9 +321,7 @@ public class WebAppHandlers {
             HashMap oneRow = new HashMap();
             oneRow.put("name", oneApp.getName());
             oneRow.put("selected", false);
-            boolean enable = AppUtil.isApplicationEnabled(oneApp);
-            String enableURL= (enable)? "/resource/images/enabled.png" : "/resource/images/disabled.png";
-            oneRow.put("enableURL", enableURL);
+            oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(oneApp.getName()));
             List sniffersList = AppUtil.getAllSniffers(oneApp);
             oneRow.put("sniffersList", sniffersList);
             oneRow.put("sniffers", sniffersList.toString());
@@ -333,6 +337,123 @@ public class WebAppHandlers {
         handlerCtx.setOutputValue("result", result);
         handlerCtx.setOutputValue("filters", new ArrayList(filters));
     }
+
+
+    @Handler(id = "gf.getTargetListInfo",
+        input = {
+            @HandlerInput(name = "appName", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = java.util.List.class)})
+    public static void getTargetListInfo(HandlerContext handlerCtx) {
+        String appName = (String) handlerCtx.getInputValue("appName");
+        String prefix = (String) GuiUtil.getSessionValue("REST_URL");
+        List clusters = TargetUtil.getClusters();
+        List standalone = TargetUtil.getStandaloneInstances();
+        standalone.add("server");
+        List<String> targetList = DeployUtil.getApplicationTarget(appName);
+        List result = new ArrayList();
+        Map attrs = null;
+        String endpoint="";
+        for(String oneTarget : targetList){
+            HashMap oneRow = new HashMap();
+            if (clusters.contains(oneTarget)){
+                endpoint = "/clusters/cluster/" + oneTarget + "/application-ref/" + appName;
+                attrs = RestApiHandlers.getAttributesMap(prefix + endpoint);
+            }else{
+                endpoint = "/servers/server/" + oneTarget + "/application-ref/" + appName;
+                attrs = RestApiHandlers.getAttributesMap(prefix  + endpoint);
+            }
+            oneRow.put("selected", false);
+            oneRow.put("endpoint", endpoint);
+            oneRow.put("targetName", oneTarget);
+            oneRow.put("enabled", attrs.get("Enabled"));
+            oneRow.put("lbEnabled", attrs.get("LbEnabled"));
+            result.add(oneRow);
+        }
+        handlerCtx.setOutputValue("result", result);
+    }
+
+
+
+    @Handler(id = "gf.getApplicationTarget",
+        input = {
+            @HandlerInput(name = "appName", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = java.util.List.class)})
+    public static void getApplicationTarget(HandlerContext handlerCtx) {
+        String appName = (String) handlerCtx.getInputValue("appName");
+        handlerCtx.setOutputValue( "result", DeployUtil.getApplicationTarget(appName));
+    }
+
+
+     @Handler(id = "gf.changeTargetStatus",
+        input = {
+            @HandlerInput(name = "selectedRows", type = List.class, required = true),
+            @HandlerInput(name = "Enabled", type = String.class, required = true),
+            @HandlerInput(name = "forLB", type = Boolean.class, required = true)})
+    public static void changeTargetStatus(HandlerContext handlerCtx) {
+        String Enabled = (String) handlerCtx.getInputValue("Enabled");
+        List<Map>  selectedRows = (List) handlerCtx.getInputValue("selectedRows");
+        boolean forLB = (Boolean) handlerCtx.getInputValue("forLB");
+        String prefix = (String) GuiUtil.getSessionValue("REST_URL");
+        for(Map oneRow : selectedRows){
+            Map attrs = new HashMap();
+            String endpoint = (String) oneRow.get("endpoint");
+            if(forLB){
+                attrs.put("LbEnabled", Enabled);
+            }else{
+                attrs.put("Enabled", Enabled);
+            }
+            RestApiHandlers.restRequest(prefix+endpoint, attrs, "post", handlerCtx);
+        }
+     }
+
+
+     @Handler(id="changeAppTargets",
+        input={
+        @HandlerInput(name="appName", type=String.class, required=true),
+        @HandlerInput(name="targets", type=String[].class, required=true )})
+    public static void changeAppTargets(HandlerContext handlerCtx) {
+        String appName = (String)handlerCtx.getInputValue("appName");
+        String[] selTargets = (String[])handlerCtx.getInputValue("targets");
+        List<String> selectedTargets = Arrays.asList(selTargets);
+
+        List clusters = TargetUtil.getClusters();
+        List standalone = TargetUtil.getStandaloneInstances();
+        String clusterEndpoint = GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/";
+        String serverEndpoint = GuiUtil.getSessionValue("REST_URL")+"/servers/server/";
+        standalone.add("server");
+
+        Map attrs = new HashMap();
+        attrs.put("ref", appName);
+        List<String> associatedTargets = DeployUtil.getApplicationTarget(appName);
+        for(String newTarget :  selectedTargets){
+            String endpoint;
+            if (associatedTargets.contains(newTarget)){
+                //no need to add or remove.
+                associatedTargets.remove(newTarget);
+                continue;
+            }else{
+                if (clusters.contains(newTarget)){
+                    endpoint = clusterEndpoint + newTarget ;
+                }else{
+                    endpoint = serverEndpoint + newTarget ;
+                }
+                RestApiHandlers.restRequest(endpoint, attrs, "post", handlerCtx);
+            }
+         }
+
+         for(String oTarget :  associatedTargets){
+            String endpoint;
+            if (clusters.contains(oTarget)){
+                endpoint = clusterEndpoint + oTarget ;
+            }else{
+                endpoint = serverEndpoint + oTarget ;
+            }
+            RestApiHandlers.restRequest(endpoint + "/application-ref/" + appName, null, "delete", handlerCtx);
+        }
+    }
+
 
 
     /*

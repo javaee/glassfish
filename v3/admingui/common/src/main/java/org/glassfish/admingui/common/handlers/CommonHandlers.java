@@ -70,6 +70,7 @@ import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.MiscUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.V3AMXUtil;
+import org.glassfish.admingui.common.util.TargetUtil;
 
 
 public class CommonHandlers {
@@ -394,6 +395,17 @@ public class CommonHandlers {
         GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), detail);
         handlerCtx.getFacesContext().renderResponse();
     }
+
+
+    @Handler(id="gf.onlyDASExist",
+    output={
+        @HandlerOutput(name="onlyDAS", type=Boolean.class)}
+    )
+    public static void onlyDas(HandlerContext handlerCtx){
+        boolean onlyDAS = TargetUtil.getClusters().isEmpty() && TargetUtil.getStandaloneInstances().isEmpty();
+        handlerCtx.setOutputValue("onlyDAS", onlyDAS);
+    }
+
 
     
     /**

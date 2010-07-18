@@ -508,6 +508,17 @@ public class UtilHandlers {
         handlerCtx.setOutputValue("commaString", commaString);
     }
 
+    @Handler(id = "convertListToArray",
+    input = {
+        @HandlerInput(name = "list", type = List.class, required = true)},
+    output = {
+        @HandlerOutput(name = "array", type = String[].class)})
+    public static void convertListToArray(HandlerContext handlerCtx) {
+        List list = (List)handlerCtx.getInputValue("list");
+
+        handlerCtx.setOutputValue("array", list.toArray(new String[list.size()]) );
+    }
+
    /**
      *	<p> This handler takes in a string with delimiter and returns list
      */

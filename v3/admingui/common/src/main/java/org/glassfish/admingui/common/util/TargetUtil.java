@@ -69,13 +69,28 @@ public class TargetUtil {
             ArrayList  messages = (ArrayList) responseMap.get("messages");
             Map message = (Map) messages.get(0);
             List<Map<String, String>> props = (List<Map<String, String>>) message.get("properties");
+            if (props == null){
+                return result;
+            }
             for(Map<String, String> oneProp : props){
                 result.add(oneProp.get("name"));
             }
         }catch (Exception ex){
-            GuiUtil.getLogger().severe("Error in getStandaloneInstances ; \nendpoint = " +endpoint + "attrsMap=" + attrsMap);
+            GuiUtil.getLogger().severe("Error in getStandaloneInstances ; \nendpoint = " +endpoint + ", attrsMap=" + attrsMap);
         }
 
         return result;
     }
+
+    public static List getClusters(){
+        List clusters = new ArrayList();
+        try{
+            clusters = RestApiHandlers.getChildrenNames(GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster", "Name");
+        }catch (Exception ex){
+            GuiUtil.getLogger().severe("Error in getClusters;");
+            ex.printStackTrace();
+        }
+        return clusters;
+    }
+
 }
