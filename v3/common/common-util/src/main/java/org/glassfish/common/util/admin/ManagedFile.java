@@ -79,6 +79,9 @@ public class ManagedFile {
 
     final File file;
     Timer timer = null;
+    RandomAccessFile raf = null;
+    FileChannel fc = null;
+
     final int maxHoldingTime;
     final int timeOut;
     final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
@@ -162,11 +165,19 @@ public class ManagedFile {
             timer.cancel();
             timer = null;
         }
+        if (raf!=null) {
+       		raf.close();
+       		raf=null;
+       	}
+       	if (fc!=null) {
+       	    fc.close();
+       	    fc = null;
+       	}
     }
 
     private FileLock access(boolean shared, String mode, int timeOut) throws IOException, TimeoutException {
-        RandomAccessFile raf = new RandomAccessFile(file, mode);
-        FileChannel fc = raf.getChannel();
+        raf = new RandomAccessFile(file, mode);
+        fc = raf.getChannel();
         final FileLock fl = get(fc, shared);
         if (maxHoldingTime != -1) {
             timer = new Timer();
