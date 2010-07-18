@@ -99,6 +99,7 @@ public class InstanceTest extends AdminBaseDevTest {
         createStartStopDelete();
         createAdminCommand();
         deleteAdminCommand();
+        cleanup();
         stopDomain();
         stat.printSummary();
     }
@@ -231,7 +232,7 @@ public class InstanceTest extends AdminBaseDevTest {
         printf("Call remote AdminCommand create-instance");
         String iname = "sugar";
         report("create-instance-success", asadmin("create-instance",
-            "--node", "localhost", "--nodeagent", "mrbean", iname));
+            "--node", "localhost", iname));
         report("create-instance-regdas", asadminWithOutput("get", "servers.server." + iname));
         report("create-instance-config", asadminWithOutput("get", "configs.config." + iname + "-config"));
 
@@ -239,12 +240,12 @@ public class InstanceTest extends AdminBaseDevTest {
         boolean success = ret.outAndErr.indexOf("servers.server." + iname + ".config-ref=" + iname + "-config") >= 0;
         report("create-instance-configref", success);
 
-        ret = asadminWithOutput("get", "servers.server." + iname + ".node-agent-ref");
-        success = ret.outAndErr.indexOf("servers.server." + iname + ".node-agent-ref=mrbean") >= 0;
-        report("create-instance-nodeagentref", success);
+        ret = asadminWithOutput("get", "servers.server." + iname + ".node");
+        success = ret.outAndErr.indexOf("servers.server." + iname + ".node=localhost") >= 0;
+        report("create-instance-node", success);
 
         report("create-instance-existsAlready", !asadmin("create-instance",
-            "--node", "localhost", "--nodeagent", "mrbean", iname));
+            "--node", "localhost", iname));
 
         createAdminCommandSystemProperties();
         createAdminCommandClusterConfig();
@@ -255,7 +256,7 @@ public class InstanceTest extends AdminBaseDevTest {
         String iname = "instancewithsysprops";
 
         report("create-instance-sysprops", asadminWithOutput("create-instance",
-                "--node", "localhost", "--nodeagent", "mrbean",
+                "--node", "localhost",
                 "--systemproperties", "prop1=valA:prop2=valB:prop3=valC", iname));
 
         AsadminReturn ret = asadminWithOutput("get", "servers.server." + iname + ".system-property.prop1.name");
@@ -284,8 +285,7 @@ public class InstanceTest extends AdminBaseDevTest {
         report("create-instance-cluster", asadmin("create-cluster", "jencluster"));
 
         report("create-instance-forcluster", asadmin("create-instance",
-                "--node", "localhost", "--nodeagent",
-                "mrbean", "--cluster", "jencluster", iname));
+                "--node", "localhost", "--cluster", "jencluster", iname));
 
         AsadminReturn ret = asadminWithOutput("get", "servers.server." + iname + ".config-ref");
         boolean success = ret.outAndErr.indexOf("servers.server." + iname + ".config-ref=jencluster-config") >= 0;
@@ -306,17 +306,14 @@ public class InstanceTest extends AdminBaseDevTest {
     private void createAdminCommandFail() {
         printf("Call remote AdminCommand create-instance with bad params");
         String iname = "badapple";
-        report("create-instance-nodeagentRequired", !asadmin("create-instance",
-            "--node", "localhost", iname));
+        report("create-instance-nosuchnode", !asadmin("create-instance",
+            "--node", "bogus", iname));
         report("create-instance-nosuchcluster", !asadmin("create-instance",
-            "--node", "localhost", "--nodeagent", "mrbean",
-            "--cluster", "nosuchcluster", iname));
+            "--node", "localhost", "--cluster", "nosuchcluster", iname));
         report("create-instance-nosuchconfig", !asadmin("create-instance",
-            "--node", "localhost", "--nodeagent", "mrbean",
-            "--config", "nosuchconfig", iname));
+            "--node", "localhost", "--config", "nosuchconfig", iname));
         report("create-instance-clusterandconfig", !asadmin("create-instance",
-            "--node", "localhost", "--nodeagent", "mrbean",
-            "--cluster", "c1", "--config", "config1", iname));
+            "--node", "localhost", "--cluster", "c1", "--config", "config1", iname));
     }
 
     private void deleteAdminCommandFail() {
@@ -368,6 +365,32 @@ public class InstanceTest extends AdminBaseDevTest {
             instanceNames[i] = "instance_" + i;
         }
     }
+
+    @Override
+    public void cleanup() {
+        //Cleanup the code so that tests run successfully next time
+        //Remove nodeagents\localhost directory so subsequent tests don't fail with 'More than one node agent in directory'
+        File nodeagents = new File(getGlassFishHome(), "nodeagents");
+        if (nodeagents.isDirectory()) {
+            File localhost = new File(nodeagents, "localhost");
+            if (localhost.isDirectory()) {
+                File agent = new File(localhost, "agent");
+                if (agent.isDirectory()) {
+                    File config = new File(agent, "config");
+                    if (config.isDirectory()) {
+                        File dasproperties = new File(config, "das.properties");
+                        if (dasproperties.isFile()) {
+                            dasproperties.delete();
+                            config.delete();
+                            agent.delete();
+                            localhost.delete();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private final String host;
     private final File glassFishHome;
     private final File instancesHome;
