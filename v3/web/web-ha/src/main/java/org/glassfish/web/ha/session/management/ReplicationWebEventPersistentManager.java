@@ -53,6 +53,7 @@ import org.glassfish.ha.store.api.BackingStoreConfiguration;
 import org.glassfish.ha.store.api.BackingStoreException;
 import org.glassfish.ha.store.api.BackingStoreFactory;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 
 import javax.servlet.ServletRequest;
@@ -69,17 +70,15 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Larry White
+ * @author Rajiv Mordani
  */
+@Service
 public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
         implements WebEventPersistentManager {
     
 
     @Inject
     Habitat habitat;
-
-    @Inject
-    Config config;
 
     @Inject
     GMSAdapterService gmsAdapterService;
@@ -122,7 +121,8 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
     
     /** Creates a new instance of ReplicationWebEventPersistentManager */
     public ReplicationWebEventPersistentManager() {
-        super();        
+        super();
+        _logger.info("ReplicationWebEventPersistentManager created");
     }
     
     /**
@@ -132,19 +132,20 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
     *   The session to store
     */    
     public void doValveSave(Session session) {
+        _logger.info("in doValveSave");
 
             try {
                 ReplicationStore replicationStore = (ReplicationStore) this.getStore();
                 // update this one's cache
-                replicationStore.getSessions().put(session.getIdInternal(), session);
-                _logger.finest("FINISHED repStore.valveSave");
+                //replicationStore.getSessions().put(session.getIdInternal(), session);
+                replicationStore.doValveSave(session);
+                _logger.info("FINISHED repStore.valveSave");
             } catch (Exception ex) {
-                //FIXME evaluate log level of exception event
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.log(Level.FINE, 
-                                "exception occurred in doValveSave id=" + ((HASession)session).getIdInternal(),
+                ex.printStackTrace();
+
+                _logger.log(Level.FINE, "exception occurred in doValveSave id=" + session.getIdInternal(),
                                 ex);
-                }
+                
             }
     }
    
@@ -168,7 +169,7 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
     }
     
     private Session getSession(ServletRequest request) {
-        javax.servlet.http.HttpServletRequest httpReq = 
+        javax.servlet.http.HttpServletRequest httpReq =
             (javax.servlet.http.HttpServletRequest) request;
         javax.servlet.http.HttpSession httpSess = httpReq.getSession(false);
         if(httpSess == null) {
@@ -287,9 +288,10 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
 
     @Override
     public void createBackingStore(String persistenceType) {
-        BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, persistenceType);
+        _logger.info("Create backing store invoked");
+        BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, "replication");
         BackingStoreConfiguration<String, SimpleMetadata> conf = new BackingStoreConfiguration<String, SimpleMetadata>();
-        config.getWebContainer().getSessionConfig().getSessionManager().getStoreProperties().getDirectory();
+        // config.getWebContainer().getSessionConfig().getSessionManager().getStoreProperties().getDirectory();
 
         if(gmsAdapterService.isGmsEnabled()) {
             clusterName = gmsAdapterService.getGMSAdapter().getClusterName();
@@ -299,10 +301,11 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
                 .setClusterName(clusterName)
                 .setInstanceName(instanceName)
                 .setStoreType(persistenceType)
-                .setKeyClazz(String.class).setValueClazz(SimpleMetadata.class)
-                .setBaseDirectory(new File(config.getWebContainer().getSessionConfig().getSessionManager().getStoreProperties().getDirectory()));
+                .setKeyClazz(String.class).setValueClazz(SimpleMetadata.class);
+
 
         try {
+            _logger.info("About to create backing store " + conf);
             this.backingStore = factory.createBackingStore(conf);
         } catch (BackingStoreException e) {
             e.printStackTrace();  

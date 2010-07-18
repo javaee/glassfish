@@ -79,7 +79,7 @@ public class ReplicationStore extends HAStoreBase {
      */
     public ReplicationStore(ServerConfigLookup serverConfigLookup) {
         super(serverConfigLookup);
-        setLogLevel();        
+        //setLogLevel();        
     }
     
 
@@ -102,6 +102,7 @@ public class ReplicationStore extends HAStoreBase {
      * @exception IOException if an input/output error occurs
      */    
     public void valveSave(Session session) throws IOException {
+/*
         HASession haSess = (HASession)session;
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("ReplicationStore>>valveSave id=" + haSess.getIdInternal() +
@@ -114,7 +115,9 @@ public class ReplicationStore extends HAStoreBase {
             haSess.setPersistent(true);
         }
         haSess.setDirty(false);
-    }    
+*/
+        this.doValveSave(session);
+    }
 
     /**
      * Save the specified Session into this Store.  Any previously saved
@@ -125,21 +128,25 @@ public class ReplicationStore extends HAStoreBase {
      * @exception IOException if an input/output error occurs
      */    
     public void doValveSave(Session session) throws IOException {
+/*
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("ReplicationStore>>doValveSave:id =" + ((HASession)session).getIdInternal());
             _logger.fine("ReplicationStore>>doValveSave:valid =" + ((StandardSession)session).getIsValid());
             _logger.fine("ReplicationStore>>doValveSave:ssoId=" + ((HASession)session).getSsoId());            
         }        
+*/
         // begin 6470831 do not save if session is not valid
         if( !((StandardSession)session).getIsValid() ) {
             return;
         }
         // end 6470831         
+/*
         String userName = "";
         if(session.getPrincipal() !=null){
             userName = session.getPrincipal().getName();
             ((BaseHASession)session).setUserName(userName);
         }
+*/
         byte[] sessionState = this.getByteArray(session, isReplicationCompressionEnabled());
         ReplicationManagerBase mgr
             = (ReplicationManagerBase)this.getManager();
@@ -150,13 +157,18 @@ public class ReplicationStore extends HAStoreBase {
         }        
         SimpleMetadata simpleMetadata =
             SimpleMetadataFactory.createSimpleMetadata(session.getVersion(),  //version
-                ((BaseHASession)session).getLastAccessedTimeInternal(), //lastaccesstime
+                session.getLastAccessedTime(), //lastaccesstime
                 session.getMaxInactiveInterval(), //maxinactiveinterval
                 sessionState); //state
         try {
-            HASession haSess = (HASession)session;
+//            HASession haSess = (HASession)session;
+//            replicator.save(session.getIdInternal(), //id
+//                    simpleMetadata, haSess.isPersistent());  //TODO: Revist the last param
+
             replicator.save(session.getIdInternal(), //id
-                    simpleMetadata, haSess.isPersistent());  //TODO: Revist the last param
+                    simpleMetadata,true);
+            _logger.info("Save succeeded. YAY");
+
         } catch (BackingStoreException ex) {
             IOException ex1 = 
                 (IOException) new IOException("Error during save: " + ex.getMessage()).initCause(ex);
@@ -191,6 +203,7 @@ public class ReplicationStore extends HAStoreBase {
      * @exception IOException if an input/output error occurs
      */    
     public void save(Session session) throws IOException {        
+/*
         HASession haSess = (HASession)session;
         if( haSess.isPersistent() && !haSess.isDirty() ) {
             this.updateLastAccessTime(session);
@@ -199,6 +212,8 @@ public class ReplicationStore extends HAStoreBase {
             haSess.setPersistent(true);
         }
         haSess.setDirty(false);        
+*/
+        this.doSave(session);
     }
     
     protected boolean isReplicationCompressionEnabled() {
@@ -230,7 +245,7 @@ public class ReplicationStore extends HAStoreBase {
                
         try {
             backingStore.save(session.getIdInternal(), //id
-                    simpleMetadata, !((HASession) session).isPersistent());  //TODO: Revist the last param
+                    simpleMetadata, true);  //TODO: Revist the last param
         } catch (BackingStoreException ex) {
             IOException ex1 = 
                 (IOException) new IOException("Error during save: " + ex.getMessage()).initCause(ex);

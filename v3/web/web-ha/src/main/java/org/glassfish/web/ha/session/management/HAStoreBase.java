@@ -65,6 +65,13 @@ public abstract class HAStoreBase extends StoreBase {
 
     protected ServerConfigLookup serverConfigLookup;
 
+    /**
+     * The logger to use for logging ALL web container related messages.
+     */
+    protected static final Logger _logger
+        = LogDomains.getLogger(HAStoreBase.class, LogDomains.WEB_LOGGER);    
+
+
     /** Creates a new instance of HAStoreBase */
     public HAStoreBase(ServerConfigLookup serverConfigLookup) {
         this.serverConfigLookup = serverConfigLookup;
@@ -86,7 +93,7 @@ public abstract class HAStoreBase extends StoreBase {
     /**
      * The current level of logging verbosity for this object.
      */
-    protected Level _logLevel = null;    
+    protected Level _logLevel = Level.FINE;    
     
     /**
      * Set _debug flag and _logLevel based on the log level.
@@ -94,6 +101,9 @@ public abstract class HAStoreBase extends StoreBase {
     protected void setLogLevel() {
         Level level = _logger.getLevel();
         _logLevel = level;
+        if(_logLevel == null) {
+            _logLevel = Level.FINE;
+        }
 
         // Determine the appropriate value our debug level
         if (level.equals(Level.FINE))
@@ -310,10 +320,5 @@ public abstract class HAStoreBase extends StoreBase {
     
 
     
-    /**
-     * The logger to use for logging ALL web container related messages.
-     */
-    protected static final Logger _logger 
-        = LogDomains.getLogger(HAStoreBase.class, LogDomains.WEB_LOGGER);    
-    
+
 }
