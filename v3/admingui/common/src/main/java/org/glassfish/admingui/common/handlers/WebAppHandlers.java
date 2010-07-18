@@ -454,8 +454,26 @@ public class WebAppHandlers {
         }
     }
 
-
-
+    @Handler(id = "getConfigName",
+        input = {
+            @HandlerInput(name = "target", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "configName", type = String.class)})
+    public static void getConfigName(HandlerContext handlerCtx) {
+        String target = (String) handlerCtx.getInputValue("target");
+        String endpoint = (String)GuiUtil.getSessionValue("REST_URL");
+        if (target.equals("server")){
+            endpoint = endpoint + "/servers/server/server";
+        }else{
+            List clusters = TargetUtil.getClusters();
+            if (clusters.contains(target)){
+                endpoint = endpoint + "/clusters/cluster/" + target;
+            }else{
+                endpoint = endpoint + "/servers/server/" + target;
+            }
+        }
+        handlerCtx.setOutputValue("configName", RestApiHandlers.getAttributesMap(endpoint).get("ConfigRef"));
+    }
     /*
      * Get the application type for the specified appName.
      * If there isComposite property is true, the appType will be returned as 'ear'
