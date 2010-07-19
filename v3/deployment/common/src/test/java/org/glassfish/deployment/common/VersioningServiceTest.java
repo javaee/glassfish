@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.deployment.versioning;
+package org.glassfish.deployment.common;
 
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;

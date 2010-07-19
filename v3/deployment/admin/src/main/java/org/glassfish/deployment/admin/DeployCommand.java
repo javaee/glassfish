@@ -264,7 +264,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             // clean up any left over repository files
             if ( ! keepreposdir.booleanValue()) {
-                FileUtils.whack(new File(env.getApplicationRepositoryPath(), name));
+                FileUtils.whack(new File(env.getApplicationRepositoryPath(), VersioningDeploymentUtil.getRepositoryName(name)));
             }
 
             File source = new File(archive.getURI().getSchemeSpecificPart());

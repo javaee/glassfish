@@ -56,7 +56,7 @@ public class VersioningDeploymentUtil {
             new LocalStringManagerImpl(VersioningDeploymentUtil.class);
     public static final String EXPRESSION_SEPARATOR = ":";
     public static final String EXPRESSION_WILDCARD = "*";
-    public static final String REPOSITORY_DASH = "-";
+    public static final String REPOSITORY_DASH = "~";
 
     /**
      * Extract the untagged name for a given application name that complies
