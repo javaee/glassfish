@@ -34,6 +34,8 @@
 	<ant dir="nowebxml" target="all"/>
         <ant dir="webservices13-respectbinding" target="all"/>
 	<ant dir="async" target="all"/>
+	<ant dir="restful" target="all"/>
+	<ant dir="restful-2" target="all"/>
 	<ant dir="pkgedwarservice" target="all"/>
 	<!--<ant dir="mbyte" target="all"/>-->
 	<ant dir="postconstruct" target="all"/>
@@ -42,8 +44,6 @@
 	<ant dir="prepkged-svc-1" target="all"/>
 	<ant dir="libdependent" target="all"/>
 	<ant dir="soaptcp" target="all"/>
-	<ant dir="restful" target="all"/>
-	<ant dir="restful-2" target="all"/>
 -->
     </target>
 </project>
