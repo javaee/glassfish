@@ -96,16 +96,20 @@ public class ClusterOperationUtil {
                                                    AdminCommandContext context,
                                                    ParameterMap parameters,
                                                    Habitat habitat) {
-        List<Server> serversForReplication = new ArrayList<Server>();
+        ActionReport.ExitCode result = ActionReport.ExitCode.SUCCESS;
         Target targetService = habitat.getComponent(Target.class);
         for(String t : targetNames) {
             if(CommandTarget.DAS.isValid(habitat, t) ||
                     CommandTarget.DOMAIN.isValid(habitat, t))
                 continue;
-            serversForReplication.addAll(targetService.getInstances(t));
+            parameters.set("target", t);
+            ActionReport.ExitCode returnValue = ClusterOperationUtil.replicateCommand(commandName,
+                    failPolicy, offlinePolicy, targetService.getInstances(t), context, parameters, habitat);
+            if(!returnValue.equals(ActionReport.ExitCode.SUCCESS)) {
+                result = returnValue;
+            }
         }
-        return ClusterOperationUtil.replicateCommand(commandName, failPolicy, offlinePolicy, serversForReplication,
-                context, parameters, habitat);
+        return result;
     }
 
     /**

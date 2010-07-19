@@ -954,11 +954,11 @@ public class CommandRunnerImpl implements CommandRunner {
                     }
                 }
 
-                if(serverEnv.isDas()) {
-                    String targetName = parameters.getOne("target");
+                String targetName = parameters.getOne("target");
+                if(targetName == null)
+                    targetName = "server";
 
-                    if(targetName == null)
-                        targetName = "server";
+                if(serverEnv.isDas()) {
 
                     // Check if the command allows this target type; first read the annotation
                     //TODO : See is @TargetType can also be moved to the CommandModel
@@ -1044,7 +1044,8 @@ public class CommandRunnerImpl implements CommandRunner {
                 }
                 //Run main command if it is applicable for this instance type
                 if( (runtimeTypes.contains(RuntimeType.ALL)) ||
-                    (serverEnv.isDas() && runtimeTypes.contains(RuntimeType.DAS)) ||
+                    (serverEnv.isDas() &&
+                        (CommandTarget.DOMAIN.isValid(habitat, targetName) || runtimeTypes.contains(RuntimeType.DAS))) ||
                     (serverEnv.isInstance() && runtimeTypes.contains(RuntimeType.INSTANCE)) ) {
                     doCommand(model, command, context);
                 }
