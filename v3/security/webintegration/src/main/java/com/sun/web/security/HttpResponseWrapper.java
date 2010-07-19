@@ -66,10 +66,6 @@ class HttpResponseWrapper extends HttpServletResponseWrapper
     }
     
     // ----- HttpResponse Methods -----
-    public Cookie[] getCookies() {
-        return httpResponse.getCookies();
-    }
-    
     public String getHeader(String name) {
         return httpResponse.getHeader(name);
     }
