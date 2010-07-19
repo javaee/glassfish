@@ -61,16 +61,16 @@ import java.util.logging.Logger;
 /**
  * Defines the notion of a managed file with a classic Read-Write locking policy.
  * A managed file can be locked for multiple concurrent reads or a single write.
- *
+ * <p/>
  * A simple example could follow this :
- *
+ * <p/>
  * ManagedFile managedFile = new ManagedFile(new File(...), 1000, -1);
  * Lock writeLock;
  * try {
- *     writeLock = managedFile.writeAccess();
- *     // write or delete the file
+ * writeLock = managedFile.writeAccess();
+ * // write or delete the file
  * } finally {
- *     writeLock.unlock();
+ * writeLock.unlock();
  * }
  *
  * @author Jerome Dochez
@@ -78,10 +78,6 @@ import java.util.logging.Logger;
 public class ManagedFile {
 
     final File file;
-    Timer timer = null;
-    RandomAccessFile raf = null;
-    FileChannel fc = null;
-
     final int maxHoldingTime;
     final int timeOut;
     final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
@@ -91,13 +87,13 @@ public class ManagedFile {
 
     final static Logger logger = LogDomains.getLogger(ManagedFile.class, LogDomains.ADMIN_LOGGER);
     final static LocalStringManagerImpl localStrings =
-            new LocalStringManagerImpl(ParamTokenizer.class);    
+            new LocalStringManagerImpl(ParamTokenizer.class);
 
     /**
      * Creates a new managed file.
      *
-     * @param file the file to manage
-     * @param timeOut the max time in milliseconds to wait for a read or write lock
+     * @param file           the file to manage
+     * @param timeOut        the max time in milliseconds to wait for a read or write lock
      * @param maxHoldingTime the max time in milliseconds to hold the read or write lock
      * @throws IOException when the file cannot be locked
      */
@@ -107,106 +103,15 @@ public class ManagedFile {
         this.timeOut = timeOut;
     }
 
-    private FileLock get(FileChannel fc, boolean shared) throws IOException, TimeoutException {
-
-        FileLock fl;
-
-        boolean wasInterrupted = false;
-        Thread current = Thread.currentThread();
-        waiters.add(current);
-
-        // calculate how much time we want to be blocked for
-        long endTime = System.currentTimeMillis() + timeOut;
-        // so far, we wait in 1/10th increment of the requested timeOut.
-        final int individualWaitTime = timeOut / 10;
-
-        // Block while not first in queue or cannot acquire lock
-        while (waiters.peek() != current ||
-                (fl = getLock(fc, shared)) == null) {
-            // I cannot just park the thread and signal it since the
-            // the lock maybe owned by a different process. I just need
-            // to wait...
-
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Waiting..." + individualWaitTime);
-            }
-            if (System.currentTimeMillis() > endTime) {
-                throw new TimeoutException(localStrings.getLocalString("FileLockTimeOut",
-                        "time out expired on locking {0}",file.getPath()));
-            }
-            try {
-                Thread.sleep(individualWaitTime);
-            } catch (InterruptedException e) {
-                wasInterrupted = true;
-            }
-            if (Thread.interrupted()) // ignore interrupts while waiting
-                wasInterrupted = true;
-        }
-
-        waiters.remove();
-        if (wasInterrupted)          // reassert interrupt status on exit
-            current.interrupt();
-
-        return fl;
-
-    }
-
-    private FileLock getLock(FileChannel fc, boolean shared) throws IOException {
-        try {
-            return fc.lock(0, Long.MAX_VALUE, shared);
-        } catch (OverlappingFileLockException e) {
-            return null;
-        }
-    }
-
-    private void release(FileLock lock) throws IOException {
-        lock.release();
-        if (timer != null) {
-            timer.cancel();
-            timer = null;
-        }
-        if (raf!=null) {
-       		raf.close();
-       		raf=null;
-       	}
-       	if (fc!=null) {
-       	    fc.close();
-       	    fc = null;
-       	}
-    }
-
-    private FileLock access(boolean shared, String mode, int timeOut) throws IOException, TimeoutException {
-        raf = new RandomAccessFile(file, mode);
-        fc = raf.getChannel();
-        final FileLock fl = get(fc, shared);
-        if (maxHoldingTime != -1) {
-            timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        if (fl.isValid()) {
-                            logger.severe(localStrings.getLocalString("FileLockNotReleased",
-                                    "File Lock not released on {0}", file.getPath()));
-                            release(fl);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, timeOut);
-        }
-        return fl;
-    }
 
     /**
      * Blocks for {@link ManagedFile#timeOut} milliseconds for the write access
      * to the managed file.
      *
      * @return the lock instance on the locked file.
-     * @throws IOException if the file cannot be locked
+     * @throws IOException      if the file cannot be locked
      * @throws TimeoutException if the lock cannot be obtained before the timeOut
-     * expiration.
+     *                          expiration.
      */
     public Lock accessWrite() throws IOException, TimeoutException {
         wl._lock();
@@ -218,9 +123,9 @@ public class ManagedFile {
      * to the managed file.
      *
      * @return the lock instance on the locked file.
-     * @throws IOException if the file cannot be locked
+     * @throws IOException      if the file cannot be locked
      * @throws TimeoutException if the lock cannot be obtained before the timeOut
-     * expiration.
+     *                          expiration.
      */
     public Lock accessRead() throws IOException, TimeoutException {
         rl._lock();
@@ -232,14 +137,107 @@ public class ManagedFile {
      * through a reference counter when all these users are done. Each thread
      * must call {@link RefCounterLock#unlock()} to release the lock, when the
      * reference counter returns to zero, the file lock is release.
-     * 
      */
     private class RefCounterLock implements Lock {
         final Lock lock;
         final boolean read;
         final AtomicInteger refs = new AtomicInteger(0);
         FileLock fileLock;
+        RandomAccessFile raf;
+        FileChannel fc;
         Timer timer;
+
+        private FileLock get(FileChannel fc, boolean shared) throws IOException, TimeoutException {
+
+            FileLock fl;
+
+            boolean wasInterrupted = false;
+            Thread current = Thread.currentThread();
+            waiters.add(current);
+
+            // calculate how much time we want to be blocked for
+            long endTime = System.currentTimeMillis() + timeOut;
+            // so far, we wait in 1/10th increment of the requested timeOut.
+            final int individualWaitTime = timeOut / 10;
+
+            // Block while not first in queue or cannot acquire lock
+            while (waiters.peek() != current ||
+                    (fl = getLock(fc, shared)) == null) {
+                // I cannot just park the thread and signal it since the
+                // the lock maybe owned by a different process. I just need
+                // to wait...
+
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("Waiting..." + individualWaitTime);
+                }
+                if (System.currentTimeMillis() > endTime) {
+                    throw new TimeoutException(localStrings.getLocalString("FileLockTimeOut",
+                            "time out expired on locking {0}", file.getPath()));
+                }
+                try {
+                    Thread.sleep(individualWaitTime);
+                } catch (InterruptedException e) {
+                    wasInterrupted = true;
+                }
+                if (Thread.interrupted()) // ignore interrupts while waiting
+                    wasInterrupted = true;
+            }
+
+            waiters.remove();
+            if (wasInterrupted)          // reassert interrupt status on exit
+                current.interrupt();
+
+            return fl;
+
+        }
+
+        private FileLock getLock(FileChannel fc, boolean shared) throws IOException {
+            try {
+                return fc.lock(0, Long.MAX_VALUE, shared);
+            } catch (OverlappingFileLockException e) {
+                return null;
+            }
+        }
+
+        private synchronized FileLock access(boolean shared, String mode, int timeOut) throws IOException, TimeoutException {
+            raf = new RandomAccessFile(file, mode);
+            fc = raf.getChannel();
+            final FileLock fl = get(fc, shared);
+            if (maxHoldingTime != -1) {
+                timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (fl.isValid()) {
+                                logger.severe(localStrings.getLocalString("FileLockNotReleased",
+                                        "File Lock not released on {0}", file.getPath()));
+                                release(fl);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, timeOut);
+            }
+            return fl;
+        }
+
+        private synchronized void release(FileLock lock) throws IOException {
+            lock.release();
+            if (timer != null) {
+                timer.cancel();
+                timer = null;
+            }
+            if (raf != null) {
+                raf.close();
+                raf = null;
+            }
+            if (fc != null) {
+                fc.close();
+                fc = null;
+            }
+        }
 
         private RefCounterLock(Lock lock, boolean read) {
             this.lock = lock;
