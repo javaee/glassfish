@@ -215,7 +215,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         }
         
         if(!authenticated) {
-            authenticated = authenticateViaAdminRalm(req.getRequest());
+            authenticated = authenticateViaAdminRealm(req.getRequest());
         }
 
         return authenticated;
@@ -260,7 +260,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     }
 
 
-    private boolean authenticateViaAdminRalm(Request req) throws LoginException, IOException  {
+    private boolean authenticateViaAdminRealm(Request req) throws LoginException, IOException  {
         String[] up = AdminAdapter.getUserPassword(req);
         String user = up[0];
         String password = up.length > 1 ? up[1] : "";

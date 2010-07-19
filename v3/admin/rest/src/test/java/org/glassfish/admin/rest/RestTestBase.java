@@ -37,16 +37,14 @@ package org.glassfish.admin.rest;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import com.sun.jersey.multipart.file.FileDataBodyPart;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import org.junit.BeforeClass;
 
 import java.math.BigInteger;
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,6 +55,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.glassfish.admin.rest.clientutils.MarshallingUtils;
+import org.junit.Before;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -67,25 +66,27 @@ public class RestTestBase {
     public static final String BASE_URL = "http://localhost:4848/management";
     public static final String BASE_URL_DOMAIN = BASE_URL + "/domain";
     public static final String RESPONSE_TYPE = MediaType.APPLICATION_XML;
+    protected static final String AUTH_USER_NAME = "dummyuser";
+    protected static final String AUTH_PASSWORD = "dummypass";
 
-    protected static Client client;
+    protected Client client;
 
     public RestTestBase() {
     }
 
-    @BeforeClass
-    public static void setup() {
+    @Before
+    public void setup() {
         if (client == null) {
             client = Client.create();
         }
+    }
 
-        Authenticator.setDefault(new Authenticator() {
+    protected void resetClient() {
+        client.removeAllFilters();
+    }
 
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("admin", "admin".toCharArray());
-            }
-        });
+    protected void authenticate() {
+        client.addFilter(new HTTPBasicAuthFilter(AUTH_USER_NAME, AUTH_PASSWORD));
     }
 
     protected static String generateRandomString() {

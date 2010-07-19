@@ -36,6 +36,7 @@
 
 package org.glassfish.admin.rest;
 
+import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Set;
@@ -54,33 +55,31 @@ public class SessionManager {
 
     private final SecureRandom randomGenerator = new SecureRandom();
 
-    private Map<Long,SessionData > activeSessions = new ConcurrentHashMap<Long, SessionData>(); //To guard against parallel mutation corrupting the map  
+    private Map<String, SessionData> activeSessions = new ConcurrentHashMap<String, SessionData>(); //To guard against parallel mutation corrupting the map
 
     //TODO createSession is public. this package should not be exported
     public String createSession() {
-        long sessionId;
+        String sessionId;
         do {
-            sessionId = randomGenerator.nextLong();
+            sessionId = new BigInteger(130, randomGenerator).toString(16);
         } while(isSessionExist(sessionId));
 
         saveSession(sessionId);
-        return Long.toString(sessionId);
+        return sessionId;
     }
 
     public boolean authenticate(String sessionId) {
         boolean authenticated = false;
 
-        Long sessionIdKey = convertToSessionIdKey(sessionId);
-
-        if(sessionIdKey != null) {
-            SessionData sessionData = activeSessions.get(sessionIdKey);
+        if(sessionId != null) {
+            SessionData sessionData = activeSessions.get(sessionId);
             if(sessionData != null) {
                 authenticated = sessionData.isSessionActive();
                 if(authenticated) {
                     // update last access time
                     sessionData.updateLastAccessTime();
                 } else {
-                    activeSessions.remove(sessionIdKey);
+                    activeSessions.remove(sessionId);
                 }
             }
         }
@@ -94,55 +93,39 @@ public class SessionManager {
      */
     public boolean deleteSession(String sessionId) {
         boolean sessionDeleted = false;
-        Long sessionIdKey = convertToSessionIdKey(sessionId);
         if(sessionId != null) {
-            SessionData removedSession = activeSessions.remove(sessionIdKey);
+            SessionData removedSession = activeSessions.remove(sessionId);
             sessionDeleted = (removedSession != null);
         }
         return sessionDeleted;
     }
 
-
-    /**
-     * @return converted <code>String sessionId</code>to Long. Null if the String can not be parsed to Long
-     */
-    private Long convertToSessionIdKey(String sessionId) {
-        Long sessionIdKey;
-        try {
-            sessionIdKey = Long.parseLong(sessionId);
-        }catch (NumberFormatException e) {
-            sessionIdKey = null;
-        }
-        return sessionIdKey;
-    }
-
-
-    private void saveSession(long sessionId) {
+    private void saveSession(String sessionId) {
         purgeInactiveSessions();
         activeSessions.put(sessionId, new SessionData(sessionId) );
     }
 
     private void purgeInactiveSessions() {
-        Set<Map.Entry<Long, SessionData>> activeSessionsSet = activeSessions.entrySet();
-        for (Map.Entry<Long, SessionData> entry : activeSessionsSet) {
+        Set<Map.Entry<String, SessionData>> activeSessionsSet = activeSessions.entrySet();
+        for (Map.Entry<String, SessionData> entry : activeSessionsSet) {
             if(!entry.getValue().isSessionActive() ) {
                 activeSessionsSet.remove(entry);
             }
         }
     }
 
-    private boolean isSessionExist(long sessionId) {
+    private boolean isSessionExist(String sessionId) {
         return activeSessions.containsKey(sessionId);
     }
 
     private static class SessionData{
         private static long INACTIVE_SESSION_DEFAULT_LIFETIME_IN_MILIS = 30 /*mins*/ * 60 /*secs/min*/ * 1000 /*milis/seconds*/;
-        private long sessionId;
+        private String sessionId;
         private long creationTime = System.currentTimeMillis();
         private long lassAccessedTime = creationTime;
         private long inactiveSessionLifeTime = INACTIVE_SESSION_DEFAULT_LIFETIME_IN_MILIS;
 
-        public SessionData(long sessionId) {
+        public SessionData(String sessionId) {
             this.sessionId = sessionId;
         }
 

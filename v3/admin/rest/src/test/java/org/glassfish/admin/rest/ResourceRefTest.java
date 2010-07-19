@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  * @author jasonlee
  */
 public class ResourceRefTest extends RestTestBase {
-    public static final String URL_CREATE_INSTANCE = BASE_URL + "/create-instance";
-    public static final String URL_JDBC_RESOURCE = BASE_URL + "/resources/jdbc-resource";
-    public static final String URL_RESOURCE_REF = BASE_URL + "/servers/server/server/resource-ref";
+    public static final String URL_CREATE_INSTANCE = BASE_URL_DOMAIN + "/create-instance";
+    public static final String URL_JDBC_RESOURCE = BASE_URL_DOMAIN + "/resources/jdbc-resource";
+    public static final String URL_RESOURCE_REF = BASE_URL_DOMAIN + "/servers/server/server/resource-ref";
     public static final String URL_DELETE_INSTANCE = "";
 
     @Test
@@ -49,9 +49,9 @@ public class ResourceRefTest extends RestTestBase {
             response = post(URL_RESOURCE_REF, resourceRef);
             assertTrue(isSuccess(response));
         } finally {
-            ClientResponse response = delete(BASE_URL + "/servers/server/" + instanceName + "/resource-ref/" + jdbcResourceName, new HashMap<String, String>() {{ put("target", instanceName); }});
+            ClientResponse response = delete(BASE_URL_DOMAIN + "/servers/server/" + instanceName + "/resource-ref/" + jdbcResourceName, new HashMap<String, String>() {{ put("target", instanceName); }});
             assertTrue(isSuccess(response));
-            response = get(BASE_URL + "/servers/server/" + instanceName + "/resource-ref/" + jdbcResourceName);
+            response = get(BASE_URL_DOMAIN + "/servers/server/" + instanceName + "/resource-ref/" + jdbcResourceName);
             assertFalse(isSuccess(response));
 
             response = delete(URL_JDBC_RESOURCE + "/" + jdbcResourceName);
@@ -59,9 +59,9 @@ public class ResourceRefTest extends RestTestBase {
             response = get(URL_JDBC_RESOURCE + "/" + jdbcResourceName);
             assertFalse(isSuccess(response));
             
-            response = delete(BASE_URL + "/servers/server/" + instanceName + "/delete-instance");
+            response = delete(BASE_URL_DOMAIN + "/servers/server/" + instanceName + "/delete-instance");
             assertTrue(isSuccess(response));
-            response = get(BASE_URL + "/servers/server/" + instanceName);
+            response = get(BASE_URL_DOMAIN + "/servers/server/" + instanceName);
             assertFalse(isSuccess(response));
         }
     }

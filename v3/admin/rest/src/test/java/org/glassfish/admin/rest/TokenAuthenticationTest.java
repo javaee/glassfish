@@ -36,36 +36,94 @@
 
 package org.glassfish.admin.rest;
 
+import java.util.HashMap;
+import java.util.Map;
 import com.sun.jersey.api.client.ClientResponse;
 import javax.ws.rs.core.Cookie;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Mitesh Meswani
  */
 public class TokenAuthenticationTest extends RestTestBase {
     private static final String URL_DOMAIN_SESSIONS = BASE_URL + "/sessions";
+    private static final String URL_CREATE_USER = BASE_URL_DOMAIN + "/configs/config/server-config/security-service/auth-realm/admin-realm/create-user";
+    private static final String URL_DELETE_USER = BASE_URL_DOMAIN + "/configs/config/server-config/security-service/auth-realm/admin-realm/delete-user";
     private static final String GF_REST_TOKEN_COOKIE_NAME = "gfresttoken";
+    private static final String TEST_GROUP = "newgroup";
 
     @Test
-    public void testToken() {
+    public void testTokenCreateAndDelete() {
+        deleteUserAuthTestUser(); // just in case
         //Verify a session token got created
-        ClientResponse response = post(URL_DOMAIN_SESSIONS);
-        assertTrue(isSuccess(response));
-        String token = response.getEntity(String.class);
+        String token = getSessionToken();
 
         // Verify we can use the session token.
-        // TODO make sure to turn on authentication for domain to assert that the token does work
-        response = client.resource(BASE_URL_DOMAIN).cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token)).get(ClientResponse.class);
+        ClientResponse response = client.resource(BASE_URL_DOMAIN).cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token)).get(ClientResponse.class);
         assertTrue(isSuccess(response));
 
         //Delete the token
         response = client.resource(URL_DOMAIN_SESSIONS + "/" + token).cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token)).delete(ClientResponse.class); delete(URL_DOMAIN_SESSIONS);
         assertTrue(isSuccess(response));
-
-        //TODO Try to access a resource and verify that we get 401
     }
 
+    @Test
+    public void testAuthRequired() {
+            Map<String, String> newUser = new HashMap<String, String>() {{
+            put("id", AUTH_USER_NAME);
+            put("groups", TEST_GROUP);
+            put("AS_ADMIN_USERPASSWORD", AUTH_PASSWORD);
+        }};
+
+        try {
+            // Delete the test user if it exists
+            deleteUserAuthTestUser();
+
+            // Verify that we can get unauthenticated access to the server
+            ClientResponse response = get(BASE_URL_DOMAIN);
+            assertTrue(isSuccess(response));
+
+            // Create the new user
+            response = post(URL_CREATE_USER, newUser);
+            assertTrue(isSuccess(response));
+
+            // Verify that we must now authentication (response.status = 401)
+            response = get(BASE_URL_DOMAIN);
+            assertFalse(isSuccess(response));
+
+            // Authenticate, get the token, then "clear" the authentication
+            authenticate();
+            String token = getSessionToken();
+            resetClient();
+
+            // Build this request manually so we can pass the cookie
+            response = client.resource(BASE_URL_DOMAIN).cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token)).get(ClientResponse.class);
+            assertTrue(isSuccess(response));
+
+            // Request again w/o the cookie.  This should fail.
+            response = get(BASE_URL_DOMAIN);
+            assertFalse(isSuccess(response));
+        } finally {
+            // Clean up after ourselves
+            deleteUserAuthTestUser();
+        }
+    }
+
+    protected String getSessionToken() {
+        ClientResponse response = post(URL_DOMAIN_SESSIONS);
+        assertTrue(isSuccess(response));
+        return response.getEntity(String.class);
+    }
+
+    private void deleteUserAuthTestUser() {
+        ClientResponse response = delete(URL_DELETE_USER, new HashMap<String, String>() {{ put("id", AUTH_USER_NAME); }});
+        if (response.getStatus() == 401) {
+            authenticate();
+            response = delete(URL_DELETE_USER, new HashMap<String, String>() {{ put("id", AUTH_USER_NAME); }});
+            assertTrue(isSuccess(response));
+            resetClient();
+        }
+    }
 }
