@@ -83,22 +83,10 @@ public final class RemoteInstanceCommandHelper {
 
         String hostName = null;
 
-        if (server == null)
+        if (server == null || nodes == null)
             return null;
 
-        // For backwards compatibility we first check node-agent-ref
-        // which in earlier builds contained the instances host name
-        hostName = server.getNodeAgentRef();
-
-        if (StringUtils.ok(hostName)) {
-            return hostName;
-        }
-
-        if (nodes == null) {
-            return null;
-        }
-
-        // No node-agent-ref. Get it from the node associated with the server
+        // Get it from the node associated with the server
         String nodeName = server.getNode();
         if (StringUtils.ok(nodeName)) {
             Node node = nodes.getNode(nodeName);
@@ -246,13 +234,8 @@ public final class RemoteInstanceCommandHelper {
         // isToken returned true so we are NOT assuming anything below!
         String key = portString.substring(2, portString.length() - 1);
 
-        // TODO TODO TODO
-        // TODO TODO TODO
         // check cluster and the cluster's config if applicable
-        // TODO TODO TODO
-        // TODO TODO TODO
-        // TODO TODO TODO
-
+        // bnevins Jul 18, 2010 -- don't botehr this should never be called anymore
         SystemProperty prop = server.getSystemProperty(key);
 
         if (prop != null) {
