@@ -87,7 +87,13 @@ public class ResourcesUtil {
         runtime = ConnectorRuntime.getRuntime();
         resources = runtime.getResources();
         domain = runtime.getDomain();
-        server = domain.getServerNamed(runtime.getServerEnvironment().getInstanceName());
+
+    }
+    private Server getServer(){
+        if(server == null){
+            server = domain.getServerNamed(runtime.getServerEnvironment().getInstanceName());
+        }
+        return server;
     }
     public static void setServerContext(ServerContext sc) {
         sc_ = sc;
@@ -561,7 +567,7 @@ public class ResourcesUtil {
      * @return true if the named resource is used/referred by this server
      */
     protected boolean isReferenced(String resourceName) {
-        boolean refExists = server.isResourceRefExists(resourceName);
+        boolean refExists = getServer().isResourceRefExists(resourceName);
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("isReferenced :: " + resourceName + " - "+ refExists);
         }
@@ -586,7 +592,7 @@ public class ResourcesUtil {
         if (resource == null){
             return false;
         }else if (resource instanceof BindableResource) {
-            ResourceRef resRef = server.getResourceRef(
+            ResourceRef resRef = getServer().getResourceRef(
                     ((BindableResource) resource).getJndiName());
             return isEnabled((BindableResource) resource) &&
                     ((resRef != null) && parseBoolean(resRef.getEnabled()));
@@ -673,7 +679,7 @@ public class ResourcesUtil {
      * @return boolean indicating the status
      */
     private boolean isApplicationReferenceEnabled(String appName) {
-        ApplicationRef appRef = server.getApplicationRef(appName);
+        ApplicationRef appRef = getServer().getApplicationRef(appName);
         if (appRef == null) {
             _logger.fine("ResourcesUtil :: isApplicationReferenceEnabled null ref");
             if(isADeployEvent()){
@@ -728,7 +734,7 @@ public class ResourcesUtil {
      * @return boolean indicating whether the resource-ref is enabled.
      */
     private boolean isResourceReferenceEnabled(String resourceName) {
-        ResourceRef ref = server.getResourceRef(resourceName);
+        ResourceRef ref = getServer().getResourceRef(resourceName);
         if (ref == null) {
             _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null ref");
             if(isADeployEvent())

@@ -181,23 +181,25 @@ public class JdbcResourceDeployer implements ResourceDeployer {
     private void checkAndDeletePool(JdbcResource cr) throws Exception {
         String poolName = cr.getPoolName();
         Resources res = (Resources) cr.getParent();
+        //Its possible that the JdbcResource here is a DataSourceDefinition. Ignore optimization.
+        if(res != null){
+            try {
+                boolean poolReferred =
+                    ResourcesUtil.createInstance().isJdbcPoolReferredInServerInstance(poolName);
+                if (!poolReferred) {
+                    _logger.fine("Deleting JDBC pool [" + poolName + " ] as there are no more " +
+                            "resource-refs to the pool in this server instance");
 
-        try {
-            boolean poolReferred =
-                ResourcesUtil.createInstance().isJdbcPoolReferredInServerInstance(poolName);
-            if (!poolReferred) {
-                _logger.fine("Deleting JDBC pool [" + poolName + " ] as there are no more " +
-                        "resource-refs to the pool in this server instance");
-
-                JdbcConnectionPool jcp = (JdbcConnectionPool)
-                        res.getResourceByName(JdbcConnectionPool.class, poolName);
-                //Delete/Undeploy Pool
-                runtime.getResourceDeployer(jcp).undeployResource(jcp);
+                    JdbcConnectionPool jcp = (JdbcConnectionPool)
+                            res.getResourceByName(JdbcConnectionPool.class, poolName);
+                    //Delete/Undeploy Pool
+                    runtime.getResourceDeployer(jcp).undeployResource(jcp);
+                }
+            } catch (Exception ce) {
+                _logger.warning(ce.getMessage());
+                _logger.fine("Exception while deleting pool [ "+poolName+" ] : " + ce );
+                throw ce;
             }
-        } catch (Exception ce) {
-            _logger.warning(ce.getMessage());
-            _logger.fine("Exception while deleting pool [ "+poolName+" ] : " + ce );
-            throw ce;
         }
     }
 }
