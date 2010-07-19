@@ -445,6 +445,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link GroupManagementService }
      */
     @Element
+    @NotNull
     GroupManagementService getGroupManagementService();
 
     /**
