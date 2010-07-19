@@ -121,6 +121,12 @@
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-embed-impl</artifactId>
             <version>${project.version}</version>
-    	</dependency>     	
+    	</dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>web-ha</artifactId>
+            <version>${project.version}</version>
+    	</dependency>
+        
     </dependencies>
 </project>
