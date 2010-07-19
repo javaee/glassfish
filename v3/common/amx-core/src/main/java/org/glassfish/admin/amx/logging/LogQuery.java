@@ -122,7 +122,8 @@ public interface LogQuery
         @Param(name="toTime") Long    toTime,
         @Param(name="logLevel") String   logLevel,
         @Param(name="modules") Set<String>      modules,
-        @Param(name="nameValuePairs") List<Attribute> 	 nameValuePairs);
+        @Param(name="nameValuePairs") List<Attribute> 	 nameValuePairs,
+        @Param(name = "anySearch") String anySearch);
     
     /**
         Value for the <code>maximumNumberOfResults</code> parameter to

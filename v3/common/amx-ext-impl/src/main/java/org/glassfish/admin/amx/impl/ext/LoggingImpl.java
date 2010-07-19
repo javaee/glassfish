@@ -422,11 +422,12 @@ public final class LoggingImpl extends AMXImplBase
         Long    toTime,
         String   logLevel,
         Set<String>     modules,
-        List<Attribute> nameValuePairs)
+        List<Attribute> nameValuePairs,
+        String anySearch)
     {
         final List<Serializable[]>    result  = queryServerLogInternal(
                  name, startIndex, searchForward, maximumNumberOfResults,
-                 fromTime, toTime, logLevel, modules, nameValuePairs );
+                 fromTime, toTime, logLevel, modules, nameValuePairs, anySearch );
         return result;
     }
 
@@ -440,7 +441,8 @@ public final class LoggingImpl extends AMXImplBase
         final Long    toTime,
         final String   logLevel,
         final Set<String>     modules,
-        final List<Attribute> nameValuePairs)
+        final List<Attribute> nameValuePairs,
+        final String anySearch)
     {
 
         if ( name == null )
@@ -474,7 +476,7 @@ public final class LoggingImpl extends AMXImplBase
                                                                : new Date(fromTime),
                                               toTime == null ? null
                                                              : new Date(toTime),
-                                              logLevel, true, moduleList, props);
+                                              logLevel, false, moduleList, props,anySearch);
 
             
         return convertQueryResult( result );

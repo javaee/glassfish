@@ -104,6 +104,7 @@ public class LogViewHandlers {
             @HandlerInput(name="Loggers", type=Object.class),
             @HandlerInput(name="CustomLoggers", type=Object.class),
             @HandlerInput(name="Nvp", type=Object.class),
+            @HandlerInput(name = "anySearch", type = String.class),                
             @HandlerInput(name="NumToDisplay", type=Integer.class),
             @HandlerInput(name="OnlyLevel", type=Boolean.class),
             @HandlerInput(name="LogDateSortDirection", type=Boolean.class),
@@ -130,6 +131,7 @@ public class LogViewHandlers {
         String logLevel = (String) handlerCtx.getInputValue("LogLevel");
         Object customLoggers = handlerCtx.getInputValue("CustomLoggers");
         Object nvp = handlerCtx.getInputValue("Nvp");
+        String anySearch = (String) handlerCtx.getInputValue("anySearch");
         Integer numberToDisplay = (Integer) handlerCtx.getInputValue("NumToDisplay");
         Boolean onlyLevel =
                 (Boolean) handlerCtx.getInputValue("OnlyLevel");
@@ -305,7 +307,8 @@ public class LogViewHandlers {
                         (toDate == null) ? null : ((Date)toDate).getTime(),
                         logLevel,
                         moduleList,
-                        nvpProps);
+                        nvpProps,
+                        anySearch);
             } catch (Exception ex) {
                 GuiUtil.handleError(handlerCtx, "Error while querying Log File.");
             }
@@ -360,7 +363,7 @@ public class LogViewHandlers {
             // Set the first / last record numbers as attributes
             if (query != null && query.length > 1) {
                 handlerCtx.setOutputValue("FirstLogRow",
-                        ((LogQueryEntry) query[1]).getRecordNumber());
+                        ((LogQueryEntry) query[0]).getRecordNumber());
                 handlerCtx.setOutputValue("LastLogRow",
                         ((LogQueryEntry) query[query.length -1]).getRecordNumber());
                 hasResults = new Boolean(true);

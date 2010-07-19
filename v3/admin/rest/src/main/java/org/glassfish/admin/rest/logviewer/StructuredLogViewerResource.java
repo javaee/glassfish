@@ -121,13 +121,15 @@ public class StructuredLogViewerResource {
             sortAscending = false;
         }
 
+        String anySearch = null;
+
         final AttributeList result = LogFilter.getLogRecordsUsingQuery(logFileName,
                 startIndex,
                 searchForward, sortAscending,
                 maximumNumberOfResults,
                 fromTime == -1 ? null : new Date(fromTime),
                 toTime == -1 ? null : new Date(toTime),
-                logLevel, onlyLevel, moduleList, props);
+                logLevel, onlyLevel, moduleList, props,anySearch);
         return convertQueryResult(result, type);
 
     }

@@ -92,7 +92,7 @@
     }
     urlencode(value="#{pageSession.logFile}" encoding="UTF-8" result="#{pageSession.encodedLogFile}");
 
-    getLogResultsTable(InstanceName="#{instanceName}", LogDateSortDirection="#{false}", FromRecord="#{fromRecord}", AfterRecord="#{afterRecord}", LogFileName="#{logFile}", LogLevel="#{logLevel}", OnlyLevel="#{requestScope.onlyLevel}", DateEnabled="#{requestScope.dateEnabled}", FromDate="#{requestScope.fromDate}", FromTime="#{requestScope.fromTime}", ToDate="#{requestScope.toDate}", ToTime="#{requestScope.toTime}", Loggers="#{logentries}", CustomLoggers="#{requestScope.customLogger}", Nvp="#{requestScope.nvp}", NumToDisplay="#{requestScope.numToDisplay}",  TruncateMessage="#{requestScope.truncate}",  result=>$attribute{tableList}, FirstLogRow=>$page{firstRecord}, LastLogRow=>$page{lastRecord}, HasResults=>$page{hasResults});
+    getLogResultsTable(InstanceName="#{instanceName}", LogDateSortDirection="#{false}", FromRecord="#{fromRecord}", AfterRecord="#{afterRecord}", LogFileName="#{logFile}", LogLevel="#{logLevel}", OnlyLevel="#{requestScope.onlyLevel}", DateEnabled="#{requestScope.dateEnabled}", FromDate="#{requestScope.fromDate}", FromTime="#{requestScope.fromTime}", ToDate="#{requestScope.toDate}", ToTime="#{requestScope.toTime}", Loggers="#{logentries}", CustomLoggers="#{requestScope.customLogger}", Nvp="#{requestScope.nvp}", anySearch="#{requestScope.anySearch}", NumToDisplay="#{requestScope.numToDisplay}",  TruncateMessage="#{requestScope.truncate}",  result=>$attribute{tableList}, FirstLogRow=>$page{firstRecord}, LastLogRow=>$page{lastRecord}, HasResults=>$page{hasResults});
     getFirstLastRecord(FirstRecord="#{firstRecord}", LastRecord="#{lastRecord}", First=>$page{first}, Last=>$page{last})
         />   
     </event>
@@ -281,7 +281,11 @@
           <sun:property id="nameValueProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.nvpLabel}" helpText="$resource{i18nc.logViewer.nvpHelp}">
                 <sun:textArea id="nameValue" rows="$int{8}" columns="$int{30}" text="#{requestScope.nvp}">
                 </sun:textArea>
-            </sun:property>              
+            </sun:property>
+            <sun:property id="anySearchProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"
+                          label="Any Search" helpText="$resource{i18nc.logViewer.nvpHelp}">
+                <sun:textField id="anySearch" columns="$int{20}" text="#{requestScope.anySearch}"/>
+            </sun:property>
          <sun:property id="displayProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.numberToDisplayLabel}" helpText="$resource{i18nc.logViewer.truncateMessageHelp}">
                  <sun:dropDown id="display" selected="#{requestScope.numToDisplay}" labels={"40" "100" "250" "1000"} >
                  </sun:dropDown><sun:staticText id="displayNumHelp"text="$resource{i18nc.logViewer.numberToDisplayLabelRight}"/>
