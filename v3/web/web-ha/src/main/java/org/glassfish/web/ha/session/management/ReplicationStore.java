@@ -191,9 +191,6 @@ public class ReplicationStore extends HAStoreBase {
         //FIXME;
     } 
     
-    // HAStorePoolElement methods end
-    
-    // Store method begin
     
     /**
      * Save the specified Session into this Store.  Any previously saved
@@ -436,7 +433,8 @@ public class ReplicationStore extends HAStoreBase {
             */
             SimpleMetadata smd = SimpleMetadataFactory.createSimpleMetadata(session.getVersion(),
                     ((BaseHASession)session).getLastAccessedTimeInternal());
-            replicator.save(session.getIdInternal(), smd, !((HASession) session).isPersistent()); //version
+//            replicator.save(session.getIdInternal(), smd, !((HASession) session).isPersistent()); //version
+         replicator.save(session.getIdInternal(), smd, true); //version
         } catch (BackingStoreException ex) {
             //FIXME
         }
@@ -523,7 +521,7 @@ public class ReplicationStore extends HAStoreBase {
                 try {
                    
                     //factory.createObjectInputStream(is);
-                    ioUtils.createObjectInputStream(is,true,classLoader);
+                    ois = ioUtils.createObjectInputStream(is,true,classLoader);
                 } catch (Exception ex) {}
             
 
