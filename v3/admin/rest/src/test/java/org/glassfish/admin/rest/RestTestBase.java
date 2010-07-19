@@ -64,7 +64,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class RestTestBase {
-    public static final String BASE_URL = "http://localhost:4848/management/domain";
+    public static final String BASE_URL = "http://localhost:4848/management";
+    public static final String BASE_URL_DOMAIN = BASE_URL + "/domain";
     public static final String RESPONSE_TYPE = MediaType.APPLICATION_XML;
 
     protected static Client client;

@@ -46,7 +46,7 @@ import static org.junit.Assert.*;
  * @author jasonlee
  */
 public class JdbcConnectionPoolTest extends RestTestBase {
-    public static final String BASE_JDBC_CP_URL = BASE_URL+"/resources/jdbc-connection-pool";
+    public static final String BASE_JDBC_CP_URL = BASE_URL_DOMAIN +"/resources/jdbc-connection-pool";
     @Test
     public void testReading() {
         Map<String, String> entity = getEntityValues(get(BASE_JDBC_CP_URL + "/__TimerPool"));

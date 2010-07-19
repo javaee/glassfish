@@ -44,13 +44,13 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class AuthRealmTest extends RestTestBase {
-    public static final String URL_LIST_GROUP_NAMES = BASE_URL + "/configs/config/server-config/security-service/auth-realm/admin-realm/list-group-names?userName=admin";
-    public static final String URL_SUPPORTS_USER_MANAGEMENT = BASE_URL + "/configs/config/server-config/security-service/auth-realm/admin-realm/supports-user-management";
-    public static final String URL_LIST_ADMIN_REALM_USERS = BASE_URL + "/configs/config/server-config/security-service/auth-realm/admin-realm/list-users";
-    public static final String URL_LIST_FILE_USERS = BASE_URL + "/configs/config/server-config/security-service/auth-realm/file/list-users";
-    public static final String URL_CREATE_USER = BASE_URL + "/configs/config/server-config/security-service/auth-realm/file/create-user";
-    public static final String URL_DELETE_USER = BASE_URL + "/configs/config/server-config/security-service/auth-realm/file/delete-user";
-    public static final String URL_AUTH_REALM_CLASS_NAMES = BASE_URL + "/configs/config/server-config/security-service/auth-realm/list-predefined-authrealm-classnames";
+    public static final String URL_LIST_GROUP_NAMES = BASE_URL_DOMAIN + "/configs/config/server-config/security-service/auth-realm/admin-realm/list-group-names?userName=admin";
+    public static final String URL_SUPPORTS_USER_MANAGEMENT = BASE_URL_DOMAIN + "/configs/config/server-config/security-service/auth-realm/admin-realm/supports-user-management";
+    public static final String URL_LIST_ADMIN_REALM_USERS = BASE_URL_DOMAIN + "/configs/config/server-config/security-service/auth-realm/admin-realm/list-users";
+    public static final String URL_LIST_FILE_USERS = BASE_URL_DOMAIN + "/configs/config/server-config/security-service/auth-realm/file/list-users";
+    public static final String URL_CREATE_USER = BASE_URL_DOMAIN + "/configs/config/server-config/security-service/auth-realm/file/create-user";
+    public static final String URL_DELETE_USER = BASE_URL_DOMAIN + "/configs/config/server-config/security-service/auth-realm/file/delete-user";
+    public static final String URL_AUTH_REALM_CLASS_NAMES = BASE_URL_DOMAIN + "/configs/config/server-config/security-service/auth-realm/list-predefined-authrealm-classnames";
     @Test
     public void testListGroupNames() {
         List<String> groups = getCommandResults(get(URL_LIST_GROUP_NAMES));

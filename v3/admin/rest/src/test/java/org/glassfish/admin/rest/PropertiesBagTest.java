@@ -50,7 +50,7 @@ import static org.junit.Assert.*;
 public class PropertiesBagTest extends RestTestBase {
 
     protected static final String PROP_DOMAIN_NAME = "administrative.domain.name";
-    protected static final String URL_DOMAIN_PROPERTIES = BASE_URL + "/property";
+    protected static final String URL_DOMAIN_PROPERTIES = BASE_URL_DOMAIN + "/property";
 
     @Test
     public void propertyRetrieval() {

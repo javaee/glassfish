@@ -36,8 +36,6 @@
 
 package org.glassfish.admin.rest;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.sun.jersey.api.client.ClientResponse;
 import org.junit.Test;
 
@@ -51,7 +49,7 @@ import static org.junit.Assert.assertTrue;
  * @author Mitesh Meswani
  */
 public class NoCLICommandResourceCreationTest extends RestTestBase {
-    private static final String URL_DOMAIN_PROPERTY = BASE_URL+ "/property";
+    private static final String URL_DOMAIN_PROPERTY = BASE_URL_DOMAIN + "/property";
 
     @Test
     public void testPropertyCreation() {

@@ -45,12 +45,12 @@ import static org.junit.Assert.*;
  * @author jasonlee
  */
 public class ProvidersTest extends RestTestBase {
-    protected static final String URL_ACTION_REPORT_RESULT = BASE_URL + "/uptime";
-    protected static final String URL_COMMAND_RESOURCE_GET_RESULT = BASE_URL + "/stop";
-    protected static final String URL_GET_RESULT = BASE_URL;
-    protected static final String URL_GET_RESULT_LIST = BASE_URL + "/servers/server";
-    protected static final String URL_OPTIONS_RESULT = BASE_URL;
-    protected static final String URL_STRING_LIST_RESULT = BASE_URL + "/configs/config/server-config/java-config/jvm-options";
+    protected static final String URL_ACTION_REPORT_RESULT = BASE_URL_DOMAIN + "/uptime";
+    protected static final String URL_COMMAND_RESOURCE_GET_RESULT = BASE_URL_DOMAIN + "/stop";
+    protected static final String URL_GET_RESULT = BASE_URL_DOMAIN;
+    protected static final String URL_GET_RESULT_LIST = BASE_URL_DOMAIN + "/servers/server";
+    protected static final String URL_OPTIONS_RESULT = BASE_URL_DOMAIN;
+    protected static final String URL_STRING_LIST_RESULT = BASE_URL_DOMAIN + "/configs/config/server-config/java-config/jvm-options";
     protected static final String URL_TREE_NODE = "http://localhost:4848/monitoring/domain";
 
     @Test

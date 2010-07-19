@@ -48,8 +48,8 @@ import static org.junit.Assert.*;
  */
 public class ApplicationTest extends RestTestBase {
 
-    public static final String URL_APPLICATION_DEPLOY = BASE_URL + "/applications/application";
-    public static final String URL_SUB_COMPONENTS = BASE_URL + "/applications/application/list-sub-components";
+    public static final String URL_APPLICATION_DEPLOY = BASE_URL_DOMAIN + "/applications/application";
+    public static final String URL_SUB_COMPONENTS = BASE_URL_DOMAIN + "/applications/application/list-sub-components";
 
     @Test
     public void testApplicationDeployment() {
