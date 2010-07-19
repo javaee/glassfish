@@ -75,8 +75,8 @@ public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceSt
 
         rwepMgr.setSessionFactory(new FullSessionFactory());
 
-
-        rwepMgr.createBackingStore(this.getPassedInPersistenceType());
+        ctx.getServletContext().getContextPath();
+        rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getServletContext().getContextPath());
 
         ReplicationStore store = new ReplicationStore(serverConfigLookup, ioUtils);
         

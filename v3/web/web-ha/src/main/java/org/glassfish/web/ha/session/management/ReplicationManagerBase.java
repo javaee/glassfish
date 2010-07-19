@@ -53,7 +53,7 @@ public abstract class ReplicationManagerBase extends PersistentManagerBase {
         return this.backingStore;
     }
 
-    public abstract void createBackingStore(String persistenceType);
+    public abstract void createBackingStore(String persistenceType, String storeName);
                                          //To change body of implemented methods use File | Settings | File Templates.
     public Session createNewSession() {
         return sessionFactory.createSession(this);

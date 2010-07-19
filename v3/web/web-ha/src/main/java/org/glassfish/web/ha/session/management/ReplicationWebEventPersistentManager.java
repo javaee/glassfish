@@ -287,7 +287,7 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
 
 
     @Override
-    public void createBackingStore(String persistenceType) {
+    public void createBackingStore(String persistenceType, String storeName) {
         _logger.info("Create backing store invoked");
         BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, "replication");
         BackingStoreConfiguration<String, SimpleMetadata> conf = new BackingStoreConfiguration<String, SimpleMetadata>();
@@ -297,7 +297,7 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
             clusterName = gmsAdapterService.getGMSAdapter().getClusterName();
             instanceName = gmsAdapterService.getGMSAdapter().getModule().getInstanceName();
         }
-        conf.setStoreName("Name")
+        conf.setStoreName(storeName)
                 .setClusterName(clusterName)
                 .setInstanceName(instanceName)
                 .setStoreType(persistenceType)
