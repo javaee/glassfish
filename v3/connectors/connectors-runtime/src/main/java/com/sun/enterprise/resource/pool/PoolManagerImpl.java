@@ -39,6 +39,8 @@ package com.sun.enterprise.resource.pool;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants.PoolType;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.spi.MCFLifecycleListener;
+import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.resource.ClientSecurityInfo;
 import com.sun.enterprise.resource.ResourceSpec;
@@ -57,6 +59,8 @@ import org.glassfish.api.invocation.ComponentInvocationHandler;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 
 import com.sun.enterprise.resource.listener.PoolLifeCycle;
+
+import javax.resource.spi.ManagedConnectionFactory;
 import javax.transaction.Transaction;
 import javax.transaction.Synchronization;
 import javax.transaction.xa.XAResource;
@@ -110,7 +114,14 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
             } catch (Exception ex) {
 	        _logger.log(Level.FINE, "Exception thrown on pool listener");
             }
-        }        
+        }
+        //notify mcf-create
+        ManagedConnectionFactory mcf = ConnectorRegistry.getInstance().getManagedConnectionFactory(poolName);
+        if(mcf != null){
+            if(mcf instanceof MCFLifecycleListener){
+                ((MCFLifecycleListener)mcf).mcfCreated();
+            }
+        }
     }
 
     /**
@@ -446,8 +457,17 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
                 poolTable.remove(poolName);
 
             }
-            if (listener != null)
+            if (listener != null){
                 listener.poolDestroyed(poolName);
+            }
+
+            //notify mcf-destroy
+            ManagedConnectionFactory mcf = ConnectorRegistry.getInstance().getManagedConnectionFactory(poolName);
+            if(mcf != null){
+                if(mcf instanceof MCFLifecycleListener){
+                    ((MCFLifecycleListener)mcf).mcfDestroyed();
+                }
+            }
         }
     }
 
