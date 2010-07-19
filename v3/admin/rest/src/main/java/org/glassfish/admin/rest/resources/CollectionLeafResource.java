@@ -230,7 +230,7 @@ public abstract class CollectionLeafResource {
                     data, RestService.getHabitat(),typeOfResult);
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-                if (exitCode == ActionReport.ExitCode.SUCCESS) {
+                if (exitCode != ActionReport.ExitCode.FAILURE) {
                     String successMessage =
                         localStrings.getLocalString(successMsgKey,
                             successMsg, new Object[] {attributeName});

@@ -118,7 +118,7 @@ public class TemplateExecCommand {
         ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
         ActionReportResult results = new ActionReportResult(commandName, actionReport, options());
 
-        if (exitCode == ActionReport.ExitCode.SUCCESS) {
+        if (exitCode != ActionReport.ExitCode.FAILURE) {
             results.setStatusCode(200); /*200 - ok*/
         } else {
             throw new CliFailureException(actionReport.getMessage());

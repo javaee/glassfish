@@ -44,6 +44,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.ResourceUtil;
 
@@ -52,6 +53,7 @@ import org.glassfish.admin.rest.ResourceUtil;
 
 import org.glassfish.admin.rest.results.CommandResourceGetResult;
 import org.glassfish.admin.rest.results.ActionReportResult;
+import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.api.admin.ParameterMap;
 
 /**
@@ -69,14 +71,8 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
     }
 
     @POST
-    @Consumes({
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_FORM_URLENCODED})
-    @Produces({
-        "text/html;qs=2",
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML})
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+    @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public ActionReportResult processPost(ParameterMap data) {
         if (data.containsKey("error")) {
             String errorMessage = localStrings.getLocalString("rest.request.parsing.error", "Unable to parse the input entity. Please check the syntax.");

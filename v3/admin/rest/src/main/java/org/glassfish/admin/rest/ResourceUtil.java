@@ -292,8 +292,7 @@ public class ResourceUtil {
      * in the given map.
      * @param uriInfo the uri context to extract parent name value.
      */
-    public static void resolveParentParamValue(HashMap<String, String> commandParams,
-            UriInfo uriInfo) {
+    public static void resolveParentParamValue(HashMap<String, String> commandParams, UriInfo uriInfo) {
 
         String parent = getParentName(uriInfo);
         if (parent != null) {

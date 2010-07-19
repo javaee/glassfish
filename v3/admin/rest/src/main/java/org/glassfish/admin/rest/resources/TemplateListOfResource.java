@@ -164,7 +164,7 @@ public abstract class TemplateListOfResource {
                 ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),typeOfResult);
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-                if (exitCode == ActionReport.ExitCode.SUCCESS) {
+                if (exitCode != ActionReport.ExitCode.FAILURE) {
                     String successMessage =
                         localStrings.getLocalString("rest.resource.create.message",
                             "\"{0}\" created successfully.", resourceToCreate);
@@ -256,7 +256,7 @@ public abstract class TemplateListOfResource {
                     data, RestService.getHabitat(),typeOfResult);
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-                if (exitCode == ActionReport.ExitCode.SUCCESS) {
+                if (exitCode != ActionReport.ExitCode.FAILURE) {
                     String successMessage =
                         localStrings.getLocalString("rest.resource.create.message",
                             "\"{0}\" created successfully.", new Object[] {resourceToCreate});

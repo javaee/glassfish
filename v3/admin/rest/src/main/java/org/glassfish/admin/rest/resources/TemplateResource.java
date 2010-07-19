@@ -268,7 +268,7 @@ public class TemplateResource {
 
             if (actionReport != null) {
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-                if (exitCode == ActionReport.ExitCode.SUCCESS) {
+                if (exitCode != ActionReport.ExitCode.FAILURE) {
                     String successMessage = localStrings.getLocalString("rest.resource.delete.message",
                             "\"{0}\" deleted successfully.", new Object[]{uriInfo.getAbsolutePath()});
                     return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo); //200 - ok

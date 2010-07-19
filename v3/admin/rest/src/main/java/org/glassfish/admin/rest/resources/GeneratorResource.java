@@ -491,7 +491,6 @@ public class GeneratorResource {
                                 out.write("@Path(\"" + cmodel.getTagName() + "/\")\n");
                                 out.write("public List" + newName + "Resource get" + newName + "Resource() {\n");
                                 out.write("\tList" + newName + "Resource resource = resourceContext.getResource(List" + newName + "Resource.class);\n");
-                                //  out.write("\tresource.setEntity(getEntity().nodeElements(\""+childModel.getTagName()+"\"));");
                                 out.write("\tresource.setParentAndTagName(getEntity() , \"" + cmodel.getTagName() + "\");\n");
 
                                 out.write("\treturn resource;\n");
@@ -503,6 +502,24 @@ public class GeneratorResource {
 
                                 }
                             }
+                        } else {
+                            // FIXME: !!!!!!
+                            // TODO: Duplicate code here.  If this works as expected, a new method will be created for this.
+                            String newName = childModel.targetTypeName.substring(childModel.targetTypeName.lastIndexOf(".") + 1, childModel.targetTypeName.length());
+                            out.write("@Path(\"" + childModel.getTagName() + "/\")\n");
+                            out.write("public List" + newName + "Resource get" + newName + "Resource() {\n");
+                            out.write("\tList" + newName + "Resource resource = resourceContext.getResource(List" + newName + "Resource.class);\n");
+                            out.write("\tresource.setParentAndTagName(getEntity() , \"" + childModel.getTagName() + "\");\n");
+
+                            out.write("\treturn resource;\n");
+                            out.write("}\n");
+                            if (prop.isCollection()) {
+                                generateList(childModel);
+                            } else {
+                                generateSingle(childModel);
+
+                            }
+
                         }
                     } catch (Exception e) {
                         e.printStackTrace();

@@ -88,7 +88,7 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand {
         }
 
         processCommandParams(data);
-        addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
+        addQueryString(uriInfo.getQueryParameters(), data);
         adjustParameters(data);
         purgeEmptyEntries(data);
         return executeCommand(data);
