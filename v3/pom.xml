@@ -201,6 +201,7 @@
                 <module>web</module>
                 <module>ejb</module>
                 <module>connectors</module>
+                <module>load-balancer</module> 
                 <module>jms</module>
                 <module>jdbc</module>
                 <module>persistence</module>
@@ -267,6 +268,7 @@
                 <module>web</module>
                 <module>ejb</module>
                 <module>connectors</module>
+                <module>load-balancer</module> 
                 <module>jdbc</module>
                 <module>extras</module>
                 <module>distributions</module>
@@ -340,6 +342,7 @@
                 <module>web</module>
                 <module>ejb</module>
                 <module>connectors</module>
+                <module>load-balancer</module> 
                 <module>jms</module>
                 <module>jdbc</module>
                 <module>persistence</module>
@@ -391,6 +394,7 @@
                 <module>web</module>
                 <module>ejb</module>
                 <module>connectors</module>
+                <module>load-balancer</module> 
                 <module>jms</module>
                 <module>jdbc</module>
                 <module>persistence</module>
