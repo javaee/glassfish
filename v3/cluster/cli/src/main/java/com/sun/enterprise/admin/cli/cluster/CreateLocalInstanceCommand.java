@@ -279,7 +279,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         try {
             localHost = InetAddress.getLocalHost();
         } catch (UnknownHostException ex) {
-            throw new CommandException(Strings.get("Agent.cantGetHostName", ex));
+            throw new CommandException(Strings.get("cantGetHostName", ex));
         }
         if (localHost != null) {
             if (isCanonical) {

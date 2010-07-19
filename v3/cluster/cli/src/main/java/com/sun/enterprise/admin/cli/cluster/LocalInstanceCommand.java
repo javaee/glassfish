@@ -114,11 +114,11 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     }
     
     protected void initInstance() throws CommandException {
-        String nodeDirRootPath = null;  // normally default <install-root>/nodeagents
-
+        /* node dir - parent directory of all node(s) */
+        String nodeDirRootPath = null;  
         if(ok(nodeDir))
             nodeDirRootPath = nodeDir;
-        else
+        else // node dir = <install-root>/nodeagents
             nodeDirRootPath = getNodeDirRootDefault();
 
         nodeDirRoot = new File(nodeDirRootPath);
@@ -126,16 +126,18 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 
         if(!nodeDirRoot.isDirectory()) {
             throw new CommandException(
-                    Strings.get("Instance.badAgentDir", nodeDirRoot));
+                    Strings.get("Instance.badNodeDir", nodeDirRoot));
         }
 
+        /* <node_dir>/<node> */
         if(node != null) {
             nodeDirChild = new File(nodeDirRoot, node);
         }
         else {
-            nodeDirChild = getTheOneAndOnlyAgent(nodeDirRoot);
+            nodeDirChild = getTheOneAndOnlyNode(nodeDirRoot);
         }
 
+        /* <node_dir>/<node>/<instance name> */
         if(instanceName != null) {
             instanceDir = new File(nodeDirChild, instanceName);
             mkdirs(instanceDir);
@@ -259,7 +261,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                     SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
 
         if(!StringUtils.ok(installRootPath))
-            throw new CommandException("Agent.noInstallDirPath");
+            throw new CommandException("noInstallDirPath");
         return installRootPath;
     }
 
@@ -330,7 +332,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         return port;
     }
 
-    private File getTheOneAndOnlyAgent(File parent) throws CommandException {
+    private File getTheOneAndOnlyNode(File parent) throws CommandException {
         // look for subdirs in the parent dir -- there must be one and only one
         // or there can be zero in which case we create one-and-only
 
@@ -340,30 +342,38 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             }
         });
 
-        // ERROR:  more than one nodeagent directory
+        // ERROR:  more than one node dir child
         if(files.length > 1) {
             throw new CommandException(
-                    Strings.get("Agent.tooManyAgentDirs", parent));
+                    Strings.get("tooManyNodes", parent));
         }
 
-        // the usual case -- one agent dir
+        // the usual case -- one node dir child
         if(files.length == 1)
             return files[0];
 
         /*
-         * If there is no existing nodeagent directory -- create one!
+         * If there is no existing node dir child -- create one!
+         * If the instance is on the same machine as DAS, use "localhost" as the node dir child
          */
         try {
+            String dashost = null;
+            if (programOpts != null) {
+                dashost = programOpts.getHost();
+            }
             String hostname = InetAddress.getLocalHost().getHostName();
+            if (hostname.equals(dashost) || "localhost".equals(dashost)) {
+                hostname = "localhost";
+            }
             File f = new File(parent, hostname);
 
             if(!f.mkdirs() || !f.isDirectory()) // for instance there is a regular file with that name
-                throw new CommandException(Strings.get("Agent.cantCreateAgentDir", f));
+                throw new CommandException(Strings.get("cantCreateNodeDirChild", f));
 
             return f;
         }
         catch (UnknownHostException ex) {
-            throw new CommandException(Strings.get("Agent.cantGetHostName", ex));
+            throw new CommandException(Strings.get("cantGetHostName", ex));
         }
     }
 
