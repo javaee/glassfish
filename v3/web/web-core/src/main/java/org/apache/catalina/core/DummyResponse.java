@@ -133,7 +133,6 @@ public class DummyResponse
     public void setContentType(String type) {}
     public void setLocale(Locale locale) {}
 
-    public Cookie[] getCookies() { return null; }
     public String getHeader(String name) { return null; }
     public Collection<String> getHeaderNames() { return null; }
     public Collection<String> getHeaders(String name) { return null; }

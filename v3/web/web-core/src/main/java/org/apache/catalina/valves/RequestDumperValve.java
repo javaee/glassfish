@@ -212,7 +212,7 @@ public class RequestDumperValve extends ValveBase {
         log("          authType=" + hreq.getAuthType());
         log("     contentLength=" + hresponse.getContentLength());
         log("       contentType=" + hresponse.getContentType());
-        Cookie[] rcookies = hresponse.getCookies();
+        Cookie[] rcookies = hreq.getCookies();
         for (int i = 0; i < rcookies.length; i++) {
             log("            cookie=" + rcookies[i].getName() + "=" +
                 rcookies[i].getValue() + "; domain=" +
