@@ -152,7 +152,7 @@ public class DeploymentHelper
         DataSource ds = null;
         try {
             ConnectorRuntime connectorRuntime = habitat.getByContract(ConnectorRuntime.class);
-            ds = DataSource.class.cast(connectorRuntime.lookupNonTxResource(name, false));
+            ds = DataSource.class.cast(connectorRuntime.lookupNonTxResource(name, true));
         } catch (Exception e) { 
             throw new JDOFatalUserException(
                 I18NHelper.getMessage(messages,

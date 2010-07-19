@@ -56,12 +56,12 @@ public abstract class ProviderContainerContractInfoBase implements ProviderConta
 
     @Override
     public DataSource lookupDataSource(String dataSourceName) throws NamingException {
-        return DataSource.class.cast(connectorRuntime.lookupPMResource(dataSourceName, false));
+        return DataSource.class.cast(connectorRuntime.lookupPMResource(dataSourceName, true));
     }
 
     @Override
     public DataSource lookupNonTxDataSource(String dataSourceName) throws NamingException {
-        return DataSource.class.cast(connectorRuntime.lookupNonTxResource(dataSourceName, false));
+        return DataSource.class.cast(connectorRuntime.lookupNonTxResource(dataSourceName, true));
     }
 
     @Override

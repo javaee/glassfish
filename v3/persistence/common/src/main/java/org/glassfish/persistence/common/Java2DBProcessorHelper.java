@@ -612,7 +612,7 @@ public class Java2DBProcessorHelper {
 
         Habitat habitat = Globals.getDefaultHabitat();
         ConnectorRuntime connectorRuntime = habitat.getByContract(ConnectorRuntime.class);
-        DataSource ds = DataSource.class.cast(connectorRuntime.lookupNonTxResource(jndiName, false));
+        DataSource ds = DataSource.class.cast(connectorRuntime.lookupNonTxResource(jndiName, true));
         return ds.getConnection();
     }
 
