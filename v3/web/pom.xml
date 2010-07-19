@@ -65,7 +65,7 @@
         <module>javax.servlet</module>
         <module>weld-integration</module>
         <module>web-embed</module>
+        <module>web-ha</module>
     </modules>
 
 </project>
-
