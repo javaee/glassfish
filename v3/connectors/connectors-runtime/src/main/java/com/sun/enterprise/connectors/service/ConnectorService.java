@@ -48,8 +48,11 @@ import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.deploy.shared.FileArchive;
+import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
+import java.io.IOException;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.security.AccessController;
@@ -59,6 +62,9 @@ import java.util.logging.Logger;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Iterator;
+import java.util.Set;
+import org.xml.sax.SAXParseException;
 
 
 /**
@@ -75,12 +81,20 @@ public class ConnectorService implements ConnectorConstants {
             ConnectorRegistry.getInstance();
 
     protected ConnectorRuntime _runtime;
+    protected ResourcesUtil resourcesUtil;
 
     /**
      * Default Constructor
      */
     public ConnectorService() {
         _runtime = ConnectorRuntime.getRuntime();
+    }
+
+    private ResourcesUtil getResourcesUtil(){
+        if(resourcesUtil == null){
+            resourcesUtil = ResourcesUtil.createInstance();
+        }
+        return resourcesUtil;
     }
 
     /**
@@ -120,8 +134,8 @@ public class ConnectorService implements ConnectorConstants {
         String resname = ConnectorAdminServiceUtils.getOriginalResourceName(resourceName);
         _logger.fine("ConnectorService :: checkAndLoadResource resolved to load " + resname);
 
-        ResourcesUtil resUtil = ResourcesUtil.createInstance();
-        DeferredResourceConfig defResConfig = resUtil.getDeferredResourceConfig(resource, pool, resourceType, raName);
+        DeferredResourceConfig defResConfig = getResourcesUtil().getDeferredResourceConfig(resource, pool, resourceType, raName);
+        //DeferredResourceConfig defResConfig = resUtil.getDeferredResourceConfig(resname);
         return loadResourcesAndItsRar(defResConfig);
     }
 
@@ -131,7 +145,7 @@ public class ConnectorService implements ConnectorConstants {
                 loadDeferredResources(defResConfig.getResourceAdapterConfig());
                 final String rarName = defResConfig.getRarName();
                 loadDeferredResourceAdapter(rarName);
-                final ConfigBeanProxy[] resToLoad = defResConfig.getResourcesToLoad();
+                final Resource[] resToLoad = defResConfig.getResourcesToLoad();
                 AccessController.doPrivileged(new PrivilegedAction() {
                     public Object run() {
                         try {
@@ -182,7 +196,7 @@ public class ConnectorService implements ConnectorConstants {
         String appName = ConnectorAdminServiceUtils.getApplicationName(rarModuleName);
         String rarFileName = ConnectorAdminServiceUtils
                         .getConnectorModuleName(rarModuleName) + ".rar";
-        String loc = ResourcesUtil.createInstance().getApplicationDeployLocation(appName);
+        String loc = getResourcesUtil().getApplicationDeployLocation(appName);
         loc = loc + File.separator + FileUtils.makeFriendlyFilename(rarFileName);
 
         String path = null;
@@ -200,16 +214,15 @@ public class ConnectorService implements ConnectorConstants {
     }
 
 
-    public void loadDeferredResources(ConfigBeanProxy[] resourcesToLoad)
+    public void loadDeferredResources(Resource[] resourcesToLoad)
             throws Exception {
         if (resourcesToLoad == null || resourcesToLoad.length == 0) {
             return;
         }
-        for (ConfigBeanProxy resource : resourcesToLoad) {
+        for (Resource resource : resourcesToLoad) {
             if (resource == null) {
                 continue;
-            } else /* TODO V3 handle later once configBeans (resource.isEnabled()) is available
-                if (resourceUtil.isEnabled(resource))*/ {
+            } else if (getResourcesUtil().isEnabled(resource)) {
                 try {
                     _runtime.getResourceDeployer(resource).deployResource(resource);
                 } catch (Exception e) {
@@ -299,11 +312,10 @@ public class ConnectorService implements ConnectorConstants {
     public boolean checkAndLoadPool(String poolName) {
         boolean status = false;
         try {
-            ResourcesUtil resutil = ResourcesUtil.createInstance();
             ResourcePool pool = _runtime.getConnectionPoolConfig(poolName);
+            //DeferredResourceConfig defResConfig = resutil.getDeferredPoolConfig(poolName);
             DeferredResourceConfig defResConfig =
-                    resutil.getDeferredResourceConfig(null, pool, ConnectorsUtil.getResourceType(pool), null);
-
+                    getResourcesUtil().getDeferredResourceConfig(null, pool, ConnectorsUtil.getResourceType(pool), null);
             status = loadResourcesAndItsRar(defResConfig);
         } catch (ConnectorRuntimeException cre) {
             Object params[] = new Object[]{poolName, cre};

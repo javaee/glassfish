@@ -50,7 +50,7 @@ public class DeferredResourceConfig {
     private JdbcConnectionPool jdbcConnectionPool;
     private JdbcResource jdbcResource;
     private ResourceAdapterConfig[] resourceAdapterConfig;
-    private ConfigBeanProxy[] resourcesToLoad;
+    private Resource[] resourcesToLoad;
 
 
     public DeferredResourceConfig() {
@@ -134,11 +134,11 @@ public class DeferredResourceConfig {
         return this.resourceAdapterConfig;
     }
 
-    public void setResourcesToLoad(ConfigBeanProxy[] resourcesToLoad) {
+    public void setResourcesToLoad(Resource[] resourcesToLoad) {
         this.resourcesToLoad = resourcesToLoad;
     }
 
-    public ConfigBeanProxy[] getResourcesToLoad() {
+    public Resource[] getResourcesToLoad() {
         return this.resourcesToLoad;
     }
 }

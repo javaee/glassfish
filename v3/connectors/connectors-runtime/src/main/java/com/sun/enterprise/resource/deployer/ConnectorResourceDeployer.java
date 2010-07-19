@@ -40,6 +40,9 @@ import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
+import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
+import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,7 +55,6 @@ import org.jvnet.hk2.component.Singleton;
 /**
  * @author Srikanth P
  */
-
 @Service
 @Scoped(Singleton.class)
 public class ConnectorResourceDeployer implements ResourceDeployer {
@@ -89,10 +91,7 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
         //Since 8.1 PE/SE/EE - if no more resource-ref to the pool
         //of this resource in this server instance, remove pool from connector
         //runtime
-        // TODO V3, we can't destroy the pool as we dont get default call from naming any more.
-        // probably, delete the pool and recreate the proxy ?
-        // checkAndDeletePool(domainResource);
-
+        checkAndDeletePool(domainResource);
     }
 
     /**
@@ -123,5 +122,34 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
      */
     public boolean handles(Object resource){
         return resource instanceof ConnectorResource;
+    }
+
+    /**
+     * Checks if no more resource-refs to resources exists for the
+     * connector connection pool and then deletes the pool
+     * @param cr ConnectorResource
+     * @throws Exception (ConfigException / undeploy exception)
+     * @since 8.1 pe/se/ee
+     */
+    private void checkAndDeletePool(ConnectorResource cr) throws Exception {
+        String poolName = cr.getPoolName();
+        try {
+            Resources res = (Resources) cr.getParent();
+
+            boolean poolReferred =
+                ResourcesUtil.createInstance().isPoolReferredInServerInstance(poolName);
+            if (!poolReferred) {
+                _logger.fine("Deleting pool [" + poolName + "] as there are no more " +
+                        "resource-refs to the pool in this server instance");
+                ConnectorConnectionPool ccp = (ConnectorConnectionPool)
+                        res.getResourceByName(ConnectorConnectionPool.class, poolName);
+                //Delete/Undeploy Pool
+                runtime.getResourceDeployer(ccp).undeployResource(ccp);
+            }
+        } catch (Exception ce) {
+            _logger.warning(ce.getMessage());
+            _logger.fine("Exception while deleting pool [ "+poolName+" ] : " + ce );
+            throw ce;
+        }
     }
 }

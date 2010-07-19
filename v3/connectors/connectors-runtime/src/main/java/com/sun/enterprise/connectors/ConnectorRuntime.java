@@ -81,6 +81,8 @@ import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.admin.*;
 import com.sun.logging.LogDomains;
+import java.sql.Connection;
+import java.sql.SQLException;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
@@ -994,7 +996,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
 
     public ResourcePool getConnectionPoolConfig(String poolName) {
-        return ConnectorsUtil.getConnectionPoolConfig(poolName, allResources.getComponent(Resources.class));
+        return ConnectorsUtil.getConnectionPoolConfig(poolName, getResources());
     }
 
 
@@ -1146,6 +1148,14 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         return habitat.getComponent(FileArchive.class);
     }
 
+    public Domain getDomain() {
+        return habitat.getComponent(Domain.class);
+    }
+
+    public ServerEnvironment getServerEnvironment() {
+        return env;
+    }
+    
     public void createActiveResourceAdapterForEmbeddedRar(String rarModuleName) throws ConnectorRuntimeException {
         connectorService.createActiveResourceAdapterForEmbeddedRar(rarModuleName);
     }
@@ -1213,7 +1223,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * {@inheritDoc}
      */
     public List<WorkSecurityMap> getWorkSecurityMap(String raName){
-        return ConnectorsUtil.getWorkSecurityMaps(raName, allResources.getComponent(Resources.class));
+        return ConnectorsUtil.getWorkSecurityMaps(raName, getResources());
     }
 
     public Resources getResources(){
@@ -1305,7 +1315,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      */
     public boolean getPingDuringPoolCreation(String poolName) {
         return ConnectorsUtil.getPingDuringPoolCreation(poolName, 
-                allResources.getComponent(Resources.class));
+                getResources());
     }
     
     /**

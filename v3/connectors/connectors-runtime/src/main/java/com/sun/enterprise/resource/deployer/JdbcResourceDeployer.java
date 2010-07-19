@@ -53,8 +53,11 @@ import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
+import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.logging.LogDomains;
 
 import java.util.logging.Level;
@@ -96,11 +99,9 @@ public class JdbcResourceDeployer implements ResourceDeployer {
         //deployResource is not synchronized as there is only one caller
         //ResourceProxy which is synchronized
 
-        com.sun.enterprise.config.serverbeans.JdbcResource jdbcRes =
-                (com.sun.enterprise.config.serverbeans.JdbcResource) resource;
+        JdbcResource jdbcRes = (JdbcResource) resource;
 
-        if (ConnectorsUtil.parseBoolean(jdbcRes.getEnabled()))
-        {
+        if (ConnectorsUtil.parseBoolean(jdbcRes.getEnabled())) {
             String jndiName = jdbcRes.getJndiName();
             String poolName = jdbcRes.getPoolName();
             
@@ -122,8 +123,7 @@ public class JdbcResourceDeployer implements ResourceDeployer {
     public synchronized void undeployResource(Object resource)
             throws Exception {
 
-        com.sun.enterprise.config.serverbeans.JdbcResource jdbcRes =
-                (com.sun.enterprise.config.serverbeans.JdbcResource) resource;
+        JdbcResource jdbcRes = (JdbcResource) resource;
 
         String jndiName = jdbcRes.getJndiName();
 
@@ -136,10 +136,7 @@ public class JdbcResourceDeployer implements ResourceDeployer {
         //Since 8.1 PE/SE/EE - if no more resource-ref to the pool
         //of this resource in this server instance, remove pool from connector
         //runtime
-        // TODO V3, we can't destroy the pool as we dont get default call from naming any more.
-        // probably, delete the pool and recreate the proxy ?
-        // checkAndDeletePool(domainResource);
-
+        checkAndDeletePool(jdbcRes);
     }
 
     /**
@@ -174,4 +171,33 @@ public class JdbcResourceDeployer implements ResourceDeployer {
         undeployResource(resource);
     }
 
+    /**
+     * Checks if no more resource-refs to resources exists for the
+     * JDBC connection pool and then deletes the pool
+     * @param cr Jdbc Resource Config bean
+     * @throws Exception if unable to access configuration/undeploy resource.
+     * @since 8.1 pe/se/ee
+     */
+    private void checkAndDeletePool(JdbcResource cr) throws Exception {
+        String poolName = cr.getPoolName();
+        Resources res = (Resources) cr.getParent();
+
+        try {
+            boolean poolReferred =
+                ResourcesUtil.createInstance().isJdbcPoolReferredInServerInstance(poolName);
+            if (!poolReferred) {
+                _logger.fine("Deleting JDBC pool [" + poolName + " ] as there are no more " +
+                        "resource-refs to the pool in this server instance");
+
+                JdbcConnectionPool jcp = (JdbcConnectionPool)
+                        res.getResourceByName(JdbcConnectionPool.class, poolName);
+                //Delete/Undeploy Pool
+                runtime.getResourceDeployer(jcp).undeployResource(jcp);
+            }
+        } catch (Exception ce) {
+            _logger.warning(ce.getMessage());
+            _logger.fine("Exception while deleting pool [ "+poolName+" ] : " + ce );
+            throw ce;
+        }
+    }
 }

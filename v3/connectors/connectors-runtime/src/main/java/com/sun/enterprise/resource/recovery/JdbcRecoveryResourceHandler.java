@@ -42,6 +42,7 @@ import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import org.jvnet.hk2.config.types.Property;
 
 import javax.naming.InitialContext;
@@ -78,6 +79,8 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
     @Inject
     private Habitat connectorRuntimeHabitat;
 
+    private ResourcesUtil resourcesUtil = ResourcesUtil.createInstance();
+
     private static Logger _logger = LogDomains.getLogger(JdbcRecoveryResourceHandler.class, LogDomains.RSR_LOGGER);
 
     private void loadAllJdbcResources() {
@@ -87,7 +90,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
             InitialContext ic = new InitialContext();
             for (Resource resource : jdbcResources) {
                 JdbcResource jdbcResource = (JdbcResource) resource;
-                if (isEnabled(jdbcResource)) {
+                if(resourcesUtil.isEnabled(jdbcResource)) {
                     try {
                         ic.lookup(jdbcResource.getJndiName());
                     } catch (Exception ex) {
@@ -116,17 +119,17 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
      */
     public void loadXAResourcesAndItsConnections(List xaresList, List connList) {
 
-        Collection<JdbcResource> jdbcres = getJdbcResources();
+        Collection<JdbcResource> jdbcResources = getJdbcResources();
 
-        if (jdbcres == null || jdbcres.size() == 0) {
+        if (jdbcResources == null || jdbcResources.size() == 0) {
             return;
         }
 
         List<JdbcConnectionPool> jdbcPools = new ArrayList<JdbcConnectionPool>();
 
-        for (Resource resource : jdbcres) {
+        for (Resource resource : jdbcResources) {
             JdbcResource jdbcResource = (JdbcResource) resource;
-            if (isEnabled(jdbcResource)) {
+            if(resourcesUtil.isEnabled(jdbcResource)) {
                 JdbcConnectionPool pool = getJdbcConnectionPoolByName(jdbcResource.getPoolName());
                 if (pool != null &&
                         "javax.sql.XADataSource".equals(pool.getResType())) {
@@ -146,9 +149,9 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
         // Read from the transaction-service , if the replacement of
         // Vendor XAResource class with our version required.
         // If yes, put the mapping in the xaresourcewrappers properties.
-        Properties xaresourcewrappers = new Properties();
+        Properties XAResourceWrappers = new Properties();
 
-        xaresourcewrappers.put(
+        XAResourceWrappers.put(
                 "oracle.jdbc.xa.client.OracleXADataSource",
                 "com.sun.enterprise.transaction.jts.recovery.OracleXAResource");
 
@@ -160,12 +163,12 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                 String value = property.getValue();
                 if (name.equals("oracle-xa-recovery-workaround")) {
                     if ("false".equals(value)) {
-                        xaresourcewrappers.remove(
+                        XAResourceWrappers.remove(
                                 "oracle.jdbc.xa.client.OracleXADataSource");
                     }
                 } else if (name.equals("sybase-xa-recovery-workaround")) {
                     if (value.equals("true")) {
-                        xaresourcewrappers.put(
+                        XAResourceWrappers.put(
                                 "com.sybase.jdbc2.jdbc.SybXADataSource",
                                 "com.sun.enterprise.transaction.jts.recovery.SybaseXAResource");
                     }
@@ -205,10 +208,10 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                         // specified if yes, replace the XAResouce class of database
                         // vendor with our own version
 
-                        String clName =
+                        String datasourceClassname =
                                 jdbcConnectionPool.getDatasourceClassname();
-                        String wrapperclass = (String) xaresourcewrappers.get(
-                                clName);
+                        String wrapperclass = (String) XAResourceWrappers.get(
+                                datasourceClassname);
                         if (wrapperclass != null) {
                             //need to load wrapper class provided by "transactions" module.
                             //Using connector-class-loader so as to get access to "transaction" module.
@@ -234,15 +237,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
 
 
     private JdbcConnectionPool getJdbcConnectionPoolByName(String poolName) {
-        JdbcConnectionPool result = null;
-        Collection<JdbcConnectionPool> jdbcPools = resources.getResources(JdbcConnectionPool.class);
-        for (JdbcConnectionPool jdbcPool : jdbcPools) {
-            if (jdbcPool.getName().equals(poolName)) {
-                result = jdbcPool;
-                break;
-            }
-        }
-        return result;
+        return (JdbcConnectionPool)resources.getResourceByName(JdbcConnectionPool.class, poolName);
     }
 
     /**
@@ -257,11 +252,6 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                 _logger.log(Level.WARNING, "recovery.jdbc-resource.destroy-error", ex);
             }
         }
-    }
-
-    //TODO V3 can't this be generic or can't this be handled by ConnectorsUtil / ResourcesUtil
-    private boolean isEnabled(JdbcResource resource) {
-        return Boolean.valueOf(resource.getEnabled());
     }
 
     /**

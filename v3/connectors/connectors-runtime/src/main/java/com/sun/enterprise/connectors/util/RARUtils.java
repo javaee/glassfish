@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.connectors.util;
 
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,10 +50,13 @@ import java.util.logging.Logger;
 
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
-import com.sun.enterprise.deployment.ConnectorConfigProperty ;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 /**
  * This is a utility class to obtain the properties of a 
@@ -265,5 +270,96 @@ public class RARUtils {
         return mergedProps;
         
     }
+
+    public static Class loadClassFromRar(String rarName, String beanClassName) throws ConnectorRuntimeException{
+        String rarLocation = getRarLocation(rarName);
+        return loadClass(rarLocation, beanClassName);
+    }
+
+    /**
+     * given the rar name, location of rar will be returned
+     * @param rarName resource-adapter name
+     * @return location of resource-adapter
+     */
+    private static String getRarLocation(String rarName) {
+        return ConnectorsUtil.getLocation(rarName);
+    }
+
+
+    /**
+     * given the location of .rar (archive / exploded dir), the specified class will be loaded
+     * @param pathToDeployableUnit location of .rar (archive / exploded dir)
+     * @param beanClassName class that has to be loaded
+     * @return loaded class
+     * @throws ConnectorRuntimeException when unable to load the class
+     */
+    private static Class loadClass(String pathToDeployableUnit, String beanClassName) throws ConnectorRuntimeException {
+        Class cls = null;
+
+        ClassLoader cl = getClassLoader(pathToDeployableUnit);
+
+        try {
+            //Only if RA is a 1.5 RAR, we need to get RA JavaBean properties, else
+            //return an empty map.
+
+            if (beanClassName != null && beanClassName.trim().length() != 0) {
+                cls = cl.loadClass(beanClassName);
+            }
+            return cls;
+        } catch (ClassNotFoundException e) {
+            _logger.info(e.getMessage());
+            _logger.log(Level.FINE, "Unable to find class while trying to read connector" +
+                    "descriptor to get resource-adapter properties", e);
+            ConnectorRuntimeException cre = new ConnectorRuntimeException("unable to find class : " + beanClassName);
+            cre.setStackTrace(e.getStackTrace());
+            throw cre;
+        }
+    }
+
+    /**
+     * based on the provided file type (dir or archive) appropriate class-loader will be selected
+     * @param file file (dir/ archive)
+     * @return classloader that is capable of loading the .rar
+     * @throws ConnectorRuntimeException when unable to load the .rar
+     */
+    private static ClassLoader getClassLoader(String file) throws ConnectorRuntimeException {
+        ClassLoader cl = null;
+        File f = new File(file);
+        validateRARLocation(f);
+        try {
+            if (f.isDirectory()) {
+                cl = new URLClassLoader(new URL[]{f.toURI().toURL()},
+                        Thread.currentThread().getContextClassLoader());
+                        //ApplicationServer.getServerContext().getCommonClassLoader());
+            } else {
+                cl =
+                        (new ConnectorRARClassLoader(file,
+                            Thread.currentThread().getContextClassLoader()));
+                                //ApplicationServer.getServerContext().getCommonClassLoader()));
+            }
+            return cl;
+        } catch (IOException ioe) {
+            _logger.info(ioe.getMessage());
+            _logger.log(Level.FINE, "IO Error while trying to read connector" +
+                    "descriptor to get resource-adapter properties", ioe);
+            ConnectorRuntimeException cre = new ConnectorRuntimeException("unable to read connector descriptor from : " + file);
+            cre.setStackTrace(ioe.getStackTrace());
+            throw cre;
+        }
+    }
+
+    /**
+     * check whether the provided location is valid
+     * @param f location where the .rar is present
+     * @throws ConnectorRuntimeException
+     */
+    private static void validateRARLocation(File f) throws ConnectorRuntimeException {
+        if (!f.exists()) {
+            String i18nMsg = localStrings.getString(
+                    "rar_archive_not_found", f);
+            throw new ConnectorRuntimeException(i18nMsg);
+        }
+    }
+
     
 }

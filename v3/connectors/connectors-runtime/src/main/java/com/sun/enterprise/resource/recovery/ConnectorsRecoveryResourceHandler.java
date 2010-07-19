@@ -57,6 +57,7 @@ import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
 import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.ConnectorConfigProperty ;
@@ -93,6 +94,8 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
     @Inject
     private Habitat applicationLoaderServiceHabitat;
 
+    private ResourcesUtil resourcesUtil = ResourcesUtil.createInstance();
+    
     private static Logger _logger = LogDomains.getLogger(ConnectorsRecoveryResourceHandler.class, LogDomains.RSR_LOGGER);
 
     /**
@@ -104,7 +107,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
             Collection<ConnectorResource> connResources = resources.getResources(ConnectorResource.class);
             InitialContext ic = new InitialContext();
             for (ConnectorResource connResource : connResources) {
-                if (isEnabled(connResource)) {
+                if(resourcesUtil.isEnabled(connResource)) {
                     try {
                         ic.lookup(connResource.getJndiName());
                     //} catch (NameNotFoundException ne) {
@@ -114,21 +117,25 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
                         try {
                             com.sun.enterprise.config.serverbeans.ConnectorConnectionPool connConnectionPool =
                                     getConnectorConnectionPoolByName(connResource.getPoolName());
-                            //TODO V3 ideally this should not happen if connector modules (and embedded rars) are loaded before recovery
+                            //TODO V3 ideally this should not happen if connector modules (and embedded rars)
+                            //TODO  are loaded before recovery
                             createActiveResourceAdapter(connConnectionPool.getResourceAdapterName());
                             getConnectorResourceDeployer().deployResource(connResource);
                         } catch (Exception ex) {
-                            _logger.log(Level.SEVERE, "error.loading.connector.resources.during.recovery", connResource.getJndiName());
+                            _logger.log(Level.SEVERE, "error.loading.connector.resources.during.recovery",
+                                    connResource.getJndiName());
                             if (_logger.isLoggable(Level.FINE)) {
                                 _logger.log(Level.FINE, ne.toString(), ne);
                             }
-                            _logger.log(Level.SEVERE, "error.loading.connector.resources.during.recovery", connResource.getJndiName());
+                            _logger.log(Level.SEVERE, "error.loading.connector.resources.during.recovery",
+                                    connResource.getJndiName());
                             if (_logger.isLoggable(Level.FINE)) {
                                 _logger.log(Level.FINE, ex.toString(), ex);
                             }
                         }
                     } catch (Exception ex) {
-                        _logger.log(Level.SEVERE, "error.loading.connector.resources.during.recovery", connResource.getJndiName());
+                        _logger.log(Level.SEVERE, "error.loading.connector.resources.during.recovery",
+                                connResource.getJndiName());
                         if (_logger.isLoggable(Level.FINE)) {
                             _logger.log(Level.FINE, ex.toString(), ex);
                         }
@@ -153,15 +160,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
      * @return ccp
      */
     private ConnectorConnectionPool getConnectorConnectionPoolByName(String poolName) {
-        ConnectorConnectionPool result = null;
-        Collection<ConnectorConnectionPool> ccPools = resources.getResources(ConnectorConnectionPool.class);
-        for (ConnectorConnectionPool ccp : ccPools) {
-            if (ccp.getName().equals(poolName)) {
-                result = ccp;
-                break;
-            }
-        }
-        return result;
+        return (ConnectorConnectionPool)resources.getResourceByName(ConnectorConnectionPool.class, poolName);
     }
 
     /**
@@ -184,7 +183,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
         List<ConnectorConnectionPool> connPools = new ArrayList<ConnectorConnectionPool>();
         for (Resource resource : connectorResources) {
             ConnectorResource connResource = (ConnectorResource) resource;
-            if (isEnabled(connResource)) {
+            if(resourcesUtil.isEnabled(connResource)) {
                 ConnectorConnectionPool pool = getConnectorConnectionPoolByName(connResource.getPoolName());
                 if (pool != null &&
                         ConnectorConstants.XA_TRANSACTION_TX_SUPPORT_STRING.equals(
@@ -329,11 +328,6 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
                 _logger.log(Level.WARNING, "Connector Resource could not be closed", ex);
             }
         }
-    }
-
-    //TODO V3 can't this be generic or can't this be handled by ConnectorsUtil / ResourcesUtil
-    private boolean isEnabled(ConnectorResource resource) {
-        return Boolean.valueOf(resource.getEnabled());
     }
 
     private String[] getdbUserPasswordOfConnectorConnectionPool(

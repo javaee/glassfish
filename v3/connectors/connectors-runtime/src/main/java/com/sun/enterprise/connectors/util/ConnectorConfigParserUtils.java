@@ -470,13 +470,9 @@ public class ConnectorConfigParserUtils {
                 loadedClass = app.getClassLoader().loadClass(className);
             }
         } catch (ClassNotFoundException e1) {
-            ConnectorRuntimeException cre = new ConnectorRuntimeException(e1.getMessage());
-            cre.initCause(e1);
-            throw cre;
+            //try loading via RARUtils
+            loadedClass = RARUtils.loadClassFromRar(resourceAdapterName, className);
         }
-        //TODO Need to introduce the same behavior as v2 (below) instead of using classloader from registry (above)
-        //try loading via RARUtils
-        //loadedClass = RARUtils.loadClassFromRar(resourceAdapterName, className);
         return loadedClass;
     }
     /**
