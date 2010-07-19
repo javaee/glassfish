@@ -65,6 +65,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PerLookup;
+import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 /**
  * AdminCommand to stop the instance

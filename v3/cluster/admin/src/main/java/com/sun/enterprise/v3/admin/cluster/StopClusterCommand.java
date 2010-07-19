@@ -52,6 +52,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 @I18n("stop.cluster.command")
 @Service(name="stop-cluster")

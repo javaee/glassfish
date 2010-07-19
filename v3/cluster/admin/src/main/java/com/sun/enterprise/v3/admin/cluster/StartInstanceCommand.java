@@ -69,6 +69,7 @@ import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
 import java.io.IOException;
 import java.lang.InterruptedException;
 import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 
 /**

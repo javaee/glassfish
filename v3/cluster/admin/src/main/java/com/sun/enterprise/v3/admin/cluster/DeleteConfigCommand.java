@@ -52,6 +52,7 @@ import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.config.ReferenceContainer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 /**
  *  This is a remote command that deletes a destination config.

@@ -36,6 +36,7 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;

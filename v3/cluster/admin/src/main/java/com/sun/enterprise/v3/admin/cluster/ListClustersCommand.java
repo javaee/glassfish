@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.logging.Logger;
 import static com.sun.enterprise.v3.admin.cluster.Constants.*;
+import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 /**
  *  This is a remote command that lists the clusters.

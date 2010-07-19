@@ -55,6 +55,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.ReferenceContainer;
 import org.jvnet.hk2.component.*;
 import static com.sun.enterprise.v3.admin.cluster.Constants.*;
+import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 /**
  * AdminCommand to list all instances and their states

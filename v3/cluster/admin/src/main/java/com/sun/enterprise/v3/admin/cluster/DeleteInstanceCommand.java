@@ -53,6 +53,7 @@ import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import java.util.logging.Logger;
 import java.io.IOException;
+import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 /**
  * Remote AdminCommand to delete an instance.  This command is run only on DAS.
