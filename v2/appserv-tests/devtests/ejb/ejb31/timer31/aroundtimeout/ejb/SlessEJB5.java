@@ -24,7 +24,7 @@ import javax.interceptor.InvocationContext;
 @Interceptors({InterceptorD.class})
 public class SlessEJB5 implements Sless5
 {
-    private boolean aroundTimeoutCalled = false;
+    private volatile static boolean aroundTimeoutCalled = false;
     boolean aroundAllCalled = false;
 
     private final static int EXPECTED = 3;
