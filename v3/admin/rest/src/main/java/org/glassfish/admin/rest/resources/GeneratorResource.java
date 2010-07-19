@@ -165,7 +165,28 @@ public class GeneratorResource {
         {"Server", "delete-instance", "DELETE", "delete-instance", "Delete Instance", "id=$parent"},
         {"Server", "start-instance", "POST", "start-instance", "Start Instance", "id=$parent"},
         {"Server", "stop-instance", "POST", "stop-instance", "Stop Instance", "id=$parent"},
-        {"Server", "recover-transactions", "POST", "recover-transactions", "Recover", "id=$parent"}
+        {"Server", "recover-transactions", "POST", "recover-transactions", "Recover", "id=$parent"},
+        {"Resources", "_get-connection-definition-properties-and-defaults", "GET", "get-connection-definition-properties-and-defaults", "Get Connection Definition Properties And Defaults"},
+        {"Resources", "_get-built-in-custom-resources", "GET", "get-built-in-custom-resources", "Get Built In Custom Resources"},
+        {"Resources", "_get-system-rars-allowing-pool-creation", "GET", "get-system-rars-allowing-pool-creation", "Get System Rars Allowing Pool Creation"},
+        {"Resources", "_get-connection-definition-names", "GET", "get-connection-definition-names", "Get Connection Definition Names"},
+        {"Resources", "_get-mcf-config-properties", "GET", "get-mcf-config-properties", "Get Mcf Config Properties"},
+        {"Resources", "_get-admin-object-interface-names", "GET", "get-admin-object-interface-names", "Get Admin Object Interface Names"},
+        {"Resources", "_get-admin-object-class-names", "GET", "get-admin-object-class-names", "Get Admin Object Class Names"},
+        {"Resources", "_get-resource-adapter-config-properties", "GET", "get-resource-adapter-config-properties", "Get Resource Adapter Config Properties"},
+        {"Resources", "_get-admin-object-config-properties", "GET", "get-admin-object-config-properties", "Get Admin Object Config Properties"},
+        {"Resources", "_get-connector-config-java-beans", "GET", "get-connector-config-java-beans", "Get Connector Config Java Beans"},
+        {"Resources", "_get-activation-spec-class", "GET", "get-activation-spec-class", "Get Activation Spec Class"},
+        {"Resources", "_get-message-listener-types", "GET", "get-message-listener-types", "Get Message Listener Types"},
+        {"Resources", "_get-message-listener-config-properties", "GET", "get-message-listener-config-properties", "Get Message Listener Config Properties"},
+        {"Resources", "_get-message-listener-config-property-types", "GET", "get-message-listener-config-property-types", "Get Message Listener Config Property Types"},
+        {"Resources", "_get-validation-table-names", "GET", "get-validation-table-names", "Get Validation Table Names"},
+        {"Resources", "_get-jdbc-driver-class-names", "GET", "get-jdbc-driver-class-names", "Get Jdbc Driver Class Names"},
+        {"Resources", "_get-validation-class-names", "GET", "get-validation-class-names", "Get Validation Class Names"},
+        {"Resources", "_get-database-vendor-names", "GET", "get-database-vendor-names", "Get Database Vendor Names"},
+        {"Resources", "flush-connection-pool", "POST", "flush-connection-pool", "Flush Connection Pool"},
+        {"Resources", "ping-connection-pool", "GET", "ping-connection-pool", "Ping Connection Pool"}
+
     };
 
     /** Creates a new instance of xxxResource */

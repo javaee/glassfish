@@ -38,6 +38,131 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.resources.*;
 public class ResourcesResource extends TemplateResource {
 
+@Path("get-connection-definition-properties-and-defaults/")
+public ResourcesGetConnectionDefinitionPropertiesAndDefaultsResource getResourcesGetConnectionDefinitionPropertiesAndDefaultsResource() {
+ResourcesGetConnectionDefinitionPropertiesAndDefaultsResource resource = resourceContext.getResource(ResourcesGetConnectionDefinitionPropertiesAndDefaultsResource.class);
+return resource;
+}
+
+@Path("get-built-in-custom-resources/")
+public ResourcesGetBuiltInCustomResourcesResource getResourcesGetBuiltInCustomResourcesResource() {
+ResourcesGetBuiltInCustomResourcesResource resource = resourceContext.getResource(ResourcesGetBuiltInCustomResourcesResource.class);
+return resource;
+}
+
+@Path("get-system-rars-allowing-pool-creation/")
+public ResourcesGetSystemRarsAllowingPoolCreationResource getResourcesGetSystemRarsAllowingPoolCreationResource() {
+ResourcesGetSystemRarsAllowingPoolCreationResource resource = resourceContext.getResource(ResourcesGetSystemRarsAllowingPoolCreationResource.class);
+return resource;
+}
+
+@Path("get-connection-definition-names/")
+public ResourcesGetConnectionDefinitionNamesResource getResourcesGetConnectionDefinitionNamesResource() {
+ResourcesGetConnectionDefinitionNamesResource resource = resourceContext.getResource(ResourcesGetConnectionDefinitionNamesResource.class);
+return resource;
+}
+
+@Path("get-mcf-config-properties/")
+public ResourcesGetMcfConfigPropertiesResource getResourcesGetMcfConfigPropertiesResource() {
+ResourcesGetMcfConfigPropertiesResource resource = resourceContext.getResource(ResourcesGetMcfConfigPropertiesResource.class);
+return resource;
+}
+
+@Path("get-admin-object-interface-names/")
+public ResourcesGetAdminObjectInterfaceNamesResource getResourcesGetAdminObjectInterfaceNamesResource() {
+ResourcesGetAdminObjectInterfaceNamesResource resource = resourceContext.getResource(ResourcesGetAdminObjectInterfaceNamesResource.class);
+return resource;
+}
+
+@Path("get-admin-object-class-names/")
+public ResourcesGetAdminObjectClassNamesResource getResourcesGetAdminObjectClassNamesResource() {
+ResourcesGetAdminObjectClassNamesResource resource = resourceContext.getResource(ResourcesGetAdminObjectClassNamesResource.class);
+return resource;
+}
+
+@Path("get-resource-adapter-config-properties/")
+public ResourcesGetResourceAdapterConfigPropertiesResource getResourcesGetResourceAdapterConfigPropertiesResource() {
+ResourcesGetResourceAdapterConfigPropertiesResource resource = resourceContext.getResource(ResourcesGetResourceAdapterConfigPropertiesResource.class);
+return resource;
+}
+
+@Path("get-admin-object-config-properties/")
+public ResourcesGetAdminObjectConfigPropertiesResource getResourcesGetAdminObjectConfigPropertiesResource() {
+ResourcesGetAdminObjectConfigPropertiesResource resource = resourceContext.getResource(ResourcesGetAdminObjectConfigPropertiesResource.class);
+return resource;
+}
+
+@Path("get-connector-config-java-beans/")
+public ResourcesGetConnectorConfigJavaBeansResource getResourcesGetConnectorConfigJavaBeansResource() {
+ResourcesGetConnectorConfigJavaBeansResource resource = resourceContext.getResource(ResourcesGetConnectorConfigJavaBeansResource.class);
+return resource;
+}
+
+@Path("get-activation-spec-class/")
+public ResourcesGetActivationSpecClassResource getResourcesGetActivationSpecClassResource() {
+ResourcesGetActivationSpecClassResource resource = resourceContext.getResource(ResourcesGetActivationSpecClassResource.class);
+return resource;
+}
+
+@Path("get-message-listener-types/")
+public ResourcesGetMessageListenerTypesResource getResourcesGetMessageListenerTypesResource() {
+ResourcesGetMessageListenerTypesResource resource = resourceContext.getResource(ResourcesGetMessageListenerTypesResource.class);
+return resource;
+}
+
+@Path("get-message-listener-config-properties/")
+public ResourcesGetMessageListenerConfigPropertiesResource getResourcesGetMessageListenerConfigPropertiesResource() {
+ResourcesGetMessageListenerConfigPropertiesResource resource = resourceContext.getResource(ResourcesGetMessageListenerConfigPropertiesResource.class);
+return resource;
+}
+
+@Path("get-message-listener-config-property-types/")
+public ResourcesGetMessageListenerConfigPropertyTypesResource getResourcesGetMessageListenerConfigPropertyTypesResource() {
+ResourcesGetMessageListenerConfigPropertyTypesResource resource = resourceContext.getResource(ResourcesGetMessageListenerConfigPropertyTypesResource.class);
+return resource;
+}
+
+@Path("get-validation-table-names/")
+public ResourcesGetValidationTableNamesResource getResourcesGetValidationTableNamesResource() {
+ResourcesGetValidationTableNamesResource resource = resourceContext.getResource(ResourcesGetValidationTableNamesResource.class);
+return resource;
+}
+
+@Path("get-jdbc-driver-class-names/")
+public ResourcesGetJdbcDriverClassNamesResource getResourcesGetJdbcDriverClassNamesResource() {
+ResourcesGetJdbcDriverClassNamesResource resource = resourceContext.getResource(ResourcesGetJdbcDriverClassNamesResource.class);
+return resource;
+}
+
+@Path("get-validation-class-names/")
+public ResourcesGetValidationClassNamesResource getResourcesGetValidationClassNamesResource() {
+ResourcesGetValidationClassNamesResource resource = resourceContext.getResource(ResourcesGetValidationClassNamesResource.class);
+return resource;
+}
+
+@Path("get-database-vendor-names/")
+public ResourcesGetDatabaseVendorNamesResource getResourcesGetDatabaseVendorNamesResource() {
+ResourcesGetDatabaseVendorNamesResource resource = resourceContext.getResource(ResourcesGetDatabaseVendorNamesResource.class);
+return resource;
+}
+
+@Path("flush-connection-pool/")
+public ResourcesFlushConnectionPoolResource getResourcesFlushConnectionPoolResource() {
+ResourcesFlushConnectionPoolResource resource = resourceContext.getResource(ResourcesFlushConnectionPoolResource.class);
+return resource;
+}
+
+@Path("ping-connection-pool/")
+public ResourcesPingConnectionPoolResource getResourcesPingConnectionPoolResource() {
+ResourcesPingConnectionPoolResource resource = resourceContext.getResource(ResourcesPingConnectionPoolResource.class);
+return resource;
+}
+
+@Override
+public String[][] getCommandResourcesPaths() {
+return new String[][]{{"get-connection-definition-properties-and-defaults", "GET", "_get-connection-definition-properties-and-defaults"}, {"get-built-in-custom-resources", "GET", "_get-built-in-custom-resources"}, {"get-system-rars-allowing-pool-creation", "GET", "_get-system-rars-allowing-pool-creation"}, {"get-connection-definition-names", "GET", "_get-connection-definition-names"}, {"get-mcf-config-properties", "GET", "_get-mcf-config-properties"}, {"get-admin-object-interface-names", "GET", "_get-admin-object-interface-names"}, {"get-admin-object-class-names", "GET", "_get-admin-object-class-names"}, {"get-resource-adapter-config-properties", "GET", "_get-resource-adapter-config-properties"}, {"get-admin-object-config-properties", "GET", "_get-admin-object-config-properties"}, {"get-connector-config-java-beans", "GET", "_get-connector-config-java-beans"}, {"get-activation-spec-class", "GET", "_get-activation-spec-class"}, {"get-message-listener-types", "GET", "_get-message-listener-types"}, {"get-message-listener-config-properties", "GET", "_get-message-listener-config-properties"}, {"get-message-listener-config-property-types", "GET", "_get-message-listener-config-property-types"}, {"get-validation-table-names", "GET", "_get-validation-table-names"}, {"get-jdbc-driver-class-names", "GET", "_get-jdbc-driver-class-names"}, {"get-validation-class-names", "GET", "_get-validation-class-names"}, {"get-database-vendor-names", "GET", "_get-database-vendor-names"}, {"flush-connection-pool", "POST", "flush-connection-pool"}, {"ping-connection-pool", "GET", "ping-connection-pool"}};
+}
+
 @Path("external-jndi-resource/")
 public ListExternalJndiResourceResource getExternalJndiResourceResource() {
 	ListExternalJndiResourceResource resource = resourceContext.getResource(ListExternalJndiResourceResource.class);
@@ -50,28 +175,10 @@ public ListJdbcConnectionPoolResource getJdbcConnectionPoolResource() {
 	resource.setParentAndTagName(getEntity() , "jdbc-connection-pool");
 	return resource;
 }
-@Path("connector-resource/")
-public ListConnectorResourceResource getConnectorResourceResource() {
-	ListConnectorResourceResource resource = resourceContext.getResource(ListConnectorResourceResource.class);
-	resource.setParentAndTagName(getEntity() , "connector-resource");
-	return resource;
-}
-@Path("resource-adapter-config/")
-public ListResourceAdapterConfigResource getResourceAdapterConfigResource() {
-	ListResourceAdapterConfigResource resource = resourceContext.getResource(ListResourceAdapterConfigResource.class);
-	resource.setParentAndTagName(getEntity() , "resource-adapter-config");
-	return resource;
-}
 @Path("jdbc-resource/")
 public ListJdbcResourceResource getJdbcResourceResource() {
 	ListJdbcResourceResource resource = resourceContext.getResource(ListJdbcResourceResource.class);
 	resource.setParentAndTagName(getEntity() , "jdbc-resource");
-	return resource;
-}
-@Path("mail-resource/")
-public ListMailResourceResource getMailResourceResource() {
-	ListMailResourceResource resource = resourceContext.getResource(ListMailResourceResource.class);
-	resource.setParentAndTagName(getEntity() , "mail-resource");
 	return resource;
 }
 @Path("persistence-manager-factory-resource/")
@@ -86,10 +193,28 @@ public ListConnectorConnectionPoolResource getConnectorConnectionPoolResource() 
 	resource.setParentAndTagName(getEntity() , "connector-connection-pool");
 	return resource;
 }
+@Path("custom-resource/")
+public ListCustomResourceResource getCustomResourceResource() {
+	ListCustomResourceResource resource = resourceContext.getResource(ListCustomResourceResource.class);
+	resource.setParentAndTagName(getEntity() , "custom-resource");
+	return resource;
+}
+@Path("resource-adapter-config/")
+public ListResourceAdapterConfigResource getResourceAdapterConfigResource() {
+	ListResourceAdapterConfigResource resource = resourceContext.getResource(ListResourceAdapterConfigResource.class);
+	resource.setParentAndTagName(getEntity() , "resource-adapter-config");
+	return resource;
+}
 @Path("admin-object-resource/")
 public ListAdminObjectResourceResource getAdminObjectResourceResource() {
 	ListAdminObjectResourceResource resource = resourceContext.getResource(ListAdminObjectResourceResource.class);
 	resource.setParentAndTagName(getEntity() , "admin-object-resource");
+	return resource;
+}
+@Path("mail-resource/")
+public ListMailResourceResource getMailResourceResource() {
+	ListMailResourceResource resource = resourceContext.getResource(ListMailResourceResource.class);
+	resource.setParentAndTagName(getEntity() , "mail-resource");
 	return resource;
 }
 @Path("work-security-map/")
@@ -98,10 +223,10 @@ public ListWorkSecurityMapResource getWorkSecurityMapResource() {
 	resource.setParentAndTagName(getEntity() , "work-security-map");
 	return resource;
 }
-@Path("custom-resource/")
-public ListCustomResourceResource getCustomResourceResource() {
-	ListCustomResourceResource resource = resourceContext.getResource(ListCustomResourceResource.class);
-	resource.setParentAndTagName(getEntity() , "custom-resource");
+@Path("connector-resource/")
+public ListConnectorResourceResource getConnectorResourceResource() {
+	ListConnectorResourceResource resource = resourceContext.getResource(ListConnectorResourceResource.class);
+	resource.setParentAndTagName(getEntity() , "connector-resource");
 	return resource;
 }
 }
