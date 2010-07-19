@@ -86,6 +86,8 @@ public final class DisableHTTPLBServerCommand extends LBCommandsBase
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         
+        Logger logger = context.getLogger();
+
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
         int t = Integer.parseInt(timeout);
@@ -106,11 +108,9 @@ public final class DisableHTTPLBServerCommand extends LBCommandsBase
             for (LbConfig lc:lbConfigs) {
                 ServerRef  sRef = lc.getRefByRef(ServerRef.class, target);
                 if (sRef == null) {
-                    String msg = localStrings.getLocalString("InvalidInstance",
-                            "Server {0} does not exist in {1}", target, lc.getName() );
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(msg);
-                    return;
+                    //log a warning and continue search
+                    logger.warning(localStrings.getLocalString("InvalidInstance",
+                            "Server {0} does not exist in {1}", target, lc.getName()));
                 } else {
                     int curTout = Integer.parseInt(
                             sRef.getDisableTimeoutInMinutes());

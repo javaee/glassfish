@@ -98,11 +98,9 @@ public final class EnableHTTPLBServerCommand extends LBCommandsBase
                 //ServerRef  sRef = lc.getServerRefByRef(target);
                 ServerRef  sRef = lc.getRefByRef(ServerRef.class, target);
                 if (sRef == null) {
-                    String msg = localStrings.getLocalString("InvalidInstance",
-                            "Server {0} does not exist in {1}", target, lc.getName() );
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(msg);
-                    return;
+                    //log a warning and continue search
+                    logger.warning(localStrings.getLocalString("InvalidInstance",
+                            "Server {0} does not exist in {1}", target, lc.getName()));
                 } else {
                     boolean enabled = sRef.getLbEnabled().equals("true");
                     if (enabled == true) {
