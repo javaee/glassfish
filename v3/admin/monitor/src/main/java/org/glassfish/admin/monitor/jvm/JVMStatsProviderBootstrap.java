@@ -83,6 +83,7 @@ public class JVMStatsProviderBootstrap implements PostStartup, PostConstruct {
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/runtime", runtimeStatsProvider, ContainerMonitoring.LEVEL_LOW);
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/thread-system", threadSysStatsProvider, ContainerMonitoring.LEVEL_LOW);
         for (ThreadInfo t : threadBean.getThreadInfo(threadBean.getAllThreadIds(), 5)) {
+            if (t == null) continue; // See issue #12636
             JVMThreadInfoStatsProvider threadInfoStatsProvider = new JVMThreadInfoStatsProvider(t);
             StatsProviderManager.register("jvm", PluginPoint.SERVER, 
                     "jvm/thread-system/thread-"+t.getThreadId(), threadInfoStatsProvider, ContainerMonitoring.LEVEL_HIGH);
