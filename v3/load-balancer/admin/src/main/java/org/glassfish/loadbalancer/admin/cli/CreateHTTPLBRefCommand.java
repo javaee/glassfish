@@ -290,7 +290,8 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
         }
 
         Server server = domain.getServerNamed(serverName);
-        if (server.getCluster() == null && server.isInstance()) {
+        boolean isStandAlone = server.getCluster() == null && server.isInstance();
+        if (!isStandAlone) {
             String msg = localStrings.getLocalString("NotStandAloneInstance",
                     "[{0}] is not a stand alone instance. Only stand alone instance can be added to a load balancer.",
                     serverName);
