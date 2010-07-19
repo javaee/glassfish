@@ -34,20 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
-import javax.ws.rs.Path;
-import org.glassfish.admin.rest.resources.*;
-public class ModuleResource extends TemplateResource {
 
-@Path("engine/")
-public ListEngineResource getEngineResource() {
-	ListEngineResource resource = resourceContext.getResource(ListEngineResource.class);
-	resource.setParentAndTagName(getEntity() , "engine");
-	return resource;
-}
-	@Path("property/")
-	public PropertiesBagResource getProperties() {
-		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
-		resource.setParentAndTagName(getEntity() , "property");
-		return resource;
-	}
+//generated code...;
+
+public class ServerDeleteApplicationRefResource extends org.glassfish.admin.rest.resources.TemplateCommandDeleteResource {
+   public ServerDeleteApplicationRefResource() {
+       super(
+          "ServerDeleteApplicationRef",
+          "delete-application-ref",
+          "DELETE",
+          "Delete Application Ref",
+          "delete-application-ref",
+          new java.util.HashMap<String, String>() {{
+                    put("target","$parent");
+       }},
+          true);
+    }
 }

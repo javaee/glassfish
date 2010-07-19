@@ -38,4 +38,8 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.resources.*;
 public class ApplicationRefResource extends TemplateResource {
 
+@Override
+public String getDeleteCommand() {
+	return "delete-application-ref";
+}
 }

@@ -102,6 +102,7 @@ public class GeneratorResource {
         {"ListWorkSecurityMap", "create-connector-work-security-map"}
     };
     private static String MappingConfigBeansToDELETECommands[][] = {
+        {"ApplicationRef", "delete-application-ref"},
         {"NetworkListener", "delete-network-listener"},
         {"Property", "GENERIC-DELETE"},
         {"Protocol", "delete-protocol"},

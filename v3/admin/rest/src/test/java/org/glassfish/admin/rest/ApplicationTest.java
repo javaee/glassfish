@@ -47,8 +47,8 @@ import static org.junit.Assert.*;
  * @author jasonlee
  */
 public class ApplicationTest extends RestTestBase {
-
     public static final String URL_APPLICATION_DEPLOY = BASE_URL_DOMAIN + "/applications/application";
+    public static final String URL_CREATE_INSTANCE = BASE_URL_DOMAIN + "/create-instance";
     public static final String URL_SUB_COMPONENTS = BASE_URL_DOMAIN + "/applications/application/list-sub-components";
 
     @Test
@@ -126,6 +126,48 @@ public class ApplicationTest extends RestTestBase {
             subComponents = response.getEntity(String.class);
             assertTrue(subComponents.contains("GreeterServlet"));
         } finally {
+            undeployApp(newApp);
+        }
+    }
+
+    @Test
+    public void testCreatingAndDeletingApplicationRefs() {
+        final String instanceName = "instance_" + generateRandomString();
+        final String appName = "testApp" + generateRandomString();
+        final String appRefUrl = BASE_URL_DOMAIN + "/servers/server/" + instanceName + "/application-ref";
+        Map<String, Object> newApp = new HashMap<String, Object>() {{
+                put("id", new File("src/test/resources/test.war"));
+                put("contextroot", appName);
+                put("name", appName);
+        }};
+        Map<String, String> newInstance = new HashMap<String, String>() {{
+            put("id", instanceName);
+            put("node", "localhost");
+        }};
+        Map<String, String> applicationRef = new HashMap<String, String>() {{
+            put("ref", appName);
+//            put("target", instanceName);
+        }};
+
+        try {
+            ClientResponse response = post(URL_CREATE_INSTANCE, newInstance);
+            assertTrue(isSuccess(response));
+
+            deployApp(newApp);
+
+            response = post (appRefUrl, applicationRef);
+            assertTrue(isSuccess(response));
+
+            response = get(appRefUrl + "/" + appName);
+            assertTrue(isSuccess(response));
+            
+            response = delete(appRefUrl + "/" + appName, new HashMap<String, String>() {{ put("target", instanceName); }});
+            assertTrue(isSuccess(response));
+        } finally {
+            ClientResponse response = delete(BASE_URL_DOMAIN + "/servers/server/" + instanceName + "/delete-instance");
+            assertTrue(isSuccess(response));
+            response = get(BASE_URL_DOMAIN + "/servers/server/" + instanceName);
+            assertFalse(isSuccess(response));
             undeployApp(newApp);
         }
     }
