@@ -53,7 +53,6 @@
     <modules>
     	<module>glassfish-api</module>
         <module>mbeanserver</module>
-        
     	<module>stats77</module>
     	<module>amx-core</module>
     	<module>amx-core-impl</module>
@@ -62,9 +61,9 @@
     	<module>amx-j2ee</module>
     	<module>amx-j2ee-impl</module>
     	<module>amx-ext-impl</module>
-	<module>mejb</module>
-	<module>mejb-frag</module>
-    	
+        <module>amx-all</module>
+	    <module>mejb</module>
+	    <module>mejb-frag</module>    	
         <module>glassfish-ee-api</module>
     	<module>internal-api</module>
         <module>annotation-framework</module>
