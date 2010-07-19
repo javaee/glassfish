@@ -178,9 +178,30 @@ public class CommonHandlers {
 		}
         handlerCtx.setOutputValue("selectedIndex", listItem);
     }
-    
-    
 
+    /**
+     *	<p> This handler removes the given element from the list </p>
+     *
+     *  <p> Output value: "finalList" -- Type: <code>List</code>/</p>
+     *	@param	handlerCtx	The HandlerContext.
+     */
+    @Handler(id="removeListElement",
+    	input={
+        @HandlerInput(name="list", type=java.util.List.class, required=true ),
+        @HandlerInput(name="name", type=String.class)},
+        output={
+        @HandlerOutput(name="finalList", type=java.util.List.class)})
+    public static void removeListElement(HandlerContext handlerCtx) {
+        List<String> list = (List) handlerCtx.getInputValue("list");
+        String name = (String) handlerCtx.getInputValue("name");
+        String[] listItem = null;
+        if (list != null) {
+            list.remove(name);
+        }
+        handlerCtx.setOutputValue("finalList", list);
+    }
+    
+    
     /**
      * <p> This handler returns the encoded String using the type specified.
      * <p> If type is not specified, it defaults to UTF-8.

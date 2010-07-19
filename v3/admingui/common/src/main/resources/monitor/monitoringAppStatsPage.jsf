@@ -45,27 +45,36 @@
 <!define name="content">
 <event>
     <!beforeCreate
-        getChildrenByType(parentObjectNameStr="amx:pp=/domain,type=applications" type="application" result="#{pageSession.tmpList}");
-        getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
+        gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/applications/application" result="#{pageSession.tmpList}");
+        removeListElement(list="#{pageSession.tmpList}" name="list-sub-components" finalList="#{pageSession.tmpList}");
+        gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server" result="#{pageSession.vsList}");
         getProxyNamesByType(type="login-mon" result="#{pageSession.loginList}" firstItem="#{pageSession.firstLogin}");
         addToMonitorList(oldList="#{pageSession.loginList}", newList="#{pageSession.tmpList}"  result="#{pageSession.appList}");
         populateApplicationsMonitorDropDown(AppsList="#{appList}", MonitorList=>$attribute{monitorList} FirstItem=>$attribute{firstVal});
         if(!#{viewVal}) {
             setAttribute(key="viewVal" value="#{firstVal}");
         }
-        getAppName(name="#{viewVal}", appName=>$attribute{appValue});
-        getNameforMbeanByType(appName="#{viewVal}", compVal="", type="servlet-mon", end="false", mbeanName=>$attribute{webStatsMbeanName});
-        getStatsbyTypeName(type="servlet-mon" name="#{webStatsMbeanName}", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsServletsTemp});
-        if(!#{hasStatsServletsTemp}) {
-            getNameforMbeanByType(appName="#{appValue}", compVal="#{viewVal}", end="false", type="servlet-mon", mbeanName=>$attribute{webStatsMbeanName});
-        }
+        getAppName(endpoint="#{sessionScope.REST_URL}/applications/application" name="#{viewVal}", appName=>$attribute{appValue}, appFullName=>$attribute{appFullName});
+        //To get the sub components of a module
+        createMap(result="#{requestScope.attrsMap}");
+        mapPut(map="#{requestScope.attrsMap}"  key="modulename" value="#{viewVal}");
+        mapPut(map="#{requestScope.attrsMap}"  key="appname"  value="#{appValue}");
+        gf.callRestAndExtractMsgProps(
+    	    endpoint="#{sessionScope.REST_URL}/applications/application/list-sub-components"
+	    attrs="#{requestScope.attrsMap}"
+	    method="GET"	    
+	    keyList="#{pageSession.subModuleList}"
+            propsMap="#{pageSession.propsMap}" );
+        
         if(#{viewVal}) {
             setPageSessionAttribute(key="viewVal" value="#{viewVal}");
         }
         if(#{cVal}) {
             setPageSessionAttribute(key="cVal" value="#{cVal}");
         }
+        getWebStatsUrl(app="#{appFullName}", compVal="#{cVal}", vsList="#{pageSession.vsList}", moduleProps="#{pageSession.propsMap}", webStatUrl=>$attribute{webStatUrl}, webStatType=>$attribute{webStatType});
         getNameforMbean(appName="#{viewVal}", compVal="#{cVal}", end="true", mbeanName=>$attribute{mbName});
+        getStatsUrl(app="#{appFullName}", compVal="#{cVal}", moduleProps="#{pageSession.propsMap}", statUrl=>$attribute{statUrl}, statType=>$attribute{statType});
         calculateHelpUrl(pluginId="#{pluginId}", helpKey: "$resource{help_web.monitorApps}", url="#{olhLink}");
     />
 </event>    
@@ -98,7 +107,6 @@
                                 <!command
                                     setAttribute(key="click" value="$this{component}");
                                     setAttribute(key="viewVal" value="#{click.selected}");
-                                    setAttribute(key="cVal" value="#{cVal}");
                                     setAttribute(key="componentList" value="#{componentList}");
                                     setAttribute(key="monitorList" value="#{monitorList}");
                                     gf.navigate(page="#{request.contextPath}/common/monitor/monitoringAppStatsPage.jsf");
@@ -146,7 +154,7 @@
     <sun:tableRowGroup id="mdbAppStats" rendered="#{hasStatsMDBApp}" data={"$attribute{MDBAppStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.MDB} : #{viewVal}/#{cVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="message-driven-bean-mon" name="#{mbName}", result=>$attribute{MDBAppStatsList}  hasStats=>$attribute{hasStatsMDBApp});
+            getStats(endpoint="#{statUrl}", statType="#{statType}", type="MessageDrivenBean", result=>$attribute{MDBAppStatsList}  hasStats=>$attribute{hasStatsMDBApp});
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
@@ -155,7 +163,7 @@
     <sun:tableRowGroup id="entityBeanAppStats" rendered="#{hasStatsEntityBean}" data={"$attribute{EntityBeanStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.EntityBean} : #{viewVal}/#{cVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="entity-bean-mon" name="#{mbName}", result=>$attribute{EntityBeanStatsList}  hasStats=>$attribute{hasStatsEntityBean});
+            getStats(endpoint="#{statUrl}", statType="#{statType}", type="EntityBean", result=>$attribute{EntityBeanStatsList}  hasStats=>$attribute{hasStatsEntityBean});
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
@@ -164,7 +172,7 @@
     <sun:tableRowGroup id="singletonBeanAppStats" rendered="#{hasStatsSingletonBean}" data={"$attribute{SingletonBeanStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.SingletonBean} : #{viewVal}/#{cVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="singleton-bean-mon" name="#{mbName}", result=>$attribute{SingletonBeanStatsList}  hasStats=>$attribute{hasStatsSingletonBean});
+            getStats(endpoint="#{statUrl}", statType="#{statType}", type="SingletonSessionBean", result=>$attribute{SingletonBeanStatsList}  hasStats=>$attribute{hasStatsSingletonBean});
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
@@ -182,7 +190,7 @@
     <sun:tableRowGroup id="sfullStats" rendered="#{hasStatsSfull}" data={"$attribute{SfullStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.Sfull} : #{viewVal}/#{cVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="stateful-session-bean-mon" name="#{mbName}", result=>$attribute{SfullStatsList}  hasStats=>$attribute{hasStatsSfull});
+            getStats(endpoint="#{statUrl}", statType="#{statType}", type="StatefulSessionBean", result=>$attribute{SfullStatsList}  hasStats=>$attribute{hasStatsSfull});
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
@@ -191,7 +199,7 @@
     <sun:tableRowGroup id="slessStats" rendered="#{hasStatsSless}" data={"$attribute{SlessStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.Sless} : #{viewVal}/#{cVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="stateless-session-bean-mon" name="#{mbName}", result=>$attribute{SlessStatsList}  hasStats=>$attribute{hasStatsSless});
+            getStats(endpoint="#{statUrl}", statType="#{statType}", type="StatelessSessionBean", result=>$attribute{SlessStatsList}  hasStats=>$attribute{hasStatsSless});
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
@@ -200,7 +208,7 @@
     <sun:tableRowGroup id="ejbTimerStats" rendered="#{hasStatsEJBTimer}" data={"$attribute{EJBTimerStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.EJBTimer} : #{viewVal}/#{cVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="ejb-timed-object-mon" name="#{mbName}", result=>$attribute{EJBTimerStatsList}  hasStats=>$attribute{hasStatsEJBTimer});
+            getStats(endpoint="#{statUrl}", statType="#{statType}", type="Timers", result=>$attribute{EJBTimerStatsList}  hasStats=>$attribute{hasStatsEJBTimer});
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
@@ -209,7 +217,7 @@
      <sun:tableRowGroup id="ejbMethodStats" rendered="#{hasStatsEjbMethod}" data={"$attribute{EjbMethodStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.EJBMethod} : #{viewVal}/#{cVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="bean-method-mon" name="#{mbName}", result=>$attribute{EjbMethodStatsList}  hasStats=>$attribute{hasStatsEjbMethod});
+            getStats(endpoint="#{statUrl}", statType="#{statType}", type="BeanMethods", result=>$attribute{EjbMethodStatsList}  hasStats=>$attribute{hasStatsEjbMethod});
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
@@ -218,7 +226,7 @@
         <sun:tableRowGroup id="ejbCacheStats" rendered="#{hasStatsEjbCache}" data={"$attribute{EjbCacheStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.EJBCache} : #{viewVal}/#{cVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-           getStatsbyTypeName(type="bean-cache-mon" name="#{mbName}", result=>$attribute{EjbCacheStatsList}  hasStats=>$attribute{hasStatsEjbCache});
+           getStats(endpoint="#{statUrl}", statType="#{statType}", type="BeanCache", result=>$attribute{EjbCacheStatsList}  hasStats=>$attribute{hasStatsEjbCache});
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
@@ -227,7 +235,7 @@
          <sun:tableRowGroup id="ejbPoolStats" rendered="#{hasStatsEjbPool}" data={"$attribute{EjbPoolStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.EJBPool} : #{viewVal}/#{cVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="bean-pool-mon" name="#{mbName}", result=>$attribute{EjbPoolStatsList}  hasStats=>$attribute{hasStatsEjbPool});
+            getStats(endpoint="#{statUrl}", statType="#{statType}", type="BeanPool", result=>$attribute{EjbPoolStatsList}  hasStats=>$attribute{hasStatsEjbPool});
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
@@ -260,7 +268,7 @@
     <sun:tableRowGroup id="wmStats" rendered="#{hasStatsWMS}" data={"$attribute{wmStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.WorkManagementStats} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="connector-service-mon" name="connector-service/#{viewVal}/work-management", result=>$attribute{wmStatsList}  hasStats=>$attribute{hasStatsWMS});
+            getStats(endpoint="#{sessionScope.MONITOR_URL}/server/connector-service/#{viewVal}/work-management", result=>$attribute{wmStatsList}  hasStats=>$attribute{hasStatsWMS});
         
          />  
                         
@@ -281,7 +289,7 @@
     <sun:tableRowGroup id="servletsInstance" rendered="#{hasStatsSI}" data={"$attribute{servletInstanceList}"}  sourceVar="td" headerText="$resource{web.monitoring.servletInstanceStatistics} : #{viewVal}/#{cVal}"
         groupToggleButton="$boolean{true}" collapsed="#{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="servlet-instance-mon" name="#{mbName}", result=>$attribute{servletInstanceList}  hasStats=>$attribute{hasStatsSI});
+            getStats(endpoint="#{webStatUrl}", statType="#{webStatType}", type="ServletInstance", result=>$attribute{servletInstanceList}  hasStats=>$attribute{hasStatsSI});
 
          />
 #include "/common/monitor/monitoringTableRows.inc"
@@ -294,8 +302,8 @@
             if(#{hasStatsSI} || #{hasStatsJersey}) {
                 setAttribute(key="collapseServlets" value="#{true}");
             }
-            getStatsbyTypeName(type="servlet-mon" name="#{webStatsMbeanName}", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsSS});
-
+            getStats(endpoint="#{webStatUrl}", statType="#{webStatType}", type="Web", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsSS});
+            filterWebStats(webStats="$attribute{servletList}", statType="Servlet", stats=>$attribute{servletList});
          />
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
@@ -304,8 +312,8 @@
     <sun:tableRowGroup id="session" rendered="#{hasStatsSSP}" data={"$attribute{sessionList}"}  sourceVar="td" headerText="$resource{web.monitoring.sessionStatisticsWeb} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="session-mon" name="#{webStatsMbeanName}", result=>$attribute{sessionList}  hasStats=>$attribute{hasStatsSSP});
-
+            getStats(endpoint="#{webStatUrl}", statType="#{webStatType}", type="Web", result=>$attribute{sessionList}  hasStats=>$attribute{hasStatsSSP});
+            filterWebStats(webStats="$attribute{sessionList}", statType="Session", stats=>$attribute{sessionList});
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
@@ -314,8 +322,8 @@
     <sun:tableRowGroup id="requestStats" rendered="#{hasStatsWR}" data={"$attribute{requestStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.requestStatisticsWeb} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="web-request-mon" name="#{webStatsMbeanName}", result=>$attribute{requestStatsList}  hasStats=>$attribute{hasStatsWR});
-
+            getStats(endpoint="#{webStatUrl}", statType="#{webStatType}", type="Web", result=>$attribute{requestStatsList}  hasStats=>$attribute{hasStatsWR});
+            filterWebStats(webStats="$attribute{requestStatsList}", statType="Request", stats=>$attribute{requestStatsList});
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
@@ -324,8 +332,8 @@
     <sun:tableRowGroup id="jspStats" rendered="#{hasStatsJSP}" data={"$attribute{jspStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jspStatisticsWeb} : #{viewVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStatsbyTypeName(type="jsp-mon" name="#{webStatsMbeanName}", result=>$attribute{jspStatsList}  hasStats=>$attribute{hasStatsJSP});
-
+            getStats(endpoint="#{webStatUrl}", statType="#{webStatType}", type="Web", result=>$attribute{jspStatsList}  hasStats=>$attribute{hasStatsJSP});
+            filterWebStats(webStats="$attribute{jspStatsList}", statType="Jsp", stats=>$attribute{jspStatsList});
          />
 
 #include "/common/monitor/monitoringTableRows.inc"
