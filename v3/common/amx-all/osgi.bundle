@@ -1,0 +1,6 @@
+Embed-Dependency:*;scope=compile;inline=true
+Embed-Transitive:false
+Include-Resource:META-INF/inhabitants/=target/classes/META-INF/inhabitants/
+-exportcontents: \
+	org.glassfish.admin.amx.*; \
+	version=${project.osgi.version}

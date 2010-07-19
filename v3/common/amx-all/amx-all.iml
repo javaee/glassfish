@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Osmorc" name="OSGi">
+      <configuration osmorcControlsManifest="true" manifestLocation="" jarfileLocation="/home/naman/IdeaProjects/gfv3/out/production/amx-all.jar" useBndFile="false" bndFileLocation="" bundleActivator="" bundleSymbolicName="org.glassfish.common.amx-all" bundleVersion="3.1-SNAPSHOT" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false">
+        <additionalProperties>
+          <property key="_include" value="-/space/gfv3/v3/common/amx-all/osgi.bundle" />
+        </additionalProperties>
+        <additionalJARContents />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="amx-core" exported="" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.external:management-api:3.0.0-b012" level="project" />
+    <orderEntry type="module" module-name="amx-core-impl" exported="" />
+    <orderEntry type="module" module-name="internal-api" exported="" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:hk2:1.0.30" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:hk2-core:1.0.30" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:config:1.0.30" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:auto-depends:1.0.30" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.hk2.external:asm-all-repackaged:1.0.30" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish:bean-validator:3.0-JBoss-4.0.2_03" level="project" />
+    <orderEntry type="module" module-name="glassfish-api" exported="" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:config-types:1.0.30" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-utils:1.9.19-beta6" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-lzma:1.9.19-beta6" level="project" />
+    <orderEntry type="module" module-name="config-api" exported="" />
+    <orderEntry type="module" module-name="common-util" exported="" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish:javax.servlet:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-config:1.9.19-beta6" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:osgi-adapter:1.0.30" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-comet:1.9.19-beta6" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-http:1.9.19-beta6" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-framework:1.9.19-beta6" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-rcm:1.9.19-beta6" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-portunif:1.9.19-beta6" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-websockets:1.9.19-beta6" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-http-servlet:1.9.19-beta6" level="project" />
+    <orderEntry type="module" module-name="glassfish-mbeanserver" exported="" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.external:jmxremote_optional-repackaged:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="amx-config" exported="" />
+    <orderEntry type="module" module-name="amx-config-impl" exported="" />
+    <orderEntry type="module" module-name="amx-j2ee" exported="" />
+    <orderEntry type="module" module-name="javax.management.j2ee" exported="" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish:javax.ejb:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish:javax.transaction:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish:javax.annotation:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="amx-j2ee-impl" exported="" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.deployment:dol:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish:javax.enterprise.deploy:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.eclipse.persistence:javax.persistence:2.0.1" level="project" />
+    <orderEntry type="module" module-name="javax.resource" exported="" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.deployment:deployment-common:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="annotation-framework" exported="" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.deployment:deployment-versioning:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="amx-ext-impl" exported="" />
+    <orderEntry type="module" module-name="kernel" exported="" />
+    <orderEntry type="module" module-name="admin-util" exported="" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.pkg:pkg-client:1.122-38.2791" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.flashlight:flashlight-framework:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.flashlight:flashlight-agent:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.sun:tools:1.6" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.gmbal:gmbal:3.0.0-b023" level="project" />
+    <orderEntry type="module" module-name="glassfish" exported="" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.appclient.server:appclient-server-core:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.deployment:deployment-javaee-core:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.deployment:deployment-admin:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.appclient.server:appclient-connector:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.security:security:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish:javax.security.auth.message:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish:javax.security.jacc:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.ejb:ejb-internal-api:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="connectors-internal-api" exported="" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.transaction:transaction-internal-api:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.external:ldapbp-repackaged:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.external:libpam4j-repackaged:3.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.3.1" level="project" />
+  </component>
+</module>
+
