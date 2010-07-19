@@ -94,7 +94,7 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         report("list-backups-DAS-running", asadmin("list-backups"));
 
         // restore backup
-        report("restore-domain-DAS-running", !asadmin("restore-domain", "--force"));
+        report("restore-domain-DAS-running", !asadmin("restore-domain", FORCE_OPTION));
 
         asadmin("stop-domain");
     }
@@ -111,35 +111,41 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         report("restore-domain-no-operand", !asadmin("restore-domain"));
 
         // force restore backup
-        report("force-restore-domain-no-operand", asadmin("restore-domain", "--force"));
+        report("force-restore-domain-no-operand", asadmin("restore-domain", FORCE_OPTION));
     }
 
     private void testCommandsWithOperands() {
 
         // perform a backup
-        report("backup-domain-with-operand", asadmin("backup-domain", "domain1"));
+        report("backup-domain-with-operand", asadmin("backup-domain", DOMAIN1));
 
         // list backup
-        report("list-backups-with-operand", asadmin("list-backups", "domain1"));
+        report("list-backups-with-operand", asadmin("list-backups", DOMAIN1));
 
         // restore backup
-        report("restore-domain-with-operand", asadmin("restore-domain", "domain1"));
+        report("restore-domain-with-operand", asadmin("restore-domain", DOMAIN1));
 
     }
 
     private void testRestoreWithFileName() {
 
         // specify a different domain name
-        report("restore-domain-with-filename", !asadmin("restore-domain", "--filename", "foo", "domain2"));
+        report("restore-domain-with-filename", !asadmin("restore-domain", FILENAME_OPTION, "foo", DOMAIN2));
         
         // force restore
-        report("force-restore-domain-with-operand", !asadmin("restore-domain", "--force", "domain2"));
+        report("force-restore-domain-with-operand", !asadmin("restore-domain", FORCE_OPTION, DOMAIN2));
+
+        report("restore-domain-with-filename", !asadmin("restore-domain", FILENAME_OPTION, BACKUP_FILE));
+
+        report("restore-domain-with-filename", asadmin("restore-domain", FILENAME_OPTION, BACKUP_FILE, FORCE_OPTION));
+
+        report("restore-domain-with-filename", asadmin("restore-domain", FILENAME_OPTION, BACKUP_FILE, FORCE_OPTION, "r-domain2"));
     }
 
     private void testCommandsWithNoDomains() {
 
         // delete the domain
-        asadmin("delete-domain", "domain1");
+        asadmin("delete-domain", DOMAIN1);
 
         // perform a backup
         report("backup-domain-empty-domaindir", !asadmin("backup-domain"));
@@ -151,34 +157,39 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         report("restore-domain-empty-domaindir", !asadmin("restore-domain"));
 
         // put back domain1
-        asadmin("create-domain", "--nopassword", "domain1");
+        asadmin("create-domain", "--nopassword", DOMAIN1);
     }
 
     private void testCommandsWithMultipleDomains() {
         
         // create domain2
-        asadmin("create-domain", "--nopassword", "domain2");
+        asadmin("create-domain", "--nopassword", DOMAIN2);
 
         // perform a backup
         report("backup-domain-multiple-domains-in-domaindir", !asadmin("backup-domain"));
 
         // perform a backup
-        asadmin("backup-domain", "domain1");
+        asadmin("backup-domain", DOMAIN1);
 
         // list backup
         report("list-backups-multiple-domains-in-domaindir", !asadmin("list-backups"));
 
         // list backup with operand
-        report("list-backups-with-operand-multiple-domains-in-domaindir", asadmin("list-backups", "domain1"));
+        report("list-backups-with-operand-multiple-domains-in-domaindir", asadmin("list-backups", DOMAIN1));
 
         // restore backup
-        report("restore-domain-multiple-domains-in-domaindir", !asadmin("restore-domain", "--force"));
+        report("restore-domain-multiple-domains-in-domaindir", !asadmin("restore-domain", FORCE_OPTION));
 
         //delete domain2
-        asadmin("delete-domain", "domain2");
+        asadmin("delete-domain", DOMAIN2);
 
     }
     private final String host;
     private final File glassFishHome;
+    private static final String DOMAIN1 = "domain1";
+    private static final String DOMAIN2 = "domain2";
+    private static final String FORCE_OPTION = "--force";
+    private static final String FILENAME_OPTION = "--filename";
+    private static final String BACKUP_FILE = "resources/domain2_2010_07_19_v00001.zip";
 
 }
