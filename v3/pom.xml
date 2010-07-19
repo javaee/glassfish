@@ -449,6 +449,12 @@
                 </plugin>
 
                 <plugin>
+                    <groupId>com.sun.enterprise</groupId>
+                    <artifactId>consolidatedbundle-maven-plugin</artifactId>
+                    <version>${hk2.plugin.version}</version>
+                </plugin>
+
+                <plugin>
                     <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                     <artifactId>maven-antrun-extended-plugin</artifactId>
                     <version> 1.40 </version>
