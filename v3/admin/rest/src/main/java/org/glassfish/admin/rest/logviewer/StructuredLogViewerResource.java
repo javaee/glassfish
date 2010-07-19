@@ -67,7 +67,8 @@ public class StructuredLogViewerResource {
             @QueryParam("onlyLevel") @DefaultValue("true") boolean onlyLevel,
             @QueryParam("fromTime") @DefaultValue("-1") long fromTime,
             @QueryParam("toTime") @DefaultValue("-1") long toTime,
-            @QueryParam("logLevel") @DefaultValue("INFO") String logLevel) throws IOException {
+            @QueryParam("logLevel") @DefaultValue("INFO") String logLevel,
+            @QueryParam("anySearch") @DefaultValue("") String anySearch) throws IOException {
 
         return getWithType(
                 logFileName,
@@ -76,7 +77,7 @@ public class StructuredLogViewerResource {
                 maximumNumberOfResults,
                 fromTime,
                 toTime,
-                logLevel, onlyLevel, "json");
+                logLevel, onlyLevel, anySearch, "json");
 
     }
 
@@ -90,7 +91,8 @@ public class StructuredLogViewerResource {
             @QueryParam("onlyLevel") @DefaultValue("true") boolean onlyLevel,
             @QueryParam("fromTime") @DefaultValue("-1") long fromTime,
             @QueryParam("toTime") @DefaultValue("-1") long toTime,
-            @QueryParam("logLevel") @DefaultValue("INFO") String logLevel) throws IOException {
+            @QueryParam("logLevel") @DefaultValue("INFO") String logLevel,
+            @QueryParam("anySearch") @DefaultValue("") String anySearch) throws IOException {
 
         return getWithType(
                 logFileName,
@@ -99,7 +101,7 @@ public class StructuredLogViewerResource {
                 maximumNumberOfResults,
                 fromTime,
                 toTime,
-                logLevel,onlyLevel, "xml");
+                logLevel,onlyLevel,anySearch, "xml");
 
     }
 
@@ -110,7 +112,7 @@ public class StructuredLogViewerResource {
             int maximumNumberOfResults,
             long fromTime,
             long toTime,
-            String logLevel, boolean onlyLevel, String type) throws IOException {
+            String logLevel, boolean onlyLevel, String anySearch, String type) throws IOException {
 
 
         Properties props = new Properties();
@@ -120,8 +122,6 @@ public class StructuredLogViewerResource {
         if (!searchForward) {
             sortAscending = false;
         }
-
-        String anySearch = null;
 
         final AttributeList result = LogFilter.getLogRecordsUsingQuery(logFileName,
                 startIndex,
