@@ -4,7 +4,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.test.contracts.DummyContract;
 import org.jvnet.hk2.test.contracts.ErrorThrowingContract;
-import org.jvnet.hk2.test.contracts.RandomContract;
+import org.jvnet.hk2.test.runlevel.RandomContract;
 
 /**
  * A service with a setter @Inject that throws an Exception

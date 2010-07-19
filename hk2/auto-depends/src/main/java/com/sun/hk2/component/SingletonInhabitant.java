@@ -36,6 +36,7 @@
  */
 package com.sun.hk2.component;
 
+import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Womb;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.Inhabitant;
@@ -46,23 +47,41 @@ import org.jvnet.hk2.component.Inhabitant;
  */
 public class SingletonInhabitant<T> extends AbstractWombInhabitantImpl<T> {
     private volatile T object;
+    private volatile boolean initializing;
 
     public SingletonInhabitant(Womb<T> womb) {
         super(womb);
     }
 
+    @SuppressWarnings("unchecked")
     public T get(Inhabitant onBehalfOf) {
-        if(object==null) {
+        if (object==null) {
             synchronized(this) {
-                if(object==null)
-                    object =womb.get(onBehalfOf);
+                if (object==null) {
+//                  object = womb.get(onBehalfOf);
+                  // we do it in two steps in case there is an initialization error, we 
+                  // want to avoid recursing
+                  object = womb.create(onBehalfOf);
+                  try {
+                    initializing = true;
+                    womb.initialize(object, onBehalfOf);
+                  } catch (Throwable e) {
+                    object = null;
+                    throw (e instanceof ComponentException) ? 
+                        (ComponentException)e : new ComponentException("problem initializing", e);
+                  } finally {
+                    initializing = false;
+                  }
+                }
             }
+        } else if (initializing) {
+          throw new ComponentException("problem initializing - cycle detected involving: " + this);
         }
         return object;
     }
 
-    public void release() {
-        if(object!=null) {
+    public synchronized void release() {
+        if (object!=null) {
             dispose(object);
             object=null;
         }

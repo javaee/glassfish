@@ -44,8 +44,6 @@ import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Index;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.annotations.InhabitantMetadata;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.CageBuilder;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
@@ -101,25 +99,26 @@ public @interface CompanionSeed {
             // and if a companion seed is added to something else, make sure
             // existing lead inhabitants will get this as a companion
             assert i.metadata()!=null;
-            for (Inhabitant lead : habitat.getInhabitantsByType(i.metadata().getOne("lead")))
+            for (Inhabitant<?> lead : habitat.getInhabitantsByType(i.metadata().getOne("lead")))
                 lead.setCompanions(cons(lead.companions(),createCompanion(habitat,lead,i)));
         }
 
         /**
          * Allocates a new read-only list by adding one more element.
          */
+        @SuppressWarnings({ "unchecked", "hiding" })
         private <T> List<T> cons(Collection<T> list, T oneMore) {
             int sz = list.size();
             Object[] a = list.toArray(new Object[sz+1]);
             a[sz]=oneMore;
-            return (List) Arrays.asList(a);
+            return (List<T>) Arrays.asList(a);
         }
 
         /**
          * Creates a companion inhabitant from the inhabitant of a {@link CompanionSeed},
          * to be associated with a lead component.
          */
-        public static LazyInhabitant createCompanion(Habitat habitat, final Inhabitant<?> lead, final Inhabitant<?> seed) {
+        public static Inhabitant<?> createCompanion(Habitat habitat, final Inhabitant<?> lead, final Inhabitant<?> seed) {
             Holder<ClassLoader> cl = new Holder<ClassLoader>() {
                     public ClassLoader get() {
                         return seed.type().getClassLoader();
@@ -136,11 +135,7 @@ public @interface CompanionSeed {
             else
                 metadata = InhabitantFileBasedParser.buildMetadata(new KeyValuePairParser(metadataLine));
 
-            LazyInhabitant ci = new LazyInhabitant(habitat, cl, fqcn, metadata) {
-                public Inhabitant lead() {
-                    return lead;
-                }
-            };
+            Inhabitant<?> ci = Inhabitants.createInhabitant(habitat, cl, fqcn, metadata, lead, null);
             habitat.add(ci);
             return ci;
         }

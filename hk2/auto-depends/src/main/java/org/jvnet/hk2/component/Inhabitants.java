@@ -2,7 +2,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2007-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,75 +36,29 @@
  */
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.ScopedInhabitant;
-import com.sun.hk2.component.SingletonInhabitant;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-import org.jvnet.hk2.annotations.Scoped;
-
-import javax.print.attribute.UnmodifiableSetException;
-import java.util.*;
+import java.util.Collection;
 
 /**
  * Factory for {@link Inhabitant}.
  * @author Kohsuke Kawaguchi
+ * 
+ * @deprecated Use {@link com.sun.hk2.component.Inhabitants} instead.
  */
 public class Inhabitants {
     /**
      * Creates a singleton wrapper around existing object.
+     * @deprecated Use {@link com.sun.hk2.component.Inhabitants} instead.
      */
     public static <T> Inhabitant<T> create(T instance) {
-        return new ExistingSingletonInhabitant<T>(instance);
+      return com.sun.hk2.component.Inhabitants.create(instance);
     }
     
     /**
      * Creates a {@link Inhabitant} by looking at annotations of the given type.
+     * @deprecated Use {@link com.sun.hk2.component.Inhabitants} instead.
      */
     public static <T> Inhabitant<T> create(Class<T> c, Habitat habitat, MultiMap<String,String> metadata) {
-        return wrapByScope(c, Wombs.create(c,habitat,metadata), habitat);
-    }
-
-    /**
-     * Creates a {@link Inhabitant} by wrapping {@link Womb} to handle scoping right.
-     */
-    public static <T> Inhabitant<T> wrapByScope(Class<T> c, Womb<T> womb, Habitat habitat) {
-        Scoped scoped = c.getAnnotation(Scoped.class);
-        if(scoped==null)
-            return new SingletonInhabitant<T>(womb); // treated as singleton
-
-        Class<? extends Scope> scopeClass = scoped.value();
-
-        // those two scopes are so common and different that they deserve
-        // specialized code optimized for them.
-        if(scopeClass== PerLookup.class)
-            return womb;
-        if(scopeClass== Singleton.class)
-            return new SingletonInhabitant<T>(womb);
-
-        // other general case
-        Scope scope = habitat.getByType(scopeClass);
-        if(scope==null)
-            throw new ComponentException("Failed to look up %s for %s",scopeClass,c);
-        return new ScopedInhabitant<T>(womb,scope);
-    }
-
-    /**
-     * Calculate the list of indexes under which the inhabitant is registered.
-     * An index is usually obtained from a contract implementation, a service can
-     * be implementing more than one contract and therefore be indexed by multiple
-     * contract names.
-     *
-     * @param i instance of inhabitant to obtain the indexes from
-     * @param <T> Contract type, optional
-     * @return a collection of indexes (usually there is only one) under which this
-     * service is available.
-     */
-    public static <T> Collection<String> getIndexes(Inhabitant<T> i) {
-        ArrayList<String> indexes = new ArrayList<String>();
-        Iterator<Map.Entry<String, List<String>>> itr = i.metadata().entrySet().iterator();
-        while (itr.hasNext()) {
-            indexes.add(itr.next().getKey());
-        }
-        return indexes;
+      return com.sun.hk2.component.Inhabitants.create(c, habitat, metadata);
     }
 
     /**
@@ -117,9 +71,11 @@ public class Inhabitants {
      * @param <T> contract type, optional
      * @return a collection of names (usually there is only one) under which this service
      * is registered for the passed contract name
+     * 
+     * @deprecated Use {@link com.sun.hk2.component.Inhabitants} instead.
      */
     public static <T> Collection<String> getNamesFor(Inhabitant<T> i, String indexName) {
-        return new ArrayList<String>(i.metadata().get(indexName));
+      return com.sun.hk2.component.Inhabitants.getNamesFor(i, indexName);
     }
 
 }

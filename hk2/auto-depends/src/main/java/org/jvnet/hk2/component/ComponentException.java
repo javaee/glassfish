@@ -44,14 +44,27 @@ package org.jvnet.hk2.component;
  * @author Jerome Dochez
  */
 public class ComponentException extends RuntimeException {
+    private ServiceContext ctx;
+
     public ComponentException(String message) {
         super(message);
     }
+    
     public ComponentException(String message, Throwable origin) {
         super(message, origin);
     }
+    
+    public ComponentException(String message, ServiceContext ctx, Throwable origin) {
+        super(message, origin);
+        this.ctx = ctx;
+    }
+    
     public ComponentException(String format, Object... args) {
         super(String.format(format,args));
+    }
+
+    public ServiceContext getFailureContext() {
+      return ctx;
     }
 
 }

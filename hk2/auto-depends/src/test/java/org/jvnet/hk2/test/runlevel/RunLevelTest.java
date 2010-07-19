@@ -39,7 +39,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.RunLevel;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.junit.Hk2Test;
@@ -74,7 +73,7 @@ public class RunLevelTest extends Hk2Test {
     @Test
     public void run() {
         HashSet<Inhabitant<?>> annotated = new HashSet<Inhabitant<?>>(habitat.getInhabitantsByContract(RunLevel.class.getName()));
-        assertEquals(annotated.toString(), 2, annotated.size());
+        assertEquals(annotated.toString(), 12, annotated.size());
         for (Inhabitant<?> i : annotated) {
             System.out.println(i.typeName() + " is annotated with " + RunLevel.class.getName());
 

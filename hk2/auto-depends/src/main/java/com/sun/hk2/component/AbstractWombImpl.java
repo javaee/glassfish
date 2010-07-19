@@ -37,18 +37,11 @@
 package com.sun.hk2.component;
 
 import org.jvnet.hk2.component.*;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Lead;
-
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import org.jvnet.tiger_types.Types;
 
 /**
  * @author Kohsuke Kawaguchi
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> implements Womb<T> {
     protected final Class<T> type;
     private final MultiMap<String,String> metadata;
@@ -67,22 +60,35 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
         return type;
     }
 
+    /**
+     * Creates, but does not initialize / wire
+     */
+    @Override
+    public T create(Inhabitant onBehalfOf) throws ComponentException {
+      T o = create(onBehalfOf);
+
+      // I could rely on injection, but the algorithm is slow enough for now that I
+      // need a faster scheme.
+      if (o instanceof InhabitantRequested) {
+          ((InhabitantRequested) o).setInhabitant(onBehalfOf);
+      }
+      
+      return o;
+    }
+    
     public final T get(Inhabitant onBehalfOf) throws ComponentException {
+//        System.out.println(this + "-" + onBehalfOf);
         T o = create(onBehalfOf);
-        // I could rely on injection, but the algorithm is slow enough for now that I
-        // need a faster scheme.
-        if (o instanceof InhabitantRequested) {
-            ((InhabitantRequested) o).setInhabitant(onBehalfOf);
-        }
-        initialize(o,onBehalfOf);
+        initialize(o, onBehalfOf);
         return o;
     }
 
     public boolean isInstantiated() {
-        return false;
+        return true;
     }
 
-    public void  initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
+    @Override
+    public void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
         // default is no-op
     }
 
@@ -101,76 +107,17 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
      * <p>
      * This method is an utility method for subclasses for performing injection.
      */
-    protected void inject(final Habitat habitat, T t, final Inhabitant onBehalfOf) {
-
-        InjectionResolver[] targets = {
-            (new InjectionResolver<Inject>(Inject.class) {
-                public boolean isOptional(AnnotatedElement element, Inject annotation) {
-                    return annotation.optional();
-                }
-
-                /**
-                 * Obtains the value to inject, based on the type and {@link Inject} annotation.
-                 */
-                @SuppressWarnings("unchecked")
-                public <V> V getValue(Object component, AnnotatedElement target, Class<V> type) throws ComponentException {
-                    if (type.isArray()) {
-                        Class<?> ct = type.getComponentType();
-
-                        Collection instances;
-                        if(habitat.isContract(ct))
-                            instances = habitat.getAllByContract(ct);
-                        else
-                            instances = habitat.getAllByType(ct);
-                        return type.cast(instances.toArray((Object[]) Array.newInstance(ct, instances.size())));
-                    } else if (Types.isSubClassOf(type, Holder.class)){
-                        Type t = Types.getTypeArgument(((java.lang.reflect.Field) target).getGenericType(), 0);
-                        Class finalType = Types.erasure(t);
-                        if (habitat.isContract(finalType)) {
-                            return type.cast(habitat.getInhabitants(finalType, target.getAnnotation(Inject.class).name()));
-                        }
-                        try {
-                            if (finalType.cast(component)!=null) {
-                                return type.cast(onBehalfOf);
-                            }
-                        } catch(ClassCastException e) {
-                            // ignore
-                        }
-                        return type.cast(habitat.getInhabitantByType(finalType));
-
-                    } else {
-                        if(habitat.isContract(type))
-                            // service lookup injection
-                            return habitat.getComponent(type, target.getAnnotation(Inject.class).name());
-
-                        // ideally we should check if type has @Service or @Configured
-
-                        // component injection
-                        return habitat.getByType(type);
-                    }
-                }
-            }) ,
-
-            (new InjectionResolver<Lead>(Lead.class) {
-                public <V> V getValue(Object component, AnnotatedElement target, Class<V> type) throws ComponentException {
-                    Inhabitant lead = onBehalfOf.lead();
-                    if(lead==null)
-                        // TODO: we should be able to check this error at APT, too.
-                        throw new ComponentException(component.getClass()+" requested @Lead injection but this is not a companion");
-
-                    if(type==Inhabitant.class) {
-                        return type.cast(lead);
-                    }
-
-                    // otherwise inject the target object
-                    return type.cast(lead.get());
-                }
-            })
+    protected void inject(Habitat habitat, T t, Inhabitant<?> onBehalfOf) {
+        InjectionResolver<?>[] targets = {
+            new InjectInjectionResolver(habitat, onBehalfOf),
+            new LeadInjectionResolver(onBehalfOf),
         };
         injectionMgr.inject(t, targets);
 
         // postContruct call if any
-        if(t instanceof PostConstruct)
+        if (t instanceof PostConstruct) {
             ((PostConstruct)t).postConstruct();
+        }
     }
+    
 }

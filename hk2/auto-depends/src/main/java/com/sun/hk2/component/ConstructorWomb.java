@@ -78,17 +78,19 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
     }
 
     public void initialize(final T t, final Inhabitant onBehalfOf) throws ComponentException {
-
         Scoped scoped = t.getClass().getAnnotation(Scoped.class);
         ScopeInstance si = (scoped == null ? singletonScope : getScope(scoped));
-        AccessController.doPrivileged(new PrivilegedAction() {
-            //doprivileged required for running with SecurityManager ON
-            public java.lang.Object run() {
-                inject(habitat, t, onBehalfOf);
-                return null;
-            }
-        });
-
+        if (System.getSecurityManager() != null) {
+          AccessController.doPrivileged(new PrivilegedAction() {
+              //doprivileged required for running with SecurityManager ON
+              public java.lang.Object run() {
+                  inject(habitat, t, onBehalfOf);
+                  return null;
+              }
+          });
+        } else {
+          inject(habitat, t, onBehalfOf);
+        }
     }
 
     /**

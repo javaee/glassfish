@@ -44,6 +44,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -106,4 +107,25 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T>  {
     public final void setCompanions(Collection<Inhabitant> companions) {
         this.companions = companions;
     }
+    
+    public <V extends Annotation> V getAnnotation(Class<V> annotation) {
+        return getAnnotation(type(), annotation);
+    }
+    
+    protected static <V extends Annotation> V getAnnotation(Class<?> annotated, Class<V> annotation) {
+      V v = annotated.getAnnotation(annotation);
+      if (null != v) {
+          return v;
+      }
+      
+      for (Annotation a : annotated.getAnnotations()) {
+          v = a.annotationType().getAnnotation(annotation);
+          if (null != v) {
+              return v;
+          }
+      }
+      
+      return null;
+    }
+
 }

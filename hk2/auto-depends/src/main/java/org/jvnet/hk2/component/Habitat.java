@@ -49,6 +49,7 @@ import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.component.HabitatListener.EventType;
 import org.jvnet.hk2.component.InhabitantTracker.Callback;
+import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 import org.jvnet.hk2.component.matcher.Constants;
 
 import java.lang.annotation.Annotation;
@@ -142,6 +143,13 @@ public class Habitat {
                 new CompanionSeed.Registerer(this)));
         add(new ExistingSingletonInhabitant<CageBuilder.Registerer>(CageBuilder.Registerer.class,
                 new CageBuilder.Registerer(this)));
+
+        // the default RunLevelService
+        DefaultRunLevelService rls = new DefaultRunLevelService(this);
+        ExistingSingletonInhabitant<RunLevelService> rlsI = 
+          new ExistingSingletonInhabitant<RunLevelService>(RunLevelService.class, rls);
+        add(rlsI);
+        addIndex(rlsI, RunLevelService.class.getName(), "default");
     }
     
     /**
