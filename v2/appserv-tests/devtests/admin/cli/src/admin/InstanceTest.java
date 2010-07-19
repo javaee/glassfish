@@ -64,7 +64,8 @@ public class InstanceTest extends AdminBaseDevTest {
         String host0 = null;
 
         try {
-            host0 = InetAddress.getLocalHost().getHostName();
+            //host0 = InetAddress.getLocalHost().getHostName();
+            host0 = "localhost";  //when DAS and instance are co-located use localhost
         }
         catch (Exception e) {
             host0 = "localhost";
