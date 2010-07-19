@@ -287,4 +287,19 @@ public class VersioningDeploymentUtil {
             return untaggedName;
         }
     }
+
+    /**
+     * @return return true is the given application name is not versioned
+     */
+    public static final Boolean isUntagged(String appName) {
+        Boolean isUntagged = false;
+        try {
+            String untaggedName = VersioningDeploymentUtil.getUntaggedName(appName);
+            if (untaggedName != null && untaggedName.equals(appName)) {
+                isUntagged = true;
+            }
+        } catch (VersioningDeploymentSyntaxException e) {
+        }
+        return isUntagged;
+    }
 }

@@ -248,12 +248,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
         if (subDirName != null )
             rootScratchDir = new File(rootScratchDir, subDirName);
         String appDirName = parameters.name();
-        try {
-            appDirName = VersioningDeploymentUtil.getRepositoryName(parameters.name());
-        } catch (VersioningDeploymentSyntaxException ex) {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
-            actionReport.failure(logger, ex.getMessage(), ex);
-        }
+        appDirName = VersioningDeploymentUtil.getRepositoryName(parameters.name());
         return new File(rootScratchDir, appDirName);
     }
 
@@ -487,6 +482,6 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
 
     public File getAppInternalDir() {
         final File internalDir = new File(env.getApplicationRepositoryPath(), INTERNAL_DIR_NAME);
-        return new File(internalDir, parameters.name());
+        return new File(internalDir, VersioningDeploymentUtil.getRepositoryName(parameters.name()));
     }
 }

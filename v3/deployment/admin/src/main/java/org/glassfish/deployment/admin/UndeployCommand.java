@@ -266,6 +266,7 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
 
             ExtendedDeploymentContext deploymentContext = null;
             try {
+                this.name = appName;
                 deploymentContext = deployment.getBuilder(logger, this, report).source(source).build();
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "Cannot create context for undeployment ", e);

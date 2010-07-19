@@ -210,6 +210,18 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             // create an initial  context
             ExtendedDeploymentContext initialContext = new DeploymentContextImpl(report, logger, archive, this, env);
 
+            boolean isUntagged = VersioningDeploymentUtil.isUntagged(name);
+            // no GlassFish versioning support for OSGi budles
+            if ( name != null && !isUntagged && type != null && type.equals("osgi") ) {
+                ActionReport.MessagePart msgPart = context.getActionReport().getTopMessagePart();
+                msgPart.setChildrenType("WARNING");
+                ActionReport.MessagePart childPart = msgPart.addChild();
+                childPart.setMessage(VersioningDeploymentUtil.LOCALSTRINGS.getLocalString(
+                        "versioning.deployment.osgi.warning",
+                        "OSGi bundles will not use the GlassFish versioning, any version information embedded as part of the name option will be ignored"));
+                name = VersioningDeploymentUtil.getUntaggedName(name);
+            }
+
             if (name==null) {
                 name = archiveHandler.getDefaultApplicationName(archive, initialContext);
             } else {
@@ -218,7 +230,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             // if no version information embedded as part of application name
             // we try to retrieve the version-identifier element's value from DD
-            if ( VersioningService.isUntagged(name) ){
+            if ( isUntagged ){
                 String versionIdentifier = archiveHandler.getVersionIdentifier(archive);
 
                 if ( versionIdentifier != null ) {
@@ -261,6 +273,19 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 isDirectoryDeployed = false;
                 expansionDir = new File(domain.getApplicationRoot(), name);
                 path = expansionDir;
+            } else {
+                // test if a version is already directory deployed from this dir
+                String versionFromSameDir =
+                        versioningService.getVersionFromSameDir(source);
+                if (!force && versionFromSameDir != null) {
+                    report.failure(logger,
+                            VersioningDeploymentUtil.LOCALSTRINGS.getLocalString(
+                                "versioning.deployment.dual.inplace",
+                                "GlassFish do not support versioning for directory deployment when using the same directory. The directory {0} is already assigned to the version {1}.",
+                                source.getPath(),
+                                versionFromSameDir));
+                    return;
+                }
             }
 
             // create the parent class loader

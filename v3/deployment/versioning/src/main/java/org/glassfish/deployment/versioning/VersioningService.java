@@ -38,6 +38,7 @@ package org.glassfish.deployment.versioning;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -174,16 +175,30 @@ public class VersioningService {
         }
     }
 
-    public static final Boolean isUntagged(String appName) {
-       Boolean isUntagged = false;
-       try {
-           String untaggedName = VersioningDeploymentUtil.getUntaggedName(appName);
-           if(untaggedName != null && untaggedName.equals(appName)){
-               isUntagged = true;
-           }
-       } catch (VersioningDeploymentSyntaxException e) {
-       }
+    /**
+    * @param directory
+    * @return the name of the version currently using the directory, else null
+    * @throws VersioningDeploymentSyntaxException
+    */
+    public String getVersionFromSameDir(File dir)
+            throws VersioningDeploymentSyntaxException{
 
-       return isUntagged;
-   }
+        try {
+            Iterator it = domain.getApplications().getApplications().iterator();
+            Application app = null;
+
+            // check if directory deployment exist
+            while ( it.hasNext() ) {
+                app = (Application) it.next();
+                if (app.getLocation().equals(dir.toURI().toString())) {
+                    if(!VersioningDeploymentUtil.getUntaggedName(app.getName()).equals(app.getName())){
+                        return app.getName();
+                    }
+                }
+            }
+        } catch (VersioningDeploymentSyntaxException ex) {
+            // return null if an exception is thrown
+        }
+        return null;
+    }
 }
