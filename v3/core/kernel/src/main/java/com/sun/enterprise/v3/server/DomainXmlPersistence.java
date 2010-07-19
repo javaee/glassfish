@@ -109,8 +109,9 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
                     "domain.xml cannot be persisted, null destination"));
             return;
         }
-        Lock writeLock=null;
+        //Lock writeLock=null;
         try {
+            /**
             try {
                 writeLock = accessWrite();
             } catch (TimeoutException e) {
@@ -119,7 +120,7 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
                 return;
 
             }
-
+			**/
             // get a temporary file
             File f = File.createTempFile("domain", ".xml", destination.getParentFile());
             if (f == null) {
@@ -187,11 +188,11 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
         } catch(IOException e) {
             logger.log(Level.SEVERE, localStrings.getLocalString("ioexception",
                     "IOException while saving the configuration, changes not persisted"), e);
-        } finally {
+        } /**finally {
             if (writeLock!=null) {
                 writeLock.unlock();
             }
-        }
+        }*/
         saved(destination);
     }
 
