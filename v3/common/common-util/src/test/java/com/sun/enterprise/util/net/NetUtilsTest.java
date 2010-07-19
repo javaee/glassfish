@@ -120,8 +120,6 @@ public class NetUtilsTest {
         assertTrue(NetUtils.isEqual("localhost", "localhost"));
         assertFalse(NetUtils.isEqual(null, "localhost"));
         assertTrue(NetUtils.isEqual("localhost", "localhost"));
-        assertTrue(NetUtils.isEqual("www.oracle.com", "www.oracle.com"));
-        assertFalse(NetUtils.isEqual("oracle.com", "google.com"));
         // since neither one can be resolved -- they are NOT the same, by definition
 
 
