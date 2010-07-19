@@ -367,8 +367,14 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             }
 
 
-            if(node==null)
-                instance.setNode("localhost");
+            if(node==null) {
+                instance.setNode("localhost");  //remove?
+            } else {
+                if (domain.getNodeNamed(node) == null) {
+                    throw new TransactionFailure(localStrings.getLocalString(
+                            "noSuchNode", "Node {0} does not exist.", node));
+                }
+            }
             //There should be no cluster/config with the same name as the server
             if (((clusters != null && domain.getClusterNamed(instance.getName()) != null))
                     || (domain.getConfigNamed(instance.getName()) != null)) {

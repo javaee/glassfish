@@ -410,6 +410,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     Cluster getClusterNamed(String name);
 
     @DuckTyped
+    Node getNodeNamed(String name);
+
+    @DuckTyped
     boolean isCurrentInstanceMatchingTarget(String target, String appName,
         String currentInstance, List<String> referencedTargets);
 
@@ -593,6 +596,19 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
             for (Cluster c : clusters) {
                 if (name.equals(c.getName().trim())) {
                     return c;
+                }
+            }
+            return null;
+        }
+
+        public static Node getNodeNamed(Domain d, String name) {
+            if (d.getNodes() == null || name == null) {
+                return null;
+            }
+            List<Node> nodes = d.getNodes().getNode();
+            for (Node n : nodes) {
+                if (name.equals(n.getName().trim())) {
+                    return n;
                 }
             }
             return null;
