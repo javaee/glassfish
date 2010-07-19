@@ -39,7 +39,6 @@ package com.sun.hk2.component;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.Inhabitants;
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.Womb;
 import org.jvnet.hk2.component.Wombs;
@@ -61,38 +60,74 @@ public class LazyInhabitant<T> extends AbstractInhabitantImpl<T> {
     protected final Habitat habitat;
 
     private final MultiMap<String,String> metadata;
+    
+    private final Inhabitant<?> lead;
 
+    
     public LazyInhabitant(Habitat habitat, Holder<ClassLoader> cl, String typeName, MultiMap<String,String> metadata) {
-        assert metadata!=null;
-        this.habitat = habitat;
-        this.classLoader = cl;
-        this.typeName = typeName;
-        this.metadata = metadata;
+      this(habitat, cl, typeName, metadata, null);
     }
 
+    public LazyInhabitant(Habitat habitat, Holder<ClassLoader> cl, String typeName, MultiMap<String,String> metadata, Inhabitant<?> lead) {
+      assert metadata!=null;
+      this.habitat = habitat;
+      this.classLoader = cl;
+      this.typeName = typeName;
+      this.metadata = metadata;
+      this.lead = lead;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
+            "(" + typeName() + ", active: " + isInstantiated() + ")";
+    }
+    
+    @Override
+    public Inhabitant<?> lead() {
+        return lead;
+    }
+    
     public String typeName() {
         return typeName;
     }
 
     public Class<T> type() {
-        fetch();
-        return real.type();
+      // fetching is too heavy of an operation because it will activate/write the class
+//        fetch();
+
+        Inhabitant<T> real = this.real;
+        if (null != real) {
+            return real.type();
+        } else {
+            return loadClass();
+        }
     }
 
     public MultiMap<String,String> metadata() {
         return metadata;
     }
 
-    @SuppressWarnings("unchecked")
     private synchronized void fetch() {
-        if(real!=null)  return;
-
-        try {
-            Class<T> c = (Class<T>) classLoader.get().loadClass(typeName);
-            real = Inhabitants.wrapByScope(c,createWomb(c),habitat);
-        } catch (ClassNotFoundException e) {
-            throw new ComponentException("Failed to load "+typeName+" from "+classLoader.get(),e);
+        if (null == real) {
+          Class<T> c = loadClass();
+          real = Inhabitants.wrapByScope(c,createWomb(c),habitat);
         }
+    }
+
+    public final ClassLoader getClassLoader() {
+      return classLoader.get();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Class<T> loadClass() {
+      final ClassLoader cl = getClassLoader();
+      try {
+          Class<T> c = (Class<T>) cl.loadClass(typeName);
+          return c;
+      } catch (ClassNotFoundException e) {
+          throw new ComponentException("Failed to load "+typeName+" from " + cl, e);
+      }
     }
 
     /**
@@ -102,14 +137,17 @@ public class LazyInhabitant<T> extends AbstractInhabitantImpl<T> {
         return Wombs.create(c,habitat,metadata);
     }
 
+    @SuppressWarnings("unchecked")
     public T get(Inhabitant onBehalfOf) throws ComponentException {
         fetch();
         return real.get(onBehalfOf);
     }
 
-    public void release() {
-        if(real!=null)
+    public synchronized void release() {
+        if (null != real) {
             real.release();
+            real = null;
+        }
     }
 
     public boolean isInstantiated() {

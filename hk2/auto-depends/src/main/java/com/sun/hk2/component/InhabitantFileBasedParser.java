@@ -82,5 +82,3 @@ public class InhabitantFileBasedParser implements InhabitantParser {
     }
 
 }
-
-

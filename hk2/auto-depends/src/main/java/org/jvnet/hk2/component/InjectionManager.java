@@ -107,7 +107,7 @@ public class InjectionManager {
 
                             } else {
                                 if(!target.isOptional(field, inject)) {
-                                    Logger.getAnonymousLogger().info("Cannot inject " + field + " in component " + component);
+                                    Logger.getAnonymousLogger().info("Cannot inject " + field + " into component " + component);
                                     throw new UnsatisfiedDependencyException(field);
                                 }
                             }

@@ -65,7 +65,10 @@ public class Hk2Runner extends Runner {
     final Map<Description, Method> testMethods = 
           new LinkedHashMap<Description, Method>();
     
-    public Hk2Runner(Class testClass) {
+    private Object instance;
+    
+    
+    public Hk2Runner(Class<?> testClass) {
         this.testClass = testClass;
         description = Description.createSuiteDescription(testClass);
         
@@ -107,18 +110,16 @@ public class Hk2Runner extends Runner {
             }
         }
 
-        Habitat habitat = singleton.getHabitat();
-        // so far we don't support extra meta-data on our tests.
-        Womb womb = Wombs.create(testClass, habitat, new MultiMap<String, String>());
         
-        Object instance;
+        Hk2RunnerOptions options = testClass.getAnnotation(Hk2RunnerOptions.class);
+        boolean reinitPerTest = (null != options) ? options.reinitializePerTest() : false;
         try {
-            instance = womb.get();
+            wombInit();
         } catch (ComponentException e) {
             notifier.fireTestFailure(new Failure(getDescription(),e));
             return;
         }
-
+        
         for (Description testDescription : description.getChildren()) {
             Method m = testMethods.get(testDescription);
             if (m.isAnnotationPresent(Ignore.class)) {
@@ -138,6 +139,15 @@ public class Hk2Runner extends Runner {
             }
             
             notifier.fireTestFinished(testDescription);
+
+            if (reinitPerTest) {
+                try {
+                    wombInit();
+                } catch (ComponentException e) {
+                    notifier.fireTestFailure(new Failure(getDescription(),e));
+                    return;
+                }
+            }
         }
 
         // Run the @AfterClass methods.
@@ -158,10 +168,18 @@ public class Hk2Runner extends Runner {
         }
     }
 
-    @SuppressWarnings("unused")
     public static Habitat getHabitat() {
         return singleton.getHabitat();
     }
 
-    final static Hk2TestServices singleton = new Hk2TestServices();
+    private void wombInit() {
+      singleton = new Hk2TestServices();
+      
+      Habitat habitat = singleton.getHabitat();
+      // so far we don't support extra meta-data on our tests.
+      Womb<?> womb = Wombs.create(testClass, habitat, new MultiMap<String, String>());
+      instance = womb.get();
+    }
+    
+    static Hk2TestServices singleton;
 }

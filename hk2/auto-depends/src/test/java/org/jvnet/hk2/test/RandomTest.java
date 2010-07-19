@@ -40,7 +40,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.junit.Hk2Test;
-import org.jvnet.hk2.test.contracts.RandomContract;
+import org.jvnet.hk2.test.runlevel.RandomContract;
 
 /**
  * Test

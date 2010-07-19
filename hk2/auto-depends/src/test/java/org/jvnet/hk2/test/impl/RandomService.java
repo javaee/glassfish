@@ -37,7 +37,7 @@
 package org.jvnet.hk2.test.impl;
 
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.test.contracts.RandomContract;
+import org.jvnet.hk2.test.runlevel.RandomContract;
 
 /**
  * Service to be injected in some test.

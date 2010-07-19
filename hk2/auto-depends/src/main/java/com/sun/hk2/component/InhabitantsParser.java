@@ -38,13 +38,14 @@ package com.sun.hk2.component;
 
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.Inhabitants;
-
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.Set;
 
 /**
  * Parses <tt>/META-INF/inhabitants</tt> and populate {@link Habitat}.
@@ -114,6 +115,7 @@ public class InhabitantsParser {
      * <p>
      * All the earlier drop/replace commands will be honored during this process.
      */
+    @SuppressWarnings("unchecked")
     public void parse(Iterable<InhabitantParser> scanner, Holder<ClassLoader> classLoader) throws IOException {
         if (scanner==null)
             return;
@@ -130,7 +132,15 @@ public class InhabitantsParser {
                     habitat.addIndex(i,typeName,null);
                 }
             } else {
-                Inhabitant i = new LazyInhabitant(habitat, classLoader, typeName, inhabitantParser.getMetaData());
+                Set<String> indicies = new HashSet<String>();
+                Iterator<String> iter = inhabitantParser.getIndexes().iterator();
+                while (iter.hasNext()) {
+                  indicies.add(iter.next());
+                }
+                Inhabitant<?> i = com.sun.hk2.component.Inhabitants.
+                    createInhabitant(habitat, classLoader, typeName,
+                        inhabitantParser.getMetaData(), null,
+                        Collections.unmodifiableSet(indicies));
                 add(i, inhabitantParser);
             }
         }
@@ -139,7 +149,7 @@ public class InhabitantsParser {
     /**
      * Adds the given inhabitant to the habitat, with all its indices.
      */
-    protected void add(Inhabitant i, InhabitantParser parser) {
+    protected void add(Inhabitant<?> i, InhabitantParser parser) {
         habitat.add(i);
 
         for (String v : parser.getIndexes()) {
