@@ -40,7 +40,14 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.WebContainer;
 import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.logging.LogDomains;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.types.Property;
 
@@ -48,6 +55,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Service
+@Scoped(PerLookup.class)
 public class ServerConfigLookup {
 
     protected static final Logger _logger = LogDomains.getLogger(
@@ -69,18 +78,18 @@ public class ServerConfigLookup {
     private static final String DEFAULT_EE_BUILDER_PATH =
         "com.sun.enterprise.ee.web.initialization";
 
-    private Config configBean;
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config configBean;
 
-    private ClassLoaderHierarchy clh;
+    @Inject(optional = true)
+    AvailabilityService availabilityService;
 
+    @Inject(optional = true)
+    WebContainerAvailability webContainerAvailability;
 
-    /**
-     * Constructor
-     */
-    public ServerConfigLookup(Config configBean, ClassLoaderHierarchy clh) {
-        this.configBean = configBean;
-        this.clh = clh;
-    }
+    @Inject
+    ClassLoaderHierarchy clh;
+
 
     /**
      * Get the session manager bean from domain.xml
@@ -169,21 +178,17 @@ public class ServerConfigLookup {
     /**
      * Get the availability-service element from domain.xml.
      * return null if not found
-     */     
+     */
     protected AvailabilityService getAvailabilityService() {
-        if (configBean == null) {
-            return null;
-        }
-
-        return configBean.getAvailabilityService();
-    }    
+        return this .availabilityService;
+    }
 
     /**
      * Get the availability-enabled from domain.xml.
      * return false if not found
      */   
     public boolean getAvailabilityEnabledFromConfig() {
-        AvailabilityService as = getAvailabilityService();
+        AvailabilityService as = this.getAvailabilityService();
         if (as == null) {
             if (_logger.isLoggable(Level.FINEST)) {
                 _logger.finest("AvailabilityService was not defined - check domain.xml");
@@ -203,14 +208,9 @@ public class ServerConfigLookup {
      * Get the web-container-availability element from domain.xml.
      * return null if not found
      */     
-    private WebContainerAvailability getWebContainerAvailability() {
-        AvailabilityService availabilityServiceBean = this.getAvailabilityService();
-        if (availabilityServiceBean == null) {
-            return null;
-        }
-
-        return availabilityServiceBean.getWebContainerAvailability();
-    } 
+    private WebContainerAvailability  getWebContainerAvailability() {
+        return this.webContainerAvailability;
+    }
     
     /**
      * Get the String value of the property under web-container-availability 
@@ -257,7 +257,7 @@ public class ServerConfigLookup {
     /**
      * Get the availability-enabled for the web container from domain.xml.
      * return inherited global availability-enabled if not found
-     */   
+     */
     public boolean getWebContainerAvailabilityEnabledFromConfig() {
         boolean globalAvailabilityEnabled = getAvailabilityEnabledFromConfig();
         WebContainerAvailability was = getWebContainerAvailability();
@@ -275,7 +275,7 @@ public class ServerConfigLookup {
             return bool;
         }       
     } 
-    
+
     /**
      * Get the availability-enabled for the web container from domain.xml.
      * return inherited global availability-enabled if not found
@@ -305,7 +305,7 @@ public class ServerConfigLookup {
      * web-module (if stand-alone)
      * return false if not found
      */   
-    public boolean calculateWebAvailabilityEnabledFromConfig(WebModule ctx) { 
+    public boolean calculateWebAvailabilityEnabledFromConfig(WebModule ctx) {
         // global availability from <availability-service> element
         boolean globalAvailability = getAvailabilityEnabledFromConfig();
         if (_logger.isLoggable(Level.FINEST)) {
@@ -314,37 +314,51 @@ public class ServerConfigLookup {
 
         // web container availability from <web-container-availability>
         // sub-element
-        boolean webContainerAvailability = 
+
+        boolean webContainerAvailability =
             getWebContainerAvailabilityEnabledFromConfig(globalAvailability);
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("webContainerAvailability = " + webContainerAvailability);
-        }        
-
-        String webModuleAvailabilityString = null;
-        ConfigBeanProxy bean = ctx.getBean();
-        if (bean != null) {
-            if (bean instanceof com.sun.enterprise.config.serverbeans.WebModule) {
-                webModuleAvailabilityString =
-                    ((com.sun.enterprise.config.serverbeans.WebModule) bean).getAvailabilityEnabled();
-            } else if (bean instanceof ExtensionModule) {
-                webModuleAvailabilityString =
-                    ((ExtensionModule) bean).getAvailabilityEnabled();
-            }
         }
 
+        //XXX Need to use the following code - haven't tried it out yet - Rajiv
+/*
         boolean webModuleAvailability = false;
-        Boolean bool = toBoolean(webModuleAvailabilityString);
-        if (bool != null) {
-            webModuleAvailability = bool;
-        }       
+        DeploymentContext dc = ctx.getWebModuleConfig().getDeploymentContext();
+        System.out.println("SERVERCONFIGLOOKUP DC HASHCODE" + System.identityHashCode(dc));
+        if (dc != null) {
+            DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
+            if (params != null) {
+                webModuleAvailability = params.availabilityenabled;
+            }
+        }
+*/
+       String webModuleAvailabilityString = null;
+       ConfigBeanProxy bean = ctx.getBean();
+       if (bean != null) {
+           if (bean instanceof com.sun.enterprise.config.serverbeans.WebModule) {
+               webModuleAvailabilityString =
+                            ((com.sun.enterprise.config.serverbeans.WebModule) bean).getAvailabilityEnabled();
+           } else if (bean instanceof ExtensionModule) {
+               webModuleAvailabilityString =
+                            ((ExtensionModule) bean).getAvailabilityEnabled();
+            }
+       }
+
+       boolean webModuleAvailability = false;
+       Boolean bool = toBoolean(webModuleAvailabilityString);
+       if (bool != null) {
+           webModuleAvailability = bool;
+       }
+
 
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("webModuleAvailability = " + webModuleAvailability);
         }
 
         return globalAvailability 
-                && webContainerAvailability 
-                && webModuleAvailability;
+                && webContainerAvailability ;
+           //  XXX webModuleAvailability not reflected correctly as yet   && webModuleAvailability;
     }    
 
     /**

@@ -328,7 +328,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     boolean instanceEnableCookies = true;
 
-    private ServerConfigLookup serverConfigLookup;
+    @Inject
+    ServerConfigLookup serverConfigLookup;
 
     protected JspProbeProvider jspProbeProvider = null;
     protected RequestProbeProvider requestProbeProvider = null;
@@ -404,7 +405,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         webContainerFeatureFactory = habitat.getComponent(
                 PEWebContainerFeatureFactoryImpl.class);
 
-        serverConfigLookup = new ServerConfigLookup(serverConfig, clh);
         configureDynamicReloadingSettings();
         setDebugLevel();
 

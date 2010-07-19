@@ -98,8 +98,9 @@ public class PersistenceStrategyBuilderFactory {
         }
 
         if (_logger.isLoggable(Level.FINEST)) {
-            _logger.fine("Resolved persistence type is " + resolvedPersistenceType);
+            _logger.finest("Resolved persistence type is " + resolvedPersistenceType);
         }
+
         if (resolvedPersistenceType.equalsIgnoreCase(PersistenceType.MEMORY.getType()) ||
                 resolvedPersistenceType.equalsIgnoreCase(PersistenceType.FILE.getType()) ||
                 resolvedPersistenceType.equalsIgnoreCase(PersistenceType.COOKIE.getType())) {
@@ -117,8 +118,6 @@ public class PersistenceStrategyBuilderFactory {
             _logger.finest("resolvedPersistenceScope = " +
                            resolvedPersistenceScope);
         }
-        
-        String passedInPersistenceType = persistenceType;
 
         if (habitat == null) {
             if (_logger.isLoggable(Level.FINEST)) {
@@ -132,18 +131,15 @@ public class PersistenceStrategyBuilderFactory {
                 _logger.finest("Could not find PersistentStrategyBuilder for persistenceType  " + resolvedPersistenceType);
             }
         } else {
-
-
-            if (_logger.isLoggable(Level.FINEST)) {
-                _logger.finest(
+                if (_logger.isLoggable(Level.INFO)) {
+                    _logger.info(
                     "PersistenceStrategyBuilderFactory>>createPersistenceStrategyBuilder: "
                     + "CandidateBuilderClassName = " + builder.getClass());
-            }
-
+                }
 
               builder.setPersistenceFrequency(frequency);
               builder.setPersistenceScope(scope);
-              builder.setPassedInPersistenceType(passedInPersistenceType);
+              builder.setPassedInPersistenceType(persistenceType);
           }
         return builder;
     } 
@@ -164,8 +160,6 @@ public class PersistenceStrategyBuilderFactory {
             _logger.finest("PersistenceStrategyBuilderFactory>>createPersistenceStrategyBuilder: "
                            + "CandidateBuilderClassName = " + builder.getClass());
         }
-
-
         builder.setPersistenceFrequency(frequency);
         builder.setPersistenceScope(scope);
         builder.setPassedInPersistenceType(passedInPersistenceType);

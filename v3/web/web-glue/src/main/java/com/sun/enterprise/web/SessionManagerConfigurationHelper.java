@@ -87,7 +87,10 @@ public class SessionManagerConfigurationHelper {
     }
     
     protected void initializeConfiguration() {
+
+        //XXX Need to look at whether the app is distributable.
         
+/*
         boolean isAppDistributable = false;
         if (_wbd != null) {
             isAppDistributable = _wbd.isDistributable();
@@ -95,8 +98,11 @@ public class SessionManagerConfigurationHelper {
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("Web App Distributable (" + getApplicationId(_ctx)
                            + "): " + isAppDistributable);    
-        }        
-        
+        }
+
+        System.out.println("SessionConfigurationHelper: distributable = " + isAppDistributable);
+*/
+
         PersistenceType persistence = PersistenceType.MEMORY;
         String persistenceFrequency = null;
         String persistenceScope = null;
@@ -110,7 +116,7 @@ public class SessionManagerConfigurationHelper {
         if (isAvailabilityEnabled) {
             // These are the global defaults if nothing is
             // set at domain.xml or sun-web.xml
-            persistence = PersistenceType.HA;
+            persistence = PersistenceType.REPLICATED;
             persistenceFrequency = "time-based";
             persistenceScope = "session";
         }
@@ -118,7 +124,8 @@ public class SessionManagerConfigurationHelper {
         PersistenceType serverDefaultPersistenceType =
             serverConfigLookup.getPersistenceTypeFromConfig();
 
-        if (serverDefaultPersistenceType != null) {        
+
+        if (serverDefaultPersistenceType != null) {
             persistence = serverDefaultPersistenceType;        
             persistenceFrequency = serverConfigLookup.getPersistenceFrequencyFromConfig();
             persistenceScope = serverConfigLookup.getPersistenceScopeFromConfig();
@@ -189,12 +196,15 @@ public class SessionManagerConfigurationHelper {
 
         // If app is not distributable and non-memory option
         // is attempted, log error and set back to "memory"
+/*
         if (!isAppDistributable && persistence != PersistenceType.MEMORY) {
             String wmName = getApplicationId(_ctx);
             if (_logger.isLoggable(Level.FINEST)) {
                 _logger.finest("is " + wmName + " a system app: " +
                                isSystemApp(wmName));
             }
+
+            System.out.println("SessionConfigurationHelper: Is AppDistributable " + isAppDistributable);
             // Suppress log error msg for default-web-module
             // log message only if availabilityenabled = true is attempted
             if (isAvailabilityEnabled &&
@@ -212,6 +222,7 @@ public class SessionManagerConfigurationHelper {
             scope = null;            
         }
         
+*/
         // If availability-enabled is false, reset to "memory"
         if (!isAvailabilityEnabled && (persistence != PersistenceType.FILE &&
                 persistence != PersistenceType.COOKIE &&
@@ -239,9 +250,7 @@ public class SessionManagerConfigurationHelper {
      * The application id for this web module
      */    
     public String getApplicationId(WebModule ctx) {
-        com.sun.enterprise.web.WebModule wm = 
-            (com.sun.enterprise.web.WebModule)ctx;
-        return wm.getID();
+        return ctx.getID();
     }
     
     /**
