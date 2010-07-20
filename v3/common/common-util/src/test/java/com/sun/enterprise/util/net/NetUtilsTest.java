@@ -111,7 +111,6 @@ public class NetUtilsTest {
      * Test equals
      */
     @Test
-    @Ignore
     public void testEquals() {
         assertTrue(NetUtils.isEqual(null, null));
         assertTrue(NetUtils.isEqual(null, ""));
