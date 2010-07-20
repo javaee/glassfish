@@ -112,7 +112,7 @@
             <arg value="--domainproperties"/>
             <arg value="jms.port=${env.JMS_PORT}:domain.jmxPort=${env.JMX_PORT}:orb.listener.port=${env.ORB_PORT}:http.ssl.port=${env.SSL_PORT}:orb.ssl.port=${env.ORB_SSL_PORT}:orb.mutualauth.port=${env.ORB_SSL_MUTUALAUTH_PORT}:osgi.shell.telnet.port=${env.OSGI_SHELL}"/>
             <arg value="--instanceport"/>
-            <arg value="${INSTANCE_PORT}"/>
+            <arg value="${env.INSTANCE_PORT}"/>
             <arg value="${DOMAIN}"/>
         </exec>
 
