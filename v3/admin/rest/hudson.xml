@@ -86,31 +86,31 @@
     <target name="start-server" depends="setup,shutdown-server">
         <echo>
             Port assigments:
-            Administration port: ${ADMINISTRATION_PORT}
-            Instance port: ${INSTANCE_PORT}
-            JMX Port: ${JMX_PORT}
-            ORB Port: ${ORB_PORT}
-            SSL Port: ${SSL_PORT}
-            ORB SSL Port: ${ORB_SSL_PORT}
-            ORB SSL Mutual Auth Port: ${ORB_SSL_MUTUALAUTH_PORT}
-            OSGi Shell: ${OSGI_SHELL}
+            Admin port: ${env.ADMIN_PORT}
+            Instance port: ${env.INSTANCE_PORT}
+            JMX Port: ${env.JMX_PORT}
+            ORB Port: ${env.ORB_PORT}
+            SSL Port: ${env.SSL_PORT}
+            ORB SSL Port: ${env.ORB_SSL_PORT}
+            ORB SSL Mutual Auth Port: ${env.ORB_SSL_MUTUALAUTH_PORT}
+            OSGi Shell: ${env.OSGI_SHELL}
         </echo>
         <exec executable="${executable}">
             <arg value="--port"/>
-            <arg value="${ADMINISTRATION_PORT}"/>
+            <arg value="${env.ADMIN_PORT}"/>
             <arg value="delete-domain"/>
             <arg value="${DOMAIN}"/>
         </exec>
 
         <exec executable="${executable}">
             <arg value="--port"/>
-            <arg value="${ADMINISTRATION_PORT}"/>
+            <arg value="${env.ADMIN_PORT}"/>
             <arg value="create-domain"/>
             <arg value="--adminport"/>
-            <arg value="${ADMINISTRATION_PORT}"/>
+            <arg value="${env.ADMIN_PORT}"/>
             <arg value="--nopassword=true"/>
             <arg value="--domainproperties"/>
-            <arg value="jms.port=${JMS_PORT}:domain.jmxPort=${JMX_PORT}:orb.listener.port=${ORB_PORT}:http.ssl.port=${SSL_PORT}:orb.ssl.port=${ORB_SSL_PORT}:orb.mutualauth.port=${ORB_SSL_MUTUALAUTH_PORT}:osgi.shell.telnet.port=${OSGI_SHELL}"/>
+            <arg value="jms.port=${env.JMS_PORT}:domain.jmxPort=${env.JMX_PORT}:orb.listener.port=${env.ORB_PORT}:http.ssl.port=${env.SSL_PORT}:orb.ssl.port=${env.ORB_SSL_PORT}:orb.mutualauth.port=${env.ORB_SSL_MUTUALAUTH_PORT}:osgi.shell.telnet.port=${env.OSGI_SHELL}"/>
             <arg value="--instanceport"/>
             <arg value="${INSTANCE_PORT}"/>
             <arg value="${DOMAIN}"/>
@@ -119,7 +119,7 @@
         <echo message="***** Starting GlassFish"/>
         <exec executable="${executable}">
             <arg value="--port"/>
-            <arg value="${ADMINISTRATION_PORT}"/>
+            <arg value="${env.ADMIN_PORT}"/>
             <arg value="start-domain"/>
             <arg value="${DOMAIN}"/>
         </exec>
@@ -130,8 +130,8 @@
             <try>
                 <antcall target="start-server"/>
                 <artifact:mvn pom="pom.xml" fork="true" mavenHome="${maven.dir}" failonerror="false" resultproperty="test.result">
-                    <arg value="-Dadmin.port=${ADMINISTRATION_PORT}"/>
-                    <arg value="-Dinstance.port=${INSTANCE_PORT}"/>
+                    <arg value="-Dadmin.port=${env.ADMIN_PORT}"/>
+                    <arg value="-Dinstance.port=${env.INSTANCE_PORT}"/>
                     <arg value="-Prest-devtest"/>
                     <arg value="test"/>
                 </artifact:mvn>
