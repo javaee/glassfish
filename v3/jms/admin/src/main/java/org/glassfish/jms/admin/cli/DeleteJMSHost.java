@@ -44,6 +44,11 @@ import org.glassfish.api.admin.AdminCommandContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
 
 import java.util.ArrayList;
 import java.beans.PropertyVetoException;
@@ -62,6 +67,9 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name="delete-jms-host")
 @Scoped(PerLookup.class)
 @I18n("delete.jms.host")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
+
 public class DeleteJMSHost implements AdminCommand {
         final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteJMSHost.class);
 
@@ -71,8 +79,8 @@ public class DeleteJMSHost implements AdminCommand {
     @Param(name="jms_host_name", primary=true)
     String jmsHostName;
 
-    @Inject
-    Configs configs;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
     @Inject
     Domain domain;
@@ -87,7 +95,13 @@ public class DeleteJMSHost implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         Server targetServer = domain.getServerNamed(target);
-        String configRef = targetServer.getConfigRef();
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster =domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
 
          if (jmsHostName == null) {
             report.setMessage(localStrings.getLocalString("delete.jms.host.noHostName",
@@ -96,12 +110,12 @@ public class DeleteJMSHost implements AdminCommand {
             return;
         }
 
-            JmsService jmsService = null;
-            for (Config c : configs.getConfig()) {
+            JmsService jmsService = config.getJmsService();
+           /* for (Config c : configs.getConfig()) {
 
                if(configRef.equals(c.getName()))
                      jmsService = c.getJmsService();
-            }
+            }*/
 
             if (jmsService == null) {
             report.setMessage(localStrings.getLocalString("list.jms.host.invalidTarget",
