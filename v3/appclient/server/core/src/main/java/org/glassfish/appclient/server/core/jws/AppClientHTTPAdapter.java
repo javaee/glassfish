@@ -48,7 +48,6 @@ import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -76,6 +75,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
     private static final String PROP_QUERY_PARAM_NAME = "prop";
     private static final String VMARG_QUERY_PARAM_NAME = "vmarg";
     private static final String ACC_ARG_QUERY_PARAM_NAME = "accarg";
+    private static final String JWS_ARG_QUERY_PARAM_NAME = "jwsaccarg";
 
     private static final String DEFAULT_ORB_LISTENER_ID = "orb-listener-1";
 
@@ -180,14 +180,14 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         final DynamicContent dc = dynamicContent.get(relativeURIString);
         if (dc == null) {
             respondNotFound(gResp);
-            logger.fine(logPrefix() + "Could not find dynamic content requested using " +
-                    relativeURIString);
+            logger.log(Level.FINE, "{0} Could not find dynamic content requested using {1}",
+                    new Object[]{logPrefix(), relativeURIString});
             return;
         }
         if ( ! dc.isAvailable()) {
             finishErrorResponse(gResp, contentStateToResponseStatus(dc));
-            logger.fine(logPrefix() + "Found dynamic content (" + relativeURIString +
-                    " but is is not marked as available");
+            logger.log(Level.FINE, "{0}Found dynamic content ({1} but is is not marked as available",
+                    new Object[]{logPrefix(), relativeURIString});
             return;
         }
 
@@ -231,8 +231,9 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         if (methodType.equalsIgnoreCase("GET")) {
             writeData(instance.getText(), gResp);
         }
-        logger.fine(logPrefix() + "Served dyn content for " + methodType + ": "
-                + relativeURIString + (logger.isLoggable(Level.FINER) ? "->" + instance.getText() : ""));
+        logger.log(Level.FINE, "{0}Served dyn content for {1}: {2}{3}",
+                new Object[]{logPrefix(), methodType, relativeURIString,
+                logger.isLoggable(Level.FINER) ? "->" + instance.getText() : ""});
         finishResponse(gResp, HttpServletResponse.SC_OK);
     }
 
@@ -275,7 +276,12 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         if (queryString != null && queryString.length() > 0) {
             queryStringPropValue.append("?").append(queryString);
         }
-        answer.setProperty("request.query.string", queryStringPropValue.toString());
+        /*
+         * Need to escape the query string which might contain arguments to the
+         * acc or the jwsacc.
+         */
+        answer.setProperty("request.quoted.query.string", 
+                Util.toXMLEscapedInclAmp(queryStringPropValue.toString()));
 
         processQueryParameters(queryString, answer);
 
@@ -333,7 +339,9 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         QueryParams properties = new PropQueryParams();
         QueryParams vmArguments = new VMArgQueryParams();
         QueryParams accArguments = new ACCArgQueryParams(targetServerSetting(answer));
-        QueryParams [] paramTypes = new QueryParams[] {arguments, properties, vmArguments, accArguments};
+        QueryParams jwsaccArguments = new JWSACCArgQueryParams();
+        QueryParams [] paramTypes = new QueryParams[] {arguments, properties, 
+            vmArguments, accArguments, jwsaccArguments};
 
         for (String param : queryParams) {
             for (QueryParams qpType : paramTypes) {
@@ -347,6 +355,8 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         answer.setProperty("request.properties", properties.toString());
         answer.setProperty("request.vmargs", vmArguments.toString());
         answer.setProperty("request.extra.agent.args", accArguments.toString());
+
+        answer.setProperty("request.javaws.acc.properties", jwsaccArguments.toString());
     }
 
     /**
@@ -430,19 +440,20 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
 
         protected abstract void processValue(String value);
 
+        @Override
         public abstract String toString();
 
         public boolean processParameter(String param) {
             boolean result = false;
             final int equalsSign = param.indexOf("=");
             String value = "";
-            String prefix;
+            String paramPrefix;
             if (equalsSign != -1) {
-                prefix = param.substring(0, equalsSign);
+                paramPrefix = param.substring(0, equalsSign);
             } else {
-                prefix = param;
+                paramPrefix = param;
             }
-            if (handles(prefix)) {
+            if (handles(paramPrefix)) {
                 result = true;
                 if ((equalsSign + 1) < param.length()) {
                     value = param.substring(equalsSign + 1);
@@ -460,6 +471,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
             super(ARG_QUERY_PARAM_NAME);
         }
 
+        @Override
         public void processValue(String value) {
             if (value.length() == 0) {
                 value = "#missing#";
@@ -467,6 +479,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
             arguments.append("<argument>").append(value).append("</argument>").append(LINE_SEP);
         }
 
+        @Override
         public String toString() {
             return arguments.toString();
         }
@@ -497,16 +510,62 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
             this.targetServerSetting = "arg=-targetserver,arg=" + targetServerSetting;
         }
 
+        @Override
         public void processValue(String value) {
             settings.append(commaIfNeeded(settings.length())).append("arg=").append(value);
         }
 
+        @Override
         public String toString() {
             return settings.toString() + commaIfNeeded(settings.length()) +
                     targetServerSetting;
         }
+    }
 
+    private class JWSACCArgQueryParams extends QueryParams {
 
+        private final static String JWS_ACC_PROPERTY_PREFIX = "javaws.acc.";
+        private final Properties props = new Properties();
+
+        private JWSACCArgQueryParams() {
+            super(JWS_ARG_QUERY_PARAM_NAME);
+        }
+
+        @Override
+        protected void processValue(String value) {
+            /*
+             * An = sign might separate the arg name from its value, or maybe not.
+             */
+            final int equals = value.indexOf('=');
+            final String propName = (equals == -1 ? value : value.substring(1, equals));
+            final String propValue = (equals == -1 ? "" : value.substring(equals+1));
+            props.setProperty(propName, propValue);
+        }
+
+        @Override
+        public String toString() {
+            /*
+             * Return zero or more JNLP property settings like this:
+             * 
+             * <property name="javaws.acc.i" value="argName[=argValue]"/>
+             *
+             * where i goes from 0 upwards.
+             */
+            int slot = 0;
+            final StringBuilder sb = new StringBuilder();
+            for (Map.Entry<Object,Object> entry : props.entrySet()) {
+                sb.append("<property name=\"").
+                        append(JWS_ACC_PROPERTY_PREFIX).
+                        append(slot++).
+                        append("\" value=\"").
+                        append((String) entry.getKey()).
+                        append("=").
+                        append((String) entry.getValue()).
+                        append("\"/>").
+                        append(LINE_SEP);
+            }
+            return sb.toString();
+        }
     }
 
     private class PropQueryParams extends QueryParams {
@@ -516,6 +575,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
             super(PROP_QUERY_PARAM_NAME);
         }
 
+        @Override
         public void processValue(String value) {
             if (value.length() > 0) {
                 final int equalsSign = value.indexOf('=');
@@ -526,11 +586,17 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
                     if ((equalsSign + 1) < value.length()) {
                         propValue = value.substring(equalsSign + 1);
                     }
-                    properties.append("<property name=\"" + propName + "\" value=\"" + propValue + "\"/>").append(LINE_SEP);
+                    properties.append("<property name=\"").
+                               append(propName).
+                               append("\" value=\"").
+                               append(propValue).
+                               append("\"/>").
+                               append(LINE_SEP);
                 }
             }
         }
 
+        @Override
         public String toString() {
             return properties.toString();
         }
@@ -544,10 +610,12 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
             super(VMARG_QUERY_PARAM_NAME);
         }
 
+        @Override
         public void processValue(String value) {
             vmArgs.append(value).append(" ");
         }
 
+        @Override
         public String toString() {
             return vmArgs.length() > 0 ? " java-vm=args=\"" + vmArgs.toString() + "\"" : "";
         }
@@ -563,7 +631,8 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         }
         final StringBuilder sb = new StringBuilder("  Dynamic content:");
         for (Map.Entry<String,DynamicContent> entry : dynamicContent.entrySet()) {
-            sb.append("  " + entry.getKey());
+            sb.append("  ").
+               append(entry.getKey());
             if (logger.isLoggable(Level.FINER)) {
                 sb.append("  ====").append(LINE_SEP).append(entry.getValue().toString())
                         .append("  ====").append(LINE_SEP);

@@ -40,7 +40,7 @@
 <jnlp
     spec="1.0+"
     codebase="${request.scheme}://${request.host}:${request.port}${app.codebase.path}"
-    href="${main.jnlp.path}${request.query.string}">
+    href="${main.jnlp.path}${request.quoted.query.string}">
     <information>
         <title>${appclient.main.information.title}</title>
         <vendor>${appclient.vendor}</vendor>
@@ -94,6 +94,8 @@
         <property name="appclient.is.jws" value="true"/>
 
         <property name="agent.args" value="mode=jws,client=url=${request.scheme}://${request.host}:${request.port}${app.codebase.path}/${client.facade.jar.path},${request.extra.agent.args}"/>
+        
+        ${request.javaws.acc.properties}
 
         <property name="client.facade.jar.path" value="${client.facade.jar.path}"/>
         <property name="full.app.codebase.path" value="${request.scheme}://${request.host}:${request.port}${app.codebase.path}"/>

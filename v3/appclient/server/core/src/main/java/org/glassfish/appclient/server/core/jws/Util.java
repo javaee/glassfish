@@ -109,7 +109,10 @@ public class Util {
 
         return sb.toString();
     }
-    
+
+    public static String toXMLEscapedInclAmp(final String content) {
+        return toXMLEscaped(content.replaceAll("&", "&amp;"));
+    }
     public static String toXMLEscaped(final String content) {
         return content.
                     replaceAll("<", "&lt;").

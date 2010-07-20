@@ -4,7 +4,7 @@
  *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,19 +39,29 @@
 
 package org.glassfish.appclient.server.core.jws;
 
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Attr;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 
 /**
  * XPath-based logic to combine generated JNLP elements with the developer-
@@ -90,6 +100,8 @@ import org.w3c.dom.NodeList;
  */
 abstract class CombinedXPath {
 
+    private static final Logger logger = Logger.getLogger(CombinedXPath.class.getName());
+
     /** property names for the types of combined JNLP content */
     private static final String OWNED_PROPERTY_NAME = "owned";
     private static final String DEFAULTED_PROPERTY_NAME = "defaulted";
@@ -98,7 +110,12 @@ abstract class CombinedXPath {
     private final static XPathFactory xPathFactory = XPathFactory.newInstance();
 
     private final static XPath xPath = xPathFactory.newXPath();
-    
+
+    private static LSSerializer lsSerializer = null;
+    private static LSOutput lsOutput = null;
+
+    private final String parentPath;
+    private final String targetRelativePath;
     
     /** xpath expression for the target node in the DOM for the developer's XML */
     private final XPathExpression targetExpr;
@@ -123,7 +140,7 @@ abstract class CombinedXPath {
 
     static List<CombinedXPath> parse(final Properties p) {
         List<CombinedXPath> result = new ArrayList<CombinedXPath>();
-        result.addAll(CombinedXPath.parse(p, CombinedXPath.Type.OWNED));
+//        result.addAll(CombinedXPath.parse(p, CombinedXPath.Type.OWNED));
         result.addAll(CombinedXPath.parse(p, CombinedXPath.Type.DEFAULTED));
         result.addAll(CombinedXPath.parse(p, CombinedXPath.Type.MERGED));
         return result;
@@ -178,12 +195,22 @@ abstract class CombinedXPath {
             final XPath xPath,
             final String parentPath,
             final String targetRelativePath) {
+        this.parentPath = parentPath;
+        this.targetRelativePath = targetRelativePath;
         try {
             parentExpr = xPath.compile(parentPath);
             targetExpr = xPath.compile(parentPath + targetRelativePath);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    String parentPath() {
+        return parentPath;
+    }
+
+    String targetRelativePath() {
+        return targetRelativePath;
     }
 
     XPathExpression targetExpr() {
@@ -196,6 +223,11 @@ abstract class CombinedXPath {
 
     /**
      * Processes the given combination: replaces, defaults, or merges.
+     * <p>
+     * Note that the template - which takes the form at this point of the
+     * generatedDOM - contains some text nodes that are important.  So we
+     * start with the generatedDOM as the "master" and then combine the
+     * developer content into it.
      *
      * @param developerDOM
      * @param generatedDOM
@@ -250,73 +282,8 @@ abstract class CombinedXPath {
 
         @Override
         void process(Document developerDOM, Document generatedDOM) throws XPathExpressionException {
-            final NodeList originalNodes = (NodeList) targetExpr().evaluate(developerDOM, XPathConstants.NODESET);
-            final NodeList replacementNodes = (NodeList) targetExpr().evaluate(generatedDOM, XPathConstants.NODESET);
-
-            /*
-             * Replace all the matching original children (if any) with the
-             * replacement ones.
-             */
-            final Node insertionPoint = (originalNodes.getLength() > 0) ?
-                originalNodes.item(0).getPreviousSibling() : null;
-
-            /*
-             * Remove the old nodes first.  They could be attributes and, if so,
-             * we need to remove them first before setting them with the
-             * replacement values.  Otherwise, if we removed the old nodes
-             * after setting the new ones, we could accidentally erase new
-             * settings that were intended to replace old settings.
-             */
-
-            for (int i = 0; i < originalNodes.getLength(); i++) {
-                remove(originalNodes.item(i));
-            }
-            
-            for (int i = 0; i < replacementNodes.getLength(); i++) {
-                insert(developerDOM, insertionPoint, replacementNodes.item(i));
-            }
         }
 
-        private void remove(final Node originalNode) {
-            if (originalNode instanceof Attr) {
-                removeAttr((Attr) originalNode);
-            } else {
-                removeNode(originalNode);
-            }
-        }
-
-        private void removeNode(final Node originalNode) {
-            originalNode.getParentNode().removeChild(originalNode);
-        }
-
-        private void removeAttr(final Attr originalAttr) {
-            final Element parent = originalAttr.getOwnerElement();
-            parent.removeAttribute(originalAttr.getName());
-        }
-
-        
-//        private void replaceNode(final Node existingNode, final Node replacementNode) {
-//            /*
-//             * If the node is an attribute we have to use different APIs.
-//             */
-//            if (existingNode instanceof Attr) {
-//                replace((Attr) existingNode, (Attr) replacementNode);
-//            } else {
-//                replace(existingNode, replacementNode);
-//            }
-//        }
-//
-//        private void replace(final Attr existingAttr, final Attr replacementAttr) {
-//            Element parent = existingAttr.getOwnerElement();
-//            parent.setAttribute(existingAttr.getName(), replacementAttr.getValue());
-//        }
-//
-//        private void replace(final Node existingNode, final Node replacementNode) {
-//            Node developerParent = existingNode.getParentNode();
-//            developerParent.replaceChild(
-//                    existingNode,
-//                    existingNode.getOwnerDocument().adoptNode(replacementNode));
-//        }
     }
 
     /**
@@ -337,11 +304,21 @@ abstract class CombinedXPath {
             NodeList developerNodes = (NodeList) targetExpr().evaluate(developerDOM, XPathConstants.NODESET);
             NodeList generatedNodes = (NodeList) targetExpr().evaluate(generatedDOM, XPathConstants.NODESET);
 
-            final Node insertionPoint = (developerNodes.getLength() > 0) ?
-                developerNodes.item(0) : null;
+            final Node insertionPoint = (generatedNodes.getLength() > 0) ?
+                generatedNodes.item(0) : null;
 
-            for (int i = 0; i < generatedNodes.getLength(); i++) {
-                insert(developerDOM, insertionPoint, generatedNodes.item(i));
+            final boolean isDetailed = logger.isLoggable(Level.FINER);
+            for (int i = 0; i < developerNodes.getLength(); i++) {
+                if (isDetailed) {
+                    logger.log(Level.FINER,
+                            "Inserting new node due to {0}:{1}",
+                            new Object[]{parentPath(), targetRelativePath()});
+
+                }
+                insert(generatedDOM, insertionPoint, developerNodes.item(i));
+                if (isDetailed) {
+                    logger.log(Level.FINER, toXML(generatedDOM));
+                }
             }
         }
         
@@ -362,27 +339,137 @@ abstract class CombinedXPath {
 
         @Override
         void process(Document developerDOM, Document generatedDOM) throws XPathExpressionException {
-            NodeList developerNodes = (NodeList) targetExpr().evaluate(developerDOM, XPathConstants.NODESET);
+            /*
+             * The developer provided content for this XPath.  So remove the
+             * generated node(s) for this XPath and replace them with the
+             * ones from the developer's content.
+             */
 
-            if (developerNodes.getLength() > 0) {
+            final NodeList replacementNodes = (NodeList) targetExpr().evaluate(developerDOM, XPathConstants.NODESET);
+            if (replacementNodes.getLength() == 0) {
                 return;
             }
+            final NodeList originalNodes = (NodeList) targetExpr().evaluate(generatedDOM, XPathConstants.NODESET);
 
-            NodeList generatedNodes = (NodeList) targetExpr().evaluate(generatedDOM, XPathConstants.NODESET);
+            /*
+             * Replace all the matching original children (if any) with the
+             * replacement ones.
+             */
+            final Node insertionPoint = (originalNodes.getLength() > 0) ?
+                originalNodes.item(0).getPreviousSibling() : null;
 
-            Node developerParent = (Node) parentExpr().evaluate(developerDOM, XPathConstants.NODE);
+                /*
+                 * Remove the old node first.  They could be attributes and, if so,
+                 * we need to remove them first before setting them with the
+                 * replacement values.  Otherwise, if we removed the old nodes
+                 * after setting the new ones, we could accidentally erase new
+                 * settings that were intended to replace old settings.
+                 */
+            final boolean isDetailed = logger.isLoggable(Level.FINER);
 
-            for (int i = 0; i < generatedNodes.getLength(); i++) {
-                append(developerParent, developerDOM.adoptNode(generatedNodes.item(i)));
+            for (int i = 0; i < originalNodes.getLength(); i++) {
+                if (isDetailed) {
+                    logger.log(Level.FINER,
+                            "Removing generated node to make way for developer node based on {0}:{1}",
+                            new Object[] {parentPath(), targetRelativePath()});
+                }
+                remove(originalNodes.item(i));
+                if (isDetailed) {
+                    logger.log(Level.FINER, toXML(generatedDOM));
+                }
+            }
+
+            for (int i = 0; i < replacementNodes.getLength(); i++) {
+                insert(generatedDOM, insertionPoint, replacementNodes.item(i));
+                if (isDetailed) {
+                    logger.log(Level.FINER, toXML(generatedDOM));
+                }
+
             }
         }
 
-        private void append(final Node parent, final Node newNode) {
-            if (newNode instanceof Attr) {
-                ((Element) parent).setAttributeNode((Attr) newNode);
+        private void remove(final Node originalNode) {
+            if (originalNode instanceof Attr) {
+                removeAttr((Attr) originalNode);
             } else {
-                parent.appendChild(parent.getOwnerDocument().importNode(newNode, true /* deep */));
+                removeNode(originalNode);
             }
+        }
+
+        private void removeNode(final Node originalNode) {
+            originalNode.getParentNode().removeChild(originalNode);
+        }
+
+        private void removeAttr(final Attr originalAttr) {
+            final Element parent = originalAttr.getOwnerElement();
+            parent.removeAttribute(originalAttr.getName());
+        }
+    }
+
+    /**
+     * Creates a new node that copies its info from the original node and
+     * has similarly created ancestors.
+     *
+     * @param original the Node for which ancestry will be computed
+     * @return
+     */
+    private static Node ancestry(Node original) {
+
+        Node nextAncestor;
+        Node displayAncestor;
+        Attr thisAttr = null;
+        if (original.getNodeType() == Node.ATTRIBUTE_NODE) {
+            thisAttr = (Attr) original;
+
+            nextAncestor = thisAttr.getOwnerElement();
+        } else {
+            nextAncestor = original.getParentNode();
+        }
+        displayAncestor = original.getOwnerDocument().createElement(nextAncestor.getNodeName());
+
+        if (thisAttr != null) {
+            ((Element) displayAncestor).setAttribute(thisAttr.getName(), thisAttr.getValue());
+        }
+
+        nextAncestor = nextAncestor.getParentNode();
+
+        while (nextAncestor != null && nextAncestor instanceof Element) {
+            Element newDisplayAncestor = original.getOwnerDocument().createElement(nextAncestor.getNodeName());
+            NamedNodeMap attrs = ((Node) nextAncestor).getAttributes();
+            for (int i = 0; i < attrs.getLength(); i++) {
+                newDisplayAncestor.setAttribute(attrs.item(i).getNodeName(), attrs.item(i).getNodeValue());
+            }
+
+            newDisplayAncestor.appendChild(displayAncestor);
+            displayAncestor = newDisplayAncestor;
+
+            nextAncestor = nextAncestor.getParentNode();
+
+        }
+        return displayAncestor;
+    }
+
+    private static String toXML(final Node node) {
+
+        Writer writer = new StringWriter();
+        writeXML(node, writer);
+        return writer.toString();
+    }
+
+    private synchronized static void writeXML(final Node node, final Writer writer) {
+        try {
+            if (lsSerializer == null) {
+                final DOMImplementation domImpl = DOMImplementationRegistry.newInstance().
+                        getDOMImplementation("");
+                final DOMImplementationLS domLS = (DOMImplementationLS) domImpl.getFeature("LS", "3.0");
+                lsOutput = domLS.createLSOutput();
+                lsOutput.setEncoding("UTF-8");
+                lsSerializer = domLS.createLSSerializer();
+            }
+            lsOutput.setCharacterStream(writer);
+            lsSerializer.write(node, lsOutput);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 }

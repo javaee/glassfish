@@ -194,8 +194,10 @@ public class AppClientContainer {
     /** Prop name for keeping temporary files */
     public static final String APPCLIENT_RETAIN_TEMP_FILES_PROPERTYNAME = "com.sun.aas.jws.retainTempFiles";
 
-    private static Logger logger = LogDomains.getLogger(AppClientContainer.class,
+    private static final Logger logger = LogDomains.getLogger(AppClientContainer.class,
             LogDomains.ACC_LOGGER);
+
+    private static final Logger _logger = Logger.getLogger(AppClientContainer.class.getName());
 
     /**
      * Creates a new ACC builder object, preset with the specified
@@ -425,53 +427,8 @@ public class AppClientContainer {
         mainMethod.invoke(null, params);
         state = State.STARTED;
 
-        cleanupWhenSafe();
     }
 
-    private boolean isEDTRunning() {
-        Map<Thread,StackTraceElement[]> threads = java.security.AccessController.doPrivileged(
-                new java.security.PrivilegedAction<Map<Thread,StackTraceElement[]>>() {
-
-            @Override
-            public Map<Thread, StackTraceElement[]> run() {
-                return Thread.getAllStackTraces();
-            }
-        });
-        
-        logger.fine("Checking for EDT thread...");
-        for (Map.Entry<Thread,StackTraceElement[]> entry : threads.entrySet()) {
-            logger.fine("  " + entry.getKey().toString());
-            StackTraceElement[] frames = entry.getValue();
-            if (frames.length > 0) {
-                StackTraceElement last = frames[frames.length - 1];
-                if (last.getClassName().equals("java.awt.EventDispatchThread") &&
-                    last.getMethodName().equals("run")) {
-                    logger.fine("Thread " + entry.getKey().toString() + " seems to be the EDT");
-                    return true;
-                }
-            }
-            logger.fine("Did not recognize any thread as the EDT");
-        }
-        return false;
-    }
-
-    private void cleanupWhenSafe() {
-        if (isEDTRunning()) {
-            final AtomicReference<Thread> edt = new AtomicReference<Thread>();
-            try {
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    public void run() {
-                        edt.set(Thread.currentThread());
-                    }
-                });
-                edt.get().join();
-            } catch (Exception e) {
-
-            }
-        }
-        stop();
-    }
-    
     private void dumpLoaderURLs() {
         final String sep = System.getProperty("line.separator");
         final ClassLoader ldr = Thread.currentThread().getContextClassLoader();
@@ -954,6 +911,7 @@ public class AppClientContainer {
         @Override
         public void run() {
             logger.fine("Clean-up starting");
+            _logger.fine("Clean-up starting");
             /*
              * Do not invoke disable from here.  The run method might execute
              * while the VM shutdown is in progress, and attempting to remove
@@ -961,6 +919,7 @@ public class AppClientContainer {
              */
             cleanUp();
             logger.fine("Clean-up complete");
+            _logger.fine("Clean-up complete");
         }
 
         void cleanUp() {

@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -172,7 +172,7 @@ public class DeveloperContentHandler {
             for (CombinedXPath combinedXPath : dcs.xPathsToCombinedContent()) {
                 combinedXPath.process(devDOM, generatedJNLPDOM);
             }
-            return toXML(devDOM);
+            return toXML(generatedJNLPDOM);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -267,9 +267,16 @@ public class DeveloperContentHandler {
             if (nodes.getLength() > 0) {
                 for (int i = 0; i < nodes.getLength(); i++) {
                     final String href = nodes.item(i).getNodeValue();
-                    c.addToContentIfInApp(this, helper, contentPath,
-                            codebaseURI, href, loader, staticContent,
-                            dynamicContent, appRootURI, appClientArchive);
+                    /*
+                     * Tokens have not been substituted at this point in the processing,
+                     * and developer-provided content should not use tokens for
+                     * hrefs.  So don't process an href starting with ${.
+                     */
+                    if ( ! href.startsWith("${")) {
+                        c.addToContentIfInApp(this, helper, contentPath,
+                                codebaseURI, href, loader, staticContent,
+                                dynamicContent, appRootURI, appClientArchive);
+                    }
                 }
             }
         }
