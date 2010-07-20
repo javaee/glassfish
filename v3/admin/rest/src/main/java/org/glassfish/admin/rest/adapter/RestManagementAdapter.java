@@ -37,7 +37,7 @@ package org.glassfish.admin.rest.adapter;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.glassfish.admin.rest.resources.ActionReportResource;
+//import org.glassfish.admin.rest.resources.ActionReportResource;
 import org.glassfish.admin.rest.resources.GeneratorResource;
 
 import org.glassfish.admin.rest.resources.SessionsResource;
@@ -61,7 +61,7 @@ public class RestManagementAdapter extends RestAdapter {
 
         // uncomment if you need to run the generator:
         r.add(GeneratorResource.class);
-        r.add(ActionReportResource.class);
+        //r.add(ActionReportResource.class);
         r.add(org.glassfish.admin.rest.resources.generated.DomainResource.class);
         r.add(SessionsResource.class); //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
 
