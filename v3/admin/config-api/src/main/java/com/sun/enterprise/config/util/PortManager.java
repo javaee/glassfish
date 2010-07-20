@@ -63,7 +63,7 @@ public final class PortManager {
             newServer = theNewServer;
             domain = theDomain;
             serverName = newServer.getName();
-            host = newServer.getNode();
+            host = newServer.getHost();
             allPorts = new ArrayList<Integer>();
             newServerPorts = new ServerPorts(cluster, config, domain, newServer);
 

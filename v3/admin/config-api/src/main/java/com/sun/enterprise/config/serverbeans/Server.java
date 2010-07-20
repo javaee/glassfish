@@ -37,6 +37,7 @@
 package com.sun.enterprise.config.serverbeans;
 
 import com.sun.enterprise.config.util.PortManager;
+import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
@@ -253,6 +254,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Override
     boolean isInstance();
 
+    @DuckTyped
+    String getHost();
+
     class Duck {
         public static boolean isCluster(Server server) { return false; }
         public static boolean isServer(Server server)  { return true; }
@@ -332,6 +336,35 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     return newResourceRef;
                 }
             }, server);
+        }
+
+        public static String getHost(final Server server) {
+            String hostName = null;
+            Dom serverDom = Dom.unwrap(server);
+            Nodes nodes = serverDom.getHabitat().getComponent(Nodes.class);
+            if (server == null || nodes == null) {
+                return null;
+            }
+
+            // Get it from the node associated with the server
+            String nodeName = server.getNode();
+            if (StringUtils.ok(nodeName)) {
+                Node node = nodes.getNode(nodeName);
+                if (node != null) {
+                    hostName = node.getNodeHost();
+                }
+                // XXX Hack to get around the fact that the default localhost
+                // node entry is malformed
+                if (hostName == null && nodeName.equals("localhost")) {
+                    hostName = "localhost";
+                }
+            }
+
+            if (StringUtils.ok(hostName)) {
+                return hostName;
+            } else {
+                return null;
+            }
         }
     }
 
