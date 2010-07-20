@@ -148,6 +148,8 @@ public final class ModuleMetadata implements Serializable {
             e = new Entry();
             entries.put(serviceName,e);
             e.load(source,is);
+        } else {
+          is.close();
         }
     }
     
