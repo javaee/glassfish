@@ -6,6 +6,10 @@
         <param-value>true</param-value>
     </context-param>
     <context-param>
+        <param-name>com.sun.jsftemplating.FS_DENY_PATHS</param-name>
+        <param-value>META-INF/:WEB-INF/:*.jsf:*.inc:*.xhtml:*.xml</param-value>
+    </context-param>
+    <context-param>
         <param-name>com.sun.jsftemplating.CLASSLOADER</param-name>
         <param-value>org.glassfish.admingui.common.plugin.ConsoleClassLoader</param-value>
     </context-param>
