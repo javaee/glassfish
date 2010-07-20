@@ -41,6 +41,7 @@ import org.objectweb.asm.ClassReader;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -97,7 +98,21 @@ public class Parser {
 
     public void parse(final File source, final Runnable doneHook) throws IOException {
         final ArchiveAdapter adapter = source.isFile()?new JarArchive(new JarFile(source)):new DirectoryArchive(source);
-        parse(adapter, doneHook);
+        final Runnable cleanUpAndNotify = new Runnable() {
+          @Override
+          public void run() {
+            try {
+              try {
+                adapter.close();
+              } catch (IOException e) {
+                throw new RuntimeException(e);
+              }
+            } finally {
+              doneHook.run();
+            }
+          }
+        };
+        parse(adapter, cleanUpAndNotify);
     }
 
     public synchronized void parse(final ArchiveAdapter source, final Runnable doneHook) throws IOException {
@@ -132,8 +147,10 @@ public class Parser {
                     if (context.logger.isLoggable(Level.FINER)) {
                         context.logger.log(Level.FINER, "Parsing class " + entry.name);
                     }
-                    ClassReader cr = new ClassReader(adapter.getInputStream(entry.name));
-                    cr.accept(context.getClassVisitor(), ClassReader.SKIP_DEBUG );
+                    InputStream is = adapter.getInputStream(entry.name);
+                    ClassReader cr = new ClassReader(is);
+                    cr.accept(context.getClassVisitor(), ClassReader.SKIP_DEBUG);
+                    is.close();
                 }
             }
             if (context.logger.isLoggable(Level.FINE)) {

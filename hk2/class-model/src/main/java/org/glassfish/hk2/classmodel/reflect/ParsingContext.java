@@ -102,7 +102,8 @@ public class ParsingContext {
     private ParsingContext(Builder builder) {
         Runtime runtime = Runtime.getRuntime();
         int nrOfProcessors = runtime.availableProcessors();        
-        this.executorService = builder.executorService==null? Executors.newFixedThreadPool(nrOfProcessors):builder.executorService;
+        this.executorService = builder.executorService==null ? 
+            Executors.newFixedThreadPool(nrOfProcessors) : builder.executorService;
         this.archiveSelector = builder.archiveSelector;
         this.logger = builder.logger;
         this.config = builder.config!=null?builder.config:new ParsingConfig() {

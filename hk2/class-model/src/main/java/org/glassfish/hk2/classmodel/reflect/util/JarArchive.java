@@ -87,4 +87,9 @@ public class JarArchive implements ArchiveAdapter {
     public Manifest getManifest() throws IOException {
         return jar.getManifest();
     }
+
+    @Override
+    public void close() throws IOException {
+      jar.close();
+    }
 }

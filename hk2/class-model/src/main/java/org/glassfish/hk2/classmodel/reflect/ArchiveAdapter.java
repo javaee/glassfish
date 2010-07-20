@@ -36,6 +36,7 @@
 
 package org.glassfish.hk2.classmodel.reflect;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.jar.Manifest;
@@ -45,7 +46,7 @@ import java.util.jar.Manifest;
  *
  * @author Jerome Dochez
  */
-public interface ArchiveAdapter extends Iterable<ArchiveAdapter.Entry> {
+public interface ArchiveAdapter extends Iterable<ArchiveAdapter.Entry>, Closeable {
 
     /**
      * Returns the name of the archive
