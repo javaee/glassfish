@@ -317,6 +317,7 @@ public abstract class StoreBase
      * the Session and remove it from the Store.
      */
     public void processExpires() {
+        long timeNow = System.currentTimeMillis(); 
         String[] keys = null;
 
         if(!started) {
@@ -336,9 +337,10 @@ public abstract class StoreBase
                 if (session == null) {
                     continue;
                 }
-                if (session.isValid()) {
-                    continue;
-                }
+				int timeIdle = (int) ((timeNow - session.thisAccessedTime) / 1000L);
+				if (timeIdle < session.getMaxInactiveInterval()) {
+					continue;
+				} 
                 if ( ( (PersistentManagerBase) manager).isLoaded( keys[i] )) {
                     // recycle old backup session
                     session.recycle();
@@ -346,7 +348,7 @@ public abstract class StoreBase
                     // expire swapped out session
                     session.expire();
                 }
-                remove(session.getIdInternal());
+                remove(keys[i]);
             } catch (IOException e) {
                 log("Error during processExpires", e);
             } catch (ClassNotFoundException e) {
