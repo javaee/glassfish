@@ -84,14 +84,32 @@ public class ResourcesUtil {
     private Server server;
 
     public ResourcesUtil(){
-        runtime = ConnectorRuntime.getRuntime();
-        resources = runtime.getResources();
-        domain = runtime.getDomain();
-
     }
+
+    private Resources getResources() {
+        if(resources == null){
+            resources = getRuntime().getResources();
+        }
+        return resources;
+    }
+
+    private Domain getDomain(){
+        if(domain == null){
+            domain = getRuntime().getDomain();
+        }
+        return domain;
+    }
+
+    private ConnectorRuntime getRuntime(){
+        if(runtime == null){
+            runtime = ConnectorRuntime.getRuntime();
+        }
+        return runtime;
+    }
+
     private Server getServer(){
         if(server == null){
-            server = domain.getServerNamed(runtime.getServerEnvironment().getInstanceName());
+            server = getDomain().getServerNamed(getRuntime().getServerEnvironment().getInstanceName());
         }
         return server;
     }
@@ -100,7 +118,7 @@ public class ResourcesUtil {
     }
 
     private Applications getApplications(){
-        return runtime.getApplications();
+        return getRuntime().getApplications();
     }
 
     private ConnectorModule getConnectorModuleByName(String name){
@@ -327,13 +345,13 @@ public class ResourcesUtil {
 
 
         ConnectorResource connectorResource = (ConnectorResource)
-                resources.getResourceByName(ConnectorResource.class, resourceName);
+                getResources().getResourceByName(ConnectorResource.class, resourceName);
         if (connectorResource == null || !ConnectorsUtil.parseBoolean(connectorResource.getEnabled())) {
             return null;
         }
         String poolName = connectorResource.getPoolName();
         ConnectorConnectionPool ccPool = (ConnectorConnectionPool)
-                resources.getResourceByName(ConnectorConnectionPool.class, poolName);
+                getResources().getResourceByName(ConnectorConnectionPool.class, poolName);
         if (ccPool == null) {
             return null;
         }
@@ -344,7 +362,7 @@ public class ResourcesUtil {
 
             ResourceAdapterConfig[] resourceAdapterConfig = new ResourceAdapterConfig[1];
             resourceAdapterConfig[0] = (ResourceAdapterConfig)
-                    resources.getResourceByName(ResourceAdapterConfig.class, rarName);
+                    getResources().getResourceByName(ResourceAdapterConfig.class, rarName);
 
             DeferredResourceConfig resourceConfig =
                     new DeferredResourceConfig(rarName, null, ccPool, connectorResource, null, null,
@@ -378,16 +396,16 @@ public class ResourcesUtil {
             _logger.log(Level.FINE,message + e.getMessage(), e);
         }
 
-        JdbcResource jdbcResource = (JdbcResource) resources.getResourceByName(JdbcResource.class, resourceName);
+        JdbcResource jdbcResource = (JdbcResource) getResources().getResourceByName(JdbcResource.class, resourceName);
         if(jdbcResource == null || !ConnectorsUtil.parseBoolean(jdbcResource.getEnabled())) {
             String cmpResourceName = getCorrespondingCmpResourceName(resourceName);
-            jdbcResource = (JdbcResource) resources.getResourceByName(JdbcResource.class, cmpResourceName);
+            jdbcResource = (JdbcResource) getResources().getResourceByName(JdbcResource.class, cmpResourceName);
             if(jdbcResource == null) {
                 return null;
             }
         }
         JdbcConnectionPool jdbcPool = (JdbcConnectionPool)
-                resources.getResourceByName(JdbcConnectionPool.class, jdbcResource.getPoolName());
+                getResources().getResourceByName(JdbcConnectionPool.class, jdbcResource.getPoolName());
         if(jdbcPool == null) {
             return null;
         }
@@ -430,7 +448,7 @@ public class ResourcesUtil {
         }
 
         AdminObjectResource adminObjectResource = (AdminObjectResource)
-                resources.getResourceByName(AdminObjectResource.class, resourceName);
+                getResources().getResourceByName(AdminObjectResource.class, resourceName);
         if(adminObjectResource == null || !ConnectorsUtil.parseBoolean(adminObjectResource.getEnabled())) {
             return null;
         }
@@ -440,7 +458,7 @@ public class ResourcesUtil {
             ResourceAdapterConfig[] resourceAdapterConfig =
                     new ResourceAdapterConfig[1];
             resourceAdapterConfig[0] = (ResourceAdapterConfig)
-                    resources.getResourceByName(ResourceAdapterConfig.class, rarName);
+                    getResources().getResourceByName(ResourceAdapterConfig.class, rarName);
             DeferredResourceConfig resourceConfig =
                     new DeferredResourceConfig(rarName,adminObjectResource,
                     null,null,null,null,resourceAdapterConfig);
@@ -474,7 +492,7 @@ public class ResourcesUtil {
 
 
         ConnectorConnectionPool ccPool = (ConnectorConnectionPool)
-                resources.getResourceByName(ConnectorConnectionPool.class, poolName);
+                getResources().getResourceByName(ConnectorConnectionPool.class, poolName);
         if(ccPool == null) {
             return null;
         }
@@ -486,7 +504,7 @@ public class ResourcesUtil {
             ResourceAdapterConfig[] resourceAdapterConfig =
                     new ResourceAdapterConfig[1];
             resourceAdapterConfig[0] = (ResourceAdapterConfig)
-                    resources.getResourceByName(ResourceAdapterConfig.class, rarName);
+                    getResources().getResourceByName(ResourceAdapterConfig.class, rarName);
             DeferredResourceConfig resourceConfig =
                     new DeferredResourceConfig(rarName,null,ccPool,
                     null,null,null,resourceAdapterConfig);
@@ -504,7 +522,7 @@ public class ResourcesUtil {
         }
 
         JdbcConnectionPool jdbcPool = (JdbcConnectionPool)
-                resources.getResourceByName(JdbcConnectionPool.class, poolName);
+                getResources().getResourceByName(JdbcConnectionPool.class, poolName);
         if(jdbcPool == null) {
             return null;
         }
@@ -523,12 +541,12 @@ public class ResourcesUtil {
 
     public boolean poolBelongsToSystemRar(String poolName) {
         ConnectorConnectionPool ccPool = (ConnectorConnectionPool)
-                resources.getResourceByName(ConnectorConnectionPool.class, poolName);
+                getResources().getResourceByName(ConnectorConnectionPool.class, poolName);
         if(ccPool != null){
             return ConnectorsUtil.belongsToSystemRA(ccPool.getResourceAdapterName());
         } else {
             JdbcConnectionPool jdbcPool = (JdbcConnectionPool)
-                    resources.getResourceByName(JdbcConnectionPool.class, poolName);
+                    getResources().getResourceByName(JdbcConnectionPool.class, poolName);
             if(jdbcPool != null) {
                 return true;
             }
@@ -538,7 +556,7 @@ public class ResourcesUtil {
 
     public boolean adminObjectBelongsToSystemRar(String adminObject) {
         AdminObjectResource aor = (AdminObjectResource)
-                resources.getResourceByName(AdminObjectResource.class, adminObject);
+                getResources().getResourceByName(AdminObjectResource.class, adminObject);
         if(aor != null) {
             return ConnectorsUtil.belongsToSystemRA(aor.getResAdapter());
         }
@@ -547,12 +565,12 @@ public class ResourcesUtil {
 
     public boolean resourceBelongsToSystemRar(String resourceName) {
         ConnectorResource connectorResource = (ConnectorResource)
-                resources.getResourceByName(ConnectorResource.class, resourceName);
+                getResources().getResourceByName(ConnectorResource.class, resourceName);
         if(connectorResource != null){
             return poolBelongsToSystemRar(connectorResource.getPoolName());
         } else {
             JdbcResource jdbcResource = (JdbcResource)
-                    resources.getResourceByName(JdbcResource.class, resourceName);
+                    getResources().getResourceByName(JdbcResource.class, resourceName);
             if(jdbcResource != null) {
                 return true;
             }
@@ -642,7 +660,7 @@ public class ResourcesUtil {
             ConnectorResource cr = (ConnectorResource) br;
             String poolName = cr.getPoolName();
             ConnectorConnectionPool ccp = (ConnectorConnectionPool)
-                    resources.getResourceByName(ConnectorConnectionPool.class, poolName);
+                    getResources().getResourceByName(ConnectorConnectionPool.class, poolName);
             if (ccp == null) {
                 return false;
             }
@@ -662,7 +680,7 @@ public class ResourcesUtil {
     private boolean isRarEnabled(String raName) {
         if(raName == null || raName.length() == 0)
             return false;
-        Application application = domain.getApplications().getApplication(raName);
+        Application application = getDomain().getApplications().getApplication(raName);
         if(application != null) {
             return isApplicationReferenceEnabled(raName);
         } else if(ConnectorsUtil.belongsToSystemRA(raName)) {
@@ -707,7 +725,7 @@ public class ResourcesUtil {
         String appName = getAppNameToken(resourceAdapterName);
         if(appName==null)
             return false;
-        Applications apps = domain.getApplications();
+        Applications apps = getDomain().getApplications();
         Application app = apps.getApplication(appName);
         if(app == null || !ConnectorsUtil.parseBoolean(app.getEnabled()))
             return false;
@@ -760,7 +778,7 @@ public class ResourcesUtil {
             _logger.fine("ResourcesUtil :: looking up jdbc resource, jndiName is : " + jndiName );
         }
 
-        JdbcResource jdbcResource = (JdbcResource) resources.getResourceByName(JdbcResource.class, jndiName);
+        JdbcResource jdbcResource = (JdbcResource) getResources().getResourceByName(JdbcResource.class, jndiName);
 
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("ResourcesUtil :: looked up jdbc resource:" + jdbcResource );
@@ -827,7 +845,7 @@ public class ResourcesUtil {
      */
     public boolean isPoolReferredInServerInstance(String poolName) {
 
-        Collection<ConnectorResource> connectorResources = runtime.getResources().getResources(ConnectorResource.class);
+        Collection<ConnectorResource> connectorResources = getRuntime().getResources().getResources(ConnectorResource.class);
         for (ConnectorResource resource : connectorResources) {
             _logger.fine("poolname " + resource.getPoolName() + "resource " + resource.getJndiName());
             if ((resource.getPoolName().equalsIgnoreCase(poolName)) && isReferenced(resource.getJndiName())){
@@ -849,7 +867,7 @@ public class ResourcesUtil {
      */
     public boolean isJdbcPoolReferredInServerInstance(String poolName) {
 
-        Collection<JdbcResource> jdbcResources = runtime.getResources().getResources(JdbcResource.class);
+        Collection<JdbcResource> jdbcResources = getRuntime().getResources().getResources(JdbcResource.class);
 
         for (JdbcResource resource : jdbcResources) {
             _logger.fine("poolname " + resource.getPoolName() + "resource " + resource.getJndiName()

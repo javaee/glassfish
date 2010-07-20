@@ -79,7 +79,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
     @Inject
     private Habitat connectorRuntimeHabitat;
 
-    private ResourcesUtil resourcesUtil = ResourcesUtil.createInstance();
+    private ResourcesUtil resourcesUtil = null;
 
     private static Logger _logger = LogDomains.getLogger(JdbcRecoveryResourceHandler.class, LogDomains.RSR_LOGGER);
 
@@ -90,7 +90,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
             InitialContext ic = new InitialContext();
             for (Resource resource : jdbcResources) {
                 JdbcResource jdbcResource = (JdbcResource) resource;
-                if(resourcesUtil.isEnabled(jdbcResource)) {
+                if(getResourcesUtil().isEnabled(jdbcResource)) {
                     try {
                         ic.lookup(jdbcResource.getJndiName());
                     } catch (Exception ex) {
@@ -114,6 +114,13 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
         return resources.getResources(JdbcResource.class);
     }
 
+    private ResourcesUtil getResourcesUtil(){
+        if(resourcesUtil == null){
+            resourcesUtil = ResourcesUtil.createInstance();
+        }
+        return resourcesUtil;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -129,7 +136,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
 
         for (Resource resource : jdbcResources) {
             JdbcResource jdbcResource = (JdbcResource) resource;
-            if(resourcesUtil.isEnabled(jdbcResource)) {
+            if(getResourcesUtil().isEnabled(jdbcResource)) {
                 JdbcConnectionPool pool = getJdbcConnectionPoolByName(jdbcResource.getPoolName());
                 if (pool != null &&
                         "javax.sql.XADataSource".equals(pool.getResType())) {

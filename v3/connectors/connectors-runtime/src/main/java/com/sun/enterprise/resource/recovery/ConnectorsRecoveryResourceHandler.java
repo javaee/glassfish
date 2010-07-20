@@ -94,7 +94,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
     @Inject
     private Habitat applicationLoaderServiceHabitat;
 
-    private ResourcesUtil resourcesUtil = ResourcesUtil.createInstance();
+    private ResourcesUtil resourcesUtil = null;
     
     private static Logger _logger = LogDomains.getLogger(ConnectorsRecoveryResourceHandler.class, LogDomains.RSR_LOGGER);
 
@@ -107,7 +107,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
             Collection<ConnectorResource> connResources = resources.getResources(ConnectorResource.class);
             InitialContext ic = new InitialContext();
             for (ConnectorResource connResource : connResources) {
-                if(resourcesUtil.isEnabled(connResource)) {
+                if(getResourcesUtil().isEnabled(connResource)) {
                     try {
                         ic.lookup(connResource.getJndiName());
                     //} catch (NameNotFoundException ne) {
@@ -150,6 +150,13 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
         }
     }
 
+    private ResourcesUtil getResourcesUtil(){
+        if(resourcesUtil == null){
+            resourcesUtil = ResourcesUtil.createInstance();
+        }
+        return resourcesUtil;
+    }
+
     private ConnectorResourceDeployer getConnectorResourceDeployer() {
         return connectorResourceDeployerHabitat.getComponent(ConnectorResourceDeployer.class);
     }
@@ -183,7 +190,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
         List<ConnectorConnectionPool> connPools = new ArrayList<ConnectorConnectionPool>();
         for (Resource resource : connectorResources) {
             ConnectorResource connResource = (ConnectorResource) resource;
-            if(resourcesUtil.isEnabled(connResource)) {
+            if(getResourcesUtil().isEnabled(connResource)) {
                 ConnectorConnectionPool pool = getConnectorConnectionPoolByName(connResource.getPoolName());
                 if (pool != null &&
                         ConnectorConstants.XA_TRANSACTION_TX_SUPPORT_STRING.equals(
