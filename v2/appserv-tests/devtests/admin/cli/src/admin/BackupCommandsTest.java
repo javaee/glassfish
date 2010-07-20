@@ -135,11 +135,15 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         // force restore
         report("force-restore-domain-with-operand", !asadmin("restore-domain", FORCE_OPTION, DOMAIN2));
 
-        report("restore-domain-with-filename", !asadmin("restore-domain", FILENAME_OPTION, BACKUP_FILE));
+        report("restore-domain-with-filename-1", !asadmin("restore-domain", FILENAME_OPTION, BACKUP_FILE));
 
-        report("restore-domain-with-filename", asadmin("restore-domain", FILENAME_OPTION, BACKUP_FILE, FORCE_OPTION));
+        report("restore-domain-with-filename-2", asadmin("restore-domain", FILENAME_OPTION, BACKUP_FILE, FORCE_OPTION));
 
-        report("restore-domain-with-filename", asadmin("restore-domain", FILENAME_OPTION, BACKUP_FILE, FORCE_OPTION, "r-domain2"));
+        report("restore-domain-with-filename-3", asadmin("restore-domain", FILENAME_OPTION, BACKUP_FILE, FORCE_OPTION, "r-domain2"));
+
+        //remove the domains
+        asadmin("delete-domain", "r-domain2");
+        asadmin("delete-domain", DOMAIN2);
     }
 
     private void testCommandsWithNoDomains() {
