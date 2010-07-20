@@ -60,8 +60,9 @@ public class OsgiWeldServlet extends HttpServlet {
 
     private static List<Attributes.Name> ATTRS =
             Arrays.asList(new Attributes.Name("Export-Package"),
-                          new Attributes.Name("Import-Package"),
-                          new Attributes.Name("Private-Package"));
+                          new Attributes.Name("Import-Package"));
+                          //new Attributes.Name("Private-Package")); 
+            //From Weld 1.1, Private-Package is not part of the OSGi headers
 
     protected void processRequest(HttpServletRequest request,
             HttpServletResponse response)
@@ -78,20 +79,23 @@ public class OsgiWeldServlet extends HttpServlet {
                 String jarFile = gfhome + File.separator + ".."
                         + File.separator + ".." + File.separator
                         + "modules" + File.separator + "weld-osgi-bundle.jar";
-                System.out.println("Weld Osgi module = " + jarFile);
+                //System.out.println("Weld Osgi module = " + jarFile);
                 JarFile jar = new JarFile(jarFile);
                 Manifest manifest = jar.getManifest();
 
                 String command = request.getParameter("command");
+                //System.out.println("Command: " + command);
                 if (command.equals("manifest")) {
                     // Make sure all manifest attrs are there
                     Set<Object> keys = manifest.getMainAttributes().keySet();
-                    if (!keys.containsAll(ATTRS)) {
+                    //System.out.println("Keys: " + keys);
+                    if (!keys.containsAll(ATTRS) || !checkBundleSymbolicName(manifest.getMainAttributes())) {
                         result = "ERROR";
                     }
                 } else if (command.equals("exports")) {
                     // Make sure package exports are present and return them
                     String exportedValues = manifest.getMainAttributes().getValue(new Attributes.Name("Export-Package"));
+                    //System.out.println("Exported Values: " + exportedValues);
                     if (null != exportedValues) {
                         result = exportedValues;
                     } else {
@@ -100,6 +104,7 @@ public class OsgiWeldServlet extends HttpServlet {
                 } else if (command.equals("imports")) {
                     //Make sure package imports are present and return them
                     String importedValues = manifest.getMainAttributes().getValue(new Attributes.Name("Import-Package"));
+                    //System.out.println("Imported Values: " + importedValues);
                     if (null != importedValues) {
                         result = importedValues;
                     } else {
@@ -117,7 +122,12 @@ public class OsgiWeldServlet extends HttpServlet {
         out.close();
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    private boolean checkBundleSymbolicName(Attributes attrs){
+        String name = attrs.getValue("Bundle-SymbolicName");
+        System.out.println("Bundle-SymbolicName:"+ name);
+        return name.equals("org.jboss.weld.osgi-bundle");
+    }
+
     /** 
      * Handles the HTTP <code>GET</code> method.
      * @param request servlet request

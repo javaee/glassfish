@@ -106,10 +106,14 @@ public class OsgiWeldTestNG {
             return false;
         }
         result = exports.equals(line);
+        if (!result) {
+            System.out.println("The packages exported by the weld-osgi-bundle do not match the expected packages");
+        }
         return result;
     }
 
     private boolean checkForString(String testurl, String str) throws Exception {
+        //System.out.println("Checking for " + str + "in " + testurl);
         URL url = new URL(testurl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
@@ -122,6 +126,7 @@ public class OsgiWeldTestNG {
         boolean result = false;
         String testLine = null;
         while ((line = input.readLine()) != null) {
+            //System.out.println("line:" + line);
             if (line.indexOf(str) != -1) {
                 result = true;
                 testLine = line;

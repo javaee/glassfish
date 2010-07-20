@@ -8,6 +8,8 @@ This test is meant to do two things:
    a "golden file" (weld-osgi.properties) that contains the expected
    exported packages for the current release of Weld for GlassFish.
 
+3. Verify that the bundle-symbolic-name is "org.jboss.weld.osgi-bundle".
+
 
 PREPARING A NEW TEST
 
