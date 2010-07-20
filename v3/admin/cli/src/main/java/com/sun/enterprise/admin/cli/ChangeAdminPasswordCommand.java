@@ -37,13 +37,15 @@
 package com.sun.enterprise.admin.cli;
 
 import java.io.Console;
-import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import org.glassfish.api.Param;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 
 /**
  * The change-admin-password command.
@@ -56,11 +58,17 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  */
 @Service(name = "change-admin-password")
 @Scoped(PerLookup.class)
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
 public class ChangeAdminPasswordCommand extends CLICommand {
     private ParameterMap params;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ChangeAdminPasswordCommand.class);
+
+    @Param(name = "target", optional = true, defaultValue =
+        SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
 
     /**
      * Require the user to actually type the passwords.
