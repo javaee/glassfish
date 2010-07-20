@@ -41,10 +41,14 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.RuntimeType;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.*;
-
 import java.util.Properties;
 import java.beans.PropertyVetoException;
 import org.jvnet.hk2.annotations.Service;
@@ -62,6 +66,8 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name="create-jms-host")
 @Scoped(PerLookup.class)
 @I18n("create.jms.host")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class CreateJMSHost implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJMSHost.class);
@@ -85,8 +91,11 @@ public class CreateJMSHost implements AdminCommand {
     @Param(name="jms_host_name", alias="host", primary=true)
     String jmsHostName;
 
-    @Inject
-    Configs configs;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
+
+    /*@Inject
+    Configs configs;*/
 
     @Inject
     Domain domain;
@@ -99,9 +108,15 @@ public class CreateJMSHost implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-
         Server targetServer = domain.getServerNamed(target);
-        String configRef = targetServer.getConfigRef();
+        //String configRef = targetServer.getConfigRef();
+        if (targetServer!=null) {
+           config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster =domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
 
         if (jmsHostName == null) {
             report.setMessage(localStrings.getLocalString("create.jms.host.noJmsHost",
@@ -109,12 +124,12 @@ public class CreateJMSHost implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-        JmsService jmsservice = null;
-        for (Config c : configs.getConfig()) {
+        JmsService jmsservice = config.getJmsService();
+        /*for (Config c : configs.getConfig()) {
 
                if(configRef.equals(c.getName()))
                      jmsservice = c.getJmsService();
-            }
+            }*/
 
         // ensure we don't already have one of this name
         for (JmsHost jmsHost : jmsservice.getJmsHost()) {
