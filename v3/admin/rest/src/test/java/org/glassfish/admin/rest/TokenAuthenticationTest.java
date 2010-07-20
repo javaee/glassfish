@@ -48,9 +48,9 @@ import static org.junit.Assert.*;
  * @author Mitesh Meswani
  */
 public class TokenAuthenticationTest extends RestTestBase {
-    private static final String URL_DOMAIN_SESSIONS = BASE_URL + "/sessions";
-    private static final String URL_CREATE_USER = BASE_URL_DOMAIN + "/configs/config/server-config/security-service/auth-realm/admin-realm/create-user";
-    private static final String URL_DELETE_USER = BASE_URL_DOMAIN + "/configs/config/server-config/security-service/auth-realm/admin-realm/delete-user";
+    private static final String URL_DOMAIN_SESSIONS = "/sessions";
+    private static final String URL_CREATE_USER = "/domain/configs/config/server-config/security-service/auth-realm/admin-realm/create-user";
+    private static final String URL_DELETE_USER = "/domain/configs/config/server-config/security-service/auth-realm/admin-realm/delete-user";
     private static final String GF_REST_TOKEN_COOKIE_NAME = "gfresttoken";
     private static final String TEST_GROUP = "newgroup";
 
@@ -61,11 +61,11 @@ public class TokenAuthenticationTest extends RestTestBase {
         String token = getSessionToken();
 
         // Verify we can use the session token.
-        ClientResponse response = client.resource(BASE_URL_DOMAIN).cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token)).get(ClientResponse.class);
+        ClientResponse response = client.resource(getAddress("/domain")).cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token)).get(ClientResponse.class);
         assertTrue(isSuccess(response));
 
         //Delete the token
-        response = client.resource(URL_DOMAIN_SESSIONS + "/" + token).cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token)).delete(ClientResponse.class); delete(URL_DOMAIN_SESSIONS);
+        response = client.resource(getAddress(URL_DOMAIN_SESSIONS) + "/" + token).cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token)).delete(ClientResponse.class); delete(URL_DOMAIN_SESSIONS);
         assertTrue(isSuccess(response));
     }
 
@@ -82,7 +82,7 @@ public class TokenAuthenticationTest extends RestTestBase {
             deleteUserAuthTestUser();
 
             // Verify that we can get unauthenticated access to the server
-            ClientResponse response = get(BASE_URL_DOMAIN);
+            ClientResponse response = get("/domain");
             assertTrue(isSuccess(response));
 
             // Create the new user
@@ -90,7 +90,7 @@ public class TokenAuthenticationTest extends RestTestBase {
             assertTrue(isSuccess(response));
 
             // Verify that we must now authentication (response.status = 401)
-            response = get(BASE_URL_DOMAIN);
+            response = get("/domain");
             assertFalse(isSuccess(response));
 
             // Authenticate, get the token, then "clear" the authentication
@@ -99,11 +99,11 @@ public class TokenAuthenticationTest extends RestTestBase {
             resetClient();
 
             // Build this request manually so we can pass the cookie
-            response = client.resource(BASE_URL_DOMAIN).cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token)).get(ClientResponse.class);
+            response = client.resource(getAddress("/domain")).cookie(new Cookie(GF_REST_TOKEN_COOKIE_NAME, token)).get(ClientResponse.class);
             assertTrue(isSuccess(response));
 
             // Request again w/o the cookie.  This should fail.
-            response = get(BASE_URL_DOMAIN);
+            response = get("/domain");
             assertFalse(isSuccess(response));
         } finally {
             // Clean up after ourselves

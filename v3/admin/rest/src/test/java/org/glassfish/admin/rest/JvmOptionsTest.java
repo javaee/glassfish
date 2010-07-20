@@ -50,7 +50,7 @@ import static org.junit.Assert.*;
  * @author jasonlee
  */
 public class JvmOptionsTest extends RestTestBase {
-    protected static final String URL_JVM_OPTIONS = BASE_URL_DOMAIN + "/configs/config/server-config/java-config/jvm-options";
+    protected static final String URL_JVM_OPTIONS = "/domain/configs/config/server-config/java-config/jvm-options";
 
     @Test
     public void getJvmOptions() {

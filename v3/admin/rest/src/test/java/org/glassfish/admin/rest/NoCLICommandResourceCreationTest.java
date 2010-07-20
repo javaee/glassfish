@@ -49,7 +49,7 @@ import static org.junit.Assert.assertTrue;
  * @author Mitesh Meswani
  */
 public class NoCLICommandResourceCreationTest extends RestTestBase {
-    private static final String URL_DOMAIN_PROPERTY = BASE_URL_DOMAIN + "/property";
+    private static final String URL_DOMAIN_PROPERTY = "/domain/property";
 
     @Test
     public void testPropertyCreation() {
@@ -60,7 +60,7 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
         Map<String, String> param = new HashMap<String, String>();
         param.put("name", propertyKey);
         param.put("value",propertyValue);
-        ClientResponse response = client.resource(URL_DOMAIN_PROPERTY)
+        ClientResponse response = client.resource(getAddress(URL_DOMAIN_PROPERTY))
                 .header("Content-Type", RESPONSE_TYPE)
                 .accept(RESPONSE_TYPE)
                 .post(ClientResponse.class, MarshallingUtils.getXmlForProperties(param));
@@ -77,7 +77,7 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
         // Verify property update
         propertyValue = generateRandomString();
         param.put("value", propertyValue);
-        response = client.resource(URL_DOMAIN_PROPERTY)
+        response = client.resource(getAddress(URL_DOMAIN_PROPERTY))
                 .header("Content-Type", RESPONSE_TYPE)
                 .accept(RESPONSE_TYPE)
                 .put(ClientResponse.class, MarshallingUtils.getXmlForProperties(param));
@@ -96,7 +96,7 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
 
         param.put("name", "administrative.domain.name");
         param.put("value", "domain1");
-        response = client.resource(URL_DOMAIN_PROPERTY)
+        response = client.resource(getAddress(URL_DOMAIN_PROPERTY))
                 .header("Content-Type", RESPONSE_TYPE)
                 .accept(RESPONSE_TYPE)
                 .post(ClientResponse.class, MarshallingUtils.getXmlForProperties(param));

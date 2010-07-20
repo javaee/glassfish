@@ -54,15 +54,15 @@ import static org.junit.Assert.*;
  * To change this template use File | Settings | File Templates.
  */
 public class JmsTest extends RestTestBase {
-    static final String URL_ADMIN_OBJECT_RESOURCE = BASE_URL_DOMAIN + "/resources/admin-object-resource";
-    static final String URL_CONNECTOR_CONNECTION_POOL = BASE_URL_DOMAIN + "/resources/connector-connection-pool";
-    static final String URL_CONNECTOR_RESOURCE = BASE_URL_DOMAIN + "/resources/connector-resource";
-    static final String URL_JMS_HOST = BASE_URL_DOMAIN + "/configs/config/server-config/jms-service/jms-host";
-    static final String URL_CREATE_JMS_DEST = BASE_URL_DOMAIN + "/configs/config/server-config/jms-service/create-jmsdest";
-    static final String URL_DELETE_JMS_DEST = BASE_URL_DOMAIN + "/configs/config/server-config/jms-service/delete-jmsdest";
-    static final String URL_LIST_JMS_DEST = BASE_URL_DOMAIN + "/configs/config/server-config/jms-service/list-jmsdest";
-    static final String URL_FLUSH_JMS_DEST = BASE_URL_DOMAIN + "/configs/config/server-config/jms-service/flush-jmsdest";
-    static final String URL_PING_JMS = BASE_URL_DOMAIN + "/configs/config/server-config/jms-service/jms-ping";
+    static final String URL_ADMIN_OBJECT_RESOURCE = "/domain/resources/admin-object-resource";
+    static final String URL_CONNECTOR_CONNECTION_POOL = "/domain/resources/connector-connection-pool";
+    static final String URL_CONNECTOR_RESOURCE = "/domain/resources/connector-resource";
+    static final String URL_JMS_HOST = "/domain/configs/config/server-config/jms-service/jms-host";
+    static final String URL_CREATE_JMS_DEST = "/domain/configs/config/server-config/jms-service/create-jmsdest";
+    static final String URL_DELETE_JMS_DEST = "/domain/configs/config/server-config/jms-service/delete-jmsdest";
+    static final String URL_LIST_JMS_DEST = "/domain/configs/config/server-config/jms-service/list-jmsdest";
+    static final String URL_FLUSH_JMS_DEST = "/domain/configs/config/server-config/jms-service/flush-jmsdest";
+    static final String URL_PING_JMS = "/domain/configs/config/server-config/jms-service/jms-ping";
 
     @Test
     public void testJmsConnectionFactories() {

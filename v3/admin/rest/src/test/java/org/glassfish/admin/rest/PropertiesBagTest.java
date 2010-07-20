@@ -50,7 +50,7 @@ import static org.junit.Assert.*;
 public class PropertiesBagTest extends RestTestBase {
 
     protected static final String PROP_DOMAIN_NAME = "administrative.domain.name";
-    protected static final String URL_DOMAIN_PROPERTIES = BASE_URL_DOMAIN + "/property";
+    protected static final String URL_DOMAIN_PROPERTIES = "/domain/property";
 
     @Test
     public void propertyRetrieval() {
@@ -70,7 +70,7 @@ public class PropertiesBagTest extends RestTestBase {
         }};
 
         try {
-            ClientResponse response = client.resource(URL_DOMAIN_PROPERTIES)
+            ClientResponse response = client.resource(getAddress(URL_DOMAIN_PROPERTIES))
                 .header("Content-Type", RESPONSE_TYPE)
                 .accept(RESPONSE_TYPE)
                 .post(ClientResponse.class, MarshallingUtils.getXmlForProperties(domainProps));
@@ -106,7 +106,7 @@ public class PropertiesBagTest extends RestTestBase {
             put("name", PROP_DOMAIN_NAME);
             put("value", "domain1");
         }};
-        ClientResponse response = client.resource(URL_DOMAIN_PROPERTIES)
+        ClientResponse response = client.resource(getAddress(URL_DOMAIN_PROPERTIES))
                 .header("Content-Type", RESPONSE_TYPE)
                 .accept(RESPONSE_TYPE)
                 .put(ClientResponse.class, MarshallingUtils.getXmlForProperties(domainProps));

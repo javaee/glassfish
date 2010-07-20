@@ -47,9 +47,9 @@ import static org.junit.Assert.*;
  * @author jasonlee
  */
 public class ApplicationTest extends RestTestBase {
-    public static final String URL_APPLICATION_DEPLOY = BASE_URL_DOMAIN + "/applications/application";
-    public static final String URL_CREATE_INSTANCE = BASE_URL_DOMAIN + "/create-instance";
-    public static final String URL_SUB_COMPONENTS = BASE_URL_DOMAIN + "/applications/application/list-sub-components";
+    public static final String URL_APPLICATION_DEPLOY = "/domain/applications/application";
+    public static final String URL_CREATE_INSTANCE = "/domain/create-instance";
+    public static final String URL_SUB_COMPONENTS = "/domain/applications/application/list-sub-components";
 
     @Test
     public void testApplicationDeployment() {
@@ -86,19 +86,20 @@ public class ApplicationTest extends RestTestBase {
         assertEquals("/" + appName, deployedApp.get("contextRoot"));
 
         try {
-            ClientResponse response = get("http://localhost:8080/" + appName);
+            String appUrl = "http://localhost:" + getParameter("instance.port", "8080") + "/" + appName;
+            ClientResponse response = get(appUrl);
             assertEquals ("Test", response.getEntity(String.class).trim());
 
             response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/disable");
             assertTrue("Response was " + response.getStatus(), isSuccess(response));
 
-            response = get("http://localhost:8080/" + appName);
+            response = get(appUrl);
             assertFalse("Response was " + response.getStatus(), isSuccess(response));
 
             response = post(URL_APPLICATION_DEPLOY + "/" + newApp.get("name") + "/enable");
             assertTrue("Response was " + response.getStatus(), isSuccess(response));
 
-            response = get("http://localhost:8080/" + appName);
+            response = get(appUrl);
             assertEquals ("Test", response.getEntity(String.class).trim());
         } finally {
             undeployApp(newApp);
@@ -134,11 +135,11 @@ public class ApplicationTest extends RestTestBase {
     public void testCreatingAndDeletingApplicationRefs() {
         final String instanceName = "instance_" + generateRandomString();
         final String appName = "testApp" + generateRandomString();
-        final String appRefUrl = BASE_URL_DOMAIN + "/servers/server/" + instanceName + "/application-ref";
+        final String appRefUrl = "/domain/servers/server/" + instanceName + "/application-ref";
         Map<String, Object> newApp = new HashMap<String, Object>() {{
-                put("id", new File("src/test/resources/test.war"));
-                put("contextroot", appName);
-                put("name", appName);
+            put("id", new File("src/test/resources/test.war"));
+            put("contextroot", appName);
+            put("name", appName);
         }};
         Map<String, String> newInstance = new HashMap<String, String>() {{
             put("id", instanceName);
@@ -146,7 +147,6 @@ public class ApplicationTest extends RestTestBase {
         }};
         Map<String, String> applicationRef = new HashMap<String, String>() {{
             put("ref", appName);
-//            put("target", instanceName);
         }};
 
         try {
@@ -164,9 +164,9 @@ public class ApplicationTest extends RestTestBase {
             response = delete(appRefUrl + "/" + appName, new HashMap<String, String>() {{ put("target", instanceName); }});
             assertTrue(isSuccess(response));
         } finally {
-            ClientResponse response = delete(BASE_URL_DOMAIN + "/servers/server/" + instanceName + "/delete-instance");
+            ClientResponse response = delete("/domain/servers/server/" + instanceName + "/delete-instance");
             assertTrue(isSuccess(response));
-            response = get(BASE_URL_DOMAIN + "/servers/server/" + instanceName);
+            response = get("/domain/servers/server/" + instanceName);
             assertFalse(isSuccess(response));
             undeployApp(newApp);
         }

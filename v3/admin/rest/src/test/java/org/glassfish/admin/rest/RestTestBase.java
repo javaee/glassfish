@@ -63,15 +63,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class RestTestBase {
-    public static final String BASE_URL = "http://localhost:4848/management";
-    public static final String BASE_URL_DOMAIN = BASE_URL + "/domain";
-    public static final String RESPONSE_TYPE = MediaType.APPLICATION_XML;
+    protected static String baseUrl;
+    protected static final String RESPONSE_TYPE = MediaType.APPLICATION_XML;
     protected static final String AUTH_USER_NAME = "dummyuser";
     protected static final String AUTH_PASSWORD = "dummypass";
 
     protected Client client;
 
     public RestTestBase() {
+        String port = getParameter("admin.port", "4848");
+        baseUrl = "http://localhost:" + port + "/management";
     }
 
     @Before
@@ -79,6 +80,14 @@ public class RestTestBase {
         if (client == null) {
             client = Client.create();
         }
+    }
+
+    protected String getAddress(String address) {
+        if (address.startsWith("http://")) {
+            return address;
+        }
+        
+        return baseUrl + address;
     }
 
     protected void resetClient() {
@@ -101,27 +110,27 @@ public class RestTestBase {
     }
 
     protected ClientResponse get(String address) {
-        return client.resource(address).accept(RESPONSE_TYPE).get(ClientResponse.class);
+        return client.resource(getAddress(address)).accept(RESPONSE_TYPE).get(ClientResponse.class);
     }
 
     protected ClientResponse options(String address) {
-        return client.resource(address).accept(RESPONSE_TYPE).options(ClientResponse.class);
+        return client.resource(getAddress(address)).accept(RESPONSE_TYPE).options(ClientResponse.class);
     }
 
     protected ClientResponse post(String address, Map<String, String> payload) {
-        return client.resource(address).post(ClientResponse.class, buildMultivaluedMap(payload));
+        return client.resource(getAddress(address)).post(ClientResponse.class, buildMultivaluedMap(payload));
     }
 
     protected ClientResponse post(String address) {
-        return client.resource(address).post(ClientResponse.class);
+        return client.resource(getAddress(address)).post(ClientResponse.class);
     }
 
     protected ClientResponse put(String address, Map<String, String> payload) {
-        return client.resource(address).put(ClientResponse.class, buildMultivaluedMap(payload));
+        return client.resource(getAddress(address)).put(ClientResponse.class, buildMultivaluedMap(payload));
     }
 
     protected ClientResponse put(String address) {
-        return client.resource(address).put(ClientResponse.class);
+        return client.resource(getAddress(address)).put(ClientResponse.class);
     }
 
     protected ClientResponse postWithUpload(String address, Map<String, Object> payload) {
@@ -133,7 +142,7 @@ public class RestTestBase {
                 form.field(entry.getKey(), entry.getValue(), MediaType.TEXT_PLAIN_TYPE);
             }
         }
-        return client.resource(address).type(MediaType.MULTIPART_FORM_DATA).post(ClientResponse.class, form);
+        return client.resource(getAddress(address)).type(MediaType.MULTIPART_FORM_DATA).post(ClientResponse.class, form);
     }
 
     protected ClientResponse delete(String address) {
@@ -141,7 +150,7 @@ public class RestTestBase {
     }
 
     protected ClientResponse delete(String address, Map<String, String> payload) {
-        return client.resource(address).queryParams(buildMultivaluedMap(payload)).delete(ClientResponse.class);
+        return client.resource(getAddress(address)).queryParams(buildMultivaluedMap(payload)).delete(ClientResponse.class);
     }
 
     /**
@@ -226,5 +235,17 @@ public class RestTestBase {
         if ((status < 200) || (status > 299)) {
             throw new RuntimeException(cr.toString());
         }
+    }
+
+    protected static String getParameter(String paramName, String defaultValue) {
+        String value = System.getenv(paramName);
+        if (value == null) {
+            value = System.getProperty(paramName);
+        }
+        if (value == null) {
+            value = defaultValue;
+        }
+
+        return value;
     }
 }

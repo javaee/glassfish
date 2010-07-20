@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
  */
 public class ConfigTest extends RestTestBase {
 
-    public static final String BASE_CONFIGS_URL = BASE_URL_DOMAIN + "/configs";
+    public static final String BASE_CONFIGS_URL = "/domain/configs";
 
     @Test
     public void testConfigCopy() {

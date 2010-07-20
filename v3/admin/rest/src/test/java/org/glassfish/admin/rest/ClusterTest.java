@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
  * @author jasonlee
  */
 public class ClusterTest extends RestTestBase {
-    public static final String URL_CLUSTER = BASE_URL_DOMAIN + "/clusters/cluster";
+    public static final String URL_CLUSTER = "/domain/clusters/cluster";
     @Test
     public void testDomainCreationAndDeletion() {
         final String clusterName = "cluster_" + generateRandomString();
