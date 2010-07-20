@@ -38,11 +38,9 @@ package com.sun.enterprise.util.net;
 import com.sun.enterprise.util.net.NetUtils.PortAvailability;
 import java.net.InetAddress;
 import java.net.Socket;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import org.junit.*;
+
 import static org.junit.Assert.*;
 
 /**
@@ -113,6 +111,7 @@ public class NetUtilsTest {
      * Test equals
      */
     @Test
+    @Ignore
     public void testEquals() {
         assertTrue(NetUtils.isEqual(null, null));
         assertTrue(NetUtils.isEqual(null, ""));

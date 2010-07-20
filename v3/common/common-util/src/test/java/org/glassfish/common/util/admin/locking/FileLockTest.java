@@ -41,6 +41,8 @@ import org.glassfish.common.util.admin.ManagedFile;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -252,6 +254,60 @@ public class FileLockTest {
         }
     }
 
+    //@Test
+    public void lockAndWriteTest() throws IOException {
+        File f = File.createTempFile("common-util-FileLockTest", "tmp");
+        try {
+            final ManagedFile managed = new ManagedFile(f, 1000, 1000);
+            Lock fl = managed.accessWrite();
+
+            // Now let's try to write the file.
+            FileWriter fw = new FileWriter(f);
+            fw.append("FileLockTest Passed !");
+            fw.close();
+
+            fl.unlock();
+
+            // Let's read it back
+            FileReader fr = new FileReader(f);
+            char[] chars = new char[1024];
+            fr.read(chars);
+            fr.close();
+            f.delete();
+            System.out.println(chars);
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //@Test
+    public void lockAndRenameTest() throws IOException {
+        File f = File.createTempFile("common-util-FileLockTest", "tmp");
+        try {
+            final ManagedFile managed = new ManagedFile(f, 1000, 1000);
+            Lock fl = managed.accessWrite();
+
+            File dest = new File("filelock");
+
+            if (f.renameTo(new File("filelock"))) {
+                System.out.println("File renaming successful");
+            } else {
+                System.out.println("File renaming failed");
+            }
+
+
+            if (dest.exists()) {
+                System.out.println("File is there...");    
+            }
+            dest.delete();
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     public File getFile() throws IOException {
         Enumeration<URL> urls = getClass().getClassLoader().getResources("adminport.xml");
         if (urls.hasMoreElements()) {
