@@ -204,10 +204,10 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, PropertyBag
                 "CallbackHandler for each request. If false, the user name and password for wsse:UsernameToken(s) is " +
                 "collected once, during module initialization. Applicable only for a ClientAuthModule"),
             
-        @PropertyDesc(name="encrypencryption.key.alias", defaultValue="s1as",
+        @PropertyDesc(name="encryption.key.alias", defaultValue="s1as",
             description="Specifies the encryption key used by the provider. The key is identified by its keystore alias"),
             
-        @PropertyDesc(name="signature.key.alaias", defaultValue="s1as",
+        @PropertyDesc(name="signature.key.alias", defaultValue="s1as",
             description="Specifies the signature key used by the provider. The key is identified by its keystore alias")
     }
     )
