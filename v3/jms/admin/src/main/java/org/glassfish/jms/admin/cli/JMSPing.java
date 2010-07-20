@@ -43,6 +43,11 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.RuntimeType;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -55,7 +60,8 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
-
+@Cluster({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 @Service(name="jms-ping")
 @Scoped(PerLookup.class)
 @I18n("jms-ping")
@@ -69,8 +75,8 @@ public class JMSPing implements AdminCommand {
     @Inject
     private ConnectorRuntime connectorRuntime;
 
-    @Inject
-    Configs configs;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
     @Inject
     Domain domain;
@@ -88,14 +94,21 @@ public class JMSPing implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
          Server targetServer = domain.getServerNamed(target);
-         String configRef = targetServer.getConfigRef();
+         //String configRef = targetServer.getConfigRef();
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster =domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
 
-         JmsService jmsservice = null;
-               for (Config c : configs.getConfig()) {
+         JmsService jmsservice =  config.getJmsService();
+              /* for (Config c : configs.getConfig()) {
 
                       if(configRef.equals(c.getName()))
                             jmsservice = c.getJmsService();
-                   }
+                   } */
          String defaultJmshostStr = jmsservice.getDefaultJmsHost();
          JmsHost defaultJmsHost = null;
                for (JmsHost jmshost : jmsservice.getJmsHost()) {
@@ -116,6 +129,7 @@ public class JMSPing implements AdminCommand {
             boolean value = pingConnectionPool(tmpJMSResource);
             
             if(!value){
+
                  report.setMessage(localStrings.getLocalString("jms-ping.pingConnectionPoolFailed",
                          "Pinging to the JMS Host failed."));
                  report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -168,7 +182,7 @@ public class JMSPing implements AdminCommand {
 
         aoAttrList.set("restype",  "javax.jms.QueueConnectionFactory");
         aoAttrList.set("DEFAULT",  tmpJMSResource);
-
+        aoAttrList.set("target", target);
         commandRunner.getCommandInvocation("create-jms-resource", subReport).parameters(aoAttrList).execute();
 
     }
@@ -188,6 +202,7 @@ public class JMSPing implements AdminCommand {
     {
         ParameterMap aoAttrList = new ParameterMap();
         aoAttrList.set("DEFAULT",  tmpJMSResource);
+        aoAttrList.set("target", target);
 
         commandRunner.getCommandInvocation("delete-jms-resource", subReport).parameters(aoAttrList).execute();
     }
