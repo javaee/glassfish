@@ -40,7 +40,7 @@
             <sun:button id="newButton" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
-                gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/create-node"   attrs="#{pageSession.valueMap}")
+                gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/create-node" attrs="#{pageSession.valueMap}")
                 gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
              />
             </sun:button>
@@ -58,37 +58,37 @@
     <sun:propertySheet id="propertySheet">
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="staticnameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
-                <sun:staticText id="IdStatic" text="#{pageSession.valueMap['Name']}"/>
+                <sun:staticText id="IdStatic" text="#{pageSession.valueMap['name']}"/>
             </sun:property>
             <sun:property id="nameProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" helpText="$resource{i18ncs.node.NameHelp}">
-                <sun:textField id="name" text="#{pageSession.valueMap['Id']}" columns="$int{60}" styleClass="required" required="#{true}" />
+                <sun:textField id="name" text="#{pageSession.valueMap['id']}" columns="$int{60}" styleClass="required" required="#{true}" />
             </sun:property>
             <sun:property id="NodeHost"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.NodeHost}" helpText="$resource{i18ncs.node.NodeHostHelp}">
-                <sun:textField id="NodeHost" columns="$int{60}" text="#{pageSession.valueMap['NodeHost']}" />
+                <sun:textField id="NodeHost" columns="$int{60}" text="#{pageSession.valueMap['nodehost']}" />
             </sun:property>
             <sun:property id="NodeHome"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.NodeHome}" helpText="$resource{i18ncs.node.NodeHomeHelp}">
-                <sun:textField id="NodeHome" columns="$int{60}" text="#{pageSession.valueMap['Nodehome']}" />
+                <sun:textField id="NodeHome" columns="$int{60}" text="#{pageSession.valueMap['nodedir']}" />
             </sun:property>
             <sun:property id="installdir"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.InstallDir}" helpText="$resource{i18ncs.node.InstallDirHelp}">
-                <sun:textField id="NodeHome" columns="$int{60}" text="#{pageSession.valueMap['InstallDir']}" />
+                <sun:textField id="installDir" columns="$int{60}" text="#{pageSession.valueMap['installdir']}" />
             </sun:property>
         </sun:propertySheetSection>
 
         <sun:propertySheetSection id="sshConnector" label="$resource{i18ncs.node.sshConnectorSection}" >
             <sun:property id="sshNodeHost"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.sshHost}" helpText="$resource{i18ncs.node.sshHostHelp}">
-                <sun:textField id="NodeHost"  columns="$int{60}" text="#{pageSession.valueMap['Sshhost']}" />
+                <sun:textField id="NodeHost"  columns="$int{60}" text="#{pageSession.valueMap['sshhost']}" />
             </sun:property>
             <sun:property id="sshNodeHome"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.sshPort}" helpText="$resource{i18ncs.node.sshPortHelp}">
-                <sun:textField id="NodeHome" columns="$int{60}" text="#{pageSession.valueMap['Sshport']}" />
+                <sun:textField id="sshport" columns="$int{60}" text="#{pageSession.valueMap['sshport']}" />
             </sun:property>
         </sun:propertySheetSection>
 
         <sun:propertySheetSection id="sshAuth" label="$resource{i18ncs.node.sshAuthSection}" >
             <sun:property id="UserName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.UserName}" helpText="$resource{i18ncs.node.UserNameHelp}">
-                <sun:textField id="UserName" columns="$int{60}" text="#{pageSession.valueMap['Sshuser']}" />
+                <sun:textField id="UserName" columns="$int{60}" text="#{pageSession.valueMap['sshuser']}" />
             </sun:property>
             <sun:property id="Keyfile"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.Keyfile}" helpText="$resource{i18ncs.node.KeyfileHelp}">
-                <sun:textField id="Keyfile" columns="$int{60}" text="#{pageSession.valueMap['Sshkeyfile']}" />
+                <sun:textField id="Keyfile" columns="$int{60}" text="#{pageSession.valueMap['sshkeyfile']}" />
             </sun:property>
         </sun:propertySheetSection>
     </sun:propertySheet>
