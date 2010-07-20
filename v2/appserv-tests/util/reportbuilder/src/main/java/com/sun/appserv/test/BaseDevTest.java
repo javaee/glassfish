@@ -53,6 +53,7 @@ import javax.xml.xpath.XPathFactory;
 
 import com.sun.appserv.test.util.process.ProcessManager;
 import com.sun.appserv.test.util.process.ProcessManagerException;
+import com.sun.appserv.test.util.process.ProcessManagerTimeoutException;
 import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -114,16 +115,20 @@ public abstract class BaseDevTest {
 
         pm.setEcho(false);
         int exit;
-
+        String myErr = "";
         try {
             exit = pm.execute();
+        }
+        catch (ProcessManagerTimeoutException tex) {
+            myErr = "\nProcessManagerTimeoutException: command timed out after " + DEFAULT_TIMEOUT_MSEC + " ms.";
+            exit = 1;
         }
         catch (ProcessManagerException ex) {
             exit = 1;
         }
 
         ret.out = pm.getStdout();
-        ret.err = pm.getStderr();
+        ret.err = pm.getStderr() + myErr;
         ret.outAndErr = ret.out + ret.err;
         ret.returnValue = exit == 0 && validResults(ret.out,
                 String.format("Command %s failed.", args[0]), "list-commands");
@@ -326,7 +331,7 @@ public abstract class BaseDevTest {
         public String err;
         public String outAndErr;
     }
-    private static final int DEFAULT_TIMEOUT_MSEC = 120000; // 2 minutes
+    private static final int DEFAULT_TIMEOUT_MSEC = 240000; // 4 minutes
     private boolean verbose = true;
     // in case the command fails so that it can be printed (Hack bnevins)
     private AsadminReturn lastAsadminReturn;
