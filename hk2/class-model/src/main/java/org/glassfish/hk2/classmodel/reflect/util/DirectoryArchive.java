@@ -50,6 +50,7 @@ import java.util.jar.Manifest;
  */
 public class DirectoryArchive implements ArchiveAdapter {
     public final File directory;
+    private ArrayList<InputStream> inputStreams = new ArrayList<InputStream>();
     public final List<Entry> entries = new ArrayList<Entry>();
 
     public DirectoryArchive(File directory) {
@@ -66,7 +67,9 @@ public class DirectoryArchive implements ArchiveAdapter {
     public InputStream getInputStream(String entry) throws IOException {
         File source = new File(directory, unmangle(entry));
         if (source.exists()) {
-           return Channels.newInputStream((new FileInputStream(source)).getChannel());   
+           InputStream is = Channels.newInputStream((new FileInputStream(source)).getChannel());
+           inputStreams.add(is);
+           return is;
         }
         throw new IOException("Cannot find entry getName " + entry);
     }
@@ -75,7 +78,12 @@ public class DirectoryArchive implements ArchiveAdapter {
     public Manifest getManifest() throws IOException {
         File manifest = new File(directory, JarFile.MANIFEST_NAME);
         if (manifest.exists()) {
-            return new Manifest(new BufferedInputStream(new FileInputStream(manifest)));  
+            InputStream is = new BufferedInputStream(new FileInputStream(manifest));
+            try {
+                return new Manifest(is);
+            } finally {
+                is.close();
+            }
         }
         return null;
     }
@@ -101,5 +109,13 @@ public class DirectoryArchive implements ArchiveAdapter {
 
     private String unmangle(String name) {
         return name.replace('/', File.separatorChar);
+    }
+
+    @Override
+    public void close() throws IOException {
+      for (InputStream is : inputStreams) {
+        is.close();
+      }
+      inputStreams.clear();
     }
 }
