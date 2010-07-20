@@ -39,6 +39,7 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
  * 
  * @author Jeff Trent
  */
+@org.junit.Ignore // See 12729
 @RunWith(Hk2Runner.class)
 @Hk2RunnerOptions(reinitializePerTest=true)
 public class RunLevelServiceTest {
