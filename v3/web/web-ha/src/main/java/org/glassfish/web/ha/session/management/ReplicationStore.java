@@ -168,7 +168,7 @@ public class ReplicationStore extends HAStoreBase {
 
             replicator.save(session.getIdInternal(), //id
                     simpleMetadata,true);
-            _logger.info("Save succeeded. YAY");
+            _logger.info("Save succeeded.");
 
         } catch (BackingStoreException ex) {
             IOException ex1 = 
