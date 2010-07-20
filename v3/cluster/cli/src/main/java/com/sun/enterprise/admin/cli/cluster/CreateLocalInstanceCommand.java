@@ -67,6 +67,12 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     @Param(name = "systemproperties", optional = true, separator = ':')
     private String systemProperties;     // XXX - should it be a Properties?
 
+    @Param(name = "portbase", optional = true)
+    private String portBase;
+
+    @Param(name = "checkports", optional = true, defaultValue = "true")
+    private boolean checkPorts = true;
+
     private static final String RENDEZVOUS_PROPERTY_NAME = "rendezvousOccurred";
     private String INSTANCE_DOTTED_NAME;
     private String RENDEZVOUS_DOTTED_NAME;

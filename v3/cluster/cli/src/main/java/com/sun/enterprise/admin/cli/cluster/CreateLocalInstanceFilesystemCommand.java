@@ -79,8 +79,8 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     //@Param(name = "agentproperties", optional = true, separator = ':')
     //private Properties agentProperties;  //TODO Properties error handling
 
-    //@Param(name = "savemasterpassword", optional = true, defaultValue = "false")
-    //private boolean saveMasterPassword = false;
+    @Param(name = "savemasterpassword", optional = true, defaultValue = "false")
+    private boolean saveMasterPassword = false;
 
     @Param(name = "instance_name", primary = true)
     private String instanceName0;
