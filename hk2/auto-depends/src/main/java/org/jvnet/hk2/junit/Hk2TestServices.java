@@ -57,6 +57,7 @@ public class Hk2TestServices {
 
     private Habitat habitat;
     
+    @SuppressWarnings("deprecation")
     public Hk2TestServices() {
         System.out.println("Singleton created");
         String classPath = System.getProperty("surefire.test.class.path");
@@ -131,6 +132,7 @@ public class Hk2TestServices {
                             // it's a file but no inhabitant file...
                             parse(parser, f);
                         }
+                        jarFile.close();
                     } else {
                         // directory, for now, always parse.
                         File inhabitantFile = new File(f, InhabitantsFile.PATH+File.separator+"default");
@@ -167,6 +169,7 @@ public class Hk2TestServices {
         for (InhabitantsScanner scanner : metaInfScanners) {
             try {
                 ip.parse(scanner, holder);
+                scanner.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -177,7 +180,7 @@ public class Hk2TestServices {
         while (contracts.hasNext()) {
             String contract = contracts.next();
             System.out.println("Found contract : " + contract);
-            for (Inhabitant t : habitat.getInhabitantsByContract(contract)) {
+            for (Inhabitant<?> t : habitat.getInhabitantsByContract(contract)) {
                 System.out.println(" --> " + t.typeName() + " "+ t.metadata());
             }
         }
@@ -199,6 +202,7 @@ public class Hk2TestServices {
         } else {
             JarFile jar = new JarFile(f);
             manifest = jar.getManifest();
+            jar.close();
         }
         if (manifest!=null) {
             String imports = manifest.getMainAttributes().getValue("Import-Package");

@@ -39,6 +39,7 @@ package com.sun.hk2.component;
 import org.jvnet.hk2.component.ComponentException;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -53,10 +54,10 @@ import java.util.Iterator;
  *
  * @author Kohsuke Kawaguchi
  */
-public class InhabitantsScanner implements Iterable<InhabitantParser> {
+public class InhabitantsScanner implements Iterable<InhabitantParser>, Closeable {
     private int lineNumber = 0;
     private final String systemId;
-    private final BufferedReader r;
+    private BufferedReader r;
     private final KeyValuePairParser kvpp = new KeyValuePairParser();
 
     public InhabitantsScanner(InputStream in, String systemId) throws IOException {
@@ -82,7 +83,7 @@ public class InhabitantsScanner implements Iterable<InhabitantParser> {
             }
 
             private void fetch() {
-                if(nextLine!=null)  return;
+                if(null == r || nextLine!=null)  return;
 
                 try {
                     while((nextLine=r.readLine())!=null) {
@@ -108,5 +109,13 @@ public class InhabitantsScanner implements Iterable<InhabitantParser> {
                 throw new UnsupportedOperationException();
             }
         };
+    }
+
+    @Override
+    public void close() throws IOException {
+      if (null != r) {
+        r.close();
+        r = null;
+      }
     }
 }
