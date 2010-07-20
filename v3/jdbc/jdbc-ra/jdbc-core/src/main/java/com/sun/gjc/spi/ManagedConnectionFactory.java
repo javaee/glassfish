@@ -36,9 +36,11 @@
 
 package com.sun.gjc.spi;
 
+import com.sun.appserv.connectors.internal.spi.MCFLifecycleListener;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.common.DataSourceSpec;
+import com.sun.gjc.spi.base.JdbcStatsProvider;
 import com.sun.gjc.util.SQLTraceDelegator;
 import com.sun.gjc.util.SecurityUtils;
 import com.sun.logging.LogDomains;
@@ -50,9 +52,11 @@ import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.security.PasswordCredential;
 import javax.sql.PooledConnection;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -60,6 +64,9 @@ import java.util.logging.Logger;
 import javax.resource.spi.ConfigProperty;
 import org.glassfish.api.jdbc.ConnectionValidation;
 import org.glassfish.api.jdbc.SQLTraceListener;
+import org.glassfish.api.monitoring.ContainerMonitoring;
+import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.StatsProviderManager;
 
 /**
  * <code>ManagedConnectionFactory</code> implementation for Generic JDBC Connector.
@@ -71,7 +78,9 @@ import org.glassfish.api.jdbc.SQLTraceListener;
  */
 
 public abstract class ManagedConnectionFactory implements javax.resource.spi.ManagedConnectionFactory,
-        javax.resource.spi.ValidatingManagedConnectionFactory, java.io.Serializable {
+        javax.resource.spi.ValidatingManagedConnectionFactory, 
+        MCFLifecycleListener,
+        java.io.Serializable {
 
     protected DataSourceSpec spec = new DataSourceSpec();
     protected transient DataSourceObjectBuilder dsObjBuilder;
@@ -93,6 +102,10 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     protected boolean isLazyCm_;
     private int statementCacheSize = 0;
     private String statementCacheType = null;
+
+    //List of all jdbc pool stats providers that are created and stored.
+    private List<JdbcStatsProvider> jdbcStatsProviders = 
+            new ArrayList<JdbcStatsProvider>();
 
     protected static final StringManager localStrings =
             StringManager.getManager(DataSourceObjectBuilder.class);
@@ -983,6 +996,14 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         return spec.getDetail(DataSourceSpec.STATEMENTCACHESIZE);
     }
 
+    public void setPoolName(String value) {
+        spec.setDetail(DataSourceSpec.POOLNAME, value);
+    }
+
+    public String getPoolName() {
+        return spec.getDetail(DataSourceSpec.POOLNAME);
+    }
+    
     public String getStatementCacheType() {
         return spec.getDetail(DataSourceSpec.STATEMENTCACHETYPE);
     }
@@ -1172,7 +1193,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
                                                            Connection sqlCon, PasswordCredential passCred,
                                                            ManagedConnectionFactory mcf) throws ResourceException {
         return new com.sun.gjc.spi.ManagedConnection(pc, sqlCon, passCred, mcf, 
-                statementCacheSize, statementCacheType, sqlTraceDelegator);
+                getPoolName(), statementCacheSize, statementCacheType, sqlTraceDelegator);
     }
 
     /**
@@ -1260,4 +1281,30 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         _logger.log(Level.FINE, logMessage);
     }
 
+    @Override
+    public void mcfCreated() {
+        _logger.finest(">>>>>>> mcfCreated");
+        JdbcStatsProvider statsProvider = new JdbcStatsProvider(getPoolName());
+        //get the poolname and use it to initialize the stats provider n register
+        StatsProviderManager.register(
+                ContainerMonitoring.JDBC_CONNECTION_POOL,
+                PluginPoint.SERVER,
+                "resources/" + getPoolName(), statsProvider);
+        jdbcStatsProviders.add(statsProvider);
+        _logger.finest(">>>>>>> added");
+    }
+
+    @Override
+    public void mcfDestroyed() {
+        _logger.finest(">>>>>>> mcfDestroyed");
+        if(jdbcStatsProviders != null) {
+            Iterator i = jdbcStatsProviders.iterator();
+            while(i.hasNext()) {
+                JdbcStatsProvider statsProvider = (JdbcStatsProvider) i.next();
+                StatsProviderManager.unregister(statsProvider);
+                i.remove();
+                _logger.finest(">>>>>>> removed");
+            }
+        }
+    }
 }

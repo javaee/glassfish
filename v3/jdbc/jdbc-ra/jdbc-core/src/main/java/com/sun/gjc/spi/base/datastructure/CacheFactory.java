@@ -60,13 +60,13 @@ public class CacheFactory {
     protected final static StringManager localStrings =
             StringManager.getManager(DataSourceObjectBuilder.class);
 
-    public static Cache getDataStructure(String className, 
+    public static Cache getDataStructure(String poolName, String className,
             int maxSize) throws ResourceException {
         Cache stmtCacheStructure;
 
         if(className == null || className.trim().equals("")) {
             debug("Initializing LRU Cache Implementation");
-            stmtCacheStructure = new LRUCacheImpl(maxSize);            
+            stmtCacheStructure = new LRUCacheImpl(poolName, maxSize);
         } else {
             stmtCacheStructure = initCustomCacheStructurePrivileged(className, 
                     maxSize);

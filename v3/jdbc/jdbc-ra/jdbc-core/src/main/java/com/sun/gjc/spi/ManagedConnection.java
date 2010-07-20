@@ -152,7 +152,9 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
      *                           object passed
      */
     public ManagedConnection(PooledConnection pooledConn, java.sql.Connection sqlConn,
-                             PasswordCredential passwdCred, javax.resource.spi.ManagedConnectionFactory mcf,
+                             PasswordCredential passwdCred, 
+                             javax.resource.spi.ManagedConnectionFactory mcf,
+                             String poolName,
                              int statementCacheSize, String statementCacheType,
                              SQLTraceDelegator delegator)
             throws ResourceException {
@@ -182,7 +184,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         }
         logWriter = mcf.getLogWriter();
         ce = new ConnectionEvent(this, ConnectionEvent.CONNECTION_CLOSED);
-        tuneStatementCaching(statementCacheSize, statementCacheType);
+        tuneStatementCaching(poolName, statementCacheSize, statementCacheType);
     }
 
     private void executeInitSql(String initSql) {
@@ -212,13 +214,13 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         _logger.log(Level.FINE, "jdbc.execute_init_sql_end");       
     }
 
-    private void tuneStatementCaching(int statementCacheSize, 
+    private void tuneStatementCaching(String poolName, int statementCacheSize,
             String statementCacheType) {
         cacheSize = statementCacheSize;
         cacheType = statementCacheType;
         if (cacheSize > 0) {
             try {
-                statementCache = CacheFactory.getDataStructure(cacheType, cacheSize); 
+                statementCache = CacheFactory.getDataStructure(poolName, cacheType, cacheSize);
                 statementCaching = true;
             } catch (ResourceException ex) {
                 _logger.severe(ex.getMessage());

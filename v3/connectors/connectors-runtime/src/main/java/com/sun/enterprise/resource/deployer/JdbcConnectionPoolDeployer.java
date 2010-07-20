@@ -271,6 +271,11 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 "Sql Trace Listeners",
                 "java.lang.String"));
         
+        propList.add(new ConnectorConfigProperty ("PoolName",
+                adminPool.getName() + "",
+                "Pool Name",
+                "java.lang.String"));
+
         //dump user defined poperties into the list
         Set connDefDescSet = connDesc.getOutboundResourceAdapter().
                 getConnectionDefs();

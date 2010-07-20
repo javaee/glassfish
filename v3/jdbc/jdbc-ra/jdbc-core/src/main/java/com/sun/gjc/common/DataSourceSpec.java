@@ -92,6 +92,7 @@ public class DataSourceSpec implements java.io.Serializable {
     public static final int CUSTOMVALIDATION = 37;
     public static final int SQLTRACELISTENERS = 38;
     public static final int INTISQL = 39;
+    public static final int POOLNAME = 40;
 
     private ConcurrentHashMap<Integer, String> details = new ConcurrentHashMap<Integer, String>();
 

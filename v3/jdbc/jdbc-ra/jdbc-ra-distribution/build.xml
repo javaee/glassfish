@@ -57,7 +57,8 @@
                 <attribute name="Specification-Version" value="3.0, 4.0"/>
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Implementation-Version" value="V3"/>
-                <attribute name="Implementation-Title" value="GlassFish"/>
+		<attribute name="Implementation-Title" value="GlassFish"/>
+		<attribute name="probe-provider-class-names" value="com.sun.gjc.util.StatementCacheProbeProvider"/>
             </manifest>
         </jar>
 
@@ -83,6 +84,7 @@
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
+		<attribute name="probe-provider-class-names" value="com.sun.gjc.util.StatementCacheProbeProvider"/>
             </manifest>
         </jar>
 
@@ -111,6 +113,7 @@
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
+		<attribute name="probe-provider-class-names" value="com.sun.gjc.util.StatementCacheProbeProvider"/>
             </manifest>
         </jar>
 
@@ -138,6 +141,7 @@
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
+		<attribute name="probe-provider-class-names" value="com.sun.gjc.util.StatementCacheProbeProvider"/>
             </manifest>
         </jar>
 
