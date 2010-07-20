@@ -337,10 +337,10 @@ public abstract class StoreBase
                 if (session == null) {
                     continue;
                 }
-				int timeIdle = (int) ((timeNow - session.thisAccessedTime) / 1000L);
-				if (timeIdle < session.getMaxInactiveInterval()) {
-					continue;
-				} 
+                int timeIdle = (int) ((timeNow - session.thisAccessedTime) / 1000L);
+                if (timeIdle < session.getMaxInactiveInterval()) {
+                    continue;
+                } 
                 if ( ( (PersistentManagerBase) manager).isLoaded( keys[i] )) {
                     // recycle old backup session
                     session.recycle();
