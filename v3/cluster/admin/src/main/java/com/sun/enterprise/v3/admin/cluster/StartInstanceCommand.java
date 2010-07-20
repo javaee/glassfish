@@ -185,9 +185,9 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             StringBuilder output = new StringBuilder();
             ParameterMap map = new ParameterMap();
             map.set("DEFAULT", instanceName);
-            map.set("node", noderef);
+            map.set("--node", noderef);
             if (nodedir != null) {
-                map.set("nodedir", nodedir);
+                map.set("--nodedir", nodedir);
             }
             int status = rch.runCommand(noderef, "start-local-instance",
                      map, output);

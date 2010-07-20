@@ -190,9 +190,9 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
          StringBuilder output = new StringBuilder();
          ParameterMap map = new ParameterMap();
          map.add("DEFAULT", instanceName);
-         map.add("node", noderef);
+         map.add("--node", noderef);
          if (nodedir != null) {
-            map.add("nodedir", nodedir);
+            map.add("--nodedir", nodedir);
          }
 
          // Run the command remotely (over SSH)
