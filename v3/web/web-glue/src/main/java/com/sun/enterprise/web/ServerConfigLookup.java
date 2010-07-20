@@ -322,42 +322,20 @@ public class ServerConfigLookup {
         }
 
         //XXX Need to use the following code - haven't tried it out yet - Rajiv
-/*
         boolean webModuleAvailability = false;
         DeploymentContext dc = ctx.getWebModuleConfig().getDeploymentContext();
-        System.out.println("SERVERCONFIGLOOKUP DC HASHCODE" + System.identityHashCode(dc));
         if (dc != null) {
             DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
             if (params != null) {
                 webModuleAvailability = params.availabilityenabled;
             }
         }
-*/
-       String webModuleAvailabilityString = null;
-       ConfigBeanProxy bean = ctx.getBean();
-       if (bean != null) {
-           if (bean instanceof com.sun.enterprise.config.serverbeans.WebModule) {
-               webModuleAvailabilityString =
-                            ((com.sun.enterprise.config.serverbeans.WebModule) bean).getAvailabilityEnabled();
-           } else if (bean instanceof ExtensionModule) {
-               webModuleAvailabilityString =
-                            ((ExtensionModule) bean).getAvailabilityEnabled();
-            }
-       }
-
-       boolean webModuleAvailability = false;
-       Boolean bool = toBoolean(webModuleAvailabilityString);
-       if (bool != null) {
-           webModuleAvailability = bool;
-       }
 
 
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("webModuleAvailability = " + webModuleAvailability);
         }
-
-        return globalAvailability 
-                && webContainerAvailability ;
+        return globalAvailability && webContainerAvailability && webModuleAvailability;
            //  XXX webModuleAvailability not reflected correctly as yet   && webModuleAvailability;
     }    
 
