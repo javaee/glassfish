@@ -36,38 +36,37 @@
 
 package org.glassfish.weld;
 
-import com.sun.enterprise.container.common.spi.util.InjectionManager;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.AppListenerDescriptorImpl;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-
-import com.sun.logging.LogDomains;
-
-import java.io.IOException;
-import java.util.*;
-
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.servlet.Filter;
+import javax.servlet.Servlet;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRequestListener;
+import javax.servlet.http.HttpSessionListener;
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.Events;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.SimpleDeployer;
-import org.glassfish.ejb.api.EjbContainerServices;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.weld.services.EjbServicesImpl;
 import org.glassfish.weld.services.InjectionServicesImpl;
+import org.glassfish.weld.services.ProxyServicesImpl;
 import org.glassfish.weld.services.SecurityServicesImpl;
 import org.glassfish.weld.services.ServletServicesImpl;
 import org.glassfish.weld.services.TransactionServicesImpl;
 import org.glassfish.weld.services.ValidationServicesImpl;
-
 import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.api.Environments;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
@@ -75,26 +74,23 @@ import org.jboss.weld.context.api.helpers.ConcurrentHashMapBeanStore;
 import org.jboss.weld.ejb.spi.EjbServices;
 import org.jboss.weld.injection.spi.InjectionServices;
 import org.jboss.weld.security.spi.SecurityServices;
+import org.jboss.weld.serialization.spi.ProxyServices;
 import org.jboss.weld.servlet.api.ServletServices;
 import org.jboss.weld.transaction.spi.TransactionServices;
 import org.jboss.weld.validation.spi.ValidationServices;
-
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.deployment.AppListenerDescriptorImpl;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.logging.LogDomains;
-
-import javax.servlet.Servlet;
-import javax.servlet.Filter;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.http.HttpSessionListener;
-import javax.enterprise.inject.spi.AnnotatedType;
 
 @Service
 public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationContainer> 
@@ -327,6 +323,9 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
 
             SecurityServices securityServices = new SecurityServicesImpl();
             deploymentImpl.getServices().add(SecurityServices.class, securityServices);
+           
+            ProxyServices proxyServices = new ProxyServicesImpl();
+            deploymentImpl.getServices().add(ProxyServices.class, proxyServices);
 
             if( ejbBundle != null ) {
                 // EJB Services is registered as a top-level service
