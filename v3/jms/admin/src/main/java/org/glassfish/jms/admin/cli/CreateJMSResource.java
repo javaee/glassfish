@@ -39,6 +39,10 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -61,6 +65,9 @@ import java.util.Enumeration;
 @Service(name="create-jms-resource")
 @Scoped(PerLookup.class)
 @I18n("create.jms.resource")
+@Cluster({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.DOMAIN})
+
 public class CreateJMSResource implements AdminCommand {
 
     @Param(name="resType")
@@ -213,6 +220,7 @@ public class CreateJMSResource implements AdminCommand {
                 aoAttrList.set(DEFAULT_OPERAND,  jndiName);
                 aoAttrList.set("restype",  resourceType);
                 aoAttrList.set("raname",  DEFAULT_JMS_ADAPTER);
+                aoAttrList.set("target", target);
                 if(enabled!=null)
                     aoAttrList.set("enabled", Boolean.toString(enabled));
 
@@ -356,6 +364,7 @@ public class CreateJMSResource implements AdminCommand {
         parameters.set("jndi_name", jndiName);
         parameters.set("enabled", Boolean.toString(enabled));
         parameters.set("poolname", jndiName);
+        parameters.set("target", target);
         if(description != null)
             parameters.set("description", description);
 
