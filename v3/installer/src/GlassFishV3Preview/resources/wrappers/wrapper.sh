@@ -23,6 +23,7 @@ else
 	echo "The answer file provided already exists. Please rerun this program by providing a non-existing answer file to be created."
 	exit 104
 fi
+ANSWER_FILE=`echo ${givenDirPath}/${givenFilePath}`
 }
 
 locate_java() {
@@ -97,6 +98,7 @@ if [ -z "$my_jar" ]; then
 fi
 
 CHECK_FOR_DISPLAY=1
+ANSWER_FILE=
 while [ $# -gt 0 ]
 do
 arg="$1"
@@ -165,10 +167,10 @@ if [ $? -ne 0 ]; then
     	exit 1
 fi
 
-echo "Extracting archive, please wait..."
-tail +207l $0 > ${tmpdir_path}/tmp.jar
+echo "Extracting the installer archive..."
+tail +218l $0 > ${tmpdir_path}/tmp.jar
 cd ${tmpdir_path}
-$my_jar xvf tmp.jar 
+$my_jar xf tmp.jar 
 
 #validate JAVA_HOME, leave full validation to OI.
 my_java=`locate_java`
@@ -177,7 +179,8 @@ my_java=`locate_java`
 if [ -z "$my_java" ]; then
     if [ -f ${tmpdir_path}/Product/Packages/jdk.zip ]
     then
-	$my_jar xvf ${tmpdir_path}/Product/Packages/jdk.zip
+	echo "Extracing bundled JDK..."
+	$my_jar xf ${tmpdir_path}/Product/Packages/jdk.zip
         #Check if the zip is okay, basic sanity, rest is handled by OI
 	if [ -f ${tmpdir_path}/jdk/bin/java ]
         then
@@ -194,13 +197,21 @@ fi
 my_java_bin=`dirname $my_java`
 JAVA_HOME=`dirname $my_java_bin`
 export JAVA_HOME
-$my_jar xvf ./Product/Packages/Engine.zip 
-$my_jar xvf ./Product/Packages/Resources.zip 
-$my_jar xvf ./Product/Packages/metadata.zip 
+echo "Extracting the installer runtime..."
+$my_jar xf ./Product/Packages/Engine.zip 
+echo "Extracting the installer resources..."
+$my_jar xf ./Product/Packages/Resources.zip 
+echo "Extracting the installer metadata..."
+$my_jar xf ./Product/Packages/metadata.zip 
 rm tmp.jar
 chmod ugo+x product-installer.sh
 chmod ugo+x install/bin/engine-wrapper
-echo "InstallHome.directory.INSTALL_HOME=$HOME/glassfish3" > install.properties
+echo "InstallHome.directory.INSTALL_HOME=$HOME/glassfishv3" > install.properties
 sh product-installer.sh $ARGS
 rm -rf ${tmpdir_path}/*
+#Assign appropriate permission to answer file if one is provided.
+if [ ! -z "${ANSWER_FILE}" ]
+then
+	chmod 600 ${ANSWER_FILE}
+fi
 exit $?
