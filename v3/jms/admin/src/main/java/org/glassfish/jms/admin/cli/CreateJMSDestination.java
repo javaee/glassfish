@@ -41,13 +41,8 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
-import org.glassfish.config.support.CommandTarget;
-import org.glassfish.config.support.TargetType;
-import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ServerContext;
-import org.glassfish.api.admin.RuntimeType;
+
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -73,8 +68,6 @@ import com.sun.logging.LogDomains;
 @Service(name="create-jmsdest")
 @Scoped(PerLookup.class)
 @I18n("create.jms.dest")
-@Cluster({RuntimeType.DAS})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 
 public class CreateJMSDestination extends JMSDestination implements AdminCommand {
 
@@ -100,10 +93,8 @@ public class CreateJMSDestination extends JMSDestination implements AdminCommand
         @Inject
         Domain domain;
 
-        //@Inject
-        //Configs configs;
-        @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-        Config config;
+        @Inject
+        Configs configs;
 
         @Inject
         ServerContext serverContext;
@@ -145,7 +136,7 @@ public class CreateJMSDestination extends JMSDestination implements AdminCommand
         // create-jmsdest
     private void createJMSDestination() throws Exception {
 
-       MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(target, config,serverContext, domain, connectorRuntime);
+       MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(target, configs,serverContext, domain, connectorRuntime);
 
         //MBeanServerConnection  mbsc = getMBeanServerConnection(tgtName);
         try {
@@ -193,5 +184,7 @@ public class CreateJMSDestination extends JMSDestination implements AdminCommand
                     }
                 }
     }
+
+
 
 }

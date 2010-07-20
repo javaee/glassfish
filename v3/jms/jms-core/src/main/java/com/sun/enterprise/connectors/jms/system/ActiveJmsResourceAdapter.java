@@ -497,7 +497,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                                         "BrokerEnableHA flag","java.lang.Boolean");
                         setProperty(cd, envProp5);
 
-                        String nodeAgentHostName = getNodeHostName();
+                        String nodeAgentHostName = getNodeAgentHostName();
                         if (nodeAgentHostName != null)  {
                                 ConnectorConfigProperty  envProp6 = new ConnectorConfigProperty  (
                                                 BROKERBINDADDRESS , nodeAgentHostName,
@@ -579,7 +579,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             String domainurl = context.getServerConfigURL();
             AppserverClusterViewFromCacheRepository rep = new AppserverClusterViewFromCacheRepository(domainurl);
 
-                nodeAgentHost = rep.getNodeHostName(server);
+                nodeAgentHost = rep.getNodeAgentHostName(server);
                 logFine("na host" + nodeAgentHost);
             } catch (Exception e) {
                 logger.log(Level.FINE,"Exception while attempting to get nodeagentHost", e.getMessage());
@@ -1308,8 +1308,6 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         jmsraUtil.setupAddressList();
         urlList = jmsraUtil.getUrlList();
         addressList = urlList.toString();
-        //todo: debug info need to remove log statement in production
-        logger.log(Level.WARNING, "ADDRESSLIST in setJmsServiceProvider " + addressList);
         ConnectorDescriptor cd = super.getDescriptor();
         setConnectionURL(service, urlList);
 
@@ -1577,9 +1575,6 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
               }
               ConnectorConfigProperty  addressProp3 = new ConnectorConfigProperty  (ADDRESSLIST, brokerurl,"Address List",
                             "java.lang.String");
-            //todo: need to remove log statement
-          logger.log(Level.WARNING, "ADDRESSLIST " + brokerurl);
-
           HashSet addressProp = new HashSet();
         addressProp.add(addressProp3);
           SetMethodAction setMethodAction =
@@ -1924,7 +1919,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
        String msg = sm.getString("ajra.cannot_find_phy_dest", ep);
            throw new ConnectorRuntimeException(msg);
         }
-                                                                                                                                                                        
+
         return ep.getValue();
     }
 

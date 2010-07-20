@@ -61,12 +61,6 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.logging.LogDomains;
 
-import org.glassfish.api.admin.Cluster;
-import org.glassfish.config.support.CommandTarget;
-import org.glassfish.config.support.TargetType;
-import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.api.admin.ServerEnvironment;
-
 /**
  * delete JMS Destination
  *
@@ -74,9 +68,6 @@ import org.glassfish.api.admin.ServerEnvironment;
 @Service(name="delete-jmsdest")
 @Scoped(PerLookup.class)
 @I18n("delete.jms.dest")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
-
 
 public class DeleteJMSDestination extends JMSDestination implements AdminCommand {
 
@@ -98,8 +89,8 @@ public class DeleteJMSDestination extends JMSDestination implements AdminCommand
         @Inject
         Domain domain;
 
-        @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-        Config config;
+        @Inject
+        Configs configs;
 
         @Inject
         ServerContext serverContext;
@@ -138,7 +129,7 @@ public class DeleteJMSDestination extends JMSDestination implements AdminCommand
 		throws Exception {
 
 		logger.log(Level.FINE, "deleteJMSDestination ...");
-                MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(target, config, serverContext, domain, connectorRuntime);
+                MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(target, configs, serverContext, domain, connectorRuntime);
 
 		//MBeanServerConnection  mbsc = getMBeanServerConnection(tgtName);
 

@@ -42,17 +42,13 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.internal.api.ServerContext;
-import org.glassfish.internal.api.Globals;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.List;
 
-import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -65,13 +61,6 @@ import org.jvnet.hk2.component.PerLookup;
 
 import com.sun.logging.LogDomains;
 
-//import org.glassfish.api.admin.Cluster;
-import org.glassfish.config.support.CommandTarget;
-import org.glassfish.config.support.TargetType;
-import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.api.admin.ServerEnvironment;
-
-
 /**
  * Flush JMS Destination
  *
@@ -79,8 +68,6 @@ import org.glassfish.api.admin.ServerEnvironment;
 @Service(name="flush-jmsdest")
 @Scoped(PerLookup.class)
 @I18n("flush.jms.dest")
-@org.glassfish.api.admin.Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 
 public class FlushJMSDestination extends JMSDestination implements AdminCommand {
 
@@ -107,8 +94,8 @@ public class FlushJMSDestination extends JMSDestination implements AdminCommand 
         @Inject
         Domain domain;
 
-        @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-        Config config;
+        @Inject
+        Configs configs;
 
         @Inject
         ServerContext serverContext;
@@ -150,8 +137,8 @@ public class FlushJMSDestination extends JMSDestination implements AdminCommand 
             //MBeanServerConnection  mbsc = getMBeanServerConnection(tgtName);
             // check and use JMX
         try {
-            CommandTarget ctarget = getTypeForTarget(target);
-            if (ctarget == CommandTarget.CLUSTER || ctarget == CommandTarget.CLUSTERED_INSTANCE) {
+            //todo: need to enable this for clustered instances for V3.1
+            //if (isClustered()) {
             /* The MQ 4.1 JMX Apis do not clean up all
                 * the destintations in all the instances
                  * in a broker cluster, in other words, JMX
@@ -163,32 +150,23 @@ public class FlushJMSDestination extends JMSDestination implements AdminCommand 
                     * This works because we resolve the port numbers
                 * even for standalone instances in MQAddressList.
                   */
-               boolean success = true;
-               Cluster cluster = null;
-              if (ctarget == CommandTarget.CLUSTER){
-                  cluster = Globals.get(Domain.class).getClusterNamed(target);
-              }else {
-                   List clustersList = Globals.get(Domain.class).getClusters().getCluster();
-                   cluster = JmsRaUtil.getClusterForServer(clustersList, target);
-              }
-               List servers =cluster.getInstances(); //target.getServer();
-               for (int server = 0; server < servers.size(); server++) {
+              /*boolean success = true;
+               Server [] servers = target.getServers();
+               for (int server = 0; server < servers.length; server++) {
                    try {
-                     purgeJMSDestination(destName, destType, ((Server)servers.get(server)).getName());
+                   jmsd.purgeJMSDestination(destName, destType, servers[server].getName());
                    } catch (Exception e) {
                    success = false;
-                       //todo: enable localized string
-                       logger.log(Level.SEVERE,/*localStrings.getLocalString("admin.mbeans.rmb.error_purging_jms_dest") +*/ ((Server)servers.get(server)).getName());
+                       sLogger.log(Level.SEVERE,localStrings.getString("admin.mbeans.rmb.error_purging_jms_dest") + servers[server].getName());
                        }
                }
                if (!success) {
-                   //todo: enable localized string
-                   throw new Exception();//localStrings.getLocalString("admin.mbeans.rmb.error_purging_jms_dest"));
+                   throw new Exception(localStrings.getString("admin.mbeans.rmb.error_purging_jms_dest"));
                }
 
-               } else {
+               } else {*/
                     purgeJMSDestination(destName, destType, tgtName);
-        }
+        //}
 
         } catch (Exception e) {
             logger.throwing(getClass().getName(), "flushJMSDestination", e);
@@ -200,7 +178,7 @@ public class FlushJMSDestination extends JMSDestination implements AdminCommand 
                throws Exception { {
 
              logger.log(Level.FINE, "purgeJMSDestination ...");
-              MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(target, config, serverContext, domain, connectorRuntime);
+              MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(target, configs, serverContext, domain, connectorRuntime);
 
                try {
 

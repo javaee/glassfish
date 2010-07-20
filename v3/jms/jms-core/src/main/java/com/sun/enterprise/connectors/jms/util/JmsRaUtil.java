@@ -152,7 +152,7 @@ public class JmsRaUtil {
     }
     }
 
-    public static boolean isClustered(List clusters, String instanceName) {
+    public static boolean isClustered(List clusters, String instanceName) throws ConnectorRuntimeException {
               //ConfigContext ctxt = ApplicationServer.getServerContext().getConfigContext();
               return (enableClustering() && isServerClustered(clusters,
                 instanceName));
@@ -160,11 +160,8 @@ public class JmsRaUtil {
       /**
      * Return true if the given server instance is part of a cluster.
      */
-    public static boolean isServerClustered(List clusters, String instanceName)
+    private static boolean isServerClustered(List clusters, String instanceName)
     {
-        return (getClusterForServer(clusters, instanceName) != null);
-    }
-    public static Cluster getClusterForServer(List clusters, String instanceName){
         //Return the server only if it is part of a cluster (i.e. only if a cluster
         //has a reference to it).
         for (int i = 0; i < clusters.size(); i++) {
@@ -173,11 +170,11 @@ public class JmsRaUtil {
                 if (((Server)servers.get(j)).getName().equals(instanceName)) {
                     // check to see if the server exists as a sanity check.
                     // NOTE: we are not checking for duplicate server instances here.
-                    return (Cluster) clusters.get(i);
+                    return true;
                 }
             }
         }
-        return null;
+        return false;
     }
      private static boolean enableClustering() {
      try {

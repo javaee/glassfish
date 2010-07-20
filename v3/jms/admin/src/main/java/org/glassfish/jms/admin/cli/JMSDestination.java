@@ -39,7 +39,6 @@ package org.glassfish.jms.admin.cli;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.connectors.jms.system.ActiveJmsResourceAdapter;
 import com.sun.enterprise.connectors.jms.system.MQAddressList;
-import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.*;
@@ -58,11 +57,7 @@ import java.lang.reflect.Method;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
-import com.sun.enterprise.config.serverbeans.Cluster;
 import org.glassfish.internal.api.ServerContext;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.config.support.TargetType;
-import org.glassfish.config.support.CommandTarget;
 
 public abstract class JMSDestination {
 
@@ -108,14 +103,14 @@ public abstract class JMSDestination {
                  !destType.equals(JMS_DEST_TYPE_TOPIC))
                 throw new IllegalArgumentException(localStrings.getLocalString("admin.mbeans.rmb.invalid_jms_desttype",destType));
          }
-    protected MQJMXConnectorInfo getMQJMXConnectorInfo(String target, Config config, ServerContext serverContext, Domain domain, ConnectorRuntime connectorRuntime)
+    protected MQJMXConnectorInfo getMQJMXConnectorInfo(String target, Configs configs, ServerContext serverContext, Domain domain, ConnectorRuntime connectorRuntime)
                                                         throws Exception {
                     logger.log(Level.FINE, "getMQJMXConnectorInfo for " + target);
                     MQJMXConnectorInfo mcInfo = null;
 
                     try {
                             MQJMXConnectorInfo [] cInfo =
-                                    getMQJMXConnectorInfos(target, config, serverContext, domain, connectorRuntime);
+                                    getMQJMXConnectorInfos(target, configs, serverContext, domain, connectorRuntime);
                             if ((cInfo == null) || (cInfo.length < 1)) {
                                     throw new Exception(
                             localStrings.getLocalString("admin.mbeans.rmb.error_obtaining_jms", "Error obtaining JMS Info"));
@@ -128,23 +123,24 @@ public abstract class JMSDestination {
                     return mcInfo;
             }
 
-        protected MQJMXConnectorInfo[] getMQJMXConnectorInfos(final String target, final Config config, final ServerContext serverContext, final Domain domain, ConnectorRuntime connectorRuntime)
+        protected MQJMXConnectorInfo[] getMQJMXConnectorInfos(final String target, final Configs configs, final ServerContext serverContext, final Domain domain, ConnectorRuntime connectorRuntime)
                                        throws ConnectorRuntimeException {
                try {
+                   final Config config = configs.getConfig().get(0);
                    final JmsService jmsService = config.getJmsService();
 
                    ActiveJmsResourceAdapter air = getMQAdapter(connectorRuntime);
                    final Class mqRAClassName = air.getResourceAdapter().getClass();
-                   final CommandTarget ctarget = this.getTypeForTarget(target);
+
                    MQJMXConnectorInfo mqjmxForServer = (MQJMXConnectorInfo)
                    java.security.AccessController.doPrivileged
                        (new java.security.PrivilegedExceptionAction() {
                         public java.lang.Object run() throws Exception {
-                            if(ctarget == CommandTarget.CLUSTER || ctarget == CommandTarget.CLUSTERED_INSTANCE) {
+                            if(!isClustered()) {
                                 logger.log(Level.FINE, "Getting JMX connector for" +
                                                       " standalone target " + target);
                                 return _getMQJMXConnectorInfo(target,
-                                                             jmsService, mqRAClassName, serverContext, config, domain);
+                                                             jmsService, mqRAClassName, serverContext, configs, domain);
                             } else {
                                 logger.log(Level.FINE, "Getting JMX connector for"  +
                                                            " cluster target " + target);
@@ -165,16 +161,16 @@ public abstract class JMSDestination {
 
 
         protected MQJMXConnectorInfo _getMQJMXConnectorInfo(
-                           String targetName, JmsService jmsService, Class mqRAClassName, ServerContext serverContext, Config config, Domain domain)
+                           String targetName, JmsService jmsService, Class mqRAClassName, ServerContext serverContext, Configs configs, Domain domain)
                                                throws ConnectorRuntimeException {
                try {
                    //If DAS, use the default address list, else obtain
 
                    String connectionURL = null;
-                   MQAddressList mqadList = new MQAddressList();
-                   //boolean isDAS = mqadList.isDAS(targetName);
 
-                   if (getTypeForTarget(targetName) == CommandTarget.DAS) {
+                   boolean isDAS = isDAS(targetName);
+
+                   if (isDAS) {
                        connectionURL = getDefaultAddressList(jmsService).toString();
                    } else {
                        //Standalone server instance
@@ -182,17 +178,15 @@ public abstract class JMSDestination {
                        logger.log(Level.FINE," _getMQJMXConnectorInfo - NOT in DAS");
                        String domainurl  =
                        serverContext.getServerConfigURL();
-                       JmsService serverJmsService= getJmsServiceOfStandaloneServerInstance(targetName, config, domain);
-                       //MQAddressList mqadList = new MQAddressList(serverJmsService, targetName);
-                       mqadList.setJmsService(serverJmsService);
-                       mqadList.setTargetName(targetName);
-                       mqadList.setup(false);
+                       JmsService serverJmsService= getJmsServiceOfStandaloneServerInstance(targetName, configs, domain);
+                       MQAddressList mqadList = new MQAddressList(serverJmsService, targetName);
+                       mqadList.setup();
                        connectionURL = mqadList.toString();
                    }
                    logger.log(Level.FINE, " _getMQJMXConnectorInfo - connection URL " + connectionURL);
                    String adminUserName = null;
                 String adminPassword = null;
-                JmsHost jmsHost = mqadList.getDefaultJmsHost(jmsService);
+                JmsHost jmsHost = getDefaultJmsHost(jmsService);
                 if (jmsHost != null) {//&& jmsHost.isEnabled()) {
                     adminUserName = jmsHost.getAdminUserName();
                     adminPassword = jmsHost.getAdminPassword();
@@ -239,32 +233,35 @@ public abstract class JMSDestination {
             // Create a new RA instance.
              ResourceAdapter raInstance = null;
              // Set the ConnectionURL.
-            MQAddressList list = null;
              try {
-                 list.setup(true);
+                 MQAddressList list = null;
+
                  if (jmsService.getType().equalsIgnoreCase(ActiveJmsResourceAdapter.REMOTE)) {
                      list = getDefaultAddressList(jmsService);
                  } else {
-                     list = new MQAddressList();
                      String domainurl  = serverContext.getServerConfigURL();
-                     java.util.Map<String,JmsHost> hostMap =  list.getResolvedLocalJmsHostsInMyCluster(true);
+                         //todo: enable this
+                     //AppserverClusterViewFromCacheRepository rep
+                       //  = new AppserverClusterViewFromCacheRepository(domainurl);
+
+                     java.util.Map<String,JmsHost> hostMap =  new HashMap(); //todo: enable this
+                       //  rep.getResolvedLocalJmsHostsInCluster(target);
 
                      if ( hostMap.size() == 0 ) {
                          String msg = localStrings.getLocalString("mqjmx.no_jms_hosts", "No JMS Hosts Configured");
                          throw new ConnectorRuntimeException(msg);
-
                      }
 
-
+                     list = new MQAddressList();
                      for (JmsHost host : hostMap.values()) {
                          list.addMQUrl(host);
                      }
                  }
 
-              String connectionUrl = list.toString();
-              String adminUserName = null;
+                 String connectionUrl = list.toString();
+                 String adminUserName = null;
               String adminPassword = null;
-              JmsHost jmsHost = list.getDefaultJmsHost(jmsService);
+              JmsHost jmsHost = getDefaultJmsHost(jmsService);
               if (jmsHost != null){// && jmsHost.isEnabled()) {
                   adminUserName = jmsHost.getAdminUserName();
                   adminPassword = jmsHost.getAdminPassword();
@@ -307,9 +304,7 @@ public abstract class JMSDestination {
              }
          }
 
-      /*  protected boolean isAConfig(String targetName) throws Exception {
-                Domain domain = Globals.get(Domain.class);
-                Configs configs = domain.getConfigs();
+        protected boolean isAConfig(String targetName, Configs configs) throws Exception {
                 List configsList = configs.getConfig();
                 for (int i =0; i < configsList.size(); i++){
                     Config config = (Config)configsList.get(i);
@@ -319,9 +314,9 @@ public abstract class JMSDestination {
                 return false;
                 //ConfigContext con = com.sun.enterprise.admin.server.core.AdminService.getAdminService().getAdminContext().getAdminConfigContext();
                 //return ServerHelper.isAConfig(con, targetName);
-            } */
+            }
 
-     /*   protected JmsHost getDefaultJmsHost(JmsService jmsService){
+        protected JmsHost getDefaultJmsHost(JmsService jmsService){
             String defaultJmsHost = jmsService.getDefaultJmsHost();
             JmsHost jmsHost = null;
            if (defaultJmsHost == null || defaultJmsHost.equals("")) {
@@ -336,37 +331,7 @@ public abstract class JMSDestination {
                             jmsHost = defaultHost;
             }
             return jmsHost;
-        } */
-
-        /* protected Map<String, JmsHost> getResolvedLocalJmsHostsInCluster(String clusterName, MQAddressList list) {
-             Map<String, JmsHost> map = new HashMap<String, JmsHost> ();
-
-             Domain domain = Globals.get(Domain.class);
-             Clusters clusters = domain.getClusters();
-             List clusterList = clusters.getCluster();
-             Cluster cluster = null;
-             for (int i =0; i < clusterList.size(); i++){
-                if (clusterName.equals(((Cluster)clusterList.get(i)).getName()))
-                    cluster =    (Cluster)clusterList.get(i);
-             }
-
-        //final String myCluster      = ClusterHelper.getClusterByName(domainCC, clusterName).getName();
-	    final Server[] buddies      = this.getServersInCluster(cluster);//ServerHelper.getServersInCluster(domainCC, myCluster);
-        final Config cfg =  getConfigForServer(buddies[0]);
-
-             final String myCluster      = ClusterHelper.getClusterByName(domainCC, clusterName).getName();
-             final Server[] buddies      = ServerHelper.getServersInCluster(domainCC, myCluster);
-             for (final Server as : buddies) {
-             try {
-                 final JmsHost copy   = getResolvedJmsHost(as);
-                 map.put(as.getName(), copy);
-                } catch (Exception e) {
-                    // we dont add the host if we cannot get it
-                    ;
-                }
-             }
-             return map;
-        } */
+        }
 
             /*
          *  Configures an instance of MQ-RA with the connection URL passed in.
@@ -398,9 +363,21 @@ public abstract class JMSDestination {
              return raInstance;
         }
 
-            private JmsService getJmsServiceOfStandaloneServerInstance(String target, Config cfg, Domain domain) throws Exception {
+            private JmsService getJmsServiceOfStandaloneServerInstance(String target, Configs configs, Domain domain) throws Exception {
                 logger.log(Level.FINE, "getJMSServiceOfSI LL " + target);
                 //ConfigContext con = com.sun.enterprise.admin.server.core.AdminService.getAdminService().getAdminContext().getAdminConfigContext();
+                Server targetServer = domain.getServerNamed(target);
+                String configRef = targetServer.getConfigRef();
+
+                Config cfg = null;
+                if (isAConfig(target, configs)) {
+                    cfg = configs.getConfigByName(target);
+                } else {
+                    for (Config config : configs.getConfig())
+                        if(configRef.equals(config.getName()))
+                            cfg = config;
+                }
+
                 logger.log(Level.FINE, "cfg " + cfg);
                 JmsService jmsService     = cfg.getJmsService();
                 logger.log(Level.FINE, "jmsservice " + jmsService);
@@ -419,27 +396,8 @@ public abstract class JMSDestination {
             }
         }
 
-        protected CommandTarget getTypeForTarget(String target){
-            Domain domain = Globals.get(Domain.class);
-            Config config = domain.getConfigNamed(target);
-            if (config != null)
-                return CommandTarget.CONFIG;
-            Server targetServer = domain.getServerNamed(target);
-            if (targetServer!=null) {
-                Clusters clusters = domain.getClusters();
-                List clustersList = clusters.getCluster();
-                if (JmsRaUtil.isServerClustered(clustersList, target))
-                    return CommandTarget.CLUSTERED_INSTANCE;
-                else if (targetServer.isDas())
-                    return CommandTarget.DAS;
-                else return CommandTarget.STANDALONE_INSTANCE;
-            }//end if (targetServer!=null)
-            Cluster cluster =domain.getClusterNamed(target);
-            if (cluster!=null) {
-                return CommandTarget.CLUSTER;
-            }
-            return CommandTarget.DAS;
-
+        protected boolean isClustered()  {
+            return false;//tgt.getType() == TargetType.CLUSTER;
         }
            /*
          *  Starts the MQ RA in the DAS, as all MQ related operations are
@@ -462,31 +420,20 @@ public abstract class JMSDestination {
             return air;
         }
 
-      /*   private boolean isDAS(String targetName) {
-             //return true;
+         private boolean isDAS(String targetName) {
+             return true;
+             //todo: need to enable a check
+            /*ConfigContext con = com.sun.enterprise.admin.server.core.AdminService.getAdminService().getAdminContext().getAdminConfigContext();
             if (isAConfig(targetName)) {
-            return false;
+                return false;
             }
+            return ServerHelper.isDAS(con, targetName);*/
+        }
 
-            return getServerByName(targetName).isDas();
-
-        }*/
-       /* private Server getServerByName(String serverName){
-            Domain domain = Globals.get(Domain.class);
-            Servers servers = domain.getServers();
-            List serverList = servers.getServer();
-
-            for (int i=0; i < serverList.size(); i++){
-                Server server = (Server) serverList.get(i);
-                if(serverName.equals(server.getName()))
-                    return server;
-            }
-            return null;
-        }*/
         protected MQAddressList getDefaultAddressList(JmsService jmsService)
                                                            throws Exception {
             MQAddressList list = new MQAddressList(jmsService);
-            list.setup(false);
+            list.setup();
             return list;
         }
 

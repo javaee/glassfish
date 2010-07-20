@@ -50,12 +50,6 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.*;
 
-import org.glassfish.api.admin.Cluster;
-import org.glassfish.config.support.CommandTarget;
-import org.glassfish.config.support.TargetType;
-import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.api.admin.ServerEnvironment;
-
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
@@ -72,8 +66,6 @@ import com.sun.logging.LogDomains;
 @Service(name="list-jmsdest")
 @Scoped(PerLookup.class)
 @I18n("list.jms.dests")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 
 public class ListJMSDestinations extends JMSDestination implements AdminCommand {
 
@@ -95,8 +87,8 @@ public class ListJMSDestinations extends JMSDestination implements AdminCommand 
         @Inject
         Domain domain;
 
-        @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-        Config config;
+        @Inject
+        Configs configs;
 
         @Inject
         ServerContext serverContext;
@@ -144,11 +136,11 @@ public class ListJMSDestinations extends JMSDestination implements AdminCommand 
         throws Exception {
 
         logger.log(Level.FINE, "listJMSDestination ...");
-                MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(target, config, serverContext, domain, connectorRuntime);
+                MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(target, configs, serverContext, domain, connectorRuntime);
 
         //MBeanServerConnection  mbsc = getMBeanServerConnection(tgtName);
         try {
-            MBeanServerConnection mbsc = mqInfo.getMQMBeanServerConnection();
+                        MBeanServerConnection mbsc = mqInfo.getMQMBeanServerConnection();
             ObjectName on = new ObjectName(
                 DESTINATION_MANAGER_CONFIG_MBEAN_NAME);
             String [] signature = null;

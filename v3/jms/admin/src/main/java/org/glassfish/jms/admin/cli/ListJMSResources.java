@@ -45,16 +45,12 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.AdminObjectResource;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.ArrayList;
-import org.glassfish.api.admin.Cluster;
-import org.glassfish.config.support.CommandTarget;
-import org.glassfish.config.support.TargetType;
-import org.glassfish.api.admin.RuntimeType;
 
 /**
  * List Connector Resources command
@@ -63,9 +59,6 @@ import org.glassfish.api.admin.RuntimeType;
 @Service(name="list-jms-resources")
 @Scoped(PerLookup.class)
 @I18n("list.jms.resources")
-@Cluster({RuntimeType.DAS})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.DOMAIN})
-
 public class ListJMSResources implements AdminCommand {
 
     private static final String QUEUE = "javax.jms.Queue";
@@ -83,7 +76,6 @@ public class ListJMSResources implements AdminCommand {
 
     @Inject
     AdminObjectResource[] resources;
-
 
     /**
         * Executes the command with the command parameters passed as Properties
