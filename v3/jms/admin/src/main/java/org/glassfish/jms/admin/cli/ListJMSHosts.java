@@ -48,7 +48,11 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
 import java.util.ArrayList;
 
 /**
@@ -58,14 +62,17 @@ import java.util.ArrayList;
 @Service(name="list-jms-hosts")
 @Scoped(PerLookup.class)
 @I18n("list.jms.hosts")
+@Cluster({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
+
 public class ListJMSHosts implements AdminCommand {
         final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListJMSHosts.class);
 
     @Param(name="target", optional=true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
-    @Inject
-    Configs configs;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
     @Inject
     Domain domain;
@@ -80,20 +87,27 @@ public class ListJMSHosts implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         Server targetServer = domain.getServerNamed(target);
-        String configRef = targetServer.getConfigRef();
+        //String configRef = targetServer.getConfigRef();
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster =domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
 
-            JmsService jmsService = null;
-            for (Config c : configs.getConfig()) {
+        JmsService jmsService = config.getJmsService();
+            /*for (Config c : configs.getConfig()) {
                 if(configRef.equals(c.getName()))
                      jmsService = c.getJmsService();
-            }
+            } */
 
             if (jmsService == null) {
             report.setMessage(localStrings.getLocalString("list.jms.host.invalidTarget",
                             "Invalid Target specified."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
-        }
+          }
            try {
             ArrayList<String> list = new ArrayList();
             for (JmsHost r : jmsService.getJmsHost()) {
