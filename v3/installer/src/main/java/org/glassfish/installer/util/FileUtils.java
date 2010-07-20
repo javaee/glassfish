@@ -70,7 +70,6 @@ public class FileUtils {
         File filesList[] = objName.listFiles();
 
         for (File eachFile : filesList) {
-
             if (eachFile.isDirectory()) {
                 if (isSymLink(eachFile)) {
                     deleteDirectory(eachFile);
@@ -89,8 +88,11 @@ public class FileUtils {
     /* Assign execute permissions on specified file/directory.
      * @param tFile File object.
      */
-    public static void setExecutable(File tFile) throws SecurityException {
-        tFile.setExecutable(true);
+    public static void setExecutable(String fileName) throws SecurityException {
+        if (isFileExist(fileName)) {
+            File tFile = new File(fileName);
+            tFile.setExecutable(true);
+        }
     }
 
     /* return true/false if the given file exists.
@@ -106,6 +108,9 @@ public class FileUtils {
      * @return true/false.
      */
     public static boolean deleteFile(String fileName) {
+        if (!isFileExist(fileName)) {
+            return false;
+        }
         return new File(fileName).delete();
 
     }

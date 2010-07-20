@@ -59,7 +59,7 @@
                       apt:dataPath="accountinfo.EMAIL"
                       apt:type="xs:string">
 	  <apt:visual>
-	    <apt:textField apt:toolTip="$EMAIL"/>
+	    <apt:textField apt:columns="20" apt:toolTip="$EMAIL"/>
 	  </apt:visual>
         </apt:property>
 
@@ -67,7 +67,7 @@
                       apt:dataPath="accountinfo.PASSWORD"
                       apt:type="xs:string">
 	  <apt:visual>
-	    <apt:password apt:toolTip="$PASSWORD"/>
+	    <apt:password apt:columns="15" apt:toolTip="$PASSWORD"/>
 	  </apt:visual>
         </apt:property>
 
@@ -75,7 +75,7 @@
                       apt:dataPath="accountinfo.REENTERPASSWORD"
                       apt:type="xs:string">
 	  <apt:visual>
-	    <apt:password apt:toolTip="$REENTER_PASSWORD"/>
+	    <apt:password apt:columns="15" apt:toolTip="$REENTER_PASSWORD"/>
 	  </apt:visual>
         </apt:property>
 
@@ -84,7 +84,7 @@
                       apt:dataPath="accountinfo.FIRSTNAME"
                       apt:type="xs:string">
 	  <apt:visual>
-	    <apt:textField apt:toolTip="$FIRSTNAME"/>
+	    <apt:textField apt:columns="20" apt:toolTip="$FIRSTNAME"/>
 	  </apt:visual>
         </apt:property>
 
@@ -92,7 +92,7 @@
                       apt:dataPath="accountinfo.LASTNAME"
                       apt:type="xs:string">
 	  <apt:visual>
-	    <apt:textField apt:toolTip="$LASTNAME"/>
+	    <apt:textField apt:columns="20" apt:toolTip="$LASTNAME"/>
 	  </apt:visual>
         </apt:property>
 
@@ -100,7 +100,7 @@
                       apt:dataPath="accountinfo.COMPANYNAME"
                       apt:type="xs:string">
 	  <apt:visual>
-	    <apt:textField apt:toolTip="$COMPANYNAME"/>
+	    <apt:textField apt:columns="30" apt:toolTip="$COMPANYNAME"/>
 	  </apt:visual>
         </apt:property>
 
@@ -109,7 +109,7 @@
                       apt:type="xs:string">
 	<apt:prop-value>$COUNTRY_LIST</apt:prop-value>
 	  <apt:visual>
-	    <apt:comboBox apt:toolTip="$COUNTRY"/>
+	    <apt:comboBox apt:columns="30" apt:toolTip="$COUNTRY"/>
 	  </apt:visual>
         </apt:property>
 
@@ -125,7 +125,7 @@
                       apt:type="xs:string">
 	  <apt:prop-value></apt:prop-value>
 	  <apt:visual>
-	    <apt:textField/>
+	    <apt:textField apt:columns="30"/>
 	  </apt:visual>
         </apt:property>
 

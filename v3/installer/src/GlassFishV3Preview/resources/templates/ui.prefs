@@ -28,11 +28,11 @@ bottom_left_image=/templates/community-logo.png
 icon_image=/templates/glassfishserver.gif
 
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-leftpanel_font=Arial-BOLD-13
+leftpanel_font=Arial-BOLD-14
 
 # Dynamic panel
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-dynamic_content_font=Arial-PLAIN-13
+dynamic_content_font=Arial-BOLD-14
 dynamic_component_background=WHITE
 dynamic_component_foreground=666666
 dynamic_component_border_color=BLACK
@@ -56,9 +56,10 @@ contentpanel_bgcolor=e8e9ed
 
 btnpanel_bgcolor=e8e9ed
 
+
 # Font for Buttons
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-button_font=Arial Narrow-PLAIN-11
+button_font=Arial-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
@@ -376,9 +377,7 @@ Select an option from the following list:\
 L10N_CHOICE_TEXT=Install languages for the selected products.
 INSTALL_L10N_TOOLTIP=Select this option to install languages for the selected products.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~J D K  S E L E C T I O N  P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-JDK_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
-Select an option from the following list:\
-&lt;/BODY&gt;&lt;/HTML&gt;
+JDK_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Select an option from the following list:&lt;/BODY&gt;&lt;/HTML&gt;
 
 
 JDK_HOME=JDK Home
@@ -396,29 +395,14 @@ JDK_TYPE_IN_TOOLTIP=Type the location of a Java(TM) SDK in this text box.
 AVAILABLE_JDK=Available Java(TM) SDKs
 ALTERNATE_JDK=Alternate Java(TM) SDK Location
 
-UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
-If a connection is available, the installer will attempt to download and configure the Update Tool \
-for this installation.&lt;BR&gt;\
-&lt;/BODY&gt;&lt;/HTML&gt;
+UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; If a connection is available, the installer will attempt to download and configure&lt;BR&gt;the Update Tool for this installation.&lt;BODY&gt;&lt;HTML&gt;
 
-UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
-The Update Tool periodically checks for available updates and collects some \
-system data. For more information about the data that is collected, see the \
-&lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt;\
-GlassFish Usage Metrics&lt;/a&gt; page \
-(http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3).&lt;BR&gt;\
-&lt;/BODY&gt;&lt;/HTML&gt;
+UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; The Update Tool periodically checks for available updates and collects some&lt;BR&gt;system data. For more information, see the &lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt; GlassFish Usage Metrics&lt;/a&gt; &lt;BR&gt;page, http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
 
-ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY;font face='Sans-Serif'&gt;\
-Configure the administration settings for the server. Please provide \
-username and password for the server. You may leave the password \
-field empty if you would like to configure the server for unauthenticated \
-logins.\
-&lt;/font&gt;&lt;/p&gt;&lt;/BODY&gt;&lt;/HTML&gt;
 
-#ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
-Configure the administration settings for the server. &lt;BR&gt;\
-&lt;/BODY&gt;&lt;/HTML&gt;
+ADMINISTRATION_SERVICE_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Provide the name of the Windows Service or a Solaris SMF service.&lt;BODY&gt;&lt;HTML&gt;
+
+ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; &lt;BR&gt;Configure the administration settings for the server.  Please provide the &lt;BR&gt;username and password for the server. You may leave the password field empty&lt;BR&gt;if you would like to configure the server for unauthenticated logins. &lt;/BODY&gt;&lt;HTML&gt;
 
 ANONYMOUS=Configure as anonymous user
 NON_ANONYMOUS=Provide username and password 
@@ -429,11 +413,9 @@ ADMIN_PASSWORD_TOOL_TIP=Enter the Administrator Password
 ADMIN_SERVICE_CHOICE_TOOL_TIP=Select this option to create a OS service for the default domain(domain1).
 ADMIN_SERVICE_CHOICE_TEXT=Create OS service for domain1
 ADMIN_SERVICE_NAME_TEXT=Service Name
-ADMIN_SERVICE_NAME_TOOL_TIP=Name of the service to be created, default is domain1Service.exe
+ADMIN_SERVICE_NAME_TOOL_TIP=Name of the service to be created, default is domain1Service
 ADMIN_SERVICE_PROPS_TEXT=Service Properties
 ADMIN_SERVICE_PROPS_TOOL_TIP=Colon(:) separated list of service properties
-
-
 
 
 
@@ -466,6 +448,7 @@ INSTALL_UPDATE_TOOL_TEXT=Install Update Tool
 ENABLE_UPDATE_TOOL_TEXT=Enable Update Tool
 PROXY_HOST_TEXT=Proxy Host
 PROXY_PORT_TEXT=Proxy Port
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ACCOUNT CREATION PAGE FOR PRODUCT REGISTRATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 EMAIL=Email Address
 PASSWORD=Password
@@ -474,23 +457,41 @@ FIRSTNAME=First Name
 LASTNAME=Last Name
 COUNTRY=Country
 COMPANYNAME=Company Name
-ACCOUNT_CREATION_HEADER_TEXT=${BODY_START}\
-Provide the following information to create a Sun Online Account. All fields are required.\
-${BODY_END}
-ACCOUNT_CREATION_FOOTER_TEXT=${BODY_START}\
-&lt;a href=http://www.sun.com/privacy/&gt;Sun's Privacy Policy&lt;/a&gt;.\
-${BODY_END}
+ACCOUNT_CREATION_HEADER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Provide the following information to create a Sun online account. All field&lt;BR&gt;values are required.&lt;BODY&gt;&lt;HTML&gt;
+ACCOUNT_CREATION_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;&lt;a href=http://www.sun.com/privacy/&gt;Sun's Privacy Policy&lt;BODY&gt;&lt;HTML&gt;
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CONFIGURATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;This installation program can configure this machine either as a GlassFish &lt;BR&gt; Domain or as a Node(instance) communicating to a pre-existing domain. Please &lt;BR&gt; select an appropriate configuration option.&lt;BODY&gt;&lt;HTML&gt; 
+
+CREATE_DOMAIN=Create a server domain
+CREATE_INSTANCE=Create a server instance 
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~INSTANCE INFORMATION PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Provide information required to create a server instance that can communicate &lt;BR&gt; to a remote server domain installation. You may also choose to add this &lt;BR&gt; instance to a pre existing cluster.&lt;BODY&gt;&lt;HTML&gt; 
+
+INSTANCE_NAME_TEXT=Instance Name
+INSTANCE_NAME_TOOL_TIP=Provide the name of the instance to be created. Default is instance1
+
+SERVER_ADMIN_PORT_TEXT=Administration Port 
+SERVER_ADMIN_PORT_TOOL_TIP=Provide the Domain Administration Port
+
+SERVER_HOST_NAME_TEXT=Server Host Name 
+SERVER_HOST_NAME_TOOL_TIP=Provide the Host Name where Domain is located
+
+CLUSTER_INFO_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Provide the following information to include this instance(to be created) &lt;BR&gt; to a pre existing cluster.&lt;BODY&gt;&lt;HTML&gt;
+
+PART_OF_CLUSTER_CHOICE_TEXT=Clustered instance
+
+PART_OF_CLUSTER_CHOICE_TOOL_TIP=
+
+CLUSTER_NAME_TEXT=Name of the cluster
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~REGISTRATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-REGISTRATION_OPTIONS_HEADER=${BODY_START}\
-Why register? Gain convenient access to benefits such as:\
-&lt;UL&gt;\
-&lt;LI&gt;Patch information and bug updates&lt;/LI&gt;\
-&lt;LI&gt;Screencasts and tutorials,&lt;/LI&gt;\
-&lt;LI&gt;Support and training offerings&lt;/LI&gt;\
-&lt;/UL&gt;\
-${BODY_END}
+REGISTRATION_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Why register? Gain convenient access to benefits such as:&lt;UL&gt;&lt;LI&gt;Patch information and bug updates&lt;/LI&gt;&lt;LI&gt;Screencasts and tutorials,&lt;/LI&gt;&lt;LI&gt;Support and training offerings&lt;/LI&gt;&lt;/UL&gt;&lt;BODY&gt;&lt;HTML&gt;
+
 CREATE_NEWACCT=I don't have a Sun Online Account. Sign me up.
 USE_EXISTINGACCT=I already have a Sun Online Account.
 USERNAME=User Name
@@ -509,7 +510,6 @@ UPGRADE_DECLINE_TOOLTIP=Select this option not to upgrade the software.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~P R O G R E S S   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # L10n: only translate the "Please wait" string.  leave the rest unchanged.
 PROGRESS_WAIT=Please wait...
-              
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~S U M M A R Y   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 REGISTRATION_PROGRESS=Registration Progress

@@ -35,9 +35,6 @@
  */
 package org.glassfish.installer.util;
 
-import java.io.FileFilter;
-import java.io.File;
-
 /**
  * Used to filter out files for processing.
  * Useful to unpack all *.pack files. Also will be useful

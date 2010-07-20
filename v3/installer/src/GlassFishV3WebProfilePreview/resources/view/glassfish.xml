@@ -52,13 +52,13 @@
             <apt:htmlPanel/>
          </apt:visual>
          </apt:property>
-
+      
            <apt:property apt:name="ADMIN_PORT"
               apt:label="$ADMIN_PORT_TEXT"
               apt:dataPath="Administration.ADMIN_PORT"
               apt:type="xs:string">
             <apt:visual>
-                <apt:textField apt:toolTip="$ADMIN_PORT_TOOL_TIP"/>
+                <apt:textField apt:columns="6" apt:toolTip="$ADMIN_PORT_TOOL_TIP"/>
             </apt:visual>
 	</apt:property>
 
@@ -67,7 +67,7 @@
               apt:dataPath="Administration.HTTP_PORT"
               apt:type="xs:string">
             <apt:visual>
-                <apt:textField apt:toolTip="$HTTP_PORT_TOOL_TIP"/>
+                <apt:textField apt:columns="6" apt:toolTip="$HTTP_PORT_TOOL_TIP"/>
             </apt:visual>
 	</apt:property>
 
@@ -75,7 +75,7 @@
                 apt:dataPath="Administration.ADMIN_USER"
                 apt:type="xs:string">
           <apt:visual>
-            <apt:textField apt:toolTip="$ADMIN_USER_TOOL_TIP"/>
+            <apt:textField apt:columns="15" apt:toolTip="$ADMIN_USER_TOOL_TIP"/>
           </apt:visual>
         </apt:property>
 
@@ -83,9 +83,26 @@
                       apt:dataPath="Administration.ADMIN_PASSWORD"
                       apt:type="xs:string">
           <apt:visual>
-            <apt:password apt:toolTip="$ADMIN_PASSWORD_TOOL_TIP"/>
+            <apt:password apt:columns="15" apt:toolTip="$ADMIN_PASSWORD_TOOL_TIP"/>
           </apt:visual>
         </apt:property>
+
+        <apt:property apt:name="ADMIN_REENTERPASSWORD" apt:label="Reenter password"
+                      apt:dataPath="Administration.ADMIN_PASSWORD_REENTER"
+                      apt:type="xs:string">
+          <apt:visual>
+            <apt:password apt:columns="15" apt:toolTip="$ADMIN_PASSWORD_TOOL_TIP"/>
+          </apt:visual>
+        </apt:property>
+
+          <apt:property apt:name="ADMIN_SERVICE_TEXT"
+             apt:dataPath=""
+             apt:type="xs:string">
+            <apt:prop-value>$ADMINISTRATION_SERVICE_TEXT</apt:prop-value>
+         <apt:visual>
+            <apt:htmlPanel/>
+         </apt:visual>
+         </apt:property>
 
     <apt:property apt:name="CREATE_SERVICE" apt:label=""
          apt:dataPath="Administration.CREATE_SERVICE"
@@ -125,7 +142,7 @@
                       apt:dataPath="Administration.SERVICE_NAME"
                       apt:type="xs:string">
           <apt:visual>
-            <apt:textField apt:toolTip="$ADMIN_SERVICE_NAME_TOOL_TIP"/>
+            <apt:textField apt:columns="15" apt:toolTip="$ADMIN_SERVICE_NAME_TOOL_TIP"/>
           </apt:visual>
         </apt:property>
 
@@ -133,10 +150,9 @@
                       apt:dataPath="Administration.SERVICE_PROPS"
                       apt:type="xs:string">
           <apt:visual>
-            <apt:password apt:toolTip="$ADMIN_SERVICE_PROPS_TOOL_TIP"/>
+            <apt:password apt:columns="20" apt:toolTip="$ADMIN_SERVICE_PROPS_TOOL_TIP"/>
           </apt:visual>
         </apt:property>
-
 	</apt:section>
       <apt:scriptHandler apt:scriptLanguage="beanshell">
 	<apt:scriptCode><![CDATA[
@@ -150,15 +166,7 @@ import org.openinstaller.util.*;
 wizard.enableCancel(true);
 wizard.enableNext(true);
 wizard.enableBack(true);
-
-ValidateCredentials()  {
-	if (isSilentMode())
-		return;
-
-        usernameTF = getComponentByName(content, "ADMIN_USER");
-        passwdTF = getComponentByName(content, "ADMIN_PASSWORD");
-
-    }
+wizard.enableHelp(true);
 
 /* Helper to determine installation mode */
 isSilentMode() {
@@ -366,8 +374,6 @@ run() {
       wizard.enableCancel(true);
       wizard.enableBack(true);
 
-      
-     
       List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
      
      }

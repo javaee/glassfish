@@ -12,7 +12,7 @@
          
           <buttongroup id="gBtnGroup">
             <#list buttons as theButton>
-              <hradiobutton id="${theButton}" name="${theButton}" VerticalAlignment="TOP" HorizontalAlignment="RIGHT" Font="${leftpanel_font}"
+              <hradiobutton id="${theButton}" name="${theButton}" VerticalAlignment="TOP" HorizontalAlignment="RIGHT" Font="${dynamic_content_font}"
                 TextColor="<#if buttons?seq_index_of(theButton) < activeIndex>${leftpanel_done_textcolor}<#elseif buttons?seq_index_of(theButton) = activeIndex>${leftpanel_active_textcolor}<#else>${leftpanel_remaining_textcolor}</#if>"
                 Text="${theButton}" Enabled="false">
                 <gridbagconstraints gridx="0" gridy="${buttons?seq_index_of(theButton)}" weightx="1" weighty="0" fill="GridBagConstraints.HORIZONTAL" anchor="GridBagConstraints.NORTHWEST" insets="${leftpanel_button_insets}"/>

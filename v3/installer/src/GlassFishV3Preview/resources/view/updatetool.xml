@@ -99,7 +99,7 @@ theAL = new ActionListener() {
               apt:dataPath="Configuration.PROXY_HOST"
               apt:type="xs:string">
             <apt:visual>
-                <apt:textField apt:toolTip="Enter Proxy Host if required"/>
+                <apt:textField apt:columns="25" apt:toolTip="Enter Proxy Host if required"/>
             </apt:visual>
       </apt:property>  
 
@@ -108,7 +108,7 @@ theAL = new ActionListener() {
               apt:dataPath="Configuration.PROXY_PORT"
               apt:type="xs:string">
             <apt:visual>
-                <apt:textField apt:toolTip="Enter Proxy Port if required"/>
+                <apt:textField apt:columns="6" apt:toolTip="Enter Proxy Port if required"/>
             </apt:visual>
       </apt:property> 
 

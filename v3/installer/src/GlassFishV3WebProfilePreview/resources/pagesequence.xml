@@ -44,7 +44,13 @@
     </page>
     <page name="License"/>
     <page name="InstallHome"/>
-    <page name="glassfish"/>
+    <page name="NodeServerOptions"/>
+    <page name="glassfish">
+	<when><![CDATA[ CREATE_DOMAIN  ]]></when>
+    </page>
+    <page name="Node">
+	<when><![CDATA[ CREATE_INSTANCE  ]]></when>
+    </page>
     <page name="updatetool"/>
     <page name="JDKSelection">
 	<when><![CDATA[ !(IS_MAC || IS_AIX)]]></when>

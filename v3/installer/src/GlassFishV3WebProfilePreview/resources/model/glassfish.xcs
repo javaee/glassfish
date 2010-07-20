@@ -61,7 +61,7 @@
 	]]></onSet>
 	</actions>
         </prop>       
-       <prop oor:name="ADMIN_USER" oor:type="xs:string" oor:transient="true">
+       <prop oor:name="ADMIN_USER" oor:type="xs:string">
            <value>admin</value>
           <info>
             <desc xml:lang="en-US">User Name</desc>
@@ -81,15 +81,33 @@ import org.openinstaller.provider.conf.ConfigHelper;
         </actions>
         </prop>
         
-       <prop oor:name="ADMIN_PASSWORD" oor:type="xs:string" oor:transient="true">
+       <prop oor:name="ADMIN_PASSWORD" oor:transient="true" oor:type="xs:string">
           <value/>
           <info>
             <desc xml:lang="en-US">User Password</desc>
           </info>
-        <actions>
-        </actions>
         </prop>
 
+       <prop oor:name="ADMIN_PASSWORD_REENTER" oor:transient="true" oor:type="xs:string">
+          <value/>
+          <info>
+            <desc xml:lang="en-US">Reenter Password</desc>
+          </info>
+        <actions>
+          <onSet><![CDATA[
+import java.lang.String;
+import java.util.List;
+import org.openinstaller.provider.conf.ConfigHelper;
+
+        String reenterPassword = (String)thisProperty.getUnconfirmedValue();
+	String Password  = ConfigHelper.getValue("glassfish.Administration.ADMIN_PASSWORD");
+        if (!reenterPassword.equals(Password)) {
+            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            throw new EnhancedException("PASSWORDS_DONOT_MATCH", new String[]{});
+   }
+          ]]></onSet>
+        </actions>
+        </prop>
        <prop oor:name="CREATE_SERVICE" oor:type="xs:boolean">
           <value/>
           <info>
@@ -99,8 +117,8 @@ import org.openinstaller.provider.conf.ConfigHelper;
         </actions>
         </prop>
 
-       <prop oor:name="SERVICE_NAME" oor:type="xs:string" oor:transient="true">
-         <value>domain1Service.exe</value>
+       <prop oor:name="SERVICE_NAME" oor:type="xs:string">
+         <value>domain1Service</value>
           <info>
             <desc xml:lang="en-US">Name of the service</desc>
           </info>
@@ -122,7 +140,7 @@ if (createService)  {
         </actions>
         </prop>
 
-       <prop oor:name="SERVICE_PROPS" oor:type="xs:string" oor:transient="true">
+       <prop oor:name="SERVICE_PROPS" oor:type="xs:string">
          <value/>
           <info>
             <desc xml:lang="en-US">Service properties</desc>
@@ -130,32 +148,6 @@ if (createService)  {
         <actions>
         </actions>
         </prop>
-
-         <prop oor:name="A_INSTALL_HOME" oor:type="xs:string" oor:transient="true">
-           <value if:eval=":[InstallHome.directory:INSTALL_HOME]"></value>
-           <info>
-             <desc xml:lang="en-US">Reference to InstallHome selected from InstallHome page</desc>
-           </info>
-	<actions>
-	</actions>
-        </prop>
-        <prop oor:name="DUMMY_PROP" oor:type="xs:string" oor:transient="true">
-          <value/>
-          <info>
-            <desc xml:lang="en-US">Dummy Field</desc>
-          </info>
-        <actions>
-          <onSet><![CDATA[
-import org.openinstaller.provider.conf.ConfigHelper;
-          
-String inputStatus = (String)ConfigHelper.getValue("glassfish.Administration.STATUS");
-if ((inputStatus != null) && (inputStatus.equals("ERROR")))  {
-    ConfigHelper.setValue("glassfish.Administration.STATUS", "");
-}       
-          ]]></onSet>
-        </actions>
-        </prop>
-
 
         <prop oor:name="STATUS" oor:type="xs:string" oor:transient="true">
           <value/>

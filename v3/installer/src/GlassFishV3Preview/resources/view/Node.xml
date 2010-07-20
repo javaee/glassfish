@@ -9,12 +9,12 @@
 * General Public License Version 2 only ("GPL") or the Common Development 
 * and Distribution License("CDDL") (collectively, the "License").  You 
 * may not use this file except in compliance with the License. You can obtain 
-* a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html 
-* or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific 
+* a copy of the License at https://Node.dev.java.net/public/CDDL+GPL.html 
+* or Node/bootstrap/legal/LICENSE.txt.  See the License for the specific 
 * language governing permissions and limitations under the License. 
 * 
 * When distributing the software, include this License Header Notice in each 
-* file and include the License file at glassfish/bootstrap/legal/LICENSE.txt. 
+* file and include the License file at Node/bootstrap/legal/LICENSE.txt. 
 * Sun designates this particular file as subject to the "Classpath" exception 
 * as provided by Sun in the GPL Version 2 section of the License file that 
 * accompanied this code.  If applicable, add the following below the License 
@@ -36,121 +36,88 @@
 * holder. 
 */ 
 --> 
-<apt:template apt:name="glassfish"
+<apt:template apt:name="Node"
     xmlns:apt="http://www.sun.com/jds/apoc/2004/template"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:oor="http://openoffice.org/2001/registry"
     xsi:schemaLocation="http://www.sun.com/jds/apoc/2004/template ../../../consumables/schemas/config/apoc/policytemplate.xsd">
-    <apt:category apt:name="glassfish" apt:label="GlassFishV3">
+    <apt:category apt:name="Node" apt:label="GlassFishV3">
       <apt:page apt:name="Configuration_Item" apt:label="Configuration Settings">
-        <apt:section apt:name="Administration" apt:label="Administration" >
-          <apt:property apt:name="ADMINISTRATION_TEXT_TOP"
+        <apt:section apt:name="NodeConfiguration" apt:label="NodeConfiguration" >
+          <apt:property apt:name="CONFIGURATION_TEXT_TOP"
              apt:dataPath=""
              apt:type="xs:string">
-            <apt:prop-value>$ADMINISTRATION_TOP_TEXT</apt:prop-value>
+            <apt:prop-value>$CONFIGURATION_TOP_TEXT</apt:prop-value>
          <apt:visual>
             <apt:htmlPanel/>
          </apt:visual>
          </apt:property>
       
-           <apt:property apt:name="ADMIN_PORT"
-              apt:label="$ADMIN_PORT_TEXT"
-              apt:dataPath="Administration.ADMIN_PORT"
-              apt:type="xs:string">
-            <apt:visual>
-                <apt:textField apt:columns="6" apt:toolTip="$ADMIN_PORT_TOOL_TIP"/>
-            </apt:visual>
-	</apt:property>
-
-           <apt:property apt:name="HTTP_PORT"
-              apt:label="$HTTP_PORT_TEXT"
-              apt:dataPath="Administration.HTTP_PORT"
-              apt:type="xs:string">
-            <apt:visual>
-                <apt:textField apt:columns="6" apt:toolTip="$HTTP_PORT_TOOL_TIP"/>
-            </apt:visual>
-	</apt:property>
-
-       <apt:property apt:name="ADMIN_USER" apt:label="$ADMIN_USER_TEXT"
-                apt:dataPath="Administration.ADMIN_USER"
+       <apt:property apt:name="INSTANCE_NAME" apt:label="$INSTANCE_NAME_TEXT"
+                apt:dataPath="NodeConfiguration.INSTANCE_NAME"
                 apt:type="xs:string">
           <apt:visual>
-            <apt:textField apt:columns="15" apt:toolTip="$ADMIN_USER_TOOL_TIP"/>
+            <apt:textField apt:columns="15" apt:toolTip="$INSTANCE_NAME_TOOL_TIP"/>
           </apt:visual>
         </apt:property>
 
-        <apt:property apt:name="ADMIN_PASSWORD" apt:label="$ADMIN_PASSWORD_TEXT"
-                      apt:dataPath="Administration.ADMIN_PASSWORD"
-                      apt:type="xs:string">
-          <apt:visual>
-            <apt:password apt:columns="15" apt:toolTip="$ADMIN_PASSWORD_TOOL_TIP"/>
-          </apt:visual>
-        </apt:property>
+           <apt:property apt:name="SERVER_HOST_NAME"
+              apt:label="$SERVER_HOST_NAME_TEXT"
+              apt:dataPath="NodeConfiguration.SERVER_HOST_NAME"
+              apt:type="xs:string">
+            <apt:visual>
+                <apt:textField apt:columns="15" apt:toolTip="$SERVER_HOST_NAME_TOOL_TIP"/>
+            </apt:visual>
+	</apt:property>
 
-        <apt:property apt:name="ADMIN_REENTERPASSWORD" apt:label="Reenter password"
-                      apt:dataPath="Administration.ADMIN_PASSWORD_REENTER"
-                      apt:type="xs:string">
-          <apt:visual>
-            <apt:password apt:columns="15" apt:toolTip="$ADMIN_PASSWORD_TOOL_TIP"/>
-          </apt:visual>
-        </apt:property>
+      
+           <apt:property apt:name="SERVER_ADMIN_PORT"
+              apt:label="$SERVER_ADMIN_PORT_TEXT"
+              apt:dataPath="NodeConfiguration.SERVER_ADMIN_PORT"
+              apt:type="xs:string">
+            <apt:visual>
+                <apt:textField apt:columns="6" apt:toolTip="$SERVER_ADMIN_PORT_TOOL_TIP"/>
+            </apt:visual>
+	</apt:property>
 
-          <apt:property apt:name="ADMIN_SERVICE_TEXT"
+          <apt:property apt:name="CLUSTER_INFO"
              apt:dataPath=""
              apt:type="xs:string">
-            <apt:prop-value>$ADMINISTRATION_SERVICE_TEXT</apt:prop-value>
+            <apt:prop-value>$CLUSTER_INFO_TEXT</apt:prop-value>
          <apt:visual>
             <apt:htmlPanel/>
          </apt:visual>
          </apt:property>
 
-    <apt:property apt:name="CREATE_SERVICE" apt:label=""
-         apt:dataPath="Administration.CREATE_SERVICE"
+    <apt:property apt:name="PART_OF_CLUSTER" apt:label=""
+         apt:dataPath="NodeConfiguration.PART_OF_CLUSTER"
          apt:type="xs:boolean">
        <apt:prop-value>false</apt:prop-value>
        <apt:visual>
-          <apt:checkBox apt:labelPost="$ADMIN_SERVICE_CHOICE_TEXT" apt:toolTip="$ADMIN_SERVICE_CHOICE_TOOL_TIP"/>
+          <apt:checkBox apt:labelPost="$PART_OF_CLUSTER_CHOICE_TEXT" apt:toolTip=""/>
        </apt:visual>
        <apt:scriptHandler apt:scriptLanguage="beanshell" >
           <apt:scriptCode><![CDATA[
              theAL = new ActionListener() {
                actionPerformed(e) {
-                 option = wizard.getComponentByName(content, "CREATE_SERVICE");
-                 serviceName = wizard.getComponentByName(content, "SERVICE_NAME");
-                 serviceProps = wizard.getComponentByName(content, "SERVICE_PROPS");
-                 if(option.isSelected()) {
-		// Currently service related entries are enabled only on w2k and solaris.
-     		if (System.getProperty("os.name").toLowerCase().startsWith("sunos") || System.getProperty("os.name").toLowerCase().startsWith("windows")) 
-                   serviceName.setEnabled(true);
-
-		// Service properties text field is applicable only or solaris. 
-     			if (System.getProperty("os.name").toLowerCase().startsWith("sunos")) 
-                   		serviceProps.setEnabled(true);
+                 option = wizard.getComponentByName(content, "PART_OF_CLUSTER");
+                 clusterName = wizard.getComponentByName(content, "CLUSTER_NAME");
+                 if(option.isSelected()) 
+                   clusterName.setEnabled(true);
+                 else 
+                   clusterName.setEnabled(false);
                  }
-                 else {
-                   serviceName.setEnabled(false);
-                   serviceProps.setEnabled(false);
-                 }
-               }
              };
              return theAL;
            ]]></apt:scriptCode>
          </apt:scriptHandler>
         </apt:property>
 
-        <apt:property apt:name="SERVICE_NAME" apt:label="$ADMIN_SERVICE_NAME_TEXT"
-                      apt:dataPath="Administration.SERVICE_NAME"
+        <apt:property apt:name="CLUSTER_NAME" apt:label="$CLUSTER_NAME_TEXT"
+                      apt:dataPath="NodeConfiguration.CLUSTER_NAME"
                       apt:type="xs:string">
           <apt:visual>
-            <apt:textField apt:columns="15" apt:toolTip="$ADMIN_SERVICE_NAME_TOOL_TIP"/>
-          </apt:visual>
-        </apt:property>
-
-        <apt:property apt:name="SERVICE_PROPS" apt:label="$ADMIN_SERVICE_PROPS_TEXT"
-                      apt:dataPath="Administration.SERVICE_PROPS"
-                      apt:type="xs:string">
-          <apt:visual>
-            <apt:password apt:columns="20" apt:toolTip="$ADMIN_SERVICE_PROPS_TOOL_TIP"/>
+            <apt:textField apt:columns="15" apt:toolTip=""/>
           </apt:visual>
         </apt:property>
 	</apt:section>
@@ -188,25 +155,17 @@ validateAdminPort(prop) {
 	validatePortValues(adminPort);
 }
 
-/* Validate HTTP Port */
-validateHttpPort(prop) {
-	if (isSilentMode())
-		return;
-        String httpPort = (String)prop.getUnconfirmedValue();
-	validatePortValues(httpPort);
-}
-
 validatePortValues(String inputPort)  {
 	// First check if the port is empty
 	/*
-	String inputStatus = (String)ConfigHelper.getValue("glassfish.Administration.STATUS"));
+	String inputStatus = (String)ConfigHelper.getValue("Node.NodeConfiguration.STATUS"));
 	if (inputStatus.equals("ERROR")) {
 		System.out.println("Not validating stuff");
 		return;
 	}
 	*/
         if ((inputPort == null) || inputPort.equals("")) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
             throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
         }
 
@@ -215,19 +174,19 @@ validatePortValues(String inputPort)  {
 	try {
 		intPortNumber = Integer.parseInt(inputPort);
 	}catch(NumberFormatException dummy) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
 		throw new EnhancedException("PORT_NOT_NUMERIC",new String[]{});
 	}
 
 	// Check for out of range values
 	if (intPortNumber <=0 || intPortNumber > 65535) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
 		throw new EnhancedException("PORT_OUT_OF_RANGE", new String[]{});
     }
 
 	/*Commented out as ConfigHelper() has bugs..
 	if (inputPort.equals(theOtherPort)) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
             throw new EnhancedException("PORTS_HAVE_SAME_VALUE", new String[]{});
 	}
 	*/
@@ -235,14 +194,14 @@ validatePortValues(String inputPort)  {
 	// Check if the port is free
 	int retStat = isPortFree(intPortNumber);
 	if (retStat == -1) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
 		throw new EnhancedException("PORT_OCCUPIED", new String[]{});
     }
 	if (retStat == -2) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
 		throw new EnhancedException("HOST_NAME_CANNOT_BE_FOUND_WARNING", new String[]{});
     }
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "SUCCESS");
+            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "SUCCESS");
 }
 
 // Check if the port is free
@@ -360,24 +319,16 @@ run() {
  		List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
 		activeModes.add("IS_AIX");
      }
-     serviceName = wizard.getComponentByName(content, "SERVICE_NAME");
-     serviceProps = wizard.getComponentByName(content, "SERVICE_PROPS");
-     serviceOption = wizard.getComponentByName(content, "CREATE_SERVICE");
-
-     if (System.getProperty("os.name").toLowerCase().startsWith("sunos") || System.getProperty("os.name").toLowerCase().startsWith("windows")) 
-                   serviceOption.setEnabled(true);
-	else
-		  serviceOption.setEnabled(false);
-     serviceName.setEnabled(false);
-     serviceProps.setEnabled(false);
+     clusterName = wizard.getComponentByName(content, "CLUSTER_NAME");
+     clusterOption = wizard.getComponentByName(content, "PART_OF_CLUSTER");
+     clusterName.setEnabled(false);
+     clusterOption.setEnabled(true);
       wizard.enableNext(true);
       wizard.enableCancel(true);
       wizard.enableBack(true);
-
       List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
-     
      }
-return (Runnable)this;
+	return (Runnable)this;
     
 	]]></apt:scriptCode>
       </apt:scriptHandler>

@@ -42,12 +42,12 @@ package org.glassfish.installer.util;
  */
 public class OSUtils {
 
-    private static String osName = System.getProperty("os.name").toLowerCase();
+    public static String osName = System.getProperty("os.name").toLowerCase();
 
-    private static String osVersion = System.getProperty("os.version");
+    public static String osVersion = System.getProperty("os.version");
 
     /* Move it to Resources */
-    protected String windowsCopyRightNoticeText =
+    static public String windowsCopyRightNoticeText =
             "@echo off\n"
             + "REM DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n"
             + "REM\n"
@@ -57,26 +57,26 @@ public class OSUtils {
             + "REM\n";
 
     /* Move it to Resources */
-    protected String unixCopyRightNoticeText =
+    static public String unixCopyRightNoticeText =
             "#!/bin/sh\n"
             + "#\n"
             + "# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n"
             + "#\n"
-            + "# Copyright 2008 Sun Microsystems, Inc. All rights reserved.\n"
+            + "# Copyright 2010 Sun Microsystems, Inc. All rights reserved.\n"
             + "#\n"
             + "# Use is subject to License Terms\n"
             + "#\n";
 
     /* @return true/false */
     static public boolean isWindows() {
-        return osName.indexOf("windows") == -1 ? true : false;
+        return osName.indexOf("windows") == -1 ? false: true;
     }
 
     /* Only supports Mac OS X.
      * @return true/false
      */
     static public boolean isMac() {
-        return osName.startsWith("mac os x") ? true : false;
+        return osName.startsWith("mac os x") || osName.startsWith("darwin") ? true : false;
 
     }
 
