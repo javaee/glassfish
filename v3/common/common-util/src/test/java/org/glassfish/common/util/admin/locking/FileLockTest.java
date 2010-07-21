@@ -254,6 +254,76 @@ public class FileLockTest {
         }
     }
 
+    @Test
+     public void lockAndReadTest() throws IOException {
+         File f = File.createTempFile("common-util-FileLockTest", "tmp");
+         try {
+
+             // Now let's try to write the file.
+             FileWriter fw = new FileWriter(f);
+             fw.append("FileLockTest reading passed !");
+             fw.close();
+             
+             final ManagedFile managed = new ManagedFile(f, 1000, 1000);
+             Lock fl = managed.accessRead();
+             FileReader fr = new FileReader(f);
+             char[] chars = new char[1024];
+             fr.read(chars);
+             fr.close();
+
+             fl.unlock();
+
+             // Let's read it back
+             System.out.println(chars);
+
+         } catch(Exception e) {
+             e.printStackTrace();
+         } finally {
+             f.delete();
+         }
+     }
+
+     @Test
+     public void lockForReadAndWriteTest() throws IOException {
+         File f = File.createTempFile("common-util-FileLockTest", "tmp");
+         try {
+
+             // Now let's try to write the file.
+             FileWriter fw = new FileWriter(f);
+             fw.append("lockForReadAndWriteTest reading passed !");
+             fw.flush();
+             fw.close();
+
+             final ManagedFile managed = new ManagedFile(f, 1000, 1000);
+             Lock fl = managed.accessRead();
+
+             try {
+                FileWriter fwr = new FileWriter(f);
+                fwr.append("lockForReadAndWriteTest reading failed !");
+                fwr.close();
+             } catch(IOException expected) {
+                 System.out.println("Got an expected exception : " + expected.getMessage());
+             }
+
+             fl.unlock();
+
+             System.out.println("file length" + f.length());
+             FileReader fr = new FileReader(f);
+             char[] chars = new char[1024];
+             fr.read(chars);
+             fr.close();
+
+
+             // Let's read it back
+             System.out.println(chars);
+             //Assert.assertTrue(new String(chars).contains("passed"));
+
+         } catch(Exception e) {
+             e.printStackTrace();
+         } finally {
+             f.delete();
+         }
+     }
     //@Test
     public void lockAndWriteTest() throws IOException {
         File f = File.createTempFile("common-util-FileLockTest", "tmp");

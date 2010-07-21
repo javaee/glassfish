@@ -94,6 +94,8 @@ public class ReadLockTest {
         }
     }
 
+    
+
 
     public File getFile() throws IOException {
         Enumeration<URL> urls = getClass().getClassLoader().getResources("adminport.xml");
