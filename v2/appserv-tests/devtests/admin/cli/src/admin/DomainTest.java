@@ -56,6 +56,7 @@ public class DomainTest extends AdminBaseDevTest {
 
     private void runTests() {
         testCreateDomainTemplate();
+        testDeleteDomain();
         stat.printSummary();
     }
 
@@ -141,5 +142,12 @@ public class DomainTest extends AdminBaseDevTest {
         System.out.println("o=" + o.toString());
         return o instanceof String && "4849".equals((String)o);
 
+    }
+
+    void testDeleteDomain() {
+         final String tn = "delete-domain-";
+         report(tn + "create", asadmin("create-domain", "foo"));
+         report(tn + "baddir", !asadmin("delete-domain", "--domainsdir", "blah", "foo"));
+         report(tn + "delete", asadmin("delete-domain", "foo"));
     }
 }
