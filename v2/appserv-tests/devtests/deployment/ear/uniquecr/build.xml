@@ -145,13 +145,6 @@
             <param name="desc" value="ear/uniquecr Test1 "/>
         </antcall>
 
-        <!-- deploy war to remote instance server -->
-        <!-- this should fail because of duplicate context root -->
-       <antcall target="common.run.asadmin">
-            <param name="arg.list"
-                   value="deploy --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target ${testServer} ${all.war}"/>
-       </antcall>
-
         <!-- deploy war to DAS server instance -->
         <!-- this should succeed because it's different instance -->
        <antcall target="common.run.asadmin">
