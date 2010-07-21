@@ -943,6 +943,10 @@ public class WebappClassLoader
                     new Object[] {name, getJavaVersion()});
                 throw new UnsupportedClassVersionError(msg);
             } catch(AccessControlException ace) {
+                if (logger.isLoggable(Level.WARNING)) {
+                    logger.log(Level.WARNING, "WebappClassLoader.findClassInternal(" + name
+                            + ") security exception: " + ace.getMessage(), ace);
+                }
                 throw new ClassNotFoundException(name, ace);
             } catch(RuntimeException rex) {
                 throw rex;
@@ -960,6 +964,10 @@ public class WebappClassLoader
                         clazz = super.findClass(name);
                     }
                 } catch(AccessControlException ace) {
+                    if (logger.isLoggable(Level.WARNING)) {
+                        logger.log(Level.WARNING,  "WebappClassLoader.findClassInternal(" + name
+                                + ") security exception: " + ace.getMessage(), ace);
+                    }
                     throw new ClassNotFoundException(name, ace);
                 } catch (RuntimeException e) {
                     if (logger.isLoggable(Level.FINER))
