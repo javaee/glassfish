@@ -53,7 +53,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -89,6 +88,9 @@ public class ManagedFile {
     final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ParamTokenizer.class);
 
+    public interface ManagedLock extends java.util.concurrent.locks.Lock {
+        public RandomAccessFile getLockedFile();    
+    }
     /**
      * Creates a new managed file.
      *
@@ -113,7 +115,7 @@ public class ManagedFile {
      * @throws TimeoutException if the lock cannot be obtained before the timeOut
      *                          expiration.
      */
-    public Lock accessWrite() throws IOException, TimeoutException {
+    public ManagedLock accessWrite() throws IOException, TimeoutException {
         wl._lock();
         return wl;
     }
@@ -127,7 +129,7 @@ public class ManagedFile {
      * @throws TimeoutException if the lock cannot be obtained before the timeOut
      *                          expiration.
      */
-    public Lock accessRead() throws IOException, TimeoutException {
+    public ManagedLock accessRead() throws IOException, TimeoutException {
         rl._lock();
         return rl;
     }
@@ -138,14 +140,18 @@ public class ManagedFile {
      * must call {@link RefCounterLock#unlock()} to release the lock, when the
      * reference counter returns to zero, the file lock is release.
      */
-    private class RefCounterLock implements Lock {
-        final Lock lock;
+    private class RefCounterLock implements ManagedLock {
+        final java.util.concurrent.locks.Lock lock;
         final boolean read;
         final AtomicInteger refs = new AtomicInteger(0);
         FileLock fileLock;
         RandomAccessFile raf;
         FileChannel fc;
         Timer timer;
+
+        public RandomAccessFile getLockedFile() {
+            return raf;
+        }
 
         private FileLock get(FileChannel fc, boolean shared) throws IOException, TimeoutException {
 
@@ -239,7 +245,7 @@ public class ManagedFile {
             }
         }
 
-        private RefCounterLock(Lock lock, boolean read) {
+        private RefCounterLock(java.util.concurrent.locks.Lock lock, boolean read) {
             this.lock = lock;
             this.read = read;
         }

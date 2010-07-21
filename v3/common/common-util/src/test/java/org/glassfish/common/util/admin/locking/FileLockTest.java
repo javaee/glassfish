@@ -40,10 +40,7 @@ import junit.framework.Assert;
 import org.glassfish.common.util.admin.ManagedFile;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -352,17 +349,17 @@ public class FileLockTest {
              f.delete();
          }
      }
+
     //@Test
     public void lockAndWriteTest() throws IOException {
         File f = File.createTempFile("common-util-FileLockTest", "tmp");
         try {
             final ManagedFile managed = new ManagedFile(f, 1000, 1000);
-            Lock fl = managed.accessWrite();
+            ManagedFile.ManagedLock fl = managed.accessWrite();
 
             // Now let's try to write the file.
-            FileWriter fw = new FileWriter(f);
-            fw.append("lockAndWriteTest Passed !");
-            fw.close();
+            RandomAccessFile raf = fl.getLockedFile();
+            raf.writeUTF("lockAndWriteTest Passed !");
 
             fl.unlock();
 
