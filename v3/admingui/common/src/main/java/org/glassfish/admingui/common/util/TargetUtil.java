@@ -54,8 +54,11 @@ import org.glassfish.admingui.common.handlers.RestApiHandlers;
  */
 public class TargetUtil {
 
-    public  boolean isCluster(String name){
-        return false;
+    public static boolean isCluster(String name){
+        if (GuiUtil.isEmpty(name)){
+            return false;
+        }
+        return getClusters().contains(name);
     }
 
     public static List getStandaloneInstances(){
