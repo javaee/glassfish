@@ -43,20 +43,15 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.api.admin.InstanceState;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
-import com.sun.enterprise.config.serverbeans.Servers;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-
-import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.logging.LogDomains;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -66,28 +61,10 @@ import java.util.logging.Level;
 @Cluster(RuntimeType.DAS)
 @Scoped(PerLookup.class)
 @I18n("recover.transactions")
-public class RecoverTransactions implements AdminCommand {
-
-    private static StringManager localStrings =
-            StringManager.getManager(RecoverTransactions.class);
-
-    private static Logger _logger = LogDomains.getLogger(RecoverTransactions.class, 
-            LogDomains.TRANSACTION_LOGGER);
-
-    @Param(name = "transactionlogdir", optional = true)
-    String transactionLogDir;
+public class RecoverTransactions extends RecoverTransactionsBase implements AdminCommand {
 
     @Param(name="target", alias = "destination", optional = true)
     String destinationServer;
-
-    @Param(name = "server_name", primary = true)
-    String serverToRecover;
-
-    @Inject
-    Servers servers;
-
-    @Inject 
-    InstanceState state;
 
     @Inject 
     CommandRunner runner;
@@ -99,46 +76,9 @@ public class RecoverTransactions implements AdminCommand {
             _logger.info("==> original target: " + destinationServer + " ... server: " + serverToRecover);
         }
 
-        //if (domain.getServerNamed(serverToRecover) == null) {
-        if (servers.getServer(serverToRecover) == null) {
-            report.setMessage(localStrings.getString("recover.transactions.serverBeRecoveredIsNotKnown",
-                    serverToRecover));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
-        if (isServerRunning(serverToRecover)) {
-            if (destinationServer != null && !serverToRecover.equals(destinationServer)) {
-                report.setMessage(localStrings.getString(
-                        "recover.transactions.runningServerBeRecoveredFromAnotherServer",
-                        serverToRecover, destinationServer));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
-            if (transactionLogDir != null) {
-                report.setMessage(localStrings.getString(
-                        "recover.transactions.logDirShouldNotBeSpecifiedForSelfRecovery"));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
-        } else if (destinationServer == null) {
-            report.setMessage(localStrings.getString("recover.transactions.noDestinationServer"));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-
-        } else if (servers.getServer(destinationServer) == null) {
-            report.setMessage(localStrings.getString("recover.transactions.DestinationServerIsNotKnown"));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-
-        } else if (!isServerRunning(destinationServer)) {
-            report.setMessage(localStrings.getString("recover.transactions.destinationServerIsNotAlive",
-                    destinationServer));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-
-        } else if (transactionLogDir == null) {
-            report.setMessage(localStrings.getString("recover.transactions.logDirNotSpecifiedForDelegatedRecovery"));
+        String error = validate(destinationServer, true);
+        if (error != null) {
+            report.setMessage(error);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
@@ -175,12 +115,4 @@ public class RecoverTransactions implements AdminCommand {
             report.setFailureCause(e);
         }
     }
-
-    // Implementation note: This has to be redone when clustering is supported in V3. Currently this implementation
-    // returns true by default as it gets executed only if DAS is running.
-    private boolean isServerRunning(String serverName) {
-        return com.sun.enterprise.util.SystemPropertyConstants.DAS_SERVER_NAME.equals(serverName) || 
-                state.getState(serverName) == InstanceState.StateType.RUNNING;
-    }
-
 }

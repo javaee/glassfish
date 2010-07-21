@@ -51,8 +51,6 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 
 import com.sun.enterprise.transaction.api.ResourceRecoveryManager;
-import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.logging.LogDomains;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -61,22 +59,10 @@ import java.util.logging.Level;
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE})
 @Cluster(RuntimeType.INSTANCE)
 @Scoped(PerLookup.class)
-public class RecoverTransactionsInternal implements AdminCommand {
-
-    private static StringManager localStrings =
-            StringManager.getManager(RecoverTransactions.class);
-
-    private static Logger _logger = LogDomains.getLogger(RecoverTransactionsInternal.class,
-            LogDomains.TRANSACTION_LOGGER);
-
-    @Param(name = "transactionlogdir", optional = true)
-    String transactionLogDir;
+public class RecoverTransactionsInternal extends RecoverTransactionsBase implements AdminCommand {
 
     @Param(name="target", optional = false)
     String destinationServer;
-
-    @Param(name = "server_name", primary = true)
-    String serverToRecover;
 
     @Inject
     ResourceRecoveryManager recoveryManager;
@@ -86,6 +72,13 @@ public class RecoverTransactionsInternal implements AdminCommand {
 
         if (_logger.isLoggable(Level.INFO)) {
             _logger.info("==> internal target: " + destinationServer + " ... server: " + serverToRecover);
+        }
+
+        String error = validate(destinationServer, false);
+        if (error != null) {
+            report.setMessage(error);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         }
 
         try {
