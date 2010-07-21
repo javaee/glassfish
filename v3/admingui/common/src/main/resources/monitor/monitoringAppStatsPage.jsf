@@ -54,24 +54,26 @@
         if(!#{viewVal}) {
             setAttribute(key="viewVal" value="#{firstVal}");
         }
-        getAppName(endpoint="#{sessionScope.REST_URL}/applications/application" name="#{viewVal}", appName=>$attribute{appValue}, appFullName=>$attribute{appFullName});
-        //To get the sub components of a module
-        createMap(result="#{requestScope.attrsMap}");
-        mapPut(map="#{requestScope.attrsMap}"  key="modulename" value="#{viewVal}");
-        mapPut(map="#{requestScope.attrsMap}"  key="appname"  value="#{appValue}");
-        gf.callRestAndExtractMsgProps(
-    	    endpoint="#{sessionScope.REST_URL}/applications/application/list-sub-components"
-	    attrs="#{requestScope.attrsMap}"
-	    method="GET"	    
-	    keyList="#{pageSession.subModuleList}"
-            propsMap="#{pageSession.propsMap}" );
-        
         if(#{viewVal}) {
             setPageSessionAttribute(key="viewVal" value="#{viewVal}");
         }
         if(#{cVal}) {
             setPageSessionAttribute(key="cVal" value="#{cVal}");
         }
+        getAppName(endpoint="#{sessionScope.REST_URL}/applications/application" name="#{viewVal}", appName=>$attribute{appValue}, appFullName=>$attribute{appFullName});
+        //To get the sub components of a module
+        if(#{viewVal}) {
+            createMap(result="#{requestScope.attrsMap}");
+            mapPut(map="#{requestScope.attrsMap}"  key="modulename" value="#{viewVal}");
+            mapPut(map="#{requestScope.attrsMap}"  key="appname"  value="#{appValue}");
+            gf.callRestAndExtractMsgProps(
+                endpoint="#{sessionScope.REST_URL}/applications/application/list-sub-components"
+                attrs="#{requestScope.attrsMap}"
+                method="GET"
+                keyList="#{pageSession.subModuleList}"
+                propsMap="#{pageSession.propsMap}" );
+        }
+        
         getWebStatsUrl(app="#{appFullName}", compVal="#{cVal}", vsList="#{pageSession.vsList}", moduleProps="#{pageSession.propsMap}", webStatUrl=>$attribute{webStatUrl}, webStatType=>$attribute{webStatType});
         getNameforMbean(appName="#{viewVal}", compVal="#{cVal}", end="true", mbeanName=>$attribute{mbName});
         getStatsUrl(app="#{appFullName}", compVal="#{cVal}", moduleProps="#{pageSession.propsMap}", statUrl=>$attribute{statUrl}, statType=>$attribute{statType});

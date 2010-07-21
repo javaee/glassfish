@@ -705,7 +705,7 @@ public class MonitoringHandlers {
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
-        if (!(name.equals(appName))) {
+        if (fullName != null && !(name.equals(appName))) {
             fullName = appName + "/" + name;
         }
 
