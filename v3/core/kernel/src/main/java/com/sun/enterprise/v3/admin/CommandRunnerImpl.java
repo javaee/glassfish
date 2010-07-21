@@ -851,17 +851,9 @@ public class CommandRunnerImpl implements CommandRunner {
         List<RuntimeType> runtimeTypes = new ArrayList<RuntimeType>();
         Set<CommandTarget> targetTypesAllowed = new HashSet<CommandTarget>();
 
-        // TODO : Remove this flag once CLIs are compliant with @Cluster requirements
-        boolean doReplication = false;
-        if(Utility.getEnvOrProp("ENABLE_REPLICATION")!=null) {
-            doReplication = Boolean.parseBoolean(Utility.getEnvOrProp("ENABLE_REPLICATION"));
-         }
-        //TODO : Remove the above flag check by MS3
-
         // If this glassfish installation does not have stand alone instances / clusters at all, then
-        // lets not even look Supplemental command and such. A small optimization so that cluster-admin
-        // and its dependencies are not loaded for a typical developer profile
-        //TODO : This should just wrap the supplemental check code once the ENV var is removed
+        // lets not even look Supplemental command and such. A small optimization
+        boolean doReplication = false;
         if( (domain.getServers().getServer().size() > 1) || (domain.getClusters().getCluster().size() != 0) ) {
             doReplication = true;
         }
@@ -936,101 +928,100 @@ public class CommandRunnerImpl implements CommandRunner {
             if(!injectParameters(model, command, injectionMgr, context).equals(ActionReport.ExitCode.SUCCESS))
                     return;
 
-            //Do supplemental commands and the main command
-            if(doReplication) {
-                // Read cluster annotation attributes
-                org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
-                if(clAnnotation == null) {
+            // Read cluster annotation attributes
+            org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
+            if(clAnnotation == null) {
+                runtimeTypes.add(RuntimeType.DAS);
+                runtimeTypes.add(RuntimeType.INSTANCE);
+            } else {
+                if(clAnnotation.value().length == 0) {
                     runtimeTypes.add(RuntimeType.DAS);
                     runtimeTypes.add(RuntimeType.INSTANCE);
                 } else {
-                    if(clAnnotation.value().length == 0) {
-                        runtimeTypes.add(RuntimeType.DAS);
-                        runtimeTypes.add(RuntimeType.INSTANCE);
-                    } else {
-                        for(RuntimeType t : clAnnotation.value()) {
-                            runtimeTypes.add(t);
-                        }
+                    for(RuntimeType t : clAnnotation.value()) {
+                        runtimeTypes.add(t);
                     }
                 }
+            }
 
-                String targetName = parameters.getOne("target");
-                if(targetName == null)
-                    targetName = "server";
+            String targetName = parameters.getOne("target");
+            if(targetName == null)
+                targetName = "server";
 
-                if(serverEnv.isDas()) {
+            if(serverEnv.isDas()) {
 
-                    // Check if the command allows this target type; first read the annotation
-                    //TODO : See is @TargetType can also be moved to the CommandModel
-                    TargetType tgtTypeAnnotation = command.getClass().getAnnotation(TargetType.class);
-                    if(tgtTypeAnnotation != null) {
-                        for(CommandTarget c : tgtTypeAnnotation.value()) {
-                            targetTypesAllowed.add(c);
-                        }
-                    };
-                    //If not @TargetType, default it
-                    if(targetTypesAllowed.size() == 0) {
-                        targetTypesAllowed.add(CommandTarget.DAS);
-                        targetTypesAllowed.add(CommandTarget.STANDALONE_INSTANCE);
-                        targetTypesAllowed.add(CommandTarget.CLUSTER);
-                        targetTypesAllowed.add(CommandTarget.CONFIG);
+                // Check if the command allows this target type; first read the annotation
+                //TODO : See is @TargetType can also be moved to the CommandModel
+                TargetType tgtTypeAnnotation = command.getClass().getAnnotation(TargetType.class);
+                if(tgtTypeAnnotation != null) {
+                    for(CommandTarget c : tgtTypeAnnotation.value()) {
+                        targetTypesAllowed.add(c);
                     }
+                };
+                //If not @TargetType, default it
+                if(targetTypesAllowed.size() == 0) {
+                    targetTypesAllowed.add(CommandTarget.DAS);
+                    targetTypesAllowed.add(CommandTarget.STANDALONE_INSTANCE);
+                    targetTypesAllowed.add(CommandTarget.CLUSTER);
+                    targetTypesAllowed.add(CommandTarget.CONFIG);
+                }
 
-                    // If the target is "server" and the command is not marked for DAS,
-                    // add DAS to RuntimeTypes; This is important because those class of CLIs that
-                    // do not always have to be run on DAS followed by applicable instances
-                    // will have @Cluster(RuntimeType.INSTANCE) and they have to be run on DAS
-                    // ONLY if the target is "server"
-                    if(CommandTarget.DAS.isValid(habitat, targetName) &&
-                            !runtimeTypes.contains(RuntimeType.DAS)) {
-                        runtimeTypes.add(RuntimeType.DAS);
-                    }
+                // If the target is "server" and the command is not marked for DAS,
+                // add DAS to RuntimeTypes; This is important because those class of CLIs that
+                // do not always have to be run on DAS followed by applicable instances
+                // will have @Cluster(RuntimeType.INSTANCE) and they have to be run on DAS
+                // ONLY if the target is "server"
+                if(CommandTarget.DAS.isValid(habitat, targetName) &&
+                        !runtimeTypes.contains(RuntimeType.DAS)) {
+                    runtimeTypes.add(RuntimeType.DAS);
+                }
 
-                    // Check if the target is valid
-                    //Is there a server or a cluster or a config with given name ?
-                    if( (!CommandTarget.DOMAIN.isValid(habitat, targetName)) &&
-                            (domain.getServerNamed(targetName) == null) &&
-                                (domain.getClusterNamed(targetName) == null) &&
-                                (domain.getConfigNamed(targetName) == null) ) {
-                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                        report.setMessage(adminStrings.getLocalString("commandrunner.executor.invalidtarget",
-                            "Unable to find a valid target with name {0}", targetName));
-                        return;
+                // Check if the target is valid
+                //Is there a server or a cluster or a config with given name ?
+                if( (!CommandTarget.DOMAIN.isValid(habitat, targetName)) &&
+                        (domain.getServerNamed(targetName) == null) &&
+                            (domain.getClusterNamed(targetName) == null) &&
+                            (domain.getConfigNamed(targetName) == null) ) {
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setMessage(adminStrings.getLocalString("commandrunner.executor.invalidtarget",
+                        "Unable to find a valid target with name {0}", targetName));
+                    return;
+                }
+                //Does this command allow this target type
+                boolean isTargetValidType = false;
+                Iterator<CommandTarget> it = targetTypesAllowed.iterator();
+                while(it.hasNext()) {
+                    if(it.next().isValid(habitat, targetName)) {
+                        isTargetValidType = true;
+                        break;
                     }
-                    //Does this command allow this target type
-                    boolean isTargetValidType = false;
-                    Iterator<CommandTarget> it = targetTypesAllowed.iterator();
+                }
+                if(!isTargetValidType) {
+                    StringBuilder validTypes = new StringBuilder();
+                    it = targetTypesAllowed.iterator();
                     while(it.hasNext()) {
-                        if(it.next().isValid(habitat, targetName)) {
-                            isTargetValidType = true;
-                            break;
-                        }
+                        validTypes.append(it.next().getDescription() + ", ");
                     }
-                    if(!isTargetValidType) {
-                        StringBuilder validTypes = new StringBuilder();
-                        it = targetTypesAllowed.iterator();
-                        while(it.hasNext()) {
-                            validTypes.append(it.next().getDescription() + ", ");
-                        }
-                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                        report.setMessage(adminStrings.getLocalString("commandrunner.executor.invalidtargettype",
-                                "Target {0} is not a supported type. Command {1} supports these types of targets only : {2}",
-                                    targetName, model.getCommandName(),validTypes.toString()));
-                        return;
-                    }
-                    //If target is a clustered instance and the allowed types does not allow operations on clustered
-                    //instance, return error
-                    if( (CommandTarget.CLUSTERED_INSTANCE.isValid(habitat, targetName)) &&
-                            (!targetTypesAllowed.contains(CommandTarget.CLUSTERED_INSTANCE))) {
-                        Cluster c = domain.getClusterForInstance(targetName);
-                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                        report.setMessage(adminStrings.getLocalString("commandrunner.executor.instanceopnotallowed",
-                                "The {0} command is not allowed on instance {1} because it is part of cluster {2}",
-                                    model.getCommandName(), targetName, c.getName()));
-                        return;
-                    }
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setMessage(adminStrings.getLocalString("commandrunner.executor.invalidtargettype",
+                            "Target {0} is not a supported type. Command {1} supports these types of targets only : {2}",
+                                targetName, model.getCommandName(),validTypes.toString()));
+                    return;
                 }
+                //If target is a clustered instance and the allowed types does not allow operations on clustered
+                //instance, return error
+                if( (CommandTarget.CLUSTERED_INSTANCE.isValid(habitat, targetName)) &&
+                        (!targetTypesAllowed.contains(CommandTarget.CLUSTERED_INSTANCE))) {
+                    Cluster c = domain.getClusterForInstance(targetName);
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setMessage(adminStrings.getLocalString("commandrunner.executor.instanceopnotallowed",
+                            "The {0} command is not allowed on instance {1} because it is part of cluster {2}",
+                                model.getCommandName(), targetName, c.getName()));
+                    return;
+                }
+            }
 
+            if(doReplication) {
                 // Run Supplemental commands that have to run before this command on this instance type
                 SupplementalCommandExecutor supplementalExecutor = habitat.getComponent(SupplementalCommandExecutor.class,
                         "SupplementalCommandExecutorImpl");
