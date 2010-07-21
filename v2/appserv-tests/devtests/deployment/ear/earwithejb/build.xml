@@ -153,14 +153,6 @@
             <param name="log.id" value="${log.id}"/>
             <param name="tgtPort" value="${deploy.clusterinstance1.orbport}"/>
         </antcall>
-        <antcall target="declare-test">
-            <param name="description" value="${testDet} (cluster-inst1)"/>
-        </antcall>
-        <antcall target="runclient">
-            <param name="arg.list" value="${state}"/>
-            <param name="log.id" value="${log.id}"/>
-            <param name="tgtPort" value="${deploy.clusterinstance2.orbport}"/>
-        </antcall>
     </target>
 
     <target name="runclient" depends="setOrbPort">

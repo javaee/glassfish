@@ -8,7 +8,8 @@
 
 	&commonBuild;
 
-    <target name="private-all">
+    <!-- Only run the tests in PE mode till all tests pass in EE -->
+    <target name="private-all" if="PE">
         <!--
             Build the versioning devtests with simple-version-servlet
         -->

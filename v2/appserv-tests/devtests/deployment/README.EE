@@ -11,6 +11,9 @@ run on DAS and cluster
 
 ** It is assumed that the masster password is changeit **
 
+Note: The admin secure connection is not implemented yet, so we always run in 
+      non-secure mode now. The SECURE variable will be ignored.
+
 FOR RUNNING THE DEPLOYMENT TESTS ON SE/EE w/ DAS :
 --------------------------------------------------
 1. In addition to setting APS_HOME, S1AS_HOME (see README for more details), 
@@ -68,14 +71,3 @@ cat `which ant` :
  "$JAVACMD" -Xmx999m -classpath "$LOCALCLASSPATH" -Dant.home="${ANT_HOME}" $ANT_OPTS org.apache.tools.ant.Main $ANT_ARGS "$@"
 
 
-ADDITIONAL NOTES
---------------------
-1. The admin secure connection is not implemented yet, so we always run in 
-   non-secure mode now. The SECURE variable will be ignored.
-2. The replication flag has not been turned on by default yet. So for now, you
-   also need to set the replication environment variable ENABLE_REPLICATION
-   to true (e.g. export ENABLE_REPLICATION=true on ksh) 
-3. Currently not all the tests passed in all three modes, investigation on 
-   the failures are still going on. For now, for instance and cluster mode, 
-   just run the ear/earwithall2 directory: cd ear/earwithall2, ant all-ee.
-   This test directory covers the basic cluster testing scenarios.

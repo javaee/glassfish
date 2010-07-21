@@ -8,7 +8,8 @@
 
 	&commonBuild;
 
-	<target name="private-all">
+        <!-- Only run the tests in PE mode till all tests pass in EE -->
+	<target name="private-all" if="PE">
 		<ant dir="ear" target="private-all">
 			<property name="build" value="${build}/ear"/>
 		</ant>

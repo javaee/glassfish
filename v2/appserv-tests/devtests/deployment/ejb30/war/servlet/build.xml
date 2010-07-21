@@ -117,12 +117,10 @@
         <antcall target="declare-test">
             <param name="description" value="ejb30/war/servlet Test asadmin redeploy"/>
         </antcall>
-<!--
         <antcall target="redeploy.asadmin"/>
         <antcall target="runweb">
             <param name="log.id" value="2"/>
         </antcall>
--->
         <antcall target="undeploy.asadmin"/>
         <antcall target="delete.user"/>
     </target>
