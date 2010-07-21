@@ -414,7 +414,7 @@ public class Main {
         return startupCode;
     }
 
-    protected Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
+    public Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
         // set the parent class loader before we start loading modules
         setParentClassLoader(context, registry);
 

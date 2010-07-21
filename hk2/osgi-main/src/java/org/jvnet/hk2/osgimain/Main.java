@@ -115,13 +115,13 @@ public class Main implements BundleActivator
     public void start(BundleContext context) throws Exception
     {
         this.context = context;
-        final String bundlesDirPath = context.getProperty(BUNDLES_DIR);
+        final String bundlesDirPath = getProperty(BUNDLES_DIR);
         if (bundlesDirPath == null) {
             // nothing to do, let's return
             return;
         }
         bundlesDir = new File(bundlesDirPath);
-        String autostartBundlesProp = context.getProperty(AUTO_START_BUNDLES_PROP);
+        String autostartBundlesProp = getProperty(AUTO_START_BUNDLES_PROP);
         if (autostartBundlesProp != null) {
             StringTokenizer st = new StringTokenizer(autostartBundlesProp, ",");
             while (st.hasMoreTokens()) {
@@ -131,7 +131,7 @@ public class Main implements BundleActivator
                 autoStartBundleLocations.add(bundleURI);
             }
         }
-        String excludedFilesProp = context.getProperty(EXCLUDED_SUBDIRS);
+        String excludedFilesProp = getProperty(EXCLUDED_SUBDIRS);
         if (excludedFilesProp != null) {
             for (String s : excludedFilesProp.split(",")) {
                 excludedSubDirs.add(new File(bundlesDir, s.trim()));
@@ -159,6 +159,14 @@ public class Main implements BundleActivator
                 }
             }
         }
+    }
+
+    private String getProperty(String property) {
+        String value = context.getProperty(property);
+        // Check System properties to work around Equinox Bug:
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=320459
+        if (value == null) value = System.getProperty(property);
+        return value;
     }
 
     /**
@@ -381,7 +389,7 @@ public class Main implements BundleActivator
         // This is a HACK - thanks to some weired optimization trick
         // done for GlassFish. HK2 maintains a cache of inhabitants and
         // that needs  to be recreated when there is a change in modules dir.
-        final String cacheDir = System.getProperty(HK2_CACHE_DIR);
+        final String cacheDir = getProperty(HK2_CACHE_DIR);
         if (cacheDir != null) {
             File inhabitantsCache = new File(cacheDir, INHABITANTS_CACHE);
             if (inhabitantsCache.exists()) inhabitantsCache.delete();

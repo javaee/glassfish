@@ -193,7 +193,7 @@ public class OSGiModulesRegistryImpl
      * @throws Exception if the file cannot be read correctly
      */
     private void loadCachedData() throws Exception {
-        String cacheLocation = System.getProperty(HK2_CACHE_DIR);
+        String cacheLocation = getProperty(HK2_CACHE_DIR);
         if (cacheLocation == null) {
             return;
         }
@@ -209,7 +209,7 @@ public class OSGiModulesRegistryImpl
      * @throws IOException if the file cannot be saved successfully
      */
     private void saveCache() throws IOException {
-        String cacheLocation = System.getProperty(HK2_CACHE_DIR);
+        String cacheLocation = getProperty(HK2_CACHE_DIR);
         if (cacheLocation == null) {
             return;
         }
@@ -226,7 +226,7 @@ public class OSGiModulesRegistryImpl
     }
 
     private void deleteCache() {
-        String cacheLocation = System.getProperty(HK2_CACHE_DIR);
+        String cacheLocation = getProperty(HK2_CACHE_DIR);
         if (cacheLocation == null) {
             return;
         }
@@ -549,6 +549,14 @@ public class OSGiModulesRegistryImpl
 
     /*package*/ Module getModule(Bundle bundle) {
         return modules.get(new OSGiModuleId(bundle));
+    }
+
+    private String getProperty(String property) {
+        String value = bctx.getProperty(property);
+        // Check System properties to work around Equinox Bug:
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=320459
+        if (value == null) value = System.getProperty(property);
+        return value;
     }
 
 }
