@@ -81,19 +81,6 @@
         <antcall target="env-check" />
         <antcall target="generate-ca-client-certs-pe" />
         <antcall target="generate-ca-client-certs-ee" />
-        <antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command"
-                   value="create-ssl
-                         --port ${admin.port}
-                         --user ${admin.user}
-                         --passwordfile ${admin.password.file}
-                         --certname s1as
-                         --clientauthenabled=false
-                         --type http-listener" />
-            <param name="as.props" value=""/>
-            <param name="operand.props"
-                   value="http-listener-2" />
-        </antcall>
         <antcall target="restart-server-instance-common"/>
     </target>
  
@@ -102,17 +89,6 @@
     </target>
 
     <target name="restore" depends="init-common" >
-        <antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command"
-                   value="delete-ssl
-                         --user ${admin.user}
-                         --passwordfile ${admin.password.file}
-                         --port ${admin.port}
-                         --type http-listener" />
-            <param name="as.props" value=""/>
-            <param name="operand.props"
-                   value="http-listener-2" />
-        </antcall>
         <antcall target="remove-store-common"/>
         <antcall target="restart-server-instance-common"/>
     </target>

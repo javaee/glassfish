@@ -182,7 +182,8 @@
     <target name="build-deploy" depends="init-common">
         <antcall target="build-server"/>
         <antcall target="deploy-common">
-            <param name="as.props" value="--libraries ${env.S1AS_HOME}/lib/test-${appname}-provider.jar ${as.props}"/>
+            <param name="as.props" value="${as.props}"/>
+            <param name="libraries" value="${env.S1AS_HOME}/lib/test-${appname}-provider.jar"/>
         </antcall>
         <antcall target="build-client"/>
         <antcall target="deploy-client-common"/>

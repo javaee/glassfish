@@ -86,19 +86,6 @@
         <antcall target="generate-ca-client-certs-ee" />-->
 	<copy file="${assemble.dir}/test-${appname}.jar"
             todir="${env.S1AS_HOME}/lib"/>
-	<antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command"
-                   value="create-ssl
-                         --port ${admin.port}
-                         --user ${admin.user}
-                         --passwordfile ${admin.password.file}
-                         --certname s1as
-                         --clientauthenabled=false
-                         --type http-listener" />
-            <param name="as.props" value=""/>
-            <param name="operand.props"
-                   value="http-listener-2" />
-        </antcall>
         <antcall target="restart-server-instance-common"/>
 	<antcall target="asadmin-common">
             <param name="admin.command"
@@ -114,17 +101,6 @@
     </target>
 
     <target name="restore" depends="init-common" >
-        <antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command"
-                   value="delete-ssl
-                         --user ${admin.user}
-                         --passwordfile ${admin.password.file}
-                         --port ${admin.port}
-                         --type http-listener" />
-            <param name="as.props" value=""/>
-            <param name="operand.props"
-                   value="http-listener-2" />
-        </antcall>
         <antcall target="asadmin-common">
             <param name="admin.command"
                    value="set" />

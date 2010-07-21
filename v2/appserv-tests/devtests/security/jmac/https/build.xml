@@ -75,7 +75,8 @@
 
     <target name="deploy" depends="init-common">
         <antcall target="deploy-war-common">
-            <param name="as.props" value="--libraries ${env.S1AS_HOME}/lib/test-${appname}-provider.jar ${as.props}"/>
+            <param name="as.props" value="${as.props}"/>
+            <param name="libraries" value="${env.S1AS_HOME}/lib/test-${appname}-provider.jar"/>
             <param name="contextroot" value="${appname}"/>
         </antcall>
     </target>
@@ -84,7 +85,7 @@
         <antcall target="undeploy-war-common"/>
     </target>
 
-    <target name="run" depends="init-common">
+    <target name="run" depends="init-common, init-security-util">
         <java classname="com.sun.s1asdev.security.jmac.https.WebSSLClient" fork="true">
             <!-- jvmarg value="-Djavax.net.debug=ssl,handshake,data,trustmanager"/-->
             <jvmarg value="-Djavax.net.ssl.keyStore=${mykeystore.db.file}"/>
@@ -92,7 +93,7 @@
             <jvmarg value="-Djavax.net.ssl.keyStorePassword=${ssl.password}"/>
             <jvmarg value="-Djavax.net.ssl.trustStorePassword=${ssl.password}"/>
 
-            <arg value="${http.host}"/>
+            <arg value="${s1asCN}"/>
             <arg value="${https.port}"/>
             <arg value="${appname}"/>
             <classpath>
