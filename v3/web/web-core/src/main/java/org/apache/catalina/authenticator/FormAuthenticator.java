@@ -459,8 +459,8 @@ public class FormAuthenticator
                     }
                 }
             }
-            ApplicationDispatcher disp = (ApplicationDispatcher) sc.getRequestDispatcher(loginPage);
-            disp.dispatch(request.getRequest(), response.getResponse(), DispatcherType.FORWARD, true);
+            RequestDispatcher disp = sc.getRequestDispatcher(loginPage);
+            disp.forward(request.getRequest(), response.getResponse());
             //NOTE: is finishResponse necessary or is it unnecessary after forward
             response.finishResponse();
         } catch (Throwable t) {
@@ -503,8 +503,8 @@ public class FormAuthenticator
                     }
                 }
             }
-            ApplicationDispatcher disp = (ApplicationDispatcher) sc.getRequestDispatcher(errorPage);
-            disp.dispatch(request.getRequest(), response.getResponse(), DispatcherType.FORWARD, true);
+            RequestDispatcher disp = sc.getRequestDispatcher(errorPage);
+            disp.forward(request.getRequest(), response.getResponse());
         } catch (Throwable t) {
             log.log(Level.WARNING,
                     "Unexpected error forwarding or redirecting to error page",

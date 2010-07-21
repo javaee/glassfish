@@ -315,12 +315,6 @@ public final class ApplicationDispatcher
     public void dispatch(ServletRequest request, ServletResponse response,
                   DispatcherType dispatcherType)
             throws ServletException, IOException {
-        dispatch(request, response, dispatcherType, false);
-    }
-
-    public void dispatch(ServletRequest request, ServletResponse response,
-                  DispatcherType dispatcherType, boolean fireRequestEvent)
-            throws ServletException, IOException {
 
         if (!DispatcherType.FORWARD.equals(dispatcherType) &&
                 !DispatcherType.ERROR.equals(dispatcherType) &&
@@ -331,6 +325,7 @@ public final class ApplicationDispatcher
         boolean isCommit = (DispatcherType.FORWARD.equals(dispatcherType) ||
             DispatcherType.ERROR.equals(dispatcherType));
 
+        boolean fireRequestEvent = !needRequestInit(request);
         if (fireRequestEvent) {
             context.fireRequestInitializedEvent(request);
         }
@@ -366,6 +361,7 @@ public final class ApplicationDispatcher
                 }
                 // END SJSAS 6374990
             } finally {
+                //XXX
                 if (fireRequestEvent) {
                     context.fireRequestDestroyedEvent(request);
                 }
@@ -502,7 +498,38 @@ public final class ApplicationDispatcher
             }
         }
     }
-    
+
+    /**
+     * This method will return the note value of Globals.FIRE_REQUEST_INIT_EVENT
+     * and then set FIRE_REQUEST_INIT_EVENT and
+     * FIRE_REQUEST_DESTROY_EVENT notes to Boolean.TRUE.
+     *
+     * This is not an idempotent operation.
+     */
+    private static boolean needRequestInit(ServletRequest request) {
+        boolean alreadyInit = false;
+        ServletRequest sreq = request;
+
+        while (sreq != null) {
+            if (sreq instanceof RequestFacade) {
+                RequestFacade reqFacade = (RequestFacade)sreq;
+                alreadyInit =
+                    Boolean.TRUE.equals(reqFacade.getNote(Constants.FIRE_REQUEST_INIT_EVENT));
+                if (!alreadyInit) {
+                    Request req = reqFacade.getUnwrappedCoyoteRequest();
+                    req.setNote(Constants.FIRE_REQUEST_INIT_EVENT, Boolean.TRUE);
+                    req.setNote(Constants.FIRE_REQUEST_DESTROY_EVENT, Boolean.TRUE);
+                }
+                break;
+            } else if (sreq instanceof ServletRequestWrapper) {
+                sreq = ((ServletRequestWrapper)sreq).getRequest();
+            } else {
+                break;
+            }
+        }
+
+        return alreadyInit;
+    }
     
     /**
      * Combines the servletPath and the pathInfo.

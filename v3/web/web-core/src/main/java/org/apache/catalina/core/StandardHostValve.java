@@ -462,7 +462,7 @@ final class StandardHostValve
                 // Reset the response (keeping the real error code and message)
                 response.resetBuffer(true);
 
-                dispatcher.dispatch(hreq, hres, DispatcherType.ERROR, true);
+                dispatcher.dispatch(hreq, hres, DispatcherType.ERROR);
 
                 // If we forward, the response is suspended again
                 response.setSuspended(false);
