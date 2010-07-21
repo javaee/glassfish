@@ -37,7 +37,7 @@
 package com.sun.enterprise.v3.admin.commands;
 
 
-import com.sun.enterprise.admin.util.Target;
+import org.glassfish.internal.api.Target;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.Param;

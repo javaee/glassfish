@@ -39,6 +39,7 @@ package org.glassfish.loadbalancer.admin.cli;
 import java.util.logging.Logger;
 import java.util.List;
 
+import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
@@ -52,8 +53,6 @@ import com.sun.enterprise.config.serverbeans.LbConfig;
 import org.glassfish.api.admin.*;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
-
-import com.sun.enterprise.admin.util.Target;
 
 /**
  * This is a remote command that enables lb-enabled attribute of

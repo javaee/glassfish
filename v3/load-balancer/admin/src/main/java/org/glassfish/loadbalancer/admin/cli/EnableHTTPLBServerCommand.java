@@ -54,7 +54,7 @@ import org.glassfish.api.admin.*;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
 
-import com.sun.enterprise.admin.util.Target;
+import org.glassfish.internal.api.Target;
 
 /**
  * This is a remote command that enables lb-enabled attribute of

@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import com.sun.enterprise.admin.util.Target;
+import org.glassfish.internal.api.Target;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;

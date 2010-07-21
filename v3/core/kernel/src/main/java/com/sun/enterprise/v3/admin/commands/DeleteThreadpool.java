@@ -39,7 +39,7 @@ package com.sun.enterprise.v3.admin.commands;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-import com.sun.enterprise.admin.util.Target;
+import org.glassfish.internal.api.Target;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.I18n;

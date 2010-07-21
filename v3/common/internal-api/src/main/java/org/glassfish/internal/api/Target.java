@@ -34,7 +34,7 @@
  * holder.
  *
  */
-package com.sun.enterprise.admin.util;
+package org.glassfish.internal.api;
 
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.ServerEnvironment;

@@ -93,7 +93,7 @@ public interface UndoableCommand extends AdminCommand {
      * @param parameters parameters to the commands.
      */
     @IfFailure(FailurePolicy.Error)
-    public ActionReport prepare(ParameterMap parameters);
+    public ActionReport prepare(AdminCommandContext context, ParameterMap parameters);
 
     /**
      * Undo a previously successful execution of the command implementation. The context

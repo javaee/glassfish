@@ -6,6 +6,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
+import org.glassfish.internal.api.Target;
 import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.component.Habitat;
 

@@ -39,7 +39,7 @@ import java.beans.PropertyVetoException;
 import java.util.Map;
 import java.util.Properties;
 
-import com.sun.enterprise.admin.util.Target;
+import org.glassfish.internal.api.Target;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;

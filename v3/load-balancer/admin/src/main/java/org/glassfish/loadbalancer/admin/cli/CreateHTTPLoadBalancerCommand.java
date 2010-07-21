@@ -49,7 +49,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.admin.util.Target;
+import org.glassfish.internal.api.Target;
 
 import com.sun.enterprise.config.serverbeans.LoadBalancers;
 import com.sun.enterprise.config.serverbeans.LoadBalancer;

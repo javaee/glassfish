@@ -38,7 +38,6 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.admin.util.InstanceCommandExecutor;
-import com.sun.enterprise.admin.util.Target;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.config.serverbeans.Cluster;
@@ -48,6 +47,7 @@ import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.glassfish.config.support.CommandTarget;
+import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.common.util.admin.CommandModelImpl;
 import org.glassfish.config.support.GenericCrudCommand;

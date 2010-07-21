@@ -38,7 +38,7 @@ package org.glassfish.web.admin.cli;
 import java.util.Iterator;
 import java.util.List;
 
-import com.sun.enterprise.admin.util.Target;
+import org.glassfish.internal.api.Target;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
