@@ -1319,6 +1319,9 @@ public class ApplicationLifecycle implements Deployment {
      * of __asadmin)
      */
     private String getVirtualServers(String target) {
+        if (env.isDas() && target.equals("domain")) {
+            target = "server";
+        }
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         Server server = domain.getServerNamed(target);

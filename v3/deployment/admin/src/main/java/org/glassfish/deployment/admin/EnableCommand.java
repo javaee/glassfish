@@ -43,6 +43,8 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.FailurePolicy;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.StateCommandParameters;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -52,10 +54,13 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.common.util.admin.ParameterMapExtractor;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -69,6 +74,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Map;
 import java.util.List;
+import java.util.Collections;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -92,6 +98,9 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
 
     @Inject
     Deployment deployment;
+
+    @Inject
+    Habitat habitat;
 
     @Inject
     Domain domain;
@@ -151,8 +160,17 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
                 }
             } else {
                 List<String> targets = domain.getAllReferencedTargetsForApplication(name());
-                // TODO: call framework API to replicate command to all 
-                // referenced targets (possibly remove DAS target first) 
+                // replicate command to all referenced targets
+                try {
+                    ParameterMapExtractor extractor = new ParameterMapExtractor(this);
+                    ParameterMap paramMap = extractor.extract(Collections.EMPTY_LIST);
+                    paramMap.set("DEFAULT", name());
+
+                    ClusterOperationUtil.replicateCommand("enable", FailurePolicy.Error, FailurePolicy.Warn, targets, context, paramMap, habitat);
+                } catch (Exception e) {
+                    report.failure(logger, e.getMessage());
+                    return;
+                }
             }
         }
 

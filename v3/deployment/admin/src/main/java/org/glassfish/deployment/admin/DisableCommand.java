@@ -39,12 +39,14 @@ package org.glassfish.deployment.admin;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.FailurePolicy;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -53,11 +55,14 @@ import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
+import org.glassfish.common.util.admin.ParameterMapExtractor;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -72,6 +77,7 @@ import java.beans.PropertyVetoException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.Collections;
 
 import org.glassfish.deployment.versioning.VersioningService;
 import org.glassfish.deployment.common.VersioningDeploymentException;
@@ -112,6 +118,9 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
 
     @Inject
     VersioningService versioningService;
+
+    @Inject
+    Habitat habitat;
 
     public DisableCommand() {
         origin = Origin.unload;
@@ -178,8 +187,16 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
         if (env.isDas()) {
             if (target.equals("domain")) {
                 List<String> targets = domain.getAllReferencedTargetsForApplication(appName);
-                // TODO: call framework API to replicate command to all
-                // referenced targets (possibly remove DAS target first)
+                // replicate command to all referenced targets
+                try {
+                    ParameterMapExtractor extractor = new ParameterMapExtractor(this);
+                    ParameterMap paramMap = extractor.extract(Collections.EMPTY_LIST);
+                    paramMap.set("DEFAULT", appName);
+                    ClusterOperationUtil.replicateCommand("disable", FailurePolicy.Error, FailurePolicy.Warn, targets, context, paramMap, habitat);
+                } catch (Exception e) {
+                    report.failure(logger, e.getMessage());
+                    return;
+                } 
             }
         }
 

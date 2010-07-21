@@ -98,23 +98,15 @@ public class PostDeployCommand extends DeployCommandParameters implements AdminC
                 targets.add(params.target);
             } else {
                 targets = dc.getTransientAppMetaData("previousTargets", List.class);
-                // TODO: call framework API to replicate the command to all 
-                // targets
-
-                // if the target is DAS, we do not need to do anything more
-                if (targets.contains("server")) {
-                    return;
-                }
             }
-            ActionReport.ExitCode replicateResult = ClusterOperationUtil.replicateCommand(
+            ClusterOperationUtil.replicateCommand(
                 "_deploy",
-                FailurePolicy.Error,
-                FailurePolicy.Ignore,
+                FailurePolicy.Warn,
+                FailurePolicy.Warn,
                 targets,
                 context,
                 paramMap,
                 habitat);
-            report.setActionExitCode(replicateResult);
         } catch (Exception e) {
             report.failure(logger, e.getMessage());
         }

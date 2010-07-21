@@ -46,6 +46,7 @@ import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.api.ActionReport;
@@ -58,10 +59,13 @@ import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.FailurePolicy;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
+import org.glassfish.common.util.admin.ParameterMapExtractor;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -77,6 +81,7 @@ import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Collections;
 
 import org.glassfish.deployment.versioning.VersioningService;
 import org.glassfish.deployment.common.VersioningDeploymentException;
@@ -115,6 +120,9 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
 
     @Inject
     CommandRunner commandRunner;
+
+    @Inject
+    Habitat habitat;
 
     public UndeployCommand() {
         origin = Origin.undeploy;
@@ -173,12 +181,6 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
                 }
-            }
-
-            if (env.isDas() && target.equals("domain")) { 
-                List<String> targets = domain.getAllReferencedTargetsForApplication(name());
-                // TODO: call framework API to replicate command to all
-                // referenced targets (possibly remove DAS target first)
             }
 
             ReadableArchive source = null;
@@ -261,6 +263,20 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                     // we should just return
                     report.setMessage(localStrings.getLocalString("disable.command.failed","{0} disabled failed", appName));
                     return;
+                }
+
+                if (target.equals("domain")) { 
+                    List<String> targets = domain.getAllReferencedTargetsForApplication(name());
+                    // replicate command to all referenced targets
+                    try {
+                        ParameterMapExtractor extractor = new ParameterMapExtractor(this);
+                        ParameterMap paramMap = extractor.extract(Collections.EMPTY_LIST);
+                        paramMap.set("DEFAULT", appName);
+                        ClusterOperationUtil.replicateCommand("undeploy", FailurePolicy.Error, FailurePolicy.Warn, targets, context, paramMap, habitat);
+                    } catch (Exception e) {
+                        report.failure(logger, e.getMessage());
+                        return;
+                    }
                 }
             }   
 

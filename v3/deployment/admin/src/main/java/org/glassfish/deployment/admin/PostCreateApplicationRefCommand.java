@@ -119,15 +119,14 @@ public class PostCreateApplicationRefCommand implements AdminCommand {
             final ParameterMap paramMap = deployment.prepareInstanceDeployParamMap(dc);
             final List<String> targets = new ArrayList<String>(Arrays.asList(params.target.split(",")));
 
-            ActionReport.ExitCode replicateResult = ClusterOperationUtil.replicateCommand(
+            ClusterOperationUtil.replicateCommand(
                 "_deploy",
                 FailurePolicy.Error,
-                FailurePolicy.Ignore,
+                FailurePolicy.Warn,
                 targets,
                 context,
                 paramMap,
                 habitat);
-            report.setActionExitCode(replicateResult);
         } catch (Exception e) {
             report.failure(logger, e.getMessage());
         }
