@@ -374,6 +374,8 @@ public final class InstallationConfigurator implements Configurator, Notificatio
 
         setupUpdateToolScripts();
 
+
+
         // check whether to bootstrap at all
         if (!ConfigHelper.getBooleanValue("updatetool.Configuration.BOOTSTRAP_UPDATETOOL")) {
             LOGGER.log(Level.INFO, "Skipping updatetool bootstrap");
@@ -455,7 +457,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         }
     }
 
-    /* Undo updatetool configuration and post-installation setups.*/
+    /* Undo GlassFish configuration and post-installation setups.*/
     public void unconfigureGlassfish() {
         // Try to stop domain.
         stopDomain();
@@ -543,7 +545,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
 
 
     /* Creates shortcuts for windows. The ones created from OI will be removed due to
-    manged names. These shortcuts are in addition to the ones created by default.
+    mangled names. These shortcuts are in addition to the ones created by default.
     Since the descriptor for defining the short cut entry is not OS specific, we still
     need to carry on the xml entries to create items on Gnome.
      */
@@ -579,6 +581,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         WindowsShortcutManager wsShortMgr = new WindowsShortcutManager();
         wsShortMgr.createFolder(folderName);
         String modifiedInstallDir = installDir.replace("\\", "\\\\");
+        String modifiedAsAdminPath = getAsadminScriptPath().replace("\\", "\\\\");
 
 
         String configMode = (String) ConfigHelper.getValue("NodeServerOptions.configoptions.CONFIGURATION_MODE");
@@ -587,7 +590,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
             wsShortMgr.createShortCut(
                     folderName,
                     "Start Application Server",
-                    modifiedInstallDir + "\\\\" + getAsadminScriptPath(),
+                    modifiedInstallDir + "\\\\" + modifiedAsAdminPath,
                     "Start server",
                     "start-domain domain1",
                     modifiedInstallDir + "\\\\glassfish\\\\icons\\\\startAppserv.ico",
@@ -599,7 +602,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
             wsShortMgr.createShortCut(
                     folderName,
                     "Stop Application Server",
-                    modifiedInstallDir + "\\\\" + getAsadminScriptPath(),
+                    modifiedInstallDir + "\\\\" + modifiedAsAdminPath,
                     "Stop server",
                     "stop-domain domain1",
                     modifiedInstallDir + "\\\\glassfish\\\\icons\\\\stopAppserv.ico",
@@ -619,7 +622,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
                 "Uninstall",
                 modifiedInstallDir + "\\\\uninstall.exe",
                 "Uninstall",
-                "",
+                "-j \"" + jdkHome.replace("\\", "\\\\") + "\"",
                 modifiedInstallDir + "\\\\glassfish\\\\icons\\\\uninstall.ico",
                 modifiedInstallDir,
                 "2");
@@ -742,6 +745,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         }
     }
 
+   
     /* Generates command line and arguments required for creating a local instance */
     private ExecuteCommand assembleCreateInstanceCommand() {
         try {
@@ -797,8 +801,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
             installDir + File.separator + "glassfish" + File.separator + "modules" + File.separator + "endorsed",
             installDir + File.separator + "glassfish" + File.separator + "modules" + File.separator + "autostart"};
 
-        // TODO Handle Error condition, if the jar extraction fails, then there
-        // is something really wrong.
+        // if the jar extraction fails, then there is something really wrong.
         for (int i = 0; i < dirList.length; i++) {
             Unpack modulesUnpack = new Unpack(new File(dirList[i]), new File(dirList[i]));
             if (!modulesUnpack.unpackJars()) {
@@ -807,7 +810,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         }
     }
 
-    /* Create asadmin-start-domain.bat on Windows and asadmin-start-domain on Solaris.
+    /* Create wrappers for asadmin start/stop on Windows.
      * This also should include copyright, that is currently taken from OSUtils.
      */
     private void setupWindowsDomainScripts() {
@@ -837,7 +840,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         }
 
     }
-    /* Create asadmin-start-domain.bat on Windows and asadmin-start-domain on Solaris.
+    /* Create wrappers for asadmin start/stop on Solaris.
      * This also should include copyright, that is currently taken from OSUtils.
      */
 
@@ -896,7 +899,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         return pwdFile.getAbsolutePath();
     }
 
-    /*create updatetool wrapper scripts used by program group menu items */
+    /*create updatetool wrapper script used by shortcut items */
     private void setupUpdateToolScripts() {
 
         org.glassfish.installer.util.FileUtils.createDirectory(installDir
@@ -929,7 +932,6 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         } catch (Exception ex) {
             LOGGER.log(Level.INFO, "Error while creating wrapper file: " + ex.getMessage());
             // OK to ignore this for now.
-
         }
     }
 }
