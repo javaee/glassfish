@@ -76,12 +76,22 @@
         </antcall>
     </target>   
 
+    <condition property="port" value="${deploy.clusterinstance1.httpport}">
+        <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
+    </condition>
+
+    <condition property="port" value="${deploy.serverinstance.httpport}">
+        <equals arg1="${targetPlatform}" arg2="SERVER"/>
+    </condition>
+
+    <property name="port" value="${http.port}"/>
+
     <target name="runweb" depends="prepare">
         <javaWithResult fork="true" failonerror="false" jvm="${JAVA}"
                 classname="WebTest" resultproperty="result"
                 output="${build}/${log.id}.output.log">
             <arg value="${http.host}"/>
-            <arg value="${http.port}"/>
+            <arg value="${port}"/>
             <arg value="${testName}"/>
             <classpath>
                 <pathelement location="${build}"/>
@@ -107,10 +117,12 @@
         <antcall target="declare-test">
             <param name="description" value="ejb30/war/servlet Test asadmin redeploy"/>
         </antcall>
+<!--
         <antcall target="redeploy.asadmin"/>
         <antcall target="runweb">
             <param name="log.id" value="2"/>
         </antcall>
+-->
         <antcall target="undeploy.asadmin"/>
         <antcall target="delete.user"/>
     </target>
