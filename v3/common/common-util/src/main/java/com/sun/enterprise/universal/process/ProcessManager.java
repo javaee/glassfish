@@ -83,12 +83,9 @@ public class ProcessManager {
      *
      * @param newEcho
      */
-
     public final void setEcho(boolean newEcho) {
         echo = newEcho;
     }
-
-
 
     ////////////////////////////////////////////////////////////////////////////
     public final int execute() throws ProcessManagerException {
@@ -106,14 +103,17 @@ public class ProcessManager {
             try {
                 exit = process.exitValue();
                 wasError = false;
-            } catch (IllegalThreadStateException tse) {
+            }
+            catch (IllegalThreadStateException tse) {
                 // this means that the process is still running...
                 process.destroy();
                 throw new ProcessManagerTimeoutException(tse);
             }
-        } catch (ProcessManagerException pme) {
+        }
+        catch (ProcessManagerException pme) {
             throw pme;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             if (process != null) {
                 process.destroy();
             }
@@ -139,8 +139,6 @@ public class ProcessManager {
         return exit;
     }
 
-
-
     ////////////////////////////////////////////////////////////////////////////
     public String toString() {
         return Arrays.toString(cmdline);
@@ -162,12 +160,15 @@ public class ProcessManager {
                 pipe.println(stdinLines[i]);
             }
             pipe.flush();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new ProcessManagerException(e);
-        } finally {
+        }
+        finally {
             try {
                 pipe.close();
-            } catch (Throwable t) {
+            }
+            catch (Throwable t) {
             }
         }
     }
@@ -184,7 +185,8 @@ public class ProcessManager {
     private void await() throws InterruptedException {
         if (timeout <= 0) {
             waitForever();
-        } else {
+        }
+        else {
             waitAwhile();
         }
     }
@@ -235,7 +237,8 @@ public class ProcessManager {
             System.out.println("*********** STDOUT ***********\n" + pm.getStdout());
             System.out.println("*********** STDERR ***********\n" + pm.getStderr());
             System.out.println("*********** EXIT VALUE: " + pm.getExitValue());
-        } catch (ProcessManagerException pme) {
+        }
+        catch (ProcessManagerException pme) {
             pme.printStackTrace();
         }
     }
@@ -247,13 +250,14 @@ public class ProcessManager {
     private int timeout;
     private Process process;
     private boolean wasError = true;
-    private boolean echo = true;    
+    private boolean echo = true;
     private static final boolean debugOn = false;
     private String[] stdinLines;
     private List<Thread> threads = new ArrayList<Thread>(2);
 
     ////////////////////////////////////////////////////////////////////////////
     static class ReaderThread implements Runnable {
+
         ReaderThread(BufferedReader Reader, StringBuffer SB, boolean echo) {
             reader = Reader;
             sb = SB;
@@ -264,11 +268,12 @@ public class ProcessManager {
             try {
                 for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                     sb.append(line).append('\n');
-                    
-                    if(echo)
+
+                    if (echo)
                         System.out.println(line);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
             }
             ProcessManager.debug("ReaderThread exiting...");
         }
@@ -286,7 +291,8 @@ public class ProcessManager {
         public void run() {
             try {
                 process.waitFor();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
             }
             ProcessManager.debug("TimeoutThread exiting...");
         }
