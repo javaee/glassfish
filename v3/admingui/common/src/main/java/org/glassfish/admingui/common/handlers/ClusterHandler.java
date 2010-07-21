@@ -219,6 +219,39 @@ public class ClusterHandler {
      }
 
 
+    @Handler(id = "gf.nodeAction",
+        input = {
+            @HandlerInput(name = "rows", type = List.class, required = true),
+            @HandlerInput(name = "action", type = String.class, required = true)})
+    public static void nodeAction(HandlerContext handlerCtx) {
+        String action = (String) handlerCtx.getInputValue("action");
+        List<Map> rows =  (List<Map>) handlerCtx.getInputValue("rows");
+        List errorInstances = new ArrayList();
+        Map response = null;
+        String prefix = GuiUtil.getSessionValue("REST_URL") + "/nodes/node/";
+
+        for (Map oneRow : rows) {
+            String nodeName = (String) oneRow.get("Name");
+            if(action.equals("delete-node")){
+                try{
+                       response = RestApiHandlers.restRequest(prefix + nodeName + "/" + action , null, "post" ,null);
+                }catch (Exception ex){
+                    GuiUtil.getLogger().severe("Error in nodeAction ; \nendpoint = " + prefix + nodeName + "/" + action  + "attrsMap=" + null);
+                    response = null;
+                }
+            }
+            if (response ==null){
+                errorInstances.add(nodeName);
+            }
+        }
+        if (errorInstances.size() > 0){
+            String details = GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "node.error.delete" , new String[]{""+errorInstances});
+            GuiUtil.handleError(handlerCtx, details);
+        }
+     }
+
+
+
     @Handler(id = "gf.createClusterInstances",
         input = {
             @HandlerInput(name = "clusterName", type = String.class, required = true),
@@ -282,18 +315,19 @@ public class ClusterHandler {
      }
 
     private static Map deleteInstance(String instanceName, String nodeName){
-        if (GuiUtil.isEmpty(nodeName)){
+       /* if (GuiUtil.isEmpty(nodeName)){
             Map iMap = RestApiHandlers.getAttributesMap(GuiUtil.getSessionValue("REST_URL")+"/servers/server/" + instanceName);
             nodeName = (String) iMap.get("Node");
         }
         Map attrsMap = new HashMap();
         attrsMap.put("nodeagent", nodeName);
+        */
         try{
-            return  RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance", attrsMap, "post" ,null);
+            return  RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance", null, "post" ,null);
         }catch(Exception ex){
             GuiUtil.getLogger().severe("Error in deleteInstance ; \nendpoint = " +
                             GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance\n" +
-                            "attrsMap=" + attrsMap);
+                            "attrsMap=" + null);
             return null;
         }
     }

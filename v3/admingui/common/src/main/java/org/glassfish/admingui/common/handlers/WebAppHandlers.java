@@ -435,9 +435,9 @@ public class WebAppHandlers {
                 continue;
             }else{
                 if (clusters.contains(newTarget)){
-                    endpoint = clusterEndpoint + newTarget ;
+                    endpoint = clusterEndpoint + newTarget + "/application-ref" ;
                 }else{
-                    endpoint = serverEndpoint + newTarget ;
+                    endpoint = serverEndpoint + newTarget + "/application-ref" ;
                 }
                 RestApiHandlers.restRequest(endpoint, attrs, "post", handlerCtx);
             }
@@ -450,7 +450,9 @@ public class WebAppHandlers {
             }else{
                 endpoint = serverEndpoint + oTarget ;
             }
-            RestApiHandlers.restRequest(endpoint + "/application-ref/" + appName, null, "delete", handlerCtx);
+            Map attrMap = new HashMap();
+            attrMap.put("target", oTarget);
+            RestApiHandlers.restRequest(endpoint + "/application-ref/" + appName, attrMap, "delete", handlerCtx);
         }
     }
 

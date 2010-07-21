@@ -199,7 +199,7 @@ public class DeployUtil {
         if (clusters.isEmpty() && standalone.isEmpty()){
             //just return Enabled or not.
             enabled = (String)RestApiHandlers.getAttributesMap(prefix  +"/servers/server/server/application-ref/"+appName).get("Enabled");
-            return (Boolean.getBoolean(enabled))? "/resource/images/enabled.png" : "/resource/images/disabled.png";
+            return (Boolean.parseBoolean(enabled))? "/resource/images/enabled.png" : "/resource/images/disabled.png";
         }
         standalone.add("server");  
         List<String> targetList = getApplicationTarget(appName);

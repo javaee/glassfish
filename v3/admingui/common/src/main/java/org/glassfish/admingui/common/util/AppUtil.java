@@ -90,6 +90,9 @@ public class AppUtil {
         String appName = (String) attrs.get("Name");
         if ( "true".equals(enabled)){
            AMXProxy appRef = V3AMX.getInstance().getApplicationRef("server", appName);
+           if (appRef==null){
+               return false;
+           }
            String appRefEnabled = (String) appRef.attributesMap().get("Enabled");
            return ("true".equals(appRefEnabled));
         }
