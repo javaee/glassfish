@@ -48,6 +48,8 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.StoreException;
+import java.io.File;
+import java.io.IOException;
 
 /**
  *  This is a local command that deletes a domain.
@@ -86,13 +88,14 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
             DomainConfig domainConfig =
                 new DomainConfig(getDomainName(), getDomainsDir().getPath());
             checkRunning();
+            checkRename();
             DomainsManager manager = new PEDomainsManager();
             manager.deleteDomain(domainConfig);
             // By default, do as what v2 does -- don't delete the entry -
             // might need a revisit (Kedar: 09/16/2009)
             //deleteLoginInfo();
         } catch (Exception e) {
-	        throw new CommandException(e.getLocalizedMessage());
+	    throw new CommandException(e.getLocalizedMessage());
         }
 
 	logger.printDetailMessage(strings.get("DomainDeleted", getDomainName()));
@@ -105,6 +108,29 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
                                         getDomainRootDir());
             throw new IllegalStateException(msg);
         }
+    }
+
+    /**
+     * Check that the domain directory can be renamed, to increase the likelyhood
+     * that it can be deleted.
+     */
+    private void checkRename() throws CommandException {
+        boolean ok = true;
+        try {
+            File root = getDomainsDir();
+            File domdir = new File(root, getDomainName());
+            File tmpdir = File.createTempFile("del-", "", root);
+
+            ok = tmpdir.delete() && domdir.renameTo(tmpdir) &&
+                    tmpdir.renameTo(domdir);
+        } catch (IOException ioe) {
+            ok = false;
+        }
+       if (!ok) {
+           String msg = strings.get("domain.fileinuse", getDomainName(),
+                   getDomainRootDir());
+           throw new IllegalStateException(msg);
+       }
     }
 
     /**

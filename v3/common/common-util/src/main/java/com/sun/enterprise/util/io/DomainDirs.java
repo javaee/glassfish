@@ -66,24 +66,24 @@ public final class DomainDirs {
      */
     public DomainDirs(File domainsDir, String domainName) throws IOException {
 
-        if(domainsDir == null || !domainsDir.isDirectory()) {
+        if (domainsDir == null) {
             domainsDir = getDefaultDomainsDir();
         }
 
-        if(!domainsDir.isDirectory()) {
+        if (!domainsDir.isDirectory()) {
             throw new IOException(strings.get("Domain.badDomainsDir", domainsDir));
         }
 
         File domainDir;
 
-        if(domainName != null) {
+        if (domainName != null) {
             domainDir = new File(domainsDir, domainName);
         }
         else {
             domainDir = getTheOneAndOnlyDir(domainsDir);
         }
 
-        if(!domainDir.isDirectory()) {
+        if (!domainDir.isDirectory()) {
             throw new IOException(strings.get("Domain.badDomainDir", domainDir));
         }
 
