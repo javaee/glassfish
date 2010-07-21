@@ -41,25 +41,23 @@ package org.jvnet.hk2.osgiadapter;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
-import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import static org.jvnet.hk2.osgiadapter.BundleEventType.valueOf;
-import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
-import org.osgi.service.cm.ManagedService;
-import org.osgi.service.cm.ManagedServiceFactory;
-import org.osgi.service.cm.ConfigurationException;
 
-import java.util.*;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
-import java.io.ByteArrayInputStream;
-import java.io.File;
+
+import static org.jvnet.hk2.osgiadapter.BundleEventType.valueOf;
+import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
 /**
  * {@link org.osgi.framework.BundleActivator} that launches a Habitat.
@@ -72,90 +70,64 @@ public class HK2Main extends Main implements
         BundleActivator,
         SynchronousBundleListener {
 
+    // TODO(Sahoo): Change to use ServiceTracker for all ServiceRegistrations
+
     private BundleContext ctx;
 
-    private ModulesRegistry mr;
+    private ServiceRegistration mrReg;
+    private Map<Habitat, HabitatInfo> habitatInfos = new HashMap<Habitat, HabitatInfo>();
 
-    private static final String pid = "org.jvnet.hk2.osgiadapter.StartupContextService";
-
-    private HK2Main.StartupContextService startupContextService;
-
-    // We can easily convert it into a ManagedServiceFactory to support
-    // creation of multiple StartupContexts and Habitats - each habitat containing inhabitants
-    // configured differently. Very useful to have multiple domains running in same JVM.
-    private class StartupContextService implements ManagedService {
+    /**
+     * Stores additional artifacts corresponding to each Habitat created by us.
+     */
+    private class HabitatInfo {
         private Habitat habitat;
         private ServiceRegistration habitatRegistration;
         private ServiceTracker osgiServiceTracker;
         private ServiceRegistration moduleStartupRegistration;
-        private ModuleStartup startupService;
+    }
 
-        // It is synchronized since it can be called from HK2Main.stop as well as config admin.
-        public synchronized void updated(Dictionary props) throws ConfigurationException {
-            if (props == null) {
-                if (habitat == null) {
-                    return; // initial event - ignore
-                }
-                destroyHabitat(habitat);
-                habitat = null; // GC
-                startupService = null; // GC
-                if (moduleStartupRegistration != null) {
-                    moduleStartupRegistration.unregister();
-                    moduleStartupRegistration = null;
-                    habitatRegistration.unregister();
-                    habitatRegistration = null;
-                }
-            } else {
-                StartupContext startupContext = new StartupContext(dict2Props(props));
-                try {
-                    habitat = createHabitat(mr, startupContext);
-                    startupService = findStartupService(mr, habitat, startupContext.getStartupModuleName(), startupContext);
-                    moduleStartupRegistration = ctx.registerService(ModuleStartup.class.getName(), startupService, props);
-                } catch (BootException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+    public Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
+        HabitatInfo habitatInfo = new HabitatInfo();
+        habitatInfo.habitat = super.createHabitat(registry, context);
+        createHK2ServiceTracker(habitatInfo);
+        // register Habitat as an OSGi service
+        habitatInfo.habitatRegistration = ctx.registerService(Habitat.class.getName(), habitatInfo.habitat, context.getArguments());
+        habitatInfos.put(habitatInfo.habitat, habitatInfo);
+        return habitatInfo.habitat;
+    }
+
+    private void destroyHabitat(Habitat habitat) {
+        HabitatInfo habitatInfo = habitatInfos.get(habitat);
+        if (habitatInfo == null) {
+            return;
         }
 
-        private Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
-            Habitat habitat = HK2Main.this.createHabitat(registry, context);
-            createServiceTracker(habitat);
-            // register Habitat as an OSGi service
-            habitatRegistration = ctx.registerService(Habitat.class.getName(), habitat, context.getArguments());
-            return habitat;
-        }
+        // run code in the reverse order
+        habitatInfo.habitatRegistration.unregister();
+        stopHK2ServiceTracker(habitatInfo);
+        // AMX i shaving trouble if we release inhabitants. So temporarily disable this.
+        // habitat.release();
+        habitatInfo = null;
+        habitatInfos.remove(habitat);
+    }
 
-        private void destroyHabitat(Habitat habitat) {
-            stopServiceTracker(habitat);
-            habitat.release();
-        }
+    private void createHK2ServiceTracker(HabitatInfo habitatInfo) {
+        habitatInfo.osgiServiceTracker = new ServiceTracker(
+                ctx, new NonHK2ServiceFilter(), new HK2ServiceTrackerCustomizer(habitatInfo.habitat));
+        habitatInfo.osgiServiceTracker.open(true);
+    }
 
-        private void createServiceTracker(Habitat habitat) {
-            osgiServiceTracker = new ServiceTracker(ctx, new NonHK2ServiceFilter(), new HK2ServiceTrackerCustomizer(habitat));
-            osgiServiceTracker.open(true);
+    /**
+     * Stop service tracker associated with the given habitat
+     *
+     * @param habitatInfo
+     */
+    private void stopHK2ServiceTracker(HabitatInfo habitatInfo) {
+        if (habitatInfo.osgiServiceTracker != null) {
+            habitatInfo.osgiServiceTracker.close();
+            habitatInfo.osgiServiceTracker = null;
         }
-
-        /**
-         * Stop service tracker associated with the given habitat
-         * @param habitat
-         */
-        private void stopServiceTracker(Habitat habitat) {
-            if (osgiServiceTracker != null) {
-                osgiServiceTracker.close();
-                osgiServiceTracker = null;
-            }
-        }
-
-        private Properties dict2Props(Dictionary dict) {
-            Properties props = new Properties();
-            Enumeration e = dict.keys();
-            while (e.hasMoreElements()) {
-                String k = e.nextElement().toString();
-                props.put(k, dict.get(k).toString());
-            }
-            return props;
-        }
-
     }
 
     public void start(BundleContext context) throws Exception {
@@ -166,17 +138,15 @@ public class HK2Main extends Main implements
 
         OSGiFactoryImpl.initialize(ctx);
 
-        mr = createModulesRegistry();
+        createModulesRegistry();
 
-        Properties p = new Properties();
-        p.setProperty(Constants.SERVICE_PID, pid);
-        startupContextService = new StartupContextService();
-        context.registerService(ManagedService.class.getName(), startupContextService, p);
+        ctx.registerService(Main.class.getName(), this, null);
     }
 
-    protected ModulesRegistry createModulesRegistry() {
+    protected void createModulesRegistry() {
+        assert (mrReg == null);
         ModulesRegistry mr = AbstractFactory.getInstance().createModulesRegistry();
-        return mr;
+        mrReg = ctx.registerService(ModulesRegistry.class.getName(), mr, null);
     }
 
     @Override
@@ -191,20 +161,21 @@ public class HK2Main extends Main implements
 
         // Execute code in reverse order w.r.t. start()
 
-        if(startupContextService.startupService != null) {
-            try {
-                logger.info("Stopping " + startupContextService.startupService);
-                startupContextService.startupService.stop();
-            } catch (Exception e) {
-                logger.log(Level.WARNING, "HK2Main:stop():Exception while stopping ModuleStartup service.", e);
+        for (HabitatInfo habitatInfo : habitatInfos.values()) {
+            ModuleStartup startupService =
+                    habitatInfo.habitat.getComponent(ModuleStartup.class, habitatInfo.habitat.DEFAULT_NAME);
+            if (startupService != null) {
+                try {
+                    logger.info("Stopping " + startupService);
+                    startupService.stop();
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, "HK2Main:stop():Exception while stopping ModuleStartup service.", e);
+                }
             }
+            destroyHabitat(habitatInfo.habitat);
         }
-        startupContextService.updated(null);
 
-        // framework will automatically unregister when the bundle is stopped.
-        // so. just make it null to assist GC.
-        startupContextService = null;
-
+        ModulesRegistry mr = (ModulesRegistry) ctx.getService(mrReg.getReference());
         if (mr != null) {
             mr.shutdown();
             mr = null;
@@ -216,7 +187,7 @@ public class HK2Main extends Main implements
     public void bundleChanged(BundleEvent event) {
         logger.logp(Level.FINE, "HK2Main", "bundleChanged",
                 "source= {0}, type= {1}", new Object[]{event.getSource(),
-                valueOf(event.getType())});
+                        valueOf(event.getType())});
     }
 
     private class NonHK2ServiceFilter implements Filter {
@@ -253,7 +224,7 @@ public class HK2Main extends Main implements
                 // we will register this service under each contract it implements
                 for (String contractName : contractNames) {
                     String name = (String) reference.getProperty("component.name");
-                    if (name==null) {
+                    if (name == null) {
                         // let's get a name if possible, that will only work with Spring OSGi services
                         // we may need to find a better way to get a potential name.
                         name = (String) reference.getProperty("org.springframework.osgi.bean.name");
@@ -261,7 +232,7 @@ public class HK2Main extends Main implements
                     habitat.addIndex(new ExistingSingletonInhabitant(object), contractName, name);
                     logger.logp(Level.FINE, "HK2Main$HK2ServiceTrackerCustomizer",
                             "addingService", "registering service = {0}, contract = {1}, name = {2}", new Object[]{
-                            object, contractName, name});
+                                    object, contractName, name});
                 }
             } else {
                 // this service does not implement a specific contract, let's register it by its type.
