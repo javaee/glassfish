@@ -57,13 +57,13 @@
                 <attribute name="Specification-Version" value="3.0, 4.0"/>
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Implementation-Version" value="V3"/>
-		<attribute name="Implementation-Title" value="GlassFish"/>
-		<attribute name="probe-provider-class-names" value="com.sun.gjc.util.StatementCacheProbeProvider"/>
+                <attribute name="Implementation-Title" value="GlassFish"/>
+                <attribute name="probe-provider-class-names" value="com.sun.gjc.monitoring.StatementCacheProbeProvider"/>
             </manifest>
         </jar>
 
         <jar jarfile="${component.lib.home}/__ds_jdbc_ra.jar" update="true" basedir="${component.classes.dir}"
-		includes="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/common/**/*, **/LocalStrings.properties">
+		includes="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/monitoring/**/*, com/sun/gjc/common/**/*, **/LocalStrings.properties">
             <exclude name="com/sun/gjc/spi/XAManagedConnectionFactory.class"/>
             <exclude name="com/sun/gjc/spi/CPManagedConnectionFactory.class"/>
             <exclude name="com/sun/gjc/spi/DMManagedConnectionFactory.class"/>
@@ -84,13 +84,13 @@
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
-		<attribute name="probe-provider-class-names" value="com.sun.gjc.util.StatementCacheProbeProvider"/>
+                <attribute name="probe-provider-class-names" value="com.sun.gjc.monitoring.StatementCacheProbeProvider"/>
             </manifest>
         </jar>
 
 
         <jar jarfile="${component.lib.home}/__cp_jdbc_ra.jar" update="true" basedir="${component.classes.dir}"
-             includes="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/common/**/*, **/LocalStrings.properties">
+		includes="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/monitoring/**/*, com/sun/gjc/common/**/*, **/LocalStrings.properties">
             <exclude name="com/sun/gjc/spi/XAManagedConnectionFactory.class"/>
             <exclude name="com/sun/gjc/spi/DSManagedConnectionFactory.class"/>
             <exclude name="com/sun/gjc/spi/DMManagedConnectionFactory.class"/>
@@ -113,13 +113,13 @@
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
-		<attribute name="probe-provider-class-names" value="com.sun.gjc.util.StatementCacheProbeProvider"/>
+                <attribute name="probe-provider-class-names" value="com.sun.gjc.monitoring.StatementCacheProbeProvider"/>
             </manifest>
         </jar>
 
 
         <jar jarfile="${component.lib.home}/__xa_jdbc_ra.jar" update="true" basedir="${component.classes.dir}"
-             includes="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/common/**/*, **/LocalStrings.properties">
+		includes="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/monitoring/**/*, com/sun/gjc/common/**/*, **/LocalStrings.properties">
             <exclude name="com/sun/gjc/spi/CPManagedConnectionFactory.class"/>
             <exclude name="com/sun/gjc/spi/DSManagedConnectionFactory.class"/>
             <exclude name="com/sun/gjc/spi/DMManagedConnectionFactory.class"/>
@@ -141,12 +141,12 @@
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
-		<attribute name="probe-provider-class-names" value="com.sun.gjc.util.StatementCacheProbeProvider"/>
+                <attribute name="probe-provider-class-names" value="com.sun.gjc.monitoring.StatementCacheProbeProvider"/>
             </manifest>
         </jar>
 
         <jar jarfile="${component.lib.home}/__dm_jdbc_ra.jar" update="true" basedir="${component.classes.dir}"
-		includes="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/common/**/*, **/LocalStrings.properties">
+		includes="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/monitoring/**/*, com/sun/gjc/common/**/*, **/LocalStrings.properties">
             <exclude name="com/sun/gjc/spi/DSManagedConnectionFactory.class"/>
             <exclude name="com/sun/gjc/spi/CPManagedConnectionFactory.class"/>
             <exclude name="com/sun/gjc/spi/XAManagedConnectionFactory.class"/>

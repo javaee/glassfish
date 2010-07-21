@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,29 +34,43 @@
  * holder.
  */
 
-package com.sun.gjc.util;
+package com.sun.gjc.monitoring;
+
+import org.glassfish.external.probe.provider.annotations.Probe;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 
 /**
+ * Provider interface for JDBC RA related probes.
  *
- * @author shalini
+ * @author Shalini M
  */
-public class StatementCacheProbeEmitterImpl {
-    private StatementCacheProbeProvider stmtCacheProbeProvider = null;
-    private String poolName = null;
+@ProbeProvider(moduleProviderName=JdbcRAConstants.GLASSFISH,
+moduleName=JdbcRAConstants.JDBCRA, probeProviderName=JdbcRAConstants.STATEMENT_CACHE_PROBE)
+public class StatementCacheProbeProvider {
 
-    public StatementCacheProbeEmitterImpl(String poolName) {
-        this.poolName = poolName;
-        if(stmtCacheProbeProvider == null) {
-            stmtCacheProbeProvider = new StatementCacheProbeProvider();
-        }
+    /**
+     * Emits probe event/notification that the given connection pool
+     * <code>poolName</code>has got a statement cache hit event
+     *
+     * @param poolName for which statement cache hit occurred
+     * @param increment number of times the statement cache was hit
+     */
+    @Probe(name=JdbcRAConstants.STATEMENT_CACHE_HIT)
+    public void statementCacheHitEvent(@ProbeParam("poolName") String poolName) {
+
     }
 
-    public void statementCacheHit() {
-        stmtCacheProbeProvider.statementCacheHitEvent(poolName);
-    }
+    /**
+     * Emits probe event/notification that the given connection pool
+     * <code>poolName</code>has got a statement cache miss event
+     *
+     * @param poolName for which statement cache miss occurred
+     * @param increment number of times the statement cache was missed
+     */
+    @Probe(name=JdbcRAConstants.STATEMENT_CACHE_MISS)
+    public void statementCacheMissEvent(@ProbeParam("poolName") String poolName) {
 
-    public void statementCacheMiss() {
-        stmtCacheProbeProvider.statementCacheMissEvent(poolName);
     }
 
 }

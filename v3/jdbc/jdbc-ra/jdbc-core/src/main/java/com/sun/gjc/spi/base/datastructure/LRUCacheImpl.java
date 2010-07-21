@@ -39,7 +39,7 @@ package com.sun.gjc.spi.base.datastructure;
 import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.gjc.spi.base.*;
 import com.sun.logging.LogDomains;
-import com.sun.gjc.util.StatementCacheProbeEmitterImpl;
+import com.sun.gjc.monitoring.StatementCacheProbeProvider;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -60,7 +60,7 @@ public class LRUCacheImpl implements Cache {
      */
     private int maxSize ;
     protected final static Logger _logger;
-    private StatementCacheProbeEmitterImpl probeEmitter = null;
+    private StatementCacheProbeProvider probeProvider = null;
     private String poolName;
 
     static {
@@ -72,8 +72,8 @@ public class LRUCacheImpl implements Cache {
         this.poolName = poolName;
         list = new LinkedHashMap<CacheObjectKey, CacheEntry>();
         try {
-            if(probeEmitter == null) {
-                probeEmitter = new StatementCacheProbeEmitterImpl(poolName);
+            if(probeProvider == null) {
+                probeProvider = new StatementCacheProbeProvider();
             }
         } catch(Exception ex) {
             //TODO logger
@@ -95,10 +95,13 @@ public class LRUCacheImpl implements Cache {
         if(entry != null) {
             //Cache hit
             result = entry.entryObj;
-            probeEmitter.statementCacheHit();
+            _logger.finest("Cache Hit");
+            //TODO-SC Busy cache hits?
+            probeProvider.statementCacheHitEvent(poolName);
         } else {
             //Cache miss
-            probeEmitter.statementCacheMiss();
+            _logger.finest("Cache Miss");
+            probeProvider.statementCacheMissEvent(poolName);
         }
         return result;
     }

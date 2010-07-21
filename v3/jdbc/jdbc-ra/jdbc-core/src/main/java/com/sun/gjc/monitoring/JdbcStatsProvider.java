@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.gjc.spi.base;
+package com.sun.gjc.monitoring;
 
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
@@ -47,6 +47,7 @@ import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 
 /**
+ * Provides the monitoring data for JDBC RA module
  *
  * @author Shalini M
  */
@@ -69,36 +70,37 @@ public class JdbcStatsProvider {
         this.poolName = poolName;
     }
 
-    @ProbeListener("glassfish:jdbcra:statementcache:statementCacheHitEvent")
+    /**
+     * Whenever statement cache is hit, increment numStatementCacheHit count.
+     * @param poolName JdbcConnectionPool that has got a statement cache hit event.
+     */
+    @ProbeListener(JdbcRAConstants.STATEMENT_CACHE_DOTTED_NAME + JdbcRAConstants.STATEMENT_CACHE_HIT)
     public void statementCacheHitEvent(@ProbeParam("poolName") String poolName) {
-            //System.out.println(">>>> Reached Statement cache Stats Provider");
 
         if ((poolName != null) && (poolName.equals(this.poolName))) {
-
-            //System.out.println(">>>> Reached SC Stats Provider");
             numStatementCacheHit.increment();
         }
     }
 
-    @ProbeListener("glassfish:jdbcra:statementcache:statementCacheMissEvent")
+    /**
+     * Whenever statement cache miss happens, increment numStatementCacheMiss count.
+     * @param poolName JdbcConnectionPool that has got a statement cache miss event.
+     */
+    @ProbeListener(JdbcRAConstants.STATEMENT_CACHE_DOTTED_NAME + JdbcRAConstants.STATEMENT_CACHE_MISS)
     public void statementCacheMissEvent(@ProbeParam("poolName") String poolName) {
-            //System.out.println(">>>> Reached Statement cache Stats Provider");
 
         if ((poolName != null) && (poolName.equals(this.poolName))) {
-
-            //System.out.println(">>>> Reached SC Stats Provider");
             numStatementCacheMiss.increment();
         }
     }
 
     @ManagedAttribute(id="numstatementcachehit")
     public CountStatistic getNumStatementCacheHit() {
-        return numStatementCacheHit.getStatistic();
+        return numStatementCacheHit;
     }
 
     @ManagedAttribute(id="numstatementcachemiss")
     public CountStatistic getNumStatementCacheMiss() {
-        return numStatementCacheMiss.getStatistic();
+        return numStatementCacheMiss;
     }
-
 }

@@ -40,7 +40,7 @@ import com.sun.appserv.connectors.internal.spi.MCFLifecycleListener;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.common.DataSourceSpec;
-import com.sun.gjc.spi.base.JdbcStatsProvider;
+import com.sun.gjc.monitoring.JdbcStatsProvider;
 import com.sun.gjc.util.SQLTraceDelegator;
 import com.sun.gjc.util.SecurityUtils;
 import com.sun.logging.LogDomains;
@@ -52,11 +52,9 @@ import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.security.PasswordCredential;
 import javax.sql.PooledConnection;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -103,9 +101,8 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     private int statementCacheSize = 0;
     private String statementCacheType = null;
 
-    //List of all jdbc pool stats providers that are created and stored.
-    private List<JdbcStatsProvider> jdbcStatsProviders = 
-            new ArrayList<JdbcStatsProvider>();
+    //Jdbc Stats provider that is created
+    private JdbcStatsProvider jdbcStatsProvider = null;
 
     protected static final StringManager localStrings =
             StringManager.getManager(DataSourceObjectBuilder.class);
@@ -1283,30 +1280,26 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
 
     @Override
     public void mcfCreated() {
-        _logger.finest(">>>>>>> mcfCreated");
-        if(statementCacheSize > 0){
-        JdbcStatsProvider statsProvider = new JdbcStatsProvider(getPoolName());
-        //get the poolname and use it to initialize the stats provider n register
-        StatsProviderManager.register(
-                ContainerMonitoring.JDBC_CONNECTION_POOL,
-                PluginPoint.SERVER,
-                "resources/" + getPoolName(), statsProvider);
-        jdbcStatsProviders.add(statsProvider);
-        _logger.finest(">>>>>>> added");
+        String poolName = getPoolName();
+        _logger.finest("MCF Created");
+        if (statementCacheSize > 0) {
+            jdbcStatsProvider = new JdbcStatsProvider(poolName);
+            //get the poolname and use it to initialize the stats provider n register
+            StatsProviderManager.register(
+                    ContainerMonitoring.JDBC_CONNECTION_POOL,
+                    PluginPoint.SERVER,
+                    "resources/" + poolName, jdbcStatsProvider);
+            _logger.finest("Registered JDBCRA Stats Provider");
         }
     }
 
     @Override
     public void mcfDestroyed() {
-        _logger.finest(">>>>>>> mcfDestroyed");
-        if(jdbcStatsProviders != null) {
-            Iterator i = jdbcStatsProviders.iterator();
-            while(i.hasNext()) {
-                JdbcStatsProvider statsProvider = (JdbcStatsProvider) i.next();
-                StatsProviderManager.unregister(statsProvider);
-                i.remove();
-                _logger.finest(">>>>>>> removed");
-            }
+        _logger.finest("MCF Destroyed");
+        if(jdbcStatsProvider != null) {
+            StatsProviderManager.unregister(jdbcStatsProvider);
+            jdbcStatsProvider = null;
+            _logger.finest("Unregistered JDBCRA Stats Provider");
         }
     }
 }
