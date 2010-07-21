@@ -4133,7 +4133,7 @@ public abstract class BaseContainer
     /**
      * Undeploy event.
      * Code must be able to gracefully handle redundant undeploy/shutdown
-     * calls for the same container intance.
+     * calls for the same container instance.
      * 
      */
     public final void undeploy() {
@@ -4171,7 +4171,7 @@ public abstract class BaseContainer
      * is shutting down or that the app has been disabled while
      * the server is still running.  The two cases are handled
      * the same. We must be able to gracefully handle redundant
-     * shutdown calls for the same container intance.
+     * shutdown calls for the same container instance.
      */
     public final void onShutdown() {
 
