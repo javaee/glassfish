@@ -65,10 +65,9 @@ public class GetResultXmlProvider extends BaseProvider<GetResult> {
     protected String getContent(GetResult proxy) {
         String result;
         String indent = Constants.INDENT;
-        final String typeKey = getTypeKey(getName(uriInfo.getAbsolutePath().toString(), '/'));
 
         result = "<";
-        result = result + typeKey;
+        result = result + KEY_ENTITY;
         String attributes = getAttributes(proxy.getDom());
         if ((attributes != null) && (attributes.length() > 1)) {
             result = result + " ";
@@ -77,10 +76,10 @@ public class GetResultXmlProvider extends BaseProvider<GetResult> {
         result = result + ">";
 
         result = result + "\n\n" + indent;
-        result = result + getStartXmlElement(getMethodsKey());
+        result = result + getStartXmlElement(KEY_METHODS);
         result = result + getXmlForMethodMetaData(proxy.getMetaData(),
                 indent + Constants.INDENT);
-        result = result + "\n" + indent + getEndXmlElement(getMethodsKey());
+        result = result + "\n" + indent + getEndXmlElement(KEY_METHODS);
 
         //do not display empty child resources array
         if ((proxy.getDom().getElementNames().size() > 0)
@@ -88,14 +87,14 @@ public class GetResultXmlProvider extends BaseProvider<GetResult> {
                 || ("applications".equals(getName(uriInfo.getPath(), '/')))) {
 
             result = result + "\n\n" + indent;
-            result = result + getStartXmlElement(getResourcesKey().replace(' ', '-'));
+            result = result + getStartXmlElement(KEY_CHILD_RESOURCES);
             result = result + getResourcesLinks(proxy.getDom(),
                     proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
             result = result + "\n" + indent;
-            result = result + getEndXmlElement(getResourcesKey().replace(' ', '-'));
+            result = result + getEndXmlElement(KEY_CHILD_RESOURCES);
         }
 
-        result = result + "\n\n" + getEndXmlElement(typeKey);
+        result = result + "\n\n" + getEndXmlElement(KEY_ENTITY);
         return result;
     }
 
@@ -109,10 +108,6 @@ public class GetResultXmlProvider extends BaseProvider<GetResult> {
                     .append(" ");
         }
 
-//        int endIndex = result.length() - 1;
-//        if (endIndex > 0) {
-//            result = result.substring(0, endIndex);
-//        }
         return result.toString().trim();
     }
 
@@ -132,11 +127,11 @@ public class GetResultXmlProvider extends BaseProvider<GetResult> {
         for (String elementName : elementNames) { //for each element
             try {
                 result = result + "\n" + indent;
-                result = result + getStartXmlElement(getResourceKey().replace(' ', '-'));
+                result = result + getStartXmlElement(KEY_CHILD_RESOURCE);
                 result = result + getElementLink(uriInfo, elementName);
-                result = result + getEndXmlElement(getResourceKey().replace(' ', '-'));
+                result = result + getEndXmlElement(KEY_CHILD_RESOURCE);
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
 
@@ -144,11 +139,11 @@ public class GetResultXmlProvider extends BaseProvider<GetResult> {
         for (String[] commandResourcePath : commandResourcesPaths) {
             try {
                 result = result + "\n" + indent;
-                result = result + getStartXmlElement(getResourceKey().replace(' ', '-'));
+                result = result + getStartXmlElement(KEY_COMMAND);
                 result = result + getElementLink(uriInfo, commandResourcePath[0]);
-                result = result + getEndXmlElement(getResourceKey().replace(' ', '-'));
+                result = result + getEndXmlElement(KEY_COMMAND);
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
         return result;

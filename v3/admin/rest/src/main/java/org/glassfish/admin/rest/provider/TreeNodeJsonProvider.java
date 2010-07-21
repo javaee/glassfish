@@ -80,7 +80,7 @@ public class TreeNodeJsonProvider extends BaseProvider<List<TreeNode>> {
         result ="{" ;
         result = result + "\n\n" + indent;
 
-        result = result + quote(getTypeKey(getName(uriInfo.getPath(), '/'))) + ":{";
+        result = result + quote(KEY_ENTITY) + ":{";
         //display hint if module monitoring levels are OFF.
         if ((proxy.isEmpty()) && (uriInfo.getPath().equalsIgnoreCase("domain"))) {
             result = result + getHint(uriInfo, MediaType.APPLICATION_JSON);
@@ -89,7 +89,7 @@ public class TreeNodeJsonProvider extends BaseProvider<List<TreeNode>> {
         result = result + "},";
 
         result = result + "\n\n" + indent;
-        result = result + quote(getResourcesKey());
+        result = result + quote(KEY_CHILD_RESOURCES);
         result = result + ":[";
         result = result + getResourcesLinks(proxy, indent + Constants.INDENT);
         result = result + "\n" + indent + "]";
@@ -129,7 +129,7 @@ public class TreeNodeJsonProvider extends BaseProvider<List<TreeNode>> {
                     result = result + quote(getElementLink(uriInfo, elementName));
                     result = result + ",";
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         }

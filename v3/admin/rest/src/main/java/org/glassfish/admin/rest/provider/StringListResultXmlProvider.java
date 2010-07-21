@@ -63,7 +63,7 @@ public class StringListResultXmlProvider extends BaseProvider<StringListResult> 
         String indent = Constants.INDENT;
         result ="<" ;
 
-        result = result + getTypeKey(name);
+        result = result + KEY_ENTITY;
         String attribute;
         if (proxy.isError()) {
             attribute = getAttribute("error", proxy.getErrorMessage());
@@ -83,12 +83,12 @@ public class StringListResultXmlProvider extends BaseProvider<StringListResult> 
         }
 
         result = result + "\n\n" + indent;
-        result = result + "<" + getMethodsKey() + ">";
+        result = result + "<" + KEY_METHODS + ">";
         result = result + getXmlForMethodMetaData(proxy.getMetaData(),
             indent + Constants.INDENT);
-        result = result + "\n" + indent + "</" + getMethodsKey() + ">";
+        result = result + "\n" + indent + "</" + KEY_METHODS + ">";
 
-        result = result + "\n\n" + "</" + getTypeKey(name) + ">";
+        result = result + "\n\n" + "</" + KEY_ENTITY + ">";
         return result;
     }
 

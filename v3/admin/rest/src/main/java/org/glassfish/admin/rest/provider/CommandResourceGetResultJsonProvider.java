@@ -70,7 +70,7 @@ public class CommandResourceGetResultJsonProvider extends BaseProvider<CommandRe
         result = result + "},";
 
         result = result + "\n\n" + indent;
-        result = result + ProviderUtil.quote(ProviderUtil.getMethodsKey()) + ":{";
+        result = result + ProviderUtil.quote(ProviderUtil.KEY_METHODS) + ":{";
         result = result + ProviderUtil.getJsonForMethodMetaData(proxy.getMetaData(),
             indent + Constants.INDENT);
         result = result + "\n" + indent + "}";

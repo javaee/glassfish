@@ -64,7 +64,7 @@ public class StringListResultJsonProvider extends BaseProvider<StringListResult>
         result ="{" ;
 
         result = result + "\n\n" + indent;
-        result = result + getTypeKey(name);
+        result = result + KEY_ENTITY;
         if (proxy.isError()) {
             result = result + ":{";
             result = result + getAttribute("error", proxy.getErrorMessage());
@@ -84,7 +84,7 @@ public class StringListResultJsonProvider extends BaseProvider<StringListResult>
         }
 
         result = result + "\n\n" + indent;
-        result = result + quote(getMethodsKey()) + ":{";
+        result = result + quote(KEY_METHODS) + ":{";
         result = result + getJsonForMethodMetaData(proxy.getMetaData(),
             indent + Constants.INDENT);
         result = result + "\n" + indent + "}";

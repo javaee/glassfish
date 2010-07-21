@@ -87,7 +87,7 @@ public class TreeNodeHtmlProvider extends BaseProvider<List<TreeNode>> {
         result = getHtmlForComponent(attributes, "Attributes", result);
 
         String childResourceLinks = getResourcesLinks(proxy);
-        result = getHtmlForComponent(childResourceLinks, getResourcesKey(), result);
+        result = getHtmlForComponent(childResourceLinks, KEY_CHILD_RESOURCES, result);
 
         result = result + "</html></body>";
         return result;

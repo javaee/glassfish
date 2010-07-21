@@ -64,11 +64,11 @@ public class CommandResourceGetResultXmlProvider extends BaseProvider<CommandRes
         result.append(ProviderUtil.getStartXmlElement(commandDisplayName))
                 .append("\n\n")
                 .append(indent)
-                .append(ProviderUtil.getStartXmlElement(ProviderUtil.getMethodsKey()))
+                .append(ProviderUtil.getStartXmlElement(ProviderUtil.KEY_METHODS))
                 .append(ProviderUtil.getXmlForMethodMetaData(proxy.getMetaData(), indent + Constants.INDENT))
                 .append("\n")
                 .append(indent)
-                .append(ProviderUtil.getEndXmlElement(ProviderUtil.getMethodsKey()))
+                .append(ProviderUtil.getEndXmlElement(ProviderUtil.KEY_METHODS))
                 .append("\n\n")
                 .append(ProviderUtil.getEndXmlElement(commandDisplayName));
         return result.toString();

@@ -45,7 +45,6 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 
 import org.glassfish.admin.rest.Constants;
-import static org.glassfish.admin.rest.Util.*;
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 
@@ -69,12 +68,12 @@ public class GetResultListJsonProvider extends BaseProvider<GetResultList> {
         result ="{" ;
         result = result + "\n\n" + indent;
 
-        result = result + quote(getTypeKey(getName(uriInfo.getPath(), '/'))) + ":{";
+        result = result + quote(KEY_ENTITY) + ":{";
         result = result + getAttributes();
         result = result + "},";
 
         result = result + "\n\n" + indent;
-        result = result + quote(getMethodsKey()) + ":{";
+        result = result + quote(KEY_METHODS) + ":{";
         result = result + getJsonForMethodMetaData(proxy.getMetaData(),
             indent + Constants.INDENT);
         result = result + "\n" + indent + "}";
@@ -84,7 +83,7 @@ public class GetResultListJsonProvider extends BaseProvider<GetResultList> {
                 (proxy.getCommandResourcesPaths().length > 0)) {
             result = result + ",";
             result = result + "\n\n" + indent;
-            result = result + quote(getResourcesKey()) + ":[";
+            result = result + quote(KEY_CHILD_RESOURCES) + ":[";
             result = result + getResourcesLinks(proxy.getDomList(),
                 proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
             result = result + "\n" + indent + "]";
@@ -112,7 +111,7 @@ public class GetResultListJsonProvider extends BaseProvider<GetResultList> {
                 result = result + quote(getElementLink(uriInfo, elementName));
                 result = result + ",";
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
 
@@ -128,7 +127,7 @@ public class GetResultListJsonProvider extends BaseProvider<GetResultList> {
                 result = result + "\n" + indent;
                 result = result + quote(getElementLink(uriInfo, commandResourcePath[0]));
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
 

@@ -72,6 +72,12 @@ import javax.ws.rs.core.UriInfo;
  * @author Ludovic Champenois ludo@dev.java.net
  */
 public class ProviderUtil {
+    public static final String KEY_CHILD_RESOURCE = "childResource";
+    public static final String KEY_CHILD_RESOURCES = "childResources";
+    public static final String KEY_COMMAND = "command";
+    public static final String KEY_COMMANDS = "commands";
+    public static final String KEY_ENTITY = "entity";
+    public static final String KEY_METHODS = "methods";
 
     /**
      * Produce a string in double quotes with backslash sequences in all the
@@ -438,13 +444,6 @@ public class ProviderUtil {
        return result;
     }
 
-    // Perhaps this needs to be a constant, but, for now, we'll return a String
-    // from here until we're certain.
-    static public String getTypeKey(String uri) {
-        return "entity";
-//                upperCaseFirstLetter(slashToDash(decode(uri)));
-    }
-
     static protected String jsonValue(Object value) {
         String result ="";
 
@@ -477,18 +476,6 @@ public class ProviderUtil {
     static protected String getXmlForMethodMetaData(OptionsResult metaData, String indent) {
         OptionsResultXmlProvider provider = new OptionsResultXmlProvider();
         return provider.getRespresenationForMethodMetaData(metaData, indent);
-    }
-
-    static protected String getResourcesKey() {
-        return "childResources";
-    }
-
-    static protected String getResourceKey() {
-        return "childResource";
-    }
-
-    static protected String getMethodsKey() {
-        return "methods";
     }
 
     static private String getHtmlRespresentationForParameter(String parameter, ParameterMetaData parameterMetaData) {

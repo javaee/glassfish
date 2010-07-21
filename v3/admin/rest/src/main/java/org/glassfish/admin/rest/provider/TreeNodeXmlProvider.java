@@ -38,20 +38,13 @@ package org.glassfish.admin.rest.provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.admin.rest.Constants;
 import org.glassfish.flashlight.datatree.TreeNode;
@@ -83,8 +76,7 @@ public class TreeNodeXmlProvider extends BaseProvider<List<TreeNode>> {
     @Override
     protected String getContent(List<TreeNode> proxy) {
         String result;
-         final String typeKey = getTypeKey(getName(uriInfo.getPath(), '/'));
-         result ="<" + typeKey;
+         result ="<" + KEY_ENTITY;
 
         //display hint if module monitoring levels are OFF.
         if ((proxy.isEmpty()) && (uriInfo.getPath().equalsIgnoreCase("domain"))) {
@@ -97,7 +89,7 @@ public class TreeNodeXmlProvider extends BaseProvider<List<TreeNode>> {
         }
 
         result = result + getResourcesLinks(proxy);
-        result = result + getEndXmlElement(typeKey);
+        result = result + getEndXmlElement(KEY_ENTITY);
         return result;
     }
 
@@ -140,13 +132,13 @@ public class TreeNodeXmlProvider extends BaseProvider<List<TreeNode>> {
             if (node.hasChildNodes()) {
                 try {
                         result = result + Constants.INDENT; //indent
-                        result = result + getStartXmlElement(getResourceKey().replace(' ', '-'));
+                        result = result + getStartXmlElement(KEY_CHILD_RESOURCE);
                         elementName = node.getName();
                         result = result + getElementLink(uriInfo, elementName);
-                        result = result + getEndXmlElement(getResourceKey().replace(' ', '-'));
+                        result = result + getEndXmlElement(KEY_CHILD_RESOURCE);
                         result = result + "\n";
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         }

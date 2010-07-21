@@ -68,12 +68,12 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
         result ="{" ;
         result = result + "\n\n" + indent;
 
-        result = result + quote(getTypeKey(getName(uriInfo.getAbsolutePath().toString(), '/'))) + ":{";
+        result = result + quote(KEY_ENTITY) + ":{";
         result = result + getAttributes(proxy.getDom());
         result = result + "},";
 
         result = result + "\n\n" + indent;
-        result = result + quote(getMethodsKey()) + ":{";
+        result = result + quote(KEY_METHODS) + ":{";
         result = result + getJsonForMethodMetaData(proxy.getMetaData(),
             indent + Constants.INDENT);
         result = result + "\n" + indent + "}";
@@ -84,7 +84,7 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
                      ("applications".equals(getName(uriInfo.getPath(), '/')))) {
             result = result + ",";
             result = result + "\n\n" + indent;
-            result = result + quote(getResourcesKey()) + ":[";
+            result = result + quote(KEY_CHILD_RESOURCES) + ":[";
             result = result + getResourcesLinks(proxy.getDom(),
                 proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
             result = result + "\n" + indent + "]";
@@ -132,7 +132,7 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
                     result = result + ",";
                 ///}
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
 
@@ -149,7 +149,7 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
                 result = result + "\n" + indent;
                 result = result + quote(getElementLink(uriInfo, commandResourcePath[0]));
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
         return result;

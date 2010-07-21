@@ -66,30 +66,29 @@ public class GetResultListXmlProvider extends BaseProvider<GetResultList> {
         StringBuilder result = new StringBuilder();
         String indent = Constants.INDENT;
 
-         final String typeKey = getTypeKey(getName(uriInfo.getPath(), '/'));
-         result.append(getStartXmlElement(typeKey))
+         result.append(getStartXmlElement(KEY_ENTITY))
                  .append("\n\n")
                  .append(indent)
-                 .append(getStartXmlElement(getMethodsKey()))
+                 .append(getStartXmlElement(KEY_METHODS))
                  .append(getXmlForMethodMetaData(proxy.getMetaData(), indent + Constants.INDENT))
                  .append("\n")
                  .append(indent)
-                 .append(getEndXmlElement(getMethodsKey()));
+                 .append(getEndXmlElement(KEY_METHODS));
 
         //do not display empty child resources array
         if ((proxy.getDomList().size() > 0) ||
                 (proxy.getCommandResourcesPaths().length > 0)) {
             result.append("\n\n")
                     .append(indent)
-                    .append(getStartXmlElement(getResourcesKey().replace(' ', '-')))
+                    .append(getStartXmlElement(KEY_CHILD_RESOURCES.replace(' ', '-')))
                     .append(getResourcesLinks(proxy.getDomList(), proxy.getCommandResourcesPaths(), indent + Constants.INDENT))
                     .append("\n")
                     .append(indent)
-                    .append(getEndXmlElement(getResourcesKey().replace(' ', '-')));
+                    .append(getEndXmlElement(KEY_CHILD_RESOURCES.replace(' ', '-')));
         }
 
         result.append("\n\n")
-                .append(getEndXmlElement(typeKey));
+                .append(getEndXmlElement(KEY_ENTITY));
         return result.toString();
     }
 
@@ -99,9 +98,9 @@ public class GetResultListXmlProvider extends BaseProvider<GetResultList> {
             try {
                     result.append("\n")
                             .append(indent)
-                            .append(getStartXmlElement(getResourceKey().replace(' ', '-')))
+                            .append(getStartXmlElement(KEY_CHILD_RESOURCE))
                             .append(getElementLink(uriInfo, proxy.getKey()))
-                            .append(getEndXmlElement(getResourceKey().replace(' ', '-')));
+                            .append(getEndXmlElement(KEY_CHILD_RESOURCE));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -112,9 +111,9 @@ public class GetResultListXmlProvider extends BaseProvider<GetResultList> {
             try {
                 result.append("\n")
                         .append(indent)
-                        .append(getStartXmlElement(getResourceKey().replace(' ', '-')))
+                        .append(getStartXmlElement(KEY_CHILD_RESOURCE))
                         .append(getElementLink(uriInfo, commandResourcePath[0]))
-                        .append(getEndXmlElement(getResourceKey().replace(' ', '-')));
+                        .append(getEndXmlElement(KEY_CHILD_RESOURCE));
             } catch (Exception e) {
                 e.printStackTrace();
             }
