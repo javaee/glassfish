@@ -57,7 +57,7 @@ public class PropertyReaderImpl implements PropertyReader {
 
     public static PropertyReader[] getPropertyReaders(Properties properties) {
         if (properties == null) {
-            return null;
+            properties = new Properties();
         }
 
         if (properties.getProperty(
