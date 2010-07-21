@@ -170,7 +170,10 @@
         </antcall>
     </target>
 
-    <target name="private-all">
+    <target name="private-all" depends="private-all-pe"/>
+
+    <target name="private-all-pe" if="PE">
+
         <antcall target="assemble"/>
 
         <antcall target="deploy.asadmin"/>

@@ -78,7 +78,7 @@
         <equals arg1="${env.DEPL_TARGET}" arg2="SERVER"/>
     </condition>
     
-    <condition property="doDAS">
+    <condition property="PE">
         <and>
             <not>
                 <equals arg1="${targetPlatform}" arg2="SERVER"/>
@@ -164,13 +164,13 @@
 </target>
 
 <target name="setAsadminArgsWithoutPassword">
-    <condition property="ASADMIN-ARGS" value="--user ${admin.user} --port ${admin.port} --target ${testCluster}">
+    <condition property="ASADMIN-ARGS-NOPASSWD" value="--user ${admin.user} --port ${admin.port} --target ${testCluster}">
         <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
     </condition>
-    <condition property="ASADMIN-ARGS" value="--user ${admin.user} --port ${admin.port} --target ${testServer}">
+    <condition property="ASADMIN-ARGS-NOPASSWD" value="--user ${admin.user} --port ${admin.port} --target ${testServer}">
         <equals arg1="${targetPlatform}" arg2="SERVER"/>
     </condition>
-    <condition property="ASADMIN-ARGS" value="--user ${admin.user} --port ${admin.port}">
+    <condition property="ASADMIN-ARGS-NOPASSWD" value="--user ${admin.user} --port ${admin.port}">
         <and>
             <not>
                 <equals arg1="${targetPlatform}" arg2="SERVER"/>
@@ -268,7 +268,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
   </echo>
   <antcall target="common.run.asadmin">
     <param name="arg.list" 
-           value="create-file-user --port ${admin.port} --passwordfile ${user.password.file} --echo=true --terse=true ${arg.list}"/>
+           value="create-file-user ${ASADMIN-ARGS-NOPASSWD} --passwordfile ${user.password.file} --echo=true --terse=true ${arg.list}"/>
     </antcall>
   <delete file="${user.password.file}" failonerror="false"/>
 </target>

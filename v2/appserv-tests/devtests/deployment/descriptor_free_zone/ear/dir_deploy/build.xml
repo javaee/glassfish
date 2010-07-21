@@ -76,10 +76,10 @@
         </antcall>
     </target>
 
-    <target name="private-all" depends="private-all-pe-ee, private-all-ee"/>
+    <target name="private-all" depends="private-all-pe"/>
 
     <!-- the following is run in both PE and EE environment -->
-    <target name="private-all-pe-ee">
+    <target name="private-all-pe" if="PE">
         <antcall target="assemble"/>
 
         <antcall target="declare-test">
@@ -98,11 +98,6 @@
             <param name="log.id" value="2"/>
         </antcall>
         <antcall target="undeploy.asadmin"/>
-    </target>
-
-    <!-- the following is run only in EE environment -->
-    <target name="private-all-ee" depends="prepare" if="EE">
-        <echo message="Running tests specific to EE"/>
     </target>
 
     <target name="clobber" depends="clean">
