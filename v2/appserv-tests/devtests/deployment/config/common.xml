@@ -280,6 +280,9 @@ AS_ADMIN_MASTERPASSWORD=changeit
         <param name="arg.list" 
                value="enable ${ASADMIN-ARGS} ${arg.list}"/>
     </antcall>
+    <antcall target="enableAppOnInstance">
+        <param name="testName" value="${testName}"/>
+    </antcall>
 </target>
 
 <!-- disable using asadmin -->
@@ -288,6 +291,9 @@ AS_ADMIN_MASTERPASSWORD=changeit
     <antcall target="common.run.asadmin">
         <param name="arg.list" 
                value="disable ${ASADMIN-ARGS} ${arg.list}"/>
+    </antcall>
+    <antcall target="disableAppOnInstance">
+        <param name="testName" value="${testName}"/>
     </antcall>
 </target>
 
@@ -353,38 +359,30 @@ AS_ADMIN_MASTERPASSWORD=changeit
         <param name="arg.list" 
                value="${deploy} ${ASADMIN-ARGS} ${arg.list}"/>
     </antcall>
-<!--
     <antcall target="createAppRef">
         <param name="testName" value="${testName}"/>
     </antcall>
--->
 </target>
 
 <target name="common.redeploy.asadmin" depends="setAsadminArgs">
-<!--
     <antcall target="delAppRef">
         <param name="testName" value="${testName}"/>
     </antcall>
--->
     <antcall target="common.run.asadmin">
         <param name="arg.list" 
                value="${deploy} ${ASADMIN-ARGS} --force=true ${arg.list}"/>
     </antcall>
-<!--
     <antcall target="createAppRef">
         <param name="testName" value="${testName}"/>
     </antcall>
--->
 </target>
 
 <!-- undeploy using asadmin -->
 <!-- @param ${arg.list} (required) -->
 <target name="common.undeploy.asadmin" depends="setAsadminArgs">
-<!--
     <antcall target="delAppRef">
         <param name="testName" value="${testName}"/>
     </antcall>
--->
     <antcall target="common.run.asadmin">
         <param name="arg.list" 
                value="${undeploy} ${ASADMIN-ARGS} ${arg.list}"/>
@@ -416,6 +414,23 @@ AS_ADMIN_MASTERPASSWORD=changeit
                value="delete-application-ref --user ${admin.user} --passwordfile ${passwordFile} --port ${admin.port} --target ${testServer} ${testName}"/>
     </antcall>
 </target>
+
+<target name="disableAppOnInstance" depends="init" if="doCluster">
+    <echo message="Disable application for ${testName}"/>
+    <antcall target="common.run.asadmin">
+        <param name="arg.list"
+               value="disable --user ${admin.user} --passwordfile ${passwordFile} --port ${admin.port} --target ${testServer} ${testName}"/>
+    </antcall>
+</target>
+
+<target name="enableAppOnInstance" depends="init" if="doCluster">
+    <echo message="Enable application for ${testName}"/>
+    <antcall target="common.run.asadmin">
+        <param name="arg.list"
+               value="enable --user ${admin.user} --passwordfile ${passwordFile} --port ${admin.port} --target ${testServer} ${testName}"/>
+    </antcall>
+</target>
+
 
 <!-- deploydir using asadmin -->
 <!-- @param ${arg.list} (required) -->
@@ -556,7 +571,6 @@ AS_ADMIN_MASTERPASSWORD=changeit
 
 <target name="common.run" depends="setHttpPort">
     <antcall target="checkAppOnServer"/>
-    <antcall target="checkAppOnInstance"/>
     <antcall target="checkAppOnCluster">
         <param name="link" value="${sub-url}"/>
         <param name="state" value="${state}"/>
@@ -565,18 +579,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </antcall>
 </target>
 
-<target name="checkAppOnInstance" if="doInstance">
-    <antcall target="declare-test">
-        <param name="description" value="${test-details} (server)"/>
-    </antcall>
-    <property name="url" value="http://${http.host}:${depltest.port}/${sub-url}"/>
-    <antcall target="runclient">
-        <param name="arg.list" value="${url} ${state} ${extra.args}"/>
-        <param name="log.id" value="${log-file}"/>
-    </antcall>
-</target>
-
-<target name="checkAppOnServer" if="doDAS">
+<target name="checkAppOnServer">
     <antcall target="declare-test">
         <param name="description" value="${test-details} (server)"/>
     </antcall>
@@ -833,7 +836,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </antcall>
 </target>
 
-<target name="setupInstance" if="doInstance">
+<target name="setupInstance">
     <echo message="Running... asadmin create-instance"/>
     <exec executable="${ASADMIN}" failonerror="true">
         <arg line="create-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --systemproperties HTTP_LISTENER_PORT=${deploy.serverinstance.httpport}:HTTP_SSL_LISTENER_PORT=2100:IIOP_LISTENER_PORT=2200:IIOP_SSL_LISTENER_PORT=2300:IIOP_SSL_MUTUALAUTH_PORT=2400:JMX_SYSTEM_CONNECTOR_PORT=2500:JMS_PROVIDER_PORT=2600:ASADMIN_LISTENER_PORT=2700 ${testServer}"/>
@@ -866,7 +869,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
     <antcall target="startCluster"/>
 </target>
 
-<target name="startInstance" if="doInstance">
+<target name="startInstance">
     <echo message="Running... asadmin start-instance"/>
     <antcall target="start-process">
         <param name="line" value="start-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testServer}"/>
@@ -889,7 +892,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </exec>
 </target>
 
-<target name="stopInstance" if="doInstance">
+<target name="stopInstance">
     <echo message="Running... asadmin stop-instance"/>
     <exec executable="${ASADMIN}">
         <arg line="stop-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testServer}"/>
@@ -921,7 +924,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
 </target>
 
 
-<target name="deleteInstance" if="doInstance">
+<target name="deleteInstance">
     <exec executable="${ASADMIN}">
         <arg line="delete-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testServer}"/>
     </exec>

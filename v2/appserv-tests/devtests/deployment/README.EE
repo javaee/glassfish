@@ -1,3 +1,5 @@
+(Please see the ADDITIONAL NOTES section at the end)
+
 UNIT TESTS ON DEPLOYMENT
 ========================
 
@@ -67,4 +69,17 @@ cat `which ant` :
 (... go towards bottom of ant script and add the option -Xmx999m as shown below)
 
  "$JAVACMD" -Xmx999m -classpath "$LOCALCLASSPATH" -Dant.home="${ANT_HOME}" $ANT_OPTS org.apache.tools.ant.Main $ANT_ARGS "$@"
+
+
+ADDITIONAL NOTES
+--------------------
+1. The replication flag has not turned on by default yet. So for now, you
+   also need to set the replication environment variable ENABLE_REPLICATION
+   to true ((e.g. export ENABLE_REPLICATION=true on ksh) 
+2. Currently not all the tests passed in all three modes, investigation on 
+   the failures are still going on, for now, for instance and cluster mode, 
+   just run the ear/earwithall2 directory: cd ear/earwithall2, ant all-ee.
+   This test directory covers all the basic clustering testing.
+ 
+ 
 

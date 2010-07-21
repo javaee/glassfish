@@ -92,6 +92,7 @@
         <antcall target="common.enable.asadmin">
             <param name="arg.list" 
                    value="${appName}"/>
+            <param name="testName" value="${appName}"/>
         </antcall>
     </target>
 
@@ -99,6 +100,7 @@
         <antcall target="common.disable.asadmin">
             <param name="arg.list" 
                    value="${appName}"/>
+            <param name="testName" value="${appName}"/>
         </antcall>
     </target>
 
@@ -280,7 +282,7 @@
 
     </target>
 
-    <target name="addInstanceRef" depends="prepare" if="doInstance">
+    <target name="addInstanceRef" depends="prepare">
        <!-- create-app-ref to remote instance server -->
        <antcall target="common.run.asadmin">
            <param name="arg.list"
@@ -288,7 +290,7 @@
        </antcall>
     </target>
 
-    <target name="delInstanceRef" depends="prepare" if="doInstance">
+    <target name="delInstanceRef" depends="prepare">
         <!-- delete-app-ref to remote instance server -->
         <antcall target="common.run.asadmin">
             <param name="arg.list"
@@ -334,6 +336,35 @@
         <antcall target="run.negative">
             <param name="log.id" value="11"/>
             <param name="desc" value="ear/earwithall2 Test delete-application-ref"/>
+        </antcall>
+
+        <antcall target="addInstanceRef"/>
+        <antcall target="addClusterRefs"/>
+        <antcall target="common.run.asadmin">
+            <param name="arg.list" 
+                   value="deploy --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --force=true --target domain ${all.ear}"/>
+        </antcall>
+        <antcall target="run.positive">
+            <param name="log.id" value="12"/>
+            <param name="desc" value="ear/earwithall2 Test redeploy to domain"/>
+        </antcall>
+
+        <antcall target="common.run.asadmin">
+            <param name="arg.list"
+                   value="disable --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target domain ${appName}"/>
+        </antcall>
+        <antcall target="run.negative">
+            <param name="log.id" value="13"/>
+            <param name="desc" value="ear/earwithall2 Test disable on domain"/>
+        </antcall>
+
+        <antcall target="common.run.asadmin">
+            <param name="arg.list"
+                   value="enable --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target domain ${appName}"/>
+        </antcall>
+        <antcall target="run.positive">
+            <param name="log.id" value="14"/>
+            <param name="desc" value="ear/earwithall2 Test enable domain"/>
         </antcall>
 
         <!-- undeploy from Domain -->
