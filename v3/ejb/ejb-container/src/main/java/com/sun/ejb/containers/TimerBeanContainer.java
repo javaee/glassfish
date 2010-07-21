@@ -72,7 +72,7 @@ public class TimerBeanContainer
     }
 
     protected void doConcreteContainerShutdown(boolean appBeingUndeployed) {
-        _logger.log(Level.FINE,"[TimerBeanContainer] Shutdown() called....");
+        _logger.log(Level.INFO,"[TimerBeanContainer] Shutdown() called....");
 
         if (ejbTimerService != null) {
             ejbTimerService.onShutdown();
