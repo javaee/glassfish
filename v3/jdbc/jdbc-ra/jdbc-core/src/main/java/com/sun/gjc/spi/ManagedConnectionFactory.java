@@ -1284,6 +1284,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     @Override
     public void mcfCreated() {
         _logger.finest(">>>>>>> mcfCreated");
+        if(statementCacheSize > 0){
         JdbcStatsProvider statsProvider = new JdbcStatsProvider(getPoolName());
         //get the poolname and use it to initialize the stats provider n register
         StatsProviderManager.register(
@@ -1292,6 +1293,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
                 "resources/" + getPoolName(), statsProvider);
         jdbcStatsProviders.add(statsProvider);
         _logger.finest(">>>>>>> added");
+        }
     }
 
     @Override
