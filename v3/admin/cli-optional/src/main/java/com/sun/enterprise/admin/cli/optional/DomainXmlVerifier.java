@@ -88,12 +88,16 @@ public class DomainXmlVerifier {
         _out = out;
         error = false;
     }
-       
+
+    /*
+     * Returns true if there is an error in the domain.xml or some other problem.
+     */
     public boolean invokeConfigValidator() {
         boolean failed = false;
         try {
             failed =  validate();
         } catch(Exception e) {
+            failed = true;
             e.printStackTrace();
         }
         return failed;
@@ -105,6 +109,7 @@ public class DomainXmlVerifier {
             if (!error)
                _out.println("All Tests Passed, domain.xml is valid");
         } catch(Exception e) {
+            error = true;
             e.printStackTrace();
         }
         return error;
@@ -134,49 +139,63 @@ public class DomainXmlVerifier {
             
             // Configs
             Configs configs = domain.getConfigs();
-            List<Config> configList = configs.getConfig();
-            checkDuplicate(configList);
+            if (configs != null) {
+                List<Config> configList = configs.getConfig();
+                checkDuplicate(configList);
+                if (configList != null) {
+                    // Children of each Config viz: HttpService, IiopService
+                    for (Config cfg : configList) {
+                        // config-->http-service
+                        HttpService httpSvc = cfg.getHttpService();
+                        if (httpSvc != null) {
+                            List<HttpListener> httpListeners = httpSvc.getHttpListener();
+                            checkDuplicate(httpListeners);
+                            List<VirtualServer> virtualServers = httpSvc.getVirtualServer();
+                            checkDuplicate(virtualServers);
+                        }
 
-            // Children of each Config viz: HttpService, IiopService
-            for (Config cfg : configList) {
-                // config-->http-service
-                HttpService httpSvc = cfg.getHttpService();
-                List<HttpListener> httpListeners = httpSvc.getHttpListener();
-                checkDuplicate(httpListeners);
-                List<VirtualServer> virtualServers = httpSvc.getVirtualServer();
-                checkDuplicate(virtualServers);
+                        // config-->iiop-service
+                        IiopService iiopSvc = cfg.getIiopService();
+                        if (iiopSvc != null) {
+                            List<IiopListener> iiopListeners = iiopSvc.getIiopListener();
+                            checkDuplicate(iiopListeners);
+                        }
 
-                // config-->iiop-service
-                IiopService iiopSvc = cfg.getIiopService();
-                List<IiopListener> iiopListeners = iiopSvc.getIiopListener();
-                checkDuplicate(iiopListeners);
+                        // config-->admin-service-->jmx-connector
+                        AdminService adminsvc = cfg.getAdminService();
+                        if (adminsvc != null) {
+                            List<JmxConnector> jmxConnectors = adminsvc.getJmxConnector();
+                            checkDuplicate(jmxConnectors);
+                        }
 
-                // config-->admin-service-->jmx-connector
-                AdminService adminsvc = cfg.getAdminService();
-                List<JmxConnector> jmxConnectors = adminsvc.getJmxConnector();
-                checkDuplicate(jmxConnectors);
+                        // config-->jms-service-->jms-host
+                        JmsService jmsService = cfg.getJmsService();
+                        if (jmsService != null) {
+                            List<JmsHost> jmsHosts = jmsService.getJmsHost();
+                            checkDuplicate(jmsHosts);
+                        }
 
-                // config-->jms-service-->jms-host
-                JmsService jmsService = cfg.getJmsService();
-                List<JmsHost> jmsHosts = jmsService.getJmsHost();
-                checkDuplicate(jmsHosts);
+                        // Now sub elements of Security Service
+                        SecurityService securitysvc = cfg.getSecurityService();
 
-                // Now sub elements of Security Service
-                SecurityService securitysvc = cfg.getSecurityService();
+                        if (securitysvc != null) {
+                            // config-->security-service-->audit-module
+                            List<AuditModule> auditModules = securitysvc.getAuditModule();
+                            checkDuplicate(auditModules);
 
-                // config-->security-service-->audit-module
-                List<AuditModule> auditModules = securitysvc.getAuditModule();
-                checkDuplicate(auditModules);
-                
-                // config-->security-service-->audit-module
-                List<AuthRealm> authrealms = securitysvc.getAuthRealm();
-                checkDuplicate(authrealms);
+                            // config-->security-service-->audit-module
+                            List<AuthRealm> authrealms = securitysvc.getAuthRealm();
+                            checkDuplicate(authrealms);
 
-                // config-->security-service-->audit-module
-                List<JaccProvider> providers = securitysvc.getJaccProvider();
-                checkDuplicate(providers);
+                            // config-->security-service-->audit-module
+                            List<JaccProvider> providers = securitysvc.getJaccProvider();
+                            checkDuplicate(providers);
+                        }
+                    }
+                }
             }
         } catch(Exception e) {
+            error = true;
             e.printStackTrace();
         }
     }
@@ -186,6 +205,9 @@ public class DomainXmlVerifier {
     }
 
     public void checkDuplicate(Collection <? extends ConfigBeanProxy> beans) {
+        if (beans == null) {
+            return;
+        }
         WeakHashMap keyBeanMap = new WeakHashMap();
         ArrayList<String> keys = new ArrayList<String>(beans.size());
         for (ConfigBeanProxy cbp : beans) {

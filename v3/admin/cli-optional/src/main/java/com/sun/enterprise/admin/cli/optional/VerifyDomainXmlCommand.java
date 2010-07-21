@@ -37,7 +37,6 @@
 package com.sun.enterprise.admin.cli.optional;
 
 import java.io.File;
-import java.util.*;
 import java.net.URL;
 
 import com.sun.enterprise.admin.cli.*;
@@ -46,7 +45,6 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
-import org.glassfish.api.embedded.Server;
 import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -96,7 +94,7 @@ public final class VerifyDomainXmlCommand extends LocalDomainCommand {
             Domain domain = domDomain.createProxy(Domain.class);            
             DomainXmlVerifier validator = new DomainXmlVerifier(domain);
 
-            validator.invokeConfigValidator();
+            if (validator.invokeConfigValidator()) return 1;
         } catch (Exception e) {
             throw new CommandException(e.getMessage());
         }
