@@ -37,7 +37,7 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import static com.sun.enterprise.glassfish.bootstrap.ASMainHelper.deleteRecursive;
+import static com.sun.enterprise.glassfish.bootstrap.Util.deleteRecursive;
 import com.sun.enterprise.module.bootstrap.PlatformMain;
 
 import java.io.BufferedInputStream;

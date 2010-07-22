@@ -37,21 +37,21 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import org.glassfish.experimentalgfapi.GlassFish;
+import org.glassfish.experimentalgfapi.GlassFishRuntime;
+import org.jvnet.hk2.component.Habitat;
 import org.osgi.framework.*;
-import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedService;
 import org.osgi.util.tracker.ServiceTracker;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -62,53 +62,72 @@ import java.util.logging.Logger;
 
 public class GlassFishActivator implements BundleActivator {
 
-    private ServiceTracker caTracker;
-
-    private volatile Configuration config;
-
     private BundleContext bundleContext;
-
-    /**
-     * PID of the managed service registered by GlassFish activator.
-     */
-    public static final String gfpid = "com.sun.enterprise.glassfish.bootstrap.GlassFish";
-
-    /**
-     * PID of the managed service registered by HK2
-     */
-    private static final String hk2pid = "org.jvnet.hk2.osgiadapter.StartupContextService";
 
     public void start(final BundleContext context) throws Exception {
         this.bundleContext = context;
         startBundles();
-        // get the startup context from the System properties
-        String lineformat = context.getProperty(Constants.ARGS_PROP);
-        if (lineformat != null) {
-            Properties args = new Properties();
-            StringReader reader = new StringReader(lineformat);
-            args.load(reader);
-            caTracker = new CATracker(args);
-            caTracker.open();
-        } else {
-            Properties p = new Properties();
-            p.setProperty(org.osgi.framework.Constants.SERVICE_PID, gfpid);
-            context.registerService(ManagedService.class.getName(), new ManagedService() {
-                public void updated(Dictionary dictionary) throws ConfigurationException {
-                    try {
-                        if (dictionary != null) {
-                            Properties args = dict2Properties(dictionary);
-                            caTracker = new CATracker(args);
-                            caTracker.open();
-                        } else {
-                            deleteConfig();
+        registerGlassFishRuntime();
+    }
+
+    private void registerGlassFishRuntime() throws InterruptedException {
+        final ServiceTracker hk2Tracker = new ServiceTracker(bundleContext, Main.class.getName(), null);
+        hk2Tracker.open();
+        bundleContext.registerService(GlassFishRuntime.class.getName(), new GlassFishRuntime() {
+            @Override
+            public GlassFish newGlassFish(Properties properties) throws Exception {
+                // set env props before updating config, because configuration update may actually trigger
+                // some code to be executed which may be depending on the environment variable values.
+                setEnv(properties);
+                final StartupContext startupContext = new StartupContext(properties);
+                final Main main = (Main) hk2Tracker.waitForService(0);
+                final ModulesRegistry mr = ModulesRegistry.class.cast(
+                        bundleContext.getService(bundleContext.getServiceReference(ModulesRegistry.class.getName())));
+                final Habitat habitat = main.createHabitat(mr, startupContext);
+                final ModuleStartup gfKernel = main.findStartupService(mr, habitat, null, startupContext);
+                System.out.println("gfKernel = " + gfKernel);
+                return new GlassFish() {
+                    volatile Status status = Status.INIT;
+
+                    public synchronized void start() {
+                        try {
+                            status = Status.STARTING;
+                            gfKernel.start();
+                            status = Status.STARTED;
+                            startPostStartupBundles();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
                         }
-                    } catch (Exception e) {
-                        throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
                     }
-                }
-            }, p);
-        }
-        startGlassFish();
+
+                    public synchronized void stop() {
+                        if (status != Status.STARTED) return;
+                        try {
+                            status = Status.STOPPING;
+                            gfKernel.stop();
+                            status = Status.STOPPED;
+                        } catch (Exception e) {
+                            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+                        }
+                    }
+
+                    public synchronized void dispose() {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    public synchronized Status getStatus() {
+                        return status;
+                    }
+
+                    public synchronized <T> T lookupService(Class<T> serviceType, String servicetName) {
+                        if (status != Status.STARTED) {
+                            throw new IllegalArgumentException("Server is not started yet. It is in " + status + "state");
+                        }
+                        return habitat.getComponent(serviceType, servicetName);
+                    }
+                };
+            }
+        }, null);
     }
 
     private Properties dict2Properties(Dictionary dictionary) {
@@ -125,42 +144,25 @@ public class GlassFishActivator implements BundleActivator {
     public void stop(BundleContext context) throws Exception {
         // Stopping osgi-adapter will take care of stopping ModuleStartup service, release of habitat, etc.
         stopBundle("com.sun.enterprise.osgi-adapter");
-
-        // Need to delete this so that it gets cleared from OSGi cache, else next time
-        // framework will use the one from previous run.
-        if (config != null) config.delete();
-        if (caTracker != null) caTracker.close();
     }
 
     private void setEnv(Properties properties) {
-        ASMainHelper helper = new ASMainHelper(Logger.getAnonymousLogger());
-        File installRoot = new File(properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME));
-        File instanceRoot = new File(properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME));
-        System.setProperty(Constants.INSTALL_ROOT_PROP_NAME, installRoot.getAbsolutePath());
-        System.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, instanceRoot.getAbsolutePath());
-        final Properties asenv = helper.parseAsEnv(installRoot);
-        for (String s : asenv.stringPropertyNames()) {
-            System.setProperty(s, asenv.getProperty(s));
-        }
-        System.setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME, installRoot.toURI().toString());
-        System.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME, instanceRoot.toURI().toString());
-    }
-
-    // It starts GlassFish in a different thread
-
-    private void startGlassFish() {
-        ServiceTracker gfKernelTracker = new ServiceTracker(bundleContext, ModuleStartup.class.getName(), null) {
-            @Override
-            public Object addingService(ServiceReference reference) {
-                ModuleStartup gfKernel = (ModuleStartup) context.getService(reference);
-                System.out.println("Starting " + gfKernel);
-                gfKernel.start();
-                startPostStartupBundles();
-                close(); // no need to track it any more
-                return super.addingService(reference);
+        final String installRootValue = properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
+        if (installRootValue != null && !installRootValue.isEmpty()) {
+            File installRoot = new File(installRootValue);
+            System.setProperty(Constants.INSTALL_ROOT_PROP_NAME, installRoot.getAbsolutePath());
+            final Properties asenv = ASMainHelper.parseAsEnv(installRoot);
+            for (String s : asenv.stringPropertyNames()) {
+                System.setProperty(s, asenv.getProperty(s));
             }
-        };
-        gfKernelTracker.open();
+            System.setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME, installRoot.toURI().toString());
+        }
+        final String instanceRootValue = properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME);
+        if (instanceRootValue != null && !instanceRootValue.isEmpty()) {
+            File instanceRoot = new File(instanceRootValue);
+            System.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, instanceRoot.getAbsolutePath());
+            System.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME, instanceRoot.toURI().toString());
+        }
     }
 
     private void startBundles() {
@@ -235,41 +237,4 @@ public class GlassFishActivator implements BundleActivator {
         }
         return null;
     }
-
-    private class CATracker extends ServiceTracker {
-        Properties properties;
-
-        public CATracker(Properties properties) {
-            super(bundleContext, ConfigurationAdmin.class.getName(), null);
-            this.properties = properties;
-        }
-
-        @Override
-        public Object addingService(ServiceReference reference) {
-            try {
-                final ConfigurationAdmin ca = (ConfigurationAdmin) context.getService(reference);
-                assert (ca != null);
-                updateConfig(properties, ca);
-            } catch (Exception ioe) {
-                throw new RuntimeException(ioe);
-            }
-            return super.addingService(reference);
-        }
-    }
-
-    private void updateConfig(Properties properties, ConfigurationAdmin ca) throws Exception {
-        // set env props before updating config, because configuration update may actually trigger
-        // some code to be executed which may be depending on the environment variable values.
-        setEnv(properties);
-        config = ca.getConfiguration(hk2pid, null);
-        config.update(properties);
-    }
-
-    private void deleteConfig() throws IOException {
-        if (config != null) {
-            config.delete();
-            config = null;
-        }
-    }
-
 }

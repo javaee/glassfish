@@ -121,7 +121,7 @@ public class ASMainEquinox extends ASMainOSGi {
         if (!cacheDir.exists() && !cacheDir.mkdirs()) {
             throw new RuntimeException("Not able to create " + cacheDir.getAbsolutePath());
         }
-        ASMainHelper.copyFile(settings, new File(cacheDir, "config.ini"));
+        Util.copyFile(settings, new File(cacheDir, "config.ini"));
     }
 
     protected void launchOSGiFW() throws Exception {

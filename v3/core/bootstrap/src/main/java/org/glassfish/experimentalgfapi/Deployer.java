@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2006-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,52 +34,39 @@
  * holder.
  */
 
-package com.sun.enterprise.glassfish.bootstrap;
 
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
+package org.glassfish.experimentalgfapi;
 
-import com.sun.enterprise.module.bootstrap.PlatformMain;
+import java.io.File;
+import java.net.URI;
+import java.util.Map;
 
 /**
- * Tag Main to get the manifest file 
+ * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class ASMain {
-
-    /*
-     * Most of the code in this file has been moved to ASMainHelper
-     *and  ASMainOSGi
+public interface Deployer {
+    /**
+     * Deploys a jar file or an exploded directory to the server using the supplied deployment command parameters.
+     *
+     * @param archive jar file or directory of the application
+     * @param params deployment command parameters
+     * @return the deployed application name
      */
-    final static Logger logger = Logger.getAnonymousLogger();
+    String deploy(File archive, Map<String, String> params);
 
-    public static void main(final String args[]) throws Exception {
-        ASMainHelper.checkJdkVersion();
-        String platform = ASMainHelper.whichPlatform();
-        if (ASMainHelper.isOSGiPlatform(platform)) {
-            // For OSGi platforms, we have switched to new way of launching GlassFish.
-            GlassFishMain.main(args);
-            return;
-        }
-        File installRoot = ASMainHelper.findInstallRoot();
-        File instanceRoot = ASMainHelper.findInstanceRoot(installRoot, args);
-        Properties ctx = ASMainHelper.buildStartupContext(platform, installRoot, instanceRoot, args);
-        ASMainHelper.setSystemProperties(ctx);
+    // TODO(Sahoo): Add more documentation about how to use 
+    /**
+     * Deploys an application identified by a URI. Please note, there is no separate deployment parameters
+     * in this method signature. All the information is encapsulated in the URI as query components.
+     * We prefer this approach as opposed to taking a separate properties argument, because one can then
+     * easily deploy from an interactive shell by encoding everything as one URI string.
+     * GlassFish does not care about what URI scheme is used as long as there is a URL handler installed
+     * in the server runtime to handle the URI scheme and a JarInputStream can be obtained from the URI.
+     *  
+     * @param archive
+     * @return
+     */
+    String deploy(URI archive);
 
-        PlatformMain delegate=ASMainHelper.getMain(platform);
-        if (delegate!=null) {
-            logger.info("Launching GlassFish on " + platform + " platform");
-            logger.fine("Startup Context: " + ctx);
-            try {
-                delegate.setLogger(logger);
-                delegate.start(ctx);
-            } catch(Exception e) {
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
-
-        } else {
-            logger.severe("Cannot launch GlassFish on the unknown " + platform + " platform");
-        }
-    }
-
+    void undeploy(String appName, Map<String, String> params);
 }

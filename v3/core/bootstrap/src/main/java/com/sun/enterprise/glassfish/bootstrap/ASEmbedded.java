@@ -104,7 +104,7 @@ public class ASEmbedded extends ASMainNonOSGi {
     final class EmbeddedMain extends Main {
 
         @Override
-        protected Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
+        public Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
             Habitat habitat = registry.newHabitat();
             for (Object c : getContexts()) {
                 habitat.add(Inhabitants.create(c));

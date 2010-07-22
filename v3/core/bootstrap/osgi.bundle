@@ -1,2 +1,2 @@
 Bundle-Activator: com.sun.enterprise.glassfish.bootstrap.GlassFishActivator
--exportcontents: com.sun.enterprise.glassfish.bootstrap; version=${project.osgi.version}
+-exportcontents: org.glassfish.experimentalgfapi; com.sun.enterprise.glassfish.bootstrap; version=${project.osgi.version}

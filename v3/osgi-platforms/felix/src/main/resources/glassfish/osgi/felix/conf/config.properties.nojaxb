@@ -30,7 +30,7 @@ org.osgi.framework.system.packages=\
  org.osgi.util.tracker; version=1.4.0 \
  ${extra-system-packages}
 
-extra-system-packages=${jre-${java.specification.version}} ${internal-jdk-pkgs-for-gf}
+extra-system-packages=${jre-${java.specification.version}} ${internal-jdk-pkgs-for-gf}, org.glassfish.experimentalgfapi;version=3.1
 
 # Although Eclipselink imports these packages, in typical GlassFish installation,
 # Oracle JDBC driver may not be available as a bundle, so we ask user to install it in 
@@ -51,18 +51,11 @@ org.osgi.framework.bootdelegation=${eclipselink.bootdelegation}, \
 # made available in GlassFish to work.
 org.osgi.framework.bundle.parent=framework
 
+org.osgi.framework.storage=${com.sun.aas.instanceRoot}/osgi-cache/${GlassFish_Platform}/
+
 # The Felix launcher registers a shutdown hook to cleanly stop the framework
 # by default, uncomment the following line to disable it.
 #felix.shutdown.hook=false
-
-# The reason for using yet another variable called com.sun.aas.installRootURI
-# instead of com.sun.aas.installRoot is that on Windows, the native pathname
-# uses '\' which is not in URI synatx. Felix requires a URI for the 
-# bundles to be auto-started.
-# GlassFish specific note:
-# Auto-start osgi-main module, which takes care of starting rest of the system.
-felix.auto.start.1= \
- reference:${com.sun.aas.installRootURI}modules/osgi-main.jar 
 
 # log level 1: error, 2: warning, 3: info, 4: debug
 felix.log.level=1

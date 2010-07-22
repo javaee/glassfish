@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2006-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,52 +34,54 @@
  * holder.
  */
 
-package com.sun.enterprise.glassfish.bootstrap;
 
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
-
-import com.sun.enterprise.module.bootstrap.PlatformMain;
+package org.glassfish.experimentalgfapi;
 
 /**
- * Tag Main to get the manifest file 
+ * This is our primary interface to communicate with the server,
+ * It provides necessary life cycle operations as well as it acts as a component registry.
+ *
+ * Concurrency Note:
+ * This interface can be used concurrently.
+ *
+ * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class ASMain {
-
-    /*
-     * Most of the code in this file has been moved to ASMainHelper
-     *and  ASMainOSGi
+public interface GlassFish {
+    /**
+     * Start the server. When this method is called, all the lifecycle (aka startup) services are started.
      */
-    final static Logger logger = Logger.getAnonymousLogger();
+    void start();
 
-    public static void main(final String args[]) throws Exception {
-        ASMainHelper.checkJdkVersion();
-        String platform = ASMainHelper.whichPlatform();
-        if (ASMainHelper.isOSGiPlatform(platform)) {
-            // For OSGi platforms, we have switched to new way of launching GlassFish.
-            GlassFishMain.main(args);
-            return;
-        }
-        File installRoot = ASMainHelper.findInstallRoot();
-        File instanceRoot = ASMainHelper.findInstanceRoot(installRoot, args);
-        Properties ctx = ASMainHelper.buildStartupContext(platform, installRoot, instanceRoot, args);
-        ASMainHelper.setSystemProperties(ctx);
+    /**
+     * Stop the server. When this method is called, all the lifecycle (aka startup) services are stopped.
+     * After the server is stopped, the server can be started again by calling the start method.
+     */
+    void stop();
 
-        PlatformMain delegate=ASMainHelper.getMain(platform);
-        if (delegate!=null) {
-            logger.info("Launching GlassFish on " + platform + " platform");
-            logger.fine("Startup Context: " + ctx);
-            try {
-                delegate.setLogger(logger);
-                delegate.start(ctx);
-            } catch(Exception e) {
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
+    /**
+     * Call this method if you don't need the server object any more. This method will stop the server
+     * if not already stopped. After this method is called, calling any method except {@link #getStatus}
+     * on the server object will cause an IllegalStateException to be thrown. When this method is called,
+     * any resource (like temporary files, threads, etc.) is also released.
+     */
+    void dispose();
 
-        } else {
-            logger.severe("Cannot launch GlassFish on the unknown " + platform + " platform");
-        }
+    /**
+     * @return Status of GlassFish
+     */
+    Status getStatus();
+
+    /**
+     * Look up a service
+     * @param serviceType type of component required.
+     * @param servicetName name of the component. Pass null if any component will fit the bill.
+     * @param <T>
+     * @return Return a component matching the requirement, null if no component found.
+     */
+    <T> T lookupService(Class<T> serviceType, String servicetName);
+
+    enum Status {
+        // Because server can take time to start or stop, we have STARTING and STOPPING states.
+        INIT, STARTING, STARTED, STOPPING, STOPPED, DISPOSED
     }
-
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2006-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,52 +34,49 @@
  * holder.
  */
 
-package com.sun.enterprise.glassfish.bootstrap;
 
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
-
-import com.sun.enterprise.module.bootstrap.PlatformMain;
+package org.glassfish.experimentalgfapi;
 
 /**
- * Tag Main to get the manifest file 
+ * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class ASMain {
+public class Constants {
+    public final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
 
-    /*
-     * Most of the code in this file has been moved to ASMainHelper
-     *and  ASMainOSGi
-     */
-    final static Logger logger = Logger.getAnonymousLogger();
+    public final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
+    public static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
+    public static final String INSTALL_ROOT_URI_PROP_NAME = "com.sun.aas.installRootURI";
+    public static final String INSTANCE_ROOT_URI_PROP_NAME = "com.sun.aas.instanceRootURI";
 
-    public static void main(final String args[]) throws Exception {
-        ASMainHelper.checkJdkVersion();
-        String platform = ASMainHelper.whichPlatform();
-        if (ASMainHelper.isOSGiPlatform(platform)) {
-            // For OSGi platforms, we have switched to new way of launching GlassFish.
-            GlassFishMain.main(args);
-            return;
-        }
-        File installRoot = ASMainHelper.findInstallRoot();
-        File instanceRoot = ASMainHelper.findInstanceRoot(installRoot, args);
-        Properties ctx = ASMainHelper.buildStartupContext(platform, installRoot, instanceRoot, args);
-        ASMainHelper.setSystemProperties(ctx);
+    private Constants(){}
 
-        PlatformMain delegate=ASMainHelper.getMain(platform);
-        if (delegate!=null) {
-            logger.info("Launching GlassFish on " + platform + " platform");
-            logger.fine("Startup Context: " + ctx);
-            try {
-                delegate.setLogger(logger);
-                delegate.start(ctx);
-            } catch(Exception e) {
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
+    // Supported platform we know about, not limited to.
+    public enum Platform {
+        /**
+         * Felix OSGi platform
+         */
+        Felix,
 
-        } else {
-            logger.severe("Cannot launch GlassFish on the unknown " + platform + " platform");
-        }
+        /**
+         * Equinox OSGi platform
+         */
+        Equinox,
+
+        /**
+         * Knopflerfish OSGi platform
+         */
+        Knopflerfish,
+
+        /**
+         * Generic OSGi R4.2 or higher platform.
+         * When this is chosen, we expect the framework to be set up in launcher classloader by user.
+         */
+        GenericOSGi,
+
+        /**
+         * Proprietary non-modular hk2 module system
+         */
+        Static
     }
 
 }

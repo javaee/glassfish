@@ -158,7 +158,7 @@ public class ASMainStatic extends ASMainNonOSGi {
         Thread launcherThread = new Thread(new Runnable(){
             public void run() {
                 Main main = new Main() {
-                    protected Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
+                    public Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
                         Habitat habitat = registry.newHabitat();
 
                         for (Object c : getContexts()) {

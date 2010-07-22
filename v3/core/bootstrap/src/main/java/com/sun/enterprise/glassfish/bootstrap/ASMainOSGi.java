@@ -45,7 +45,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Properties;
 import java.util.logging.Logger;
-import java.net.MalformedURLException;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -187,7 +186,7 @@ public abstract class ASMainOSGi extends PlatformMain {
     private void addJDKToolsJar(ClassPathBuilder cpb) {
         try {
 
-            File jdkToolsJar = ASMainHelper.getJDKToolsJar();
+            File jdkToolsJar = Util.getJDKToolsJar();
             if (jdkToolsJar.exists()) {
                 cpb.addJar(jdkToolsJar);
             } else {
@@ -201,7 +200,7 @@ public abstract class ASMainOSGi extends PlatformMain {
 
     private void findDerbyClient(ClassPathBuilder cpb) throws IOException {
         // Sahoo: Why do we have to add derby to this class loader? Find out from Jerome.
-        String derbyHome = new ASMainHelper(Logger.getAnonymousLogger()).parseAsEnv(glassfishDir).getProperty("AS_DERBY_INSTALL");
+        String derbyHome = ASMainHelper.parseAsEnv(glassfishDir).getProperty("AS_DERBY_INSTALL");
         File derbyLib = null;
         if (derbyHome != null) {
             derbyLib = new File(derbyHome, "lib");

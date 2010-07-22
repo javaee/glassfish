@@ -37,10 +37,12 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.process.JavaClassRunner;
 import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.internal.api.Globals;
 
 import java.io.*;
 import java.util.*;
@@ -121,10 +123,7 @@ public class RestartServer {
     ////////////////////////////////////////////////////////////////////////////
     private void init(AdminCommandContext context) throws IOException {
         logger = context.getLogger();
-        String s = System.getProperty(com.sun.enterprise.glassfish.bootstrap.Constants.ARGS_PROP);
-        Reader reader = new StringReader(s);
-        props = new Properties();
-        props.load(reader);
+        props = Globals.get(StartupContext.class).getArguments();
         verbose = Boolean.parseBoolean(props.getProperty("-verbose", "false"));
         logger.info(strings.get("restart.server.init"));
     }
