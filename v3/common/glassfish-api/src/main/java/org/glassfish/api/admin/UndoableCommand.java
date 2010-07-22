@@ -70,7 +70,7 @@ import org.glassfish.api.ActionReport;
  * method is invoked (and any supplemented methods).
  *
  * <p>If the framework is electing that successful commands execution need to be rolled back, it will
- * call the {@link #undo(ParameterMap)} method on the same instance that was used for the
+ * call the {@link #undo(AdminCommandContext, ParameterMap)} method on the same instance that was used for the
  * {@link #execute(AdminCommandContext)} invocation, as well as any supplemented commands that implement
  * this interface.
  * 
@@ -87,9 +87,10 @@ public interface UndoableCommand extends AdminCommand {
      * servers instances are on-line and can be notified of the change.
      *
      * <p>No changes to the configuration should be made within the implementation of the
-     * prepare method since {@link #undo(ParameterMap)} will not be called if the command
+     * prepare method since {@link #undo(AdminCommandContext, ParameterMap)} will not be called if the command
      * execution stops at the prepare phase.
      *
+     * @param context the command's context
      * @param parameters parameters to the commands.
      */
     @IfFailure(FailurePolicy.Error)
@@ -100,9 +101,8 @@ public interface UndoableCommand extends AdminCommand {
      * for undoing the administrative operation should be obtained from either the
      * parameters passed to the command execution or the command instance context.
      *
+     * @param context the command's context
      * @param parameters parameters passed to the command.
      */
-    public void undo(ParameterMap parameters);
-
-
+    public void undo(AdminCommandContext context, ParameterMap parameters);
 }
