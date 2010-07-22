@@ -39,8 +39,17 @@
 
 package org.glassfish.appclient.client.acc.config.util;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.EntityResolver;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
@@ -52,7 +61,6 @@ import org.glassfish.appclient.client.acc.config.ClientContainer;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -110,7 +118,8 @@ public class XMLTest {
 
     }
 
-    private static ClientContainer readConfig(final String configPath) throws JAXBException, FileNotFoundException {
+    private static ClientContainer readConfig(final String configPath) 
+            throws JAXBException, FileNotFoundException, ParserConfigurationException, SAXException {
         ClientContainer result = null;
         InputStream is = XMLTest.class.getResourceAsStream(SAMPLE_XML_PATH);
         if (is == null) {
@@ -119,8 +128,103 @@ public class XMLTest {
         JAXBContext jc = JAXBContext.newInstance(ClientContainer.class );
 
         Unmarshaller u = jc.createUnmarshaller();
-        result = (ClientContainer) u.unmarshal(is);
+
+        final SAXSource src = setUpToUseLocalDTDs(is);
+
+        result = (ClientContainer) u.unmarshal(src);
 
         return result;
+    }
+
+    private static SAXSource setUpToUseLocalDTDs(final InputStream is)
+            throws ParserConfigurationException, SAXException {
+        SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+        SAXParser saxParser = parserFactory.newSAXParser();
+        XMLReader xmlReader = saxParser.getXMLReader();
+        InputSource inSrc = new InputSource(is);
+        xmlReader.setEntityResolver(new LocalEntityResolver());
+        SAXSource saxSource = new SAXSource(xmlReader,inSrc);
+        return saxSource;
+    }
+
+    /**
+     * Resolves entity references against local files if possible.
+     * <p>
+     * This is here primarily to allow us to find the local copy of the
+     * sun-application-client DTD without going out over the network.
+     */
+    private static class LocalEntityResolver implements EntityResolver {
+
+        
+        private static final String SUN_ACC_PUBLIC_ID =
+                "-//Sun Microsystems Inc.//DTD Application Server 8.0 Application Client Container//EN";
+        private static final String SYSTEM_ID_PREFIX =
+                "http://www.sun.com/software/appserver/";
+        private static final URI SUN_ACC_SYSTEM_ID_URI = 
+                URI.create(SYSTEM_ID_PREFIX + "dtds/sun-application-client-container_1_2.dtd");
+        private static final URI SYSTEM_ID_PREFIX_URI =
+                URI.create(SYSTEM_ID_PREFIX);
+
+        private static final String LOCAL_PATH_PREFIX = "/glassfish/lib/";
+
+        private static final Map<String,String> publicIdToLocalPathMap =
+                initPublicIdToLocalPathMap();
+
+        private static Map<String,String> initPublicIdToLocalPathMap() {
+            final Map<String,String> result = new HashMap<String,String>();
+            final URI relativeURIToSystemID = SYSTEM_ID_PREFIX_URI.relativize(SUN_ACC_SYSTEM_ID_URI);
+            result.put(SUN_ACC_PUBLIC_ID, LOCAL_PATH_PREFIX + relativeURIToSystemID.getPath());
+            return result;
+        }
+
+        /*
+         * The deployment/dtds module should be in the dependencies, so the
+         * entries in that JAR should be accessible on the class path.
+         */
+        @Override
+        public InputSource resolveEntity(String publicId, String systemId){
+            InputSource result = null;
+            final String localPath = publicIdToLocalPathMap.get(publicId);
+            if (localPath == null) {
+                return null;
+            }
+
+//            showClassPath(Thread.currentThread().getContextClassLoader(), "context");
+//            showClassPath(getClass().getClassLoader(), "class");
+//            showClassPath(ClassLoader.getSystemClassLoader(), "system");
+
+            /*
+             * The next line works because the pom for this project extracted
+             * the DTD from the deployment/dtds dtds.zip file and placed it into
+             * a temporary directory which we used for generating the JAXB classes.
+             * The pom also adds that same temporary directory to the test-time
+             * class path, which allows this class to find that locally-extracted
+             * copy of the DTD.
+             */
+            final InputStream is = getClass().getResourceAsStream(localPath);
+            if (is == null) {
+                System.err.println("Found map entry for public Id but could not find the local path " + localPath);
+                return null;
+            }
+            result = new InputSource(is);
+            return result;
+        }
+
+//        private void showClassPath(ClassLoader cl, final String title) {
+//            System.err.println("URLs of loaders for the " + title + " class loader");
+//            while (cl != null) {
+//                if (cl instanceof URLClassLoader) {
+//                    System.err.println("  " + cl.toString());
+//                    URLClassLoader urlCL = URLClassLoader.class.cast(cl);
+//                    System.err.println();
+//                    for (URL url : urlCL.getURLs()) {
+//                        System.err.println("    " + url.toExternalForm());
+//                    }
+//                }
+//                cl = cl.getParent();
+//            }
+//            System.err.println();
+//        }
+
     }
 }

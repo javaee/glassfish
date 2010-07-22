@@ -280,13 +280,14 @@
             <version>${project.version}</version>
         </dependency>
         <!--
-            We depend on the deployment/dtds module which contains the
-            sun-application-client-container_1_2.dtd.  We use that for
-            generating JAXB classes.  We depend on both the DTDs and
-            the schemas at runtime.
+            We depend on the deployment/dtds and deployment/schemas modules
+            but only at build-time.  We extract the DTD and schema files and
+            add them to the module JAR so they will be accessible at tuntime
+            on the class path.  Because we don't really rely on the zip files
+            at runtime, we use scope "provided" for the dependencies.
         -->
         <dependency>
-            <scope>compile</scope>
+            <scope>provided</scope>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>dtds</artifactId>
             <type>zip</type>
@@ -294,7 +295,7 @@
         </dependency>
 
         <dependency>
-            <scope>runtime</scope>
+            <scope>provided</scope>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>schemas</artifactId>
             <type>zip</type>
