@@ -157,7 +157,7 @@ public class EjbApplication
                     getCommandParameters(DeployCommandParameters.class);
 
             for (Container container : containers) {
-                container.startApplication(params.origin == OpsParams.Origin.deploy);
+                container.startApplication(params.origin.isDeploy());
             }
 
             singletonLCM.doStartup(this);
@@ -186,7 +186,7 @@ public class EjbApplication
 
         // If true the application is being deployed.  If false, it's
         // an initialization after the app was already deployed. 
-        boolean deploy = (params.origin == OpsParams.Origin.deploy );
+        boolean deploy = params.origin.isDeploy();
 
         String dcMapToken = "org.glassfish.ejb.startup.SingletonLCM";
         singletonLCM = dc.getTransientAppMetaData(dcMapToken, SingletonLifeCycleManager.class);
@@ -243,8 +243,7 @@ public class EjbApplication
         // If true we're shutting down b/c of an undeploy or a fatal error during
         // deployment.  If false, it's a shutdown where the application will remain
         // deployed.
-        boolean undeploy = (params.origin == OpsParams.Origin.undeploy ) ||
-                (params.origin == OpsParams.Origin.deploy);
+        boolean undeploy = (params.origin.isUndeploy() || params.origin.isDeploy());
 
         // First, shutdown any singletons that were initialized based
         // on a particular ordering dependency.
