@@ -119,7 +119,7 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
 
                 if (name != null) {
                     InstanceInfo ii = new InstanceInfo(
-                            name, helper.getAdminPort(server), helper.getHost(server),
+                            name, helper.getAdminPort(server), server.getHost(),
                             clusterName, logger, timeoutInMsec);
                     infos.add(ii);
 

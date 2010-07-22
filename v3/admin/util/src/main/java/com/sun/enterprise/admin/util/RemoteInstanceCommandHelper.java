@@ -76,36 +76,12 @@ public final class RemoteInstanceCommandHelper {
     }
 
     public final String getHost(final String serverName) {
-        return getHost(getServer(serverName));
-    }
-
-    public final String getHost(final Server server) {
-
-        String hostName = null;
-
-        if (server == null || nodes == null)
-            return null;
-
-        // Get it from the node associated with the server
-        String nodeName = server.getNode();
-        if (StringUtils.ok(nodeName)) {
-            Node node = nodes.getNode(nodeName);
-            if (node != null) {
-                hostName = node.getNodeHost();
-            }
-            // XXX Hack to get around the fact that the default localhost
-            // node entry is malformed
-            if (hostName == null && nodeName.equals("localhost")) {
-                hostName = "localhost";
-            }
+        String host = null;
+        Server server = getServer(serverName);
+        if (server != null) {
+            host = server.getHost();
         }
-
-        if (StringUtils.ok(hostName)) {
-            return hostName;
-        }
-        else {
-            return null;
-        }
+        return host;
     }
 
     public final Server getServer(final String serverName) {
