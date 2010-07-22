@@ -179,6 +179,26 @@ public class JCDIServiceImpl implements JCDIService
     }
 
 
+    /**
+     * Perform 299 style injection on the <code>managedObject</code> argument.
+     * @param managedObject the managed object
+     * @param bundle  the bundle descriptor
+     */
+    public void injectManagedObject(Object managedObject, BundleDescriptor bundle) {
+
+        BundleDescriptor topLevelBundleDesc = (BundleDescriptor) bundle.getModuleDescriptor().getDescriptor();
+
+        // First get BeanDeploymentArchive for this ejb
+
+        BeanDeploymentArchive bda = weldDeployer.getBeanDeploymentArchiveForBundle(topLevelBundleDesc);
+        WeldBootstrap bootstrap = weldDeployer.getBootstrapForApp(bundle.getApplication());
+        BeanManager beanManager = bootstrap.getManager(bda);
+        AnnotatedType annotatedType = beanManager.createAnnotatedType(managedObject.getClass());
+        InjectionTarget it = beanManager.createInjectionTarget(annotatedType);
+        CreationalContext cc = beanManager.createCreationalContext(null);
+        it.inject(managedObject, cc);
+    }
+
     public JCDIInjectionContext createManagedObject(Class managedClass, BundleDescriptor bundle,
                                                     boolean invokePostConstruct) {
 

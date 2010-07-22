@@ -53,6 +53,8 @@ public interface JCDIService {
     public JCDIInjectionContext createManagedObject(Class managedClass, BundleDescriptor bundle,
                                                     boolean invokePostConstruct);
 
+    public void injectManagedObject(Object managedObject, BundleDescriptor bundle);
+
     public JCDIInjectionContext createJCDIInjectionContext(EjbDescriptor ejbDesc);
     public JCDIInjectionContext createJCDIInjectionContext(EjbDescriptor ejbDesc, Object instance);
 
