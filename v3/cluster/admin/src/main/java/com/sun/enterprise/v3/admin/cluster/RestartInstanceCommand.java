@@ -35,12 +35,15 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
-import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.admin.remote.RemoteAdminCommand;
+import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.util.StringUtils;
+import java.util.logging.Logger;
 import org.glassfish.api.*;
 import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.*;
-import com.sun.enterprise.v3.admin.RestartServer;
-import com.sun.enterprise.v3.admin.RestartServer;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 /**
@@ -49,26 +52,83 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service(name = "restart-instance")
 @Scoped(PerLookup.class)
-@Async
 @I18n("restart.instance.command")
-public class RestartInstanceCommand extends RestartServer implements AdminCommand {
-
-    @Inject
-    ModulesRegistry registry;
-    @Inject
-    private ServerEnvironment env;
-    // no default value!  We use the Boolean as a tri-state.
-    @Param(name = "debug", optional = true)
-    private Boolean debug;
+@Cluster(RuntimeType.DAS)
+public class RestartInstanceCommand implements AdminCommand {
 
     @Override
     public void execute(AdminCommandContext context) {
-        setRegistry(registry);
-        setServerName(env.getInstanceName());
+        helper = new RemoteInstanceCommandHelper(habitat);
+        report = context.getActionReport();
+        logger = context.getLogger();
 
-        if (debug != null)
-            setDebug(debug);
+        if (env.isDas())
+            errorMessage = callInstance();
+        else
+            errorMessage = Strings.get("restart.instance.notDas",
+                    env.getRuntimeType().toString());
 
-        doExecute(context);
+        if (errorMessage != null) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(errorMessage);
+            return;
+        }
+
+        // todo -- verify it really stopped
+        // waiting for IT for Vijay to get done -- API for status
+        // we are GUARANTEED that instanceName is set...
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        report.setMessage(Strings.get("restart.instance.success", instanceName));
     }
+
+    /**
+     * return null if all went OK...
+     *
+     */
+    private String callInstance() {
+        String cmdName = "restart-instance";
+
+        if (!StringUtils.ok(instanceName))
+            return Strings.get("stop.instance.noInstanceName", cmdName);
+
+        final Server instance = helper.getServer(instanceName);
+
+        if (instance == null)
+            return Strings.get("stop.instance.noSuchInstance", instanceName);
+
+        String host = helper.getHost(instance);
+
+        if (host == null)
+            return Strings.get("stop.instance.noHost", instanceName);
+
+        int port = helper.getAdminPort(instance);
+
+        if (port < 0)
+            return Strings.get("stop.instance.noPort", instanceName);
+
+        try {
+            // TODO username password ????
+            RemoteAdminCommand rac = new RemoteAdminCommand("_restart-instance",
+                    host, port, false, "admin", null, logger);
+
+            // notice how we do NOT send in the instance's name as an operand!!
+            rac.executeCommand(new ParameterMap());
+        }
+        catch (CommandException ex) {
+            return Strings.get("restart.instance.racError", instanceName,
+                    ex.getLocalizedMessage());
+        }
+
+        return null;
+    }
+    @Inject
+    private Habitat habitat;
+    @Inject
+    private ServerEnvironment env;
+    @Param(optional = false, primary = true)
+    private String instanceName;
+    private Logger logger;
+    private RemoteInstanceCommandHelper helper;
+    private ActionReport report;
+    private String errorMessage = null;
 }

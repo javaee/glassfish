@@ -71,11 +71,8 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
  * AdminCommand to stop the instance
  * server.
  * Shutdown of an instance.
- * If this is DAS -- we call the instance
- * If this is an instance we commit suicide
- *
- * note: This command is asynchronous.  We can't return anything so we just
- * log errors and return
+ * This command only runs on DAS.  It calls the instance and asks it to
+ * kill itself
 
  * @author Byron Nevins
  */
@@ -95,7 +92,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
     private ModulesRegistry registry;
     @Param(optional = true, defaultValue = "true")
     private Boolean force;
-    @Param(optional = true, primary = true)
+    @Param(optional = false, primary = true)
     private String instanceName;
     private Logger logger;
     private RemoteInstanceCommandHelper helper;
@@ -107,12 +104,12 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         logger = context.getLogger();
 
         if (env.isDas())
-            callInstance();
+            errorMessage = callInstance();
         else
             errorMessage = Strings.get("stop.instance.notDas",
                     env.getRuntimeType().toString());
 
-        if(errorMessage != null) {
+        if (errorMessage != null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(errorMessage);
         }
@@ -132,39 +129,43 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
     }
 
     /**
-     * set errorMessage if there is a problem...
+     * return null if all went OK...
      *
      */
-    private void callInstance() {
-        try {
-            if (!StringUtils.ok(instanceName)) {
-                errorMessage = Strings.get("stop.instance.noInstanceName");
-                return;
-            }
-            final Server instance = helper.getServer(instanceName);
-            if (instance == null) {
-                errorMessage = Strings.get("stop.instance.noSuchInstance", instanceName);
-                return;
-            }
-            String host = helper.getHost(instance);
-            if (host == null) {
-                errorMessage = Strings.get("stop.instance.noHost", instanceName);
-                return;
-            }
-            int port = helper.getAdminPort(instance);
-            if (port < 0) {
-                errorMessage = Strings.get("stop.instance.noPort", instanceName);
-                return;
-            }
+    private String callInstance() {
+        String cmdName = "stop-instance";
 
+        if (!StringUtils.ok(instanceName))
+            return Strings.get("stop.instance.noInstanceName", cmdName);
+
+        final Server instance = helper.getServer(instanceName);
+
+        if (instance == null)
+            return Strings.get("stop.instance.noSuchInstance", instanceName);
+
+        String host = helper.getHost(instance);
+
+        if (host == null)
+            return Strings.get("stop.instance.noHost", instanceName);
+
+        int port = helper.getAdminPort(instance);
+
+        if (port < 0)
+            return Strings.get("stop.instance.noPort", instanceName);
+
+        try {
             // TODO username password ????
-            RemoteAdminCommand rac = new RemoteAdminCommand("_stop-instance", helper.getHost(instance), helper.getAdminPort(instance), false, "admin", null, logger);
+            RemoteAdminCommand rac = new RemoteAdminCommand("_stop-instance",
+                    host, port, false, "admin", null, logger);
 
             // notice how we do NOT send in the instance's name as an operand!!
             rac.executeCommand(new ParameterMap());
         }
         catch (CommandException ex) {
-            errorMessage = Strings.get("stop.instance.racError", instanceName);
+            return Strings.get("stop.instance.racError", instanceName,
+                    ex.getLocalizedMessage());
         }
+
+        return null;
     }
 }
