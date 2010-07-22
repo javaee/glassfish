@@ -2413,6 +2413,15 @@ public abstract class BaseContainer
         }
     }
     
+    private void stopTimers() {
+        if( isTimedObject() ) {
+            EJBTimerService ejbTimerService = ejbContainerUtilImpl.getEJBTimerService();
+            if( ejbTimerService != null ) {
+                ejbTimerService.stopTimers(getContainerId());
+            }
+        }
+    }
+    
     // internal API, implemented in subclasses
     abstract EJBObjectImpl createEJBObjectImpl()
         throws CreateException, RemoteException;
@@ -4180,6 +4189,12 @@ public abstract class BaseContainer
             
                 setStoppedState();
 
+                try {
+                   stopTimers();
+                } catch(Exception e) {
+                    _logger.log(Level.FINE, "Error stopping timers for " +
+                                ejbDescriptor.getName(), e);
+                }
                 // Cleanup without undeploy
                 doConcreteContainerShutdown(false);
 

@@ -713,6 +713,23 @@ public class EJBTimerService
     }
 
     /**
+     * Remove from the cache (i.e. stop) all timers associated with a particular ejb container
+     * and known to this server instance.
+     * This is typically called when an ejb is disabled or on a server shutdown
+     * to avoid accidentally removing a valid timer.  
+     */
+    void stopTimers(long containerId) {
+        Set<TimerPrimaryKey> timerIds = null;
+
+        timerIds = timerLocal_.findTimerIdsByContainer(containerId);
+        timerIds.addAll(timerCache_.getNonPersistentTimerIdsForContainer(containerId));
+
+        for(TimerPrimaryKey nextTimerId: timerIds) {
+            expungeTimer(nextTimerId);
+        }
+    }
+
+    /**
      * Destroy all timers associated with a particular ejb container
      * and owned by this server instance.  
      * This is typically called when an ejb is undeployed.  It expunges
@@ -1692,7 +1709,7 @@ public class EJBTimerService
 
             if( timerState == null ) { 
                 // This isn't an error case.  The most likely reason is that
-                // the ejbTimeout method itself cancelled the timer.
+                // the ejbTimeout method itself cancelled the timer or the bean was disabled.
                 logger.log(Level.FINE, "Timer no longer exists for " + 
                            timerId + " after callEJBTimeout");
                 return; 
