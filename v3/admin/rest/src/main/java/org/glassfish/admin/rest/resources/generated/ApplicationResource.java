@@ -50,9 +50,15 @@ ApplicationEnableResource resource = resourceContext.getResource(ApplicationEnab
 return resource;
 }
 
+@Path("show-component-status/")
+public ApplicationShowComponentStatusResource getApplicationShowComponentStatusResource() {
+ApplicationShowComponentStatusResource resource = resourceContext.getResource(ApplicationShowComponentStatusResource.class);
+return resource;
+}
+
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"disable", "POST", "disable"}, {"enable", "POST", "enable"}};
+return new String[][]{{"disable", "POST", "disable"}, {"enable", "POST", "enable"}, {"show-component-status", "GET", "show-component-status"}};
 }
 
 	@Path("module/")

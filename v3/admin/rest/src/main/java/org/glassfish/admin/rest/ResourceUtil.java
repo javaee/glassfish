@@ -372,6 +372,7 @@ public class ResourceUtil {
         Class<? extends ConfigBeanProxy> configBeanProxy = null;
         try {
             configBeanProxy = (Class<? extends ConfigBeanProxy>) childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
+            System.out.println(configBeanProxy.getInterfaces());
 
             Set<String> attributeNames = childModel.getAttributeNames();
             for (String attributeName : attributeNames) {
@@ -403,7 +404,7 @@ public class ResourceUtil {
     }
     /**
      * Constructs and returns the parameter meta-data.
-     * @param command the command assocaited with the resource method
+     * @param command the command associated with the resource method
      * @param habitat the habitat
      * @param logger the logger to use
      * @return Collection the meta-data for the parameter of the resource method.
@@ -419,7 +420,7 @@ public class ResourceUtil {
 
     /**
      * Constructs and returns the parameter meta-data.
-     * @param command the command assocaited with the resource method
+     * @param command the command associated with the resource method
      * @param commandParamsToSkip the command parameters for which not to
      *        include the meta-data.
      * @param habitat the habitat
