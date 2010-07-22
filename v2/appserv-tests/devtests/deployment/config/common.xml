@@ -189,10 +189,10 @@
 
 <target name="setHttpPort">
     <condition property="depltest.port" value="${deploy.serverinstance.httpport}">
-        <or>
-            <equals arg1="${targetPlatform}" arg2="SERVER"/>
-            <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
-        </or>
+        <equals arg1="${targetPlatform}" arg2="SERVER"/>
+    </condition>
+    <condition property="depltest.port" value="${deploy.clusterinstance1.httpport}">
+        <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
     </condition>
     <condition property="depltest.port" value="${http.port}">
         <and>
@@ -208,10 +208,10 @@
 
 <target name="setOrbPort">
     <condition property="depltest.orbport" value="${deploy.serverinstance.orbport}">
-        <or>
-            <equals arg1="${targetPlatform}" arg2="SERVER"/>
-            <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
-        </or>
+        <equals arg1="${targetPlatform}" arg2="SERVER"/>
+    </condition>
+    <condition property="depltest.orbport" value="${deploy.clusterinstance1.orbport}">
+        <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
     </condition>
     <condition property="depltest.orbport" value="${orb.port}">
         <and>
@@ -223,6 +223,7 @@
             </not>
         </and>
     </condition>
+    <property name="appclient.targetservers" value="localhost:${depltest.orbport}"/>
 </target>
 
 <!--
@@ -839,7 +840,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
 <target name="setupInstance">
     <echo message="Running... asadmin create-instance"/>
     <exec executable="${ASADMIN}" failonerror="true">
-        <arg line="create-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --systemproperties HTTP_LISTENER_PORT=${deploy.serverinstance.httpport}:HTTP_SSL_LISTENER_PORT=2100:IIOP_LISTENER_PORT=2200:IIOP_SSL_LISTENER_PORT=2300:IIOP_SSL_MUTUALAUTH_PORT=2400:JMX_SYSTEM_CONNECTOR_PORT=2500:JMS_PROVIDER_PORT=2600:ASADMIN_LISTENER_PORT=2700 ${testServer}"/>
+        <arg line="create-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --systemproperties HTTP_LISTENER_PORT=${deploy.serverinstance.httpport}:HTTP_SSL_LISTENER_PORT=2100:IIOP_LISTENER_PORT=${deploy.serverinstance.orbport}:IIOP_SSL_LISTENER_PORT=2300:IIOP_SSL_MUTUALAUTH_PORT=2400:JMX_SYSTEM_CONNECTOR_PORT=2500:JMS_PROVIDER_PORT=2600:ASADMIN_LISTENER_PORT=2700 ${testServer}"/>
     </exec>
     <echo message="Running... asadmin start-instance"/>
     <antcall target="start-process">
@@ -852,9 +853,8 @@ AS_ADMIN_MASTERPASSWORD=changeit
     <exec executable="${ASADMIN}" failonerror="true">
         <arg line="create-cluster --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testCluster}"/>
     </exec>
-    <echo message="Running... asadmin create-cluster-instance"/>
     <exec executable="${ASADMIN}" failonerror="true">
-        <arg line="create-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --cluster ${testCluster} --systemproperties HTTP_LISTENER_PORT=${deploy.clusterinstance1.httpport}:HTTP_SSL_LISTENER_PORT=2101:IIOP_LISTENER_PORT=2201:IIOP_SSL_LISTENER_PORT=2301:IIOP_SSL_MUTUALAUTH_PORT=2401:JMX_SYSTEM_CONNECTOR_PORT=2501:JMS_PROVIDER_PORT=2601:ASADMIN_LISTENER_PORT=2701 ${testClusterServer1}"/>
+        <arg line="create-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --cluster ${testCluster} --systemproperties HTTP_LISTENER_PORT=${deploy.clusterinstance1.httpport}:HTTP_SSL_LISTENER_PORT=2101:IIOP_LISTENER_PORT=${deploy.clusterinstance1.orbport}:IIOP_SSL_LISTENER_PORT=2301:IIOP_SSL_MUTUALAUTH_PORT=2401:JMX_SYSTEM_CONNECTOR_PORT=2501:JMS_PROVIDER_PORT=2601:ASADMIN_LISTENER_PORT=2701 ${testClusterServer1}"/>
     </exec>
     <echo message="Running... asadmin start-cluster"/>
     <antcall target="startCluster"/>
