@@ -103,6 +103,22 @@ public class ClusterOperationUtil {
             if(CommandTarget.DAS.isValid(habitat, t) ||
                     CommandTarget.DOMAIN.isValid(habitat, t))
                 continue;
+            //If the target is a cluster and dynamic reconfig enabled is false, no replication
+            if(targetService.isCluster(t)) {
+                String dynRecfg = targetService.getClusterConfig(t).getDynamicReconfigurationEnabled();
+                if(Boolean.FALSE.equals(Boolean.valueOf(dynRecfg))) {
+                    ActionReport aReport = context.getActionReport().addSubActionsReport();
+                    aReport.setActionExitCode(ActionReport.ExitCode.WARNING);
+                    aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.dynrecfgdisabled",
+                            "WARNING : The command was not replicated to all cluster instances because the" +
+                                    " dynamic-reconfig-enabled flag is set to false for cluster {0}", t));
+                    InstanceState instanceState = habitat.getComponent(InstanceState.class);
+                    for(Server s : targetService.getInstances(t))
+                        instanceState.setState(s.getName(), InstanceState.StateType.RESTART_REQUIRED);
+                    result = ActionReport.ExitCode.WARNING;
+                    continue;
+                }
+            }
             parameters.set("target", t);
             ActionReport.ExitCode returnValue = ClusterOperationUtil.replicateCommand(commandName,
                     failPolicy, offlinePolicy, targetService.getInstances(t), context, parameters, habitat);
