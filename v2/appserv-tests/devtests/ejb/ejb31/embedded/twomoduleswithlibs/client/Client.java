@@ -58,9 +58,14 @@ public class Client {
         appName = s[0];
         stat.addDescription(appName);
         Client t = new Client();
-        t.test();
+        try {
+            t.test();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         stat.printSummary(appName + "ID");
 
+        System.exit(0);
     }
 
     private void test() {

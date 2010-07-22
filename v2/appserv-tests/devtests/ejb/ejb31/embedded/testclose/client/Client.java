@@ -60,7 +60,11 @@ public class Client {
         System.out.println(".......... Testing module: " + appName);
         stat.addDescription(appName);
         Client t = new Client();
-        t.test(appName);
+        try {
+            t.test(appName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         stat.printSummary(appName + "ID");
         System.exit(0);
 
