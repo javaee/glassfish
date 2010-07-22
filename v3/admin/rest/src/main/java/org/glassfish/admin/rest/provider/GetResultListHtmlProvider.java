@@ -71,8 +71,8 @@ public class GetResultListHtmlProvider extends BaseProvider<GetResultList> {
         String childResourceLinks = getResourcesLinks(proxy.getDomList());
         result = getHtmlForComponent(childResourceLinks, "Child Resources", result);
 
-        String childCommandLinks = getCommandLinks(proxy.getCommandResourcesPaths());
-        result = getHtmlForComponent(childCommandLinks, "Commands", result);
+        String commandLinks = getCommandLinks(proxy.getCommandResourcesPaths());
+        result = getHtmlForComponent(commandLinks, "Commands", result);
 
         result = result + "</html></body>";
         return result;

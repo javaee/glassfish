@@ -189,10 +189,10 @@ public abstract class TemplateListOfResource {
 
             }
         } catch (Exception e) {
-            throw new WebApplicationException(e,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
+
     public static Class<? extends ConfigBeanProxy> getElementTypeByName(Dom parentDom, String elementName)
             throws ClassNotFoundException {
 
@@ -305,8 +305,7 @@ public abstract class TemplateListOfResource {
     @OPTIONS
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
     public OptionsResult options() {
-        OptionsResult optionsResult =
-            new OptionsResult(Util.getResourceName(uriInfo));
+        OptionsResult optionsResult = new OptionsResult(Util.getResourceName(uriInfo));
         try {
             //GET meta data
             optionsResult.putMethodMetaData("GET", new MethodMetaData());
