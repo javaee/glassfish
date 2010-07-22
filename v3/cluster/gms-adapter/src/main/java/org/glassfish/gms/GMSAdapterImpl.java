@@ -41,6 +41,7 @@ import com.sun.enterprise.ee.cms.core.*;
 import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.impl.client.*;
 import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
+import com.sun.enterprise.ee.cms.spi.MemberStates;
 import com.sun.logging.LogDomains;
 
 import java.util.*;
@@ -70,6 +71,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.types.Property;
+import org.glassfish.api.event.EventListener;
 
 /**
  * @author Sheetal.Vartak@Sun.COM
@@ -100,6 +102,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     private Cluster cluster = null;
     private String clusterName = null;
     private Config clusterConfig = null;
+    private long joinTime = 0L;
 
     private ConcurrentHashMap<CallBack, JoinNotificationActionFactory> callbackJoinActionFactoryMapping =
             new ConcurrentHashMap<CallBack, JoinNotificationActionFactory>();
@@ -113,6 +116,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             new ConcurrentHashMap<CallBack, GroupLeadershipNotificationActionFactory>();
     private ConcurrentHashMap<CallBack, PlannedShutdownActionFactory> callbackPlannedShutdownActionFactoryMapping =
             new ConcurrentHashMap<CallBack, PlannedShutdownActionFactory>();
+    private EventListener glassfishEventListener = null;
+    private boolean aliveAndReadyLoggingEnabled = false;
 
     @Inject
     Events events;
@@ -368,7 +373,11 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                         if (name.startsWith(GMS_PROPERTY_PREFIX)) {
                             name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
                         }
-                        if (name.compareTo("LISTENER_PORT") == 0 ) {
+                        // undocumented property for testing purposes.
+                        // impossible to register handlers in a regular app before gms starts up.
+                        if (name.compareTo("ALIVEANDREADY_LOGGING") == 0){
+                            aliveAndReadyLoggingEnabled = Boolean.parseBoolean(value);
+                        } else if (name.compareTo("LISTENER_PORT") == 0 ) {
 
                             // special case mapping.  Glassfish Cluster property GMS_LISTENER_PORT maps to Grizzly Config Constants TCPSTARTPORT and TCPENDPORT.
                             configProps.put(GrizzlyConfigConstants.TCPSTARTPORT.toString(), value);
@@ -378,7 +387,9 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(name);
                             configProps.put(name, value);
                         }
-                    } catch (IllegalArgumentException iae) {
+                    } catch (Throwable t) {
+                        logger.warning("error processing cluster property:" + name + " value:"+ value +
+                                " due to exception " + t.getLocalizedMessage());
 
                     }
                 }
@@ -412,9 +423,13 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 registerPlannedShutdownListener(this);
                 registerFailureSuspectedListener(this);
                 
-                events.register(new org.glassfish.api.event.EventListener() {
+                glassfishEventListener = new org.glassfish.api.event.EventListener() {
                     @Override
                     public void event(Event event) {
+                        if (gms == null) {
+                            // handle cases where gms is not set and for some reason this handler did not get unregistered.
+                            return;
+                        }
                         if (event.is(EventTypes.SERVER_SHUTDOWN)) {
                             logger.fine("Calling gms.shutdown()...");
 
@@ -425,24 +440,54 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             removeFailureSuspectedListener(GMSAdapterImpl.this);
                             gms.shutdown(GMSConstants.shutdownType.INSTANCE_SHUTDOWN);
                             removePlannedShutdownListener(GMSAdapterImpl.this);
+                            events.unregister(glassfishEventListener);
                         } else if (event.is(EventTypes.SERVER_READY)) {
-                            logger.fine("Ready");
+                             // consider putting following, includding call to joinedAndReady into a timertask.
+                              // this time would give instance time to get its heartbeat cache updated by all running
+                              // READY cluster memebrs
+//                            final long MAX_WAIT_DURATION = 4000;
+//
+//                            long elapsedDuration = (joinTime == 0L) ? 0 : System.currentTimeMillis() - joinTime;
+//                            long waittime = MAX_WAIT_DURATION - elapsedDuration;
+//                            if (waittime > 0L && waittime <= MAX_WAIT_DURATION) {
+//                                try {
+//                                    logger.info("wait " + waittime + " ms before signaling joined and ready");
+//                                    Thread.sleep(waittime);
+//                                } catch(Throwable t) {}
+//                            }
+//                          validateCoreMembers();
                             gms.reportJoinedAndReadyState(clusterName);
                         }
                     }
-                });
-
+                };
+                events.register(glassfishEventListener);
                 gms.join();
+                joinTime = System.currentTimeMillis();
+                logger.info("member " + instanceName + " joined group " + clusterName);
             } catch (GMSException e) {
+                // failed to start so unregister event listener that calls GMS.
+                events.unregister(glassfishEventListener);
                 logger.log(Level.WARNING, "gmsexception.occurred", e.getLocalizedMessage());
             }
 
             logger.log(Level.CONFIG, "gmsservice.started ", new Object[]{instanceName, clusterName});
 
         } else throw new GMSException("gms object is null.");
+    }
 
-        logger.info(instanceName + " joined group " + clusterName);
+    private void validateCoreMembers() {
+        List<String> currentCoreMembers = gms.getGroupHandle().getCurrentCoreMembers();
+        SortedSet<String> unknownMembers = new TreeSet<String>();
+        for (String member : currentCoreMembers) {
+            MemberStates state = gms.getGroupHandle().getMemberState(member, 10000, 0);
+            if (state == MemberStates.UNKNOWN) {
+                unknownMembers.add(member);
 
+            }
+        }
+        if (unknownMembers.size() > 0) {
+            logger.log(Level.INFO, "aliveAndReady monitoring: joinedAndReady memberState is UNKNOWN for core members:" + unknownMembers);
+        }
     }
 
     private void printProps(Properties prop) {
@@ -473,7 +518,35 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     @Override
     public void processNotification(Signal signal) {
-        logger.log(Level.INFO, "gmsservice.processNotification", signal.getClass().getName());
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "gmsservice.processNotification", signal.getClass().getName());
+        }
+        if (this.aliveAndReadyLoggingEnabled) {
+            if (signal instanceof JoinedAndReadyNotificationSignal ||
+                signal instanceof FailureNotificationSignal ||
+                signal instanceof PlannedShutdownSignal) {
+                String signalSubevent = "";
+                if (signal instanceof JoinedAndReadyNotificationSignal) {
+                    JoinedAndReadyNotificationSignal jrsig = (JoinedAndReadyNotificationSignal)signal;
+                    if (jrsig.getEventSubType() == GMSConstants.startupType.GROUP_STARTUP) {
+                        signalSubevent = " Subevent: " + GMSConstants.startupType.GROUP_STARTUP;
+                    } else if (jrsig.getRejoinSubevent() != null) {
+                        signalSubevent = " Subevent: " + jrsig.getRejoinSubevent();
+                    }
+                }
+                if (signal instanceof PlannedShutdownSignal) {
+                    PlannedShutdownSignal pssig = (PlannedShutdownSignal)signal;
+                    if (pssig.getEventSubType() == GMSConstants.shutdownType.GROUP_SHUTDOWN) {
+                        signalSubevent = " Subevent:" + GMSConstants.shutdownType.GROUP_SHUTDOWN.toString();
+                    }
+                }
+                AliveAndReadyView current = gms.getGroupHandle().getCurrentAliveAndReadyCoreView();
+                AliveAndReadyView previous = gms.getGroupHandle().getPreviousAliveAndReadyCoreView();
+                logger.info("AliveAndReady for signal: " + signal.getClass().getSimpleName() + signalSubevent +
+                            " for member: " + signal.getMemberToken() + " of group: " + signal.getGroupName() + 
+                            " current:[" +  current + "] previous:[" + previous + "]");
+            }
+        }
     }
 
     // each of the getModule(s) methods are temporary. see class-level comment.
