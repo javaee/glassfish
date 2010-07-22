@@ -116,7 +116,7 @@
         </antcall>
     </target>
 
-    <target name="runclient" depends="prepare,setOrbPort,setHttpPort">
+    <target name="runclient" depends="prepare,setOrbPort2,setHttpPort2">
         <exec executable="${APPCLIENT}" 
               resultproperty="result" 
               failonerror="false" 

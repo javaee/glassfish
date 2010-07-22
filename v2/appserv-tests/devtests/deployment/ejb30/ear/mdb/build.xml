@@ -8,7 +8,7 @@
 
 	&commonBuild;
 
-	<target name="private-all">
+	<target name="private-all" if="PE">
 		<ant dir="webclient" target="private-all">
 			<property name="build" value="${build}/webclient"/>
 		</ant>

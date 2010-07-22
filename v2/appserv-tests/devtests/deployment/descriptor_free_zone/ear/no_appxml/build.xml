@@ -107,7 +107,7 @@
         </antcall>
     </target>
 
-    <target name="runclient" depends="prepare,setOrbPort">
+    <target name="runclient" depends="prepare,setOrbPort2">
         <exec executable="${APPCLIENT}" 
               resultproperty="result" 
               failonerror="false" 

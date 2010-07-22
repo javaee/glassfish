@@ -120,7 +120,7 @@
         </antcall>
     </target>
 
-    <target name="runclient" depends="prepare,setOrbPort">
+    <target name="runclient" depends="prepare,setOrbPort2">
         <exec executable="${APPCLIENT}" resultproperty="result" failonerror="false" output="${build}/${log.id}.output.log">
             <arg line="-targetserver ${appclient.targetservers} -client ${build}/${testName}AppClient.jar"/>
         </exec>

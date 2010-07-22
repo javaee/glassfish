@@ -187,7 +187,7 @@
     <property name="redeploy" value="redeploy"/>
 </target>
 
-<target name="setHttpPort">
+<target name="setHttpPort2">
     <condition property="depltest.port" value="${deploy.serverinstance.httpport}">
         <equals arg1="${targetPlatform}" arg2="SERVER"/>
     </condition>
@@ -206,12 +206,51 @@
     </condition>
 </target>
 
-<target name="setOrbPort">
+<target name="setHttpPort">
+    <condition property="depltest.port" value="${deploy.serverinstance.httpport}">
+        <or>
+            <equals arg1="${targetPlatform}" arg2="SERVER"/>
+            <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
+        </or>
+    </condition>
+    <condition property="depltest.port" value="${http.port}">
+        <and>
+            <not>
+                <equals arg1="${targetPlatform}" arg2="SERVER"/>
+            </not>
+            <not>
+                <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
+            </not>
+        </and>
+    </condition>
+</target>
+
+<target name="setOrbPort2">
     <condition property="depltest.orbport" value="${deploy.serverinstance.orbport}">
         <equals arg1="${targetPlatform}" arg2="SERVER"/>
     </condition>
     <condition property="depltest.orbport" value="${deploy.clusterinstance1.orbport}">
         <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
+    </condition>
+    <condition property="depltest.orbport" value="${orb.port}">
+        <and>
+            <not>
+                <equals arg1="${targetPlatform}" arg2="SERVER"/>
+            </not>
+            <not>
+                <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
+            </not>
+        </and>
+    </condition>
+    <property name="appclient.targetservers" value="localhost:${depltest.orbport}"/>
+</target>
+
+<target name="setOrbPort">
+    <condition property="depltest.orbport" value="${deploy.serverinstance.orbport}">
+        <or>
+            <equals arg1="${targetPlatform}" arg2="SERVER"/>
+            <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
+        </or>
     </condition>
     <condition property="depltest.orbport" value="${orb.port}">
         <and>

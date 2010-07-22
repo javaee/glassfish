@@ -202,10 +202,12 @@ UNKNOWN: 0
 [PASSED] simple-versionned-servlet : sample.scenarios: show-component-status simple-versioned-servlet:RC-1.0.0 - (fail expected)  
 [PASSED] simple-versionned-servlet : sample.scenarios: show-component-status simple-versioned-servlet - (fail expected)
 
+===========================================================
+
 2. Running with EE installation on Remote Instance 
    (DEPL_TARGET=SERVER)
 
-PASS: 78
+PASS: 86
 FAIL: 0
 UNKNOWN: 0
 
@@ -287,11 +289,21 @@ UNKNOWN: 0
 [PASSED] manifestClassPath : libClasspath Test asadmin deploy (server)
 [PASSED] simple : jsr88/war/simple deploy test
 [PASSED] simple : jsr88/war/simple redeploy test
+[PASSED] session : ejb30/session Test asadmin deploy  
+[PASSED] session : ejb30/session Test asadmin redeploy  
+[PASSED] session2 : ejb30/session2 Test asadmin deploy  
+[PASSED] session2 : ejb30/session2 Test asadmin redeploy   
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin deploy  
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin re-deploy
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin deploy  
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin re-deploy
+
+===========================================================
 
 3. Running with EE installation on Remote Instance and Cluster
    (DEPL_TARGET=CLUSTER)
 
-PASS: 149
+PASS: 157
 FAIL: 0
 UNKNOWN: 0
 
@@ -444,3 +456,11 @@ PASSED] servletonly : war/servletonly Test asadmin deploy (server)
 [PASSED] manifestClassPath : libClasspath Test asadmin deploy (cluster-inst1)
 [PASSED] simple : jsr88/war/simple deploy test
 [PASSED] simple : jsr88/war/simple redeploy test
+[PASSED] session : ejb30/session Test asadmin deploy
+[PASSED] session : ejb30/session Test asadmin redeploy
+[PASSED] session2 : ejb30/session2 Test asadmin deploy
+[PASSED] session2 : ejb30/session2 Test asadmin redeploy
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin deploy
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin re-deploy
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin deploy
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin re-deploy

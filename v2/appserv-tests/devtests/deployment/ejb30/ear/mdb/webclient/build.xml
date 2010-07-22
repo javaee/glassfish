@@ -60,7 +60,7 @@
         </antcall>
     </target>
 
-    <target name="runclient" depends="init,setOrbPort">
+    <target name="runclient" depends="init,setOrbPort2">
        <echo message="TestClient ${arg.list}"/>
         <javaWithResult
             fork="true"

@@ -49,7 +49,7 @@
         </antcall>
     </target>
 
-    <target name="runclient" depends="prepare,setHttpPort">
+    <target name="runclient" depends="prepare,setHttpPort2">
        <javaWithResult  fork="true" resultproperty="result"
               failonerror="false" classname="${se.client}">
             <classpath>

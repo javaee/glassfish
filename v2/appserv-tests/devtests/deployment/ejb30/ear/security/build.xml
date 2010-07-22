@@ -98,7 +98,7 @@
         </antcall>
     </target>   
 
-    <target name="runclient" depends="prepare,setOrbPort,setHttpPort">
+    <target name="runclient" depends="prepare,setOrbPort2,setHttpPort2">
         <exec executable="${APPCLIENT}" resultproperty="result" failonerror="false" output="${build}/${log.id}.output.log">
             <arg line="-targetserver ${appclient.targetservers}"/>
             <arg line="-client ${archivedir}/${testName}Client.jar"/>
@@ -114,7 +114,7 @@
         </antcall>  
     </target>
  
-    <target name="private-all">
+    <target name="private-all" if="PE">
         <antcall target="create.user"/>
         <antcall target="assemble"/>
         <antcall target="declare-test">

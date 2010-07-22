@@ -57,7 +57,7 @@
         </antcall>
     </target>
 
-    <target name="runclient" depends="prepare,setOrbPort">
+    <target name="runclient" depends="prepare,setOrbPort2">
 <echo>appclient -targetserver ${appclient.targetservers} -xml client/sun-acc-no-log-service.xml -client ${archivedir}/${testName}Client.jar</echo>
         <exec executable="${APPCLIENT}" resultproperty="result" failonerror="false" output="${build}/${log.id}.output.log">
             <arg line="-targetserver ${appclient.targetservers} -xml client/sun-acc-no-log-service.xml -client ${archivedir}/${testName}Client.jar"/>

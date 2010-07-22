@@ -4,17 +4,18 @@ UNIT TESTS ON DEPLOYMENT
 ========================
 
 There are 3 test senarios in running the deployment dev tests on an EE 
-installation, i.e. running tests on DAS or on remote instances or on cluster.
-The tests should be run on, at least, DAS and remote server before checkin to
+installation, i.e. running tests on DAS or on remote instance or on cluster
+(and on remote instance).
+The tests should be run on, at least, DAS and remote instance before checkin to
 ensure the checkin quality. For cluster related fixes, the tests should be 
-run on DAS and cluster
+run on DAS and cluster.
 
 ** It is assumed that the masster password is changeit **
 
 Note: The admin secure connection is not implemented yet, so we always run in 
       non-secure mode now. The SECURE variable will be ignored.
 
-FOR RUNNING THE DEPLOYMENT TESTS ON SE/EE w/ DAS :
+FOR RUNNING THE DEPLOYMENT TESTS ON EE w/ DAS :
 --------------------------------------------------
 1. In addition to setting APS_HOME, S1AS_HOME (see README for more details), 
    set environment variable SECURE to true (e.g. export SECURE=true on ksh)
@@ -25,7 +26,7 @@ FOR RUNNING THE DEPLOYMENT TESTS ON SE/EE w/ DAS :
 3. Run the tests using "ant all".
 
 
-FOR RUNNING THE DEPLOYMENT TESTS ON SE/EE w/ remote instances :
+FOR RUNNING THE DEPLOYMENT TESTS ON EE w/ remote instance:
 ---------------------------------------------------------------
 
 1. In addition to setting APS_HOME, S1AS_HOME (see README for more details), 
@@ -40,7 +41,7 @@ NOTE : no need to to start a domain manually before starting the tests; setting
        instance. All test modules will be deployed on this instance 
        named depltest-server.
 
-FOR RUNNING THE DEPLOYMENT TESTS ON SE/EE w/ clusters :
+FOR RUNNING THE DEPLOYMENT TESTS ON EE w/ cluster and remote instance :
 --------------------------------------------------------------------------
 
 1. In addition to setting APS_HOME, S1AS_HOME (see README for more details), 
@@ -53,7 +54,7 @@ FOR RUNNING THE DEPLOYMENT TESTS ON SE/EE w/ clusters :
 NOTE : no need to to start a domain manually before starting the tests; setting
        the env DEPL_TARGET will result in creation and starting of a 
        cluster. All test modules will be deployed on this cluster 
-       named depltest-cluster.
+       named depltest-cluster and the remote instance depltest-server.
 
 Please NOTE.  You might want to do the following anyway before starting the tests:
 
