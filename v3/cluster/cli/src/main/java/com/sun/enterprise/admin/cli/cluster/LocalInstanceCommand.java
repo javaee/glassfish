@@ -48,6 +48,7 @@ import org.glassfish.api.admin.*;
 
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.net.NetUtils;
 import com.sun.enterprise.universal.io.SmartFile;
 
 /**
@@ -362,7 +363,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                 dashost = programOpts.getHost();
             }
             String hostname = InetAddress.getLocalHost().getHostName();
-            if (hostname.equals(dashost) || "localhost".equals(dashost)) {
+            if (hostname.equals(dashost) || "localhost".equals(dashost) || NetUtils.IsThisHostLocal(dashost)) {
                 hostname = "localhost";
             }
             File f = new File(parent, hostname);
