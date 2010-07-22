@@ -102,6 +102,7 @@
 	<ant dir="custom-validation-1" target="all"/>
 	<ant dir="flushconnectionpool" target="all"/>
 	<ant dir="connleakreclaimnotify" target="all"/>
+	<ant dir="stmtCaching_hit_miss.monitoring" target="all"/>
 	<!--<antcall target="all-oracle"/>-->
     </target>
 
