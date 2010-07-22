@@ -167,6 +167,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             lac = new LocalAdminCommand("start-local-instance", "--node", noderef, "--nodedir", nodedir, instanceName);
         }
         try {
+            lac.waitForReaderThreads(false);
             int status = lac.execute();
         } catch (ProcessManagerException ex) {
             
