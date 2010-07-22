@@ -109,6 +109,7 @@ public class ClusterTest extends AdminBaseDevTest {
         testClusterWithObsoleteOptions();
         testEndToEndDemo();
         testListClusters();
+	testDynamicReconfigEnabledFlag();
         cleanup();
         stopDomain();
         stat.printSummary();
@@ -349,6 +350,107 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "delete-local-instance2", asadmin("delete-local-instance", i2name));
         report(tn + "delete-cluster", asadmin("delete-cluster", cname));
 
+    }
+
+    /*
+     * Test for dynamic-reconfig-enabled flag
+     */
+    private void testDynamicReconfigEnabledFlag() {
+        final String tn = "end-to-end-";
+
+        final String cname = "dec1";
+        final String dasurl = "http://localhost:8080/";
+        final String i1url = "http://localhost:18080/";
+        final String i1murl = "http://localhost:14848/management/domain/";
+        final String i1name = "dein1";
+        final String i2url = "http://localhost:28080/";
+        final String i2murl = "http://localhost:24848/management/domain/";
+        final String i2name = "dein2";
+        final String dasmurl = "http://localhost:4848/management/domain/";
+
+        // create a cluster and two instances
+        report(tn + "create-cluster", asadmin("create-cluster", cname));
+        report(tn + "create-local-instance1", asadmin("create-local-instance",
+                "--cluster", cname, "--systemproperties",
+                "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:" +
+                "IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:" +
+                "JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848", i1name));
+        report(tn + "create-local-instance2", asadmin("create-local-instance",
+                "--cluster", cname, "--systemproperties",
+                "HTTP_LISTENER_PORT=28080:HTTP_SSL_LISTENER_PORT=28181:IIOP_SSL_LISTENER_PORT=23800:" +
+                "IIOP_LISTENER_PORT=23700:JMX_SYSTEM_CONNECTOR_PORT=27676:IIOP_SSL_MUTUALAUTH_PORT=23801:" +
+                "JMS_PROVIDER_PORT=28686:ASADMIN_LISTENER_PORT=24848", i2name));
+
+        // start the instances
+        report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
+        report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
+
+        // check that the instances are there
+        report(tn + "list-instances", asadmin("list-instances"));
+        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
+        report(tn + "getindex2", matchString("GlassFish Enterprise Server", getURL(i2url)));
+
+	// Set dynamic reconfig enabled flag for c1 to false
+	report(tn + "set-dyn-recfg-flag", asadmin("set", "configs.config."+cname+"-config.dynamic-reconfiguration-enabled=false"));
+
+        // deploy an application to the cluster
+        File webapp = new File("resources", "helloworld.war");
+        report(tn + "CLUSTER-deploy", asadmin("deploy", "--target", cname, webapp.getAbsolutePath()));
+
+	// Ensure that the app is not available in the instances
+        report(tn + "CLUSTER-getapp1-dynrecfg-disabled-beforerestart", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dynrecfg-disabled-beforerestart", !matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+
+        // restart the instance 1 and ensure that app is on instance1 only
+        report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
+        report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
+        report(tn + "CLUSTER-getapp1-dynrecfg-disabled-afterrestart", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dynrecfg-disabled-beforerestart", !matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+
+        // restart the instance 2 and ensure that app is on both instances
+        report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
+        report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
+        report(tn + "CLUSTER-getapp1-dynrecfg-disabled-afterrestart", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dynrecfg-disabled-afterrestart", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+
+	//Undeploy the app; ensure that the app is still available
+        report(tn + "CLUSTER-undeploy", asadmin("undeploy", "--target", cname, "helloworld"));
+        report(tn + "CLUSTER-getapp1-dynrecfg-disabled-beforerestart", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dynrecfg-disabled-beforerestart", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+
+        // restart the instance 1 and ensure that app is gone on instance1 only
+        report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
+        report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
+        report(tn + "CLUSTER-getapp1-dynrecfg-disabled-afterrestart", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dynrecfg-disabled-beforerestart", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+
+        // restart the instance 2 and ensure that app is gone on both instances
+        report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
+        report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
+        report(tn + "CLUSTER-getapp1=dynrecfg-disabled-afterrestart", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2=dynrecfg-disabled-afterrestart", !matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+
+	// Set dynamic reconfig enabled flag for c1 to true
+	report(tn + "set-dyn-recfg-flag", asadmin("set", "configs.config."+cname+"-config.dynamic-reconfiguration-enabled=true"));
+
+        // deploy an application to the cluster
+        report(tn + "CLUSTER-deploy", asadmin("deploy", "--target", cname, webapp.getAbsolutePath()));
+
+	// Ensure that the app is available in the instances
+        report(tn + "CLUSTER-getapp1-dynrecfg-enabled", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dynrecfg-enabled", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+
+	//Undeploy the app; ensure that the app is not available
+        report(tn + "CLUSTER-undeploy", asadmin("undeploy", "--target", cname, "helloworld"));
+        report(tn + "CLUSTER-getapp1-dynrecfg-enabled", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dynrecfg-enabled", !matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+
+        // Cleanup
+        report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
+        report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
+        report(tn + "delete-local-instance1", asadmin("delete-local-instance", i1name));
+        report(tn + "delete-local-instance2", asadmin("delete-local-instance", i2name));
+        report(tn + "delete-cluster", asadmin("delete-cluster", cname));
     }
 
     @Override
