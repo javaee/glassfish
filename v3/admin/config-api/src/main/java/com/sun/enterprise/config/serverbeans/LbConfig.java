@@ -53,7 +53,6 @@ import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.*;
@@ -180,7 +179,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false",dataType=Boolean.class)
     String getMonitoringEnabled();
 
     /**
@@ -292,22 +291,19 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
         String responsetimeout;
 
         @Param (optional=true, defaultValue="false")
-        String httpsrouting;
+        Boolean httpsrouting;
 
         @Param (optional=true, defaultValue="60")
         String reloadinterval;
 
         @Param (optional=true, defaultValue="false")
-        String monitor;
+        Boolean monitor;
 
         @Param (optional=true, defaultValue="true")
-        String routecookie;
+        Boolean routecookie;
 
         @Param(optional=true, name="property", separator=':')
         Properties properties;
-
-        @Inject
-        Habitat habitat;
 
         @Inject
         Domain domain;
@@ -349,9 +345,9 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
             instance.setName(config_name);
             instance.setResponseTimeoutInSeconds(responsetimeout);
             instance.setReloadPollIntervalInSeconds(reloadinterval);
-            instance.setMonitoringEnabled(monitor);
-            instance.setRouteCookieEnabled(routecookie);
-            instance.setHttpsRouting(httpsrouting);
+            instance.setMonitoringEnabled(monitor==null ? null : monitor.toString());
+            instance.setRouteCookieEnabled(routecookie==null ? null : routecookie.toString());
+            instance.setHttpsRouting(httpsrouting==null ? null : httpsrouting.toString());
 
             // creates a reference to the target
             if (target != null) {                
