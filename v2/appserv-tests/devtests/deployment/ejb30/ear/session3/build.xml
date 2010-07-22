@@ -120,9 +120,9 @@
         </antcall>
     </target>
 
-    <target name="runclient" depends="prepare">
+    <target name="runclient" depends="prepare,setOrbPort">
         <exec executable="${APPCLIENT}" resultproperty="result" failonerror="false" output="${build}/${log.id}.output.log">
-            <arg line="-client ${build}/${testName}AppClient.jar"/>
+            <arg line="-targetserver ${appclient.targetservers} -client ${build}/${testName}AppClient.jar"/>
         </exec>
         <antcall target="processResult">
             <param name="result" value="${result}"/>
@@ -146,6 +146,8 @@
         </antcall>
         <antcall target="undeploy.asadmin"/>
         <antcall target="unsetup_sql"/>
+<!--
         <antcall target="stopDerby"/>
+-->
     </target>
 </project>

@@ -60,7 +60,7 @@
         </antcall>
     </target>
 
-    <target name="runclient" depends="init">
+    <target name="runclient" depends="init,setOrbPort">
        <echo message="TestClient ${arg.list}"/>
         <javaWithResult
             fork="true"
@@ -70,7 +70,7 @@
             output="${build}/${log.id}.output.log"
             resultproperty="result">
             <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${http.host}"/>
-            <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${depltest.orbport}"/>
             <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
 
             <classpath>

@@ -76,22 +76,21 @@
         </antcall>
     </target>   
 
-    <condition property="port" value="${deploy.clusterinstance1.httpport}">
+<!--    <condition property="port" value="${deploy.clusterinstance1.httpport}">
         <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
     </condition>
 
     <condition property="port" value="${deploy.serverinstance.httpport}">
         <equals arg1="${targetPlatform}" arg2="SERVER"/>
     </condition>
+-->
 
-    <property name="port" value="${http.port}"/>
-
-    <target name="runweb" depends="prepare">
+    <target name="runweb" depends="prepare,setHttpPort">
         <javaWithResult fork="true" failonerror="false" jvm="${JAVA}"
                 classname="WebTest" resultproperty="result"
                 output="${build}/${log.id}.output.log">
             <arg value="${http.host}"/>
-            <arg value="${port}"/>
+            <arg value="${depltest.port}"/>
             <arg value="${testName}"/>
             <classpath>
                 <pathelement location="${build}"/>

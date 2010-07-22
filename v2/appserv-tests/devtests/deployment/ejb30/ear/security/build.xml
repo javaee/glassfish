@@ -98,14 +98,15 @@
         </antcall>
     </target>   
 
-    <target name="runclient" depends="prepare">
+    <target name="runclient" depends="prepare,setOrbPort,setHttpPort">
         <exec executable="${APPCLIENT}" resultproperty="result" failonerror="false" output="${build}/${log.id}.output.log">
+            <arg line="-targetserver ${appclient.targetservers}"/>
             <arg line="-client ${archivedir}/${testName}Client.jar"/>
             <arg line="-textauth"/>
             <arg line="-user j2ee"/>
             <arg line="-password j2ee"/>
             <arg line="-xml ${env.S1AS_HOME}/domains/${admin.domain}/config/sun-acc.xml"/>
-            <arg line="${http.host} ${http.port}"/>
+            <arg line="${http.host} ${depltest.port}"/>
         </exec>
         <antcall target="processResult">
             <param name="result" value="${result}"/>

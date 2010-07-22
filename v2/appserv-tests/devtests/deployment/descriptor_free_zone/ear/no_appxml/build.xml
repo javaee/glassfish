@@ -107,12 +107,12 @@
         </antcall>
     </target>
 
-    <target name="runclient" depends="prepare">
+    <target name="runclient" depends="prepare,setOrbPort">
         <exec executable="${APPCLIENT}" 
               resultproperty="result" 
               failonerror="false" 
               output="${build}/${log.id}.output.log">
-          <arg line="-client ${appclient.jar}"/>
+          <arg line="-targetserver ${appclient.targetservers} -client ${appclient.jar}"/>
         </exec>
         <antcall target="processResult">
             <param name="result" value="${result}"/>
