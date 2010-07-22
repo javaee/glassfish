@@ -165,6 +165,13 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
             }
         } else if (lbname != null) {
             LoadBalancer lb = domain.getLoadBalancers().getLoadBalancer(lbname);
+            if (lb == null) {
+                String msg = localStrings.getLocalString("LoadBalancerConfigNotDefined",
+                        "Load balancer configuration [{0}] not found.", lbname);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+                return;
+            }
             config = lb.getLbConfigName();
         }
 
@@ -238,10 +245,8 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
             }
 
         }
-        if(Boolean.getBoolean(lbenableallapplications) || lbpolicy != null ||
-                lbpolicymodule != null ) {
+        if(Boolean.getBoolean(lbenableallapplications)) {
             List<ApplicationRef> appRefs = domain.getApplicationRefsInTarget(target);
-            LbConfig lbConfig = lbconfigs.getLbConfig(config);
 
             if ((appRefs.size() > 0) && Boolean.getBoolean(lbenableallapplications)) {
                 for(ApplicationRef ref:appRefs) {
@@ -250,9 +255,7 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
                         enableApp(context, ref.getRef());
                     }
                 }
-            }
-            ClusterRef cRef = lbConfig.getRefByRef(ClusterRef.class, target);
-            updateClusterRef(cRef);
+            }            
         }
     }
 
@@ -336,6 +339,12 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
                     public Object run(LbConfig param) throws PropertyVetoException, TransactionFailure {
                         ClusterRef ref = param.createChild(ClusterRef.class);
                         ref.setRef(clusterName);
+                        if(lbpolicy != null) {
+                            ref.setLbPolicy(lbpolicy);
+                        }
+                        if(lbpolicymodule != null) {
+                            ref.setLbPolicyModule(lbpolicymodule);
+                        }
                         param.getClusterRefOrServerRef().add(ref);
                         return Boolean.TRUE;
                     }
@@ -367,31 +376,6 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
 //            return;
         }
     }
-
-    public void updateClusterRef(final ClusterRef ref) {
-        try {
-            ConfigSupport.apply(new SingleConfigCode<ClusterRef>() {
-                    @Override
-                    public Object run(ClusterRef param) throws PropertyVetoException, TransactionFailure {
-                        if(lbpolicy != null) {
-                            param.setLbPolicy(lbpolicy);
-                        }
-                        if(lbpolicymodule != null) {
-                            param.setLbPolicyModule(lbpolicymodule);
-                        }
-
-                        return Boolean.TRUE;
-                    }
-            }, ref);
-        } catch (TransactionFailure ex) {
-            String msg = localStrings.getLocalString("FailedToUpdateClusterRef",
-                    "Failed to update cluster-ref");
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
-            report.setFailureCause(ex);
-            return;
-        }
-    }    
 
     private boolean isUserApp(String id) {
         if(applications.getApplication(id).getObjectType().equals("user")) {

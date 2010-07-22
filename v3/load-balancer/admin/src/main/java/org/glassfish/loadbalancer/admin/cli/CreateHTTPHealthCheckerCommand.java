@@ -114,7 +114,7 @@ public final class CreateHTTPHealthCheckerCommand implements AdminCommand {
         if (config != null) {
             LbConfig lbConfig = lbconfigs.getLbConfig(config);
             createHealthCheckerInternal(url,interval,timeout,lbConfig,
-            config ,target, false);
+            config ,target);
         } else {
             List<LbConfig> lbConfigs = lbconfigs.getLbConfig();
             if (lbConfigs.size() == 0) {
@@ -139,7 +139,7 @@ public final class CreateHTTPHealthCheckerCommand implements AdminCommand {
 
             for (LbConfig lc:match){
                 createHealthCheckerInternal(url,interval,timeout,
-                    lc, config, target, false);
+                    lc, config, target);
             }
         }
    
@@ -168,17 +168,10 @@ public final class CreateHTTPHealthCheckerCommand implements AdminCommand {
      * @param   target      name of the target - cluster or stand alone
      *  server instance
      *
-     * @param   ignoreError if ignoreError is true, exceptions are not thrown in
-     *                      the following cases
-     *                      1). The specified server instance or cluster
-     *                      does not exist in the LB config.
-     *                      2). The target  already contains the health checker.
-     *
      * @throws CommandException   If the operation is failed
      */
     private void createHealthCheckerInternal(String url, String interval,
-            String timeout, LbConfig lbConfig, String lbConfigName, String target,
-            boolean ignoreError)
+            String timeout, LbConfig lbConfig, String lbConfigName, String target)
     {
         // invalid lb config name
         if (lbConfigName == null) {
@@ -208,7 +201,7 @@ public final class CreateHTTPHealthCheckerCommand implements AdminCommand {
             ClusterRef  cRef = lbConfig.getRefByRef(ClusterRef.class, target);
 
             // cluster is not associated to this lb config
-            if ((cRef == null) && (ignoreError == false)){
+            if (cRef == null){
                 String msg = localStrings.getLocalString("UnassociatedCluster",
                         "Load balancer configuration [{0}] does not have a reference to the given cluster [{1}].",
                         lbConfigName, target);
@@ -228,21 +221,19 @@ public final class CreateHTTPHealthCheckerCommand implements AdminCommand {
                     return;
                 }
                 logger.info("http_lb_admin.HealthCheckerCreated" + target);
-            } else {
-                if (ignoreError == false) {
-                    String msg = localStrings.getLocalString("HealthCheckerExists",
-                            "Health checker server/cluster [{0}] already exists.", target);
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(msg);
-                    return;
-                }
+            } else {                
+                String msg = localStrings.getLocalString("HealthCheckerExists",
+                        "Health checker server/cluster [{0}] already exists.", target);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+                return;
             }
         // target is a server
         } else if (domain.isServer(target)) {
             ServerRef sRef = lbConfig.getRefByRef(ServerRef.class, target);
 
             // server is not associated to this lb config
-            if ((sRef == null) && (ignoreError == false)){
+            if (sRef == null){
                 String msg = localStrings.getLocalString("UnassociatedServer",
                         "Load balancer configuration [{0}] does not have a reference to the given server [{1}].",
                         lbConfigName, target);
@@ -264,13 +255,11 @@ public final class CreateHTTPHealthCheckerCommand implements AdminCommand {
                 logger.info(localStrings.getLocalString("http_lb_admin.HealthCheckerCreated",
                         "Health checker created for target {0}", target));
             } else {
-                if (ignoreError == false) {
-                    String msg = localStrings.getLocalString("HealthCheckerExists",
-                            "Health checker server/cluster [{0}] already exists.", target);
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(msg);
-                    return;
-                }
+                String msg = localStrings.getLocalString("HealthCheckerExists",
+                        "Health checker server/cluster [{0}] already exists.", target);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+                return;
             }
 
         // unknown target

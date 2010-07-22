@@ -126,20 +126,20 @@ public final class CreateHTTPLoadBalancerCommand extends LBCommandsBase
     @Param (optional=true)
     String lbweight;
 
-    @Param (optional=true)
+    @Param (optional=true, defaultValue="60")
     String responsetimeout;
 
-    @Param (optional=true)
-    String httpsrouting;
+    @Param (optional=true, defaultValue="false")
+    Boolean httpsrouting;
 
-    @Param (optional=true)
+    @Param (optional=true, defaultValue="60")
     String reloadinterval;
 
-    @Param (optional=true)
-    String monitor;
+    @Param (optional=true, defaultValue="false")
+    Boolean monitor;
 
-    @Param (optional=true)
-    String routecookie;
+    @Param (optional=true, defaultValue="true")
+    Boolean routecookie;
 
     @Param(optional=true, name="property", separator=':')
     Properties properties;
@@ -259,10 +259,10 @@ public final class CreateHTTPLoadBalancerCommand extends LBCommandsBase
         ParameterMap map = new ParameterMap();
         map.add("target", target);
         map.add("responsetimeout", responsetimeout);
-        map.add("httpsrouting", httpsrouting);
+        map.add("httpsrouting", httpsrouting==null ? null : httpsrouting.toString());
         map.add("reloadinterval", reloadinterval);
-        map.add("monitor", monitor);
-        map.add("routecookie", routecookie);
+        map.add("monitor", monitor==null ? null : monitor.toString());
+        map.add("routecookie", routecookie==null ? null : routecookie.toString());
         map.add("config_name", config);
         ci.parameters(map);
         ci.execute();
