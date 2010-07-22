@@ -57,11 +57,16 @@ public final class LocalAdminCommand {
             cmds.addAll(Arrays.asList(args));
     }
 
+    public final void waitForReaderThreads(boolean b) {
+        waitForReaderThreads = b;
+    }
+
     public int execute() throws ProcessManagerException {
         if (!asadmin.canExecute())
             throw new ProcessManagerException("asadmin is not executable!");
 
         pm = new ProcessManager(cmds);
+        pm.waitForReaderThreads(waitForReaderThreads);
         pm.execute();  // blocks until command is complete
         return pm.getExitValue();
     }
@@ -73,4 +78,5 @@ public final class LocalAdminCommand {
     private final File asadmin;
     private final List<String> cmds = new ArrayList<String>();
     private ProcessManager pm;
+    private boolean waitForReaderThreads = true;
 }

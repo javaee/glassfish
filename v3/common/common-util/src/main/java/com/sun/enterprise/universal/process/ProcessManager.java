@@ -78,6 +78,10 @@ public class ProcessManager {
         }
     }
 
+    public final void waitForReaderThreads(boolean b) {
+        waitForReaderThreads = b;
+    }
+    
     ////////////////////////////////////////////////////////////////////////////
     /** Should the output of the process be echoed to stdout?
      *
@@ -195,9 +199,12 @@ public class ProcessManager {
     private void waitForever() throws InterruptedException {
         process.waitFor();
 
-        // wait for stdin and stderr to finish up
-        for (Thread t : threads) {
-            t.join();
+        if (waitForReaderThreads)
+        {
+            // wait for stdin and stderr to finish up
+            for (Thread t : threads) {
+                t.join();
+            }
         }
     }
 
@@ -254,8 +261,9 @@ public class ProcessManager {
     private static final boolean debugOn = false;
     private String[] stdinLines;
     private List<Thread> threads = new ArrayList<Thread>(2);
-
+    private boolean waitForReaderThreads = true;
     ////////////////////////////////////////////////////////////////////////////
+
     static class ReaderThread implements Runnable {
 
         ReaderThread(BufferedReader Reader, StringBuffer SB, boolean echo) {
