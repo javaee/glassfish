@@ -36,8 +36,11 @@
 
 package org.glassfish.faces.integration;
 
+import com.sun.enterprise.container.common.spi.JCDIService;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.InjectionInfo;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.faces.spi.DiscoverableInjectionProvider;
@@ -63,8 +66,10 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
     private static final Logger LOGGER = FacesLogger.APPLICATION.getLogger();
     private static final String HABITAT_ATTRIBUTE =
             "org.glassfish.servlet.habitat";
+    private ComponentEnvManager compEnvManager;
     private InjectionManager injectionManager;
     private InvocationManager invokeMgr;
+    private JCDIService jcdiService;
 
     /**
      * <p>Constructs a new <code>GlassFishInjectionProvider</code> instance.</p>
@@ -74,8 +79,10 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
     public GlassFishInjectionProvider(ServletContext servletContext) {
         Habitat defaultHabitat = (Habitat)servletContext.getAttribute(
                 HABITAT_ATTRIBUTE);
+        compEnvManager = defaultHabitat.getByContract(ComponentEnvManager.class);
         invokeMgr = defaultHabitat.getByContract(InvocationManager.class);
         injectionManager = defaultHabitat.getByContract(InjectionManager.class);
+        jcdiService = defaultHabitat.getByContract(JCDIService.class);    
     }
     
     /**
@@ -94,6 +101,12 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
             injectionManager.injectInstance(managedBean,
                                             getNamingEnvironment(),
                                             false);
+
+            if (jcdiService.isCurrentModuleJCDIEnabled()) {
+                jcdiService.injectManagedObject(managedBean, getBundle());
+  
+            }
+
         } catch (InjectionException ie) {
             throw new InjectionProviderException(ie);
         }
@@ -305,6 +318,27 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
         return;
 
     }
+
+    private BundleDescriptor getBundle() {
+
+        JndiNameEnvironment env = compEnvManager.getCurrentJndiNameEnvironment();
+
+        BundleDescriptor bundle = null;
+
+        if( env instanceof BundleDescriptor) {
+
+           bundle = (BundleDescriptor) env;
+
+        }
+
+        if( bundle == null ) {
+           throw new IllegalStateException("Invalid context for managed bean creation");
+        }
+
+        return bundle;
+
+    }
+
 
 
 } // END GlassFishInjectionProvider
