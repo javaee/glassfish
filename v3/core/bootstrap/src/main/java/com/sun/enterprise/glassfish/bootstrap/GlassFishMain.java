@@ -121,7 +121,7 @@ public class GlassFishMain {
         private void startConsole() throws IOException {
             String command;
             final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            while ((command = readCommand(reader)) != null && !command.trim().isEmpty()) {
+            while ((command = readCommand(reader)) != null) {
                 try {
                     System.out.println("command = " + command);
                     if ("start".equalsIgnoreCase(command)) {
@@ -166,7 +166,11 @@ public class GlassFishMain {
 
         private String readCommand(BufferedReader reader) throws IOException {
             prompt();
-            return reader.readLine();
+            String command = null;
+            while((command = reader.readLine()) != null && command.isEmpty()) {
+                // loop until a non empty command or Ctrl-D is inputted.  
+            }
+            return command;
         }
 
         private void prompt() {
