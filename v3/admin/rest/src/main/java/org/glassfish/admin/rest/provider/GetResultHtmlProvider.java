@@ -71,21 +71,22 @@ public class GetResultHtmlProvider extends BaseProvider<GetResult> {
         String attributes = ProviderUtil.getHtmlRespresentationForAttributes((ConfigBean)proxy.getDom(), uriInfo);
         result = ProviderUtil.getHtmlForComponent(attributes, "Attributes", result);
 
-        String command = proxy.getDeleteCommand();
         String deleteCommand = ProviderUtil.getHtmlRespresentationsForCommand(
                 proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", "Delete", uriInfo);
         result = ProviderUtil.getHtmlForComponent(deleteCommand, "Delete " + typeKey, result);
 
-        String childResourceLinks = getResourcesLinks(proxy.getDom(),
-            proxy.getCommandResourcesPaths());
+        String childResourceLinks = getResourcesLinks(proxy.getDom());
         result = ProviderUtil.getHtmlForComponent(childResourceLinks, "Child Resources", result);
+
+        String commandLinks = getCommandLinks(proxy.getCommandResourcesPaths());
+        result = ProviderUtil.getHtmlForComponent(commandLinks, "Commands", result);
 
         result = result + "</body></html>";
         return result;
     }
 
-    private String getResourcesLinks(Dom proxy, String[][] commandResourcesPaths) {
-        String result = "";
+    private String getResourcesLinks(Dom proxy) {
+        StringBuilder result = new StringBuilder("<div>");
         Set<String> elementNames = proxy.model.getElementNames();
 
         //expose ../applications/application resource to enable deployment
@@ -104,54 +105,45 @@ public class GetResultHtmlProvider extends BaseProvider<GetResult> {
                     List<ConfigModel> lcm = proxy.document.getAllModelsImplementing(subType);
                     if (lcm != null) {
                         for (ConfigModel cmodel : lcm) {
-                            result = result + "<a href=\"" + ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()) + "\">";
-                            result = result + cmodel.getTagName() + "</a><br>";
+                            result.append("<a href=\"")
+                                    .append(ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()))
+                                    .append("\">")
+                                    .append(cmodel.getTagName())
+                                    .append("</a><br>");
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             } else {
-                result = result + "<a href=\"" + ProviderUtil.getElementLink(uriInfo, elementName) + "\">";
-                result = result + elementName + "</a><br>";
+                result.append("<a href=\"")
+                    .append(ProviderUtil.getElementLink(uriInfo, elementName))
+                    .append("\">")
+                    .append(elementName)
+                    .append("</a><br>");
             }
         }
 
-        //add command resources
+        return result.append("</div><br>").toString();
+    }
+
+    private String getCommandLinks(String[][] commandResourcesPaths) {
+        StringBuilder result = new StringBuilder("<div>");
+
         for (String[] commandResourcePath : commandResourcesPaths) {
             if (commandResourcePath[2].startsWith("_")){//hidden cli command name
-                result = result + "<!--" ;//hide the link in a comment
+                result.append("<!--");//hide the link in a comment
             }
-                result = result + "<a href=\"" +
-                    ProviderUtil.getElementLink(uriInfo, commandResourcePath[0]) + "\">";
-                result = result + commandResourcePath[0];
-                result = result + "</a>";
-                result = result + "<br>";
+                result.append("<a href=\"")
+                                    .append(ProviderUtil.getElementLink(uriInfo, commandResourcePath[0]))
+                                    .append("\">")
+                                    .append(commandResourcePath[0])
+                                    .append("</a><br>");
             if (commandResourcePath[2].startsWith("_")){//hidden cli
-                result = result + "-->" ;
+                result.append("-->");
             }
         }
 
-        if (!result.equals("")) {
-            result = "<div>" + result + "</div>" + "<br>";
-        }
-        return result;
-    }
-
-    private String getStartHtmlElement(String name) {
-        assert ((name != null) && name.length() > 0);
-        String result = "<";
-        result = result + name;
-        result = result + ">";
-        return result;
-    }
-
-    private String getEndHtmlElement(String name) {
-        assert ((name != null) && name.length() > 0);
-        String result = "<";
-        result = result + "/";
-        result = result + name;
-        result = result + ">";
-        return result;
+        return result.append("</div><br>").toString();
     }
 }

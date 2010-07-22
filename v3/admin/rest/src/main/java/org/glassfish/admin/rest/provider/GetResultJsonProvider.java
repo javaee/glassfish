@@ -79,15 +79,20 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
         result = result + "\n" + indent + "}";
 
         //do not display empty child resources array
-        if ((proxy.getDom().getElementNames().size() > 0) ||
-                (proxy.getCommandResourcesPaths().length > 0) ||
-                     ("applications".equals(getName(uriInfo.getPath(), '/')))) {
+        if ((proxy.getDom().getElementNames().size() > 0) || ("applications".equals(getName(uriInfo.getPath(), '/')))) {
             result = result + ",";
             result = result + "\n\n" + indent;
             result = result + quote(KEY_CHILD_RESOURCES) + ":[";
-            result = result + getResourcesLinks(proxy.getDom(),
-                proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
-            result = result + "\n" + indent + "]";
+            result = result + getResourcesLinks(proxy.getDom(), indent + Constants.INDENT);
+            result = result + "]";
+        }
+
+        if (proxy.getCommandResourcesPaths().length > 0)  {
+            result = result + ",";
+            result = result + "\n\n" + indent;
+            result = result + quote(KEY_COMMANDS) + ":[";
+            result = result + getCommandLinks(proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
+            result = result + "]";
         }
 
         result = result + "\n\n" + "}";
@@ -97,23 +102,22 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
     private String getAttributes(Dom proxy) {
         StringBuilder result = new StringBuilder();
         Set<String> attributeNames = proxy.model.getAttributeNames();
+        String sep = "";
         for (String attributeName : attributeNames) {
-            result.append(quote(eleminateHypen(attributeName)))
+            result.append(sep)
+                    .append(quote(eleminateHypen(attributeName)))
                     .append(":")
-                    .append(quote(proxy.attribute(attributeName)))
-                    .append(", ");
+                    .append(quote(proxy.attribute(attributeName)));
         }
 
-//        int endIndex = result.length() - 2;
-//        if (endIndex > 0) result = result.substring(0, endIndex );
-        return result.toString().trim();
+        return result.toString();
     }
 
 
-    private String getResourcesLinks(Dom proxy, 
-            String[][] commandResourcesPaths, String indent) {
-        String result = "";
+    private String getResourcesLinks(Dom proxy, String indent) {
+        StringBuilder result = new StringBuilder();
         Set<String> elementNames = proxy.getElementNames();
+        String sep = "";
 
         //expose ../applications/application resource to enable deployment
         //when no applications deployed on server
@@ -125,33 +129,35 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
 
         for (String elementName : elementNames) {
             try {
-                ///List<Dom> elements = proxy.nodeElements(elementName);
-                ///for (Dom element : elements) {
-                    result = result + "\n" + indent;
-                    result = result + quote(getElementLink(uriInfo, elementName/*element*/));
-                    result = result + ",";
-                ///}
+                result.append(sep)
+                        .append("\n")
+                        .append(indent)
+                        .append(quote(getElementLink(uriInfo, elementName/*element*/)));
+                sep = ",";
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
+        return result.toString();
+    }
 
-        int endIndex = result.length() - 1;
-        if (endIndex > 0) result = result.substring(0, endIndex );
+    private String getCommandLinks(String[][] commandResourcesPaths, String indent) {
+        StringBuilder result = new StringBuilder();
+        String sep = "";
 
-        //add command resources
-        //TODO commandResourcePath is two dimensional array. It seems the second e.x. see DomainResource#getCommandResourcesPaths(). The second dimension POST/GET etc. does not seem to be used. Discussed with Ludo. Need to be removed in a separate checkin.
+        //TODO commandResourcePath is two dimensional array. It seems the second e.x. see DomainResource#getCommandResourcesPaths().
+        //The second dimension POST/GET etc. does not seem to be used. Discussed with Ludo. Need to be removed in a separate checkin.
         for (String[] commandResourcePath : commandResourcesPaths) {
             try {
-                if (result.length() > 0) {
-                    result = result + ",";
-                }
-                result = result + "\n" + indent;
-                result = result + quote(getElementLink(uriInfo, commandResourcePath[0]));
+                result.append(sep)
+                        .append("\n")
+                        .append(indent)
+                        .append(quote(getElementLink(uriInfo, commandResourcePath[0])));
+                sep = ",";
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
-        return result;
+        return result.toString();
     }
 }

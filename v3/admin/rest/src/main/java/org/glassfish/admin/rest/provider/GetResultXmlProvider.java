@@ -82,16 +82,20 @@ public class GetResultXmlProvider extends BaseProvider<GetResult> {
         result = result + "\n" + indent + getEndXmlElement(KEY_METHODS);
 
         //do not display empty child resources array
-        if ((proxy.getDom().getElementNames().size() > 0)
-                || (proxy.getCommandResourcesPaths().length > 0)
-                || ("applications".equals(getName(uriInfo.getPath(), '/')))) {
-
+        if ((proxy.getDom().getElementNames().size() > 0) || ("applications".equals(getName(uriInfo.getPath(), '/')))) {
             result = result + "\n\n" + indent;
             result = result + getStartXmlElement(KEY_CHILD_RESOURCES);
-            result = result + getResourcesLinks(proxy.getDom(),
-                    proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
+            result = result + getResourcesLinks(proxy.getDom(), indent + Constants.INDENT);
             result = result + "\n" + indent;
             result = result + getEndXmlElement(KEY_CHILD_RESOURCES);
+        }
+
+        if (proxy.getCommandResourcesPaths().length > 0) {
+            result = result + "\n\n" + indent;
+            result = result + getStartXmlElement(KEY_COMMANDS);
+            result = result + getXmlCommandLinks(proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
+            result = result + "\n" + indent;
+            result = result + getEndXmlElement(KEY_COMMANDS);
         }
 
         result = result + "\n\n" + getEndXmlElement(KEY_ENTITY);
@@ -111,9 +115,8 @@ public class GetResultXmlProvider extends BaseProvider<GetResult> {
         return result.toString().trim();
     }
 
-    private String getResourcesLinks(Dom proxy,
-                                     String[][] commandResourcesPaths, String indent) {
-        String result = "";
+    protected String getResourcesLinks(Dom proxy, String indent) {
+        StringBuilder result = new StringBuilder();
         Set<String> elementNames = proxy.getElementNames();
 
         //expose ../applications/application resource to enable deployment
@@ -125,27 +128,13 @@ public class GetResultXmlProvider extends BaseProvider<GetResult> {
         }
 
         for (String elementName : elementNames) { //for each element
-            try {
-                result = result + "\n" + indent;
-                result = result + getStartXmlElement(KEY_CHILD_RESOURCE);
-                result = result + getElementLink(uriInfo, elementName);
-                result = result + getEndXmlElement(KEY_CHILD_RESOURCE);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            result.append("\n")
+                    .append(indent)
+                    .append(getStartXmlElement(KEY_CHILD_RESOURCE))
+                    .append(getElementLink(uriInfo, elementName))
+                    .append(getEndXmlElement(KEY_CHILD_RESOURCE));
         }
 
-        //add command resources
-        for (String[] commandResourcePath : commandResourcesPaths) {
-            try {
-                result = result + "\n" + indent;
-                result = result + getStartXmlElement(KEY_COMMAND);
-                result = result + getElementLink(uriInfo, commandResourcePath[0]);
-                result = result + getEndXmlElement(KEY_COMMAND);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return result;
+        return result.toString();
     }
 }

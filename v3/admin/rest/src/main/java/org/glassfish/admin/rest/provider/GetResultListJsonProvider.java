@@ -68,9 +68,7 @@ public class GetResultListJsonProvider extends BaseProvider<GetResultList> {
         result ="{" ;
         result = result + "\n\n" + indent;
 
-        result = result + quote(KEY_ENTITY) + ":{";
-        result = result + getAttributes();
-        result = result + "},";
+        result = result + quote(KEY_ENTITY) + ":{},";
 
         result = result + "\n\n" + indent;
         result = result + quote(KEY_METHODS) + ":{";
@@ -79,58 +77,53 @@ public class GetResultListJsonProvider extends BaseProvider<GetResultList> {
         result = result + "\n" + indent + "}";
 
         //do not display empty child resources array
-        if ((proxy.getDomList().size() > 0) ||
-                (proxy.getCommandResourcesPaths().length > 0)) {
+        if (proxy.getDomList().size() > 0) {
             result = result + ",";
             result = result + "\n\n" + indent;
             result = result + quote(KEY_CHILD_RESOURCES) + ":[";
-            result = result + getResourcesLinks(proxy.getDomList(),
-                proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
-            result = result + "\n" + indent + "]";
+            result = result + getResourcesLinks(proxy.getDomList(), indent + Constants.INDENT);
+            result = result + "]";
+        }
+
+        if (proxy.getCommandResourcesPaths().length > 0) {
+            result = result + ",";
+            result = result + "\n\n" + indent;
+            result = result + quote(KEY_COMMANDS) + ":[";
+            result = result + getCommandLinks(proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
+            result = result + "]";
         }
 
         result = result + "\n\n" + "}";
         return result;
     }
 
-    private String getAttributes() {
-        //No attributes for this resource. This resource is an abstraction.
-        //for which there does not exists any actual config bean.
-        return "";
-    }
-
-
-    private String getResourcesLinks(List<Dom> proxyList,
-        String[][] commandResourcesPaths, String indent) {
-        String result = "";
+    private String getResourcesLinks(List<Dom> proxyList, String indent) {
+        StringBuilder result = new StringBuilder();
+        String sep = "";
         String elementName;
         for (Dom proxy: proxyList) {
-            try {
-                elementName = proxy.getKey();
-                result = result + "\n" + indent;
-                result = result + quote(getElementLink(uriInfo, elementName));
-                result = result + ",";
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            elementName = proxy.getKey();
+            result.append(sep)
+                    .append("\n")
+                    .append(indent)
+                    .append(quote(getElementLink(uriInfo, elementName)));
+            sep = ",";
         }
 
-        int endIndex = result.length() - 1;
-        if (endIndex > 0) result = result.substring(0, endIndex);
+        return result.toString();
+    }
 
-        //add command resources
+    private String getCommandLinks(String[][] commandResourcesPaths, String indent) {
+        StringBuilder result = new StringBuilder();
+        String sep = "";
+
         for (String[] commandResourcePath : commandResourcesPaths) {
-            try {
-                if (result.length() > 0) {
-                    result = result + ",";
-                }
-                result = result + "\n" + indent;
-                result = result + quote(getElementLink(uriInfo, commandResourcePath[0]));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            result.append(sep)
+                    .append("\n")
+                    .append(indent)
+                    .append(quote(getElementLink(uriInfo, commandResourcePath[0])));
         }
 
-        return result;
+        return result.toString();
     }
 }

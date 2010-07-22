@@ -45,7 +45,6 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 
 import org.glassfish.admin.rest.Constants;
-import static org.glassfish.admin.rest.Util.*;
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
@@ -76,15 +75,23 @@ public class GetResultListXmlProvider extends BaseProvider<GetResultList> {
                  .append(getEndXmlElement(KEY_METHODS));
 
         //do not display empty child resources array
-        if ((proxy.getDomList().size() > 0) ||
-                (proxy.getCommandResourcesPaths().length > 0)) {
+        if (proxy.getDomList().size() > 0) {
             result.append("\n\n")
                     .append(indent)
-                    .append(getStartXmlElement(KEY_CHILD_RESOURCES.replace(' ', '-')))
-                    .append(getResourcesLinks(proxy.getDomList(), proxy.getCommandResourcesPaths(), indent + Constants.INDENT))
+                    .append(getStartXmlElement(KEY_CHILD_RESOURCES))
+                    .append(getResourcesLinks(proxy.getDomList(), indent + Constants.INDENT))
                     .append("\n")
                     .append(indent)
-                    .append(getEndXmlElement(KEY_CHILD_RESOURCES.replace(' ', '-')));
+                    .append(getEndXmlElement(KEY_CHILD_RESOURCES));
+        }
+        if (proxy.getCommandResourcesPaths().length > 0) {
+            result.append("\n\n")
+                    .append(indent)
+                    .append(getStartXmlElement(KEY_COMMANDS))
+                    .append(getXmlCommandLinks(proxy.getCommandResourcesPaths(), indent + Constants.INDENT))
+                    .append("\n")
+                    .append(indent)
+                    .append(getEndXmlElement(KEY_COMMANDS));
         }
 
         result.append("\n\n")
@@ -92,7 +99,11 @@ public class GetResultListXmlProvider extends BaseProvider<GetResultList> {
         return result.toString();
     }
 
-    private String getResourcesLinks(List<Dom> proxyList, String[][] commandResourcesPaths, String indent) {
+    protected String getXmlResourcesLinks(List<Dom> proxyList, String[][] commandResourcesPaths, String indent) {
+        return null;
+    }
+
+    private String getResourcesLinks(List<Dom> proxyList, String indent) {
         StringBuilder result = new StringBuilder();
         for (Dom proxy: proxyList) { //for each element
             try {
@@ -102,20 +113,7 @@ public class GetResultListXmlProvider extends BaseProvider<GetResultList> {
                             .append(getElementLink(uriInfo, proxy.getKey()))
                             .append(getEndXmlElement(KEY_CHILD_RESOURCE));
             } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        //add command resources
-        for (String[] commandResourcePath : commandResourcesPaths) {
-            try {
-                result.append("\n")
-                        .append(indent)
-                        .append(getStartXmlElement(KEY_CHILD_RESOURCE))
-                        .append(getElementLink(uriInfo, commandResourcePath[0]))
-                        .append(getEndXmlElement(KEY_CHILD_RESOURCE));
-            } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
 

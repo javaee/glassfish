@@ -65,54 +65,51 @@ public class GetResultListHtmlProvider extends BaseProvider<GetResultList> {
          final String typeKey = upperCaseFirstLetter((decode(getName(uriInfo.getPath(), '/'))));
          result = result + "<h1>" + typeKey + "</h1>";
 
-      //  String command = proxy.getPostCommand();
-        String postCommand = getHtmlRespresentationsForCommand(
-            proxy.getMetaData().getMethodMetaData("POST"), "POST", "Create", uriInfo);
+        String postCommand = getHtmlRespresentationsForCommand(proxy.getMetaData().getMethodMetaData("POST"), "POST", "Create", uriInfo);
         result = getHtmlForComponent(postCommand, "Create " + typeKey, result);
 
-        String childResourceLinks = getResourcesLinks(proxy.getDomList(),
-            proxy.getCommandResourcesPaths());
+        String childResourceLinks = getResourcesLinks(proxy.getDomList());
         result = getHtmlForComponent(childResourceLinks, "Child Resources", result);
+
+        String childCommandLinks = getCommandLinks(proxy.getCommandResourcesPaths());
+        result = getHtmlForComponent(childCommandLinks, "Commands", result);
 
         result = result + "</html></body>";
         return result;
     }
 
-
-//    private String getTypeKey() {
-//       return upperCaseFirstLetter(eleminateHypen(getName(uriInfo.getPath(), '/')));
-//    }
-
-
-    private String getResourcesLinks(List<Dom> proxyList,
-        String[][] commandResourcesPaths) {
-        String result = "";
+    private String getResourcesLinks(List<Dom> proxyList) {
+        StringBuilder result = new StringBuilder("<div>");
         for (Dom proxy: proxyList) { //for each element
             try {
-                    result = result + "<a href=\"" + getElementLink(uriInfo, proxy.getKey()) + "\">";
-                    result = result + proxy.getKey();
-                    result = result + "</a>";
-                    result = result +  "<br>";
+                    result.append("<a href=\"")
+                            .append(getElementLink(uriInfo, proxy.getKey()))
+                            .append("\">")
+                            .append(proxy.getKey())
+                            .append("</a><br>");
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
 
-        //add command resources
+        result.append("</div><br/>");
+        return result.toString();
+    }
+
+    private String getCommandLinks(String[][] commandResourcesPaths) {
+        StringBuilder result = new StringBuilder("<div>");
         for (String[] commandResourcePath : commandResourcesPaths) {
             try {
-                result = result + "<a href=\"" + getElementLink(uriInfo, commandResourcePath[0]) + "\">";
-                result = result + commandResourcePath[0];
-                result = result + "</a>";
-                result = result + "<br>";
+                result.append("<a href=\"")
+                            .append(getElementLink(uriInfo, commandResourcePath[0]))
+                            .append("\">")
+                            .append(commandResourcePath[0])
+                            .append("</a><br/>");
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
-
-        if (!result.equals("")) {
-            result = "<div>" + result + "</div>" + "<br>";
-        }
-        return result;
+        result.append("</div><br/>");
+        return result.toString();
     }
 }
