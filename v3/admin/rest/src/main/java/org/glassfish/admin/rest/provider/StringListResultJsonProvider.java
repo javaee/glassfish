@@ -35,14 +35,15 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.glassfish.admin.rest.results.StringListResult;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 
-import org.glassfish.admin.rest.Constants;
-import static org.glassfish.admin.rest.Util.*;
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
@@ -51,51 +52,31 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 public class StringListResultJsonProvider extends BaseProvider<StringListResult> {
+
     public StringListResultJsonProvider() {
         super(StringListResult.class, MediaType.APPLICATION_JSON_TYPE);
     }
 
     @Override
     protected String getContent(StringListResult proxy) {
-        String result;
-        String indent = Constants.INDENT;
-        String uri = uriInfo.getAbsolutePath().toString();
-        String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
-        result ="{" ;
-
-        result = result + "\n\n" + indent;
-        result = result + KEY_ENTITY;
-        if (proxy.isError()) {
-            result = result + ":{";
-            result = result + getAttribute("error", proxy.getErrorMessage());
-            result = result + "},";
-        } else {
-            result = result + ":[";
-            boolean firstEntry = true;
-            for (String message: proxy.getMessages()) {
-                if (!firstEntry) {
-                    result = result + ",";
+        JSONObject obj = new JSONObject();
+        try {
+            if (proxy.isError()) {
+                JSONObject error = new JSONObject();
+                error.put("error", proxy.getErrorMessage());
+                obj.put(KEY_ENTITY, error);
+            } else {
+                JSONArray array = new JSONArray();
+                for (String message : proxy.getMessages()) {
+                    array.put(message);
                 }
-                result = result + "\n" + indent + Constants.INDENT;
-                result = result + quote(message);
-                firstEntry = false;
             }
-            result = result + "],";
+
+            obj.put(KEY_METHODS, getJsonForMethodMetaData(proxy.getMetaData()));
+        } catch (JSONException ex) {
+            throw new RuntimeException(ex);
         }
 
-        result = result + "\n\n" + indent;
-        result = result + quote(KEY_METHODS) + ":{";
-        result = result + getJsonForMethodMetaData(proxy.getMetaData(),
-            indent + Constants.INDENT);
-        result = result + "\n" + indent + "}";
-
-        result = result + "\n\n" + "}";
-        return result;
-    }
-
-    private String getAttribute(String name, String value) {
-        String result ="";
-        result = result + quote(name) + " : " + quote(value);
-        return result;
+        return obj.toString();
     }
 }

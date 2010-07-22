@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.codehaus.jettison.json.JSONException;
 import org.glassfish.admin.rest.results.OptionsResult;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,6 +65,7 @@ import org.glassfish.external.statistics.Statistic;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import org.codehaus.jettison.json.JSONArray;
 
 
 /**
@@ -468,9 +470,14 @@ public class ProviderUtil {
         return result;
     }
 
+    static protected JSONArray getJsonForMethodMetaData(OptionsResult metaData) throws JSONException {
+        OptionsResultJsonProvider provider = new OptionsResultJsonProvider();
+        return provider.getRespresenationForMethodMetaData(metaData);
+    }
+
     static protected String getJsonForMethodMetaData(OptionsResult metaData, String indent) {
         OptionsResultJsonProvider provider = new OptionsResultJsonProvider();
-        return provider.getRespresenationForMethodMetaData(metaData, indent);
+        return provider.getRespresenationForMethodMetaData(metaData).toString();
     }
 
     static protected String getXmlForMethodMetaData(OptionsResult metaData, String indent) {

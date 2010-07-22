@@ -35,6 +35,11 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.codehaus.jettison.json.JSONArray;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.glassfish.admin.rest.results.GetResult;
 import java.util.Set;
 
@@ -44,7 +49,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 
-import org.glassfish.admin.rest.Constants;
 import static org.glassfish.admin.rest.Util.*;
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
@@ -63,61 +67,31 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
 
     @Override
     protected String getContent(GetResult proxy) {
-        String result;
-        String indent = Constants.INDENT;
-        result ="{" ;
-        result = result + "\n\n" + indent;
-
-        result = result + quote(KEY_ENTITY) + ":{";
-        result = result + getAttributes(proxy.getDom());
-        result = result + "},";
-
-        result = result + "\n\n" + indent;
-        result = result + quote(KEY_METHODS) + ":{";
-        result = result + getJsonForMethodMetaData(proxy.getMetaData(),
-            indent + Constants.INDENT);
-        result = result + "\n" + indent + "}";
-
-        //do not display empty child resources array
-        if ((proxy.getDom().getElementNames().size() > 0) || ("applications".equals(getName(uriInfo.getPath(), '/')))) {
-            result = result + ",";
-            result = result + "\n\n" + indent;
-            result = result + quote(KEY_CHILD_RESOURCES) + ":[";
-            result = result + getResourcesLinks(proxy.getDom(), indent + Constants.INDENT);
-            result = result + "]";
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put(KEY_ENTITY, getAttributes(proxy.getDom()));
+            obj.put(KEY_METHODS, getJsonForMethodMetaData(proxy.getMetaData()));
+            obj.put(KEY_CHILD_RESOURCES, getResourcesLinks(proxy.getDom()));
+            obj.put(KEY_COMMANDS, getCommandLinks(proxy.getCommandResourcesPaths()));
+        } catch (JSONException ex) {
+            Logger.getLogger(GetResultJsonProvider.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        if (proxy.getCommandResourcesPaths().length > 0)  {
-            result = result + ",";
-            result = result + "\n\n" + indent;
-            result = result + quote(KEY_COMMANDS) + ":[";
-            result = result + getCommandLinks(proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
-            result = result + "]";
-        }
-
-        result = result + "\n\n" + "}";
-        return result;
+        return obj.toString();
     }
 
-    private String getAttributes(Dom proxy) {
-        StringBuilder result = new StringBuilder();
-        Set<String> attributeNames = proxy.model.getAttributeNames();
-        String sep = "";
-        for (String attributeName : attributeNames) {
-            result.append(sep)
-                    .append(quote(eleminateHypen(attributeName)))
-                    .append(":")
-                    .append(quote(proxy.attribute(attributeName)));
+    private JSONObject getAttributes(Dom proxy) throws JSONException {
+        JSONObject entity = new JSONObject();
+        for (String attributeName : proxy.model.getAttributeNames()) {
+            entity.put(attributeName, proxy.attribute(attributeName));
         }
 
-        return result.toString();
+        return entity;
     }
 
-
-    private String getResourcesLinks(Dom proxy, String indent) {
-        StringBuilder result = new StringBuilder();
+    private JSONArray getResourcesLinks(Dom proxy) throws JSONException {
+        JSONArray array = new JSONArray();
         Set<String> elementNames = proxy.getElementNames();
-        String sep = "";
 
         //expose ../applications/application resource to enable deployment
         //when no applications deployed on server
@@ -128,36 +102,19 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
         }
 
         for (String elementName : elementNames) {
-            try {
-                result.append(sep)
-                        .append("\n")
-                        .append(indent)
-                        .append(quote(getElementLink(uriInfo, elementName/*element*/)));
-                sep = ",";
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            array.put(getElementLink(uriInfo, elementName));
         }
-        return result.toString();
+        return array;
     }
 
-    private String getCommandLinks(String[][] commandResourcesPaths, String indent) {
-        StringBuilder result = new StringBuilder();
-        String sep = "";
+    private JSONArray getCommandLinks(String[][] commandResourcesPaths) throws JSONException {
+        JSONArray array = new JSONArray();
 
         //TODO commandResourcePath is two dimensional array. It seems the second e.x. see DomainResource#getCommandResourcesPaths().
         //The second dimension POST/GET etc. does not seem to be used. Discussed with Ludo. Need to be removed in a separate checkin.
         for (String[] commandResourcePath : commandResourcesPaths) {
-            try {
-                result.append(sep)
-                        .append("\n")
-                        .append(indent)
-                        .append(quote(getElementLink(uriInfo, commandResourcePath[0])));
-                sep = ",";
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            array.put(getElementLink(uriInfo, commandResourcePath[0]));
         }
-        return result.toString();
+        return array;
     }
 }

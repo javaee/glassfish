@@ -35,6 +35,11 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.codehaus.jettison.json.JSONArray;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.glassfish.admin.rest.results.GetResultList;
 import java.util.List;
 
@@ -44,7 +49,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
 
-import org.glassfish.admin.rest.Constants;
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 
@@ -63,67 +67,41 @@ public class GetResultListJsonProvider extends BaseProvider<GetResultList> {
 
     @Override
     protected String getContent(GetResultList proxy) {
-        String result;
-        String indent = Constants.INDENT;
-        result ="{" ;
-        result = result + "\n\n" + indent;
-
-        result = result + quote(KEY_ENTITY) + ":{},";
-
-        result = result + "\n\n" + indent;
-        result = result + quote(KEY_METHODS) + ":{";
-        result = result + getJsonForMethodMetaData(proxy.getMetaData(),
-            indent + Constants.INDENT);
-        result = result + "\n" + indent + "}";
-
-        //do not display empty child resources array
-        if (proxy.getDomList().size() > 0) {
-            result = result + ",";
-            result = result + "\n\n" + indent;
-            result = result + quote(KEY_CHILD_RESOURCES) + ":[";
-            result = result + getResourcesLinks(proxy.getDomList(), indent + Constants.INDENT);
-            result = result + "]";
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put(KEY_ENTITY, new JSONObject());
+            obj.put(KEY_METHODS, getJsonForMethodMetaData(proxy.getMetaData()));
+            if (proxy.getDomList().size() > 0) {
+                obj.put(KEY_CHILD_RESOURCES, getResourcesLinks(proxy.getDomList()));
+            }
+            if (proxy.getCommandResourcesPaths().length > 0) {
+                obj.put(KEY_COMMANDS, getCommandLinks(proxy.getCommandResourcesPaths()));
+            }
+        } catch (JSONException ex) {
+            Logger.getLogger(GetResultJsonProvider.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        if (proxy.getCommandResourcesPaths().length > 0) {
-            result = result + ",";
-            result = result + "\n\n" + indent;
-            result = result + quote(KEY_COMMANDS) + ":[";
-            result = result + getCommandLinks(proxy.getCommandResourcesPaths(), indent + Constants.INDENT);
-            result = result + "]";
-        }
-
-        result = result + "\n\n" + "}";
-        return result;
+        return obj.toString();
     }
 
-    private String getResourcesLinks(List<Dom> proxyList, String indent) {
-        StringBuilder result = new StringBuilder();
-        String sep = "";
+    private JSONArray getResourcesLinks(List<Dom> proxyList) {
+        JSONArray array = new JSONArray();
         String elementName;
         for (Dom proxy: proxyList) {
             elementName = proxy.getKey();
-            result.append(sep)
-                    .append("\n")
-                    .append(indent)
-                    .append(quote(getElementLink(uriInfo, elementName)));
-            sep = ",";
+             array.put(getElementLink(uriInfo, elementName));
         }
-
-        return result.toString();
+        return array;
     }
 
-    private String getCommandLinks(String[][] commandResourcesPaths, String indent) {
-        StringBuilder result = new StringBuilder();
-        String sep = "";
+    private JSONArray getCommandLinks(String[][] commandResourcesPaths) throws JSONException {
+        JSONArray array = new JSONArray();
 
+        //TODO commandResourcePath is two dimensional array. It seems the second e.x. see DomainResource#getCommandResourcesPaths().
+        //The second dimension POST/GET etc. does not seem to be used. Discussed with Ludo. Need to be removed in a separate checkin.
         for (String[] commandResourcePath : commandResourcesPaths) {
-            result.append(sep)
-                    .append("\n")
-                    .append(indent)
-                    .append(quote(getElementLink(uriInfo, commandResourcePath[0])));
+            array.put(getElementLink(uriInfo, commandResourcePath[0]));
         }
-
-        return result.toString();
+        return array;
     }
 }

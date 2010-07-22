@@ -35,16 +35,19 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.codehaus.jettison.json.JSONException;
 import org.glassfish.admin.rest.results.OptionsResult;
-import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 import java.util.Iterator;
 import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONObject;
 
-import org.glassfish.admin.rest.Constants;
 
 /**
  * JSON provider for OptionsResult.
@@ -54,152 +57,89 @@ import org.glassfish.admin.rest.Constants;
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 public class OptionsResultJsonProvider extends BaseProvider<OptionsResult> {
-     private static final String METHOD = "method";
-     private static final String NAME = "name";
-     private static final String MESSAGE_PARAMETERS = "messageParameters";
+    private static final String NAME = "name";
+    private static final String QUERY_PARAMETERS = "queryParameters";
+    private static final String MESSAGE_PARAMETERS = "messageParameters";
 
-     public OptionsResultJsonProvider() {
-         super(OptionsResult.class, MediaType.APPLICATION_JSON_TYPE);
-     }
-
-     //get json representation for the given OptionsResult object
-     @Override
-     protected String getContent(OptionsResult proxy) {
-        String result;
-        String indent = Constants.INDENT;
-        result ="{" + quote(proxy.getName()) + ":";
-        result = result + "\n" + indent + "{";
-        result = result + getRespresenationForMethodMetaData(proxy,
-            indent + Constants.INDENT);
-        result = result + "\n" + indent + "}";
-        result = result + "\n}";
-        return result;
+    public OptionsResultJsonProvider() {
+        super(OptionsResult.class, MediaType.APPLICATION_JSON_TYPE);
     }
 
-    String getRespresenationForMethodMetaData(OptionsResult proxy, String indent) {
-        String result = "";
+    //get json representation for the given OptionsResult object
+    @Override
+    protected String getContent(OptionsResult proxy) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put(proxy.getName(), getRespresenationForMethodMetaData(proxy));
+        } catch (JSONException ex) {
+            Logger.getLogger(OptionsResultJsonProvider.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return obj.toString();
+    }
+
+    public JSONArray getRespresenationForMethodMetaData(OptionsResult proxy) {
+        JSONArray arr = new JSONArray();
         Set<String> methods = proxy.methods();
         Iterator<String> iterator = methods.iterator();
-        String method;
-        boolean first = true;
+        String methodName;
         while (iterator.hasNext()) {
-           method = iterator.next();
-           if (!first) {
-               result = result + ",";
-           }
-
-           MethodMetaData methodMetaData = proxy.getMethodMetaData(method);
-
-           //get method representation
-           result = result + getMethod(method, methodMetaData, indent);
-
-           first = false;
+            try {
+                methodName = iterator.next();
+                MethodMetaData methodMetaData = proxy.getMethodMetaData(methodName);
+                JSONObject method = new JSONObject();
+                method.put(NAME, methodName);
+                method.put(QUERY_PARAMETERS, getQueryParams(methodMetaData));
+                method.put(MESSAGE_PARAMETERS, getMessageParams(methodMetaData));
+                arr.put(method);
+            } catch (JSONException ex) {
+                Logger.getLogger(OptionsResultJsonProvider.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        return result;
-    }
 
-    //get json representation for the given method name
-    private String getMethod(String method, MethodMetaData methodMetaData, String indent) {
-        String result = "\n" + indent;
-        result = result + quote(METHOD) + ":{";
-        result = result + "\n" + indent + Constants.INDENT +
-            quote(NAME) + ":" + quote(method);
-
-        //query params
-        result = result + getQueryParams(methodMetaData, indent + Constants.INDENT);
-
-        //parameters (message parameters)
-        result = result + getMessageParams(methodMetaData, indent + Constants.INDENT);
-
-        result = result + "\n" + indent + "}";
-        return result;
+        return arr;
     }
 
     //get json representation for the method query parameters
-    private String getQueryParams(MethodMetaData methodMetaData, String indent) {
-        String result = "";
+    private JSONObject getQueryParams(MethodMetaData methodMetaData) throws JSONException {
+        JSONObject obj = new JSONObject();
         if (methodMetaData.sizeQueryParamMetaData() > 0) {
-            result = result + "," + "\n" + indent;
-            result = result + quote("Query Parameters") + ":{";
-
             Set<String> queryParams = methodMetaData.queryParams();
             Iterator<String> iterator = queryParams.iterator();
             String queryParam;
-            boolean first = true;
             while (iterator.hasNext()) {
-               if (!first) {
-                   result = result + ",";
-               }
-
                 queryParam = iterator.next();
-                ParameterMetaData parameterMetaData =
-                    methodMetaData.getQueryParamMetaData(queryParam);
-                result = result + getParameter(queryParam, parameterMetaData,
-                    indent + Constants.INDENT);
-                first = false;
+                ParameterMetaData parameterMetaData = methodMetaData.getQueryParamMetaData(queryParam);
+                obj.put(queryParam, getParameter(parameterMetaData));
             }
-            result = result + "\n" + indent + "}";
+        }
+
+        return obj;
+    }
+
+    private JSONObject getParameter(ParameterMetaData parameterMetaData) throws JSONException {
+        JSONObject result = new JSONObject();
+        Iterator<String> iterator = parameterMetaData.attributes().iterator();
+        String attributeName;
+        while (iterator.hasNext()) {
+            attributeName = iterator.next();
+            result.put(attributeName, parameterMetaData.getAttributeValue(attributeName));
         }
         return result;
     }
 
-    //get json representation for the method message parameters
-    private String getMessageParams(MethodMetaData methodMetaData, String indent) {
-        String result = "";
+    private JSONObject getMessageParams(MethodMetaData methodMetaData) throws JSONException {
+        JSONObject result = new JSONObject();
         if (methodMetaData.sizeParameterMetaData() > 0) {
-            result = result + "," + "\n" + indent;
-            result = result + quote(MESSAGE_PARAMETERS) + ":{";
-
             Set<String> parameters = methodMetaData.parameters();
             Iterator<String> iterator = parameters.iterator();
             String parameter;
-            boolean first = true;
             while (iterator.hasNext()) {
-               if (!first) {
-                   result = result + ",";
-               }
-               parameter = iterator.next();
-               ParameterMetaData parameterMetaData =
-                   methodMetaData.getParameterMetaData(parameter);
-               result = result + getParameter(parameter, parameterMetaData,
-                   indent + Constants.INDENT);
-               first = false;
+                parameter = iterator.next();
+                ParameterMetaData parameterMetaData = methodMetaData.getParameterMetaData(parameter);
+                result.put(parameter, getParameter(parameterMetaData));
             }
-            result = result + "\n" + indent + "}";
         }
+
         return result;
     }
-
-    //get json representation for the given parameter
-    private String getParameter(String parameter,
-        ParameterMetaData parameterMetaData, String indent) {
-        String result = "\n" + indent;
-
-        result = result + quote(parameter) + ":{";
-
-        Set<String> attributes = parameterMetaData.attributes();
-        Iterator<String> iterator = attributes.iterator();
-        String attributeName;
-        boolean first = true;
-        while (iterator.hasNext()) {
-           if (!first) {
-               result = result + ", ";
-           }
-           attributeName = iterator.next();
-           String attributeValue =
-               parameterMetaData.getAttributeValue(attributeName);
-           result = result + getAttribute(attributeName, attributeValue);
-           first = false;
-        }
-        result = result + "}";
-        return result;
-    }
-
-    //get json representation for a give attribute of parameter
-    private String getAttribute(String name, String value) {
-        String result = "";
-        result = result + quote(name) + ":" + quote(value);
-        return result;
-    }
-
 }

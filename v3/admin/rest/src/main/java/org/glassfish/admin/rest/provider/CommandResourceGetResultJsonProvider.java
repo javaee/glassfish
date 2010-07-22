@@ -40,9 +40,10 @@ import org.glassfish.admin.rest.results.CommandResourceGetResult;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
-
-import org.glassfish.admin.rest.Constants;
+import org.codehaus.jettison.json.JSONException;
 import static org.glassfish.admin.rest.Util.*;
+
+import org.codehaus.jettison.json.JSONObject;
 
 /**
  * @author Rajeshwar Patil
@@ -57,32 +58,15 @@ public class CommandResourceGetResultJsonProvider extends BaseProvider<CommandRe
 
     @Override
     protected String getContent(CommandResourceGetResult proxy) {
-        String result;
-        String indent = Constants.INDENT;
-        result ="{" ;
-        result = result + "\n\n" + indent;
+        JSONObject obj = new JSONObject();
 
-        String commandDisplayName =
-            upperCaseFirstLetter(eleminateHypen(proxy.getCommandDisplayName()));
-        result = result + ProviderUtil.quote(commandDisplayName) + ":{";
+        try {
+            obj.put (upperCaseFirstLetter(eleminateHypen(proxy.getCommandDisplayName())), new JSONObject());
+            obj.put (ProviderUtil.KEY_METHODS, ProviderUtil.getJsonForMethodMetaData(proxy.getMetaData()));
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
 
-        result = result + getAttributes();
-        result = result + "},";
-
-        result = result + "\n\n" + indent;
-        result = result + ProviderUtil.quote(ProviderUtil.KEY_METHODS) + ":{";
-        result = result + ProviderUtil.getJsonForMethodMetaData(proxy.getMetaData(),
-            indent + Constants.INDENT);
-        result = result + "\n" + indent + "}";
-
-        result = result + "\n\n" + "}";
-        return result;
-    }
-
-
-    private String getAttributes() {
-        //No attributes for this resource. This resource is an abstraction for
-        //command, for which there does not exists any actual config bean.
-        return "";
+        return obj.toString();
     }
 }

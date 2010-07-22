@@ -60,11 +60,9 @@ public class ActionReportResultJsonProvider extends BaseProvider<ActionReportRes
         try {
             proxy.getActionReport().writeReport(baos);
             result = result + baos.toString();
-
         } catch (IOException ex) {
-            //Logger.getLogger(ActionReportResultHtmlProvider.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
         }
-
 
         return result;
     }
