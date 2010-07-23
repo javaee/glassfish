@@ -160,6 +160,7 @@ public class GeneratorResource {
         {"NetworkListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
         {"NetworkListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"},
         {"Node", "delete-node-ssh", "DELETE", "delete-node", "Delete Node", "id=$parent"},
+        {"Node", "_update-node", "POST", "_update-node", "Update Node", "id=$parent"},
         {"Nodes", "create-node-ssh", "POST", "create-node", "Create Node"},
         {"Profiler", "delete-profiler", "DELETE", "delete-profiler", "Delete Profiler", "id=$parent"},
         {"Protocol", "create-http", "POST", "create-http", "Create", "id=$parent"},

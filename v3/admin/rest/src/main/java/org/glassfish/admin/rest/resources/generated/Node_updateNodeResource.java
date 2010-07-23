@@ -34,26 +34,20 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
-import javax.ws.rs.Path;
-import org.glassfish.admin.rest.resources.*;
-public class LbConfigResource extends TemplateResource {
 
-@Path("cluster-ref/")
-public ListClusterRefResource getClusterRefResource() {
-	ListClusterRefResource resource = resourceContext.getResource(ListClusterRefResource.class);
-	resource.setParentAndTagName(getEntity() , "cluster-ref");
-	return resource;
-}
-@Path("server-ref/")
-public ListServerRefResource getServerRefResource() {
-	ListServerRefResource resource = resourceContext.getResource(ListServerRefResource.class);
-	resource.setParentAndTagName(getEntity() , "server-ref");
-	return resource;
-}
-	@Path("property/")
-	public PropertiesBagResource getProperties() {
-		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
-		resource.setParentAndTagName(getEntity() , "property");
-		return resource;
-	}
+//generated code...;
+
+public class Node_updateNodeResource extends org.glassfish.admin.rest.resources.TemplateCommandPostResource {
+   public Node_updateNodeResource() {
+       super(
+          "Node_updateNode",
+          "_update-node",
+          "POST",
+          "Update Node",
+          "_update-node",
+          new java.util.HashMap<String, String>() {{
+                    put("id","$parent");
+       }},
+          true);
+    }
 }

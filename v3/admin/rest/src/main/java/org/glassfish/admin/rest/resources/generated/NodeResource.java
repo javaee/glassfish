@@ -44,9 +44,15 @@ NodeDeleteNodeResource resource = resourceContext.getResource(NodeDeleteNodeReso
 return resource;
 }
 
+@Path("_update-node/")
+public Node_updateNodeResource getNode_updateNodeResource() {
+Node_updateNodeResource resource = resourceContext.getResource(Node_updateNodeResource.class);
+return resource;
+}
+
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"delete-node", "DELETE", "delete-node-ssh"}};
+return new String[][]{{"delete-node", "DELETE", "delete-node-ssh"}, {"_update-node", "POST", "_update-node"}};
 }
 
 	@Path("application-ref/")
