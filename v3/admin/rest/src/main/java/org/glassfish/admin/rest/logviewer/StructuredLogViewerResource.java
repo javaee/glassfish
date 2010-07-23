@@ -145,8 +145,9 @@ public class StructuredLogViewerResource {
     private String convertQueryResult(final AttributeList queryResult, String type) {
         // extract field descriptions into a String[]
         StringBuilder sb = new StringBuilder();
+        String sep = "";
         if (type.equals("json")) {
-            sb.append("{\n").append(quoted("records")).append(": [");
+            sb.append("{\"records\": [");
         } else {
             sb.append("<records>\n");
         }
@@ -178,8 +179,9 @@ public class StructuredLogViewerResource {
             rec.setMessageID((String) record.get(fieldIdx++));
             rec.setMessage((String) record.get(fieldIdx++));
             if (type.equals("json")) {
+                sb.append(sep);
                 sb.append(rec.toJSON());
-                sb.append(",\n");
+                sep = ",";
             } else {
                 sb.append(rec.toXML());
 
@@ -187,8 +189,7 @@ public class StructuredLogViewerResource {
 
         }
         if (type.equals("json")) {
-            sb.append("]\n");
-            sb.append("}\n");
+            sb.append("]}\n");
         } else {
             sb.append("\n</records>\n");
 

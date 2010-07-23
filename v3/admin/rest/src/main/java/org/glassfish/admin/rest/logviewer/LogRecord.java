@@ -37,6 +37,8 @@ package org.glassfish.admin.rest.logviewer;
 
 import java.io.StringWriter;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,6 +52,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -69,14 +73,14 @@ class LogRecord {
     String loggerName;
     String nameValuePairs;
     String messageID;
-    String Message;
+    String message;
 
     public String getMessage() {
-        return Message;
+        return message;
     }
 
     public void setMessage(String Message) {
-        this.Message = Message;
+        this.message = Message;
     }
 
     public Date getLoggedDateTime() {
@@ -140,21 +144,20 @@ class LogRecord {
     }
 
     public String toJSON() {
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("{\n");
-        sb.append(quoted("recordNumber")).append(':').append(recordNumber).append(",\n");
-        sb.append(quoted("loggedDateTimeInMS")).append(':').append(loggedDateTime.getTime()).append(",\n");
-        sb.append(quoted("loggedLevel")).append(':').append(quoted(loggedLevel)).append(",\n");
-        sb.append(quoted("productName")).append(':').append(quoted(productName)).append(",\n");
-        sb.append(quoted("loggerName")).append(':').append(quoted(loggerName)).append(",\n");
-        sb.append(quoted("nameValuePairs")).append(':').append(quoted(nameValuePairs)).append(",\n");
-        sb.append(quoted("messageID")).append(':').append(quoted(messageID)).append(",\n");
-        sb.append(quoted("Message")).append(':').append(
-	    quoted(Message.replaceAll("\n", Matcher.quoteReplacement("\\\n")).
-			   replaceAll("\"", Matcher.quoteReplacement("\\\"")))).append("}\n");
-
-        return sb.toString();
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("recordNumber", recordNumber);
+            obj.put("loggedDateTimeInMS", loggedDateTime.getTime());
+            obj.put("loggedLevel", loggedLevel);
+            obj.put("productName", productName);
+            obj.put("loggerName", loggerName);
+            obj.put("nameValuePairs", nameValuePairs);
+            obj.put("messageID", messageID);
+            obj.put("Message", message); //.replaceAll("\n", Matcher.quoteReplacement("\\\n")).replaceAll("\"", Matcher.quoteReplacement("\\\"")));
+        } catch (JSONException ex) {
+            Logger.getLogger(LogRecord.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return obj.toString();
     }
 
     public String toXML() {
@@ -173,7 +176,7 @@ class LogRecord {
             result.setAttribute("loggerName", loggerName);
             result.setAttribute("nameValuePairs", nameValuePairs);
             result.setAttribute("messageID", messageID);
-            result.setNodeValue(Message);
+            result.setNodeValue(message);
             d.appendChild(result);
             return xmlToString(d);
 
@@ -181,7 +184,8 @@ class LogRecord {
             throw new RuntimeException(pex);
         }
     }
-    private  String xmlToString(Node node) {
+
+    private String xmlToString(Node node) {
         try {
             Source source = new DOMSource(node);
             StringWriter stringWriter = new StringWriter();
@@ -193,9 +197,9 @@ class LogRecord {
             transformer.transform(source, result);
             return stringWriter.getBuffer().toString();
         } catch (TransformerConfigurationException e) {
-          //  e.printStackTrace();
+            //  e.printStackTrace();
         } catch (TransformerException e) {
-          //  e.printStackTrace();
+            //  e.printStackTrace();
         }
         return null;
     }
