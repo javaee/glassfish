@@ -37,6 +37,7 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.net.NetUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -46,8 +47,11 @@ import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import com.sun.enterprise.universal.glassfish.TokenResolver;
+import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import java.util.logging.Logger;
 import java.io.File;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -66,13 +70,16 @@ public class CreateNodeSshCommand implements AdminCommand  {
     @Inject
     private CommandRunner cr;
 
+    @Inject
+    Habitat habitat;
+
     @Param(name="name", primary = true)
     private String name;
 
     @Param(name="nodehost")
     private String nodehost;
 
-    @Param(name = "installdir")
+    @Param(name = "installdir", optional=true)
     private String installdir;
 
     @Param(name="nodedir", optional=true)
@@ -92,22 +99,35 @@ public class CreateNodeSshCommand implements AdminCommand  {
 
     private static final String NL = System.getProperty("line.separator");
 
+    private Logger logger = null;
+    private TokenResolver resolver = null;
+
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         StringBuilder msg = new StringBuilder();
 
+        logger = context.getLogger();
+
+        // Create a resolver that can replace system properties in strings
+        Map<String, String> systemPropsMap =
+                new HashMap<String, String>((Map)(System.getProperties()));
+        resolver = new TokenResolver(systemPropsMap);
+
         setDefaults();
         try {
             validate();
         } catch (CommandValidationException e) {
+            String m1 = Strings.get("create.node.ssh.invalid.params");
             if (!force) {
-                report.setMessage(e.getMessage());
+                String m2 = Strings.get("create.node.ssh.not.created");
+                msg.append(StringUtils.cat(NL, m1, m2, e.getMessage()));
+                report.setMessage(msg.toString());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             } else {
-                msg.append(e.getMessage()).append(NL);
-                msg.append(Strings.get("create.node.ssh.continue.force"));
+                String m2 = Strings.get("create.node.ssh.continue.force");
+                msg.append(StringUtils.cat(NL, m1, e.getMessage(), m2));
             }
         }
 
@@ -140,14 +160,12 @@ public class CreateNodeSshCommand implements AdminCommand  {
         if (sshuser == null) {
             sshuser = "${user.name}";
         }
+        if (installdir == null) {
+            installdir = "${com.sun.aas.installRoot}";
+        }
     }
 
     private void validate() throws CommandValidationException {
-
-        Map<String, String> systemPropsMap =
-                new HashMap<String, String>((Map)(System.getProperties()));
-
-        TokenResolver resolver = new TokenResolver(systemPropsMap);
 
         if (StringUtils.ok(sshkeyfile)) {
             // User specified a key file. Make sure we get use it
@@ -166,6 +184,47 @@ public class CreateNodeSshCommand implements AdminCommand  {
                 throw new CommandValidationException(
                         Strings.get("key.path.not.readable",
                         kfile.getPath(), System.getProperty("user.name")) );
+            }
+        }
+
+        validateSSHConnection();
+    }
+
+    private void validateSSHConnection() throws CommandValidationException {
+        SSHLauncher sshL=habitat.getComponent(SSHLauncher.class);
+
+        // We use the resolver to expand any system properties
+        if (! NetUtils.isPortStringValid(resolver.resolve(sshport))) {
+            throw new CommandValidationException(Strings.get(
+                    "Invalid port number {0}", sshport));
+        }
+
+        int port = Integer.parseInt(resolver.resolve(sshport));
+
+        try {
+            sshL.validate(resolver.resolve(nodehost),
+                          port,
+                          resolver.resolve(sshuser),
+                          resolver.resolve(sshkeyfile),
+                          resolver.resolve(installdir),
+                          logger);
+        } catch (IOException e) {
+            String m1 = e.getMessage();
+            String m2 = "";
+            Throwable e2 = e.getCause();
+            if (e2 != null) {
+                m2 = e2.getMessage();
+            }
+            if (e instanceof FileNotFoundException) {
+                logger.warning(StringUtils.cat(": ", m1, m2, sshL.toString()));
+                throw new CommandValidationException(StringUtils.cat(NL,
+                                            m1, m2));
+            } else {
+                String msg = Strings.get("ssh.bad.connect", nodehost);
+                logger.warning(StringUtils.cat(": ", msg, m1, m2,
+                                            sshL.toString()));
+                throw new CommandValidationException(StringUtils.cat(NL,
+                                            msg, m1, m2));
             }
         }
     }

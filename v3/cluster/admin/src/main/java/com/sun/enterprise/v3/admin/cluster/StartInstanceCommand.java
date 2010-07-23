@@ -117,18 +117,28 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     public void execute(AdminCommandContext context) {
         logger = context.getLogger();
         this.ctx=context;
+        ActionReport report = ctx.getActionReport();
+        String msg = "";
+        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+
         if(!StringUtils.ok(instanceName)) {
-            logger.severe(Strings.get("start.instance.noInstanceName"));
+            msg = Strings.get("start.instance.noInstanceName");
+            logger.severe(msg);
+            report.setMessage(msg);
             return;
         }
         instance = helper.getServer(instanceName);
         if(instance == null) {
-            logger.severe(Strings.get("start.instance.noSuchInstance", instanceName));
+            msg = Strings.get("start.instance.noSuchInstance", instanceName);
+            logger.severe(msg);
+            report.setMessage(msg);
             return;
         }
         noderef = helper.getNode(instance);
         if(!StringUtils.ok(noderef)) {
-             logger.severe(Strings.get("missingNodeRef", instanceName));
+            msg = Strings.get("missingNodeRef", instanceName);
+            logger.severe(msg);
+            report.setMessage(msg);
             return;
         }
         if (nodes != null) {
@@ -136,21 +146,24 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             if (n != null) {
                 nodedir = n.getNodeDir();
             } else {
-                logger.severe(Strings.get("missingNode", noderef));
+                msg = Strings.get("missingNode", noderef);
+                logger.severe(msg);
+                report.setMessage(msg);
                 return;
             }
         }
 
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         if(env.isDas()) {
             callInstance();
-        }
-        else if(env.isInstance()) {
+        } else if(env.isInstance()) {
             startInstance();
-
         } else {
-            String msg = Strings.get("start.instance.notAnInstanceOrDas",
+            msg = Strings.get("start.instance.notAnInstanceOrDas",
                     env.getRuntimeType().toString());
-            logger.warning(msg);
+            logger.severe(msg);
+            report.setMessage(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         }
     }
 
@@ -210,5 +223,4 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             report.setMessage(msg);            
         }
     }
-    
 }

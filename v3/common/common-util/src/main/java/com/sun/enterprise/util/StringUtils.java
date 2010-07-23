@@ -530,4 +530,35 @@ public class StringUtils {
         else
             return s;   // GIGO
     }
+
+    /**
+     * Concatenate a list of strings, putting a separator in between each one.
+     * If the list is one string, then the separator is not used.
+     * The separator will never be added to the start or end of the returned
+     * string.
+     * When empty or null strings are encountered in the list of strings
+     * they are ignore.
+     *
+     * @param separator Separator to use between concatenated strings
+     * @param list      List of strings to concatenate together
+     * @return          String created by concatenating provided strings
+     */
+    public static String cat(String separator, String... list) {
+        StringBuilder sb = new StringBuilder();
+
+        boolean first = true;
+        for (String s : list) {
+            // Skip empty or null strings
+            if (!StringUtils.ok(s)) {
+                continue;
+            }
+            if (!first) {
+                sb.append(separator);
+            } else {
+                first = false;
+            }
+            sb.append(s);
+        }
+        return sb.toString();
+    }
 }

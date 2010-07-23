@@ -49,9 +49,11 @@ import com.sun.enterprise.config.serverbeans.Node;
 import java.io.OutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import java.util.Formatter;
 
 @Service(name="SSHLauncher")
 public class SSHLauncher {
@@ -217,14 +219,14 @@ public class SSHLauncher {
         return status;
     }
 
-    public  boolean validate(String host, int port,
+    public void validate(String host, int port,
                              String userName, String keyFile, String nodeHome,
                              Logger logger) throws IOException
     {
         this.host = host;
         this.keyFile = keyFile;
         this.logger = logger;
-        boolean isValid = false;
+        boolean validNodeHome = false;
         init(userName, port);
 
 
@@ -232,11 +234,31 @@ public class SSHLauncher {
         logger.fine("Connection settings valid");
         //Validate if nodeHome exists
         SFTPClient sftpClient = new SFTPClient(connection);
-        isValid = sftpClient.exists(nodeHome);
+        validNodeHome = sftpClient.exists(nodeHome);
         logger.fine("Node home validated");
         SSHUtil.unregister(connection);
 
         connection = null;
-        return isValid;
+
+        if (!validNodeHome) {
+            throw new FileNotFoundException("Could not find " +
+                    nodeHome + " on " + host);
+        }
+    }
+
+    @Override
+    public String toString() {
+
+    String knownHostsPath  = "null";
+    if (knownHosts != null) {
+        try {
+            knownHostsPath = knownHosts.getCanonicalPath();
+        } catch (IOException e) {
+            knownHostsPath = knownHosts.getAbsolutePath();
+        }
+    }
+
+    return String.format("host=%s port=%d user=%s keyFile=%s authType=%s knownHostFile=%s",
+            host, port, userName, keyFile, authType, knownHostsPath);
     }
 }
