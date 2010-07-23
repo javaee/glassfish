@@ -38,15 +38,12 @@
 package com.sun.enterprise.glassfish.bootstrap;
 
 import org.glassfish.experimentalgfapi.GlassFishRuntime;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.osgi.util.tracker.ServiceTracker;
 
-import java.io.File;
-import java.net.URI;
 import java.util.Properties;
 import java.util.ServiceLoader;
 
@@ -56,17 +53,21 @@ import java.util.ServiceLoader;
  * b) installing glassfish bundles,
  * c) starting the primordial GlassFish bundle,
  * d) obtaining a reference to GlassFishRuntime OSGi service.
- *
- * It is the responsibility of the caller to pass in a properly populated properties object.
- *
  * <p/>
- * This class is registered as a provider of RuntimeBuilder.
+ * Steps #b & #c are handled via {@link AutoProcessor}.
+ * We specify our provisioning bundle details in the properties object that's used to boostrap
+ * the system. AutoProcessor installs and starts such bundles, The provisioning bundle is also configured
+ * via the same properties object.
+ * <p/>
+ * It is the responsibility of the caller to pass in a properly populated properties object.
+ * <p/>
+ * <p/>
+ * This class is registered as a provider of RuntimeBuilder using META-INF/services file.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuilder {
     private Framework framework;
-    private URI installRoot;
     private Properties properties;
 
     /**
@@ -76,9 +77,7 @@ public class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuil
 
     public GlassFishRuntime build(Properties properties) throws Exception {
         this.properties = properties;
-        installRoot = URI.create(Util.getPropertyOrSystemProperty(properties, Constants.INSTALL_ROOT_URI_PROP_NAME));
         launchOSGiFrameWork();
-        setupBundles();
         return getRuntime();
     }
 
@@ -100,30 +99,9 @@ public class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuil
 
     private GlassFishRuntime getRuntime() throws Exception {
         final BundleContext context = framework.getBundleContext();
-//        ServiceReference[] refs = context.getAllServiceReferences(GlassFishRuntime.class.getName(), null);
-//        if (refs.length == 1) {
-//            return (GlassFishRuntime) context.getService(refs[0]);
-//        }
-//        throw new RuntimeException("Not able to get hold of GlassFishRuntime OSGi service");
         ServiceTracker tracker = new ServiceTracker(context, GlassFishRuntime.class.getName(), null);
         tracker.open(true);
         return GlassFishRuntime.class.cast(tracker.waitForService(0));
-    }
-
-    protected void setupBundles() throws Exception {
-        BundleInstaller bi = getBundleInstaller();
-        bi.install();
-    }
-
-    /**
-     * Extension point for plugging in different types of Provisioning System
-     * Use properties object as input to decide.
-     *
-     * @return BundleInstaller appropriate for this environment
-     */
-    private BundleInstaller getBundleInstaller() {
-        BundleInstaller bi = new OSGiMainBundleInstaller();
-        return bi;
     }
 
     protected void launchOSGiFrameWork() throws Exception {
@@ -141,6 +119,9 @@ public class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuil
                 framework.init();
                 debug("Initialized + " + framework);
             }
+
+            // Call auto-processor - this is where our provisioning bundle is installed and started.
+            AutoProcessor.process(properties, framework.getBundleContext());
             framework.start();
         }
     }
@@ -153,56 +134,6 @@ public class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuil
      */
     private boolean isOSGiEnv() {
         return (getClass().getClassLoader() instanceof BundleReference);
-    }
-
-    /**
-     * Abstraction to install and start GlassFish bundles.
-     * Different implementations can exist, viz: one can use our osgi-main.jar to do the work,
-     * some other implementation can use OBR and something else can use another custom implementation
-     * to install bundles from JarFile entries.
-     */
-    abstract class BundleInstaller {
-        abstract void install() throws Exception;
-    }
-
-    /**
-     * Uses osgi-,main.jar to install GlassFish bundles and start
-     */
-    class OSGiMainBundleInstaller extends BundleInstaller {
-        File glassfishDir;
-
-        public void install() throws Exception {
-            glassfishDir = new File(installRoot);
-            if (!glassfishDir.isDirectory()) {
-                throw new RuntimeException("OSGiMainBundleInstaller can only install from a regular glassfish installtion");
-            }
-            URI osgiMain = installRoot.resolve("modules/osgi-main.jar");
-            Bundle b = framework.getBundleContext().installBundle(osgiMain.toString());
-            b.update(); // in case it has changed since last time
-            configureProvisioningBundle();
-            b.start(Bundle.START_TRANSIENT);
-        }
-
-        /**
-         * This is where we configure our provisioning bundle (i.e., osgi-main bundle).
-         */
-        private void configureProvisioningBundle() {
-            // Set the modules dir. This is used by our main bundle to locate all
-            // bundles and install them
-            System.setProperty("org.jvnet.hk2.osgimain.bundlesDir",
-                    new File(glassfishDir, "modules/").getAbsolutePath());
-
-            // Set the excluded dir list property so that osgi-main does not
-            // install bundles from modules/autostart.
-            System.setProperty("org.jvnet.hk2.osgimain.excludedSubDirs", "autostart/");
-
-            // Set the autostart bundle list. This is used by bootstrap bundle to
-            // locate the bundles and start them. The path is relative to bundles dir
-            if (System.getProperty("org.jvnet.hk2.osgimain.autostartBundles") == null) {
-                final String bundlePaths = "glassfish.jar";
-                System.setProperty("org.jvnet.hk2.osgimain.autostartBundles", bundlePaths);
-            }
-        }
     }
 
     private static void debug(String s) {
