@@ -352,7 +352,7 @@ class ASMainHelper {
             // a. the jar could be uber jar, or
             // b. the jar is part of modules
             String scheme = loadedFrom.getScheme();
-            if ("file".equalsIgnoreCase("file")) {
+            if ("file".equalsIgnoreCase(scheme)) {
                 File bootstrapFile = new File(loadedFrom);
                 if (bootstrapFile.getName().equals("glassfish.jar")) {
                     installRootURI = bootstrapFile.getParentFile().getParentFile().toURI();
