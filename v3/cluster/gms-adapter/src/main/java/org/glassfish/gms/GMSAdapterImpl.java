@@ -201,6 +201,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         return initialized.get();
     }
 
+    @Override
     public void complete() {
         initialized.compareAndSet(true, false);
         initializationComplete.compareAndSet(true, false);
@@ -422,7 +423,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 registerFailureNotificationListener(this);
                 registerPlannedShutdownListener(this);
                 registerFailureSuspectedListener(this);
-                
+
                 glassfishEventListener = new org.glassfish.api.event.EventListener() {
                     @Override
                     public void event(Event event) {
