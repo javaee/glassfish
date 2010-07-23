@@ -41,7 +41,6 @@ package org.glassfish.appclient.server.core;
 
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.universal.i18n.LocalStrings;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.logging.Logger;
@@ -51,7 +50,6 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.deployment.admin.DeployCommand;
-import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
 import org.glassfish.deployment.common.VersioningDeploymentUtil;
 import org.jvnet.hk2.annotations.Inject;
@@ -74,9 +72,6 @@ public class GetClientStubsCommand implements AdminCommand {
             new LocalStringManagerImpl(GetClientStubsCommand.class);
 
     @Inject
-    private DownloadableArtifacts downloadableArtifacts;
-
-    @Inject
     private Applications apps;
 
     @Param(name = APPNAME, optional=false)
@@ -85,6 +80,7 @@ public class GetClientStubsCommand implements AdminCommand {
     @Param(primary=true)
     private String localDir;
 
+    @Override
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
@@ -112,7 +108,7 @@ public class GetClientStubsCommand implements AdminCommand {
             return;
         }
         try {
-            DeployCommand.retrieveArtifacts(context, appname, localDir, downloadableArtifacts);
+            DeployCommand.retrieveArtifacts(context, matchingApp, localDir);
         } catch (Exception e) {
             report.setFailureCause(e);
             report.failure(logger, localStrings.getLocalString(

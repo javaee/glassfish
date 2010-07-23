@@ -55,7 +55,6 @@ import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
@@ -82,6 +81,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Collections;
+import org.glassfish.deployment.common.Artifacts;
 
 import org.glassfish.deployment.versioning.VersioningService;
 import org.glassfish.deployment.common.VersioningDeploymentException;
@@ -291,12 +291,21 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 return;
             }
 
-            deploymentContext.getAppProps().putAll(application.getDeployProperties());
+            final Properties appProps = deploymentContext.getAppProps();
+            appProps.putAll(application.getDeployProperties());
 
             if (properties!=null) {
-                deploymentContext.getAppProps().putAll(properties);
+                appProps.putAll(properties);
             }
 
+            /*
+             * Extract the generated artifacts from the application's properties
+             * and record them in the DC.  This will be useful, for example,
+             * during Deployer.clean.
+             */
+            final Artifacts generatedArtifacts = DeploymentUtils.generatedArtifacts(application);
+            generatedArtifacts.record(deploymentContext);
+            
             deploymentContext.setModulePropsMap(
                 application.getModulePropertiesMap());
 

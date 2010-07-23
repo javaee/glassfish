@@ -70,12 +70,11 @@ import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
+import org.glassfish.deployment.common.Artifacts;
+import org.glassfish.deployment.common.Artifacts.FullAndPartURIs;
 import org.glassfish.deployment.common.DeploymentUtils;
-import org.glassfish.deployment.common.DownloadableArtifacts;
-import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
 import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
 import org.glassfish.deployment.common.VersioningDeploymentUtil;
-import org.glassfish.deployment.versioning.VersioningService;
 import org.jvnet.hk2.component.Habitat;
 
 public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
@@ -98,7 +97,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
 
     private StringBuilder libExtensionElementsForMainDocument = null;
 
-    private static Logger logger = LogDomains.getLogger(NestedAppClientDeployerHelper.class, LogDomains.ACC_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(NestedAppClientDeployerHelper.class, LogDomains.ACC_LOGGER);
 
     /**
      * records the downloads needed to support this app client,
@@ -190,7 +189,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
 
             for (Map.Entry<URI,StaticContent> entry : libURIs.entrySet()) {
                 final URI uri = entry.getKey();
-                libJarElements.append("<jar href=\"" + libJARRelPath(uri) + "\"/>");
+                libJarElements.append("<jar href=\"").append(libJARRelPath(uri)).append("\"/>");
             }
             tHelper.setProperty(LIBRARY_JARS_PROPERTY_NAME, libJarElements.toString());
 
@@ -299,7 +298,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * If the user has selected compatibility with v2 behavior, then also
          * consider EJB submodules and JARs at the top level of the EAR.
          */
-        clientLevelDownloads.add(new DownloadableArtifacts.FullAndPartURIs(
+        clientLevelDownloads.add(new Artifacts.FullAndPartURIs(
                 facadeServerURI(dc()),
                 facadeUserURI(dc())));
 
@@ -505,8 +504,8 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
 
     @Override
     protected void addGroupFacadeToEARDownloads() {
-        final DownloadableArtifacts.FullAndPartURIs earFacadeDownload =
-                dc().getTransientAppMetaData("earFacadeDownload", DownloadableArtifacts.FullAndPartURIs.class);
+        final Artifacts.FullAndPartURIs earFacadeDownload =
+                dc().getTransientAppMetaData("earFacadeDownload", Artifacts.FullAndPartURIs.class);
         earLevelDownloads.add(earFacadeDownload);
     }
 
@@ -721,10 +720,11 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                         result = new JARArtifact(artifactFile);
                     }
                 } else {
-                    logger.fine("Attempt to create artifact with URI " +
-                            canonicalArtifactURIWithinEAR.toASCIIString() +
-                            " which translates to the file " + artifactFile.getAbsolutePath() +
-                            "  but no such file exists.");
+                    logger.log(Level.FINE,
+                            "Attempt to create artifact with URI {0} which translates to the file {1}  but no such file exists.",
+                            new Object[]{
+                                canonicalArtifactURIWithinEAR.toASCIIString(),
+                                artifactFile.getAbsolutePath()});
                 }
             } catch (URISyntaxException ex) {
                 throw new RuntimeException(ex);
@@ -795,7 +795,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * within the user's download directory the downloade file will reside.
          * @return FullAndPartURIs object for this artifact's download data
          */
-        DownloadableArtifacts.FullAndPartURIs downloadInfo() {
+        Artifacts.FullAndPartURIs downloadInfo() {
             return new FullAndPartURIs(physicalFile.toURI(), 
                     earDirUserURI(dc()).resolve(canonicalURIWithinEAR()));
         }
@@ -908,7 +908,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                     if (f.getName().endsWith(".jar")) {
                         fileURI = signedJARManager.addJAR(fileURI);
                     }
-                    DownloadableArtifacts.FullAndPartURIs fileDependency = 
+                    Artifacts.FullAndPartURIs fileDependency =
                             new FullAndPartURIs(fileURI,
                                 earDirUserURI(dc()).resolve(earURI.relativize(fileURI)));
 //                                earURI.relativize(fileURI));
@@ -942,7 +942,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
              */
             final URI fileURI = physicalFile().toURI();
             final URI uriWithinAnchor = earDirUserURI(dc()).resolve(canonicalURIWithinEAR());
-            DownloadableArtifacts.FullAndPartURIs fileDependency =
+            Artifacts.FullAndPartURIs fileDependency =
                     new FullAndPartURIs(fileURI, uriWithinAnchor);
             downloadsForReferencedArtifacts.add(fileDependency);
             signedJARManager.addJAR(uriWithinAnchor, fileURI);

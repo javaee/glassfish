@@ -57,7 +57,6 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.deployment.common.DeploymentException;
-import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.webservices.deployment.WebServicesDeploymentMBean;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.internal.api.JAXRPCCodeGenFacade;
@@ -81,6 +80,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.deployment.common.Artifacts;
+import org.glassfish.deployment.common.DeploymentUtils;
 
 
 /**
@@ -107,9 +108,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config config;
-
-    @Inject
-    private DownloadableArtifacts downloadableArtifacts;
 
     @Inject
     private ArchiveFactory archiveFactory;
@@ -731,10 +729,8 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         super.clean(dc);
         UndeployCommandParameters params = dc.getCommandParameters(UndeployCommandParameters.class);
         if (params != null)  {
-            String name = params.name()  ;
-            if (downloadableArtifacts.getArtifacts(name).size()>0) {
-                downloadableArtifacts.clearArtifacts(name) ;
-            }
+            final Artifacts generatedArtifacts = DeploymentUtils.generatedArtifacts(dc);
+            generatedArtifacts.clearArtifacts() ;
         }
 
     }
@@ -807,7 +803,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             // out.  In the worst case, some unnecessary files under
             // META-INF/wsdl or WEB-INF/wsdl will be written to the publish
             // directory.
-            ArrayList<DownloadableArtifacts.FullAndPartURIs> alist = new ArrayList<DownloadableArtifacts.FullAndPartURIs>();
+            ArrayList<Artifacts.FullAndPartURIs> alist = new ArrayList<Artifacts.FullAndPartURIs>();
             while(entries.hasMoreElements()) {
                 String name = (String) entries.nextElement();
                 String wsdlName = stripWsdlDir(name,bundle) ;
@@ -820,11 +816,11 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
                 File fulluriFile = new File(sourceDir,name);
                 if (! fulluriFile.isDirectory()) {
-                     alist.add(new DownloadableArtifacts.FullAndPartURIs(fulluriFile.toURI(),clientwsdl));
+                     alist.add(new Artifacts.FullAndPartURIs(fulluriFile.toURI(),clientwsdl));
 
                 }
             }
-            downloadableArtifacts.addArtifacts(moduleName,alist);
+            DeploymentUtils.downloadableArtifacts(dc).addArtifacts(alist);
 
         }
     }

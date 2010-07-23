@@ -36,6 +36,7 @@
 
 package org.glassfish.deployment.common;
 
+import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.deployment.deploy.shared.Util;
@@ -82,6 +83,9 @@ public class DeploymentUtils {
     private final static String DAS_TARGET_NAME = "server";
     private final static String DOMAIN_TARGET_NAME = "domain";
 
+    private final static String DOWNLOADABLE_ARTIFACTS_KEY_PREFIX = "downloadable";
+    private final static String GENERATED_ARTIFACTS_KEY_PREFIX = "generated";
+    
     public static boolean isDASTarget(final String targetName) {
         return DAS_TARGET_NAME.equals(targetName);
     }
@@ -114,6 +118,46 @@ public class DeploymentUtils {
             checksum.update(uri.toASCIIString().getBytes());
         }
         return checksum.getValue();
+    }
+
+    /**
+     * Returns the downloadable artifacts object from the specified deployment
+     * context, creating it there if it does not already exist.
+     * @param dc the deployment context from which to fetch the downloadable Artifacts object
+     * @return
+     */
+    public static Artifacts downloadableArtifacts(final DeploymentContext dc) {
+        return Artifacts.get(dc, DOWNLOADABLE_ARTIFACTS_KEY_PREFIX);
+    }
+
+    /**
+     * Returns the downloadable artifacts object derived from the properties
+     * saved with the specified Application
+     * @param app the Application config object with (possibly) properties describing downloadable artifacts
+     * @return
+     */
+    public static Artifacts downloadableArtifacts(final Application app) {
+        return Artifacts.get(app.getDeployProperties(), DOWNLOADABLE_ARTIFACTS_KEY_PREFIX);
+    }
+
+    /**
+     * Returns the generated artifacts object from the specified deployment
+     * context, creating it there if it does not already exist.
+     * @param app
+     * @return
+     */
+    public static Artifacts generatedArtifacts(final DeploymentContext dc) {
+        return Artifacts.get(dc, GENERATED_ARTIFACTS_KEY_PREFIX);
+    }
+    
+    /**
+     * Returns the generated artifacts object derived from the properties
+     * saved with the specified Application
+     * @param app the Application config object with (possibly) properties describing generated artifacts
+     * @return
+     */
+    public static Artifacts generatedArtifacts(final Application app) {
+        return Artifacts.get(app.getDeployProperties(), GENERATED_ARTIFACTS_KEY_PREFIX);
     }
 
     private static void scanDirectory(final File directory, final List<URI> uris) {

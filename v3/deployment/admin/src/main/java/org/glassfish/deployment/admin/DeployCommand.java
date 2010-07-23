@@ -43,20 +43,18 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
-import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
+import org.glassfish.deployment.common.Artifacts;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.deployment.common.DeploymentException;
@@ -75,9 +73,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.Transaction;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
-import java.net.URI;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,7 +83,6 @@ import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.Payload;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
-import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
 import org.glassfish.deployment.common.VersioningDeploymentUtil;
 
@@ -108,7 +103,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
     final private static String COPY_IN_PLACE_ARCHIVE_PROP_NAME = "copy.inplace.archive";
-
+    
     @Inject
     Applications apps;
 
@@ -134,9 +129,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     Domain domain;
 
     @Inject
-    DownloadableArtifacts downloadableArtifacts;
-
-    @Inject
     Events events;
 
     @Inject
@@ -156,6 +148,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
      * Entry point from the framework into the command execution
      * @param context context for the command.
      */
+    @Override
     public void execute(AdminCommandContext context) {
 
       events.register(this);
@@ -340,12 +333,27 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             } else {
                 appInfo = deployment.deploy(deployment.prepareSniffersForOSGiDeployment(type, deploymentContext), deploymentContext);
             }
+
+            /*
+             * Various deployers might have added to the downloadable or
+             * generated artifacts.  Extract them and, if the command succeeded,
+             * persist both into the app properties (which will be recorded
+             * in domain.xml).
+             */
+            final Artifacts downloadableArtifacts =
+                    DeploymentUtils.downloadableArtifacts(deploymentContext);
+            final Artifacts generatedArtifacts =
+                    DeploymentUtils.generatedArtifacts(deploymentContext);
             
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 try {
                     moveAppFilesToPermanentLocation(
                             deploymentContext, logger);
                     recordFileLocations(appProps);
+
+                    downloadableArtifacts.record(appProps);
+                    generatedArtifacts.record(appProps);
+
                     // register application information in domain.xml
                     deployment.registerAppInDomainXML(appInfo, deploymentContext, t);
                     suppInfo.setDeploymentContext(deploymentContext);
@@ -358,7 +366,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             }
             if(retrieve != null) {
-                retrieveArtifacts(context, name, retrieve, downloadableArtifacts,
+                retrieveArtifacts(context, downloadableArtifacts.getArtifacts(),
+                        retrieve, 
                         false);
             }
         } catch(Throwable e) {
@@ -463,9 +472,10 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 FileUtils.copy(fileParam, result);
                 result.setLastModified(fileParam.lastModified());
                 if (logger.isLoggable(Level.FINE)) {
-                    logger.fine("*** In-place archive copy of " +
-                            fileParam.getAbsolutePath() + " took " +
-                            (System.currentTimeMillis() - startTime) + " ms");
+                    logger.log(Level.FINE, "*** In-place archive copy of {0} took {1} ms",
+                            new Object[]{
+                                fileParam.getAbsolutePath(),
+                                System.currentTimeMillis() - startTime});
                 }
             }
         }
@@ -551,18 +561,40 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         return null;
     }
 
+    /**
+     * Places into the outgoing payload the downloadable artifacts for an application.
+     * @param context the admin command context for the command requesting the artifacts download
+     * @param app the application of interest
+     * @param targetLocalDir the client-specified local directory to receive the downloaded files
+     */
     public static void retrieveArtifacts(final AdminCommandContext context,
-            final String appName,
-            final String targetLocalDir,
-            final DownloadableArtifacts downloadableArtifacts) {
-        retrieveArtifacts(context, appName, targetLocalDir, downloadableArtifacts, true);
+            final Application app,
+            final String targetLocalDir) {
+        retrieveArtifacts(context, app, targetLocalDir, true);
     }
 
+    /**
+     * Places into the outgoing payload the downloadable artifacts for an application.
+     * @param context the admin command context for the command currently running
+     * @param app the application of interest
+     * @param targetLocalDir the client-specified local directory to receive the downloaded files
+     * @param reportErrorsInTopReport whether to include error indications in the report's top-level
+     */
     public static void retrieveArtifacts(final AdminCommandContext context,
-            final String appName,
+            final Application app,
             final String targetLocalDir,
-            final DownloadableArtifacts downloadableArtifacts,
             final boolean reportErrorsInTopReport) {
+        retrieveArtifacts(context,
+                DeploymentUtils.downloadableArtifacts(app).getArtifacts(),
+                targetLocalDir,
+                reportErrorsInTopReport);
+    }
+
+    private static void retrieveArtifacts(final AdminCommandContext context,
+            final Collection<Artifacts.FullAndPartURIs> artifactInfo,
+            final String targetLocalDir,
+            final boolean reportErrorsInTopReport) {
+
         Logger logger = context.getLogger();
         try {
             Payload.Outbound outboundPayload = context.getOutboundPayload();
@@ -571,9 +603,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
              * file-xfer-root is used as a URI, so convert backslashes.
              */
             props.setProperty("file-xfer-root", targetLocalDir.replace('\\', '/'));
-            for (DownloadableArtifacts.FullAndPartURIs uriPair : downloadableArtifacts.getArtifacts(appName)) {
+            for (Artifacts.FullAndPartURIs uriPair : artifactInfo) {
                 if(logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "About to download artifact " + uriPair.getFull());
+                    logger.log(Level.FINE, "About to download artifact {0}", uriPair.getFull());
                 }
                 outboundPayload.attachFile("application/octet-stream",
                         uriPair.getPart(),"files",props,
@@ -635,6 +667,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         }
     }
 
+    @Override
     public void event(Event event) {
         if (event.is(Deployment.APPLICATION_PREPARED)) {
             DeploymentContext context = (DeploymentContext)event.hook();
@@ -673,8 +706,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         try {
             verifier.generateReports();
         } catch (IOException ioe) {
-            context.getLogger().warning(
-                "Can not generate verifier report: " + ioe.getMessage());
+            context.getLogger().log(
+                Level.WARNING, "Can not generate verifier report: {0}", ioe.getMessage());
         }
         int failedCount = rm.getFailedCount() + rm.getErrorCount();
         if (failedCount != 0) {
@@ -693,4 +726,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             return false;
         }
     }
+
+    
 }

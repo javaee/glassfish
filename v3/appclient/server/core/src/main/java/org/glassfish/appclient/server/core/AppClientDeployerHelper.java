@@ -67,7 +67,7 @@ import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
-import org.glassfish.deployment.common.DownloadableArtifacts;
+import org.glassfish.deployment.common.Artifacts;
 import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
 import org.glassfish.deployment.common.VersioningDeploymentUtil;
 import org.jvnet.hk2.component.Habitat;
@@ -558,9 +558,9 @@ public abstract class AppClientDeployerHelper {
         return is;
     }
 
-    protected abstract Set<DownloadableArtifacts.FullAndPartURIs> clientLevelDownloads() throws IOException;
+    protected abstract Set<Artifacts.FullAndPartURIs> clientLevelDownloads() throws IOException;
 
-    public abstract Set<DownloadableArtifacts.FullAndPartURIs> earLevelDownloads() throws IOException;
+    public abstract Set<Artifacts.FullAndPartURIs> earLevelDownloads() throws IOException;
 
     protected abstract void addGroupFacadeToEARDownloads();
     

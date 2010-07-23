@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,10 +52,20 @@ import org.glassfish.api.deployment.DeploymentContext;
 
 /**
  * Records artifacts generated during deployment that need
- * to be included with each downloaded app client.
+ * to be included inside the generated app client JAR so they are accessible
+ * on the runtime classpath.
  * <p>
  * An example: jaxrpc classes from web services deployment
  * <p>
+ * Important node:  Artifacts added to this manager are NOT downloaded to
+ * the client as separate files.  In contrast, then are added to the
+ * generated client JAR file.  That generated JAR, along with other JARs needed
+ * by the client, are downloaded.
+ * <p>
+ * A Deployer that needs to request for files to be downloaded to the client
+ * as part of the payload in the http command response should instead use
+ * DownloadableArtifactsManager.
+ *
  * An instance of this class can be stored in the deployment
  * context's transient app metadata so the various deployers can add to the
  * same collection and so the app client deployer can find it and
@@ -73,11 +83,11 @@ public class ClientArtifactsManager {
     
     private static final String CLIENT_ARTIFACTS_KEY = "ClientArtifacts";
     
-    private final Logger logger = 
+    private static final Logger logger =
             LogDomains.getLogger(ClientArtifactsManager.class, LogDomains.DPL_LOGGER);
     
-    private final Map<URI,DownloadableArtifacts.FullAndPartURIs> artifacts =
-            new HashMap<URI,DownloadableArtifacts.FullAndPartURIs>();
+    private final Map<URI,Artifacts.FullAndPartURIs> artifacts =
+            new HashMap<URI,Artifacts.FullAndPartURIs>();
 
     /**
      * Retreives the client artifacts store from the provided deployment 
@@ -119,7 +129,7 @@ public class ClientArtifactsManager {
                         uris.absoluteURI.toASCIIString())
                     );
         } else {
-            DownloadableArtifacts.FullAndPartURIs existingArtifact =
+            Artifacts.FullAndPartURIs existingArtifact =
                     artifacts.get(uris.relativeURI);
             if (existingArtifact != null) {
                 throw new IllegalArgumentException(
@@ -137,8 +147,8 @@ public class ClientArtifactsManager {
                             uris.absoluteURI.toASCIIString())
                         );
             }
-            final DownloadableArtifacts.FullAndPartURIs newArtifact =
-                    new DownloadableArtifacts.FullAndPartURIs(
+            final Artifacts.FullAndPartURIs newArtifact =
+                    new Artifacts.FullAndPartURIs(
                     uris.absoluteURI, uris.relativeURI);
             artifacts.put(uris.relativeURI, newArtifact);
         }
@@ -186,7 +196,7 @@ public class ClientArtifactsManager {
      *
      * @return all client artifacts reported by various deployers
      */
-    public Collection<DownloadableArtifacts.FullAndPartURIs> artifacts() {
+    public Collection<Artifacts.FullAndPartURIs> artifacts() {
         isArtifactSetConsumed = true;
         return Collections.unmodifiableCollection(artifacts.values());
     }

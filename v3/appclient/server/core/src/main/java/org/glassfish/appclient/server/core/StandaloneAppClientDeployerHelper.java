@@ -59,8 +59,8 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
-import org.glassfish.deployment.common.DownloadableArtifacts;
-import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
+import org.glassfish.deployment.common.Artifacts;
+import org.glassfish.deployment.common.Artifacts.FullAndPartURIs;
 import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
 import org.glassfish.deployment.common.VersioningDeploymentUtil;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
@@ -79,7 +79,7 @@ import org.jvnet.hk2.component.Habitat;
  */
 public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
 
-    private static Logger logger = LogDomains.getLogger(StandaloneAppClientDeployerHelper.class, LogDomains.ACC_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(StandaloneAppClientDeployerHelper.class, LogDomains.ACC_LOGGER);
 
     StandaloneAppClientDeployerHelper(final DeploymentContext dc, 
             final ApplicationClientDescriptor bundleDesc,
@@ -264,10 +264,10 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
          * 2. the facade JAR 
          */
         Set<FullAndPartURIs> downloads = new HashSet<FullAndPartURIs>();
-        downloads.add(new DownloadableArtifacts.FullAndPartURIs(
+        downloads.add(new Artifacts.FullAndPartURIs(
                 appClientServerURI(dc()),
                 appClientUserURI(dc())));
-        downloads.add(new DownloadableArtifacts.FullAndPartURIs(
+        downloads.add(new Artifacts.FullAndPartURIs(
                 facadeServerURI(dc()),
                 facadeUserURI(dc())));
         return downloads;

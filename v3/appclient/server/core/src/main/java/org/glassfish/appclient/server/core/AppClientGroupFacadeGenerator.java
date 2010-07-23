@@ -66,9 +66,9 @@ import java.util.logging.Logger;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.WritableArchive;
+import org.glassfish.deployment.common.Artifacts;
 import org.glassfish.deployment.common.ClientArtifactsManager;
 import org.glassfish.deployment.common.DeploymentException;
-import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
 import org.glassfish.deployment.common.VersioningDeploymentUtil;
 import org.jvnet.hk2.annotations.Inject;
@@ -101,9 +101,6 @@ public class AppClientGroupFacadeGenerator {
 
     private DeploymentContext dc;
     private AppClientDeployerHelper helper;
-
-    @Inject
-    private DownloadableArtifacts downloadableArtifacts;
 
     @Inject
     private ModulesRegistry modulesRegistry;
@@ -245,10 +242,10 @@ public class AppClientGroupFacadeGenerator {
 
         facadeArchive.close();
 
-        Set<DownloadableArtifacts.FullAndPartURIs> downloads =
-                    new HashSet<DownloadableArtifacts.FullAndPartURIs>();
-        DownloadableArtifacts.FullAndPartURIs download =
-                new DownloadableArtifacts.FullAndPartURIs(
+        Set<Artifacts.FullAndPartURIs> downloads =
+                    new HashSet<Artifacts.FullAndPartURIs>();
+        Artifacts.FullAndPartURIs download =
+                new Artifacts.FullAndPartURIs(
                     generatedJar.toURI(), facadeFileName);
         downloads.add(download);
         helper.earLevelDownloads().add(download);
@@ -284,7 +281,7 @@ public class AppClientGroupFacadeGenerator {
             final WritableArchive facadeArchive,
             final DeploymentContext dc) throws IOException {
         final ClientArtifactsManager artifacts = ClientArtifactsManager.get(dc);
-        for (DownloadableArtifacts.FullAndPartURIs artifact : artifacts.artifacts()) {
+        for (Artifacts.FullAndPartURIs artifact : artifacts.artifacts()) {
             OutputStream os = facadeArchive.putNextEntry(artifact.getPart().toASCIIString());
             InputStream is = new BufferedInputStream(new FileInputStream(new File(artifact.getFull())));
             AppClientDeployerHelper.copyStream(is, os);

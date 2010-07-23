@@ -39,8 +39,6 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.module.Module;
 import java.io.IOException;
-import java.util.logging.Level;
-import org.glassfish.deployment.common.DownloadableArtifacts;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
@@ -64,10 +62,11 @@ import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.deployment.common.Artifacts;
+import org.glassfish.deployment.common.DeploymentUtils;
 /**
  * AppClient module deployer.
  * <p>
@@ -164,22 +163,18 @@ public class AppClientDeployer
     private ServerContext serverContext;
 
     @Inject
-    private DownloadableArtifacts downloadInfo;
-
-    @Inject
     private ModulesRegistry modulesRegistry;
 
     @Inject
     private Applications applications;
 
     @Inject
-    private Habitat habitat;
-
-    @Inject
     private ASJarSigner jarSigner;
 
-	@Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
+
+//    private DownloadableArtifacts downloadInfo = null;
 
     /**
      * Maps the app name to the user-friendly context root for that app.
@@ -208,10 +203,12 @@ public class AppClientDeployer
     public AppClientDeployer() {
     }
 
+    @Override
     protected String getModuleType() {
         return "appclient";
     }
 
+    @Override
     public void postConstruct() {
         logger = LogDomains.getLogger(AppClientDeployer.class, LogDomains.ACC_LOGGER);
         for (Module module : modulesRegistry.getModules(GF_CLIENT_MODULE_NAME)) {
@@ -255,6 +252,7 @@ public class AppClientDeployer
         return result;
     }
 
+    @Override
     public void unload(AppClientServerApplication application, DeploymentContext dc) {
         appClientApps.remove(application);
     }
@@ -270,7 +268,9 @@ public class AppClientDeployer
         super.clean(dc);
         UndeployCommandParameters params = dc.getCommandParameters(UndeployCommandParameters.class);
         if (params != null) {
-            downloadInfo.clearArtifacts(params.name);
+            final com.sun.enterprise.config.serverbeans.Application app =
+                    applications.getApplication(params.name);
+            DeploymentUtils.downloadableArtifacts(app).clearArtifacts();
         }
     }
 
@@ -288,16 +288,27 @@ public class AppClientDeployer
                     dc, gfClientModuleClassLoader);
             helper.prepareJARs();
             DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
-            addArtifactsToDownloads(params.name(), helper);
+            addArtifactsToDownloads(helper, dc);
+            addArtifactsToGeneratedFiles(helper, dc);
         } catch (Exception ex) {
             throw new DeploymentException(ex);
         }
     }
 
-    private void addArtifactsToDownloads(final String appName,
-            final AppClientDeployerHelper helper) throws IOException {
-        downloadInfo.addArtifacts(appName, helper.earLevelDownloads());
-        downloadInfo.addArtifacts(appName, helper.clientLevelDownloads());
+    private void addArtifactsToDownloads(
+            final AppClientDeployerHelper helper,
+            final DeploymentContext dc) throws IOException {
+        final Artifacts downloadInfo = DeploymentUtils.downloadableArtifacts(dc);
+        downloadInfo.addArtifacts(helper.earLevelDownloads());
+        downloadInfo.addArtifacts(helper.clientLevelDownloads());
+    }
+
+    private void addArtifactsToGeneratedFiles(
+            final AppClientDeployerHelper helper,
+            final DeploymentContext dc) throws IOException {
+        final Artifacts generatedFileInfo = DeploymentUtils.generatedArtifacts(dc);
+        generatedFileInfo.addArtifacts(helper.earLevelDownloads());
+        generatedFileInfo.addArtifacts(helper.clientLevelDownloads());
     }
 
     private AppClientDeployerHelper createAndSaveHelper(final DeploymentContext dc,
