@@ -44,7 +44,8 @@ com.sun.grizzly.
 org.eclipse.persistence
 org.hibernate.validator
 org.jboss.weld
-
+# Shoal logging system overhaul is MS5 deliverable
+ShoalLogger
 
 # Stacktraces
 	at 
