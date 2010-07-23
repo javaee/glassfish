@@ -44,6 +44,7 @@ import org.jvnet.hk2.component.Inhabitant;
 
 import java.io.*;
 import java.util.*;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -104,11 +105,13 @@ public class Hk2TestServices {
         
         habitat = new Habitat();
 
+        HashSet<String> cpSet = new HashSet<String> ();
+        
+        findEntriesInClasspath(cpSet, classPath);
+              
         List<InhabitantsScanner> metaInfScanners = new ArrayList<InhabitantsScanner>();
 
-        final StringTokenizer st = new StringTokenizer(classPath, File.pathSeparator);
-        while(st.hasMoreElements()) {
-            final String fileName = st.nextToken();
+        for (String fileName : cpSet) {
             File f = new File(fileName);
             if (f.exists()) {
                 try {
@@ -186,6 +189,81 @@ public class Hk2TestServices {
         }
     }
 
+    /**
+     * Find all jars referenced directly and indirectly via a classpath
+     * specification typically drawn from java.class.path or 
+     * surefire.test.class.path System properties 
+     * @param cpSet a Set to hold classpath entries
+     * @param classPath a classpath with entries separated by {@link File.pathSeparator}
+     */
+    static void findEntriesInClasspath(Set<String> cpSet, String classPath) {
+        if (classPath != null) {
+            String[] filenames = classPath.split(File.pathSeparator);
+
+            for (String filename : filenames) {
+
+                if (!filename.equals("")) {
+                    final File classpathEntry = new File(filename);
+
+                    addTransitiveJars(cpSet, classpathEntry);
+                }
+            }
+        }
+    }
+
+    /**
+     * Add provided File and all of its transitive manifest classpath entries to
+     * the provided set
+     * 
+     * @param cpSet a Set to hold classpath entries
+     * @param classpathFile File to transitively add to set
+     */
+    private static void addTransitiveJars(Set<String> cpSet, final File classpathFile) {
+        cpSet.add(classpathFile.getAbsolutePath());
+
+        if (classpathFile.exists()) {
+
+            try {
+                if (classpathFile.isFile()) {
+                    JarFile jarFile = null;
+                    Manifest mf;
+                    try {
+                        jarFile = new JarFile(classpathFile);
+                        
+                        mf = jarFile.getManifest();
+                    } finally {
+                        if (jarFile != null) {
+                            jarFile.close();
+                        }
+                    }
+
+                    // manifest may contain additional classpath
+                    if (mf != null) {
+                        String additionalClasspath = mf.getMainAttributes().getValue(
+                                Attributes.Name.CLASS_PATH);
+
+                        if (additionalClasspath != null) {
+
+                            for (String classpathEntry : additionalClasspath.split(" ")) {
+
+                                if (!classpathEntry.equals("")) {
+                                    File mfClasspathFile = new File(classpathFile.getParent(),
+                                            classpathEntry.trim());
+
+                                    if (mfClasspathFile.exists() && !cpSet.contains(mfClasspathFile.getAbsolutePath())) {
+                                        addTransitiveJars(cpSet, mfClasspathFile);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+        }
+    }
 
     private void parse(Parser parser, final File f) throws IOException {
         Manifest manifest=null;
