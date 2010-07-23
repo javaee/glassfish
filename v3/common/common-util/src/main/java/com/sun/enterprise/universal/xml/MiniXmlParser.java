@@ -765,7 +765,7 @@ public class MiniXmlParser {
     private String domainName;
     private String logFilename;
     private static final LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
-    private boolean monitoringEnabled;
+    private boolean monitoringEnabled = true; // Issue 12762 Absent <monitoring-service /> element means monitoring-enabled=true by default
     private List<Map<String, String>> vsAttributes = new ArrayList<Map<String, String>>();
     private List<Map<String, String>> listenerAttributes = new ArrayList<Map<String, String>>();
     private boolean sawNetworkConfig;
