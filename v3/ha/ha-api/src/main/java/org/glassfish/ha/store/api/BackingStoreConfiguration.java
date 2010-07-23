@@ -48,6 +48,12 @@ import java.util.logging.Logger;
  */
 public class BackingStoreConfiguration<K extends Serializable, V extends Serializable> {
 
+    public static final String BASE_DIRECTORY_NAME = "base.directory.name";
+
+    public static final String NO_OP_PERSISTENCE_TYPE = "noop";
+
+    public static final String START_GMS = "start.gms";
+
     private String clusterName;
 
     private String instanceName;

@@ -87,13 +87,11 @@
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
         </dependency>
-
-        <!-- Temporary dependency till we fix the OSGi input/output streams -->
-	<!--
         <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>glassfish-naming</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
         </dependency>
-        -->
     </dependencies>
 </project>
