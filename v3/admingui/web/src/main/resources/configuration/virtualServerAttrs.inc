@@ -74,8 +74,8 @@
                 labels="$pageSession{availableNetworkListeners}"
                 selected="#{pageSession.selectedNetworkListeners}" >
                 <!beforeCreate
-                    getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=network-listeners"
-                        type="network-listener" result="#{pageSession.networkListeners}");
+                    gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners/network-listener"
+                          result="#{pageSession.networkListeners}");
                     getListBoxOptions(
                         availableList="#{pageSession.networkListeners}",
                         selectedCommaString="#{pageSession.valueMap['NetworkListeners']}",

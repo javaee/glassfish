@@ -81,6 +81,7 @@ import org.glassfish.admin.amx.monitoring.ServerMon;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
 import org.glassfish.admingui.common.handlers.RestApiHandlers;
+import org.glassfish.admingui.common.util.RestResponse;
 
 
 
@@ -743,13 +744,16 @@ public class WebAppHandlers {
    //change to take into effect.  refer to issue#8671
    @Handler(id = "EnsureDefaultWebModule",
         input = {
-            @HandlerInput(name = "vsObjStr", type = String.class, required = true),
-            @HandlerInput(name = "vsName", type = String.class, required = true)
+            @HandlerInput(name = "endpoint", type = String.class, required = true),
+            @HandlerInput(name = "vsName", type = String.class, required = true),
+            @HandlerInput(name = "instanceList", type=List.class, required=true)
         })
-    public static void EnsureDefaultWebModule(HandlerContext handlerCtx) {
-        String vsObjStr = (String) handlerCtx.getInputValue("vsObjStr");
-        String webModule= (String) V3AMX.getAttribute(vsObjStr, "DefaultWebModule");
-        String vsName = (String) V3AMX.getAttribute(vsObjStr, "Name");
+    public static void EnsureDefaultWebModule(HandlerContext handlerCtx) throws Exception {
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        String vsName = (String) handlerCtx.getInputValue("vsName");
+        List instanceList = (List) handlerCtx.getInputValue("instanceList");
+        Map vsAttrs = RestApiHandlers.getAttributesMap(endpoint+"/" + vsName);
+        String webModule= (String) vsAttrs.get("DefaultWebModule");
         if (GuiUtil.isEmpty(webModule))
             return;
         String appName = webModule;
@@ -757,16 +761,26 @@ public class WebAppHandlers {
         if (index != -1){
             appName=webModule.substring(0, index);
         }
-        ApplicationRef appRef = V3AMX.getInstance().getApplicationRef("server", appName);
-        String vsStr = appRef.getVirtualServers();
-        List vsList = GuiUtil.parseStringList(vsStr, ",");
-        if (vsList.contains(vsName)){
-            return;   //the default web module app is already deployed to this vs, no action needed
+        String serverEndPoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/";
+        for (Object serverName : instanceList) {
+            String apprefEndpoint = serverEndPoint + serverName + "/application-ref/" + appName;
+            Map apprefAttrs = RestApiHandlers.getAttributesMap(apprefEndpoint+"/" + vsName);
+            String vsStr = (String) apprefAttrs.get("VirtualServers");
+            List vsList = GuiUtil.parseStringList(vsStr, ",");
+            if (vsList.contains(vsName)){
+                continue;   //the default web module app is already deployed to this vs, no action needed
+            }
+            //Add to the vs list of this application-ref, then restart the app.
+            vsStr=vsStr+","+vsName;
+            apprefAttrs.put("VirtualServers", vsStr);
+            RestResponse response = RestApiHandlers.sendUpdateRequest(apprefEndpoint, apprefAttrs, null, null, null);
+            if (!response.isSuccess()) {
+                GuiUtil.getLogger().severe("Update virtual server failed.  parent=" + apprefEndpoint + "; attrsMap =" + apprefAttrs);
+                GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
+                return;
+            }
+            DeployUtil.restartApplication(appName, handlerCtx);
         }
-        //Add to the vs list of this application-ref, then restart the app.
-        vsStr=vsStr+","+vsName;
-        appRef.setVirtualServers(vsStr);
-        DeployUtil.restartApplication(appName, handlerCtx);
    }
 
    //getVsForDeployment(result="#{pageSession.vsList}");
@@ -783,24 +797,46 @@ public class WebAppHandlers {
    //We need to go through all the application-ref to see if the VS specified still exist.  If it doesn't, we need to
    //remove that from the vs list.
    @Handler(id = "checkVsOfAppRef")
-    public static void checkVsOfAppRef(HandlerContext handlerCtx) {
-       Map<String, ApplicationRef> appRefMap = V3AMX.getInstance().getServer("server").getApplicationRef();
-       Map<String, VirtualServer> vsMap = V3AMX.getInstance().getConfig("server-config").getHttpService().getVirtualServer();
-       for(ApplicationRef appRef: appRefMap.values()){
-           String vsStr = appRef.getVirtualServers();
-           List<String> vsList = GuiUtil.parseStringList(vsStr, ",");
-           boolean changed = false;
-           String newVS = "";
-           for(String oneVs: vsList ){
-               if (! vsMap.containsKey(oneVs)){
-                   changed = true;
-                   continue;
-               }
-               newVS = newVS+","+oneVs;
+   public static void checkVsOfAppRef(HandlerContext handlerCtx) throws Exception{
+       String configUrl = GuiUtil.getSessionValue("REST_URL") + "/configs/config/";
+       List configs = RestApiHandlers.getChildrenNames(configUrl,"Name");
+       ArrayList vsList = new ArrayList();
+       for (Object cfgName : configs) {
+           String vsUrl = configUrl + cfgName + "/http-service/virtual-server";
+           List vsNames = RestApiHandlers.getChildrenNames(vsUrl,"Name");
+           for (Object str : vsNames) {
+               if (!vsList.contains(str))
+                   vsList.add(str);
            }
-           if (changed){
-               newVS = newVS.substring(1);
-               appRef.setVirtualServers(newVS);
+       }
+       List servers = RestApiHandlers.getChildrenNames(GuiUtil.getSessionValue("REST_URL") + "/servers/server","Name");
+       for (Object svrName : servers) {
+           String serverEndpoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + svrName;
+           List appRefs = RestApiHandlers.getChildrenNames(serverEndpoint + "/application-ref","Name");
+           for (Object appRef : appRefs) {
+               String apprefEndpoint = serverEndpoint + "/application-ref/" + appRef;
+               Map apprefAttrs = RestApiHandlers.getAttributesMap(apprefEndpoint);
+               String vsStr = (String) apprefAttrs.get("VirtualServers");
+               List<String> lvsList = GuiUtil.parseStringList(vsStr, ",");
+               boolean changed = false;
+               String newVS = "";
+               for(String oneVs: lvsList ){
+                   if (! vsList.contains(oneVs)){
+                       changed = true;
+                       continue;
+                   }
+                   newVS = newVS+","+oneVs;
+               }
+               if (changed){
+                   newVS = newVS.substring(1);
+                   apprefAttrs.put("VirtualServers", vsStr);
+                   RestResponse response = RestApiHandlers.sendUpdateRequest(apprefEndpoint, apprefAttrs, null, null, null);
+                   if (!response.isSuccess()) {
+                       GuiUtil.getLogger().severe("Update virtual server failed.  parent=" + apprefEndpoint + "; attrsMap =" + apprefAttrs);
+                       GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
+                       return;
+                   }
+               }
            }
        }
    }

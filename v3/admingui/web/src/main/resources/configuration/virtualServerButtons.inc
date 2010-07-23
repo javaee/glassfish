@@ -51,11 +51,21 @@
                     mapPut(map="#{pageSession.valueMap}" key="SsoEnabled" value="#{requestScope.ssoGroup}");
                     mapPut(map="#{pageSession.valueMap}" key="AccessLoggingEnabled" value="#{requestScope.accessLoggingFlagGp}");
 
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                    gf.createEntity(endpoint="#{pageSession.selfUrl}"
+                        attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                    );
-                    EnsureDefaultWebModule(vsObjStr="#{pageSession.objectNameStr}");
+                        convertToFalse="#{pageSession.convertToFalseList}");
+                    createMap(result="#{pageSession.statusAttrs}");
+                    mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{pageSession.configName}" );
+                    gf.callRestAndExtractMsgProps(
+                        endpoint="#{sessionScope.REST_URL}/list-instances.xml"
+                        attrs="#{pageSession.statusAttrs}"
+                        method="GET"
+                        keyList="#{requestScope.instanceList}" propsMap="#{requestScope.propsMap}");
+                    if(#{pageSession.configName}=server-config){
+                        listAdd(list="#{requestScope.instanceList}" value="server" index="0");
+                    }
+                    EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['Id']}",instanceList="#{requestScope.instanceList}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
@@ -76,12 +86,21 @@
                             skipAttrs="#{pageSession.skipAttrsList}"
                             convertToFalse="#{pageSession.convertToFalseList}"
                             onlyUseAttrs="#{pageSession.onlyUseAttrs}"
-                        );
-                    EnsureDefaultWebModule(vsObjStr="#{requestScope.objStr}");
+                    );
+                    createMap(result="#{pageSession.statusAttrs}");
+                    mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{pageSession.configName}" );
+                    gf.callRestAndExtractMsgProps(
+                        endpoint="#{sessionScope.REST_URL}/list-instances.xml"
+                        attrs="#{pageSession.statusAttrs}"
+                        method="GET"
+                        keyList="#{requestScope.instanceList}" propsMap="#{requestScope.propsMap}");
+                    if(#{pageSession.configName}=server-config){
+                        listAdd(list="#{requestScope.instanceList}" value="server" index="0");
+                    }
+                    EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['Id']}",instanceList="#{requestScope.instanceList}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    setPageSessionAttribute(key="restObjStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/http-service,type=virtual-server" );
-                    setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['Id']}");
+                    setAttribute(key="objStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/http-service,type=virtual-server,name=#{pageSession.valueMap['Id']}");
                     setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                     gf.redirect(page="#{parentPage}?configName=#{configName}")
                 />
