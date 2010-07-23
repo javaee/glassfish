@@ -58,12 +58,14 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 @Service(name="_get-host-and-port")
+@org.glassfish.api.admin.Cluster(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
 public class GetHostAndPortCommand implements AdminCommand {
 

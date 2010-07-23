@@ -241,7 +241,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 }
             }
             
-            if (!target.equals("domain") && enabled) {
+            if (!DeploymentUtils.isDomainTarget(target) && enabled) {
                 // try to disable the enabled version, if exist
                 try {
                     versioningService.handleDisable(name,target, report);
@@ -256,7 +256,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             deployment.validateDeploymentTarget(target, name, isRedeploy);
 
             ActionReport.MessagePart part = report.getTopMessagePart();
-            part.addProperty("name", name);
+            part.addProperty(DeploymentProperties.NAME, name);
 
             ApplicationConfigInfo savedAppConfig = 
                     new ApplicationConfigInfo(apps.getModule(Application.class, name));

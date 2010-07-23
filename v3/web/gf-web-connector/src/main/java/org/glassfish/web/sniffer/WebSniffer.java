@@ -104,6 +104,7 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
         result.add("WEB-INF/web.xml");
         result.add("WEB-INF/sun-web.xml");
         result.add("WEB-INF/glassfish-web.xml");
+        result.add("WEB-INF/weblogic.xml");
         return result;
     }
     

@@ -62,6 +62,7 @@ import org.glassfish.deployapi.ProgressObjectImpl;
 import org.glassfish.deployapi.TargetImpl;
 import org.glassfish.deployapi.TargetModuleIDImpl;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.util.HostAndPort;
 import com.sun.enterprise.deployment.deploy.shared.MemoryMappedArchive;
 
@@ -504,9 +505,9 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                     subIter.hasNext();) {
                     DFDeploymentStatus subStage =
                         (DFDeploymentStatus) subIter.next();
-                    if (subStage.getProperty("moduleInfo") != null) {
+                    if (subStage.getProperty(DeploymentProperties.MODULE_INFO) != null) {
                         subModuleInfoList.add(
-                            subStage.getProperty("moduleInfo"));
+                            subStage.getProperty(DeploymentProperties.MODULE_INFO));
                     }
                 }
             } else {
@@ -552,7 +553,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                 if (subIter.hasNext()) {
                     DFDeploymentStatus subStage =
                         (DFDeploymentStatus) subIter.next();
-                    String result = subStage.getProperty("state");
+                    String result = subStage.getProperty(DeploymentProperties.STATE);
                     if (result.equals("enabled")) {
                         enabledAttr = "true";
                     } else {

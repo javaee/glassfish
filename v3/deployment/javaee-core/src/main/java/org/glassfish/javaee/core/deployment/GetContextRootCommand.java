@@ -36,49 +36,69 @@
 
 package org.glassfish.deployment.admin;
 
-import java.util.List;
-
-import com.sun.enterprise.config.serverbeans.Domain;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.BundleDescriptor;
+import org.glassfish.deployment.common.DeploymentProperties;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
-@Service(name="_get-targets")
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * Get context root command
+ */
+@Service(name="_get-context-root")
 @Cluster(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
-public class GetTargetsCommand implements AdminCommand {
+public class GetContextRootCommand implements AdminCommand {
 
-    @Param(optional=true, primary=true)
-    String appName = null;
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(GetContextRootCommand.class);
 
-    @Inject 
-    Domain domain;
+    @Param
+    private String modulename = null;
 
+    @Param
+    private String appname = null;
+
+    @Inject
+    ApplicationRegistry appRegistry;
+
+    /**
+     * Entry point from the framework into the command execution
+     * @param context context for the command.
+     */
     public void execute(AdminCommandContext context) {
-        
         final ActionReport report = context.getActionReport();
+        final Logger logger = context.getLogger();
 
         ActionReport.MessagePart part = report.getTopMessagePart();
 
-        
-        List<String> targets = null;
-
-        if (appName.equals("*")) {
-            targets = domain.getAllTargets();
-        } else {
-            targets = domain.getAllReferencedTargetsForApplication(appName);
-        }
-
-        for (String target : targets) {
-            ActionReport.MessagePart childPart = part.addChild();
-            childPart.setMessage(target);
+        ApplicationInfo appInfo = appRegistry.get(appname);
+        if (appInfo != null) {
+            Application app = appInfo.getMetaData(Application.class);
+            if (app != null) {
+                BundleDescriptor bundleDesc = app.getModuleByUri(modulename);
+                if (bundleDesc != null &&
+                    bundleDesc instanceof WebBundleDescriptor) {
+                    String contextRoot = ((WebBundleDescriptor)bundleDesc).getContextRoot();
+                    part.addProperty(DeploymentProperties.CONTEXT_ROOT, contextRoot);
+                }
+            }
         }
     }
 }

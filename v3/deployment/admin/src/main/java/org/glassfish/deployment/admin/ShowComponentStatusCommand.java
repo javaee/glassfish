@@ -44,6 +44,8 @@ import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
+import org.glassfish.deployment.common.DeploymentProperties;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.config.serverbeans.Applications;
@@ -120,7 +122,7 @@ public class ShowComponentStatusCommand implements AdminCommand {
             String status = "disabled";
 
             // special target domain
-            if (target.equals("domain")) {
+            if (DeploymentUtils.isDomainTarget(target)) {
                 if (Boolean.valueOf(app.getEnabled())) {
                     status = "enabled";
                 }
@@ -143,7 +145,7 @@ public class ShowComponentStatusCommand implements AdminCommand {
             ActionReport.MessagePart childPart = part.addChild();
             String message = localStrings.getLocalString("component.status","Status of {0} is {1}.", appName, status);
             childPart.setMessage(message);
-            childPart.addProperty("state", status);
+            childPart.addProperty(DeploymentProperties.STATE, status);
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }

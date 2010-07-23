@@ -152,6 +152,7 @@ public class ConnectorSniffer extends GenericSniffer implements Sniffer {
         final List<String> result = new ArrayList<String>();
         result.add("META-INF/ra.xml");
         result.add("META-INF/sun-ra.xml");
+        result.add("META-INF/weblogic-ra.xml");
         return result;
     }
 

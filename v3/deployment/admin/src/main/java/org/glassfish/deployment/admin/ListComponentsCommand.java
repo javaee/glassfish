@@ -47,6 +47,7 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -113,7 +114,7 @@ public class ListComponentsCommand  implements AdminCommand {
 
     private String getVerboseStatus(Application app) {
        String message = "";
-       if (target.equals("domain")) {
+       if (DeploymentUtils.isDomainTarget(target)) {
            // ignore --verbose for target domain 
            return message;
        }

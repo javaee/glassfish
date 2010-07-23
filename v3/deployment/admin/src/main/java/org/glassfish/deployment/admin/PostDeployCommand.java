@@ -50,6 +50,7 @@ import org.glassfish.api.admin.Supplemental;
 import org.glassfish.api.admin.FailurePolicy;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -86,7 +87,7 @@ public class PostDeployCommand extends DeployCommandParameters implements AdminC
         final DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
 
         // if the target is DAS, we do not need to do anything more
-        if (params.target.equals("server")) {
+        if (DeploymentUtils.isDASTarget(params.target)) {
             return;
         }
 
@@ -94,7 +95,7 @@ public class PostDeployCommand extends DeployCommandParameters implements AdminC
             final ParameterMap paramMap = deployment.prepareInstanceDeployParamMap(dc);
 
             List<String> targets = new ArrayList<String>();
-            if (!target.equals("domain")) {
+            if (!DeploymentUtils.isDomainTarget(params.target)) {
                 targets.add(params.target);
             } else {
                 targets = dc.getTransientAppMetaData("previousTargets", List.class);

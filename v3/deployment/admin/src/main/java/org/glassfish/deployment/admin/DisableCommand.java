@@ -62,6 +62,7 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.common.util.admin.ParameterMapExtractor;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -169,7 +170,7 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
             return;
         }
 
-        if (!target.equals("domain")) {
+        if (!DeploymentUtils.isDomainTarget(target)) {
             ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
             if (ref == null) {
                 report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
@@ -185,7 +186,7 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
         }
 
         if (env.isDas()) {
-            if (target.equals("domain")) {
+            if (DeploymentUtils.isDomainTarget(target)) {
                 List<String> targets = domain.getAllReferencedTargetsForApplication(appName);
                 // replicate command to all referenced targets
                 try {

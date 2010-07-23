@@ -174,7 +174,7 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
 
             deployment.validateUndeploymentTarget(target, appName);
 
-            if (!target.equals("domain")) {
+            if (!DeploymentUtils.isDomainTarget(target)) {
                 ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
                 if (ref == null) {
                     report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
@@ -265,7 +265,7 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                     return;
                 }
 
-                if (target.equals("domain")) { 
+                if (DeploymentUtils.isDomainTarget(target)) { 
                     List<String> targets = domain.getAllReferencedTargetsForApplication(name());
                     // replicate command to all referenced targets
                     try {

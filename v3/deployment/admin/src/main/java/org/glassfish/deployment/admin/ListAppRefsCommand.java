@@ -49,6 +49,8 @@ import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.admin.config.ApplicationName;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -56,6 +58,7 @@ import org.jvnet.hk2.component.PerLookup;
 import java.util.List;
 
 @Service(name="_list-app-refs")
+@Cluster(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
 public class ListAppRefsCommand implements AdminCommand {
 
