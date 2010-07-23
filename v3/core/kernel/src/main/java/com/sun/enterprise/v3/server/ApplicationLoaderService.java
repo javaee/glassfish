@@ -83,6 +83,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
@@ -225,7 +227,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                         final File tmpFile = File.createTempFile(sourceFile.getName(),"");
                         final String path = tmpFile.getAbsolutePath();
                         if (!tmpFile.delete()) {
-                            logger.log(Level.SEVERE, "Cannot delete created temporary file " + path);
+                            logger.log(Level.WARNING, "cannot.delete.temp.file", new Object[] {path});
                         }
                         File tmpDir = new File(path);
                         tmpDir.deleteOnExit();
@@ -245,7 +247,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                             handler.expand(sourceArchive, archiveFactory.get().createArchive(tmpDir), dummyContext);
                             sourceArchive = 
                                 archiveFactory.get().openArchive(tmpDir);
-                            logger.info("Source is not a directory, using temporary location " + tmpDir.getAbsolutePath());
+                            logger.log(Level.INFO, "source.not.directory", new Object[] {tmpDir.getAbsolutePath()});
                             parameters.name = appName;
                         }
                     }
@@ -254,14 +256,12 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     ApplicationInfo appInfo = deployment.deploy(depContext);
                     if (appInfo==null) {
 
-                        logger.severe("Cannot find the application type for the artifact at : "
-                                + sourceFile.getAbsolutePath());
-                        logger.severe("Was the container or sniffer removed ?");
+                        logger.log(Level.SEVERE, "cannot.find.applicationinfo", new Object[] {sourceFile.getAbsolutePath()});
                     }
                 } catch(RuntimeException e) {
-                    logger.log(Level.SEVERE, "Exception while deploying", e);
+                    logger.log(Level.SEVERE, "exception.while.deploying", e);
                 } catch(IOException ioe) {
-                    logger.log(Level.SEVERE, "IOException while deploying", ioe);                    
+                    logger.log(Level.SEVERE, "ioexception.while.deploying", ioe);                    
                 } finally {
                     if (sourceArchive!=null) {
                         try {
@@ -316,14 +316,14 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         }
 
         if (snifferTypes.isEmpty()) {
-            logger.severe("Cannot determine application type at " + source);
+            logger.log(Level.SEVERE, "cannot.determine.type", new Object[] {source});
             return;
         }
         URI uri;
         try {
             uri = new URI(source);
         } catch (URISyntaxException e) {
-            logger.severe("Cannot determine original location for application : " + e.getMessage());
+            logger.log(Level.SEVERE, "cannot.determine.location", new Object[] {e.getMessage()});
             return;
         }
         File sourceFile = new File(uri);
@@ -358,11 +358,11 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                             if (sniffer!=null) {
                                 sniffers.add(sniffer);
                             } else {
-                                logger.severe("Cannot find sniffer for module type : " + snifferType);
+                                logger.log(Level.SEVERE, "cannot.find.sniffer", new Object[] {snifferType});
                             }
                         }
                         if (sniffers.isEmpty()) {
-                            logger.severe("Cannot find any sniffer for deployed app " + appName);
+                            logger.log(Level.SEVERE, "cannot.find.sniffer.for.app", new Object[] {appName});
                             return;
                         }
                     } else {
@@ -372,8 +372,8 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     }
                     deployment.deploy(sniffers, depContext);
                     if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
-                        logger.info("Loading " + appName + " Application done is "
-                                + (Calendar.getInstance().getTimeInMillis() - operationStartTime) + " ms");
+                        logger.log(Level.INFO, "loading.application.time", new Object[] {
+                                appName, (Calendar.getInstance().getTimeInMillis() - operationStartTime)});
                     } else {
                         logger.severe(report.getMessage());
                     }
@@ -387,12 +387,12 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     }
                 }
             } catch (IOException e) {
-                logger.log(Level.SEVERE, "IOException while opening deployed artifact", e);
+                logger.log(Level.SEVERE, "exception.open.artifact", e);
 
             }
 
         } else {
-            logger.severe("Application previously deployed is not at its original location any more : " + source);
+            logger.log(Level.SEVERE, "not.found.in.original.location" + new Object[] {source});
         }
     }
 
@@ -407,35 +407,49 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
     public void preDestroy() {
 
 
-        final ActionReport dummy = new HTMLActionReporter();
         // stop all running applications including user and system applications
+        // which are registered in the domain.xml
         List<Application> allApplications = new ArrayList<Application>();
         allApplications.addAll(applications.getApplications());
         allApplications.addAll(systemApplications.getApplications());
-
         for (Application app : allApplications) {
             ApplicationInfo appInfo = deployment.get(app.getName());
-            if (appInfo!=null) {
-                UndeployCommandParameters parameters = new UndeployCommandParameters(appInfo.getName());
-                parameters.origin = UndeployCommandParameters.Origin.unload;
-
-                try {
-                    ExtendedDeploymentContext depContext = deployment.getBuilder(logger, parameters, dummy).source(appInfo.getSource()).build();
-                    try {
-                        appInfo.stop(depContext, depContext.getLogger());
-                    } catch (Throwable t) {
-                        logger.log(Level.WARNING, "Cannot stop application " + app.getName(), t);
-                    }
-                    appInfo.unload(depContext);
-                } catch (IOException e) {
-                    logger.log(Level.SEVERE, "Cannot create unloading context for " + app.getName(), e);
-                }
-                appRegistry.remove(appInfo.getName());
-            }
+            stopApplication(appInfo);
         }
+
+        // now stop the applications which are not registered in the 
+        // domain.xml like timer service application
+        Set<String> allAppNames = new HashSet<String>();
+        allAppNames.addAll(appRegistry.getAllApplicationNames());
+        for (String appName : allAppNames) {
+            ApplicationInfo appInfo = appRegistry.get(appName);
+            stopApplication(appInfo);
+        }
+
         // stop all the containers
         for (EngineInfo engineInfo : containerRegistry.getContainers()) {
             engineInfo.stop(logger);
+        }
+    }
+
+    private void stopApplication(ApplicationInfo appInfo) {
+        final ActionReport dummy = new HTMLActionReporter();
+        if (appInfo!=null) {
+            UndeployCommandParameters parameters = new UndeployCommandParameters(appInfo.getName());
+            parameters.origin = UndeployCommandParameters.Origin.unload;
+
+            try {
+                ExtendedDeploymentContext depContext = deployment.getBuilder(logger, parameters, dummy).source(appInfo.getSource()).build();
+                try {
+                    appInfo.stop(depContext, depContext.getLogger());
+                } catch (Throwable t) {
+                    logger.log(Level.WARNING, "cannot.stop.app", new Object[] {appInfo.getName(), t.getMessage()});
+                }
+                appInfo.unload(depContext);
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "cannot.create.unload.context", new Object[] {appInfo.getName(), e.getMessage()});
+            }
+            appRegistry.remove(appInfo.getName());
         }
     }
 
