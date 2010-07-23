@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.config.util.ServerHelper;
 import com.sun.enterprise.config.util.PortManager;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;

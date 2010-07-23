@@ -33,11 +33,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.config.serverbeans;
+package com.sun.enterprise.config.util;
 
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.net.NetUtils;
 import com.sun.grizzly.config.dom.NetworkListener;
 import java.util.List;
@@ -48,21 +55,20 @@ import org.jvnet.hk2.config.Dom;
 /**
  * The Server.java file is getting pretty bloated.
  * Offload some utilities here.
- * Nothing in here is visible outside this package...
  *
  * @author Byron Nevins
  */
-class ServerHelper {
+public class ServerHelper {
 
-    ServerHelper(Server theServer, Config theConfig) {
+    public ServerHelper(Server theServer, Config theConfig) {
         server = theServer;
         config = theConfig;
 
-        if(server == null || config == null)
+        if (server == null || config == null)
             throw new IllegalArgumentException();
     }
 
-    int getAdminPort() {
+    public final int getAdminPort() {
         try {
             if (server == null)
                 return -1;
@@ -83,7 +89,12 @@ class ServerHelper {
         return -1;
     }
 
-     String getHost() {
+    public final String getHost() {
+
+        if (server.isDas()) {
+            return null;    // IT 12778 -- it is impossible to know
+        }
+
         String hostName = null;
         Dom serverDom = Dom.unwrap(server);
         Nodes nodes = serverDom.getHabitat().getComponent(Nodes.class);
@@ -113,16 +124,16 @@ class ServerHelper {
         }
     }
 
-     // very simple generic check
-     boolean isRunning() {
+    // very simple generic check
+    public final boolean isRunning() {
         try {
             return NetUtils.isRunning(getHost(), getAdminPort());
         }
-        catch(Exception e) {
+        catch (Exception e) {
             // fall through
         }
-         return false;
-     }
+        return false;
+    }
 
     ///////////////////////////////////////////
     ///////////////////  all private below

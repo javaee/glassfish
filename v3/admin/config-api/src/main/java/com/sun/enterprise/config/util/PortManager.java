@@ -40,9 +40,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
-import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.util.net.*;
 import java.beans.PropertyVetoException;
 import java.util.*;
@@ -63,7 +61,16 @@ public final class PortManager {
             newServer = theNewServer;
             domain = theDomain;
             serverName = newServer.getName();
-            host = newServer.getHost();
+            
+            // bnevins 7-23-2010
+            // we are probably being called from inside the create decorator for a server.
+            // the server is not yet committed.  We can't call ducktype methods
+            // on the server yet.  So we do this self-serve call to get the host
+            
+            //host = newServer.getHost();
+
+             host = new ServerHelper(theNewServer, config).getHost();
+
             allPorts = new ArrayList<Integer>();
             newServerPorts = new ServerPorts(cluster, config, domain, newServer);
 
