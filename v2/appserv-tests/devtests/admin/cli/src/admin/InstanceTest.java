@@ -75,7 +75,8 @@ public class InstanceTest extends AdminBaseDevTest {
         glassFishHome = getGlassFishHome();
         domainHome = new File(glassFishHome, "domains/domain1");    // yes it is hard-coded!!
         // it does NOT need to exist -- do not insist!
-        instancesHome = new File(new File(glassFishHome, "nodeagents"), host);
+        nodeDir = new File(glassFishHome, "nodeagents");
+        instancesHome = new File(nodeDir, host);
         printf("GF HOME = " + glassFishHome);
     }
 
@@ -100,6 +101,8 @@ public class InstanceTest extends AdminBaseDevTest {
         createStartStopDelete();
         createAdminCommand();
         deleteAdminCommand();
+        testRendezvous();
+        testUpgrade();
         cleanup();
         stopDomain();
         stat.printSummary();
@@ -323,6 +326,32 @@ public class InstanceTest extends AdminBaseDevTest {
         report("delete-instance-fail", !asadmin("delete-instance", iname));
     }
 
+    private void testRendezvous() {
+        String instance = "rendezvousinstance";
+        report("create-local-instance-rendezvous", asadmin("create-local-instance", instance));
+        AsadminReturn ret = asadminWithOutput("get", "servers.server."+instance+".property.rendezvousOccurred");
+        boolean success = ret.outAndErr.indexOf("servers.server."+instance+".property.rendezvousOccurred=true") >= 0;
+        report("rendezvous-true-rendezvous", success);
+        report("create-local-instance-rendezvousAlready", !asadmin("create-local-instance", instance));
+        report("set-rendezvousOccurred-false", asadmin("set", "servers.server."+instance+".property.rendezvousOccurred=false"));
+        report("create-local-instance-rendezvousAgain", asadmin("create-local-instance", instance));
+        report("delete-local-instance-rendezvous", asadmin("delete-local-instance", instance));
+    }
+
+    private void testUpgrade() { //Issue 12736 support creation of local instance from DAS data - rendezvous flag handling
+        String instance = "upgradeinstance";
+        cleanup(); //remove locahost dir so we can see it gets created here.
+        report("register-instance-upgrade", asadmin("_register-instance",
+            "--node", "localhost", instance));
+        report("upgradeinstance-registered", asadminWithOutput("get", "servers.server."+instance));
+        report("create-local-instance-upgrade", asadmin("create-local-instance", instance));
+        report("das-properties-exists-upgrade", checkDasProperties());
+        AsadminReturn ret = asadminWithOutput("get", "servers.server."+instance+".property.rendezvousOccurred");
+        boolean success = ret.outAndErr.indexOf("servers.server."+instance+".property.rendezvousOccurred=true") >= 0;
+        report("rendezvous-true-upgrade", success);
+        report("delete-local-instance-upgrade", asadmin("delete-local-instance", instance));
+    }
+
     private boolean checkInstanceDir(String name) {
         File inf = new File(instancesHome, name);
         boolean exists = inf.isDirectory();
@@ -371,9 +400,8 @@ public class InstanceTest extends AdminBaseDevTest {
     public void cleanup() {
         //Cleanup the code so that tests run successfully next time
         //Remove nodeagents\localhost directory so subsequent tests don't fail with 'More than one node agent in directory'
-        File nodeagents = new File(getGlassFishHome(), "nodeagents");
-        if (nodeagents.isDirectory()) {
-            File localhost = new File(nodeagents, "localhost");
+        if (nodeDir.isDirectory()) {
+            File localhost = new File(nodeDir, host);
             if (localhost.isDirectory()) {
                 File agent = new File(localhost, "agent");
                 if (agent.isDirectory()) {
@@ -394,6 +422,7 @@ public class InstanceTest extends AdminBaseDevTest {
 
     private final String host;
     private final File glassFishHome;
+    private final File nodeDir;
     private final File instancesHome;
     private final File domainHome;
     private static String[] instanceNames;
