@@ -70,9 +70,13 @@ public class StringListResultJsonProvider extends BaseProvider<StringListResult>
                 for (String message : proxy.getMessages()) {
                     array.put(message);
                 }
+                obj.put(proxy.getName(), array);
             }
 
-            obj.put(KEY_METHODS, getJsonForMethodMetaData(proxy.getMetaData()));
+            JSONArray array = getJsonForMethodMetaData(proxy.getMetaData());
+            if (array.length() > 0) {
+                obj.put(KEY_METHODS, array);
+            }
         } catch (JSONException ex) {
             throw new RuntimeException(ex);
         }

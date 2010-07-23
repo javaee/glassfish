@@ -63,6 +63,8 @@ public class StringListResultXmlProvider extends BaseProvider<StringListResult> 
         String indent = Constants.INDENT;
         result ="<" ;
 
+        // TODO:  We need to rethink this strucure, as it's slightly different
+        // than the JSON version.
         result = result + KEY_ENTITY;
         String attribute;
         if (proxy.isError()) {
@@ -82,11 +84,13 @@ public class StringListResultXmlProvider extends BaseProvider<StringListResult> 
             }
         }
 
-        result = result + "\n\n" + indent;
-        result = result + "<" + KEY_METHODS + ">";
-        result = result + getXmlForMethodMetaData(proxy.getMetaData(),
-            indent + Constants.INDENT);
-        result = result + "\n" + indent + "</" + KEY_METHODS + ">";
+        String methodDataXml = getXmlForMethodMetaData(proxy.getMetaData(), indent + Constants.INDENT);
+        if (!methodDataXml.isEmpty()) {
+            result = result + "\n\n" + indent;
+            result = result + "<" + KEY_METHODS + ">";
+            result = result + methodDataXml;
+            result = result + "\n" + indent + "</" + KEY_METHODS + ">";
+        }
 
         result = result + "\n\n" + "</" + KEY_ENTITY + ">";
         return result;

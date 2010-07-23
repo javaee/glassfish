@@ -49,10 +49,11 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 @Provider
 @Produces(MediaType.TEXT_HTML)
 public class StringListResultHtmlProvider extends BaseProvider<StringListResult> {
+
     public StringListResultHtmlProvider() {
         super(StringListResult.class, MediaType.TEXT_HTML_TYPE);
     }
-    
+
     @Override
     protected String getContent(StringListResult proxy) {
         String result = getHtmlHeader();
@@ -64,17 +65,17 @@ public class StringListResultHtmlProvider extends BaseProvider<StringListResult>
             result = result + "<h2>Error:</h2>";
             result = result + proxy.getErrorMessage() + "<br>";
         } else {
-            result = result + "<h2>" + proxy.getName() + "s</h2>";
-            for (String message: proxy.getMessages()) {
+            result = result + "<h2>" + proxy.getName() + "</h2>";
+            for (String message : proxy.getMessages()) {
                 result = result + message + "<br>";
             }
         }
         result = "<div>" + result + "</div>" + "<br>";
 
         String command = proxy.getPostCommand();
-            if (command != null) {
+        if (command != null) {
             String postCommand = getHtmlRespresentationsForCommand(
-                proxy.getMetaData().getMethodMetaData("POST"), "POST", "Create", uriInfo);
+                    proxy.getMetaData().getMethodMetaData("POST"), "POST", "Create", uriInfo);
             result = getHtmlForComponent(postCommand, "Create " + proxy.getName(), result);
         }
 

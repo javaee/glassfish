@@ -33,14 +33,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.management.JMException;
+import javax.management.MBeanServer;
+import javax.management.remote.JMXServiceURL;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import org.glassfish.admin.rest.logviewer.LogViewerResource;
 import org.glassfish.admin.rest.RestService;
+import org.glassfish.admin.rest.results.OptionsResult;
+import org.glassfish.admin.rest.results.StringListResult;
+import org.glassfish.external.amx.AMXGlassfish;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.Dom;
-
 
 /**
  * This is the root class for the generated DomainResource
@@ -52,7 +63,6 @@ import org.jvnet.hk2.config.Dom;
  * @author ludo
  */
 public class GlassFishDomainResource extends TemplateResource {
-
     @Override
     public Dom getEntity() {
         return RestService.getDomainBean();
@@ -62,5 +72,24 @@ public class GlassFishDomainResource extends TemplateResource {
     public LogViewerResource getViewLogResource() {
         LogViewerResource resource = resourceContext.getResource(LogViewerResource.class);
         return resource;
+    }
+
+    @GET
+    @Path("jmx-urls/")
+    @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+    public StringListResult getJmxServiceUrl() {
+        try {
+            Habitat habitat = RestService.getHabitat();
+            MBeanServer mBeanServer = habitat.getComponent(MBeanServer.class);
+            JMXServiceURL[] urls = (JMXServiceURL[]) mBeanServer.getAttribute(AMXGlassfish.DEFAULT.getBootAMXMBeanObjectName(), "JMXServiceURLs");
+            List<String> jmxUrls = new ArrayList();
+            for (JMXServiceURL url : urls) {
+                jmxUrls.add(url.getURLPath());
+            }
+            return new StringListResult("jmx-service-urls", jmxUrls, "", "", new OptionsResult());
+        } catch (final JMException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
