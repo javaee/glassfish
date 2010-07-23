@@ -66,8 +66,8 @@ public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
         long timestamp = (pwFile != null) ? pwFile.lastModified() : -1;
 
         // run the remote restart-domain command and throw away the output
-        RemoteCommand cmd = new RemoteCommand("restart-instance", programOpts, env);
-        cmd.executeAndReturnOutput("restart-instance");
+        RemoteCommand cmd = new RemoteCommand("_restart-instance", programOpts, env);
+        cmd.executeAndReturnOutput("_restart-instance");
         waitForRestart(pwFile, timestamp, uptimeOldServer);
         return 0;
     }
