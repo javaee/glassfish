@@ -40,6 +40,7 @@ import com.sun.enterprise.config.util.PortManager;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.logging.LogDomains;
 import java.io.*;
 import org.glassfish.api.Param;
@@ -257,6 +258,15 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @DuckTyped
     String getHost();
 
+    @DuckTyped
+    int getAdminPort();
+
+    @DuckTyped
+    Config getConfig();
+
+    @DuckTyped
+    boolean isRunning();
+
     class Duck {
         public static boolean isCluster(Server server) { return false; }
         public static boolean isServer(Server server)  { return true; }
@@ -338,33 +348,58 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             }, server);
         }
 
-        public static String getHost(final Server server) {
-            String hostName = null;
-            Dom serverDom = Dom.unwrap(server);
-            Nodes nodes = serverDom.getHabitat().getComponent(Nodes.class);
-            if (server == null || nodes == null) {
-                return null;
-            }
+        public static Config getConfig(Server server) {
+            try {
+                if (server == null)
+                    return null;
 
-            // Get it from the node associated with the server
-            String nodeName = server.getNode();
-            if (StringUtils.ok(nodeName)) {
-                Node node = nodes.getNode(nodeName);
-                if (node != null) {
-                    hostName = node.getNodeHost();
-                }
-                // XXX Hack to get around the fact that the default localhost
-                // node entry is malformed
-                if (hostName == null && nodeName.equals("localhost")) {
-                    hostName = "localhost";
+                Dom serverDom = Dom.unwrap(server);
+                Configs configs = serverDom.getHabitat().getComponent(Configs.class);
+                String configName = getReference(server);
+                Config theConfig = null;
+
+                for (Config config : configs.getConfig()) {
+                    if (configName.equals(config.getName())) {
+                        return config;
+                    }
                 }
             }
-
-            if (StringUtils.ok(hostName)) {
-                return hostName;
-            } else {
-                return null;
+            catch (Exception e) {
+                // drop through...
             }
+            return null;
+        }
+
+        public static int getAdminPort(Server server) {
+            try {
+                ServerHelper helper = new ServerHelper(server, getConfig(server));
+                return helper.getAdminPort();
+            }
+            catch (Exception e) {
+                // drop through...
+            }
+            return -1;
+        }
+
+        public static String getHost(Server server) {
+            try {
+                ServerHelper helper = new ServerHelper(server, getConfig(server));
+                return helper.getHost();
+            }
+            catch (Exception e) {
+                // drop through...
+            }
+            return null;
+        }
+        public static boolean isRunning(Server server) {
+            try {
+                ServerHelper helper = new ServerHelper(server, getConfig(server));
+                return helper.isRunning();
+            }
+            catch (Exception e) {
+                // drop through...
+            }
+            return false;
         }
     }
 
