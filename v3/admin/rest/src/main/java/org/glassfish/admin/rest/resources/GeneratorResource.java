@@ -103,6 +103,7 @@ public class GeneratorResource {
     };
     private static String MappingConfigBeansToDELETECommands[][] = {
         {"ApplicationRef", "delete-application-ref"},
+        {"JaccProvider", "delete-jacc-provider"},
         {"NetworkListener", "delete-network-listener"},
         {"Property", "GENERIC-DELETE"},
         {"Protocol", "delete-protocol"},
