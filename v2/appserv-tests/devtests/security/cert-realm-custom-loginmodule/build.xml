@@ -90,7 +90,7 @@
 	<antcall target="asadmin-common">
             <param name="admin.command"
                    value="set" />
-            <param name="as.props" value=""/>
+            <param name="as.props" value="${as.props}"/>
             <param name="operand.props"
                    value="configs.config.server-config.security-service.auth-realm.certificate.property.jaas-context=certRealm" />
 	</antcall>
@@ -104,7 +104,7 @@
         <antcall target="asadmin-common">
             <param name="admin.command"
                    value="set" />
-            <param name="as.props" value=""/>
+            <param name="as.props" value="${as.props}"/>
             <param name="operand.props"
                    value="configs.config.server-config.security-service.auth-realm.certificate.property.jaas-context=" />
         </antcall>
