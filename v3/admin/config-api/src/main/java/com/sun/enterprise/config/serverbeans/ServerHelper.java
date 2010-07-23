@@ -38,6 +38,7 @@ package com.sun.enterprise.config.serverbeans;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.net.NetUtils;
 import com.sun.grizzly.config.dom.NetworkListener;
 import java.util.List;
 import org.glassfish.config.support.GlassFishConfigBean;
@@ -112,10 +113,17 @@ class ServerHelper {
         }
     }
 
+     // very simple generic check
      boolean isRunning() {
-
+        try {
+            return NetUtils.isRunning(getHost(), getAdminPort());
+        }
+        catch(Exception e) {
+            // fall through
+        }
          return false;
      }
+
     ///////////////////////////////////////////
     ///////////////////  all private below
     ///////////////////////////////////////////

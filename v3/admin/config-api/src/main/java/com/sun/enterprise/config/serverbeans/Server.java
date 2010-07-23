@@ -391,6 +391,14 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             }
             return null;
         }
+
+        /** this is NOT a reliable test.  It just checks if ANYTHING has setup shop
+         * on the host and port.
+         * I wanted to run RemoteAdminCommand but that is (inexplicably) in
+         * admin/util -- and we would have a circular dependency
+         * @param server
+         * @return
+         */
         public static boolean isRunning(Server server) {
             try {
                 ServerHelper helper = new ServerHelper(server, getConfig(server));
