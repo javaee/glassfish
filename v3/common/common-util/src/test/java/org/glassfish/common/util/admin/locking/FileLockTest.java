@@ -274,13 +274,13 @@ public class FileLockTest {
              Lock fl = managed.accessRead();
              FileReader fr = new FileReader(f);
              char[] chars = new char[1024];
-             fr.read(chars);
+             int length = fr.read(chars);
              fr.close();
 
              fl.unlock();
 
              // Let's read it back
-             System.out.println(chars);
+             System.out.println(new String(chars,0, length));
 
          } catch(Exception e) {
              e.printStackTrace();
@@ -289,7 +289,7 @@ public class FileLockTest {
          }
      }
 
-     //@Test
+     @Test
      public void lockForReadAndWriteTest() throws IOException {
          // on unixes, there is no point on testing locking access through
          // normal java.io APIs since several outputstream can be created and
@@ -302,29 +302,30 @@ public class FileLockTest {
 
              // Now let's try to write the file.
              FileWriter fw = new FileWriter(f);
-             fw.append("lockForReadAndWriteTest reading passed !");
+             fw.append("lockForReadAndWriteTest passed !");
              fw.flush();
              fw.close();
 
              try {
-                 System.out.println("file length" + f.length());
+                 System.out.println("file length " + f.length());
                  FileReader fr = new FileReader(f);
                  char[] chars = new char[1024];
-                 fr.read(chars);
+                 int length=fr.read(chars);
                  fr.close();
-                 System.out.println(chars);
+                 System.out.println(new String(chars, 0, length));
                  
              } catch(IOException unexpected) {
-                 System.out.println("Failed, got an execption reading : " + unexpected.getMessage());
+                 System.out.println("Failed, got an exception reading : " + unexpected.getMessage());
                  throw unexpected;
              }
 
              final ManagedFile managed = new ManagedFile(f, 1000, 1000);
              Lock fl = managed.accessRead();
 
+             FileWriter fwr=null;
              try {
-                FileWriter fwr = new FileWriter(f);
-                fwr.append("lockForReadAndWriteTest reading failed !");
+                fwr = new FileWriter(f);
+                fwr.append("lockForReadAndWriteTest failed !");
                 fwr.close();
              } catch(IOException expected) {
                  System.out.println("Got an expected exception : " + expected.getMessage());
@@ -332,15 +333,23 @@ public class FileLockTest {
 
              fl.unlock();
 
-             System.out.println("file length" + f.length());
+             
+             if (f.length()==0) {
+                 System.out.println("The write lock was an advisory lock, file content was deleted !");
+                 return;
+             }
              FileReader fr = new FileReader(f);
              char[] chars = new char[1024];
-             fr.read(chars);
+             int length=fr.read(chars);
              fr.close();
 
 
              // Let's read it back
-             System.out.println(chars);
+             if (length>0) {
+                System.out.println(new String(chars,0,length));
+             } else {
+                 System.out.println("lockForReadAndWriteTest failed, file content is empty");
+             }
              //Assert.assertTrue(new String(chars).contains("passed"));
 
          } catch(Exception e) {
@@ -350,7 +359,7 @@ public class FileLockTest {
          }
      }
 
-    //@Test
+    @Test
     public void lockAndWriteTest() throws IOException {
         File f = File.createTempFile("common-util-FileLockTest", "tmp");
         try {
@@ -366,10 +375,10 @@ public class FileLockTest {
             // Let's read it back
             FileReader fr = new FileReader(f);
             char[] chars = new char[1024];
-            fr.read(chars);
+            int length = fr.read(chars);
             fr.close();
             f.delete();
-            System.out.println(chars);
+            System.out.println(new String(chars,0,length));
             
         } catch(Exception e) {
             e.printStackTrace();
