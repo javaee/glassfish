@@ -38,13 +38,13 @@ package org.glassfish.cluster.ssh.launcher;
 
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.KnownHosts;
-import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.glassfish.cluster.ssh.util.HostVerifier;
 import org.glassfish.cluster.ssh.util.SSHUtil;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.config.serverbeans.Node;
+import org.glassfish.cluster.ssh.sftp.SFTPClient;
 
 import java.io.OutputStream;
 import java.io.File;
@@ -244,6 +244,12 @@ public class SSHLauncher {
             throw new FileNotFoundException("Could not find " +
                     nodeHome + " on " + host);
         }
+    }
+
+    public SFTPClient getSFTPClient() throws IOException {
+        openConnection();
+        SFTPClient sftpClient = new SFTPClient(connection);
+        return sftpClient;
     }
 
     @Override

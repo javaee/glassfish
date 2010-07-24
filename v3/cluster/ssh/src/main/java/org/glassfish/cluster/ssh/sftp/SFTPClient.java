@@ -159,7 +159,4 @@ public class SFTPClient extends SFTPv3Client {
         atts.permissions = permissions;
         setstat(path, atts);
     }
-
 }
-
-
