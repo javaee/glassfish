@@ -44,6 +44,7 @@ import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.net.*;
 import java.beans.PropertyVetoException;
 import java.util.*;
+import java.util.logging.*;
 import org.jvnet.hk2.config.TransactionFailure;
 
 /**
@@ -53,20 +54,22 @@ import org.jvnet.hk2.config.TransactionFailure;
  */
 public final class PortManager {
 
-    public PortManager(Cluster cluster, Config config, Domain theDomain, Server theNewServer) throws TransactionFailure {
+    public PortManager(Cluster cluster, Config config, Domain theDomain,
+            Server theNewServer, Logger theLogger) throws TransactionFailure {
         try {
             if (theNewServer == null || theDomain == null)
                 throw new TransactionFailure(Strings.get("internal.error", "null argument in PortManager constructor"));
 
+            logger = theLogger;
             newServer = theNewServer;
             domain = theDomain;
             serverName = newServer.getName();
-            
+
             // bnevins 7-23-2010
             // we are probably being called from inside the create decorator for a server.
             // the server is not yet committed.  We can't call ducktype methods
             // on the server yet.  So we do this self-serve call to get the host
-            
+
             //host = newServer.getHost();
 
             host = new ServerHelper(theNewServer, config).getHost();
@@ -120,15 +123,18 @@ public final class PortManager {
             // the ServerPorts class
             Map<String, Integer> reassigned = reassignPorts();
             Set<Map.Entry<String, Integer>> entries = reassigned.entrySet();
-
-
+            StringBuilder logMessage = new StringBuilder();
             List<SystemProperty> sps = newServer.getSystemProperty();
 
+            boolean firstLine = true;
             for (Map.Entry<String, Integer> entry : entries) {
                 String name = entry.getKey();
                 int port = entry.getValue();
                 changeSystemProperty(sps, name, "" + port); // do not want commas in the int!
+                logMessage.append("\n").append(name).append("=").append("" + port);
             }
+
+            logger.info(Strings.get("PortManager.reassign.summary", serverName, logMessage.toString()));
         }
         catch (Exception e) {
             throw new TransactionFailure(e.toString(), e);
@@ -159,7 +165,7 @@ public final class PortManager {
             if (server.isDas())
                 serversOnHost.add(new ServerPorts(domain, server));
             else if (NetUtils.IsThisHostLocal(server.getHost())) {
-                 serversOnHost.add(new ServerPorts(domain, server));
+                serversOnHost.add(new ServerPorts(domain, server));
             }
         }
     }
@@ -263,5 +269,6 @@ public final class PortManager {
     private final List<ServerPorts> serversOnHost;
     private final ServerPorts newServerPorts;
     private final boolean checkLivePorts = true;
+    private final Logger logger;
     private static final int MAX_PORT_TRIES = 1100;
 }

@@ -594,7 +594,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             
             this.addClusterRefs(ourCluster, instance);
 
-            PortManager pm = new PortManager(ourCluster, ourConfig, domain, instance);
+            PortManager pm = new PortManager(ourCluster, ourConfig, domain, instance, logger);
             pm.process(); // might throw
         }
 
