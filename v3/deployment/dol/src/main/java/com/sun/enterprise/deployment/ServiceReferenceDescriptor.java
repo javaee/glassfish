@@ -675,4 +675,16 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
         return false;
     }
 
+    boolean isConflict(ServiceReferenceDescriptor other) {
+        return (!(getName().equals(other.getName()) &&
+                equals(getServiceInterface(), other.getServiceInterface()) &&
+                equals(getWsdlFileUri(), other.getWsdlFileUri()) &&
+                equals(getMappingFileUri(), other.getMappingFileUri()) 
+                //XXX need to compare the following
+                // handler
+                // handle-chains
+                // port-component-info
+                )) ||
+            !isConflictResourceGroup(other);
+    }
 }

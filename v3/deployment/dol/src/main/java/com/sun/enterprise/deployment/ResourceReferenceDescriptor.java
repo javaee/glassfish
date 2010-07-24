@@ -224,16 +224,18 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
      * Return the type of the resource.
      * @return the type of the resource.
      */
+    @Override
     public String getType() {
-	return rType;
+        return rType;
     }
     
     /** 
      * Sets the type of this resource.
      * @param the type of the resource.
      */
+    @Override
     public void setType(String type) {
-	rType = type;
+        rType = type;
     }	
 
     /**
@@ -497,7 +499,7 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
 	    } catch (Throwable t) {
 	        if (this.isBoundsChecking()) {
 		    throw new IllegalArgumentException(localStrings.getLocalString(
-		  "enterprise.deployment.exceptiontypenotallowedpropertytype", 
+                  "enterprise.deployment.exceptiontypenotallowedpropertytype", 
                   "{0} is not an allowed property value type", 
                   new Object[] {rType}));
 		} else {
@@ -507,5 +509,13 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
         }
     }
     // END OF IASRI 4718559, 4729298
-            
+
+    boolean isConflict(ResourceReferenceDescriptor other) {
+        return (!(getName().equals(other.getName()) &&
+                equals(getType(), other.getType()) &&
+                getAuthorization().equals(other.getAuthorization()) &&
+                getSharingScope().equals(other.getSharingScope()))
+                ) ||
+            isConflictResourceGroup(other);
+    }
 }

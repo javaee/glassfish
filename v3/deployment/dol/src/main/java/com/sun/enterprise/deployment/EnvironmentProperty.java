@@ -231,8 +231,8 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
     */
     
     public void setType(String type) {
-	checkType(type);
-	this.type = type;
+        checkType(type);
+        this.type = type;
     }
 
     private String convertPrimitiveTypes(String type) {
@@ -266,9 +266,9 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
     */
     
     public String getType() {
-	if (type == null && this.isBoundsChecking()) {
+        if (type == null && this.isBoundsChecking()) {
             return String.class.getName();
-	} else {
+        } else {
             return type;
         }
     }
@@ -411,6 +411,24 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
             }
         } 
         return null;
+    }
+
+    boolean isConflict(EnvironmentProperty other) {
+        return (!(getName().equals(other.getName()) &&
+                equals(getType(), other.getType()) &&
+                getValue().equals(other.getValue()))
+                ) ||
+            isConflictResourceGroup(other);
+    }
+
+    protected boolean isConflictResourceGroup(EnvironmentProperty other) {
+        return !(getLookupName().equals(other.getLookupName()) &&
+                getMappedName().equals(other.getMappedName()));
+    }
+
+    protected boolean equals(String a, String b) {
+        return ((a == null && b == null) ||
+                (a != null && a.equals(b)));
     }
 
     //

@@ -261,6 +261,7 @@ public class WebBundleDescriptor extends BundleDescriptor
 
         // combine with conflict resolution check
         combineEnvironmentEntries(webBundleDescriptor);
+        combineResourceReferenceDescriptors(webBundleDescriptor);
         combinePostConstructDescriptors(webBundleDescriptor);
         combinePreDestroyDescriptors(webBundleDescriptor);
         combineDataSourceDefinitionDescriptors(webBundleDescriptor);

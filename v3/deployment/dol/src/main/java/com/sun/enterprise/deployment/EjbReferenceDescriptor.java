@@ -429,4 +429,14 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
 	}
 	return false;
     }
+
+    boolean isConflict(EjbReferenceDescriptor other) {
+        return (!(getName().equals(other.getName()) &&
+                equals(getType(), other.getType()) &&
+                equals(getEjbHomeInterface(), other.getEjbHomeInterface()) &&
+                equals(getEjbInterface(), other.getEjbInterface()) &&
+                equals(getLinkName(), other.getLinkName()))
+                ) ||
+            isConflictResourceGroup(other);
+    }
 }
