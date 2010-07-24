@@ -1043,6 +1043,16 @@ public class EJBTimerService
     }
 
     /**
+     * @return Primary key of newly created timer
+     */
+    TimerPrimaryKey createTimer(long containerId, TimerSchedule schedule, 
+                                TimerConfig timerConfig, String server_name) 
+                                throws CreateException {
+
+        return createTimer(containerId, null, null, 0, schedule, timerConfig, server_name);
+    }
+
+    /**
      * @param primaryKey can be null if timed object is not an entity bean.
      * @return Primary key of newly created timer
      */
@@ -1051,7 +1061,7 @@ public class EJBTimerService
                                 throws CreateException {
 
         return createTimer(containerId, timedObjectPrimaryKey, 
-                           null, 0, schedule, timerConfig);
+                           null, 0, schedule, timerConfig, ownerIdOfThisServer_);
     }
 
     /**
@@ -1063,19 +1073,36 @@ public class EJBTimerService
                                 TimerSchedule schedule, TimerConfig timerConfig) 
                                 throws CreateException {
 
+        return createTimer(containerId, timedObjectPrimaryKey, initialExpiration,
+                intervalDuration, schedule, timerConfig, ownerIdOfThisServer_);
+    }
+
+    /**
+     * @param primaryKey can be null if timed object is not an entity bean.
+     * @return Primary key of newly created timer
+     */
+    private TimerPrimaryKey createTimer(long containerId, Object timedObjectPrimaryKey,
+                                Date initialExpiration, long intervalDuration,
+                                TimerSchedule schedule, TimerConfig timerConfig,
+                                String server_name) 
+                                throws CreateException {
+
         BaseContainer container = getContainer(containerId);
-        if( container == null ) {
-            throw new CreateException("invalid container id " + containerId +
+        boolean startTimers = ownerIdOfThisServer_.equals(server_name);
+        if (startTimers) {
+            if( container == null ) {
+                throw new CreateException("invalid container id " + containerId +
                                       " in createTimer request");
-        }
+            }
         
-        Class ejbClass = container.getEJBClass();
-        if( !container.isTimedObject() ) {
-            throw new CreateException
-                ("Attempt to create an EJB Timer from a bean that is " +
-                 "not a Timed Object.  EJB class " + ejbClass + 
-                 " must implement javax.ejb.TimedObject or " +
-                 " annotation a timeout method with @Timeout");
+            Class ejbClass = container.getEJBClass();
+            if( !container.isTimedObject() ) {
+                throw new CreateException
+                        ("Attempt to create an EJB Timer from a bean that is " +
+                         "not a Timed Object.  EJB class " + ejbClass + 
+                         " must implement javax.ejb.TimedObject or " +
+                         " annotation a timeout method with @Timeout");
+            }
         }
 
         TimerPrimaryKey timerId = new TimerPrimaryKey(getNextTimerId());
@@ -1121,12 +1148,14 @@ public class EJBTimerService
             // Add timer entry before calling TimerBean.create, since 
             // create() actions might call back on EJBTimerService and 
             // need access to timer cache.
-            timerCache_.addTimer(timerId, timerState);
+            if (startTimers) {
+                timerCache_.addTimer(timerId, timerState);
+            }
+
             try {
                 if (timerConfig.isPersistent()) {
                     timerLocal_.createTimer(timerId.getTimerId(), containerId, 
-                                       ownerIdOfThisServer_,
-                                       timedObjectPrimaryKey, 
+                                       server_name, timedObjectPrimaryKey, 
                                        initialExpiration, intervalDuration, 
                                        schedule, timerConfig);
                 } else {
@@ -1159,7 +1188,8 @@ public class EJBTimerService
      * Recover pre-existing timers associated with the Container identified 
      * by the containerId, and create automatic timers defined by the @Schedule
      * annotation on the EJB bean.
-     * If there were no timers for this containerId, it is the 1st load and both
+     * 
+     * If it is called from deploy on a non-clustered instance, both
      * persistent and non-persistent timers will be created.
      * Otherwise only non-persistent timers are created by this method.
      *
@@ -1171,6 +1201,29 @@ public class EJBTimerService
             long containerId, Map<Method, 
             List<ScheduledTimerDescriptor>> schedules,
             boolean deploy) {
+
+            return recoverAndCreateSchedules(containerId, schedules, ownerIdOfThisServer_, deploy);
+    }
+
+    /**
+     * Recover pre-existing timers associated with the Container identified 
+     * by the containerId, and create automatic timers defined by the @Schedule
+     * annotation on the EJB bean.
+     * 
+     * If this method is called on a deploy in a clustered deployment, only persistent schedule
+     * based timers will be created. And no timers will be scheduled.
+     * If it is called from deploy on a non-clustered instance, both
+     * persistent and non-persistent timers will be created.
+     * Otherwise only non-persistent timers are created by this method.
+     *
+     * @return a Map of both, restored and created timers, where the key is TimerPrimaryKey 
+     * and the value is the Method to be executed by the container when the timer with
+     * this PK times out.
+     */
+    Map<TimerPrimaryKey, Method> recoverAndCreateSchedules(
+            long containerId, Map<Method, 
+            List<ScheduledTimerDescriptor>> schedules,
+            String server_name, boolean deploy) {
 
         Map<TimerPrimaryKey, Method> result = new HashMap<TimerPrimaryKey, Method>();
 
@@ -1203,11 +1256,13 @@ public class EJBTimerService
                 }
             }
 
+            boolean startTimers = ownerIdOfThisServer_.equals(server_name);
             for (Method m : schedules.keySet()) {
                 for (ScheduledTimerDescriptor sch : schedules.get(m)) {
                     boolean persistent = sch.getPersistent();
-                    if (persistent && !deploy) {
-                        // Do not recreate schedule-based timers on restart
+                    if ((persistent && !deploy) || (!persistent && !startTimers)) {
+                        // Do not recreate schedule-based timers on restart or create
+                        // non-persistent timers on a clustered deploy
                         continue;
                     }
 
@@ -1220,7 +1275,7 @@ public class EJBTimerService
                         tc.setInfo(info);
                     }
                     tc.setPersistent(persistent);
-                    result.put(createTimer(containerId, null, ts, tc), m);
+                    result.put(createTimer(containerId, ts, tc, server_name), m);
                     if( logger.isLoggable(Level.FINE) ) {
                         logger.log(Level.FINE, "@@@ CREATED new schedule: " + 
                                     ts.getScheduleAsString() + " FOR method: " + m);
