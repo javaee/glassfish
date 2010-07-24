@@ -36,6 +36,7 @@
 
 package org.glassfish.deployment.admin;
 
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.File;
 import java.util.logging.Level;
 import org.glassfish.api.ActionReport;
@@ -67,6 +68,9 @@ import org.jvnet.hk2.component.PerLookup;
 @Cluster(value={RuntimeType.INSTANCE})
 public class InstanceValidateRemoteDirDeploymentCommand implements AdminCommand {
 
+    private static final LocalStringsImpl localStrings =
+            new LocalStringsImpl(InstanceValidateRemoteDirDeploymentCommand.class);
+
     @Param(primary=true)
     private File path;
 
@@ -76,13 +80,27 @@ public class InstanceValidateRemoteDirDeploymentCommand implements AdminCommand 
     @Override
     public void execute(AdminCommandContext context) {
         context.getLogger().log(Level.FINE,
-                "Running _instanceValidateRemoteDirDeployment with {0} and checksum {1}",
+                "Running _instanceValidateRemoteDirDeployment with directory {0} and expected checksum {1}",
                 new Object[]{path.getAbsolutePath(), checksum});
-        final long myChecksum = DeploymentUtils.checksum(path);
         final ActionReport report = context.getActionReport();
-        report.setActionExitCode(
-                (Long.parseLong(checksum) == myChecksum
-                  ? ActionReport.ExitCode.SUCCESS
-                  : ActionReport.ExitCode.FAILURE));
+
+        try {
+            final long myChecksum = DeploymentUtils.checksum(path);
+            if (Long.parseLong(checksum) == myChecksum) {
+                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            } else {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.getTopMessagePart().setMessage(
+                        localStrings.get("deploy.remoteDirDeployChecksumMismatch",
+                        checksum, myChecksum));
+            }
+        } catch (IllegalArgumentException ex) {
+            /*
+             * If the path is not a directory then DeploymentUtils.checksum
+             * throws an IllegalArgumentException.
+             */
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.getTopMessagePart().setMessage(ex.getMessage());
+        }
     }
 }

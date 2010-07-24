@@ -102,10 +102,14 @@ public class DeploymentUtils {
      */
     public static long checksum(final File directory) {
         if ( ! directory.isDirectory()) {
-            throw new IllegalArgumentException(directory.getAbsolutePath());
+            final String msg = localStrings.getLocalString(
+                    "enterprise.deployment.remoteDirPathUnusable",
+                    "The directory deployment path {0} is not a directory or is inaccessible",
+                    directory.getAbsolutePath());
+            throw new IllegalArgumentException(msg);
         }
         final List<URI> uris = new ArrayList<URI>();
-        scanDirectory(directory, uris);
+        scanDirectory(directory.toURI(), directory, uris);
         /*
          * Sort the URIs.  File.listFiles does not guarantee any particular
          * ordering of the visited files, and for two checksums to match we
@@ -160,11 +164,12 @@ public class DeploymentUtils {
         return Artifacts.get(app.getDeployProperties(), GENERATED_ARTIFACTS_KEY_PREFIX);
     }
 
-    private static void scanDirectory(final File directory, final List<URI> uris) {
+    private static void scanDirectory(final URI anchorDirURI,
+            final File directory, final List<URI> uris) {
         for (File f : directory.listFiles()) {
-            uris.add(f.toURI());
+            uris.add(anchorDirURI.relativize(f.toURI()));
             if (f.isDirectory()) {
-                scanDirectory(f, uris);
+                scanDirectory(anchorDirURI, f, uris);
             }
         }
     }
