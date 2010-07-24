@@ -45,4 +45,7 @@
 	<sun:imageHyperlink imageURL="/resource/images/instance.gif" url="/common/appServer/serverInstGeneralPe.jsf?instanceName=server"
 	    border="0" immediate="true" alt="$resource{i18n.tree.appServer}"/>
     </facet>
+    <!beforeCreate
+        setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    />
 </sun:treeNode>

@@ -40,5 +40,8 @@
     text="$resource{i18nc.tree.domain}"
     url="/common/appServer/serverInstDomainAttrs.jsf"
     imageURL="/resource/images/domain.gif"
-    expanded="true"
-/>
+    expanded="true">
+    <!beforeCreate
+        setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    />
+</sun:treeNode>
