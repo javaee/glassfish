@@ -46,6 +46,7 @@ import java.beans.PropertyVetoException;
 import java.util.*;
 import java.util.logging.*;
 import org.jvnet.hk2.config.TransactionFailure;
+import static com.sun.enterprise.config.util.PortConstants.PORTSLIST;
 
 /**
  * Hiding place for the remarkably complex logic of assigning ports to instances
@@ -103,11 +104,11 @@ public final class PortManager {
         }
     }
 
-    public void process() throws TransactionFailure {
+    public String process() throws TransactionFailure {
         try {
             // if there are no port system-property's -- no point in going on!
             if (newServerPorts.getMap().isEmpty())
-                return; // all done!
+                return null; // all done!
 
             // make sure user-supplied props are not flaky
             PortUtils.checkInternalConsistency(newServer);
@@ -126,7 +127,6 @@ public final class PortManager {
             StringBuilder logMessage = new StringBuilder();
             List<SystemProperty> sps = newServer.getSystemProperty();
 
-            boolean firstLine = true;
             for (Map.Entry<String, Integer> entry : entries) {
                 String name = entry.getKey();
                 int port = entry.getValue();
@@ -134,7 +134,9 @@ public final class PortManager {
                 logMessage.append("\n").append(name).append("=").append("" + port);
             }
 
-            logger.info(Strings.get("PortManager.reassign.summary", serverName, logMessage.toString()));
+            String msg = Strings.get("PortManager.reassign.summary", serverName, logMessage.toString());
+            logger.info(msg);
+            return msg;
         }
         catch (Exception e) {
             throw new TransactionFailure(e.toString(), e);
@@ -150,6 +152,34 @@ public final class PortManager {
 
         sb.append("All Ports in all other servers on same host: " + allPorts);
         return sb.toString();
+    }
+/*
+     * This method is used at creation time and later on in order to get a message
+     * back to a remote client that just created this server.
+     * If there are any system-property reassignments of ports for the given server
+     * return a String representation.
+     * If not return null.
+     */
+    public static String generateReassignPortMessage(final Server server) {
+        try {
+            StringBuilder logMessage = new StringBuilder();
+            List<SystemProperty> props = server.getSystemProperty();
+
+            for (SystemProperty sp : props) {
+                String name = sp.getName();
+                String value = sp.getValue();
+
+                if (StringUtils.ok(name) && StringUtils.ok(value) && PORTSLIST.contains(name))
+                    logMessage.append("\n").append(name).append("=").append(value);
+            }
+
+            if (logMessage.length() > 0)
+                return Strings.get("PortManager.reassign.summary", server.getName(), logMessage.toString());
+        }
+        catch (Exception e) {
+            // fall through
+        }
+        return null;
     }
 
     private void createServerList() {

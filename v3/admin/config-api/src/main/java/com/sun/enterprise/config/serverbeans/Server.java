@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.config.serverbeans;
 
 import com.sun.enterprise.config.util.ServerHelper;
@@ -87,7 +86,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Param(name = "name", primary = true)
     public void setName(String value) throws PropertyVetoException;
 
-
     /**
      * Gets the value of the configRef property.
      *
@@ -98,7 +96,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")                      
+    @Pattern(regexp = "[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     String getConfigRef();
 
     /**
@@ -132,7 +130,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Param(name = "nodeagent", optional = true)
     void setNodeAgentRef(String value) throws PropertyVetoException;
 
-     /**
+    /**
      * Sets the value of the node property.
      *
      * @param value allowed object is
@@ -141,6 +139,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      */
     @Param(name = "node", optional = true)
     void setNode(String value) throws PropertyVetoException;
+
     /**
      * Gets the value of the node property.
      *
@@ -151,6 +150,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      */
     @Attribute
     String getNode();
+
     /**
      * Gets the value of the lbWeight property.
      *
@@ -268,13 +268,24 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @DuckTyped
     boolean isRunning();
 
+    @DuckTyped
+    String generateReassignPortMessage();
+
     class Duck {
-        public static boolean isCluster(Server server) { return false; }
-        public static boolean isServer(Server server)  { return true; }
+
+        public static boolean isCluster(Server server) {
+            return false;
+        }
+
+        public static boolean isServer(Server server) {
+            return true;
+        }
+
         public static boolean isInstance(Server server) {
             String name = (server == null) ? null : server.getName();
             return name != null && !name.equals("server");
         }
+
         public static boolean isDas(Server server) {
             String name = (server == null) ? null : server.getName();
             return "server".equals(name);
@@ -410,6 +421,10 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             }
             return false;
         }
+
+        public static String generateReassignPortMessage(Server server) {
+            return PortManager.generateReassignPortMessage(server);
+        }
     }
 
     @Service
@@ -418,13 +433,10 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
         @Param(name = "cluster", optional = true)
         String clusterName;
-
-        @Param(name="node",optional=true)
-        String node=null;
-
+        @Param(name = "node", optional = true)
+        String node = null;
         @Inject
         Domain domain;
-
         @Inject
         private ServerEnvironment env;
 
@@ -438,15 +450,16 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             String configRef = instance.getConfigRef();
             Clusters clusters = domain.getClusters();
 
-            if (tx==null) {
+            if (tx == null) {
                 throw new TransactionFailure(localStrings.getLocalString(
                         "noTransaction", "Internal Error - Cannot obtain transaction object"));
             }
 
 
-            if(node==null) {
+            if (node == null) {
                 instance.setNode("localhost");  //remove?
-            } else {
+            }
+            else {
                 if (domain.getNodeNamed(node) == null) {
                     throw new TransactionFailure(localStrings.getLocalString(
                             "noSuchNode", "Node {0} does not exist.", node));
@@ -492,7 +505,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     File configConfigDir = new File(env.getConfigDirPath(), cluster.getConfigRef());
                     new File(configConfigDir, "docroot").mkdirs();
                     new File(configConfigDir, "lib/ext").mkdirs();
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     // no big deal - just ignore
                 }
 
@@ -518,7 +532,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     File configConfigDir = new File(env.getConfigDirPath(), specifiedConfig.getName());
                     new File(configConfigDir, "docroot").mkdirs();
                     new File(configConfigDir, "lib/ext").mkdirs();
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     // no big deal - just ignore
                 }
             }
@@ -543,7 +558,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 final Config configCopy;
                 try {
                     configCopy = (Config) defaultConfig.deepCopy(writableConfigs);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     logger.log(Level.SEVERE, localStrings.getLocalString(Server.class,
                             "Cluster.error_while_copying",
                             "Error while copying the default configuration {0}",
@@ -558,7 +574,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     File configConfigDir = new File(env.getConfigDirPath(), configName);
                     new File(configConfigDir, "docroot").mkdirs();
                     new File(configConfigDir, "lib/ext").mkdirs();
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     // no big deal - just ignore
                 }
 
@@ -591,11 +608,15 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     instance.getApplicationRef().add(newAppRef);
                 }
             }
-            
-            this.addClusterRefs(ourCluster, instance);
 
+            this.addClusterRefs(ourCluster, instance);
             PortManager pm = new PortManager(ourCluster, ourConfig, domain, instance, logger);
-            pm.process(); // might throw
+            String message = pm.process(); // might throw
+
+            if(message != null) {
+                ActionReport report = context.getActionReport();
+                report.setMessage(message);
+            }
         }
 
         private void addClusterRefs(Cluster cluster, Server instance) throws TransactionFailure, PropertyVetoException {
@@ -624,9 +645,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     class DeleteDecorator implements DeletionDecorator<Servers, Server> {
 
         // for backward compatibility, ignored.
-        @Param(name="nodeagent", optional=true)
+        @Param(name = "nodeagent", optional = true)
         String nodeagent;
-        
         @Inject
         Configs configs;
         @Inject
@@ -657,7 +677,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                         File configConfigDir = new File(env.getConfigDirPath(), config.getName());
                         FileUtils.whack(configConfigDir);
                     }
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     // no big deal - just ignore
                 }
                 try {
@@ -666,7 +687,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                         List<Config> configList = c.getConfig();
                         configList.remove(config);
                     }
-                } catch (TransactionFailure ex) {
+                }
+                catch (TransactionFailure ex) {
                     logger.log(Level.SEVERE,
                             localStrings.getLocalString("deleteConfigFailed",
                             "Unable to remove config {0}", instanceConfig), ex);
@@ -678,7 +700,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     report.setFailureCause(ex);
                     throw ex;
                 }
-            } else { // remove server-ref from cluster
+            }
+            else { // remove server-ref from cluster
                 final String instanceName = child.getName();
                 if (t != null) {
                     try {
@@ -696,7 +719,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                         if (serverRef != null) {
                             serverRefList.remove(serverRef);
                         }
-                    } catch (TransactionFailure ex) {
+                    }
+                    catch (TransactionFailure ex) {
                         logger.log(Level.SEVERE,
                                 localStrings.getLocalString("deleteServerRefFailed",
                                 "Unable to remove server-ref {0} from cluster {1}", instanceName, cluster.getName()), ex);
