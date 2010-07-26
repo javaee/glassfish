@@ -86,13 +86,14 @@ public class InstanceValidateRemoteDirDeploymentCommand implements AdminCommand 
 
         try {
             final long myChecksum = DeploymentUtils.checksum(path);
-            if (Long.parseLong(checksum) == myChecksum) {
+            final long dasChecksum = Long.parseLong(checksum);
+            if (dasChecksum == myChecksum) {
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             } else {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.getTopMessagePart().setMessage(
                         localStrings.get("deploy.remoteDirDeployChecksumMismatch",
-                        checksum, myChecksum));
+                        path.getAbsolutePath()));
             }
         } catch (IllegalArgumentException ex) {
             /*
