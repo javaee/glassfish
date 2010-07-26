@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class SessionManagerResource extends TemplateResource {
+public class SessionManagerResource extends TemplateResource  {
 
 	@Path("manager-properties/")
 	public ManagerPropertiesResource getManagerPropertiesResource() {

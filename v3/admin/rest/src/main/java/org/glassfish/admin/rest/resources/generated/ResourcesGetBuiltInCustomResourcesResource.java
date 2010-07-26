@@ -34,13 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.*;
+public class ResourcesGetBuiltInCustomResourcesResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource  {
 
-//generated code...;
-
-public class ResourcesGetBuiltInCustomResourcesResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource {
    public ResourcesGetBuiltInCustomResourcesResource() {
        super(
-          "ResourcesGetBuiltInCustomResources",
+          "ResourcesGetBuiltInCustomResourcesResource",
           "_get-built-in-custom-resources",
           "GET",
           (java.util.HashMap<String, String>) null ,

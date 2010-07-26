@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ApplicationResource extends TemplateResource {
+public class ApplicationResource extends TemplateResource  {
 
 @Path("disable/")
 public ApplicationDisableResource getApplicationDisableResource() {
@@ -58,29 +59,29 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"disable", "POST", "disable"}, {"enable", "POST", "enable"}, {"show-component-status", "GET", "show-component-status"}};
+return new String[][] {{"disable", "POST", "disable"} , {"enable", "POST", "enable"} , {"show-component-status", "GET", "show-component-status"} };
 }
 
 	@Path("module/")
-	public ListModuleResource getModuleResource() {
+	public ListModuleResource getListModuleResource() {
 		ListModuleResource resource = resourceContext.getResource(ListModuleResource.class);
 		resource.setParentAndTagName(getEntity() , "module");
 		return resource;
 	}
 	@Path("web-service-endpoint/")
-	public ListWebServiceEndpointResource getWebServiceEndpointResource() {
+	public ListWebServiceEndpointResource getListWebServiceEndpointResource() {
 		ListWebServiceEndpointResource resource = resourceContext.getResource(ListWebServiceEndpointResource.class);
 		resource.setParentAndTagName(getEntity() , "web-service-endpoint");
 		return resource;
 	}
 	@Path("engine/")
-	public ListEngineResource getEngineResource() {
+	public ListEngineResource getListEngineResource() {
 		ListEngineResource resource = resourceContext.getResource(ListEngineResource.class);
 		resource.setParentAndTagName(getEntity() , "engine");
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

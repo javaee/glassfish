@@ -35,9 +35,10 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
 @Path("/domain/")
-public class DomainResource extends org.glassfish.admin.rest.resources.GlassFishDomainResource {
+public class DomainResource extends org.glassfish.admin.rest.resources.GlassFishDomainResource  {
 
 @Path("create-instance/")
 public DomainCreateInstanceResource getDomainCreateInstanceResource() {
@@ -107,7 +108,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-instance", "POST", "create-instance"}, {"host-port", "GET", "_get-host-and-port"}, {"list-logger-levels", "GET", "list-logger-levels"}, {"list-instances", "GET", "list-instances"}, {"restart", "POST", "restart-domain"}, {"rotate-log", "POST", "rotate-log"}, {"set-log-level", "POST", "set-log-level"}, {"stop", "POST", "stop-domain"}, {"uptime", "GET", "uptime"}, {"version", "GET", "version"}, {"location", "GET", "__locations"}};
+return new String[][] {{"create-instance", "POST", "create-instance"} , {"host-port", "GET", "_get-host-and-port"} , {"list-logger-levels", "GET", "list-logger-levels"} , {"list-instances", "GET", "list-instances"} , {"restart", "POST", "restart-domain"} , {"rotate-log", "POST", "rotate-log"} , {"set-log-level", "POST", "set-log-level"} , {"stop", "POST", "stop-domain"} , {"uptime", "GET", "uptime"} , {"version", "GET", "version"} , {"location", "GET", "__locations"} };
 }
 
 	@Path("resources/")
@@ -129,7 +130,7 @@ return new String[][]{{"create-instance", "POST", "create-instance"}, {"host-por
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
@@ -177,7 +178,7 @@ return new String[][]{{"create-instance", "POST", "create-instance"}, {"host-por
 		return resource;
 	}
 	@Path("system-property/")
-	public ListSystemPropertyResource getSystemPropertyResource() {
+	public ListSystemPropertyResource getListSystemPropertyResource() {
 		ListSystemPropertyResource resource = resourceContext.getResource(ListSystemPropertyResource.class);
 		resource.setParentAndTagName(getEntity() , "system-property");
 		return resource;

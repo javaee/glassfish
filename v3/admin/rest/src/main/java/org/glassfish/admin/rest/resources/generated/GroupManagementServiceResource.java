@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class GroupManagementServiceResource extends TemplateResource {
+public class GroupManagementServiceResource extends TemplateResource  {
 
 	@Path("failure-detection/")
 	public FailureDetectionResource getFailureDetectionResource() {
@@ -45,7 +46,7 @@ public class GroupManagementServiceResource extends TemplateResource {
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

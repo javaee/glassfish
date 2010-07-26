@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ClusterResource extends TemplateResource {
+public class ClusterResource extends TemplateResource  {
 
 @Path("delete-cluster/")
 public ClusterDeleteClusterResource getClusterDeleteClusterResource() {
@@ -58,35 +59,35 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"delete-cluster", "POST", "delete-cluster"}, {"start-cluster", "POST", "start-cluster"}, {"stop-cluster", "POST", "stop-cluster"}};
+return new String[][] {{"delete-cluster", "POST", "delete-cluster"} , {"start-cluster", "POST", "start-cluster"} , {"stop-cluster", "POST", "stop-cluster"} };
 }
 
 	@Path("application-ref/")
-	public ListApplicationRefResource getApplicationRefResource() {
+	public ListApplicationRefResource getListApplicationRefResource() {
 		ListApplicationRefResource resource = resourceContext.getResource(ListApplicationRefResource.class);
 		resource.setParentAndTagName(getEntity() , "application-ref");
 		return resource;
 	}
 	@Path("server-ref/")
-	public ListServerRefResource getServerRefResource() {
+	public ListServerRefResource getListServerRefResource() {
 		ListServerRefResource resource = resourceContext.getResource(ListServerRefResource.class);
 		resource.setParentAndTagName(getEntity() , "server-ref");
 		return resource;
 	}
 	@Path("resource-ref/")
-	public ListResourceRefResource getResourceRefResource() {
+	public ListResourceRefResource getListResourceRefResource() {
 		ListResourceRefResource resource = resourceContext.getResource(ListResourceRefResource.class);
 		resource.setParentAndTagName(getEntity() , "resource-ref");
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
 	}
 	@Path("system-property/")
-	public ListSystemPropertyResource getSystemPropertyResource() {
+	public ListSystemPropertyResource getListSystemPropertyResource() {
 		ListSystemPropertyResource resource = resourceContext.getResource(ListSystemPropertyResource.class);
 		resource.setParentAndTagName(getEntity() , "system-property");
 		return resource;

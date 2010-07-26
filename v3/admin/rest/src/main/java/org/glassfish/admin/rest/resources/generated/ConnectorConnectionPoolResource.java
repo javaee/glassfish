@@ -35,17 +35,18 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ConnectorConnectionPoolResource extends TemplateResource {
+public class ConnectorConnectionPoolResource extends TemplateResource  {
 
 	@Path("security-map/")
-	public ListSecurityMapResource getSecurityMapResource() {
+	public ListSecurityMapResource getListSecurityMapResource() {
 		ListSecurityMapResource resource = resourceContext.getResource(ListSecurityMapResource.class);
 		resource.setParentAndTagName(getEntity() , "security-map");
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

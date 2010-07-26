@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class NodesResource extends TemplateResource {
+public class NodesResource extends TemplateResource  {
 
 @Path("create-node/")
 public NodesCreateNodeResource getNodesCreateNodeResource() {
@@ -46,11 +47,11 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-node", "POST", "create-node-ssh"}};
+return new String[][] {{"create-node", "POST", "create-node-ssh"} };
 }
 
 	@Path("node/")
-	public ListNodeResource getNodeResource() {
+	public ListNodeResource getListNodeResource() {
 		ListNodeResource resource = resourceContext.getResource(ListNodeResource.class);
 		resource.setParentAndTagName(getEntity() , "node");
 		return resource;

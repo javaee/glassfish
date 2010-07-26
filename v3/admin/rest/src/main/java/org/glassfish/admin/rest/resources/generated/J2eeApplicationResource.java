@@ -35,17 +35,18 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class J2eeApplicationResource extends TemplateResource {
+public class J2eeApplicationResource extends TemplateResource  {
 
 	@Path("web-service-endpoint/")
-	public ListWebServiceEndpointResource getWebServiceEndpointResource() {
+	public ListWebServiceEndpointResource getListWebServiceEndpointResource() {
 		ListWebServiceEndpointResource resource = resourceContext.getResource(ListWebServiceEndpointResource.class);
 		resource.setParentAndTagName(getEntity() , "web-service-endpoint");
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

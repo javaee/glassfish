@@ -35,35 +35,36 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class SecurityServiceResource extends TemplateResource {
+public class SecurityServiceResource extends TemplateResource  {
 
 	@Path("auth-realm/")
-	public ListAuthRealmResource getAuthRealmResource() {
+	public ListAuthRealmResource getListAuthRealmResource() {
 		ListAuthRealmResource resource = resourceContext.getResource(ListAuthRealmResource.class);
 		resource.setParentAndTagName(getEntity() , "auth-realm");
 		return resource;
 	}
 	@Path("audit-module/")
-	public ListAuditModuleResource getAuditModuleResource() {
+	public ListAuditModuleResource getListAuditModuleResource() {
 		ListAuditModuleResource resource = resourceContext.getResource(ListAuditModuleResource.class);
 		resource.setParentAndTagName(getEntity() , "audit-module");
 		return resource;
 	}
 	@Path("message-security-config/")
-	public ListMessageSecurityConfigResource getMessageSecurityConfigResource() {
+	public ListMessageSecurityConfigResource getListMessageSecurityConfigResource() {
 		ListMessageSecurityConfigResource resource = resourceContext.getResource(ListMessageSecurityConfigResource.class);
 		resource.setParentAndTagName(getEntity() , "message-security-config");
 		return resource;
 	}
 	@Path("jacc-provider/")
-	public ListJaccProviderResource getJaccProviderResource() {
+	public ListJaccProviderResource getListJaccProviderResource() {
 		ListJaccProviderResource resource = resourceContext.getResource(ListJaccProviderResource.class);
 		resource.setParentAndTagName(getEntity() , "jacc-provider");
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

@@ -35,11 +35,12 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class NodeAgentsResource extends TemplateResource {
+public class NodeAgentsResource extends TemplateResource  {
 
 	@Path("node-agent/")
-	public ListNodeAgentResource getNodeAgentResource() {
+	public ListNodeAgentResource getListNodeAgentResource() {
 		ListNodeAgentResource resource = resourceContext.getResource(ListNodeAgentResource.class);
 		resource.setParentAndTagName(getEntity() , "node-agent");
 		return resource;

@@ -35,11 +35,12 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ServersResource extends TemplateResource {
+public class ServersResource extends TemplateResource  {
 
 	@Path("server/")
-	public ListServerResource getServerResource() {
+	public ListServerResource getListServerResource() {
 		ListServerResource resource = resourceContext.getResource(ListServerResource.class);
 		resource.setParentAndTagName(getEntity() , "server");
 		return resource;

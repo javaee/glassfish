@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ConfigsResource extends TemplateResource {
+public class ConfigsResource extends TemplateResource  {
 
 @Path("copy-config/")
 public ConfigsCopyConfigResource getConfigsCopyConfigResource() {
@@ -46,11 +47,11 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"copy-config", "POST", "copy-config"}};
+return new String[][] {{"copy-config", "POST", "copy-config"} };
 }
 
 	@Path("config/")
-	public ListConfigResource getConfigResource() {
+	public ListConfigResource getListConfigResource() {
 		ListConfigResource resource = resourceContext.getResource(ListConfigResource.class);
 		resource.setParentAndTagName(getEntity() , "config");
 		return resource;

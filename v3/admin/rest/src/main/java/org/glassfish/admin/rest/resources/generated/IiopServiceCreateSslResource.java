@@ -34,13 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.*;
+public class IiopServiceCreateSslResource extends org.glassfish.admin.rest.resources.TemplateCommandPostResource  {
 
-//generated code...;
-
-public class IiopServiceCreateSslResource extends org.glassfish.admin.rest.resources.TemplateCommandPostResource {
    public IiopServiceCreateSslResource() {
        super(
-          "IiopServiceCreateSsl",
+          "IiopServiceCreateSslResource",
           "create-ssl",
           "POST",
           "Create",

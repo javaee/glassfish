@@ -34,13 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.*;
+public class AuthRealmListUsersResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource  {
 
-//generated code...;
-
-public class AuthRealmListUsersResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource {
    public AuthRealmListUsersResource() {
        super(
-          "AuthRealmListUsers",
+          "AuthRealmListUsersResource",
           "list-file-users",
           "GET",
           new java.util.HashMap<String, String>() {{

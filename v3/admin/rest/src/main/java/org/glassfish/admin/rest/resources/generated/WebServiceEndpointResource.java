@@ -35,17 +35,18 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class WebServiceEndpointResource extends TemplateResource {
+public class WebServiceEndpointResource extends TemplateResource  {
 
 	@Path("registry-location/")
-	public ListRegistryLocationResource getRegistryLocationResource() {
+	public ListRegistryLocationResource getListRegistryLocationResource() {
 		ListRegistryLocationResource resource = resourceContext.getResource(ListRegistryLocationResource.class);
 		resource.setParentAndTagName(getEntity() , "registry-location");
 		return resource;
 	}
 	@Path("transformation-rule/")
-	public ListTransformationRuleResource getTransformationRuleResource() {
+	public ListTransformationRuleResource getListTransformationRuleResource() {
 		ListTransformationRuleResource resource = resourceContext.getResource(ListTransformationRuleResource.class);
 		resource.setParentAndTagName(getEntity() , "transformation-rule");
 		return resource;

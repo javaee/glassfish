@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class IiopServiceResource extends TemplateResource {
+public class IiopServiceResource extends TemplateResource  {
 
 @Path("create-ssl/")
 public IiopServiceCreateSslResource getIiopServiceCreateSslResource() {
@@ -52,7 +53,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-ssl", "POST", "create-ssl"}, {"delete-ssl", "DELETE", "delete-ssl"}};
+return new String[][] {{"create-ssl", "POST", "create-ssl"} , {"delete-ssl", "DELETE", "delete-ssl"} };
 }
 
 	@Path("orb/")
@@ -62,7 +63,7 @@ return new String[][]{{"create-ssl", "POST", "create-ssl"}, {"delete-ssl", "DELE
 		return resource;
 	}
 	@Path("iiop-listener/")
-	public ListIiopListenerResource getIiopListenerResource() {
+	public ListIiopListenerResource getListIiopListenerResource() {
 		ListIiopListenerResource resource = resourceContext.getResource(ListIiopListenerResource.class);
 		resource.setParentAndTagName(getEntity() , "iiop-listener");
 		return resource;

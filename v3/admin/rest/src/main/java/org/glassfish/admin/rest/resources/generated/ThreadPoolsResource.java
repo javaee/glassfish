@@ -35,11 +35,12 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ThreadPoolsResource extends TemplateResource {
+public class ThreadPoolsResource extends TemplateResource  {
 
 	@Path("thread-pool/")
-	public ListThreadPoolResource getThreadPoolResource() {
+	public ListThreadPoolResource getListThreadPoolResource() {
 		ListThreadPoolResource resource = resourceContext.getResource(ListThreadPoolResource.class);
 		resource.setParentAndTagName(getEntity() , "thread-pool");
 		return resource;

@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ConnectionPoolResource extends TemplateResource {
+public class ConnectionPoolResource extends TemplateResource  {
 
 @Path("ping/")
 public ConnectionPoolPingResource getConnectionPoolPingResource() {
@@ -46,7 +47,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"ping", "GET", "ping-connection-pool"}};
+return new String[][] {{"ping", "GET", "ping-connection-pool"} };
 }
 
 }

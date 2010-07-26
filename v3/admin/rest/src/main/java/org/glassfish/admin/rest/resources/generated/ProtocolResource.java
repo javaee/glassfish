@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ProtocolResource extends TemplateResource {
+public class ProtocolResource extends TemplateResource  {
 
 @Path("create-http/")
 public ProtocolCreateHttpResource getProtocolCreateHttpResource() {
@@ -52,7 +53,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-http", "POST", "create-http"}, {"delete-http", "DELETE", "delete-http"}};
+return new String[][] {{"create-http", "POST", "create-http"} , {"delete-http", "DELETE", "delete-http"} };
 }
 
 @Override
@@ -78,7 +79,7 @@ public String getDeleteCommand() {
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

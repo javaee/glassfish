@@ -35,11 +35,12 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ManagementRulesResource extends TemplateResource {
+public class ManagementRulesResource extends TemplateResource  {
 
 	@Path("management-rule/")
-	public ListManagementRuleResource getManagementRuleResource() {
+	public ListManagementRuleResource getListManagementRuleResource() {
 		ListManagementRuleResource resource = resourceContext.getResource(ListManagementRuleResource.class);
 		resource.setParentAndTagName(getEntity() , "management-rule");
 		return resource;

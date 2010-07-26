@@ -35,7 +35,8 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class BackendPrincipalResource extends TemplateResource {
+public class BackendPrincipalResource extends TemplateResource  {
 
 }

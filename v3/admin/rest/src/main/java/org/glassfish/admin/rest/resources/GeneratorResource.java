@@ -53,6 +53,8 @@ import javax.ws.rs.Path;
 import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.RestService;
 
+import org.glassfish.admin.rest.generator.ResourcesGenerator;
+import org.glassfish.admin.rest.generator.TextResourcesGenerator;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DomDocument;
@@ -233,6 +235,12 @@ public class GeneratorResource {
         //+ Domain domain = Domain.class.cast(RestService.getHabitat().getComponent(Domain.class.getName(), ""));
         try {
             generateSingle(rootModel);
+
+            // New generator. Generates resources under System.getProperty("user.home")/src/glassfish/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources/generated.new
+            ResourcesGenerator resourcesGenerator = new TextResourcesGenerator();
+            resourcesGenerator.generateSingle(rootModel, document);
+            resourcesGenerator.endGeneration();
+
         } catch (Exception ex) {
             Logger.getLogger(GeneratorResource.class.getName()).log(Level.SEVERE, null, ex);
         }

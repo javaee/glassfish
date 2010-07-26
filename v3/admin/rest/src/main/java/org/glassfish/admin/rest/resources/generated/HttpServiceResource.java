@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class HttpServiceResource extends TemplateResource {
+public class HttpServiceResource extends TemplateResource  {
 
 	@Path("http-protocol/")
 	public HttpProtocolResource getHttpProtocolResource() {
@@ -57,7 +58,7 @@ public class HttpServiceResource extends TemplateResource {
 		return resource;
 	}
 	@Path("http-listener/")
-	public ListHttpListenerResource getHttpListenerResource() {
+	public ListHttpListenerResource getListHttpListenerResource() {
 		ListHttpListenerResource resource = resourceContext.getResource(ListHttpListenerResource.class);
 		resource.setParentAndTagName(getEntity() , "http-listener");
 		return resource;
@@ -69,7 +70,7 @@ public class HttpServiceResource extends TemplateResource {
 		return resource;
 	}
 	@Path("virtual-server/")
-	public ListVirtualServerResource getVirtualServerResource() {
+	public ListVirtualServerResource getListVirtualServerResource() {
 		ListVirtualServerResource resource = resourceContext.getResource(ListVirtualServerResource.class);
 		resource.setParentAndTagName(getEntity() , "virtual-server");
 		return resource;
@@ -81,7 +82,7 @@ public class HttpServiceResource extends TemplateResource {
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

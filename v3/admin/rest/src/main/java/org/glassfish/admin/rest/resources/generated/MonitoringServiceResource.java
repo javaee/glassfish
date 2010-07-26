@@ -35,11 +35,12 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class MonitoringServiceResource extends TemplateResource {
+public class MonitoringServiceResource extends TemplateResource  {
 
 	@Path("container-monitoring/")
-	public ListContainerMonitoringResource getContainerMonitoringResource() {
+	public ListContainerMonitoringResource getListContainerMonitoringResource() {
 		ListContainerMonitoringResource resource = resourceContext.getResource(ListContainerMonitoringResource.class);
 		resource.setParentAndTagName(getEntity() , "container-monitoring");
 		return resource;
@@ -51,7 +52,7 @@ public class MonitoringServiceResource extends TemplateResource {
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

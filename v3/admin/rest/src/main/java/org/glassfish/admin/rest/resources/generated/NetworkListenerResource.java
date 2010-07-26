@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class NetworkListenerResource extends TemplateResource {
+public class NetworkListenerResource extends TemplateResource  {
 
 @Path("create-ssl/")
 public NetworkListenerCreateSslResource getNetworkListenerCreateSslResource() {
@@ -52,7 +53,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-ssl", "POST", "create-ssl"}, {"delete-ssl", "DELETE", "delete-ssl"}};
+return new String[][] {{"create-ssl", "POST", "create-ssl"} , {"delete-ssl", "DELETE", "delete-ssl"} };
 }
 
 @Override
@@ -60,7 +61,7 @@ public String getDeleteCommand() {
 	return "delete-network-listener";
 }
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

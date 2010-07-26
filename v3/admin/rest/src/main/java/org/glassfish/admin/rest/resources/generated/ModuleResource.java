@@ -35,17 +35,18 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ModuleResource extends TemplateResource {
+public class ModuleResource extends TemplateResource  {
 
-@Path("engine/")
-public ListEngineResource getEngineResource() {
-	ListEngineResource resource = resourceContext.getResource(ListEngineResource.class);
-	resource.setParentAndTagName(getEntity() , "engine");
-	return resource;
-}
+	@Path("engine/")
+	public ListEngineResource getListEngineResource() {
+		ListEngineResource resource = resourceContext.getResource(ListEngineResource.class);
+		resource.setParentAndTagName(getEntity() , "engine");
+		return resource;
+	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

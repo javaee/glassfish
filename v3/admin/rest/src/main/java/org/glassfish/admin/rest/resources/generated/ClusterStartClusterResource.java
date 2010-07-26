@@ -34,13 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.*;
+public class ClusterStartClusterResource extends org.glassfish.admin.rest.resources.TemplateCommandPostResource  {
 
-//generated code...;
-
-public class ClusterStartClusterResource extends org.glassfish.admin.rest.resources.TemplateCommandPostResource {
    public ClusterStartClusterResource() {
        super(
-          "ClusterStartCluster",
+          "ClusterStartClusterResource",
           "start-cluster",
           "POST",
           "Start Cluster",

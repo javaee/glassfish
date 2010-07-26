@@ -65,8 +65,8 @@ import org.glassfish.api.admin.ParameterMap;
  */
 public class TemplateCommandPostResource extends TemplateExecCommand {
 
-    public TemplateCommandPostResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, HashMap<String, String> m, boolean b) {
-        super(resourceName, commandName, commandMethod, commandAction, commandDisplayName, m, b);
+    public TemplateCommandPostResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, HashMap<String, String> commandParams, boolean isLinkedToParent) {
+        super(resourceName, commandName, commandMethod, commandAction, commandDisplayName, commandParams, isLinkedToParent);
         parameterType = Constants.MESSAGE_PARAMETER;
     }
 

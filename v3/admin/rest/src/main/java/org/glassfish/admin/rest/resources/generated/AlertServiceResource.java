@@ -35,17 +35,18 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class AlertServiceResource extends TemplateResource {
+public class AlertServiceResource extends TemplateResource  {
 
 	@Path("alert-subscription/")
-	public ListAlertSubscriptionResource getAlertSubscriptionResource() {
+	public ListAlertSubscriptionResource getListAlertSubscriptionResource() {
 		ListAlertSubscriptionResource resource = resourceContext.getResource(ListAlertSubscriptionResource.class);
 		resource.setParentAndTagName(getEntity() , "alert-subscription");
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

@@ -34,13 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.*;
+public class JmsServiceListJmsdestResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource  {
 
-//generated code...;
-
-public class JmsServiceListJmsdestResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource {
    public JmsServiceListJmsdestResource() {
        super(
-          "JmsServiceListJmsdest",
+          "JmsServiceListJmsdestResource",
           "list-jmsdest",
           "GET",
           (java.util.HashMap<String, String>) null ,

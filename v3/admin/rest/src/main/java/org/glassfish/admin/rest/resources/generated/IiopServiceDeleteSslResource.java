@@ -34,13 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.*;
+public class IiopServiceDeleteSslResource extends org.glassfish.admin.rest.resources.TemplateCommandDeleteResource  {
 
-//generated code...;
-
-public class IiopServiceDeleteSslResource extends org.glassfish.admin.rest.resources.TemplateCommandDeleteResource {
    public IiopServiceDeleteSslResource() {
        super(
-          "IiopServiceDeleteSsl",
+          "IiopServiceDeleteSslResource",
           "delete-ssl",
           "DELETE",
           "Delete",

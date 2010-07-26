@@ -35,17 +35,18 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class WorkSecurityMapResource extends TemplateResource {
+public class WorkSecurityMapResource extends TemplateResource  {
 
 	@Path("principal-map/")
-	public ListPrincipalMapResource getPrincipalMapResource() {
+	public ListPrincipalMapResource getListPrincipalMapResource() {
 		ListPrincipalMapResource resource = resourceContext.getResource(ListPrincipalMapResource.class);
 		resource.setParentAndTagName(getEntity() , "principal-map");
 		return resource;
 	}
 	@Path("group-map/")
-	public ListGroupMapResource getGroupMapResource() {
+	public ListGroupMapResource getListGroupMapResource() {
 		ListGroupMapResource resource = resourceContext.getResource(ListGroupMapResource.class);
 		resource.setParentAndTagName(getEntity() , "group-map");
 		return resource;

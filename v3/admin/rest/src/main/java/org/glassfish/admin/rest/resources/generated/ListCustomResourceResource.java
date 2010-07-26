@@ -36,8 +36,8 @@
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import org.glassfish.admin.rest.resources.TemplateListOfResource;
-public class ListCustomResourceResource extends TemplateListOfResource {
+import org.glassfish.admin.rest.resources.*;
+public class ListCustomResourceResource extends TemplateListOfResource  {
 
 
 	@Path("{JndiName}/")
@@ -46,7 +46,6 @@ public class ListCustomResourceResource extends TemplateListOfResource {
 		resource.setBeanByKey(entity, id);
 		return resource;
 	}
-
 
 @Override
 public String getPostCommand() {

@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ConfigResource extends TemplateResource {
+public class ConfigResource extends TemplateResource  {
 
 @Path("delete-config/")
 public ConfigDeleteConfigResource getConfigDeleteConfigResource() {
@@ -46,7 +47,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"delete-config", "POST", "delete-config"}};
+return new String[][] {{"delete-config", "POST", "delete-config"} };
 }
 
 	@Path("admin-service/")
@@ -79,18 +80,18 @@ return new String[][]{{"delete-config", "POST", "delete-config"}};
 		resource.setParentAndTagName(getEntity() , "java-config");
 		return resource;
 	}
-@Path("config-extension/")
-public ListConfigExtensionResource getConfigExtensionResource() {
-	ListConfigExtensionResource resource = resourceContext.getResource(ListConfigExtensionResource.class);
-	resource.setParentAndTagName(getEntity() , "config-extension");
-	return resource;
-}
-@Path("jruby-container/")
-public ListJrubyContainerResource getJrubyContainerResource() {
-	ListJrubyContainerResource resource = resourceContext.getResource(ListJrubyContainerResource.class);
-	resource.setParentAndTagName(getEntity() , "jruby-container");
-	return resource;
-}
+	@Path("config-extension/")
+	public ListConfigExtensionResource getListConfigExtensionResource() {
+		ListConfigExtensionResource resource = resourceContext.getResource(ListConfigExtensionResource.class);
+		resource.setParentAndTagName(getEntity() , "config-extension");
+		return resource;
+	}
+	@Path("jruby-container/")
+	public ListJrubyContainerResource getListJrubyContainerResource() {
+		ListJrubyContainerResource resource = resourceContext.getResource(ListJrubyContainerResource.class);
+		resource.setParentAndTagName(getEntity() , "jruby-container");
+		return resource;
+	}
 	@Path("monitoring-service/")
 	public MonitoringServiceResource getMonitoringServiceResource() {
 		MonitoringServiceResource resource = resourceContext.getResource(MonitoringServiceResource.class);
@@ -104,7 +105,7 @@ public ListJrubyContainerResource getJrubyContainerResource() {
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;
@@ -170,7 +171,7 @@ public ListJrubyContainerResource getJrubyContainerResource() {
 		return resource;
 	}
 	@Path("system-property/")
-	public ListSystemPropertyResource getSystemPropertyResource() {
+	public ListSystemPropertyResource getListSystemPropertyResource() {
 		ListSystemPropertyResource resource = resourceContext.getResource(ListSystemPropertyResource.class);
 		resource.setParentAndTagName(getEntity() , "system-property");
 		return resource;

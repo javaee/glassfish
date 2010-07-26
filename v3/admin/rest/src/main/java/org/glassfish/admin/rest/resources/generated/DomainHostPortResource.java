@@ -34,13 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.*;
+public class DomainHostPortResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource  {
 
-//generated code...;
-
-public class DomainHostPortResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource {
    public DomainHostPortResource() {
        super(
-          "DomainHostPort",
+          "DomainHostPortResource",
           "_get-host-and-port",
           "GET",
           (java.util.HashMap<String, String>) null ,

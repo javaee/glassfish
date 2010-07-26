@@ -35,17 +35,18 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class WebModuleConfigResource extends TemplateResource {
+public class WebModuleConfigResource extends TemplateResource  {
 
 	@Path("context-param/")
-	public ListContextParamResource getContextParamResource() {
+	public ListContextParamResource getListContextParamResource() {
 		ListContextParamResource resource = resourceContext.getResource(ListContextParamResource.class);
 		resource.setParentAndTagName(getEntity() , "context-param");
 		return resource;
 	}
 	@Path("env-entry/")
-	public ListEnvEntryResource getEnvEntryResource() {
+	public ListEnvEntryResource getListEnvEntryResource() {
 		ListEnvEntryResource resource = resourceContext.getResource(ListEnvEntryResource.class);
 		resource.setParentAndTagName(getEntity() , "env-entry");
 		return resource;

@@ -36,8 +36,8 @@
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import org.glassfish.admin.rest.resources.TemplateListOfResource;
-public class ListAlertSubscriptionResource extends TemplateListOfResource {
+import org.glassfish.admin.rest.resources.*;
+public class ListAlertSubscriptionResource extends TemplateListOfResource  {
 
 
 	@Path("{Name}/")
@@ -47,9 +47,4 @@ public class ListAlertSubscriptionResource extends TemplateListOfResource {
 		return resource;
 	}
 
-
-@Override
-public String getPostCommand() {
-	return null;
-}
 }

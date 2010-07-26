@@ -35,15 +35,16 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class JaccProviderResource extends TemplateResource {
+public class JaccProviderResource extends TemplateResource  {
 
 @Override
 public String getDeleteCommand() {
 	return "delete-jacc-provider";
 }
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

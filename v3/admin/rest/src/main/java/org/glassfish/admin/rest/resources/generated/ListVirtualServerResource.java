@@ -36,8 +36,8 @@
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import org.glassfish.admin.rest.resources.TemplateListOfResource;
-public class ListVirtualServerResource extends TemplateListOfResource {
+import org.glassfish.admin.rest.resources.*;
+public class ListVirtualServerResource extends TemplateListOfResource  {
 
 
 	@Path("{Id}/")
@@ -46,7 +46,6 @@ public class ListVirtualServerResource extends TemplateListOfResource {
 		resource.setBeanByKey(entity, id);
 		return resource;
 	}
-
 
 @Override
 public String getPostCommand() {

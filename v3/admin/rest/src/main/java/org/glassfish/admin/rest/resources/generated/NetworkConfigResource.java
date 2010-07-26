@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class NetworkConfigResource extends TemplateResource {
+public class NetworkConfigResource extends TemplateResource  {
 
 	@Path("transports/")
 	public TransportsResource getTransportsResource() {
@@ -51,7 +52,7 @@ public class NetworkConfigResource extends TemplateResource {
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

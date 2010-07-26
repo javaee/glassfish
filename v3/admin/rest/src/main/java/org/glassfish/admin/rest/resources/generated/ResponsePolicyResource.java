@@ -35,7 +35,8 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ResponsePolicyResource extends TemplateResource {
+public class ResponsePolicyResource extends TemplateResource  {
 
 }

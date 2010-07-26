@@ -35,11 +35,12 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class LoadBalancersResource extends TemplateResource {
+public class LoadBalancersResource extends TemplateResource  {
 
 	@Path("load-balancer/")
-	public ListLoadBalancerResource getLoadBalancerResource() {
+	public ListLoadBalancerResource getListLoadBalancerResource() {
 		ListLoadBalancerResource resource = resourceContext.getResource(ListLoadBalancerResource.class);
 		resource.setParentAndTagName(getEntity() , "load-balancer");
 		return resource;

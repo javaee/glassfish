@@ -34,10 +34,10 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
-
-import org.glassfish.admin.rest.resources.CollectionLeafResource;
-
-public class JvmOptionsResource extends CollectionLeafResource {
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.*;
+public class JvmOptionsResource extends CollectionLeafResource  {
 
 @Override
 protected String getPostCommand(){

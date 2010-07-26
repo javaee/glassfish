@@ -35,17 +35,18 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class AdminServiceResource extends TemplateResource {
+public class AdminServiceResource extends TemplateResource  {
 
 	@Path("jmx-connector/")
-	public ListJmxConnectorResource getJmxConnectorResource() {
+	public ListJmxConnectorResource getListJmxConnectorResource() {
 		ListJmxConnectorResource resource = resourceContext.getResource(ListJmxConnectorResource.class);
 		resource.setParentAndTagName(getEntity() , "jmx-connector");
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class JavaConfigResource extends TemplateResource {
+public class JavaConfigResource extends TemplateResource  {
 
 @Path("create-profiler/")
 public JavaConfigCreateProfilerResource getJavaConfigCreateProfilerResource() {
@@ -52,7 +53,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"create-profiler", "POST", "create-profiler"}, {"generate-jvm-report", "POST", "generate-jvm-report"}};
+return new String[][] {{"create-profiler", "POST", "create-profiler"} , {"generate-jvm-report", "POST", "generate-jvm-report"} };
 }
 
 	@Path("profiler/")
@@ -62,7 +63,7 @@ return new String[][]{{"create-profiler", "POST", "create-profiler"}, {"generate
 		return resource;
 	}
 	@Path("property/")
-	public PropertiesBagResource getProperties() {
+	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);
 		resource.setParentAndTagName(getEntity() , "property");
 		return resource;

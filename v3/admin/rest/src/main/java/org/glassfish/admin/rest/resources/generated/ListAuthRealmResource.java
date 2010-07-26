@@ -36,8 +36,8 @@
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import org.glassfish.admin.rest.resources.TemplateListOfResource;
-public class ListAuthRealmResource extends TemplateListOfResource {
+import org.glassfish.admin.rest.resources.*;
+public class ListAuthRealmResource extends TemplateListOfResource  {
 
 
 	@Path("{Name}/")
@@ -55,9 +55,8 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"list-predefined-authrealm-classnames", "GET", "__list-predefined-authrealm-classnames"}};
+return new String[][] {{"list-predefined-authrealm-classnames", "GET", "__list-predefined-authrealm-classnames"} };
 }
-
 
 @Override
 public String getPostCommand() {

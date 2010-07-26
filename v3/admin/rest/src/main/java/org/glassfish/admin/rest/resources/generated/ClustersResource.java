@@ -35,11 +35,12 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ClustersResource extends TemplateResource {
+public class ClustersResource extends TemplateResource  {
 
 	@Path("cluster/")
-	public ListClusterResource getClusterResource() {
+	public ListClusterResource getListClusterResource() {
 		ListClusterResource resource = resourceContext.getResource(ListClusterResource.class);
 		resource.setParentAndTagName(getEntity() , "cluster");
 		return resource;

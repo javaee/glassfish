@@ -34,13 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.*;
+public class ApplicationShowComponentStatusResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource  {
 
-//generated code...;
-
-public class ApplicationShowComponentStatusResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource {
    public ApplicationShowComponentStatusResource() {
        super(
-          "ApplicationShowComponentStatus",
+          "ApplicationShowComponentStatusResource",
           "show-component-status",
           "GET",
           new java.util.HashMap<String, String>() {{

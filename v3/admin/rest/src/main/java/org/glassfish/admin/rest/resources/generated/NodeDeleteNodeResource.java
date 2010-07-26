@@ -34,13 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.*;
+public class NodeDeleteNodeResource extends org.glassfish.admin.rest.resources.TemplateCommandDeleteResource  {
 
-//generated code...;
-
-public class NodeDeleteNodeResource extends org.glassfish.admin.rest.resources.TemplateCommandDeleteResource {
    public NodeDeleteNodeResource() {
        super(
-          "NodeDeleteNode",
+          "NodeDeleteNodeResource",
           "delete-node-ssh",
           "DELETE",
           "Delete Node",

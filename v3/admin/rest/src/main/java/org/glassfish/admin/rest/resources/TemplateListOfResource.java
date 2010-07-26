@@ -354,7 +354,9 @@ public abstract class TemplateListOfResource {
     }
 
 
-    abstract public String getPostCommand();
+    public String getPostCommand() {
+        return null;
+    }
 
 
     public String[][] getCommandResourcesPaths() {

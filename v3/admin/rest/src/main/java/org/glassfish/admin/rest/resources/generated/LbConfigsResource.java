@@ -35,11 +35,12 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class LbConfigsResource extends TemplateResource {
+public class LbConfigsResource extends TemplateResource  {
 
 	@Path("lb-config/")
-	public ListLbConfigResource getLbConfigResource() {
+	public ListLbConfigResource getListLbConfigResource() {
 		ListLbConfigResource resource = resourceContext.getResource(ListLbConfigResource.class);
 		resource.setParentAndTagName(getEntity() , "lb-config");
 		return resource;

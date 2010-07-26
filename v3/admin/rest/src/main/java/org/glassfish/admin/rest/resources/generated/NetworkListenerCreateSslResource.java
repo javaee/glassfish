@@ -34,13 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.*;
+public class NetworkListenerCreateSslResource extends org.glassfish.admin.rest.resources.TemplateCommandPostResource  {
 
-//generated code...;
-
-public class NetworkListenerCreateSslResource extends org.glassfish.admin.rest.resources.TemplateCommandPostResource {
    public NetworkListenerCreateSslResource() {
        super(
-          "NetworkListenerCreateSsl",
+          "NetworkListenerCreateSslResource",
           "create-ssl",
           "POST",
           "Create",

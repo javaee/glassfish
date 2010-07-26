@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class NodeResource extends TemplateResource {
+public class NodeResource extends TemplateResource  {
 
 @Path("delete-node/")
 public NodeDeleteNodeResource getNodeDeleteNodeResource() {
@@ -52,11 +53,11 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][]{{"delete-node", "DELETE", "delete-node-ssh"}, {"_update-node", "POST", "_update-node"}};
+return new String[][] {{"delete-node", "DELETE", "delete-node-ssh"} , {"_update-node", "POST", "_update-node"} };
 }
 
 	@Path("application-ref/")
-	public ListApplicationRefResource getApplicationRefResource() {
+	public ListApplicationRefResource getListApplicationRefResource() {
 		ListApplicationRefResource resource = resourceContext.getResource(ListApplicationRefResource.class);
 		resource.setParentAndTagName(getEntity() , "application-ref");
 		return resource;
@@ -68,7 +69,7 @@ return new String[][]{{"delete-node", "DELETE", "delete-node-ssh"}, {"_update-no
 		return resource;
 	}
 	@Path("resource-ref/")
-	public ListResourceRefResource getResourceRefResource() {
+	public ListResourceRefResource getListResourceRefResource() {
 		ListResourceRefResource resource = resourceContext.getResource(ListResourceRefResource.class);
 		resource.setParentAndTagName(getEntity() , "resource-ref");
 		return resource;

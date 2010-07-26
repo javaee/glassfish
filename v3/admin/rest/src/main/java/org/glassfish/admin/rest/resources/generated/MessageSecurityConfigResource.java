@@ -35,11 +35,12 @@
  */
 package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class MessageSecurityConfigResource extends TemplateResource {
+public class MessageSecurityConfigResource extends TemplateResource  {
 
 	@Path("provider-config/")
-	public ListProviderConfigResource getProviderConfigResource() {
+	public ListProviderConfigResource getListProviderConfigResource() {
 		ListProviderConfigResource resource = resourceContext.getResource(ListProviderConfigResource.class);
 		resource.setParentAndTagName(getEntity() , "provider-config");
 		return resource;
