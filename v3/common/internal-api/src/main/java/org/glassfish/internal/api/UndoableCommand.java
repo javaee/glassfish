@@ -34,9 +34,13 @@
  * holder.
  *
  */
-package org.glassfish.api.admin;
+package org.glassfish.internal.api;
 
+import com.sun.enterprise.config.serverbeans.Server;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.*;
+
+import java.util.List;
 
 /**
  * Interface that augment the AdminCommand responsibilities by adding the ability
@@ -70,7 +74,7 @@ import org.glassfish.api.ActionReport;
  * method is invoked (and any supplemented methods).
  *
  * <p>If the framework is electing that successful commands execution need to be rolled back, it will
- * call the {@link #undo(AdminCommandContext, ParameterMap)} method on the same instance that was used for the
+ * call the {@link #undo(AdminCommandContext, ParameterMap, List<Server>)} method on the same instance that was used for the
  * {@link #execute(AdminCommandContext)} invocation, as well as any supplemented commands that implement
  * this interface.
  * 
@@ -87,22 +91,34 @@ public interface UndoableCommand extends AdminCommand {
      * servers instances are on-line and can be notified of the change.
      *
      * <p>No changes to the configuration should be made within the implementation of the
-     * prepare method since {@link #undo(AdminCommandContext, ParameterMap)} will not be called if the command
+     * prepare method since {@link #undo(AdminCommandContext, ParameterMap, List<Server>)} will not be called if the command
      * execution stops at the prepare phase.
+     *
+     * <p>Note that if, as part of prepare, remote instances have to be contacted, then it is the responsibility of
+     * the command implementation to invoke remote instaces for such verification.
+     *
+     * The framework will call prepare() method in DAS before execution of the main command
+     * and the execution of the main command will happen only if the prepare() call returns ActionReport.ExitCode.SUCCESS
+     * on DAS.
      *
      * @param context the command's context
      * @param parameters parameters to the commands.
      */
     @IfFailure(FailurePolicy.Error)
-    public ActionReport prepare(AdminCommandContext context, ParameterMap parameters);
+    public ActionReport.ExitCode prepare(AdminCommandContext context, ParameterMap parameters);
 
     /**
      * Undo a previously successful execution of the command implementation. The context
      * for undoing the administrative operation should be obtained from either the
      * parameters passed to the command execution or the command instance context.
+     * The list of servers indicates to the command implementation on which servers the command succeeded
+     * The command implementation is guaranteed that the  {@link #undo(AdminCommandContext, ParameterMap, List<Server>)}
+     * is called on DAS if the main command execution failed on one instance but it is the responsiblity of the command
+     * implementation to invoke remote instances to do the actual undo if required
      *
      * @param context the command's context
      * @param parameters parameters passed to the command.
+     * @param instances instances on which the command succeeded
      */
-    public void undo(AdminCommandContext context, ParameterMap parameters);
+    public void undo(AdminCommandContext context, ParameterMap parameters, List<Server> instances);
 }

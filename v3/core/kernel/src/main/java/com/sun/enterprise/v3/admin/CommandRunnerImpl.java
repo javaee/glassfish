@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -1021,6 +1022,19 @@ public class CommandRunnerImpl implements CommandRunner {
                 }
             }
 
+            // If command is undoable, then invoke prepare method
+            if(command.getClass().isAssignableFrom(UndoableCommand.class)) {
+                UndoableCommand uCmd = (UndoableCommand) command;
+                if(!uCmd.prepare(context, parameters).equals(ActionReport.ExitCode.SUCCESS)) {
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setMessage(adminStrings.getLocalString("commandrunner.executor..errorinprepare",
+                            "The command {0} cannot be completed because the preparation for the command failed " +
+                                    "indicating potential issues : {1}", model.getCommandName(), report.getMessage()));
+                    return;
+                }
+            }
+
+            ClusterOperationUtil.clearInstanceList();
             if(doReplication) {
                 // Run Supplemental commands that have to run before this command on this instance type
                 SupplementalCommandExecutor supplementalExecutor = habitat.getComponent(SupplementalCommandExecutor.class,
@@ -1102,6 +1116,13 @@ public class CommandRunnerImpl implements CommandRunner {
             if(report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
                 report.setMessage(adminStrings.getLocalString("commandrunner.executor.errorwhilereplication",
                         "An error occurred during replication"));
+            }
+        }
+        if(report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
+            // If command is undoable, then invoke undo method method
+            if(command.getClass().isAssignableFrom(UndoableCommand.class)) {
+                UndoableCommand uCmd = (UndoableCommand) command;
+                uCmd.undo(context, parameters, ClusterOperationUtil.getCompletedInstances());
             }
         }
     }

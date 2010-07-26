@@ -22,8 +22,19 @@ public class ClusterOperationUtil {
     private static final LocalStringManagerImpl strings =
                         new LocalStringManagerImpl(ClusterOperationUtil.class);
 
+    //TODO : This is temporary fix;
+    private static List<Server> servers = new ArrayList<Server>();
+
+    public static List<Server> getCompletedInstances() {
+        return servers;
+    }
+
+    public static void clearInstanceList() {
+        servers.clear();
+    }
+
     /**
-     * Replicate a given command on given list of targ
+     * Replicate a given command on given list of targets
      */
     public static ActionReport.ExitCode replicateCommand(String commandName,
                                                    FailurePolicy failPolicy,
@@ -51,6 +62,7 @@ public class ClusterOperationUtil {
                         aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandSuccessful",
                             "Command {0} executed successfully on server instance {1}", commandName,
                             rac.getServer().getName()));
+                    servers.add(rac.getServer());
                 } catch (CommandException cmdEx) {
                     ActionReport.ExitCode finalResult;
                     if(cmdEx.getCause() instanceof java.net.ConnectException) {
