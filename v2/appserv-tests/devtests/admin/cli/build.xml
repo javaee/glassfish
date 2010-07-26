@@ -126,6 +126,14 @@
         </java>
     </target>
 
+    <target name="sshnode">
+        <java classname="admin.SSHNodeTest"  fork="true" classpath="${test}">
+            <jvmarg value="-Dssh.host=${ssh.host}"/>
+            <jvmarg value="-Dssh.installdir=${ssh.installdir}"/>
+            <jvmarg value="${javaprops}"/>
+        </java>
+    </target>
+
     <target name="portsonly" depends="init">
         <record name="admin.output" action="start" />
         <java classname="admin.PortTests"  fork="true" classpath="${test}">

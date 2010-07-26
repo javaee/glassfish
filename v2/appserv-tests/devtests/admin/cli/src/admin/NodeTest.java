@@ -262,8 +262,32 @@ public class NodeTest extends AdminBaseDevTest {
                         "--cluster", CNAME,
                         INAME2));
 
+        System.out.printf("Starting cluster %s\n", CNAME);
         report("node-start-cluster1", asadmin("start-cluster", CNAME));
-        report("node-stop-cluster1", asadmin("start-cluster", CNAME));
+
+        AsadminReturn ret = asadminWithOutput("list-instances", "--verbose");
+        System.out.printf("After start-cluster list-instances returned:\n%s\n",
+                ret.out);
+
+        report("node-check-instance1", isInstanceRunning(INAME1));
+        report("node-check-instance2", isInstanceRunning(INAME2));
+        report("node-check-cluster1", isClusterRunning(CNAME));
+
+        report("node-stop-cluster1", asadmin("stop-cluster", CNAME));
+
+        try {
+            // Give instances time to come down
+            Thread.sleep(4 * 1000);
+        } catch (InterruptedException e) {
+        }
+
+        ret = asadminWithOutput("list-instances", "--verbose");
+        System.out.printf("After stop-cluster list-instances returned:\n%s\n",
+                ret.out);
+
+        report("node-check-stopped-instance1", ! isInstanceRunning(INAME1));
+        report("node-check-stopped-instance2", ! isInstanceRunning(INAME2));
+        report("node-check-stopped-cluster1", ! isClusterRunning(CNAME));
 
         report("node-delete-instance1", asadmin("delete-instance", INAME1));
         report("node-delete-instance2", asadmin("delete-instance", INAME2));
