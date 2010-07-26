@@ -51,6 +51,7 @@ import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -60,6 +61,7 @@ import java.net.URI;
 
 public class ResourcesUtil {
 
+/*
     //The thread local ResourcesUtil is used in two cases
     //1. An event config context is to be used as in case of resource
     //   deploy/undeploy and enable/disable events.
@@ -68,6 +70,7 @@ public class ResourcesUtil {
     static ThreadLocal<ResourcesUtil> localResourcesUtil =
             new ThreadLocal<ResourcesUtil>();
 
+*/
     static Logger _logger = LogDomains.getLogger(ResourcesUtil.class,LogDomains.RSR_LOGGER);
 
     static StringManager localStrings =
@@ -83,7 +86,9 @@ public class ResourcesUtil {
 
     private Server server;
 
-    public ResourcesUtil(){
+    private static ResourcesUtil resourcesUtil;
+
+    private ResourcesUtil(){
     }
 
     private Resources getResources() {
@@ -113,9 +118,11 @@ public class ResourcesUtil {
         }
         return server;
     }
+/*
     public static void setServerContext(ServerContext sc) {
         sc_ = sc;
     }
+*/
 
     private Applications getApplications(){
         return getRuntime().getApplications();
@@ -167,13 +174,11 @@ public class ResourcesUtil {
     }
 
     public static ResourcesUtil createInstance() {
-
-        if (localResourcesUtil.get() != null){
-            return localResourcesUtil.get();
+        //stateless, no synchronization needed
+        if(resourcesUtil == null){
+            resourcesUtil = new ResourcesUtil();
         }
-
-        localResourcesUtil.set(new ResourcesUtil());
-        return localResourcesUtil.get();
+        return resourcesUtil;
     }
 
 
@@ -670,7 +675,7 @@ public class ResourcesUtil {
             AdminObjectResource aor = (AdminObjectResource) br;
             String raName = aor.getResAdapter();
             boolean isRarEnabled = isRarEnabled(raName);
-            if(isRarEnabled && resourceEnabled && refEnabled){
+            if(/* TODO isRarEnabled &&*/ resourceEnabled && refEnabled){
                 enabled = true;
             }
         }
@@ -700,26 +705,69 @@ public class ResourcesUtil {
         ApplicationRef appRef = getServer().getApplicationRef(appName);
         if (appRef == null) {
             _logger.fine("ResourcesUtil :: isApplicationReferenceEnabled null ref");
+/*  TODO revisit
             if(isADeployEvent()){
                 return true;
             }else{
+*/
                 return false;
-            }
+//            }
         }
         _logger.fine("ResourcesUtil :: isApplicationReferenceEnabled appRef enabled ?" + appRef.getEnabled());
         return ConnectorsUtil.parseBoolean(appRef.getEnabled());
     }
 
-    /**
+    //TODO can be made generic
+    //TODO probably, DuckTyped for resources
+    public AdminObjectResource[] getEnabledAdminObjectResources(String raName)  {
+        List resourcesList = getResources().getResources();
+        int resourceCount = resourcesList.size();      //sizeAdminObjectResource();
+        if(resourceCount == 0) {
+            return null;
+        }
+        List<AdminObjectResource> adminObjectResources = new ArrayList<AdminObjectResource>();
+        for(int i=0; i< resourceCount; ++i) {
+             Resource resource = (Resource)resourcesList.get(i);
+
+            if(resource == null || !(resource instanceof AdminObjectResource))
+                continue;
+            AdminObjectResource adminObjectResource = (AdminObjectResource)resource;
+            String resourceAdapterName = adminObjectResource.getResAdapter();
+
+            if(resourceAdapterName == null)
+                continue;
+            if(raName!= null && !raName.equals(resourceAdapterName))
+                continue;
+
+
+            // skips the admin resource if it is not referenced by the server
+            if(!isEnabled(adminObjectResource))
+                continue;
+            adminObjectResources.add(adminObjectResource);
+        }
+        AdminObjectResource[] allAdminObjectResources =
+                    new AdminObjectResource[adminObjectResources.size()];
+        return adminObjectResources.toArray(allAdminObjectResources);
+    }
+
+
+
+/*
+    */
+/**
      * Checks whether call is from a deploy event.
      * Since in case of deploy event, the localResourceUtil will be set, so check is based on that.
      * @return boolean indicating the status
-     */
+     *//*
+
+
     private boolean isADeployEvent(){
         if(localResourcesUtil.get() != null)
             return true;
         return false;
     }
+*/
+
 
     private boolean belongToEmbeddedRarAndEnabled(String resourceAdapterName)  {
         String appName = getAppNameToken(resourceAdapterName);
@@ -755,9 +803,11 @@ public class ResourcesUtil {
         ResourceRef ref = getServer().getResourceRef(resourceName);
         if (ref == null) {
             _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null ref");
+/* TODO revisit
             if(isADeployEvent())
                 return true;
             else
+*/
                 return false;
         }
         _logger.fine("ResourcesUtil :: isResourceReferenceEnabled ref enabled ?" + ref.getEnabled());

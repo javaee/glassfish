@@ -37,6 +37,7 @@
 package com.sun.enterprise.connectors.module;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
@@ -132,7 +133,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
         Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
         Collection<Resource> resources = ConnectorsUtil.getAllResources(poolNames, allResources);
         AdminObjectResource[] adminObjectResources =
-                ConnectorsUtil.getEnabledAdminObjectResources(moduleName, allResources, null);
+                ResourcesUtil.createInstance().getEnabledAdminObjectResources(moduleName);
         for (AdminObjectResource aor : adminObjectResources) {
             resources.add(aor);
         }
@@ -172,7 +173,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
         Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
         Collection<Resource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
         AdminObjectResource[] adminObjectResources =
-                ConnectorsUtil.getEnabledAdminObjectResources(moduleName, allResources, null);
+                ResourcesUtil.createInstance().getEnabledAdminObjectResources(moduleName);
         List<Resource> resources = new ArrayList<Resource>();
         resources.addAll(connectorResources);
         resources.addAll(connectionPools);

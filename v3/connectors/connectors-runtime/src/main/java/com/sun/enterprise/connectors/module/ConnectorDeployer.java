@@ -41,6 +41,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.ConnectorRegistry;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.config.serverbeans.*;
@@ -265,8 +266,8 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         Collection<ConnectorConnectionPool> conPools = ConnectorsUtil.getAllPoolsOfModule(moduleName, resources);
         Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(conPools);
         Collection<Resource> connectorResources = ConnectorsUtil.getAllResources(poolNames, resources);
-        AdminObjectResource[] adminObjectResources = ConnectorsUtil.getEnabledAdminObjectResources(moduleName,
-                resources, ConfigBeansUtilities.getServerNamed(targetServer));
+        AdminObjectResource[] adminObjectResources = ResourcesUtil.createInstance().
+                getEnabledAdminObjectResources(moduleName);
         Collection<WorkSecurityMap> securityMaps = ConnectorsUtil.getAllWorkSecurityMaps(resources, moduleName);
         ResourceAdapterConfig rac = ConnectorsUtil.getRAConfig(moduleName, resources);
 

@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.connectors.jms.system;
 
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.ConnectorConfigProperty;
@@ -1759,8 +1760,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                            server = (Server) serversList.get(j);
                        }
                     }
-                    AdminObjectResource[] adminObjectResources = ConnectorsUtil.getEnabledAdminObjectResources(ConnectorConstants.DEFAULT_JMS_ADAPTER, getAllResources(), server);
-                //cb = ResourcesUtil.createInstance().getEnabledAdminObjectResources(ConnectorConstants.DEFAULT_JMS_ADAPTER);
+                    AdminObjectResource[] adminObjectResources =
+                            ResourcesUtil.createInstance().getEnabledAdminObjectResources(ConnectorConstants.DEFAULT_JMS_ADAPTER);
                 for (int i = 0; i < adminObjectResources.length; i++) {
                     AdminObjectResource aor = adminObjectResources[i];
                     if (aor.getJndiName().equals(jndiName)) {
