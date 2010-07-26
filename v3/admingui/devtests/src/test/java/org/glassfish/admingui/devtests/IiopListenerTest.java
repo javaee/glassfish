@@ -88,5 +88,10 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_ORB_SUCCESS);
         assertEquals(totalConn, selenium.getValue("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns"));
         assertEquals(maxMsgSize, selenium.getValue("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize"));
+
+        clickAndWaitForButtonEnabled("form1:propertyContentPage:loadDefaultsButton");
+        assertEquals("1024", selenium.getValue("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns"));
+        assertEquals("1024", selenium.getValue("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize"));
+        
     }
 }
