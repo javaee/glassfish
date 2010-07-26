@@ -188,4 +188,16 @@
                 priority="40"
                 parentId="monitoring"
                 content="monitor/monitoringResourcesTab.jsf" />
+        <integration-point
+                id="clusterInstanceMonitoring"
+                type="org.glassfish.admingui:clusterInstTab"
+                priority="30"
+                parentId="clusterInstanceTabs"
+                content="monitor/clusterInstanceMonitoringTab.jsf" />
+        <integration-point
+                id="standaloneInstanceMonitoring"
+                type="org.glassfish.admingui:standaloneInstTab"
+                priority="30"
+                parentId="standaloneInstanceTabs"
+                content="monitor/standaloneInstanceMonitoringTab.jsf" />
 </console-config>
