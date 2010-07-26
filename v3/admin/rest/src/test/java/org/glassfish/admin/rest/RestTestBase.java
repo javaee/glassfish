@@ -110,7 +110,11 @@ public class RestTestBase {
     }
 
     protected ClientResponse get(String address) {
-        return client.resource(getAddress(address)).accept(RESPONSE_TYPE).get(ClientResponse.class);
+        return get(address, new HashMap<String, String>());
+    }
+    
+    protected ClientResponse get(String address, Map<String, String> payload) {
+        return client.resource(getAddress(address)).queryParams(buildMultivaluedMap(payload)).accept(RESPONSE_TYPE).get(ClientResponse.class);
     }
 
     protected ClientResponse options(String address) {

@@ -37,35 +37,14 @@ package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
-public class ListApplicationResource extends TemplateListOfResource  {
+public class ListApplicationGetContextRootResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource  {
 
-
-	@Path("{Name}/")
-	public ApplicationResource getApplicationResource(@PathParam("Name") String id) {
-		ApplicationResource resource = resourceContext.getResource(ApplicationResource.class);
-		resource.setBeanByKey(entity, id);
-		return resource;
-	}
-
-@Path("get-context-root/")
-public ListApplicationGetContextRootResource getListApplicationGetContextRootResource() {
-ListApplicationGetContextRootResource resource = resourceContext.getResource(ListApplicationGetContextRootResource.class);
-return resource;
-}
-
-@Path("list-sub-components/")
-public ListApplicationListSubComponentsResource getListApplicationListSubComponentsResource() {
-ListApplicationListSubComponentsResource resource = resourceContext.getResource(ListApplicationListSubComponentsResource.class);
-return resource;
-}
-
-@Override
-public String[][] getCommandResourcesPaths() {
-return new String[][] {{"get-context-root", "GET", "_get-context-root"} , {"list-sub-components", "GET", "list-sub-components"} };
-}
-
-@Override
-public String getPostCommand() {
-	return "deploy";
-}
+   public ListApplicationGetContextRootResource() {
+       super(
+          "ListApplicationGetContextRootResource",
+          "_get-context-root",
+          "GET",
+          (java.util.HashMap<String, String>) null ,
+          false);
+    }
 }

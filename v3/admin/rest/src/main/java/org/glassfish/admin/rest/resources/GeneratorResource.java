@@ -159,6 +159,7 @@ public class GeneratorResource {
         {"JmsService", "jms-ping", "GET", "jms-ping", "Ping JMS"},
         {"JmsService", "list-jmsdest", "GET", "list-jmsdest", "JmsDest"},
         {"ListApplication", "list-sub-components", "GET", "list-sub-components", "List Subcomponents"},
+        {"ListApplication", "_get-context-root", "GET", "get-context-root", "Get Context Root"},
         {"ListAuthRealm", "__list-predefined-authrealm-classnames", "GET", "list-predefined-authrealm-classnames", "List Auth Realms"},
         {"NetworkListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
         {"NetworkListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"},

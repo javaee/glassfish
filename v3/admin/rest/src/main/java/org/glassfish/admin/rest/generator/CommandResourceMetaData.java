@@ -121,6 +121,7 @@ public class CommandResourceMetaData {
             {"JmsService", "flush-jmsdest", "POST", "flush-jmsdest", "Flush"},
             {"JmsService", "jms-ping", "GET", "jms-ping", "Ping JMS"},
             {"JmsService", "list-jmsdest", "GET", "list-jmsdest", "JmsDest"},
+            {"ListApplication", "_get-context-root", "GET", "get-context-root", "Get Context Root"},
             {"ListApplication", "list-sub-components", "GET", "list-sub-components", "List Subcomponents"},
             {"ListAuthRealm", "__list-predefined-authrealm-classnames", "GET", "list-predefined-authrealm-classnames", "List Auth Realms"},
             {"NetworkListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},

@@ -71,14 +71,11 @@ public class ApplicationTest extends RestTestBase {
     @Test
     public void testApplicationDisableEnable() {
         final String appName = "testApp" + generateRandomString();
-        Map<String, Object> newApp = new HashMap<String, Object>() {
-
-            {
-                put("id", new File("src/test/resources/test.war"));
-                put("contextroot", appName);
-                put("name", appName);
-            }
-        };
+        Map<String, Object> newApp = new HashMap<String, Object>() {{
+            put("id", new File("src/test/resources/test.war"));
+            put("contextroot", appName);
+            put("name", appName);
+        }};
 
         Map<String, String> deployedApp = deployApp(newApp);
         assertEquals(appName, deployedApp.get("name"));
@@ -168,6 +165,31 @@ public class ApplicationTest extends RestTestBase {
             assertTrue(isSuccess(response));
             response = get("/domain/servers/server/" + instanceName);
             assertFalse(isSuccess(response));
+            undeployApp(newApp);
+        }
+    }
+
+    @Test
+    public void testGetContextRoot() {
+        final String appName = "testApp" + generateRandomString();
+        Map<String, Object> newApp = new HashMap<String, Object>() {{
+            put("id", new File("src/test/resources/stateless-simple.ear"));
+            put("contextroot", appName);
+            put("name", appName);
+        }};
+
+        try {
+            Map<String, String> deployedApp = deployApp(newApp);
+            assertEquals(appName, deployedApp.get("name"));
+            Map<String, String> contextRootPayload = new HashMap<String, String>() {{
+                put("appname", appName);
+                put("modulename", "stateless-simple.war");
+            }};
+
+            ClientResponse response = get("/domain/applications/application/get-context-root", contextRootPayload);
+            assertTrue(isSuccess(response));
+            assertTrue(response.getEntity(String.class).contains("property name=\"contextRoot\" value=\""));
+        } finally {
             undeployApp(newApp);
         }
     }
