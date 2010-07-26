@@ -46,6 +46,8 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_NEW_NETWORK_LISTENER = "New Network Listener";
     private static final String TRIGGER_PROTOCOLS = "Click New to define a new protocol. Click the name of an existing protocol to modify its settings. Select one or more protocols and click Delete to delete the protocols and any network listeners using them.";
     private static final String TRIGGER_NEW_PROTOCOL = "Create a new protocol.";
+    private static final String TRIGGER_TRANSPORTS = "Click New to define a new transport. Click the name of an existing transport to modify its settings.";
+    private static final String TRIGGER_NEW_TRANSPORT = "Create a new transport.";
 
     @Test
     public void testAddingNetworkListener() {
@@ -69,6 +71,28 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_NETWORK_LISTENERS);
 
         deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", listenerName);
+    }
+
+    @Test
+    public void testAddingTransport() {
+        final String transportName = "transport"+generateRandomString();
+
+        clickAndWait("treeForm:tree:configurations:server-config:networkConfig:transports:transports_link", TRIGGER_TRANSPORTS);
+        clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_TRANSPORT);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", transportName);
+        selenium.select("propertyForm:propertySheet:propertSectionTextField:ByteBufferType:ByteBufferType", "label=DIRECT");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:BufferSizeBytes:BufferSizeBytes", "1000");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:AcceptorThreads:AcceptorThreads", "-1");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_TRANSPORTS);
+        assertTrue(selenium.isTextPresent(transportName));
+
+        clickAndWait(getLinkIdByLinkText("propertyForm:configs", transportName), "Edit Transport");
+        assertTrue(selenium.isTextPresent(transportName));
+        assertTrue(selenium.isTextPresent("DIRECT"));
+        assertEquals("1000", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:BufferSizeBytes:BufferSizeBytes"));
+        clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_TRANSPORTS);
+
+        deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", transportName);
     }
 
     @Test
