@@ -70,8 +70,8 @@ public class NodeTest extends AdminBaseDevTest {
         "--sshport", "ssh-connector.ssh-port",
         "--sshuser", "ssh-connector.ssh-auth.user-name",
         "--sshkeyfile", "ssh-connector.ssh-auth.keyfile",
-        "--sshnodehost", "ssh-connector.ssh-auth.node-host",
         // Not supported yet
+        "--sshnodehost", "ssh-connector.ssh-auth.node-host",
         "--sshpassphrase", "ssh-connector.ssh-auth.passphrase",
         "--sshpassword", "ssh-connector.ssh-auth.password"
     };
@@ -111,8 +111,10 @@ public class NodeTest extends AdminBaseDevTest {
 
     private void runTests() {
         startDomain();
+        testLocalHostNode();
         testCreateNodeSsh();
         testCreateNodeConfig();
+        testBasicCluster();
         stopDomain();
         stat.printSummary();
     }
@@ -207,6 +209,65 @@ public class NodeTest extends AdminBaseDevTest {
         // Make sure it is gone by trying to get its name
         testName = testNamePrefixValidateDelete + "0";
         report(testName, !asadmin("get", propPrefix + nodeName + "." + "name"));
+    }
+
+    private void testLocalHostNode() {
+        final String LOCALHOST = "localhost";
+
+        // Verify localhost node exists
+        report("check-for-node-localhost", asadmin("get", propPrefix +
+                LOCALHOST + "." + "name"));
+
+        // Validate localhost nodehost
+        String testName = "check-for-node-localhost-nodehost";
+        String property = propPrefix + LOCALHOST + "." + "node-host";
+        AsadminReturn ret = asadminWithOutput("get", property);
+        // Parse the asadmin output to get the property value
+        String propertyValue = getPropertyValue(property, ret.out);
+        if (propertyValue.equals(LOCALHOST)) {
+            report(testName, true);
+        } else {
+            System.out.printf("ERROR: node %s: %s == %s. Expected %s\n",
+                    LOCALHOST, property, propertyValue, LOCALHOST);
+            report(testName, false);
+        }
+
+        // Verify you can't delete node "localhost"
+        report("delete-node-localhost-neg",
+                ! asadmin("delete-node-ssh", LOCALHOST));
+
+        // Verify you can't create node "localhost"
+        report("create-node-localhost-neg",
+                ! asadmin("create-node-config", LOCALHOST));
+    }
+
+    private void testBasicCluster() {
+        final String LOCALHOST = "localhost";
+        final String CNAME = "ccc_node_test_1";
+        final String INAME1 = "iii_node_test_1";
+        final String INAME2 = "iii_node_test_2";
+
+        // Do a basic cluster test. Create a cluster with two
+        // local instances. Start the cluster, stop it, then remove
+        // everything.
+        report("node-create-cluster", asadmin("create-cluster", CNAME));
+
+        report("node-create-instance1", asadmin("create-instance",
+                        "--node", LOCALHOST,
+                        "--cluster", CNAME,
+                        INAME1));
+
+        report("node-create-instance2", asadmin("create-instance",
+                        "--node", LOCALHOST,
+                        "--cluster", CNAME,
+                        INAME2));
+
+        report("node-start-cluster1", asadmin("start-cluster", CNAME));
+        report("node-stop-cluster1", asadmin("start-cluster", CNAME));
+
+        report("node-delete-instance1", asadmin("delete-instance", INAME1));
+        report("node-delete-instance2", asadmin("delete-instance", INAME2));
+        report("node-delete-cluster1", asadmin("delete-cluster", CNAME));
     }
 
     /**
