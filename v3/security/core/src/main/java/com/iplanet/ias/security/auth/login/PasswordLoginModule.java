@@ -46,7 +46,7 @@ import javax.security.auth.login.LoginException;
 /**
  * Provided for backward compatibility with SunOne 7.0
  * Newer implementations should extend
- * com.sun.appserv.security.AbstractPasswordLogin directly
+ * com.sun.appserv.security.AppservPasswordLoginModule 
  */
 public abstract class PasswordLoginModule extends AppservPasswordLoginModule
 {
