@@ -1301,7 +1301,7 @@ public class ResourcesXMLParser implements EntityResolver
         return vResources.iterator();
     }
     
-    public List getResourcesList() {
+    public List<Resource> getResourcesList() {
         return vResources;
     }
     

@@ -61,6 +61,7 @@ import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.resource.listener.PoolLifeCycle;
 
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.RetryableUnavailableException;
 import javax.transaction.Transaction;
 import javax.transaction.Synchronization;
 import javax.transaction.xa.XAResource;
@@ -77,7 +78,7 @@ import java.util.logging.Logger;
 @Service
 public class PoolManagerImpl extends AbstractPoolManager implements ComponentInvocationHandler {
 
-    private ConcurrentHashMap<String, ResourcePool> poolTable;
+    private final ConcurrentHashMap<String, ResourcePool> poolTable;
 
     private ResourceManager resourceManager;
     private ResourceManager sysResourceManager;
@@ -147,9 +148,8 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
 
 
     // invoked by DataSource objects to obtain a connection
-    public Object getResource(ResourceSpec spec, ResourceAllocator alloc,
-                              ClientSecurityInfo info)
-            throws PoolingException {
+    public Object getResource(ResourceSpec spec, ResourceAllocator alloc, ClientSecurityInfo info)
+            throws PoolingException, RetryableUnavailableException {
 
         Transaction tran = null;
         boolean transactional = alloc.isTransactional();
@@ -226,9 +226,8 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
         }
     }
 
-    public ResourceHandle getResourceFromPool(ResourceSpec spec, ResourceAllocator alloc,
-                                              ClientSecurityInfo info, Transaction tran)
-            throws PoolingException {
+    public ResourceHandle getResourceFromPool(ResourceSpec spec, ResourceAllocator alloc, ClientSecurityInfo info,
+                                              Transaction tran) throws PoolingException, RetryableUnavailableException {
         ResourcePool pool = getPool(spec.getConnectionPoolName());
         // pool.getResource() has been modified to:
         //      - be able to create new resource if needed
@@ -243,7 +242,7 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
      * @param poolName Name of the pool
      */
     public boolean switchOnMatching(String poolName) {
-        ResourcePool pool = (ResourcePool) getPoolTable().get(poolName);
+        ResourcePool pool = getPool(poolName);
 
         if (pool != null) {
             pool.switchOnMatching();
@@ -254,7 +253,7 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
     }
 
 
-    public ConcurrentHashMap getPoolTable() {
+    private ConcurrentHashMap<String, ResourcePool> getPoolTable() {
         return poolTable;
     }
 
@@ -387,7 +386,7 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
         // notify pool
         String poolName = h.getResourceSpec().getConnectionPoolName();
         if (poolName != null) {
-            ResourcePool pool = (ResourcePool) poolTable.get(poolName);
+            ResourcePool pool = poolTable.get(poolName);
             if (pool != null) {
                 synchronized (pool) {
                     pool.resourceClosed(h);
@@ -650,8 +649,7 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
 
     public void reconfigPoolProperties(ConnectorConnectionPool ccp) throws PoolingException {
         String poolName = ccp.getName();
-        ResourcePool pool = (ResourcePool) getPoolTable().get( poolName );
-
+        ResourcePool pool = getPool( poolName );
         if (pool != null ) {
             pool.reconfigurePool( ccp );
         }        
@@ -665,8 +663,7 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
      */
     public boolean flushConnectionPool(String poolName) throws PoolingException {
         boolean result = false;
-        ResourcePool pool = (ResourcePool) getPoolTable().get( poolName );
-        
+        ResourcePool pool = getPool( poolName );
         if(pool != null) {
             result = pool.flushConnectionPool();
         } else {
@@ -683,7 +680,7 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
      * @return
      */
     public PoolStatus getPoolStatus(String poolName) {
-        ResourcePool pool = (ResourcePool) poolTable.get(poolName);
+        ResourcePool pool = poolTable.get(poolName);
         return pool.getPoolStatus();
     }
 }

@@ -153,10 +153,9 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
             throws ConnectorRuntimeException {
 
         try {
-
             _runtime.getNamingManager().unpublishObject(jndiName);
         } catch (NamingException ne) {
-            /* TODO V3 handle system RAR later
+            /* TODO for System RAR (not needed as proxy will always be present ?)
             ResourcesUtil resUtil = ResourcesUtil.createInstance();
             if (resUtil.resourceBelongsToSystemRar(jndiName)) {
                 return;

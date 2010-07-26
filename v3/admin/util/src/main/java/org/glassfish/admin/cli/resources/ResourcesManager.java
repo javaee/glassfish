@@ -52,16 +52,16 @@ import java.io.File;
  * This class serves as the API to creating new resources when an xml file 
  * is supplied containing the resource definitions
  * 
- * @author PRASHANTH ABBAGANI
+ * @author Prashanth Abbagani
  */
 public class ResourcesManager {
 
-     /**
+    /**
      * Creating resources from sun-resources.xml file. This method is used by 
      * the admin framework when the add-resources command is used to create
      * resources
      */
-    static ArrayList createResources(Resources resources, File resourceXMLFile,
+    public static ArrayList createResources(Resources resources, File resourceXMLFile,
             String target, ResourceFactory resourceFactory) throws Exception {
         ArrayList results = new ArrayList();
         ResourcesXMLParser resourcesParser =

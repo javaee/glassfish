@@ -55,23 +55,6 @@ public abstract class AbstractPoolManager implements PoolManager {
         throw new UnsupportedOperationException();
     }
 
-    public void disableMonitoring(String poolName) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setMonitoringEnabledHigh(String poolName) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setMonitoringEnabledLow(String poolName) {
-        throw new UnsupportedOperationException();
-    }
-
-   //register the MonitoringLevelListeners
-    public void initializeMonitoring() {
-        throw new UnsupportedOperationException();
-    }
-
     public void killAllPools() {
         throw new UnsupportedOperationException();
     }

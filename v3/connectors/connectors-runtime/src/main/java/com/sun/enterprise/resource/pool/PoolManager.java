@@ -50,6 +50,7 @@ import org.jvnet.hk2.annotations.Contract;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.ManagedConnection;
+import javax.resource.spi.RetryableUnavailableException;
 import javax.transaction.Transaction;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,11 +86,8 @@ public interface PoolManager extends TransactedPoolManager {
     public PoolStatus getPoolStatus(String poolName);
     
 
-    ResourceHandle getResourceFromPool(ResourceSpec spec,
-                                       ResourceAllocator alloc,
-                                       ClientSecurityInfo info,
-                                       Transaction tran)
-            throws PoolingException;
+    public ResourceHandle getResourceFromPool(ResourceSpec spec, ResourceAllocator alloc, ClientSecurityInfo info,
+                                       Transaction tran) throws PoolingException, RetryableUnavailableException;
 
     public void createEmptyConnectionPool(String name, PoolType pt, Hashtable env) throws PoolingException;
 
@@ -101,14 +99,13 @@ public interface PoolManager extends TransactedPoolManager {
     public void putbackDirectToPool(ResourceHandle h, String poolName);
 
 
-    void resourceClosed(ResourceHandle res);
+    public void resourceClosed(ResourceHandle res);
 
-    void badResourceClosed(ResourceHandle res);
+    public void badResourceClosed(ResourceHandle res);
 
-    void resourceErrorOccurred(ResourceHandle res);
+    public void resourceErrorOccurred(ResourceHandle res);
 
-
-    void transactionCompleted(Transaction tran, int status);
+    public void transactionCompleted(Transaction tran, int status);
 
     public void emptyResourcePool(ResourceSpec spec);
 
@@ -116,23 +113,9 @@ public interface PoolManager extends TransactedPoolManager {
 
     public void reconfigPoolProperties(ConnectorConnectionPool ccp) throws PoolingException;
 
-
-    //sets/resets the monitoring levels for the pool
-    public void disableMonitoring(String poolName);
-
-    public void setMonitoringEnabledHigh(String poolName);
-
-    public void setMonitoringEnabledLow(String poolName);
-
-    //register the MonitoringLevelListeners
-    public void initializeMonitoring();
-
-
-    //get the pooltable
-    public ConcurrentHashMap getPoolTable();
-
+/*
     public ConcurrentHashMap getMonitoredPoolTable();
-
+*/
 
     public boolean switchOnMatching(String poolName);
 
@@ -146,15 +129,14 @@ public interface PoolManager extends TransactedPoolManager {
      * @throws PoolingException Thrown if some error occurs while
      *                          obtaining the resource
      */
-    Object getResource(ResourceSpec spec, ResourceAllocator alloc, ClientSecurityInfo info)
-            throws PoolingException;
+    public Object getResource(ResourceSpec spec, ResourceAllocator alloc, ClientSecurityInfo info)
+            throws PoolingException, RetryableUnavailableException;
 
     public ResourceReferenceDescriptor getResourceReference(String jndiName, String logicalName);
 
     public void killAllPools();
 
     public void killFreeConnectionsInPools();
-
 
     public ResourcePool getPool(String poolName);
 

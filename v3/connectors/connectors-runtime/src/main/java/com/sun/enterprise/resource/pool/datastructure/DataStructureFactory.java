@@ -68,8 +68,12 @@ public class DataStructureFactory {
         return ds;
     }
 
-    private static DataStructure initializeCustomDataStructureInPrivilegedMode(final String className, final String parameters,
-                                                                               final int maxPoolSize, final ResourceHandler handler, final String strategyClass) throws PoolingException {
+    private static DataStructure initializeCustomDataStructureInPrivilegedMode(final String className,
+                                                                               final String parameters,
+                                                                               final int maxPoolSize,
+                                                                               final ResourceHandler handler,
+                                                                               final String strategyClass)
+            throws PoolingException {
         Object result = AccessController.doPrivileged(new PrivilegedAction() {
             public Object run() {
 
@@ -90,8 +94,8 @@ public class DataStructureFactory {
         }
     }
 
-    private static DataStructure initializeDataStructure(String className, String parameters,
-                                                         int maxPoolSize, ResourceHandler handler, String strategyClass) throws Exception {
+    private static DataStructure initializeDataStructure(String className, String parameters, int maxPoolSize,
+                                                         ResourceHandler handler, String strategyClass) throws Exception {
         DataStructure ds;
         Object[] constructorParameters = new Object[]{parameters, maxPoolSize, handler, strategyClass};
 

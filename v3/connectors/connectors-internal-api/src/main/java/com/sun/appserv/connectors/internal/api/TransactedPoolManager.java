@@ -56,7 +56,6 @@ public interface TransactedPoolManager {
      */
     void resourceEnlisted(Transaction tran, ResourceHandle res) throws IllegalStateException;
 
-
     /**
      * registers the provided resource with the component & enlists the resource in the transaction
      * @param handle resource-handle
