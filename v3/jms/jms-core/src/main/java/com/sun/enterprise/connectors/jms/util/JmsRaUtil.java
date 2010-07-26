@@ -152,7 +152,7 @@ public class JmsRaUtil {
     }
     }
 
-    public static boolean isClustered(List clusters, String instanceName) throws ConnectorRuntimeException {
+    public static boolean isClustered(List clusters, String instanceName)  {
               //ConfigContext ctxt = ApplicationServer.getServerContext().getConfigContext();
               return (enableClustering() && isServerClustered(clusters,
                 instanceName));

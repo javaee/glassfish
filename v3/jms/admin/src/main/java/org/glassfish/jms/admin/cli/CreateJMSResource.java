@@ -319,8 +319,9 @@ public class CreateJMSResource implements AdminCommand {
                }
          }
         //parameters.set("restype", resourceType);
-
+		parameters.set(DEFAULT_OPERAND, jndiName);
         parameters.set("poolname", jndiName);
+
         if(description != null)
             parameters.set("description", description);
 
@@ -362,6 +363,7 @@ public class CreateJMSResource implements AdminCommand {
     {
         ParameterMap parameters = new ParameterMap();
         parameters.set("jndi_name", jndiName);
+        parameters.set(DEFAULT_OPERAND, jndiName);
         parameters.set("enabled", Boolean.toString(enabled));
         parameters.set("poolname", jndiName);
         parameters.set("target", target);

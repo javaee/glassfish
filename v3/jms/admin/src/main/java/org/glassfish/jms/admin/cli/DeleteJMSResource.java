@@ -43,6 +43,10 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.api.admin.RuntimeType;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
@@ -63,6 +67,9 @@ import java.util.Properties;
 @Service(name="delete-jms-resource")
 @Scoped(PerLookup.class)
 @I18n("delete.jms.resource")
+@Cluster({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.DOMAIN})
+
 public class DeleteJMSResource implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteJMSResource.class);
 
@@ -108,6 +115,8 @@ public class DeleteJMSResource implements AdminCommand {
             {
               ParameterMap params = new ParameterMap();
               params.set("jndi_name", jndiName);
+              params.set("DEFAULT", jndiName);
+              params.set("target", target);
 	          commandRunner.getCommandInvocation("delete-admin-object", subReport).parameters(params).execute();
 
               if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
@@ -124,7 +133,9 @@ public class DeleteJMSResource implements AdminCommand {
                 if (poolName != null && poolName.equals(defPoolName))
                 {
                      ParameterMap params = new ParameterMap();
+                     params.set("DEFAULT", jndiName);
                      params.set("connector_resource_name", jndiName);
+                     params.set("target", target);         
 		             commandRunner.getCommandInvocation("delete-connector-resource", subReport).parameters(params).execute();
 
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
@@ -137,6 +148,7 @@ public class DeleteJMSResource implements AdminCommand {
 
                     params = new ParameterMap();
                     params.set("poolname", jndiName);
+                    params.set("DEFAULT", jndiName);
 		            commandRunner.getCommandInvocation("delete-connector-connection-pool", subReport).parameters(params).execute();
 
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
@@ -159,7 +171,9 @@ public class DeleteJMSResource implements AdminCommand {
                     // as the ref. is the same.
 
                      ParameterMap params = new ParameterMap();
+                     params.set("DEFAULT", jndiName);
                      params.set("connector_resource_name", jndiName);
+                     params.set("target", target);
 		             commandRunner.getCommandInvocation("delete-connector-resource", subReport).parameters(params).execute();
 
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
