@@ -37,7 +37,7 @@
 
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" rendered="#{edit}" disabled="true"  text="$resource{i18n.button.Save} "
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save} "
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
                     {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
