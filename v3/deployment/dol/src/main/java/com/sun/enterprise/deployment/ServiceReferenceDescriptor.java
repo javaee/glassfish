@@ -677,9 +677,9 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
 
     boolean isConflict(ServiceReferenceDescriptor other) {
         return (!(getName().equals(other.getName()) &&
-                equals(getServiceInterface(), other.getServiceInterface()) &&
-                equals(getWsdlFileUri(), other.getWsdlFileUri()) &&
-                equals(getMappingFileUri(), other.getMappingFileUri()) 
+                DOLUtils.equals(getServiceInterface(), other.getServiceInterface()) &&
+                DOLUtils.equals(getWsdlFileUri(), other.getWsdlFileUri()) &&
+                DOLUtils.equals(getMappingFileUri(), other.getMappingFileUri()) 
                 //XXX need to compare the following
                 // handler
                 // handle-chains

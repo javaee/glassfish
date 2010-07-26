@@ -37,6 +37,7 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.types.EjbReference;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
@@ -432,10 +433,10 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
 
     boolean isConflict(EjbReferenceDescriptor other) {
         return (!(getName().equals(other.getName()) &&
-                equals(getType(), other.getType()) &&
-                equals(getEjbHomeInterface(), other.getEjbHomeInterface()) &&
-                equals(getEjbInterface(), other.getEjbInterface()) &&
-                equals(getLinkName(), other.getLinkName()))
+                DOLUtils.equals(getType(), other.getType()) &&
+                DOLUtils.equals(getEjbHomeInterface(), other.getEjbHomeInterface()) &&
+                DOLUtils.equals(getEjbInterface(), other.getEjbInterface()) &&
+                DOLUtils.equals(getLinkName(), other.getLinkName()))
                 ) ||
             isConflictResourceGroup(other);
     }

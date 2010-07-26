@@ -37,6 +37,7 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.types.MessageDestinationReference;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 
@@ -249,6 +250,15 @@ public class MessageDestinationReferenceDescriptor extends EnvironmentProperty
 	    toStringBuffer.append("Unresolved Message-Destination-Ref ").append(getName()).append(
                 "@").append(getType()).append("@").append(usage);
 	}	
+    }
+
+    boolean isConflict(MessageDestinationReferenceDescriptor other) {
+        return (!(getName().equals(other.getName()) &&
+                DOLUtils.equals(getDestinationType(), other.getDestinationType()) &&
+                DOLUtils.equals(getUsage(), other.getUsage()) &&
+                DOLUtils.equals(getMessageDestinationLinkName(), other.getMessageDestinationLinkName()))
+                ) ||
+            isConflictResourceGroup(other);
     }
     
     /* Equality on name. */

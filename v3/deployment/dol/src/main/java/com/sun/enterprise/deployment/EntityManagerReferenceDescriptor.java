@@ -37,6 +37,7 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.types.EntityManagerReference;
+import com.sun.enterprise.deployment.util.DOLUtils;
 
 import javax.persistence.PersistenceContextType;
 import java.util.HashMap;
@@ -114,6 +115,14 @@ public class EntityManagerReferenceDescriptor extends
     {
 	return referringBundle;
     }  
-    
+
+    boolean isConflict(EntityManagerReferenceDescriptor other) {
+        return (!(getName().equals(other.getName()) &&
+                DOLUtils.equals(getUnitName(), other.getUnitName()) &&
+                DOLUtils.equals(getPersistenceContextType(), other.getPersistenceContextType()) &&
+                properties.equals(other.properties))
+                ) ||
+            isConflictResourceGroup(other);
+    }
 }
 

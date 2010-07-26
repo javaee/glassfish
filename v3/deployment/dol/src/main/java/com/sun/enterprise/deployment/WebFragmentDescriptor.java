@@ -187,7 +187,9 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
         for (ServiceReferenceDescriptor serviceRef: webBundleDescriptor.getServiceReferenceDescriptors()) {
             ServiceReferenceDescriptor sr = _getServiceReferenceByName(serviceRef.getName());
             if (sr != null) {
-                conflictServiceReference = true;
+                if (sr.isConflict((ServiceReferenceDescriptor)serviceRef)) {
+                    conflictServiceReference = true;
+                }
                 unionInjectionTargets(sr, serviceRef);
             } else {
                 addServiceReferenceDescriptor(serviceRef);
@@ -215,7 +217,9 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
         for (JmsDestinationReferenceDescriptor jdRef: webBundleDescriptor.getJmsDestinationReferenceDescriptors()) {
             JmsDestinationReferenceDescriptor jdr = _getJmsDestinationReferenceByName(jdRef.getName());
             if (jdr != null) {
-                conflictJmsDestinationReference = true;
+                if (jdr.isConflict((JmsDestinationReferenceDescriptor)jdRef)) {
+                    conflictJmsDestinationReference = true;
+                }
                 unionInjectionTargets(jdr, jdRef);   
             } else {
                 addJmsDestinationReferenceDescriptor(jdRef);
@@ -230,7 +234,9 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
             MessageDestinationReferenceDescriptor mdr =
                 _getMessageDestinationReferenceByName(mdRef.getName());
             if (mdr != null) {
-                conflictMessageDestinationReference = true;
+                if (mdr.isConflict(mdRef)) {
+                    conflictMessageDestinationReference = true;
+                }
                 unionInjectionTargets(mdr, mdRef);
             } else {
                 addMessageDestinationReferenceDescriptor(mdRef);
@@ -245,7 +251,9 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
             EntityManagerReferenceDescriptor emr =
                 _getEntityManagerReferenceByName(emRef.getName());
             if (emr != null) {
-                conflictEntityManagerReference = true;
+                if (emr.isConflict(emRef)) {
+                    conflictEntityManagerReference = true;
+                }
                 unionInjectionTargets(emr, emRef);
             } else {
                 addEntityManagerReferenceDescriptor(emRef);
@@ -260,7 +268,9 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
             EntityManagerFactoryReferenceDescriptor emfr =
                 _getEntityManagerFactoryReferenceByName(emfRef.getName());
             if (emfr != null) {
-                conflictEntityManagerReference = true;
+                if (emfr.isConflict(emfRef)) {
+                    conflictEntityManagerReference = true;
+                }
                 unionInjectionTargets(emfr, emfRef);
             } else {
                 addEntityManagerFactoryReferenceDescriptor(emfRef);
@@ -282,10 +292,12 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     protected void combineDataSourceDefinitionDescriptors(WebBundleDescriptor webBundleDescriptor) {
         for (DataSourceDefinitionDescriptor ddd: webBundleDescriptor.getDataSourceDefinitionDescriptors()) {
             DataSourceDefinitionDescriptor ddDesc = getDataSourceDefinitionDescriptor(ddd.getName());
-            if (ddDesc == null) {
-                getDataSourceDefinitionDescriptors().add(ddd);
+            if (ddDesc != null) {
+                if (ddDesc.isConflict(ddd)) {
+                    conflictDataSourceDefinition = true;
+                }
             } else {
-                conflictDataSourceDefinition = true;
+                getDataSourceDefinitionDescriptors().add(ddd);
             }
         }
     }

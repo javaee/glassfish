@@ -512,7 +512,7 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
 
     boolean isConflict(ResourceReferenceDescriptor other) {
         return (!(getName().equals(other.getName()) &&
-                equals(getType(), other.getType()) &&
+                DOLUtils.equals(getType(), other.getType()) &&
                 getAuthorization().equals(other.getAuthorization()) &&
                 getSharingScope().equals(other.getSharingScope()))
                 ) ||

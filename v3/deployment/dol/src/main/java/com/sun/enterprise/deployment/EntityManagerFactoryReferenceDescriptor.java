@@ -36,6 +36,7 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.types.EntityManagerFactoryReference;
+import com.sun.enterprise.deployment.util.DOLUtils;
 
 /**
  * An object representing a component environment reference 
@@ -85,5 +86,11 @@ public class EntityManagerFactoryReferenceDescriptor extends
 	return referringBundle;
     }    
     
+    boolean isConflict(EntityManagerFactoryReferenceDescriptor other) {
+        return (!(getName().equals(other.getName()) &&
+                DOLUtils.equals(getUnitName(), other.getUnitName()))
+                ) ||
+            isConflictResourceGroup(other);
+    }
 }
 

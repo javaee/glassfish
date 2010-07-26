@@ -36,11 +36,12 @@
 
  package com.sun.enterprise.deployment;
 
+import com.sun.enterprise.deployment.runtime.ApplicationParameter;
 import com.sun.enterprise.deployment.web.ContextParameter;
 import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.deployment.web.InitializationParameter;
-import com.sun.enterprise.deployment.runtime.ApplicationParameter;
 import com.sun.enterprise.deployment.web.WebDescriptor;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.internal.api.RelativePathResolver;
 
@@ -415,7 +416,7 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
 
     boolean isConflict(EnvironmentProperty other) {
         return (!(getName().equals(other.getName()) &&
-                equals(getType(), other.getType()) &&
+                DOLUtils.equals(getType(), other.getType()) &&
                 getValue().equals(other.getValue()))
                 ) ||
             isConflictResourceGroup(other);
@@ -424,11 +425,6 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
     protected boolean isConflictResourceGroup(EnvironmentProperty other) {
         return !(getLookupName().equals(other.getLookupName()) &&
                 getMappedName().equals(other.getMappedName()));
-    }
-
-    protected boolean equals(String a, String b) {
-        return ((a == null && b == null) ||
-                (a != null && a.equals(b)));
     }
 
     //

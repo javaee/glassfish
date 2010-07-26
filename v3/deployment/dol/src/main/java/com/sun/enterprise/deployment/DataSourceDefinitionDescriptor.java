@@ -370,4 +370,24 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
     public void addDataSourcePropertyDescriptor(DataSourcePropertyDescriptor propertyDescriptor){
         properties.put(propertyDescriptor.getName(), propertyDescriptor.getValue());
     }
+
+    boolean isConflict(DataSourceDefinitionDescriptor other) {
+        return !(getName().equals(other.getName()) &&
+                DOLUtils.equals(getClassName(), other.getClassName()) &&
+                DOLUtils.equals(getServerName(), other.getServerName()) &&
+                getPortNumber() == other.getPortNumber() &&
+                DOLUtils.equals(getDatabaseName(), other.getDatabaseName()) &&
+                DOLUtils.equals(getUrl(), other.getUrl()) &&
+                DOLUtils.equals(getUser(), other.getUser()) &&
+                DOLUtils.equals(getPassword(), other.getPassword()) &&
+                properties.equals(other.properties) &&
+                getLoginTimeout() == other.getLoginTimeout() &&
+                isTransactional() == other.isTransactional() &&
+                getIsolationLevel() == other.getIsolationLevel() &&
+                getInitialPoolSize() == other.getInitialPoolSize() &&
+                getMinPoolSize() == other.getMinPoolSize() &&
+                getMaxPoolSize() == other.getMaxPoolSize() &&
+                getMaxIdleTime() == other.getMaxIdleTime() &&
+                getMaxStatements() == other.getMaxStatements());
+    }
 }

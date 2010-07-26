@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.deployment;
 
+import com.sun.enterprise.deployment.util.DOLUtils;
+
 /**
  * I am an object representing a dependency on a JMS Destination
  * (Queue/Topic)
@@ -138,6 +140,13 @@ public class JmsDestinationReferenceDescriptor extends EnvironmentProperty imple
 
     public boolean isCDIBeanManager() {
         return (getRefType().equals(CDI_BEAN_MANAGER_TYPE));
+    }
+
+    boolean isConflict(ResourceReferenceDescriptor other) {
+        return (!(getName().equals(other.getName()) &&
+                DOLUtils.equals(getType(), other.getType()))
+                ) ||
+            isConflictResourceGroup(other);
     }
 
     /* Equality on name. */
