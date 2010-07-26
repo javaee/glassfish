@@ -150,25 +150,31 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
-                        <artifactId>maven-antrun-extended-plugin</artifactId>
-                    <!-- start of ant execution -->
-	                <executions>
-		            <execution>
-		                <phase>package</phase>
-         			<configuration>
-		                    <tasks>
-				        <filter token="BUILD_ID" value="${build.id}"/>
-					    <copy file="pkg_conf.py.template" tofile="pkg_conf.py" 
-					          filtering="true" failonerror="false"/>
-	      		            </tasks>
-                                </configuration>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.4.3</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>validate</phase>
                                 <goals>
-                                    <goal>run</goal>
-	                        </goals>
-	                    </execution>
-		        </executions>    
-                    </plugin> 
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${basedir}/..</outputDirectory>
+                                    <overwrite>true</overwrite>
+                                    <resources>          
+                                        <resource>
+                                            <directory>${basedir}/../resources</directory>
+                                            <filtering>true</filtering>
+                                            <includes>
+                                                <include>pkg_conf.py</include>
+                                           </includes>
+                                        </resource>
+                                    </resources>              
+                                </configuration>            
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
