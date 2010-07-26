@@ -164,6 +164,7 @@ Variables Used:
     <fileset dir="${basedir}/docroot" casesensitive="yes">
       <include name="**/*.html"/>
       <include name="**/*.HTML"/>
+      <include name="**/*.xhtml"/>
       <include name="**/*.jsp"/>
       <include name="**/*.jspx"/>
       <include name="**/*.jspf"/>
