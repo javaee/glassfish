@@ -52,7 +52,7 @@
     </event>
             <sun:form id="propertyForm">
 
-#include "/cluster/cluster/clusterInstanceTabs.inc"
+#include "/cluster/standalone/standaloneInstanceTabs.inc"
 "<br/>
 " instanceName = #{pageSession.instanceName}
             </sun:form>
