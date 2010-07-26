@@ -1559,8 +1559,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     </target>
 
     <target name="stop-server" depends="setOSConditions">
-        <antcall target="stop-server-unix"/>
-        <antcall target="stop-server-windows"/>
         <antcall target="stop-server-embedded"/>
     </target>
 
