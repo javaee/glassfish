@@ -36,7 +36,9 @@
 package wftest3;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
+import javax.annotation.Resource;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -45,11 +47,18 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
+import javax.sql.DataSource;
 
 @WebFilter(urlPatterns={ "/" }, dispatcherTypes= { DispatcherType.REQUEST })
 public class WFTestFilter3 implements Filter {
+    @Resource(name="jdbc/__default")  DataSource ds;
+
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println(">>> WFTestFilter3.init");
+        try {
+            System.out.println(">>> WFTestFilter3.init:" + ds.getLoginTimeout());
+        } catch(SQLException ex) {
+            throw new ServletException(ex);
+        }
     }   
 
     public void doFilter(ServletRequest req, ServletResponse res,
