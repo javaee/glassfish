@@ -111,8 +111,12 @@
             <!afterCreate
                 getClientId(component="$this{component}" clientId=>$attribute{sheetId});
             />
-            <sun:property id="hostName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.hostHomeLabel}" >
-                <sun:staticText id="hostName" text="#{sessionScope.serverName}" />
+            <sun:property id="clusterName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.ClusterName}" >
+                <sun:staticText id="clusterName" text="#{pageSession.clusterName}" />
+            </sun:property>
+
+            <sun:property id="instanceName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.instanceName}" >
+                <sun:staticText id="instanceName" text="#{pageSession.instanceName}" />
             </sun:property>
 
             <sun:property id="jvmProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">

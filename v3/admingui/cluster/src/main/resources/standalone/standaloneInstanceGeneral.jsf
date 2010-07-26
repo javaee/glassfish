@@ -33,38 +33,27 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- standalone/standaloneInstanceGeneral.jsf -->
 
-<!--
-<sun:page id="page1">
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
+<!composition template="/templates/default.layout"  guiTitle="" >
+<!define name="content">
+    <event>
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="com.sun.enterprise.tools.admingui.resources.Strings")
-        setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
-        setSessionAttribute(key="standaloneTabs" value="general");
-        getRequestValue(key="instanceName" value=>$page{instanceName});
-        setPageSessionAttribute(key="pageName" value="standalone/standaloneInstanceGeneral.jsf");
-        isAdminServer(instanceName="#{instanceName}" isAdminServer=>$page{isAdminServer});
-        getStandaloneInstanceGeneralAttributes(instanceName="#{instanceName}", isAdminServer="#{isAdminServer}", httpPorts=>$page{httpPorts},
-            iiopPorts=>$page{iiopPorts}, configDir=>$page{configDir}, version=>$page{version}, 
-            debugPort=>$page{debugPort}, nodeAgentStatus=>$page{nodeAgentStatus}, nodeAgent=>$page{nodeAgent}, 
-            status=>$page{status}, config=>$page{config}, running=>$page{running});
-        if(#{SipConfigBean.enabled}) {
-            setResourceBundle(key="sip" bundle="org.jvnet.glassfish.comms.admin.gui.extensions.resources.Strings");
-        } 
-    />
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.instance.GeneralTitle}">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head> 
-        <sun:body id="body3">
+        getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
+        urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+        setSessionAttribute(key="clusterInstanceTabs" value="general");
+
+        />
+    </event>
             <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-#include "standalone/standaloneInstanceTabs.inc"
-#include "alertMsg.inc"       
-#include "shared/instanceGeneral.inc"   
-                    <sun:hidden id="helpKey" value="$resource{help.standaloneInstanceGeneral}" />
+
+#include "/cluster/cluster/clusterInstanceTabs.inc"
+"<br/>
+" instanceName = #{pageSession.instanceName}
             </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>
--->
+</define>
+</composition>

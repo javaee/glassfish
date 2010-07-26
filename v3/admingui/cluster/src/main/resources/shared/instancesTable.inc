@@ -60,7 +60,7 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n.common.name.header}" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.Name}" url="#{pageSession.editLink}?instanceName=#{td.value.Name}" />
+        <sun:hyperlink id="link" text="#{td.value.Name}" url="#{pageSession.editLink}&instanceName=#{td.value.Name}" />
     </sun:tableColumn>
     <sun:tableColumn headerText="$resource{i18ncs.standalone.ColWeight}" rowHeader="$boolean{true}" id="col2">
         <sun:textField id="weight" columns="$int{10}" text="#{td.value.LbWeight}" />

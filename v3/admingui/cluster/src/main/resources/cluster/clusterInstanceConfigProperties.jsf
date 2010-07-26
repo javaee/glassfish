@@ -35,48 +35,31 @@
 -->
 <!-- cluster/clusterInstanceConfigProperties.jsf -->
 
-<sun:page id="page1">
-    <!beforeCreate
-        setResourceBundle(key="i18n" bundle="com.sun.enterprise.tools.admingui.resources.Strings")
-        setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
-        getRequestValue(key="clusterName" value=>$page{clusterName});
-        getRequestValue(key="instanceName" value=>$page{instanceName});
-        //The following handler has been removed. convert to REST when work on this page.
-        //getConfigName(target="#{instanceName}", configName=>$attribute{configName});
-        setPageSessionAttribute(key="PageTitleHelp" value="$resource{i18n.inst.ConfigPropsPageHelp, ${configName}}");
-        getInstanceSystemProperties(instanceName="#{instanceName}", result=>$attribute{listOfRows} );
-    />
-    <sun:html id="html2">
-        <sun:head id="propertyhead">
-        </sun:head>
-        <sun:body id="body3">
-            <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-#include "cluster/clusterInstanceTabs.inc"
-#include "alertMsg.inc"                       
-                 <sun:title id="propertyContentPage" title="$resource{i18n.inst.ConfigPropsPageTitle}"
-                 helpText="#{PageTitleHelp}">
-                    <!-- Buttons  -->                    
-                    <!facet pageButtonsTop>
-                    <sun:panelGroup id="topButtons">
-                        <sun:button id="saveButton" text="$resource{i18n.button.Save}" >
-                            <!command
-                            getUIComponent(clientId="$pageSession{configPropsTableRowGroupId}", component=>$attribute{tableRowGroup});      
-                            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                            convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{addProps});
-                            prepareSuccessfulMsg();
-                            saveInstanceSystemProperties(InstanceName="#{instanceName}", AddProps="${addProps}"  );
-                            setAttribute(key="instanceName" value="#{instanceName}");
-                            navigate("cluster/clusterInstanceConfigProperties.jsf");
-                            />
-                        </sun:button>
-                    </sun:panelGroup>
-                    </facet>                        
-                 </sun:title>
 
-#include "shared/instanceConfigPropsTable.inc"                  
-	<sun:hidden id="helpKey" value="$resource{help.clusterInstanceConfigProperties}" />
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
+<!composition template="/templates/default.layout"  guiTitle="" >
+<!define name="content">
+    <event>
+    <!beforeCreate
+        getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
+        urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
+        getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
+        urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+        setSessionAttribute(key="clusterInstanceTabs" value="configProps");
+
+        />
+    </event>
+            <sun:form id="propertyForm">
+
+#include "/cluster/cluster/clusterInstanceTabs.inc"
+"<br/>
+" ClusterName = #{pageSession.clusterName}
+"<br/>
+" InstanceName = #{pageSession.instanceName}
             </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>
+</define>
+</composition>

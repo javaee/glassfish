@@ -34,38 +34,38 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- cluster/clusterInstanceTabs.inc -->
+<!-- standalone/standaloneInstanceTabs.inc -->
 
-<sun:tabSet id="clusterInstanceTabs" immediate="$boolean{true}" selected="#{sessionScope.clusterInstanceTabs}">
+<sun:tabSet id="standaloneInstanceTabs" immediate="$boolean{true}" selected="#{sessionScope.standaloneInstanceTabs}">
 
     <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18nc.GeneralTab}" >
         <!command
-            setSessionAttribute(key="clusterInstanceTabs" value="general");
-            gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
+            setSessionAttribute(key="standaloneInstanceTabs" value="general");
+            gf.redirect(page="#{request.contextPath}/cluster/standalone/standaloneInstanceGeneral.jsf?instanceName=#{pageSession.encodedInstanceName}");
         />       
     </sun:tab>
 
-    <sun:tab id="clusterProp" immediate="$boolean{true}" text="$resource{i18nc.PropertiesTab}">
+    <sun:tab id="standaloneProp" immediate="$boolean{true}" text="$resource{i18nc.PropertiesTab}">
         <!command
-            setSessionAttribute(key="clusterInstanceTabs" value="configProps");
-            gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterInstanceConfigProperties.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
+            setSessionAttribute(key="standaloneInstanceTabs" value="configProps");
+            gf.redirect(page="#{request.contextPath}/cluster/standalone/standaloneInstanceConfigProperties.jsf?instanceName=#{pageSession.encodedInstanceName}");
         />
         <sun:tab id="configProps" immediate="$boolean{true}" text="$resource{i18n.inst.tab.ConfigProperties}" >
             <!command
-                setSessionAttribute(key="clusterInstanceTabs" value="configProps");
-                gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterInstanceConfigProperties.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
+                setSessionAttribute(key="standaloneInstanceTabs" value="configProps");
+                gf.redirect(page="#{request.contextPath}/cluster/standalone/standaloneInstanceConfigProperties.jsf?instanceName=#{pageSession.encodedInstanceName}");
             />
 	</sun:tab>
         <sun:tab id="instanceProps" immediate="$boolean{true}" text="$resource{i18n.inst.tab.InstanceProperties}" >
 	    <!command
-                setSessionAttribute(key="clusterInstanceTabs" value="instanceProps");
-                gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterInstanceProperties.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
+                setSessionAttribute(key="standaloneInstanceTabs" value="instanceProps");
+                gf.redirect(page="#{request.contextPath}/cluster/standalone/standaloneInstanceProperties.jsf?instanceName=#{pageSession.encodedInstanceName}");
 	    />
 	</sun:tab>
     </sun:tab>
 </sun:tabSet>
 <event>
     <!afterCreate
-	includeIntegrations(type="org.glassfish.admingui:clusterInstTab");
+	includeIntegrations(type="org.glassfish.admingui:standaloneInstTab");
     />
 </event>
