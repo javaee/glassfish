@@ -37,7 +37,16 @@
 
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
-            <sun:button id="newButton" text="$resource{i18n.button.OK}"
+            <sun:button id="saveButton" rendered="#{edit}" disabled="true"  text="$resource{i18n.button.Save} "
+                    onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
+                    {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+                <!command
+                    gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/#{pageSession.encodedNodeName}/_update-node" attrs="#{pageSession.valueMap}")
+                    gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                />
+            </sun:button>
+
+            <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
                 gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/create-node" attrs="#{pageSession.valueMap}")
@@ -71,6 +80,9 @@
             </sun:property>
             <sun:property id="installdir"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.InstallDir}" helpText="$resource{i18ncs.node.InstallDirHelp}">
                 <sun:textField id="installDir" columns="$int{60}" text="#{pageSession.valueMap['installdir']}" />
+            </sun:property>
+            <sun:property id="force"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.force}" helpText="$resource{i18ncs.node.forceHelp}">
+                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['force']}" selectedValue="true" />
             </sun:property>
         </sun:propertySheetSection>
 

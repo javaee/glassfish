@@ -61,9 +61,10 @@
                 gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth", currentMap="#{pageSession.valueMap}"  valueMap="#{pageSession.valueMap}");
             }
         }
+        println("================= #{pageSession.valueMap}")
         setPageSessionAttribute(key="edit" value="#{true}");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
-        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+        setPageSessionAttribute(key="hasPropertySheet" value="#{false}" );
         setPageSessionAttribute(key="title" value="$resource{i18ncs.node.EditPageTitle}");
         setPageSessionAttribute(key="titleHelp" value="$resource{i18ncs.node.EditPageTitleHelp}");
     />
@@ -71,74 +72,7 @@
     </event>
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
- //#include "/cluster/node/nodeAttr.inc"
-
- <sun:title id="propertyContentPage" title="#{pageSession.title}" helpText="#{pageSession.titleHelp}">
-    <!facet pageButtonsTop>
-        <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" rendered="#{edit}" disabled="true" text="$resource{i18n.button.Save} (TBD)"
-                    onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
-                    {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
-                <!command
-                    if (#{pageSession['rest-api']}){
-                        if(#{pageSession.hasPropertySheet}){
-                            gf.createEntity(endpoint="#{pageSession.selfUrl}"
-                                attrs="#{pageSession.valueMap}"
-                                skipAttrs="#{pageSession.skipAttrsList}"
-                                convertToFalse="#{pageSession.convertToFalseList}"
-                                onlyUseAttrs="#{pageSession.onlyUseAttrs}"
-                            );
-                        }
-                    }
-                />
-            </sun:button>
-
-            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
-                <!command
-                    gf.redirect(page="#{parentPage}?configName=#{configName}");
-                />
-            </sun:button>
-        </sun:panelGroup>
-    </facet>
-    </sun:title>
-
-    <sun:propertySheet id="propertySheet">
-        <sun:propertySheetSection id="propertSectionTextField">
-            <sun:property id="staticnameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
-                <sun:staticText id="IdStatic" text="#{pageSession.valueMap['Name']}"/>
-            </sun:property>
-            <sun:property id="nameProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" helpText="$resource{i18ncs.node.NameHelp}">
-                <sun:textField id="name" text="#{pageSession.valueMap['Id']}" columns="$int{60}" styleClass="required" required="#{true}" />
-            </sun:property>
-            <sun:property id="NodeHost"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.NodeHost}" helpText="$resource{i18ncs.node.NodeHostHelp}">
-                <sun:textField id="NodeHost" columns="$int{60}" text="#{pageSession.valueMap['NodeHost']}" />
-            </sun:property>
-            <sun:property id="NodeHome"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.NodeDir}" helpText="$resource{i18ncs.node.NodeDirHelp}">
-                <sun:textField id="NodeHome" columns="$int{60}" text="#{pageSession.valueMap['NodeDir']}" />
-            </sun:property>
-            <sun:property id="installdir"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.InstallDir}" helpText="$resource{i18ncs.node.InstallDirHelp}">
-                <sun:textField id="installDir" columns="$int{60}" text="#{pageSession.valueMap['InstallDir']}" />
-            </sun:property>
-        </sun:propertySheetSection>
-
-        <sun:propertySheetSection id="sshConnector" label="$resource{i18ncs.node.sshConnectorSection}" >
-            <sun:property id="sshNodeHost"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.sshHost}" helpText="$resource{i18ncs.node.sshHostHelp}">
-                <sun:textField id="NodeHost"  columns="$int{60}" text="#{pageSession.valueMap['SshHost']}" />
-            </sun:property>
-            <sun:property id="sshNodeHome"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.sshPort}" helpText="$resource{i18ncs.node.sshPortHelp}">
-                <sun:textField id="NodeHome" columns="$int{60}" text="#{pageSession.valueMap['SshPort']}" />
-            </sun:property>
-        </sun:propertySheetSection>
-
-        <sun:propertySheetSection id="sshAuth" label="$resource{i18ncs.node.sshAuthSection}" >
-            <sun:property id="UserName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.UserName}" helpText="$resource{i18ncs.node.UserNameHelp}">
-                <sun:textField id="UserName" columns="$int{60}" text="#{pageSession.valueMap['UserName']}" />
-            </sun:property>
-            <sun:property id="Keyfile"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.Keyfile}" helpText="$resource{i18ncs.node.KeyfileHelp}">
-                <sun:textField id="Keyfile" columns="$int{60}" text="#{pageSession.valueMap['Keyfile']}" />
-            </sun:property>
-        </sun:propertySheetSection>
-    </sun:propertySheet>
+#include "/cluster/node/nodeAttr.inc"
 
 "<br /><br />
 	<sun:hidden id="helpKey" value="$resource{help_cluster.nodeEdit}" />
