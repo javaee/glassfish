@@ -573,8 +573,8 @@ public class LoginContextDriver  {
                 });
             }
         } catch (Exception ex) {
-            if (_logger.isLoggable(Level.INFO)) {
-                _logger.log(Level.INFO, "Exception when trying to populate groups for CallerPrincipal " + identityAssertion, ex);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Exception when trying to populate groups for CallerPrincipal " + identityAssertion, ex);
             }
         }
         return subject;
