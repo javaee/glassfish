@@ -45,6 +45,8 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_IIOP_LISTENERS = "A number of IIOP listeners can be configured for an ORB";
     private static final String TRIGGER_NEW_IIOP_LISTENER = "New IIOP Listener";
     private static final String TRIGGER_EDIT_IIOP_LISTENER = "Edit IIOP Listener";
+    private static final String TRIGGER_ORB = "The Object Request Broker (ORB) is the central component of CORBA";
+    private static final String TRIGGER_ORB_SUCCESS = "New values successfully saved";
 
     @Test
     public void testAddIiopListener() {
@@ -74,5 +76,17 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_IIOP_LISTENERS);
 
         deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", iiopName);
+    }
+
+    @Test
+    public void testORB() {
+        final String totalConn = "1048";
+        final String maxMsgSize = "2048";
+        clickAndWait("treeForm:tree:configurations:server-config:orb:orb_link", TRIGGER_ORB);
+        selenium.type("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns", totalConn);
+        selenium.select("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize", "label="+maxMsgSize);
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_ORB_SUCCESS);
+        assertEquals(totalConn, selenium.getValue("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns"));
+        assertEquals(maxMsgSize, selenium.getValue("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize"));
     }
 }
