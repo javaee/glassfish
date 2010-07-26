@@ -368,40 +368,84 @@ public class ResourceUtil {
 
     public static MethodMetaData getMethodMetaData2(Dom parent, ConfigModel childModel, int parameterType) {
         MethodMetaData methodMetaData = new MethodMetaData();
+        List<Class<?>> interfaces = new ArrayList<Class<?>>();
+        Map<String, ParameterMetaData> params = new HashMap<String, ParameterMetaData>();
 
-        Class<? extends ConfigBeanProxy> configBeanProxy = null;
         try {
-            configBeanProxy = (Class<? extends ConfigBeanProxy>) childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
-            System.out.println(configBeanProxy.getInterfaces());
+            Class<? extends ConfigBeanProxy> configBeanProxy =
+                    (Class<? extends ConfigBeanProxy>) childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
+            getInterfaces(configBeanProxy, interfaces);
 
             Set<String> attributeNames = childModel.getAttributeNames();
             for (String attributeName : attributeNames) {
-                String methodName = getAttributeMethodName(attributeName);
+                String methodName = ResourceUtil.getAttributeMethodName(attributeName);
+
+                //camelCase the attributeName before passing out
+                attributeName = Util.eleminateHypen(attributeName);
+
+                ParameterMetaData parameterMetaData = params.get(attributeName);
+                if (parameterMetaData == null) {
+                    parameterMetaData = new ParameterMetaData();
+                    params.put(attributeName, parameterMetaData);
+                }
+                // Check parent interfaces
+                for (int i = interfaces.size() - 1; i >= 0; i--) {
+                    Class<?> intf = interfaces.get(i);
+                    try {
+                        Method method = intf.getMethod(methodName);
+                        Attribute attribute = method.getAnnotation(Attribute.class);
+                        if (attribute != null) {
+                            ParameterMetaData localParam = ResourceUtil.getParameterMetaData(attribute);
+                            copyParameterMetaDataAttribute(localParam, parameterMetaData, Constants.DEFAULT_VALUE);
+                            copyParameterMetaDataAttribute(localParam, parameterMetaData, Constants.KEY);
+                            copyParameterMetaDataAttribute(localParam, parameterMetaData, Constants.TYPE);
+                            copyParameterMetaDataAttribute(localParam, parameterMetaData, Constants.OPTIONAL);
+                        }
+                    } catch (NoSuchMethodException e) {
+                    }
+                }
+
+                // Check ConfigBean
                 try {
                     Method method = configBeanProxy.getMethod(methodName);
                     Attribute attribute = method.getAnnotation(Attribute.class);
                     if (attribute != null) {
-                        ParameterMetaData parameterMetaData = getParameterMetaData(attribute);
-
-                        //camelCase the attributeName before passing out
-                        attributeName = eleminateHypen(attributeName);
-                        if (parameterType == Constants.QUERY_PARAMETER) {
-                            methodMetaData.putQueryParamMetaData(attributeName, parameterMetaData);
-                        } else {
-                            //message parameter
-                            methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
-                        }
+                        ParameterMetaData localParam = ResourceUtil.getParameterMetaData(attribute);
+                        copyParameterMetaDataAttribute(localParam, parameterMetaData, Constants.DEFAULT_VALUE);
+                        copyParameterMetaDataAttribute(localParam, parameterMetaData, Constants.KEY);
+                        copyParameterMetaDataAttribute(localParam, parameterMetaData, Constants.TYPE);
+                        copyParameterMetaDataAttribute(localParam, parameterMetaData, Constants.OPTIONAL);
                     }
                 } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
+                }
+
+                if (parameterType == Constants.QUERY_PARAMETER) {
+                    methodMetaData.putQueryParamMetaData(attributeName, parameterMetaData);
+                } else {
+                    //message parameter
+                    methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
                 }
             }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException cnfe) {
+            throw new RuntimeException(cnfe);
         }
 
         return methodMetaData;
     }
+
+    protected static void copyParameterMetaDataAttribute(ParameterMetaData from, ParameterMetaData to, String key) {
+        if (from.getAttributeValue(key) != null) {
+            to.putAttribute(key, from.getAttributeValue(key));
+        }
+    }
+
+    protected static void getInterfaces(Class<?> clazz, List<Class<?>> interfaces) {
+        for (Class<?> intf : clazz.getInterfaces()) {
+            interfaces.add(intf);
+            getInterfaces(intf, interfaces);
+        }
+    }
+
     /**
      * Constructs and returns the parameter meta-data.
      * @param command the command associated with the resource method
@@ -539,7 +583,7 @@ public class ResourceUtil {
     }
 
     //Construct parameter meta-data from the model
-    private static ParameterMetaData getParameterMetaData(CommandModel.ParamModel paramModel) {
+    static ParameterMetaData getParameterMetaData(CommandModel.ParamModel paramModel) {
         Param param = paramModel.getParam();
         ParameterMetaData parameterMetaData = new ParameterMetaData();
 
@@ -552,7 +596,7 @@ public class ResourceUtil {
     }
 
     //Construct parameter meta-data from the attribute annotation
-    private static ParameterMetaData getParameterMetaData(Attribute attribute) {
+    static ParameterMetaData getParameterMetaData(Attribute attribute) {
         ParameterMetaData parameterMetaData = new ParameterMetaData();
         parameterMetaData.putAttribute(Constants.TYPE, getXsdType(attribute.dataType().toString()));
         parameterMetaData.putAttribute(Constants.OPTIONAL, Boolean.toString(!attribute.required()));
@@ -625,7 +669,7 @@ public class ResourceUtil {
         return javaType;
     }
 
-    private static String getAttributeMethodName(String attributeName) {
+    static String getAttributeMethodName(String attributeName) {
         return methodNameFromDtdName(attributeName, "get");
     }
 
