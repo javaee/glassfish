@@ -134,9 +134,14 @@ public final class PortManager {
                 logMessage.append("\n").append(name).append("=").append("" + port);
             }
 
-            String msg = Strings.get("PortManager.reassign.summary", serverName, logMessage.toString());
-            logger.info(msg);
-            return msg;
+            if (logMessage.length() > 0) {
+                String msg = Strings.get("PortManager.reassign.summary", serverName, logMessage.toString());
+                logger.info(msg);
+                return msg;
+            }
+            
+            return null;
+
         }
         catch (Exception e) {
             throw new TransactionFailure(e.toString(), e);
@@ -153,13 +158,14 @@ public final class PortManager {
         sb.append("All Ports in all other servers on same host: " + allPorts);
         return sb.toString();
     }
-/*
+    /*
      * This method is used at creation time and later on in order to get a message
      * back to a remote client that just created this server.
      * If there are any system-property reassignments of ports for the given server
      * return a String representation.
      * If not return null.
      */
+
     public static String generateReassignPortMessage(final Server server) {
         try {
             StringBuilder logMessage = new StringBuilder();
