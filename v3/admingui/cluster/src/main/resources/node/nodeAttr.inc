@@ -73,10 +73,10 @@
                 <sun:textField id="name" text="#{pageSession.valueMap['id']}" columns="$int{60}" styleClass="required" required="#{true}" />
             </sun:property>
             <sun:property id="NodeHost"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.NodeHost}" helpText="$resource{i18ncs.node.NodeHostHelp}">
-                <sun:textField id="NodeHost" columns="$int{60}" text="#{pageSession.valueMap['nodehost']}" />
+                <sun:textField id="NodeHost" columns="$int{60}" text="#{pageSession.valueMap['nodehost']}" styleClass="required" required="#{true}"/>
             </sun:property>
             <sun:property id="NodeHome"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.NodeDir}" helpText="$resource{i18ncs.node.NodeDirHelp}">
-                <sun:textField id="NodeHome" columns="$int{60}" text="#{pageSession.valueMap['nodedir']}" styleClass="required"/>
+                <sun:textField id="NodeHome" columns="$int{60}" text="#{pageSession.valueMap['nodedir']}" />
             </sun:property>
             <sun:property id="installdir"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.InstallDir}" helpText="$resource{i18ncs.node.InstallDirHelp}">
                 <sun:textField id="installDir" columns="$int{60}" text="#{pageSession.valueMap['installdir']}" />
