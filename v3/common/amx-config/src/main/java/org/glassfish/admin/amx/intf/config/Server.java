@@ -59,9 +59,16 @@ public interface Server
     public String getConfigRef();
 
     /**
+    Get the name of the node element referenced by this server.
+    @since Glassfish 3.1
+     */
+    public String getNode();
+
+    /**
     Get the name of the node-agent element referenced by this server.
     @since Glassfish V3
      */
+    @Deprecated
     public String getNodeAgentRef();
 
     public Map<String, ApplicationRef> getApplicationRef();

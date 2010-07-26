@@ -95,7 +95,7 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
         try {
             RemoteCommand rc = new RemoteCommand("_unregister-instance", programOpts, env);
             rc.execute("_unregister-instance",
-                    "--nodeagent", getServerDirs().getServerParentDir().getName(),
+                    "--node", getServerDirs().getServerParentDir().getName(),
                     //"--remote_only", "true",
                     getServerDirs().getServerName());
         }

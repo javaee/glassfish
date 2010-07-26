@@ -113,11 +113,12 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * Gets the value of the nodeAgentRef property.
      *
      * SE/EE only. Specifies name of node agent where server instance is hosted
-     * 
+     *
      * @return possible object is
      *         {@link String }
      */
     @Attribute
+    @Deprecated
     String getNodeAgentRef();
 
     /**
@@ -127,7 +128,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name = "nodeagent", optional = true)
+    @Deprecated
     void setNodeAgentRef(String value) throws PropertyVetoException;
 
     /**
@@ -160,7 +161,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * use this weight while load balancing requests within the cluster.
      * It is the responsibility of the administrator to set the relative weights
      * correctly, keeping in mind deployed hardware capacity
-     * 
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -644,9 +645,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Scoped(PerLookup.class)
     class DeleteDecorator implements DeletionDecorator<Servers, Server> {
 
-        // for backward compatibility, ignored.
-        @Param(name = "nodeagent", optional = true)
-        String nodeagent;
+        //TODO - add support for node?
+        @Param(name = "node", optional = true)
+        String node;
         @Inject
         Configs configs;
         @Inject
