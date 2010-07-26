@@ -342,6 +342,11 @@ public class ApplicationLifecycle implements Deployment {
                 appInfo.setIsJavaEEApp(sortedEngineInfos);
                 appRegistry.add(appName, appInfo);
 
+                // send the APPLICATION_PREPARED event
+                // set the phase and thread context classloader properly 
+                // before sending the event
+                context.setPhase(DeploymentContextImpl.Phase.PREPARED);
+                Thread.currentThread().setContextClassLoader(context.getClassLoader());
                 events.send(new Event<DeploymentContext>(Deployment.APPLICATION_PREPARED, context), false);
 
                 // now were falling back into the mainstream loading/starting sequence, at this
@@ -351,7 +356,6 @@ public class ApplicationLifecycle implements Deployment {
                  // and the target is the default server instance of current VM
                  // we load and start the application
                 if (commandParams.enabled && domain.isCurrentInstanceMatchingTarget(commandParams.target, appName, server.getName(), context.getTransientAppMetaData("previousTargets", List.class))) {
-                    Thread.currentThread().setContextClassLoader(context.getFinalClassLoader());
                     appInfo.setLibraries(commandParams.libraries());
                     try {
                         appInfo.load(context, tracker);
