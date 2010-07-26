@@ -409,7 +409,9 @@ public final class JDBCRealm extends DigestRealmBase {
                 /*Since pwd contains 1024 elements arbitrarily initialized,
                     construct a new char[] that has the right no of char elements
                     to be used for equal comparison*/
-
+                if (noOfChars < 0) {
+                    noOfChars = 0;
+                }
                 char[] passwd = new char[noOfChars];
                 System.arraycopy(pwd, 0, passwd, 0, noOfChars);
                 if (HEX.equalsIgnoreCase(getProperty(PARAM_ENCODING))) {

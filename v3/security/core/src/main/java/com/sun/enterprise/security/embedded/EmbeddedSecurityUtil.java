@@ -37,12 +37,17 @@ package com.sun.enterprise.security.embedded;
 
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -55,7 +60,7 @@ import org.jvnet.hk2.config.types.Property;
  */
 public class EmbeddedSecurityUtil {
 
-    public static void copyConfigFiles(Habitat habitat, File fromInstanceDir) throws IOException {
+    public static void copyConfigFiles(Habitat habitat, File fromInstanceDir, File domainXml) throws IOException, XMLStreamException {
         //For security reasons, permit only an embedded server instance to carry out the copy operations
         ServerEnvironment se = habitat.getComponent(ServerEnvironment.class);
         if (!isEmbedded(se)) {
@@ -72,8 +77,8 @@ public class EmbeddedSecurityUtil {
 
         //Add FileRealm keyfiles to the list
 
-        SecurityService securityService = habitat.getComponent(SecurityService.class);
-        fileNames.addAll(getKeyFileNames(securityService));
+
+        fileNames.addAll(new EmbeddedSecurityUtil().new DomainXmlSecurityParser(domainXml).getKeyFileNames());
 
         //Add keystore and truststore files
 
@@ -109,6 +114,21 @@ public class EmbeddedSecurityUtil {
 
     }
 
+    public static String parseFileName(String fullFilePath) {
+        if (fullFilePath == null) {
+            return null;
+        }
+        int beginIndex = fullFilePath.lastIndexOf(File.separator);
+        return fullFilePath.substring(beginIndex + 1);
+    }
+
+    public static boolean isEmbedded(ServerEnvironment se) {
+        if (se.getRuntimeType() == RuntimeType.EMBEDDED) {
+            return true;
+        }
+        return false;
+    }
+
     public static List<String> getKeyFileNames(SecurityService securityService) {
         List<String> keyFileNames = new ArrayList<String>();
 
@@ -128,18 +148,61 @@ public class EmbeddedSecurityUtil {
         return keyFileNames;
     }
 
-    public static String parseFileName(String fullFilePath) {
-        if (fullFilePath == null) {
-            return null;
-        }
-        int beginIndex = fullFilePath.lastIndexOf(File.separator);
-        return fullFilePath.substring(beginIndex + 1);
-    }
 
-    public static boolean isEmbedded(ServerEnvironment se) {
-        if (se.getRuntimeType() == RuntimeType.EMBEDDED) {
-            return true;
+    class DomainXmlSecurityParser {
+
+        XMLStreamReader xmlReader;
+        XMLInputFactory xif =
+                (XMLInputFactory.class.getClassLoader() == null)
+                ? XMLInputFactory.newInstance()
+                : XMLInputFactory.newInstance(XMLInputFactory.class.getName(),
+                XMLInputFactory.class.getClassLoader());
+
+        DomainXmlSecurityParser(File domainXml) throws XMLStreamException, FileNotFoundException {
+            xmlReader = xif.createXMLStreamReader(new FileReader(domainXml));
+
         }
-        return false;
+        private static final String AUTH_REALM = "auth-realm";
+        private static final String DOMAIN = "domain";
+        private static final String CLASSNAME = "classname";
+        private static final String FILE_REALM_CLASS = "com.sun.enterprise.security.auth.realm.file.FileRealm";
+        private static final String PROPERTY = "property";
+        private static final String NAME = "name";
+        private static final String VALUE = "value";
+        private static final String FILE = "file";
+
+        List<String> getKeyFileNames() throws XMLStreamException {
+            List<String> keyFileNames = new ArrayList<String>();
+            while (skipToStartButNotPast(AUTH_REALM, DOMAIN)) {
+                String realmClass = xmlReader.getAttributeValue(null, CLASSNAME);
+                if (realmClass.equals(FILE_REALM_CLASS)) {
+                    while (skipToStartButNotPast(PROPERTY, AUTH_REALM)) {
+                        if (FILE.equals(xmlReader.getAttributeValue(null, NAME))) {
+                            keyFileNames.add(xmlReader.getAttributeValue(null, VALUE));
+
+                        }
+                    }
+                }
+            }
+            return keyFileNames;
+        }
+
+        private boolean skipToStartButNotPast(String startName, String stopName) throws XMLStreamException {
+            if (!StringUtils.ok(startName) || !StringUtils.ok(stopName)) {
+                throw new IllegalArgumentException();
+            }
+
+            while (xmlReader.hasNext()) {
+                xmlReader.next();
+                // getLocalName() will throw an exception in many states.  Be careful!!
+                if (xmlReader.isStartElement() && startName.equals(xmlReader.getLocalName())) {
+                    return true;
+                }
+                if (xmlReader.isEndElement() && stopName.equals(xmlReader.getLocalName())) {
+                    return false;
+                }
+            }
+            return false;
+        }
     }
 }
