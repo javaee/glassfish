@@ -101,13 +101,25 @@ public interface ResourceDeployer {
      */
 	void disableResource(Object resource) throws Exception;
 
-
     /**
      * Indicates whether a particular resource deployer can handle the
      * resource in question
      * @param resource resource that need to be handled
      * @return boolean
      */
-    boolean handles(Object resource); 
+    boolean handles(Object resource);
+
+    /**
+     * Indicates whether the resource deployer can handle
+     * transparent-dynamic-reconfiguration of resource
+     * @return boolean indicating whether transparent-dynamic-reconfiguration is supported.
+     */
+    boolean supportsDynamicReconfiguration();
+
+    /**
+     * List of classes which need to be proxied for dynamic-reconfiguration
+     * @return list of classes
+     */
+    Class[] getProxyClassesForDynamicReconfiguration();
 
 }

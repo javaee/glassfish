@@ -36,30 +36,31 @@
 
 package com.sun.enterprise.resource.naming;
 
+import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
+import com.sun.enterprise.config.serverbeans.ResourcePool;
+import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.ConnectionManagerImpl;
 import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.single.StaticModulesRegistry;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.enterprise.resource.DynamicallyReconfigurableResource;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 import javax.naming.*;
 import javax.naming.spi.ObjectFactory;
 import javax.resource.spi.ManagedConnectionFactory;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Hashtable;
 
-import org.glassfish.api.admin.*;
 import org.glassfish.api.naming.GlassfishNamingManager;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * An object factory to handle creation of Connection Factories
@@ -145,6 +146,32 @@ public class ConnectorObjectFactory implements ObjectFactory {
                 throw new RuntimeException(new ConfigurationException(msg));
             }
 
+            if (getRuntime().isServer() || getRuntime().isEmbedded()) {
+                ResourcePool resourcePool = (ResourcePool)
+                        getRuntime().getResources().getResourceByName(ResourcePool.class, poolName);
+
+                ResourceDeployer deployer = getRuntime().getResourceDeployer(resourcePool);
+                if (deployer != null && deployer.supportsDynamicReconfiguration() &&
+                        ConnectorsUtil.isDynamicReconfigurationEnabled(resourcePool)) {
+
+                    Object o = env.get(ConnectorConstants.DYNAMIC_RECONFIGURATION_PROXY_CALL);
+                    if (o == null  || Boolean.valueOf(o.toString()).equals(false)) {
+                        //TODO use list ? (even in the ResourceDeployer API)
+                        Class[] classes = deployer.getProxyClassesForDynamicReconfiguration();
+                        Class[] proxyClasses = new Class[classes.length + 1];
+                        for (int i = 0; i < classes.length; i++) {
+                            proxyClasses[i] = classes[i];
+                        }
+                        proxyClasses[proxyClasses.length - 1] = DynamicallyReconfigurableResource.class;
+
+                        cf = getProxyObject(cf, proxyClasses, jndiName);
+                        Map<DynamicallyReconfigurableResource, Boolean> resources =
+                                ConnectorRegistry.getInstance().getResourceFactories(jndiName);
+                        resources.put((DynamicallyReconfigurableResource) Proxy.getInvocationHandler(cf), true);
+                    }
+                }
+            }
+
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "Connection Factory:" + cf);
             }
@@ -153,6 +180,11 @@ public class ConnectorObjectFactory implements ObjectFactory {
             throw new RuntimeException(e);
         }
         return cf;
+    }
+
+      protected <T> T getProxyObject(final Object actualObject, Class<T>[] ifaces, String jndiName) throws Exception {
+        InvocationHandler ih = new DynamicResourceReconfigurator(actualObject, jndiName);
+        return (T) Proxy.newProxyInstance(actualObject.getClass().getClassLoader(), ifaces, ih);
     }
 
     private ConnectorRuntime getRuntime() {

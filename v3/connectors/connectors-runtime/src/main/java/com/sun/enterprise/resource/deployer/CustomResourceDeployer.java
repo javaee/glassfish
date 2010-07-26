@@ -151,6 +151,19 @@ public class CustomResourceDeployer implements ResourceDeployer {
         return resource instanceof com.sun.enterprise.config.serverbeans.CustomResource;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public boolean supportsDynamicReconfiguration() {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public Class[] getProxyClassesForDynamicReconfiguration() {
+        return new Class[0];
+    }
 
     /**
      * {@inheritDoc}

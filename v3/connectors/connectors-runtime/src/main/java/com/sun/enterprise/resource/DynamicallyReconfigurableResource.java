@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,72 +34,18 @@
  * holder.
  */
 
-package com.sun.enterprise.resource.pool.waitqueue;
-
-import com.sun.logging.LogDomains;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+package com.sun.enterprise.resource;
 
 /**
- * Default wait queue for the connection pool
- *
- * @author Jagadish Ramu
+ * Contract for dynamically reconfigurable resource
  */
-public class DefaultPoolWaitQueue implements PoolWaitQueue {
+public interface DynamicallyReconfigurableResource {
 
-    private LinkedList list;
-    protected final static Logger _logger = LogDomains.getLogger(DefaultPoolWaitQueue.class, LogDomains.RSR_LOGGER);
+    String SET_DELEGATE_METHOD_NAME = "setDelegate";
 
-    private void initializeDefaultQueue() {
-        list = new LinkedList();
-        debug("Initializing default Pool Wait Queue");
-    }
+    String SET_INVALID_METHOD_NAME = "setInvalid";
 
-    public DefaultPoolWaitQueue() {
-        initializeDefaultQueue();
-    }
+    void setDelegate(Object o);
 
-    public synchronized int getQueueLength() {
-        return list.size();
-    }
-
-    public synchronized Object addToQueue() {
-
-        Object waitMonitor = new Object();
-        list.addLast(waitMonitor);
-        return waitMonitor;
-    }
-
-    public synchronized boolean removeFromQueue(Object o) {
-        return list.remove(o);
-    }
-
-/*
-    public synchronized Object removeFirst() {
-        return list.removeFirst();
-    }
-*/
-
-    public synchronized Object remove() {
-        return list.removeFirst();
-    }
-
-    public Object peek() {
-        Object result = null;
-        if (list.size() > 0) {
-            result = list.get(0);
-        }
-        return result;
-    }
-
-    public Collection getQueueContents() {
-        return list;
-    }
-
-    protected void debug(String debugStatement) {
-        _logger.log(Level.FINE, debugStatement);
-    }
+    void setInvalid();
 }

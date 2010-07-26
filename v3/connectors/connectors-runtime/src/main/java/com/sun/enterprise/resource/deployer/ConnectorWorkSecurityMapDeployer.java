@@ -69,4 +69,18 @@ public class ConnectorWorkSecurityMapDeployer implements ResourceDeployer {
     public boolean handles(Object resource) {
         return resource instanceof WorkSecurityMap;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public boolean supportsDynamicReconfiguration() {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public Class[] getProxyClassesForDynamicReconfiguration() {
+        return new Class[0];
+    }
 }

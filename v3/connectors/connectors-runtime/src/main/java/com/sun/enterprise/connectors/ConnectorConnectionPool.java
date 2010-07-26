@@ -87,6 +87,8 @@ public class ConnectorConnectionPool implements Serializable {
     private boolean nonTransactional_ = false;
     private boolean nonComponent_ = false;
 
+    private long dynamicReconfigWaitTimeout = 0;
+
     private ConnectorSecurityMap[] securityMaps = null;
     private boolean isAuthCredentialsDefinedInPool_ = false;
 
@@ -825,5 +827,12 @@ public class ConnectorConnectionPool implements Serializable {
     public void setPreferValidateOverRecreate(boolean preferValidateOverRecreate) {
         preferValidateOverRecreate_ = preferValidateOverRecreate;
     }
-    
+
+    public long getDynamicReconfigWaitTimeout() {
+        return dynamicReconfigWaitTimeout;
+    }
+
+    public void setDynamicReconfigWaitTimeout(long dynamicReconfigWaitTimeout) {
+        this.dynamicReconfigWaitTimeout = dynamicReconfigWaitTimeout;
+    }
 }

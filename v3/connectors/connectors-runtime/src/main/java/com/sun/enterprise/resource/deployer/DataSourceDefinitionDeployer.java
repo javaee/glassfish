@@ -145,6 +145,20 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         return resource instanceof DataSourceDefinitionDescriptor;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public boolean supportsDynamicReconfiguration() {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public Class[] getProxyClassesForDynamicReconfiguration() {
+        return new Class[0];
+    }
+
     abstract class FakeConfigBean implements ConfigBeanProxy {
         @Override
         public ConfigBeanProxy deepCopy(ConfigBeanProxy parent) {

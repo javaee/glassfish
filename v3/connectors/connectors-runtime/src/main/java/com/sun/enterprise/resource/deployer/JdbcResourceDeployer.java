@@ -50,6 +50,7 @@
 package com.sun.enterprise.resource.deployer;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
@@ -128,9 +129,12 @@ public class JdbcResourceDeployer implements ResourceDeployer {
         String jndiName = jdbcRes.getJndiName();
 
         runtime.deleteConnectorResource(jndiName);
+        ConnectorRegistry.getInstance().removeResourceFactories(jndiName);
         //In-case the resource is explicitly created with a suffix (__nontx or __PM), no need to delete one
         if(ConnectorsUtil.getValidSuffix(jndiName) == null){
-            runtime.deleteConnectorResource( ConnectorsUtil.getPMJndiName( jndiName) );
+            String pmJndiName = ConnectorsUtil.getPMJndiName( jndiName) ;
+            runtime.deleteConnectorResource(pmJndiName);
+            ConnectorRegistry.getInstance().removeResourceFactories(pmJndiName);
         }
 
         //Since 8.1 PE/SE/EE - if no more resource-ref to the pool
@@ -154,6 +158,20 @@ public class JdbcResourceDeployer implements ResourceDeployer {
      */
     public boolean handles(Object resource){
         return resource instanceof JdbcResource;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public Class[] getProxyClassesForDynamicReconfiguration() {
+        return new Class[0];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public boolean supportsDynamicReconfiguration() {
+        return false;
     }
 
 

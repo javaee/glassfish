@@ -177,6 +177,19 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         return resource instanceof com.sun.enterprise.config.serverbeans.MailResource;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public boolean supportsDynamicReconfiguration() {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public Class[] getProxyClassesForDynamicReconfiguration() {
+        return new Class[0];
+    }
 
     /**
      * {@inheritDoc}

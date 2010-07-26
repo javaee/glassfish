@@ -128,6 +128,20 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
     }
 
     /**
+     * @inheritDoc
+     */
+    public boolean supportsDynamicReconfiguration() {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public Class[] getProxyClassesForDynamicReconfiguration() {
+        return new Class[0];  
+    }
+
+    /**
      * {@inheritDoc}
      */
     public synchronized void redeployResource(Object resource)

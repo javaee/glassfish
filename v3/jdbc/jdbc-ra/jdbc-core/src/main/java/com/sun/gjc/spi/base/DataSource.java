@@ -36,6 +36,7 @@
 
 package com.sun.gjc.spi.base;
 
+import com.sun.appserv.connectors.internal.spi.BadConnectionEventListener;
 import com.sun.gjc.spi.ConnectionRequestInfo;
 import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.logging.LogDomains;
@@ -108,8 +109,18 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
 
             return con;
         } catch (ResourceException re) {
+            logNonTransientException(re);
+            throw new SQLException(re.getMessage(), re);
+        }
+    }
+
+    /**
+     * log the exception if it is a non-transient exception <br>
+     * @param re Exception to log
+     */
+    private void logNonTransientException(ResourceException re) {
+        if(!BadConnectionEventListener.POOL_RECONFIGURED_ERROR_CODE.equals(re.getErrorCode())){
             _logger.log(Level.WARNING, "jdbc.exc_get_conn", re.getMessage());
-            throw new SQLException(re.getMessage());
         }
     }
 
@@ -129,8 +140,8 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
             setConnectionType(con);
             return con;
         } catch (ResourceException re) {
-            _logger.log(Level.WARNING, "jdbc.exc_get_conn", re.getMessage());
-            throw new SQLException(re.getMessage());
+            logNonTransientException(re);
+            throw new SQLException(re.getMessage(), re);
         }
     }
 
@@ -174,8 +185,8 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
 
             return con;
         } catch (ResourceException re) {
-            _logger.log(Level.WARNING, "jdbc.exc_get_conn", re.getMessage());
-            throw new SQLException(re.getMessage());
+            logNonTransientException(re);
+            throw new SQLException(re.getMessage(), re);
         }
     }
 
@@ -203,8 +214,8 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
 
             return con;
         } catch (ResourceException re) {
-            _logger.log(Level.WARNING, "jdbc.exc_get_conn", re.getMessage());
-            throw new SQLException(re.getMessage());
+            logNonTransientException(re);
+            throw new SQLException(re.getMessage(), re);
         }
     }
 

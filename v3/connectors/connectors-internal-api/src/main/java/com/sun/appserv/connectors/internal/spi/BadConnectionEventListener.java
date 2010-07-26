@@ -44,6 +44,15 @@ import javax.resource.spi.ConnectionEvent;
  * @author  Jagadish Ramu
  */
 public interface BadConnectionEventListener {
+
+    /**
+     * Error code used to indicate that the pool is reconfigured
+     * and the client can retry to do operations based on
+     * based on new configuration.
+     * Used for <i>dynamic-resource-reconfiguration<i>
+     */
+    public static final String POOL_RECONFIGURED_ERROR_CODE = "POOL-RECONFIGURED-1";
+
     /**
      * Resource adapters will signal that the connection being closed is bad.
      * <i>Custom api</i>

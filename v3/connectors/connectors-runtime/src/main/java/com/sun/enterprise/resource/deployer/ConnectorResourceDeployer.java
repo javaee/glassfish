@@ -125,6 +125,20 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
     }
 
     /**
+     * @inheritDoc
+     */
+    public boolean supportsDynamicReconfiguration() {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public Class[] getProxyClassesForDynamicReconfiguration() {
+        return new Class[0];
+    }
+
+    /**
      * Checks if no more resource-refs to resources exists for the
      * connector connection pool and then deletes the pool
      * @param cr ConnectorResource

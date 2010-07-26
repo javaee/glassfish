@@ -39,9 +39,9 @@ package com.sun.enterprise.connectors;
 import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.MessageDestinationDescriptor;
 import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
 import com.sun.enterprise.connectors.module.ConnectorApplication;
+import com.sun.enterprise.resource.DynamicallyReconfigurableResource;
 import com.sun.logging.LogDomains;
 
 import javax.resource.spi.ManagedConnectionFactory;
@@ -80,6 +80,7 @@ public class ConnectorRegistry {
     protected final Map<String, ResourceAdapterConfig> resourceAdapterConfig;
     protected final Map<String, ConnectorApplication> rarModules;
     protected final Map<String, Validator> beanValidators;
+    protected final Map<String, Map<DynamicallyReconfigurableResource, Boolean>> resourceProxies;
 
     /**
      * Return the ConnectorRegistry instance
@@ -102,6 +103,7 @@ public class ConnectorRegistry {
         resourceAdapterConfig = Collections.synchronizedMap(new HashMap<String, ResourceAdapterConfig>());
         rarModules = Collections.synchronizedMap(new HashMap<String, ConnectorApplication>());
         beanValidators = Collections.synchronizedMap(new HashMap<String, Validator>());
+        resourceProxies = new HashMap<String, Map<DynamicallyReconfigurableResource, Boolean>>();
         _logger.log(Level.FINE, "initialized the connector registry");
     }
 
@@ -119,6 +121,39 @@ public class ConnectorRegistry {
         _logger.log(Level.FINE,
                 "Added the active resource adapter to connector registry",
                 rarModuleName);
+    }
+
+    /**
+     * get the map of factories (proxy to actual factory) using the resource. 
+     * @param name resource-name
+     * @return Map of factories
+     */
+    public Map<DynamicallyReconfigurableResource, Boolean> getResourceFactories(String name){
+        Map<DynamicallyReconfigurableResource, Boolean> map = resourceProxies.get(name);
+        //TODO synchronization
+        if(map == null){
+            map = new HashMap<DynamicallyReconfigurableResource, Boolean>();
+            resourceProxies.put(name, map);
+        }
+        return map;
+    }
+
+    /**
+     * remove and invalidate factories (proxy to actual factory) using the resource.
+     * @param name resource-name
+     * @return boolean indicating whether the factories are invalidated or not
+     */
+    public boolean removeResourceFactories(String name){
+        boolean mapRemoved = false;
+        Map<DynamicallyReconfigurableResource, Boolean> map = resourceProxies.remove(name);
+        if(map != null){
+            for(DynamicallyReconfigurableResource resource : map.keySet()){
+                resource.setInvalid();
+            }
+            map.clear();
+            mapRemoved = true;
+        }
+        return mapRemoved;
     }
 
     /**

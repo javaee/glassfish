@@ -58,10 +58,8 @@ import com.sun.enterprise.security.SecurityContext;
 import com.sun.logging.LogDomains;
 
 import javax.resource.ResourceException;
-import javax.resource.spi.ConnectionRequestInfo;
+import javax.resource.spi.*;
 import javax.resource.spi.IllegalStateException;
-import javax.resource.spi.ManagedConnectionFactory;
-import javax.resource.spi.ResourceAllocationException;
 import javax.security.auth.Subject;
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -82,9 +80,6 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
     private static Logger logger = LogDomains.getLogger(ConnectionManagerImpl.class,LogDomains.RSR_LOGGER);
     private static StringManager localStrings = StringManager.getManager(ConnectionManagerImpl.class);
 
-    //The RAR name
-    //This is pushed into the object in the connector runtime during
-    //jndi publishing
     protected String rarName;
 
     protected ResourcePrincipal defaultPrin = null;
@@ -302,7 +297,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
     private Object getResource(int txLevel, PoolManager poolmgr, ManagedConnectionFactory mcf, ResourceSpec spec,
                                Subject subject, ConnectionRequestInfo cxRequestInfo, ClientSecurityInfo info,
                                ConnectorDescriptor desc, boolean shareable)
-            throws PoolingException, ResourceAllocationException, IllegalStateException {
+            throws PoolingException, ResourceAllocationException, IllegalStateException, RetryableUnavailableException {
         ResourceAllocator alloc;
 
         switch (txLevel) {

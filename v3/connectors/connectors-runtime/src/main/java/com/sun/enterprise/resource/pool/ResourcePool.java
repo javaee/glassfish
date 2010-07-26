@@ -43,7 +43,9 @@ import com.sun.enterprise.resource.ResourceSpec;
 import com.sun.enterprise.resource.listener.PoolLifeCycleListener;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.appserv.connectors.internal.api.PoolingException;
+import com.sun.enterprise.resource.pool.waitqueue.PoolWaitQueue;
 
+import javax.resource.spi.RetryableUnavailableException;
 import javax.transaction.Transaction;
 
 /**
@@ -55,7 +57,7 @@ public interface ResourcePool {
     // Modify getResource() to throw PoolingException
     public ResourceHandle getResource(ResourceSpec spec,
                                       ResourceAllocator alloc,
-                                      Transaction tran) throws PoolingException;
+                                      Transaction tran) throws PoolingException, RetryableUnavailableException;
     // end IASRI 4649256
 
     public void resourceClosed(ResourceHandle resource);
@@ -160,9 +162,35 @@ public interface ResourcePool {
     /**
      * Flush Connection pool by reinitializing the connections 
      * established in the pool.
+     * @return boolean indicating whether flush operation was successful or not
+     * @throws com.sun.appserv.connectors.internal.api.PoolingException
      */
     public boolean flushConnectionPool() throws PoolingException;
 
+    /**
+     * block any new requests to the pool
+     * Used for transparent dynamic reconfiguration of the pool
+     * @param waitTimeout time for which the new requests will wait
+     */
+    public void blockRequests(long waitTimeout);
+
+    /**
+     * returns pool-wait-queue
+     * @return wait-queue
+     */
+    public PoolWaitQueue getPoolWaitQueue();
+
+    /**
+     * returns wait-queue used during transparent dynamic reconfiguration
+     * @return PoolWaitQueue
+     */
+    public PoolWaitQueue getReconfigWaitQueue();
+
+    /**
+     * returns the reconfig-wait-time
+     * @return long
+     */
+    public long getReconfigWaitTime();
 }
 
 

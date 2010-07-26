@@ -419,4 +419,10 @@ public interface ConnectorConstants {
     public static final String ACCESS_ALL_RARS = "access-all-rars";
     //flag to indiate additional RARs required for an application, apart from the ones referred via app's DD
     public static final String REQUIRED_RARS_FOR_APP_PREFIX="required-rars-for-";
+
+    //flag to indicate that the call to lookup is a proxy's call so that actual object can be returned
+    public static final String DYNAMIC_RECONFIGURATION_PROXY_CALL = "com.sun.enterprise.resource.reconfig.proxyCall";
+
+    //flag to enable dynamic-reconfiguration feature for connection pool
+    public static final String DYNAMIC_RECONFIGURATION_FLAG = "dynamic-reconfiguration-wait-timeout-in-seconds";
 }
