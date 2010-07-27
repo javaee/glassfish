@@ -83,7 +83,7 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
     private JSONObject getAttributes(Dom proxy) throws JSONException {
         JSONObject entity = new JSONObject();
         for (String attributeName : proxy.model.getAttributeNames()) {
-            entity.put(attributeName, proxy.attribute(attributeName));
+            entity.put(eleminateHypen(attributeName), proxy.attribute(attributeName));
         }
 
         return entity;
