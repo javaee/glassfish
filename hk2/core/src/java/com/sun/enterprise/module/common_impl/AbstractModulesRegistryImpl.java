@@ -152,8 +152,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
                     ModulesRegistry.class.getName(), null);
             habitats.put(name, habitat);
             
-            habitat.initialized();
-            
             return habitat;
         } catch (IOException e) {
             throw new ComponentException("Failed to create a habitat",e);
