@@ -70,20 +70,21 @@ public class EmbeddedSetDefaultWebXmlTest {
             EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
 
             String p = System.getProperty("buildDir");
-            root = new File(p).getParentFile();
+            /*root = new File(p).getParentFile();
             root =new File(root, "glassfish");
-            EmbeddedFileSystem fs = fsBuilder.instanceRoot(root).build();
+            EmbeddedFileSystem fs = fsBuilder.instanceRoot(root).build();*/
 
             File domainXml = new File(p+"/org/glassfish/tests/webapi/domain.xml");
             // specify the domain.xml location
             fsBuilder.configurationFile(domainXml);
+            EmbeddedFileSystem efs = fsBuilder.build();
 
             Server.Builder builder = new Server.Builder("dirserve");
-            builder.embeddedFileSystem(fs);
+            builder.embeddedFileSystem(efs);
             server = builder.build();
 
             WebBuilder webBuilder = server.createConfig(WebBuilder.class);
-            webBuilder.setDocRootDir(root);
+            //webBuilder.setDocRootDir(root);
             File defaultWebXml = new File(p+"/org/glassfish/tests/webapi/my-default-web.xml");
             webBuilder.setDefaultWebXml(defaultWebXml.toURL());
             System.out.println("builder is " + webBuilder+" using default-web.xml "+defaultWebXml.getAbsolutePath()+
@@ -92,8 +93,6 @@ public class EmbeddedSetDefaultWebXmlTest {
             embedded = (EmbeddedWebContainer) webBuilder.create(server);
             embedded.setLogLevel(Level.INFO);
             embedded.setConfiguration(webBuilder);
-
-            System.out.println("Added Web with base directory "+root.getAbsolutePath());
 
             Port http = server.createPort(8080);
             embedded.bind(http, "http");
