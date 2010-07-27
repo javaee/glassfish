@@ -9,9 +9,9 @@ import org.jvnet.hk2.test.contracts.TestingInfoService;
  * 
  * @author Jeff Trent
  */
-@RunLevel(0)
+@RunLevel(-1)
 @Service
-public class RunLevelService0 implements TestingInfoService {
+public class RunLevelServiceNegOne implements TestingInfoService {
 
   private boolean destroyed;
   

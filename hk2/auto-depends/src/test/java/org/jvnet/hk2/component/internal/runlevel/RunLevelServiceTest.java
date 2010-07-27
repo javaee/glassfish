@@ -26,7 +26,7 @@ import org.jvnet.hk2.component.internal.runlevel.Recorder;
 import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.junit.Hk2RunnerOptions;
 import org.jvnet.hk2.test.runlevel.NonRunLevelWithRunLevelDepService;
-import org.jvnet.hk2.test.runlevel.RunLevelService0;
+import org.jvnet.hk2.test.runlevel.RunLevelServiceNegOne;
 import org.jvnet.hk2.test.runlevel.ServiceA;
 import org.jvnet.hk2.test.runlevel.ServiceB;
 import org.jvnet.hk2.test.runlevel.ServiceC;
@@ -40,7 +40,6 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
  * 
  * @author Jeff Trent
  */
-//@org.junit.Ignore // See 12729
 @RunWith(Hk2Runner.class)
 @Hk2RunnerOptions(reinitializePerTest=true)
 public class RunLevelServiceTest {
@@ -80,7 +79,7 @@ public class RunLevelServiceTest {
     RunLevelService rls = h.getComponent(RunLevelService.class);
     assertNotNull(rls);
     assertNotNull(rls.getState());
-    assertEquals(0, rls.getState().getCurrentRunLevel());
+    assertEquals(-1, rls.getState().getCurrentRunLevel());
     assertEquals(null, rls.getState().getPlannedRunLevel());
     assertEquals(Void.class, rls.getState().getEnvironment());
     
@@ -91,20 +90,20 @@ public class RunLevelServiceTest {
   }
   
   /**
-   * Verifies that RunLevel 0 inhabitants are created immediately
+   * Verifies that RunLevel -1 inhabitants are created immediately
    */
   @Test
-  public void validateRunLevel0Inhabitants() {
+  public void validateRunLevelNegOneInhabitants() {
     assertTrue(h.isInitialized());
-    Inhabitant<RunLevelService0> i = h.getInhabitantByType(RunLevelService0.class);
+    Inhabitant<RunLevelServiceNegOne> i = h.getInhabitantByType(RunLevelServiceNegOne.class);
     assertNotNull(i);
-    assertTrue(i.isInstantiated());
+    assertTrue(i.toString() + "expected to have been instantiated", i.isInstantiated());
   }
   
   @Test
-  public void proceedToNegNum() {
+  public void proceedToInvalidNegNum() {
     try {
-      rls.proceedTo(-1);
+      rls.proceedTo(-2);
       fail("Expected -1 to be a problem");
     } catch (IllegalArgumentException e) {
       // expected
@@ -118,7 +117,7 @@ public class RunLevelServiceTest {
   public void proceedTo0() {
     installTestRunLevelService(false);
     rls.proceedTo(0);
-    assertEquals(0, recorders.size());
+    assertEquals(recorders.toString(), 0, recorders.size());
     assertEquals(0, defRLS.getCurrentRunLevel());
     assertEquals(null, defRLS.getPlannedRunLevel());
   }
@@ -433,7 +432,7 @@ public class RunLevelServiceTest {
    */
   private void assertListenerState(boolean expectDownSide, boolean expectErrors, boolean expectCancelled) {
     assertTrue(defRLlistener.calls.size() > 0);
-    int last = -1;
+    int last = -2;
     boolean upSide = true;
     int sawCancel = 0;
     boolean sawError = false;
