@@ -118,6 +118,14 @@ class ClusterCommandHelper {
         // Get the list of servers in the cluster.
         List<Server> targetServers = domain.getServersInTarget(clusterName);
 
+        // If the cluster is empty, say so
+        if (targetServers == null || targetServers.isEmpty()) {
+            report.setActionExitCode(ExitCode.SUCCESS);
+            report.setMessage(Strings.get("cluster.command.noInstances",
+                                            clusterName));
+            return report;
+        }
+
         // We will save the name of the instances that worked and did
         // not work so we can summarize our results.
         StringBuilder failedServerNames = new StringBuilder();
