@@ -71,6 +71,12 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
 
         if(!StringUtils.ok(getServerDirs().getServerName()))
             throw new CommandException(Strings.get("DeleteInstance.noInstanceName"));
+
+        File dasProperties = getServerDirs().getDasPropertiesFile();
+
+        if (dasProperties.isFile()) {
+            setDasDefaults(dasProperties);
+        }
     }
 
     /**
