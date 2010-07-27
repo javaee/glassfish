@@ -4,6 +4,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.StringUtils;
+import java.io.File;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.glassfish.internal.api.Target;
@@ -33,9 +34,6 @@ public class ClusterOperationUtil {
         servers.clear();
     }
 
-    /**
-     * Replicate a given command on given list of targets
-     */
     public static ActionReport.ExitCode replicateCommand(String commandName,
                                                    FailurePolicy failPolicy,
                                                    FailurePolicy offlinePolicy,
@@ -43,15 +41,51 @@ public class ClusterOperationUtil {
                                                    AdminCommandContext context,
                                                    ParameterMap parameters,
                                                    Habitat habitat) {
+        return replicateCommand(commandName, failPolicy, offlinePolicy, 
+                instancesForReplication, context, parameters, habitat, null);
+    }
+
+    /**
+     * Replicates a given command on the given list of targets, optionally gathering
+     * downloaded result payloads from the instance commands into a directory.
+     * <p>
+     * If intermediateDownloadDir is non-null, then any files returned from
+     * the instances in the payload of the HTTP response will be stored in a
+     * directory tree like this:
+     * <pre>
+     * ${intermediateDownloadDir}/
+     *     ${instanceA}/
+     *         file(s) returned from instance A
+     *     ${instanceB}/
+     *         file(s) returned from instance B
+     *     ...
+     * </pre>
+     * where ${instanceA}, ${instanceB}, etc. are the names of the instances to
+     * which the command was replicated.  This method does no further processing
+     * on the downloaded files but leaves that to the calling command.
+     */
+    public static ActionReport.ExitCode replicateCommand(String commandName,
+                                                   FailurePolicy failPolicy,
+                                                   FailurePolicy offlinePolicy,
+                                                   List<Server> instancesForReplication,
+                                                   AdminCommandContext context,
+                                                   ParameterMap parameters,
+                                                   Habitat habitat,
+                                                   final File intermediateDownloadDir) {
 
         // TODO : Use Executor service to spray the commands on all instances
 
         ActionReport.ExitCode returnValue = ActionReport.ExitCode.SUCCESS;
         InstanceState instanceState = habitat.getComponent(InstanceState.class);
         try {
+            validateIntermediateDownloadDir(intermediateDownloadDir);
             List<InstanceCommandExecutor> execList = getInstanceCommandList(commandName,
                                     instancesForReplication, context.getLogger(), habitat);
             for(InstanceCommandExecutor rac : execList) {
+                if (intermediateDownloadDir != null) {
+                    rac.setFileOutputDirectory(
+                        subdirectoryForInstance(intermediateDownloadDir, rac));
+                }
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
                 try {
                     rac.executeCommand(parameters);
@@ -109,6 +143,38 @@ public class ClusterOperationUtil {
                                                    AdminCommandContext context,
                                                    ParameterMap parameters,
                                                    Habitat habitat) {
+        return replicateCommand(commandName, failPolicy, offlinePolicy,
+                targetNames, context, parameters, habitat, null);
+    }
+
+    /**
+     * Replicates a given command on the given list of targets, optionally gathering
+     * downloaded result payloads from the instance commands into a directory.
+     * <p>
+     * If intermediateDownloadDir is non-null, then any files returned from
+     * the instances in the payload of the HTTP response will be stored in a
+     * directory tree like this:
+     * <pre>
+     * ${intermediateDownloadDir}/
+     *     ${instanceA}/
+     *         file(s) returned from instance A
+     *     ${instanceB}/
+     *         file(s) returned from instance B
+     *     ...
+     * </pre>
+     * where ${instanceA}, ${instanceB}, etc. are the names of the instances to
+     * which the command was replicated.  This method does no further processing
+     * on the downloaded files but leaves that to the calling command.
+     */
+    public static ActionReport.ExitCode replicateCommand(String commandName,
+                                                   FailurePolicy failPolicy,
+                                                   FailurePolicy offlinePolicy,
+                                                   Collection<String> targetNames,
+                                                   AdminCommandContext context,
+                                                   ParameterMap parameters,
+                                                   Habitat habitat,
+                                                   File intermediateDownloadDir) {
+
         ActionReport.ExitCode result = ActionReport.ExitCode.SUCCESS;
         Target targetService = habitat.getComponent(Target.class);
         for(String t : targetNames) {
@@ -133,7 +199,8 @@ public class ClusterOperationUtil {
             }
             parameters.set("target", t);
             ActionReport.ExitCode returnValue = ClusterOperationUtil.replicateCommand(commandName,
-                    failPolicy, offlinePolicy, targetService.getInstances(t), context, parameters, habitat);
+                    failPolicy, offlinePolicy, targetService.getInstances(t), context, parameters, habitat,
+                    intermediateDownloadDir);
             if(!returnValue.equals(ActionReport.ExitCode.SUCCESS)) {
                 result = returnValue;
             }
@@ -154,5 +221,31 @@ public class ClusterOperationUtil {
             list.add(new InstanceCommandExecutor(commandName, svr, host, port, logger));
         }
         return list;
+    }
+
+    /**
+     * Makes sure the intermediate download directory is null (meaning the calling
+     * command does not care about any downloaded content from the instances) or
+     * that the specified file is a valid place to store any downloaded files.
+     * Create the directory if it does not already exist.
+     *
+     * @param dir the caller-specified File to check
+     */
+    private static void validateIntermediateDownloadDir(final File dir) {
+        if (dir == null) {
+            return;
+        }
+        if ( ! dir.exists()) {
+            dir.mkdirs();
+        } else {
+            if (! dir.isDirectory() || ! dir.canWrite()) {
+                throw new IllegalArgumentException(dir.getAbsolutePath());
+            }
+        }
+    }
+
+    private static File subdirectoryForInstance(final File dir,
+            final InstanceCommandExecutor exec) {
+        return new File(dir, exec.getServer().getName());
     }
 }
