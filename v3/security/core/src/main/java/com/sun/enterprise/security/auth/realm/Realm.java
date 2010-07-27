@@ -290,7 +290,7 @@ public abstract class Realm implements Comparable {
                     throw new BadRealmException("Unable to locate RealmsManager Service");
                 }
                 mgr.putIntoLoadedRealms(name, r);
-                _logger.log(Level.INFO, "Realm " + name + " of classtype " + className + " successfully created.");
+                _logger.log(Level.INFO,"realm.loaded.successfully" ,new Object[]{name, className});
                 return r;
             } else {
                 throw new BadRealmException("Unable to locate Realm class " + className);
@@ -337,7 +337,7 @@ public abstract class Realm implements Comparable {
         }
         realm.setName(oldRealm.getName());
         mgr.putIntoLoadedRealms(name, realm);
-        _logger.log(Level.INFO, "Realm " + realm.getName() + " was successfully updated.");
+        _logger.log(Level.INFO, "realm.updated.successfully",new Object[]{realm.getName()});
     }
 
     

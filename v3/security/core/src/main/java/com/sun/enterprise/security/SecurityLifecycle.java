@@ -48,12 +48,7 @@ import javax.security.jacc.PolicyContextHandler;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 
-import com.sun.enterprise.config.serverbeans.AuthRealm;
-import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.audit.AuditManager;
-import com.sun.enterprise.security.auth.login.LoginContextDriver;
-import com.sun.enterprise.security.auth.realm.RealmConfig;
-import com.sun.enterprise.security.auth.realm.RealmStatsProvider;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 import com.sun.enterprise.security.common.Util;
@@ -62,9 +57,7 @@ import com.sun.enterprise.security.ssl.SSLUtils;
 import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.glassfish.api.Startup.Lifecycle;
 import org.glassfish.api.event.EventListener;
@@ -72,7 +65,6 @@ import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
-import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -179,7 +171,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
 
         try {
              if (_logger.isLoggable(Level.INFO)) {
-                 _logger.log(Level.INFO, "Security startup service called");
+                 _logger.log(Level.INFO, "sec.service.startup.enter");
              }
              
              webStatsProvider = new WebSecurityDeployerStatsProvider();
@@ -218,7 +210,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             //initRoleMapperFactory();
            
            if (_logger.isLoggable(Level.INFO)) {
-                 _logger.log(Level.INFO, "Security service(s) started successfully....");
+                 _logger.log(Level.INFO, "sec.service.startup.exit");
              }
 
         } catch(Exception ex) {
@@ -260,6 +252,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
         return Lifecycle.START;
     }
 
+    @Override
     public void postConstruct() {
         onInitialization();
         listener = new AuditServerShutdownListener();
@@ -268,6 +261,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
 
     }
 
+    @Override
     public void preDestroy() {
         //DO Nothing ?
         //TODO:V3 need to see if something needs cleanup
@@ -276,6 +270,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     
     //To audit the server shutdown event
     public class AuditServerShutdownListener implements EventListener {
+        @Override
         public void event(Event event) {
             if (EventTypes.SERVER_SHUTDOWN.equals(event.type())) {
                 secServUtil.getAuditManager().serverShutdown();

@@ -188,7 +188,7 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
                     }
                 });
         } catch (Exception e) {
-            logger.severe("Programmatic login failed: "+e.toString());
+            logger.log(Level.SEVERE,"prog.login.failed", e);
             if(errors == true){ // propagate the exception ahead
                 throw e;    
             } else{
@@ -397,7 +397,7 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
             });
             loggedout = Boolean.valueOf(true);
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Programmatic logout failed: "+e.toString());
+            logger.log(Level.WARNING, "prog.logout.failed", e);
             if(errors){
                 throw e;
             } else{
