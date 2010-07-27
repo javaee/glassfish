@@ -60,24 +60,7 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
         return type;
     }
 
-    /**
-     * Creates, but does not initialize / wire
-     */
-    @Override
-    public T create(Inhabitant onBehalfOf) throws ComponentException {
-      T o = create(onBehalfOf);
-
-      // I could rely on injection, but the algorithm is slow enough for now that I
-      // need a faster scheme.
-      if (o instanceof InhabitantRequested) {
-          ((InhabitantRequested) o).setInhabitant(onBehalfOf);
-      }
-      
-      return o;
-    }
-    
     public final T get(Inhabitant onBehalfOf) throws ComponentException {
-//        System.out.println(this + "-" + onBehalfOf);
         T o = create(onBehalfOf);
         initialize(o, onBehalfOf);
         return o;
@@ -89,7 +72,12 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
 
     @Override
     public void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
-        // default is no-op
+      // I could rely on injection, but the algorithm is slow enough for now that I
+      // need a faster scheme.
+      if (t instanceof InhabitantRequested) {
+          ((InhabitantRequested) t).setInhabitant(onBehalfOf);
+      }
+      
     }
 
     public void release() {

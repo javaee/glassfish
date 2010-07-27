@@ -78,6 +78,8 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
     }
 
     public void initialize(final T t, final Inhabitant onBehalfOf) throws ComponentException {
+        super.initialize(t, onBehalfOf);
+        
         Scoped scoped = t.getClass().getAnnotation(Scoped.class);
         ScopeInstance si = (scoped == null ? singletonScope : getScope(scoped));
         if (System.getSecurityManager() != null) {

@@ -1,6 +1,8 @@
 package org.jvnet.hk2.test.impl;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.InhabitantRequested;
 import org.jvnet.hk2.test.contracts.Simple;
 
 /**
@@ -11,8 +13,16 @@ import org.jvnet.hk2.test.contracts.Simple;
  * To change this template use File | Settings | File Templates.
  */
 @Service(name="one")
-public class OneSimple implements Simple {
+public class OneSimple implements Simple, InhabitantRequested {
+    public Inhabitant<?> self;
+    
     public String get() {
         return "one";
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setInhabitant(Inhabitant inhabitant) {
+      this.self = inhabitant;
     }
 }
