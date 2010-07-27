@@ -47,11 +47,16 @@ import org.jvnet.hk2.annotations.Contract;
  * <p>
  * The default RunLevelService uses T==Void.class, and is registered in
  * the habitat with the name "default".
+ * <p>
+ * RunLevelServices are special in that they are constructed early on
+ * in habitat creation lifecycle.  As a result, they should not rely
+ * on the Habitat being fully initialized in any <code>PostConstruct</code>
+ * call.  Alternatively, they should implement HabitatListener, and
+ * wait for a habitat initialization event.
  * 
  * @author Jeff Trent
  * 
  * @since 3.1
- *
  */
 @Contract
 public interface RunLevelService<T> {

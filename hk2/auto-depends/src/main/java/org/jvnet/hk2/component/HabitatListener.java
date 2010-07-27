@@ -56,10 +56,34 @@ import org.jvnet.hk2.component.Inhabitant;
 public interface HabitatListener extends EventListener {
 
   public enum EventType {
+    /**
+     * Notification sent when this habitat has been initialized post startup
+     */
+    HABITAT_INITIALIZED,
+    
+    /**
+     * Notification sent when a new inhabitant has been added to this habitat
+     */
     INHABITANT_ADDED,
+    
+    /**
+     * Notification sent when an inhabitant has been modified within this habitat
+     */
     INHABITANT_MODIFIED,
+    
+    /**
+     * Notification sent when an inhabitant in this habitat has been removed
+     */
     INHABITANT_REMOVED,
+    
+    /**
+     * Notification sent when an inhabitant contract is added to this habitat
+     */
     INHABITANT_INDEX_ADDED,
+
+    /**
+     * Notification sent when an inhabitant contract is removed from this habitat
+     */
     INHABITANT_INDEX_REMOVED,
   };
   

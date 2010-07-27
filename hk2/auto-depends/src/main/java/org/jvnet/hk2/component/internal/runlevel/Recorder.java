@@ -96,12 +96,14 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
       RunLevel rl = ((AbstractInhabitantImpl<?>)inhabitant).getAnnotation(RunLevel.class);
       // actually, it should really never be null (in real life we could consider tossing an exception)
       if (null != rl) {
-        // we record it anyway, for good measure during shutdown
-        activations.add(0, inhabitant);
-        
-        // verify it is not to a bad dependency
-        if (rl.value() > runLevel) {
-          throw new ComponentException("Invalid RunLevel dependency to: " + inhabitant);
+        if (null == rl.environment() || Void.class == rl.environment()) {
+          // we record it anyway, for good measure during shutdown
+          activations.add(0, inhabitant);
+          
+          // verify it is not to a bad dependency
+          if (rl.value() > runLevel) {
+            throw new ComponentException("Invalid RunLevel dependency to: " + inhabitant);
+          }
         }
       }
     }

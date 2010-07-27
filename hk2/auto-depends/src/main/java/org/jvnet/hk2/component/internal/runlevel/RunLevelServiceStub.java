@@ -34,82 +34,99 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.hk2.component;
+package org.jvnet.hk2.component.internal.runlevel;
 
-import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantListener;
+import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.RunLevelState;
 
 /**
- * An inhabitant that prevents activation unless the sufficient RunLevelState
- * has been scheduled.
+ * This serves as a holder, or proxy, for RunLevelServices that are not
+ * initially found in the Habitat.
  * 
  * @author Jeff Trent
  * 
  * @since 3.1
+ * 
  */
-public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
-  /**
-   * Serves as the gating runLevel state.
-   */
-  private final int runLevel;
+@SuppressWarnings("unchecked")
+/*public*/ class RunLevelServiceStub implements RunLevelService, RunLevelState, InhabitantListener {
 
-  /**
-   * The RunLevelState that will gate the activation of the underlying
-   * inhabitant.
-   */
-  private final RunLevelState<V> state;
-
-  /*public*/ RunLevelInhabitant(Inhabitant<T> delegate,
-      int runLevel, RunLevelState<V> state) {
-    this(delegate, runLevel, state, null);
+  private final Habitat h;
+  
+  private final Class<?> env;
+  
+  // We are waiting for this guy to come around
+  private RunLevelService delegate;
+  private InhabitantListener delegateListener;
+  
+  
+  /*public*/ RunLevelServiceStub(Habitat habitat, Class<?> environment) {
+    this.h = habitat;
+    this.env = environment;
   }
 
-  /*public*/ RunLevelInhabitant(Inhabitant<T> delegate,
-      int runLevel, RunLevelState<V> state,
-      InhabitantListener listener) {
-    super(delegate, listener);
-    this.runLevel = runLevel;
-    this.state = state;
-  }
-
-  @Override
-  public Class<T> type() {
-    boolean wasInstantiated = isInstantiated();
-    try {
-      return super.type();
-    } finally {
-      if (isInstantiated() != wasInstantiated) {
-        // if we were inadvertently activated, better perform a latent check
-        verifyState();
-      }
+  /**
+   * Called when the habitat backing this RunLevelService has been fully initialized.
+   */
+  void activate(RunLevelService<?> realRls) {
+    assert(null == delegate);
+    delegate = realRls;
+    if (InhabitantListener.class.isInstance(delegate)) {
+      delegateListener = InhabitantListener.class.cast(delegate);
     }
   }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public T get(Inhabitant onBehalfOf) {
-    verifyState();
-    return super.get(onBehalfOf);
+  Habitat getHabitat() {
+    return h;
   }
 
-  /**
-   * Verifies that the state of the RunLevelService is appropriate
-   * for this instance activation.
-   * 
-   * @throws ComponentException if not in an appropriate state
-   */
-  protected void verifyState() throws ComponentException {
-    if (!isInstantiated()) {
-      Integer planned = state.getPlannedRunLevel();
-      Integer current = state.getCurrentRunLevel();
-      current = (null == current) ? -1 : current;
-      if (null == planned || runLevel > planned || runLevel > current + 1) {
-        throw new ComponentException("minimum expected RunLevel is: " + runLevel +
-            "; planned is: " + planned + "; current is: " + current);
+  @Override
+  public RunLevelState getState() {
+    return this;
+  }
+
+  @Override
+  public Integer getCurrentRunLevel() {
+    return (null == delegate) ? null : delegate.getState().getCurrentRunLevel();
+  }
+
+  @Override
+  public Integer getPlannedRunLevel() {
+    return (null == delegate) ? null : delegate.getState().getPlannedRunLevel();
+  }
+
+  @Override
+  public Class<?> getEnvironment() {
+    return env;
+  }
+
+  @Override
+  public void proceedTo(int runLevel) {
+    if (null != delegate) {
+      delegate.proceedTo(runLevel);
+    }
+
+    // should never be here
+    throw new IllegalStateException();
+  }
+
+  @Override
+  public boolean inhabitantChanged(EventType eventType, Inhabitant<?> inhabitant) {
+    if (null == delegateListener) {
+      if (null == delegate) {
+        // we want to keep getting messages for now
+        return true;
+      } else {
+        // our delegate is not a listener, so we don't care anymore
+        return false;
       }
     }
+
+    // refer to the delegate
+    return delegateListener.inhabitantChanged(eventType, inhabitant);
   }
 
 }

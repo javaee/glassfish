@@ -151,6 +151,8 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
             habitat.addIndex(new ExistingSingletonInhabitant<ModulesRegistry>(this),
                     ModulesRegistry.class.getName(), null);
             habitats.put(name, habitat);
+
+            habitat.initialized();
             
             return habitat;
         } catch (IOException e) {

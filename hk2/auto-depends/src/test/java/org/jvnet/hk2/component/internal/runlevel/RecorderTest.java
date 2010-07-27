@@ -18,6 +18,7 @@ import org.jvnet.hk2.component.InhabitantListener.EventType;
 import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.test.contracts.Simple;
 import org.jvnet.hk2.test.impl.TwoSimple;
+import org.jvnet.hk2.test.runlevel.ANonExistantEnvServerService;
 import org.jvnet.hk2.test.runlevel.RandomContract;
 import org.jvnet.hk2.test.runlevel.RunLevelFiveService;
 import org.jvnet.hk2.test.runlevel.RunLevelTenService;
@@ -147,6 +148,25 @@ public class RecorderTest {
     assertFalse(low.isInstantiated());
     assertFalse(correct.isInstantiated());
     assertFalse(high.isInstantiated());
+  }
+  
+  @Test
+  public void anotherEnvironment() {
+    List<Inhabitant<?>> list = new ArrayList<Inhabitant<?>>();
+    Recorder recorder = new Recorder(list, 10);
+    RunLevelState rlState = new TestRunLevelState(10, 10, Integer.class);
+
+    Holder.Impl cl = new Holder.Impl(getClass().getClassLoader());
+
+    Inhabitant<?> delegate = Inhabitants.createInhabitant(h, cl,
+        ANonExistantEnvServerService.class.getName(), new MultiMap(), null,
+        Collections.singleton(RandomContract.class.getName()));
+    TestRunLevelInhabitant rli = new TestRunLevelInhabitant(delegate, 0, rlState, null);
+
+    rli.get();
+    recorder.inhabitantChanged(EventType.INHABITANT_ACTIVATED, rli);
+
+    assertEquals(0, list.size());
   }
   
 }

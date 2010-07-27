@@ -19,5 +19,9 @@ public class TestRunLevelInhabitant extends RunLevelInhabitant {
     super(delegate, runLevel, state, listener);
   }
   
+  // make it public
+  public void notify(InhabitantListener.EventType eventType) {
+    super.notify(eventType);
+  }
 
 }

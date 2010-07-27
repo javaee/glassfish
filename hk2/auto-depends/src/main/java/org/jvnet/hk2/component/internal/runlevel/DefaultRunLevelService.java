@@ -49,6 +49,7 @@ import java.util.logging.Logger;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.HabitatListener;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantListener;
 import org.jvnet.hk2.component.RunLevelListener;
@@ -154,13 +155,19 @@ import com.sun.hk2.component.RunLevelInhabitant;
  *  
  * Note that the implementation does not handle Holder and Collection injection
  * constraint validations.
+ * 
+ * ~~~
+ * 
+ * The implementation will automatically proceedTo(0) after the habitat has been initialized.
+ * 
+ * Note that all RunLevel values less than -1 will be ignored.
  *
  * @author Jeff Trent
  *
  * @since 3.1
  */
 public class DefaultRunLevelService
-  implements RunLevelService<Void>, RunLevelState<Void>, InhabitantListener {
+  implements RunLevelService<Void>, RunLevelState<Void>, InhabitantListener, HabitatListener {
 
   static final boolean ASYNC_ENABLED = false;
   
@@ -206,6 +213,8 @@ public class DefaultRunLevelService
       });
     }
     this.recorders = recorders;
+    
+    habitat.addHabitatListener(this);
   }
   
   @Override
@@ -216,6 +225,10 @@ public class DefaultRunLevelService
   
   @Override
   public synchronized void proceedTo(final int runLevel) {
+    if (runLevel < 0) {
+      throw new IllegalArgumentException();
+    }
+    
     if (null != activeProceedToOp) {
       Logger.getAnonymousLogger().log(Level.INFO, 
           "Cancelling activation to runLevel {0} and instead proceeding to {1}",
@@ -250,7 +263,7 @@ public class DefaultRunLevelService
   }
 
   private void proceedToWorker(int runLevel) {
-    int current = (null == this.current) ? 0 : this.current;
+    int current = (null == this.current) ? -1 : this.current;
     if (runLevel > current) {
       for (int rl = current; rl <= runLevel; rl++) {
         upActiveRecorder(rl);
@@ -304,7 +317,7 @@ public class DefaultRunLevelService
 
       if (rl.value() == activeRunLevel) {
 //        assert(!i.isInstantiated()); -- avoid check since we could have cancelled a previous op
-        Logger.getAnonymousLogger().log(Level.INFO, "activating {0}", i);
+        Logger.getAnonymousLogger().log(Level.FINE, "activating {0}", i);
         try {
           i.get();
           assert(i.isInstantiated());
@@ -402,9 +415,6 @@ public class DefaultRunLevelService
     return ctx;
   }
 
-  /**
-   * This is used exclusively in testing
-   */
   void setDelegate(RunLevelState<Void> stateProvider) {
     assert(this != stateProvider);
     assert(getEnvironment() == stateProvider.getEnvironment());
@@ -418,7 +428,7 @@ public class DefaultRunLevelService
 
   @Override
   public Class<Void> getEnvironment() {
-    return Void.class;
+    return (null == delegate) ? Void.class : delegate.getEnvironment();
   }
 
   @Override
@@ -432,7 +442,7 @@ public class DefaultRunLevelService
   }
 
   @Override
-  public boolean inhabitantChanged(EventType eventType, Inhabitant<?> inhabitant) {
+  public boolean inhabitantChanged(InhabitantListener.EventType eventType, Inhabitant<?> inhabitant) {
     if (InhabitantListener.class.isInstance(delegate)) {
       return InhabitantListener.class.cast(delegate).inhabitantChanged(eventType, inhabitant);
     }
@@ -443,8 +453,8 @@ public class DefaultRunLevelService
       throw new ComponentException("problem: " + inhabitant);
     }
 
-    if ((upSide && EventType.INHABITANT_ACTIVATED != eventType) ||
-        (!upSide && EventType.INHABITANT_RELEASED != eventType)) {
+    if ((upSide && InhabitantListener.EventType.INHABITANT_ACTIVATED != eventType) ||
+        (!upSide && InhabitantListener.EventType.INHABITANT_RELEASED != eventType)) {
       throw new ComponentException("problem: " + inhabitant);
     }
 
@@ -470,6 +480,24 @@ public class DefaultRunLevelService
     return true;
   }
   
+  @Override
+  public boolean inhabitantChanged(
+      HabitatListener.EventType eventType,
+      Habitat habitat, Inhabitant<?> inhabitant) {
+    if (org.jvnet.hk2.component.HabitatListener.EventType.HABITAT_INITIALIZED == eventType) {
+      proceedTo(0);
+    }
+    return !habitat.isInitialized();
+  }
+
+  @Override
+  public boolean inhabitantIndexChanged(
+      HabitatListener.EventType eventType,
+      Habitat habitat, Inhabitant<?> inhabitant, String index, String name,
+      Object service) {
+    return true;
+  }
+
   
   private static class RunLevelServiceThread extends Thread {
     
@@ -480,5 +508,6 @@ public class DefaultRunLevelService
     }
 
   }
+
 
 }

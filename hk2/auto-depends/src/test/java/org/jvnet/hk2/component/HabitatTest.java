@@ -115,23 +115,23 @@ public class HabitatTest extends TestCase {
   private void runTestAddRemoveHabitatListeners(Habitat h) {
     Inhabitant i = h.getInhabitantByContract(Habitat.ListenersByTypeInhabitant.class.getName());
     assertNotNull(i);
-    assertEquals("size", 1, ((Habitat.ListenersByTypeInhabitant)i).size());
+    assertEquals("size", 2, ((Habitat.ListenersByTypeInhabitant)i).size());
     
     HabitatListener listener = new TestHabitatListener();
     h.addHabitatListener(listener);
     i = h.getInhabitantByContract(Habitat.ListenersByTypeInhabitant.class.getName());
     assertNotNull(i);
-    assertEquals("size", 2, ((Habitat.ListenersByTypeInhabitant)i).size());
+    assertEquals("size", 3, ((Habitat.ListenersByTypeInhabitant)i).size());
 
     assertTrue(h.removeHabitatListener(listener));
     i = h.getInhabitantByContract(Habitat.ListenersByTypeInhabitant.class.getName());
     assertNotNull(i);
-    assertEquals("size", 1, ((Habitat.ListenersByTypeInhabitant)i).size());
+    assertEquals("size", 2, ((Habitat.ListenersByTypeInhabitant)i).size());
 
     assertFalse(h.removeHabitatListener(listener));
     i = h.getInhabitantByContract(Habitat.ListenersByTypeInhabitant.class.getName());
     assertNotNull(i);
-    assertEquals("size", 1, ((Habitat.ListenersByTypeInhabitant)i).size());
+    assertEquals("size", 2, ((Habitat.ListenersByTypeInhabitant)i).size());
   }
   
   public void testAddRemoveHabitatListeners_filtered() {
