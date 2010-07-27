@@ -55,8 +55,10 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.types.Property;
 
 /**
- *
- * @author nithyasubramanian
+ * Utility file to copy the security related config files
+ * from the passed non-embedded instanceDir to the embedded
+ * server instance's config.
+ * @author Nithya Subramanian
  */
 public class EmbeddedSecurityUtil {
 
@@ -67,7 +69,7 @@ public class EmbeddedSecurityUtil {
             return;
         }
 
-        if ((fromInstanceDir == null)) {
+        if ((fromInstanceDir == null) || (domainXml == null)) {
             throw new IllegalArgumentException("Null inputs");
         }
 
@@ -76,9 +78,7 @@ public class EmbeddedSecurityUtil {
         List<String> fileNames = new ArrayList<String>();
 
         //Add FileRealm keyfiles to the list
-
-
-        fileNames.addAll(new EmbeddedSecurityUtil().new DomainXmlSecurityParser(domainXml).getKeyFileNames());
+        fileNames.addAll(new EmbeddedSecurityUtil().new DomainXmlSecurityParser(domainXml).getAbsolutePathKeyFileNames(fromInstanceDir));
 
         //Add keystore and truststore files
 
@@ -94,7 +94,7 @@ public class EmbeddedSecurityUtil {
         //Add login.conf and security policy
 
         String loginConf = fromInstanceDir + File.separator + "config" + File.separator + "login.conf";
-        String secPolicy = fromInstanceDir + File.separator + "config" + File.separator + "security.policy";
+        String secPolicy = fromInstanceDir + File.separator + "config" + File.separator + "server.policy";
 
         fileNames.add(loginConf);
         fileNames.add(secPolicy);
@@ -105,9 +105,7 @@ public class EmbeddedSecurityUtil {
         }
 
         //Copy files into new directory
-
         for (String fileName : fileNames) {
-
             FileUtils.copyFile(new File(fileName), new File(toConfigDir, parseFileName(fileName)));
         }
 
@@ -148,7 +146,7 @@ public class EmbeddedSecurityUtil {
         return keyFileNames;
     }
 
-
+    //Inner class to parse the domainXml to obtain the keyfile names
     class DomainXmlSecurityParser {
 
         XMLStreamReader xmlReader;
@@ -158,27 +156,37 @@ public class EmbeddedSecurityUtil {
                 : XMLInputFactory.newInstance(XMLInputFactory.class.getName(),
                 XMLInputFactory.class.getClassLoader());
 
-        DomainXmlSecurityParser(File domainXml) throws XMLStreamException, FileNotFoundException {
-            xmlReader = xif.createXMLStreamReader(new FileReader(domainXml));
 
-        }
         private static final String AUTH_REALM = "auth-realm";
-        private static final String DOMAIN = "domain";
+        private static final String CONFIG = "config";
         private static final String CLASSNAME = "classname";
         private static final String FILE_REALM_CLASS = "com.sun.enterprise.security.auth.realm.file.FileRealm";
         private static final String PROPERTY = "property";
         private static final String NAME = "name";
         private static final String VALUE = "value";
         private static final String FILE = "file";
+        private static final String INSTANCE_DIR_PLACEHOLDER = "${com.sun.aas.instanceRoot}";
 
-        List<String> getKeyFileNames() throws XMLStreamException {
+        DomainXmlSecurityParser(File domainXml) throws XMLStreamException, FileNotFoundException {
+            xmlReader = xif.createXMLStreamReader(new FileReader(domainXml));
+
+        }
+
+        private String replaceInstanceDir(String fromInstanceDir, String keyFileName) {
+            return StringUtils.replace(keyFileName, INSTANCE_DIR_PLACEHOLDER, fromInstanceDir);
+
+        }
+        //Obtain the keyfile names for the server-config (the first appearing config in domain.xml
+        List<String> getAbsolutePathKeyFileNames(File fromInstanceDir) throws XMLStreamException {
             List<String> keyFileNames = new ArrayList<String>();
-            while (skipToStartButNotPast(AUTH_REALM, DOMAIN)) {
+            while (skipToStartButNotPast(AUTH_REALM, CONFIG)) {
                 String realmClass = xmlReader.getAttributeValue(null, CLASSNAME);
                 if (realmClass.equals(FILE_REALM_CLASS)) {
                     while (skipToStartButNotPast(PROPERTY, AUTH_REALM)) {
                         if (FILE.equals(xmlReader.getAttributeValue(null, NAME))) {
-                            keyFileNames.add(xmlReader.getAttributeValue(null, VALUE));
+                            String keyFileName = xmlReader.getAttributeValue(null, VALUE);
+                            //Replace the Placeholder in the keyfile names
+                            keyFileNames.add(replaceInstanceDir(fromInstanceDir.getAbsolutePath(),keyFileName ));
 
                         }
                     }
