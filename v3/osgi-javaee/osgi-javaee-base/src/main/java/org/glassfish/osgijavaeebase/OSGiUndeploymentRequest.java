@@ -42,6 +42,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.osgi.framework.Bundle;
@@ -100,7 +101,10 @@ public abstract class OSGiUndeploymentRequest
             throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
         }
 
-        deployer.undeploy(osgiAppInfo.getAppInfo().getName(), dc);
+        final ApplicationInfo appInfo = osgiAppInfo.getAppInfo();
+        appInfo.stop(dc, logger);
+        appInfo.unload(dc);
+        deployer.undeploy(appInfo.getName(), dc);
         if (!osgiAppInfo.isDirectoryDeployment())
         {
             // We can always assume dc.getSourceDir will return a valid file
