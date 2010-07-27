@@ -33,19 +33,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest.generator;
 
+
 import java.util.List;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 
 /**
- * @author Mitesh Meswani
+ * @author Ludovic Champenois
  */
-public class ASMClassWriter implements ClassWriter {
-    int lineNumber;
+public class ASMClassWriter implements ClassWriter, Opcodes {
+    private static final String GENERATED_PATH ="org/glassfish/admin/rest/resources/generated/";
 
-    public ASMClassWriter(String className) {
-        
+    private org.objectweb.asm.ClassWriter cw = new org.objectweb.asm.ClassWriter(0);
+    private String className;
+    private String baseClassName;
+    private String resourcePath;
+
+    public ASMClassWriter(String className, String baseClassName, String resourcePath) {
+        this.className = className;
+        this.baseClassName = baseClassName;
+        this.resourcePath = resourcePath;
+
+        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, GENERATED_PATH + className , null,
+                "org/glassfish/admin/rest/resources/" + baseClassName , null);
+
+        if (resourcePath != null) {
+            AnnotationVisitor av0 = cw.visitAnnotation("Ljavax/ws/rs/Path;", true);
+            av0.visit("value", "/" + resourcePath + "/");
+            av0.visitEnd();
+        }
+
+
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKESPECIAL, "org/glassfish/admin/rest/resources/" + baseClassName , "<init>", "()V");
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
+
+
     }
 
     @Override
@@ -55,7 +86,23 @@ public class ASMClassWriter implements ClassWriter {
 
     @Override
     public void createGetCommandResource(String commandResourceClassName, String resourcePath) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + commandResourceClassName , "()L"+ GENERATED_PATH  + commandResourceClassName + ";", null, null);
+
+        AnnotationVisitor av0 = mv.visitAnnotation("Ljavax/ws/rs/Path;", true);
+        av0.visit("value", resourcePath + "/");
+        av0.visitEnd();
+
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitFieldInsn(GETFIELD, GENERATED_PATH + className, "resourceContext", "Lcom/sun/jersey/api/core/ResourceContext;");
+        mv.visitLdcInsn(Type.getType("LGENERATED_PATH" + commandResourceClassName + ";"));
+        mv.visitMethodInsn(INVOKEINTERFACE, "com/sun/jersey/api/core/ResourceContext", "getResource", "(Ljava/lang/Class;)Ljava/lang/Object;");
+        mv.visitTypeInsn(CHECKCAST, GENERATED_PATH + commandResourceClassName );
+        mv.visitVarInsn(ASTORE, 1);
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(2, 2);
+        mv.visitEnd();
     }
 
     @Override
@@ -70,36 +117,114 @@ public class ASMClassWriter implements ClassWriter {
 
     @Override
     public void createGetDeleteCommand(String commandName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "getDeleteCommand", "()Ljava/lang/String;", null, null);
+        mv.visitCode();
+        mv.visitLdcInsn(commandName);
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
     }
 
     @Override
     public void createGetPostCommand(String commandName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "getPostCommand", "()Ljava/lang/String;", null, null);
+        mv.visitCode();
+        mv.visitLdcInsn(commandName);
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
     }
 
     @Override
     public void createGetChildResource(String path, String childResourceClassName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + childResourceClassName, "()L"+ GENERATED_PATH + childResourceClassName + ";", null, null);
+
+        AnnotationVisitor av0 = mv.visitAnnotation("Ljavax/ws/rs/Path;", true);
+        av0.visit("value", path + "/");
+        av0.visitEnd();
+
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitFieldInsn(GETFIELD, GENERATED_PATH + className, "resourceContext", "Lcom/sun/jersey/api/core/ResourceContext;");
+        mv.visitLdcInsn(Type.getType("LGENERATED_PATH" + childResourceClassName + ";"));
+        mv.visitMethodInsn(INVOKEINTERFACE, "com/sun/jersey/api/core/ResourceContext", "getResource", "(Ljava/lang/Class;)Ljava/lang/Object;");
+        mv.visitTypeInsn(CHECKCAST, GENERATED_PATH + childResourceClassName);
+        mv.visitVarInsn(ASTORE, 1);
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, GENERATED_PATH + className, "getEntity", "()Lorg/jvnet/hk2/config/Dom;");
+        mv.visitLdcInsn(path);
+        mv.visitMethodInsn(INVOKEVIRTUAL, GENERATED_PATH + childResourceClassName, "setParentAndTagName", "(Lorg/jvnet/hk2/config/Dom;Ljava/lang/String;)V");
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(3, 2);
+        mv.visitEnd();
     }
 
     @Override
     public void createGetChildResourceForListResources(String keyAttributeName, String childResourceClassName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + childResourceClassName , "(Ljava/lang/String;)LGENERATED_PATH" + childResourceClassName + ";", null, null);
+
+        AnnotationVisitor av0 = mv.visitAnnotation("Ljavax/ws/rs/Path;", true);
+        av0.visit("value", "{" + keyAttributeName + "}/");
+        av0.visitEnd();
+
+
+        av0 = mv.visitParameterAnnotation(0, "Ljavax/ws/rs/PathParam;", true);
+        av0.visit("value", keyAttributeName);
+        av0.visitEnd();
+
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitFieldInsn(GETFIELD, GENERATED_PATH +"List" + childResourceClassName , "resourceContext", "Lcom/sun/jersey/api/core/ResourceContext;");
+        mv.visitLdcInsn(Type.getType("L" + GENERATED_PATH + childResourceClassName + ";"));
+        mv.visitMethodInsn(INVOKEINTERFACE, "com/sun/jersey/api/core/ResourceContext", "getResource", "(Ljava/lang/Class;)Ljava/lang/Object;");
+        mv.visitTypeInsn(CHECKCAST, GENERATED_PATH + childResourceClassName );
+        mv.visitVarInsn(ASTORE, 2);
+        mv.visitVarInsn(ALOAD, 2);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitFieldInsn(GETFIELD, GENERATED_PATH + "List" + childResourceClassName , "entity", "Ljava/util/List;");
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitMethodInsn(INVOKEVIRTUAL, GENERATED_PATH + childResourceClassName , "setBeanByKey", "(Ljava/util/List;Ljava/lang/String;)V");
+        mv.visitVarInsn(ALOAD, 2);
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(3, 3);
+        mv.visitEnd();
     }
 
     @Override
     public void createGetPostCommandForCollectionLeafResource(String postCommandName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        MethodVisitor mv = cw.visitMethod(ACC_PROTECTED, "getPostCommand", "()Ljava/lang/String;", null, null);
+        mv.visitCode();
+        mv.visitLdcInsn(postCommandName);
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
     }
 
     @Override
-    public void createGetDeleteCommandForCollectionLeafResource(String postCommandName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void createGetDeleteCommandForCollectionLeafResource(String deleteCommandName) {
+        MethodVisitor mv = cw.visitMethod(ACC_PROTECTED, "getDeleteCommand", "()Ljava/lang/String;", null, null);
+        mv.visitCode();
+        mv.visitLdcInsn(deleteCommandName);
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
     }
 
     @Override
     public void createGetDisplayNameForCollectionLeafResource(String displayName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        MethodVisitor mv = cw.visitMethod(ACC_PROTECTED, "getName", "()Ljava/lang/String;", null, null);
+        mv.visitCode();
+        mv.visitLdcInsn(displayName);
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
+    }
+
+    public byte[] getByteClass() {
+        cw.visitEnd();
+        return cw.toByteArray();
     }
 }
