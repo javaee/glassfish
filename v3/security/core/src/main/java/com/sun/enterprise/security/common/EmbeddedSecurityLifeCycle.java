@@ -57,7 +57,7 @@ import org.jvnet.hk2.annotations.Service;
  *
  * @author Nithya Subramanian
  */
-/*
+
 @Service
 public class EmbeddedSecurityLifeCycle
         implements EmbeddedLifecycle{
@@ -103,4 +103,4 @@ public class EmbeddedSecurityLifeCycle
 
     }
 
-}*/
+}
