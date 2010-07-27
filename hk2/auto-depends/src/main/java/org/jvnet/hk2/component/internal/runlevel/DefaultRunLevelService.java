@@ -158,7 +158,7 @@ import com.sun.hk2.component.RunLevelInhabitant;
  * 
  * ~~~
  * 
- * The implementation will automatically proceedTo(0) after the habitat has been initialized.
+ * The implementation will automatically proceedTo(-1) after the habitat has been initialized.
  * 
  * Note that all RunLevel values less than -1 will be ignored.
  *
@@ -225,7 +225,7 @@ public class DefaultRunLevelService
   
   @Override
   public synchronized void proceedTo(final int runLevel) {
-    if (runLevel < 0) {
+    if (runLevel < -1) {
       throw new IllegalArgumentException();
     }
     
@@ -263,7 +263,7 @@ public class DefaultRunLevelService
   }
 
   private void proceedToWorker(int runLevel) {
-    int current = (null == this.current) ? -1 : this.current;
+    int current = (null == this.current) ? -2 : this.current;
     if (runLevel > current) {
       for (int rl = current; rl <= runLevel; rl++) {
         upActiveRecorder(rl);
@@ -485,7 +485,7 @@ public class DefaultRunLevelService
       HabitatListener.EventType eventType,
       Habitat habitat, Inhabitant<?> inhabitant) {
     if (org.jvnet.hk2.component.HabitatListener.EventType.HABITAT_INITIALIZED == eventType) {
-      proceedTo(0);
+      proceedTo(-1);
     }
     return !habitat.isInitialized();
   }
