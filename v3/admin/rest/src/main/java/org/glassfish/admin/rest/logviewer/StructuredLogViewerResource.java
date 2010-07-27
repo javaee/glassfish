@@ -123,7 +123,7 @@ public class StructuredLogViewerResource {
             sortAscending = false;
         }
 
-        final AttributeList result = LogFilter.getLogRecordsUsingQuery(logFileName,
+        final AttributeList result = LogFilter.getLogRecordsUsingQueryStaticMethod(logFileName,
                 startIndex,
                 searchForward, sortAscending,
                 maximumNumberOfResults,

@@ -36,12 +36,18 @@
 
 package com.sun.enterprise.server.logging.logviewer.backend;
 
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
-import java.io.File;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -54,6 +60,7 @@ import java.util.*;
  * @AUTHOR: Hemanth Puttaswamy and Ken Paulsen
  * @AUTHOR: Carla Mott
  */
+@Service
 public class LogFilter {
 
     // This is the name of the Results Attribute that we send out to the
@@ -62,6 +69,19 @@ public class LogFilter {
 
 
     private static final String NV_SEPARATOR = ";";
+
+    @Inject
+    Domain domain;
+
+
+     public static AttributeList getLogRecordsUsingQueryStaticMethod(
+            String logFileName, Long fromRecord, Boolean next, Boolean forward,
+            Integer requestedCount, Date fromDate, Date toDate,
+            String logLevel, Boolean onlyLevel, List listOfModules,
+            Properties nameValueMap, String anySearch) {
+        return null;         
+     }
+
 
     /**
      * The public method that Log Viewer Front End will be calling on.
@@ -93,11 +113,12 @@ public class LogFilter {
      * @param nameValueMap   NVP's to match
      * @return
      */
-    public static AttributeList getLogRecordsUsingQuery(
+    public AttributeList getLogRecordsUsingQuery(
             String logFileName, Long fromRecord, Boolean next, Boolean forward,
             Integer requestedCount, Date fromDate, Date toDate,
             String logLevel, Boolean onlyLevel, List listOfModules,
             Properties nameValueMap, String anySearch) {
+
         LogFile logFile = null;
         if ((logFileName != null)
                 && (logFileName.length() != 0)) {
@@ -139,7 +160,100 @@ public class LogFilter {
                     reqCount, fromDate, toDate, logLevel,
                     onlyLevel.booleanValue(), listOfModules, nameValueMap, anySearch);
         } catch (Exception ex) {
-            System.err.println("Exception in fetchRecordsUsingQuer.." + ex);
+            System.err.println("Exception in fetchRecordsUsingQuery:" + ex);
+            // FIXME: Handle this correctly...
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public AttributeList getLogRecordsUsingQuery(
+            String logFileName, Long fromRecord, Boolean next, Boolean forward,
+            Integer requestedCount, Date fromDate, Date toDate,
+            String logLevel, Boolean onlyLevel, List listOfModules,
+            Properties nameValueMap, String anySearch, String instanceName) {
+
+
+        Server targetServer = domain.getServerNamed(instanceName);
+
+        File tempLogDir = null;
+        File tempLogFile = null;
+
+        if (targetServer.isDas()) {
+            return getLogRecordsUsingQuery(
+                    logFileName, fromRecord, next, forward,
+                    requestedCount, fromDate, toDate,
+                    logLevel, onlyLevel, listOfModules,
+                    nameValueMap, anySearch);
+        } else {
+
+            try {
+
+                if (!targetServer.isRunning()) {
+                    return null;
+                }
+
+                tempLogDir = File.createTempFile(targetServer.getName(), "log");
+                tempLogDir.delete();
+                tempLogDir.mkdirs();
+
+                tempLogFile = new File(tempLogDir, targetServer.getName() + ".log");
+
+                URL url = new URL("http://" + targetServer.getHost() + ":" + targetServer.getAdminPort() + "/management/domain/view-log");
+                URLConnection connection = url.openConnection();
+                InputStream stream = connection.getInputStream();
+                BufferedInputStream in = new BufferedInputStream(stream);
+                FileOutputStream file = new FileOutputStream(tempLogFile.getAbsolutePath());
+                BufferedOutputStream out = new BufferedOutputStream(file);
+                int i;
+                while ((i = in.read()) != -1) {
+                    out.write(i);
+                }
+                out.flush();
+            }
+            catch (IOException ex) {
+                System.err.println("Exception in getLogRecordsUsingQuery:" + ex);
+                throw new RuntimeException(ex);
+            }
+        }
+
+
+        LogFile logFile = null;
+        logFile = getLogFile(tempLogFile.getAbsolutePath());
+        boolean forwd = (forward == null) ? true : forward.booleanValue();
+        boolean nxt = (next == null) ? true : next.booleanValue();
+        long reqCount = (requestedCount == null) ?
+                logFile.getIndexSize() : requestedCount.intValue();
+        long startingRecord;
+        if (fromRecord == -1) {
+            // In this case next/previous (before/after) don't mean much since
+            // we don't have a reference record number.  So set before/after
+            // according to the direction.
+            nxt = forwd;
+
+            // We +1 for reverse so that we see the very end of the file (the
+            // query will not go past the "startingRecord", so we have to put
+            // it after the end of the file)
+            startingRecord = forwd ?
+                    (-1) : ((logFile.getLastIndexNumber() + 1) * logFile.getIndexSize());
+        } else {
+            startingRecord = fromRecord.longValue();
+            if (startingRecord < -1) {
+
+                throw new IllegalArgumentException(
+                        "fromRecord must be greater than 0!");
+            }
+        }
+
+        // TO DO: If the fromRecord count is zero and the fromDate entry is
+        // non-null, then the system should take advantage of file Indexing.
+        // It should move the file position to the marker where the DateTime
+        // query matches.
+        try {
+            return fetchRecordsUsingQuery(logFile, startingRecord, nxt, forwd,
+                    reqCount, fromDate, toDate, logLevel,
+                    onlyLevel.booleanValue(), listOfModules, nameValueMap, anySearch);
+        } catch (Exception ex) {
+            System.err.println("Exception in fetchRecordsUsingQuer:" + ex);
             // FIXME: Handle this correctly...
             throw new RuntimeException(ex);
         }
@@ -149,7 +263,7 @@ public class LogFilter {
     /**
      * Internal method that will be called from getLogRecordsUsingQuery()
      */
-    protected static AttributeList fetchRecordsUsingQuery(
+    protected AttributeList fetchRecordsUsingQuery(
             LogFile logFile, long startingRecord, boolean next, boolean forward,
             long requestedCount, Date fromDate, Date toDate, String logLevel,
             boolean onlyLevel, List listOfModules, Properties nameValueMap, String anySearch) {
@@ -269,7 +383,7 @@ public class LogFilter {
      * of this result. The LogRecord itself is an ArrayList of
      * all fields.
      */
-    private static AttributeList convertResultsToTheStructure(List results) {
+    private AttributeList convertResultsToTheStructure(List results) {
         if (results == null) {
             return null;
         }
@@ -310,7 +424,7 @@ public class LogFilter {
      * _REVISIT_: We may want to limit the entries here as each logFile
      * takes up so much of memory to maintain indexes
      */
-    public static LogFile getLogFile(String fileName) {
+    public LogFile getLogFile(String fileName) {
         // No need to check for null or zero length string as the
         // test is already done before.
         if (fileName.contains("${com.sun.aas.instanceRoot}")) {
@@ -361,7 +475,7 @@ public class LogFilter {
     /**
      *
      */
-    public static synchronized void setLogFile(LogFile logFile) {
+    public synchronized void setLogFile(LogFile logFile) {
         _logFile = logFile;
     }
 
@@ -370,7 +484,7 @@ public class LogFilter {
      * Utility method to replace the Module Names with their actual logger
      * names.
      */
-    protected static void updateModuleList(List listOfModules) {
+    protected void updateModuleList(List listOfModules) {
         if (listOfModules == null) {
             return;
         }
@@ -393,9 +507,9 @@ public class LogFilter {
      * This method accepts the first line of the Log Record and checks
      * to see if it matches the query.
      */
-    protected static boolean allChecks(LogFile.LogEntry entry,
-                                       Date fromDate, Date toDate, String queryLevel, boolean onlyLevel,
-                                       List listOfModules, Properties nameValueMap, String anySearch) {
+    protected boolean allChecks(LogFile.LogEntry entry,
+                                Date fromDate, Date toDate, String queryLevel, boolean onlyLevel,
+                                List listOfModules, Properties nameValueMap, String anySearch) {
         if ((dateTimeCheck(entry.getLoggedDateTime(), fromDate, toDate))
                 && (levelCheck(entry.getLoggedLevel(), queryLevel, onlyLevel))
                 && (moduleCheck(entry.getLoggedLoggerName(), listOfModules))
@@ -408,8 +522,8 @@ public class LogFilter {
     }
 
 
-    protected static boolean dateTimeCheck(Date loggedDateTime,
-                                           Date fromDateTime, Date toDateTime) {
+    protected boolean dateTimeCheck(Date loggedDateTime,
+                                    Date fromDateTime, Date toDateTime) {
         if ((fromDateTime == null) || (toDateTime == null)) {
             // If user doesn't specify fromDate and toDate, then S/He is
             // not interested in DateTime filter
@@ -425,7 +539,7 @@ public class LogFilter {
     }
 
 
-    protected static boolean levelCheck(
+    protected boolean levelCheck(
             final String loggedLevel,
             final String queryLevelIn,
             final boolean isOnlyLevelFlag) {
@@ -456,7 +570,7 @@ public class LogFilter {
         return false;
     }
 
-    protected static boolean moduleCheck(String loggerName, List modules) {
+    protected boolean moduleCheck(String loggerName, List modules) {
         if ((modules == null) || (modules.size() == 0)) {
             return true;
         }
@@ -470,8 +584,8 @@ public class LogFilter {
         return false;
     }
 
-    protected static boolean nameValueCheck(String loggedNameValuePairs,
-                                            Properties queriedNameValueMap) {
+    protected boolean nameValueCheck(String loggedNameValuePairs,
+                                     Properties queriedNameValueMap) {
         if ((queriedNameValueMap == null) || (queriedNameValueMap.size() == 0)) {
             return true;
         }
@@ -518,8 +632,8 @@ public class LogFilter {
         return false;
     }
 
-    protected static boolean messageDataCheck(String message,
-                                              String anySearch) {
+    protected boolean messageDataCheck(String message,
+                                       String anySearch) {
         if ((message == null) || (anySearch == null) || message.length() == 0 || anySearch.length() < 3) {
             return true;
         }

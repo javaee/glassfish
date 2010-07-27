@@ -72,6 +72,8 @@ import java.util.logging.LogRecord;
  import static org.glassfish.admin.amx.logging.LogRecordEmitter.*;
  import static org.glassfish.admin.amx.logging.LogFileAccess.*;
  import static org.glassfish.admin.amx.logging.LogAnalyzer.*;
+
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 
 //import com.sun.enterprise.server.logging.LoggingImplHook;
@@ -85,6 +87,7 @@ import org.jvnet.hk2.component.Habitat;
     com.sun.enterprise.server.logging.AMXLoggingHook to instantiate
     and call an instance of LoggingImpl.
  */
+@Service
 public final class LoggingImpl extends AMXImplBase
 	 //implements /*Logging,*/ LoggingImplHook
 {    
@@ -137,10 +140,10 @@ public final class LoggingImpl extends AMXImplBase
         final ServerEnvironmentImpl env = InjectedValues.getInstance().getServerEnvironment();
         loggingConfig = new LoggingConfigImpl();
         loggingConfig.setupConfigDir(env.getConfigDirPath(), env.getLibPath());
-        logFilter = new LogFilter();
         msgIdCatalog = new MessageIdCatalog();
         mHabitat = InjectedValues.getInstance().getHabitat();
         gfFileHandler = mHabitat.getComponent(GFFileHandler.class);
+        logFilter = mHabitat.getComponent(LogFilter.class);
         logger = Logger.getAnonymousLogger();
 
     }
