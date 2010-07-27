@@ -416,7 +416,7 @@ public class Habitat {
     }
 
     /**
-     * Removes a inhabitant
+     * Removes an inhabitant
      *
      * @param inhabitant
      *      inhabitant to be removed
@@ -799,7 +799,7 @@ public class Habitat {
      * @return null
      *      if no such component is found.
      */
-    public <T> Inhabitant<? extends T> getInhabitant(Class<T> contract, String name) throws ComponentException {
+    public <T> Inhabitant<T> getInhabitant(Class<T> contract, String name) throws ComponentException {
         return getInhabitantByContract(contract.getName(), name);
     }
 

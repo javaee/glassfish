@@ -375,6 +375,50 @@ public class RunLevelServiceTest {
     assertFalse(i.isInstantiated());
   }
   
+  /**
+   * Verifies the behavior of an OnProgress recipient, calling proceedTo()
+   */
+  @Test
+  public void chainedProceedToCalls() throws Exception {
+    installTestRunLevelService(false);
+    
+    defRLlistener.setProgressProceedTo(50, 51, rls);
+    
+    rls.proceedTo(50);
+    
+    synchronized (rls) {
+      rls.wait(1000);
+    }
+    assertEquals(51, defRLS.getCurrentRunLevel());
+    assertEquals(null, defRLS.getPlannedRunLevel());
+
+    assertInhabitantsState(51);
+    assertListenerState(true, true, true);
+    assertRecorderState();
+  }
+  
+  /**
+   * Verifies the behavior of an OnProgress recipient, calling proceedTo()
+   */
+  @Test
+  public void chainedProceedToCallsAsync() throws Exception {
+    installTestRunLevelService(true);
+    
+    defRLlistener.setProgressProceedTo(50, 51, rls);
+    
+    rls.proceedTo(50);
+    
+    synchronized (rls) {
+      rls.wait(1000);
+    }
+    assertEquals(51, defRLS.getCurrentRunLevel());
+    assertEquals(null, defRLS.getPlannedRunLevel());
+
+    assertInhabitantsState(51);
+    assertListenerState(true, true, true);
+    assertRecorderState();
+  }
+  
   @SuppressWarnings("unchecked")
   private void installTestRunLevelService(boolean async) {
     Inhabitant<RunLevelService> r = 

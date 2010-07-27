@@ -301,11 +301,15 @@ public class DefaultRunLevelService
     current = runLevel;
     activeRunLevel = null;
 
+    if (planned == current) {
+      // needed for the chained case
+      reset();
+    } else {
+      activeRecorder = null;
+    }
+    
     // notify listeners that we are complete
     notify(ListenerEvent.PROGRESS, null, null);
-
-    // we clear this last in case the listener attempt to manually create extra stuff
-    activeRecorder = null;
   }
 
   protected void activateRunLevel() {
@@ -351,8 +355,14 @@ public class DefaultRunLevelService
     
     // don't set current until we've actually reached it
     current = runLevel;
-    activeRunLevel = null;
 
+    if (planned == current) {
+      // needed for the chained case
+      reset();
+    } else {
+      activeRunLevel = null;
+    }
+    
     // notify listeners that we are complete
     notify(ListenerEvent.PROGRESS, null, null);
   }
