@@ -106,6 +106,10 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             throw new CommandException(
                     Strings.get("Instance.rendezvousAlready", instanceName, DASHost, "" + DASPort));
         }
+
+        if (node != null) { //Uncomment when _validate-node is implemented - Issue 12544
+            //validateNode(node, getInstallRootPath(), getInstanceHostName(true));
+        }
     }
 
     /**
@@ -262,9 +266,6 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         if (nodeDir != null) {
             argsList.add("--nodedir");
             argsList.add(nodeDir);
-        } else {
-            argsList.add("--nodedir");
-            argsList.add(installdir + File.separator + "nodeagents");
         }
         if (installdir != null) {
             argsList.add("--installdir");
@@ -276,6 +277,33 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         argsArray = argsList.toArray(argsArray);
 
         RemoteCommand rc = new RemoteCommand("_create-node-implicit", this.programOpts, this.env);
+        return rc.execute(argsArray);
+    }
+
+    private int validateNode(String name, String installdir, String nodeHost) throws CommandException {
+        ArrayList<String> argsList = new ArrayList<String>();
+        argsList.add(0, "_validate-node");
+        if (name != null) {
+            argsList.add("--name");
+            argsList.add(name);
+        }
+        if (nodeDir != null) {
+            argsList.add("--nodedir");
+            argsList.add(nodeDir);
+        }
+        if (nodeHost != null) {
+            argsList.add("--nodehost");
+            argsList.add(nodeHost);
+        }
+        if (installdir != null) {
+            argsList.add("--installdir");
+            argsList.add(installdir);
+        }
+
+        String[] argsArray = new String[argsList.size()];
+        argsArray = argsList.toArray(argsArray);
+
+        RemoteCommand rc = new RemoteCommand("_validate-node", this.programOpts, this.env);
         return rc.execute(argsArray);
     }
 
