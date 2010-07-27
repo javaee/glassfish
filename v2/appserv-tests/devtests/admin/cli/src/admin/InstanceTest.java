@@ -80,7 +80,7 @@ public class InstanceTest extends AdminBaseDevTest {
         printf("GF HOME = " + glassFishHome);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new InstanceTest().runTests();
     }
 
@@ -89,7 +89,7 @@ public class InstanceTest extends AdminBaseDevTest {
         return "Unit test for create/delete/list instance";
     }
 
-    public void runTests() {
+    public void runTests() throws IOException {
         startDomain();
         testDuplicateReportNames();
         testNamesWithSpaces();
@@ -103,7 +103,8 @@ public class InstanceTest extends AdminBaseDevTest {
         deleteAdminCommand();
         testRendezvous();
         testUpgrade();
-        cleanup();
+        testNode();
+        deleteDirectory(nodeDir);
         stopDomain();
         stat.printSummary();
     }
@@ -352,6 +353,46 @@ public class InstanceTest extends AdminBaseDevTest {
         report("delete-local-instance-upgrade", asadmin("delete-local-instance", instance));
     }
 
+    private void testNode() throws IOException {
+        String installdir = getGlassFishHome().getCanonicalPath();
+        String nodedir = installdir + File.separator + "mynodes";
+        String node = "n1";
+        String instance = "i1";
+        //Uncomment when _validate-node is implemented - Issue 12544. Otherwise bogus node dir gets created.
+        //report("create-local-instance-nosuchnode", !asadmin("create-local-instance",
+        //    "--node", "bogus", "bogusinstance"));
+
+        report("create-node-config-i1n1", asadmin("create-node-config",
+            "--nodedir", nodedir , "--nodehost", "localhost", "--installdir", installdir, node ));
+        report("create-local-instance-i1n1", asadmin("create-local-instance",
+            "--nodedir", nodedir , "--node", node, instance ));
+
+        report("check-i1-n1-dir", checkInstanceDir(instance, node, nodedir));
+        report("check-i1-n1-dasprops", checkDasProperties(node, nodedir));
+
+        report("start-local-instance-i1n1", asadmin("start-local-instance",
+            "--nodedir", nodedir , "--node", node, instance ));
+
+        report("list-instances-i1n1", asadmin("list-instances"));
+        report("check-list-instances-n1-run", isInstanceRunning(instance));
+
+        report("stop-local-instance-i1n1", asadmin("stop-local-instance",
+            "--nodedir", nodedir , "--node", node, instance ));
+
+        report("list-instances-i1n1", asadmin("list-instances"));
+        report("check-list-instances-i1n1-notrun", !isInstanceRunning(instance));
+
+        report("delete-local-instance-n1", asadmin("delete-local-instance",
+            "--nodedir", nodedir , "--node", node, instance ));
+        report("check-i1n1-dir-deleted", !checkInstanceDir(instance, node, nodedir));
+
+        report("verify-no-instances-i1n1", verifyNoInstances());
+
+        //clean up
+        report("delete-node-config-n1", asadmin("delete-node-config", node ));
+        deleteDirectory(new File(nodedir));
+    }
+
     private boolean checkInstanceDir(String name) {
         File inf = new File(instancesHome, name);
         boolean exists = inf.isDirectory();
@@ -360,6 +401,17 @@ public class InstanceTest extends AdminBaseDevTest {
 
     private boolean checkDasProperties() {
         File dasFile = new File(instancesHome, "agent" + File.separator + "config" + File.separator + "das.properties");
+        return dasFile.exists();
+    }
+
+    private boolean checkInstanceDir(String instance, String node, String nodedir) {
+        File inf = new File(nodedir + File.separator + node, instance);
+        boolean exists = inf.isDirectory();
+        return exists;
+    }
+
+    private boolean checkDasProperties(String node, String nodedir) {
+        File dasFile = new File(nodedir + File.separator + node, "agent" + File.separator + "config" + File.separator + "das.properties");
         return dasFile.exists();
     }
 
@@ -396,29 +448,20 @@ public class InstanceTest extends AdminBaseDevTest {
         }
     }
 
-    @Override
-    public void cleanup() {
-        //Cleanup the code so that tests run successfully next time
-        //Remove nodeagents\localhost directory so subsequent tests don't fail with 'More than one node agent in directory'
-        if (nodeDir.isDirectory()) {
-            File localhost = new File(nodeDir, host);
-            if (localhost.isDirectory()) {
-                File agent = new File(localhost, "agent");
-                if (agent.isDirectory()) {
-                    File config = new File(agent, "config");
-                    if (config.isDirectory()) {
-                        File dasproperties = new File(config, "das.properties");
-                        if (dasproperties.isFile()) {
-                            dasproperties.delete();
-                            config.delete();
-                            agent.delete();
-                            localhost.delete();
-                        }
-                    }
+    public boolean deleteDirectory(File path) {
+        if (path.exists()) {
+            File[] files = path.listFiles();
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteDirectory(f);
+                } else {
+                    f.delete();
                 }
             }
         }
+        return (path.delete());
     }
+
 
     private final String host;
     private final File glassFishHome;
