@@ -122,9 +122,15 @@ import org.jvnet.hk2.component.matcher.Constants;
             if (null == bestSr) {
               bestSr = getServiceRanking(best, true);
             }
+            
             if (sr > bestSr) {
               best = next;
               bestSr = sr;
+            } else if (sr == bestSr) {
+              // favor active inhabitants over inactive ones
+              if (!best.isInstantiated() && next.isInstantiated()) {
+                best = next;
+              }
             }
           }
         }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.Ignore;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.RunLevelListener;
+import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.RunLevelState;
 import org.jvnet.hk2.component.ServiceContext;
 
@@ -19,6 +20,10 @@ import org.jvnet.hk2.component.ServiceContext;
 public class TestRunLevelListener implements RunLevelListener {
 
   public final List<Call> calls = new ArrayList<Call>();
+  
+  public Integer proceedToWaitFor;
+  public Integer proceedToGoTo;
+  public RunLevelService<?> proceedToRls;
   
   
   @Override
@@ -35,6 +40,17 @@ public class TestRunLevelListener implements RunLevelListener {
   @Override
   public void onProgress(RunLevelState<?> state) {
     calls.add(Call.onProgress(state));
+    if (null != proceedToWaitFor && 
+        state.getCurrentRunLevel() == proceedToWaitFor) {
+      proceedToWaitFor = null;
+      proceedToRls.proceedTo(proceedToGoTo);
+    }
+  }
+
+  public void setProgressProceedTo(int i, int j, RunLevelService<?> rls) {
+    proceedToWaitFor = i;
+    proceedToGoTo = j;
+    proceedToRls = rls;
   }
 
   
@@ -82,4 +98,5 @@ public class TestRunLevelListener implements RunLevelListener {
       return new Call("progress", rls, null);
     }
   }
+
 }
