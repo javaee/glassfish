@@ -50,6 +50,8 @@ public interface PostConstruct {
      * The component has been injected with any dependency and
      * will be placed into commission by the subsystem.
      *
+     * Hk2 will catch all unchecked exceptions, and cause the 
+     * backing inhabitant to be released.
      */
     public void postConstruct();
 }
