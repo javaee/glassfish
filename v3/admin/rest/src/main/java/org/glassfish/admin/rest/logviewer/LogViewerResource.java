@@ -35,8 +35,6 @@
  */
 package org.glassfish.admin.rest.logviewer;
 
-
-
 import com.sun.jersey.api.core.ResourceContext;
 import java.io.File;
 import java.io.IOException;
@@ -52,17 +50,18 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.io.OutputStreamWriter;
 import java.net.URI;
+import java.util.zip.GZIPOutputStream;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
-
 
 /**
  * Represents a large text data.
@@ -77,10 +76,11 @@ import javax.ws.rs.core.UriInfo;
  */
 //@Path("view-log/")
 public class LogViewerResource {
+
     @Context
     protected ResourceContext resourceContext;
-
-    @Context protected UriInfo ui;
+    @Context
+    protected UriInfo ui;
 
     /**
      * Represents the data source of this text.
@@ -104,9 +104,15 @@ public class LogViewerResource {
     }
 
     @GET
-    @Produces({MediaType.TEXT_PLAIN})
+    @Produces("text/plain;charset=UTF-8")
     public Response get(@QueryParam("start")
-            @DefaultValue("0") long start) throws IOException {
+            @DefaultValue("0") long start, @Context HttpHeaders hh) throws IOException {
+        boolean gzipOK = true;
+        MultivaluedMap<String, String> headerParams = hh.getRequestHeaders();
+        String acceptEncoding = headerParams.getFirst("Accept-Encoding");
+        if (acceptEncoding == null || acceptEncoding.indexOf("gzip") == -1) {
+            gzipOK = false;
+        }
 
 
         initLargeText(new File(org.glassfish.admin.rest.RestService.getLogLocation()), false);
@@ -123,8 +129,7 @@ public class LogViewerResource {
                         public void write(OutputStream out) throws IOException, WebApplicationException {
                         }
                     }).
-                    header("X-Text-Append-Next", ui.getAbsolutePathBuilder().queryParam("start", 0).build())
-                    .build();
+                    header("X-Text-Append-Next", ui.getAbsolutePathBuilder().queryParam("start", 0).build()).build();
         }
 
 
@@ -132,39 +137,42 @@ public class LogViewerResource {
             start = 0;  // text rolled over
         }
         final CharSpool spool = new CharSpool();
-        long r = writeLogTo(start, spool);
+        long size = writeLogTo(start, spool);
 
         //       response.addHeader("X-Text-Size", String.valueOf(r));
         if (!completed) {
             //           response.addHeader("X-More-Data", "true");
         }
+        if (size < 10000) {
+            gzipOK = false;
+        }
+        final boolean gz = gzipOK;
         ResponseBuilder rp = Response.ok(
                 new StreamingOutput() {
 
                     @Override
                     public void write(OutputStream out) throws IOException, WebApplicationException {
-                        Writer w = new OutputStreamWriter(out);
+                        Writer w = getWriter(out, gz);
                         spool.writeTo(new LineEndNormalizingWriter(w));
                         w.flush();
                         w.close();
                     }
                 });
-        URI next = ui.getAbsolutePathBuilder().queryParam("start", r).build();
+        URI next = ui.getAbsolutePathBuilder().queryParam("start", size).build();
         rp.header("X-Text-Append-Next", next);
+        if (gzipOK) {
+            rp = rp.header("Content-Encoding", "gzip");
+        }
         return rp.build();
-     //   return rp.header("X-Text-Size", String.valueOf(r)).header("X-More-Data", "true").build();
+        //   return rp.header("X-Text-Size", String.valueOf(r)).header("X-More-Data", "true").build();
     }
 
-    public Writer getWriter(OutputStream out, ResponseBuilder rp, long size) throws IOException {
-//            if (size<10000){
-        return new OutputStreamWriter(out);
-//            }
-//        String acceptEncoding = req.getHeader("Accept-Encoding");
-//        if(acceptEncoding==null || acceptEncoding.indexOf("gzip")==-1)
-//            return new OutputStreamWriter(out);   // compression not available
-//
-//        rp = rp.header("Content-Encoding","gzip");
-//        return new OutputStreamWriter(new GZIPOutputStream(out),getCharacterEncoding());
+    private Writer getWriter(OutputStream out, boolean gzipOK) throws IOException {
+        if (gzipOK == false) {
+            return new OutputStreamWriter(out);
+        } else {
+            return new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
+        }
     }
 
     public void initLargeText(File file, boolean completed) {
