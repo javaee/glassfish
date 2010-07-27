@@ -36,11 +36,14 @@
 package org.jvnet.hk2.test.runlevel;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import static org.junit.Assert.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.junit.Hk2Test;
 
 import java.lang.annotation.Annotation;
@@ -51,7 +54,7 @@ import java.util.HashSet;
  *
  * @author Jerome Dochez
  */
-
+@RunWith(Hk2Runner.class)
 public class RunLevelTest extends Hk2Test {
     @Inject
     Habitat habitat;
@@ -73,7 +76,7 @@ public class RunLevelTest extends Hk2Test {
     @Test
     public void run() {
         HashSet<Inhabitant<?>> annotated = new HashSet<Inhabitant<?>>(habitat.getInhabitantsByContract(RunLevel.class.getName()));
-        assertEquals(annotated.toString(), 12, annotated.size());
+        assertEquals(annotated.toString(), 15, annotated.size());
         for (Inhabitant<?> i : annotated) {
             System.out.println(i.typeName() + " is annotated with " + RunLevel.class.getName());
 

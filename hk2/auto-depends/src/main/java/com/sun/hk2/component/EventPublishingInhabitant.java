@@ -142,7 +142,7 @@ import org.jvnet.hk2.component.MultiMap;
     return (null == listeners) ? false : listeners.remove(listener);
   }
 
-  private synchronized void notify(InhabitantListener.EventType eventType) {
+  protected synchronized void notify(InhabitantListener.EventType eventType) {
     if (null != listeners) {
       Iterator<InhabitantListener> iter = listeners.iterator();
       while (iter.hasNext()) {

@@ -5,18 +5,25 @@ import org.jvnet.hk2.component.RunLevelState;
 
 /**
  * Test RunLevelState
+ * 
  * @author Jeff Trent
  */
 @Ignore
 public class TestRunLevelState implements RunLevelState<Object> {
   Integer current;
   Integer planned;
+  Class<?> env;
 
   public TestRunLevelState(Integer current, Integer planned) {
-    this.current = current;
-    this.planned = planned;
+    this(current, planned, null);
   }
   
+  public TestRunLevelState(Integer current, Integer planned, Class<?> env) {
+    this.current = current;
+    this.planned = planned;
+    this.env = env;
+  }
+
   @Override
   public Integer getCurrentRunLevel() {
     return current;
@@ -25,7 +32,7 @@ public class TestRunLevelState implements RunLevelState<Object> {
   @SuppressWarnings("unchecked")
   @Override
   public Class getEnvironment() {
-    return null;
+    return env;
   }
 
   @Override

@@ -106,6 +106,9 @@ public class Habitat {
       Boolean.getBoolean("hk2.async.executor");
     final ExecutorService exec;
     
+    private boolean initialized;
+
+    
     public Habitat() {
       this(null, null);
     }
@@ -534,6 +537,19 @@ public class Habitat {
           notify(inhabitant, EventType.INHABITANT_MODIFIED, contract, null);
         }
       }
+    }
+    
+    /**
+     * FOR INTERNAL USE ONLY
+     */
+    public void initialized() {
+      if (initialized) throw new RuntimeException("already initialized");
+      initialized = true;
+      notify(null, EventType.HABITAT_INITIALIZED, null, null);
+    }
+    
+    public boolean isInitialized() {
+      return initialized;
     }
     
     protected void notify(final Inhabitant<?> inhabitant,

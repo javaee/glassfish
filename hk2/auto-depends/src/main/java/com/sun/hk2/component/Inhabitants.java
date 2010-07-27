@@ -53,6 +53,7 @@ import org.jvnet.hk2.component.Scope;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.Womb;
 import org.jvnet.hk2.component.Wombs;
+import org.jvnet.hk2.component.internal.runlevel.RunLevelServices;
 
 /**
  * Factory for Inhabitants.
@@ -65,6 +66,8 @@ import org.jvnet.hk2.component.Wombs;
 // TODO: should probably use iface for InhabitantFactory instead of hardcoding them.
 public class Inhabitants {
 
+  private static final RunLevelServices runLevelServices = new RunLevelServices(); 
+  
   @SuppressWarnings("unchecked")
   public static Inhabitant<?> createInhabitant(Habitat habitat,
       Holder<ClassLoader> classLoader,
@@ -81,7 +84,7 @@ public class Inhabitants {
       assert(!i.isInstantiated()) : "inhabitant should not be active";
 
       // get the appropriate RLS for this RunLevel
-      RunLevelService<?> rls = getRunLevelService(habitat, rl);
+      RunLevelService<?> rls = runLevelServices.get(habitat, rl);
       InhabitantListener listener = InhabitantListener.class.isInstance(rls) ?
           InhabitantListener.class.cast(rls) : null;
 
@@ -109,25 +112,6 @@ public class Inhabitants {
     }
     return false;
   }
-
-  /**
-   * Find the RunLevelService appropriate for the specified RunLevel.
-   * Throws ComponentException if no RunLevel found for passed RunLevel type.
-   */
-  @SuppressWarnings("unchecked")
-  private static RunLevelService<?> getRunLevelService(Habitat habitat, RunLevel rl) {
-    assert(null != rl);
-    Collection<RunLevelService> coll = habitat.getAllByContract(RunLevelService.class);
-    for (RunLevelService<?> rls : coll) {
-      if (null != rls.getState() && 
-          rls.getState().getEnvironment() == rl.environment()) {
-        return rls;
-      }
-    }
-    
-    throw new ComponentException("no RunLevelService appropriate for " + rl);
-  }
-
 
   /**
    * Creates a singleton wrapper around existing object.

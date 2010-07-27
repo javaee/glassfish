@@ -187,6 +187,8 @@ public class Hk2TestServices {
                 System.out.println(" --> " + t.typeName() + " "+ t.metadata());
             }
         }
+        
+        habitat.initialized();
     }
 
     /**

@@ -26,6 +26,7 @@ import org.jvnet.hk2.component.internal.runlevel.Recorder;
 import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.junit.Hk2RunnerOptions;
 import org.jvnet.hk2.test.runlevel.NonRunLevelWithRunLevelDepService;
+import org.jvnet.hk2.test.runlevel.RunLevelService0;
 import org.jvnet.hk2.test.runlevel.ServiceA;
 import org.jvnet.hk2.test.runlevel.ServiceB;
 import org.jvnet.hk2.test.runlevel.ServiceC;
@@ -74,12 +75,12 @@ public class RunLevelServiceTest {
     
     Collection<RunLevelService> coll2 = h.getAllByContract(RunLevelService.class);
     assertNotNull(coll2);
-    assertEquals(coll2.toString(), 1, coll2.size());
+    assertEquals(coll2.toString(), 2, coll2.size());  // a test one, and the real one
     
     RunLevelService rls = h.getComponent(RunLevelService.class);
     assertNotNull(rls);
     assertNotNull(rls.getState());
-    assertEquals(null, rls.getState().getCurrentRunLevel());
+    assertEquals(0, rls.getState().getCurrentRunLevel());
     assertEquals(null, rls.getState().getPlannedRunLevel());
     assertEquals(Void.class, rls.getState().getEnvironment());
     
@@ -87,6 +88,27 @@ public class RunLevelServiceTest {
     assertSame(rls, rls2);
     assertSame(this.rls, rls);
     assertTrue(rls instanceof DefaultRunLevelService);
+  }
+  
+  /**
+   * Verifies that RunLevel 0 inhabitants are created immediately
+   */
+  @Test
+  public void validateRunLevel0Inhabitants() {
+    assertTrue(h.isInitialized());
+    Inhabitant<RunLevelService0> i = h.getInhabitantByType(RunLevelService0.class);
+    assertNotNull(i);
+    assertTrue(i.isInstantiated());
+  }
+  
+  @Test
+  public void proceedToNegNum() {
+    try {
+      rls.proceedTo(-1);
+      fail("Expected -1 to be a problem");
+    } catch (IllegalArgumentException e) {
+      // expected
+    }
   }
   
   /**
@@ -370,11 +392,6 @@ public class RunLevelServiceTest {
     h.add(r);
     h.addIndex(r, RunLevelService.class.getName(), "default");
 
-    Collection<RunLevelService> coll = h.getAllByContract(RunLevelService.class);
-    assertNotNull(coll);
-    assertEquals(1, coll.size());
-    assertSame(rls, coll.iterator().next());
-
     this.defRLS = (DefaultRunLevelService) rls;
     this.defRLlistener = (TestRunLevelListener) listener;
     defRLlistener.calls.clear();
@@ -398,7 +415,11 @@ public class RunLevelServiceTest {
         if (ai.toString().contains("Invalid")) {
           assertFalse("expect not instantiated: " + ai, ai.isInstantiated());
         } else {
-          assertTrue("expect instantiated: " + ai, ai.isInstantiated());
+          if (Void.class == rl.environment()) {
+            assertTrue("expect instantiated: " + ai, ai.isInstantiated());
+          } else {
+            assertFalse("expect instantiated: " + ai, ai.isInstantiated());
+          }
         }
       } else {
         assertFalse("expect not instantiated: " + ai, ai.isInstantiated());
