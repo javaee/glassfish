@@ -383,8 +383,7 @@ public class GuiUtil {
     public static void prepareException(HandlerContext handlerCtx, Throwable ex) {
         Throwable rootException = getRootCause(ex);
         prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), rootException.getMessage());
-        //TODO use logger
-        ex.printStackTrace();
+	GuiUtil.getLogger().log(Level.SEVERE, "Exception Occurred: ", ex);
     }
 
     /* This method sets up the attributes of the <sun:alert> message box so that any
