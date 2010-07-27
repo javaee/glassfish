@@ -49,14 +49,11 @@ import java.util.logging.Logger;
  */
 public class TextResourcesGenerator extends ResourcesGeneratorBase {
 
-    private static String GENERATOR_OUTPUT_DIR = System.getProperty("user.home")
-            + "/src/glassfish/v3/admin/rest/src/main/java/org/glassfish/admin/rest/resources/generated.new";
-
     /* The absolute path to dir where resources are generated */
     private File generationDir;
 
-    public TextResourcesGenerator() {
-        generationDir= new File(GENERATOR_OUTPUT_DIR);
+    public TextResourcesGenerator(String outputDir) {
+        generationDir= new File(outputDir);
         generationDir.mkdirs();
     }
     
