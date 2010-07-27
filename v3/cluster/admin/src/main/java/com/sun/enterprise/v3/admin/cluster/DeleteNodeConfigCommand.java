@@ -104,6 +104,12 @@ public class DeleteNodeConfigCommand implements AdminCommand, PostConstruct {
         String dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
         rch = new RemoteConnectHelper(habitat, nodeList, logger, dasHost, dasPort);
 
+        /*
+         *
+         * We don't have a robust way to differentiate between a "config"
+         * node and an ssh node -- see bug 12694. So for now we don't
+         * check which means delete-node-config can delete a node
+         * of any type.
         if (!isConfigNode(name)) {
             String msg = Strings.get("notConfigNode", name);
             logger.warning(msg);
@@ -111,6 +117,7 @@ public class DeleteNodeConfigCommand implements AdminCommand, PostConstruct {
             report.setMessage(msg);
             return;
         }
+         */
         
         // for now delete-node-ssh deletes all types of nodes so can call it.  that needs to be fixed.
         CommandInvocation ci = cr.getCommandInvocation("delete-node-ssh", report);
