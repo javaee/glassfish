@@ -90,10 +90,15 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
                     Strings.get("ConfigClusterConflict"));
         }
 
-        super.validate();  // instanceName is validated and set in super.validate()
+        if (node != null) { //Uncomment when _validate-node is implemented - Issue 12544.
+            //Has to be before super.validate(), so if node is bogus CommandException should be
+            //thrown and command fail. The bogus node directory should not get created in super.validate().
+            //validateNode(node, getInstallRootPath(), getInstanceHostName(true));
+        }
+
+        super.validate();  // instanceName is validated and set in super.validate(), directories created
         INSTANCE_DOTTED_NAME = "servers.server." + instanceName;
         RENDEZVOUS_DOTTED_NAME = INSTANCE_DOTTED_NAME + ".property." + RENDEZVOUS_PROPERTY_NAME;
-
         
         if (!rendezvousWithDAS()) {
             instanceDir.delete();
@@ -105,10 +110,6 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         if (_rendezvousOccurred) {
             throw new CommandException(
                     Strings.get("Instance.rendezvousAlready", instanceName, DASHost, "" + DASPort));
-        }
-
-        if (node != null) { //Uncomment when _validate-node is implemented - Issue 12544
-            //validateNode(node, getInstallRootPath(), getInstanceHostName(true));
         }
     }
 
