@@ -61,9 +61,9 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
      * Generate REST resource for a single config model.
      */
     public void generateSingle(ConfigModel model, DomDocument domDocument) {
-        processRedirectsAnnotation(model);
+        //processRedirectsAnnotation(model); // TODO need to extract info from RestRedirect Annotations
 
-        String serverConfigName = getLastAfterDot(model.targetTypeName);
+        String serverConfigName = getUnqualifiedTypeName(model.targetTypeName);
         String beanName = getBeanName(serverConfigName);
         String className = getClassName(beanName);
 
@@ -97,70 +97,16 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
                     generateCollectionLeafResource(childResourceBeanName);
                 }
             } else {  // => !childElement.isLeaf()
-                //TODO code below is not elegantly laid out. Refactor it after digesting the flow.
-                /* create a method processNonLeafChildElement() {
-                      which encapsulates all of below and recurses to itself as required.
-                   }
-                 */
-
-                ConfigModel.Node node = (ConfigModel.Node) childElement;
-                ConfigModel childModel = node.getModel();
-                String childBeanName = getLastAfterDot(childModel.targetTypeName);
-
-                if (elementName.equals("*")) {
-                    List<ConfigModel> childConfigModels = null;
-                    try {
-                        Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
-                        childConfigModels = domDocument.getAllModelsImplementing(subType);
-                    } catch (ClassNotFoundException e) {
-                        throw new GeneratorException(e);
-                    }
-                    if (childConfigModels != null) {
-                        for (ConfigModel childConfigModel : childConfigModels) {
-                            processNonLeafChildConfigModel(childConfigModel, childElement, domDocument, classWriter);
-                        }
-                    } else {
-                        processNonLeafChildConfigModel(childModel, childElement, domDocument, classWriter);
-                    }
-                } else { // => !childElement.isLeaf() && !elementName.equals("*")
-                    if (childBeanName.equals("Property")) {
-                        classWriter.createGetChildResource("property", "PropertiesBagResource");
-                    } else {
-                        String childResourceClassName = getClassName(childBeanName);
-                        if(childElement.isCollection()) {
-                            childResourceClassName = "List" + childResourceClassName;
-                        }
-                        classWriter.createGetChildResource(childModel.getTagName(), childResourceClassName);
-                    }
-
-                    if (childElement.isCollection()) {
-                        generateList(childModel, domDocument);
-                    } else {
-                        generateSingle(childModel, domDocument);
-                    }
-                }
+                processNonLeafChildElement(elementName, childElement, domDocument, classWriter);
             }
         }
 
         classWriter.done();
     }
 
-    /**
-     * @param className
-     * @return true if the given className is already generated. false otherwise.
-     */
-    private boolean alreadyGenerated(String className) {
-        boolean retVal = true;
-        if (!alreadyGenerated.contains(className)) {
-            alreadyGenerated.add(className);
-            retVal = false;
-        }
-        return retVal;
-    }
-
     public void generateList(ConfigModel model, DomDocument domDocument)  {
 
-        String serverConfigName = getLastAfterDot(model.targetTypeName);
+        String serverConfigName = getUnqualifiedTypeName(model.targetTypeName);
         String beanName = getBeanName(serverConfigName);
         String className = "List" + getClassName(beanName);
 
@@ -207,38 +153,47 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
     }
 
+    private void processNonLeafChildElement(String elementName, ConfigModel.Property element, DomDocument domDocument, ClassWriter classWriter) {
+        ConfigModel.Node node = (ConfigModel.Node) element;
+        ConfigModel model = node.getModel();
+        String beanName = getUnqualifiedTypeName(model.targetTypeName);
 
-    /**
-     * @param model
-     * @return name of the key attribute for the given model.
-     */
-    private String getKeyAttributeName(ConfigModel model) {
-        String keyAttributeName = null;
-        if (model.key == null) {
-            for (String s : model.getAttributeNames()) {//no key, by default use the name attr
-                if (s.equals("name")) {
-                    keyAttributeName = getBeanName(s);
-                }
+        if (elementName.equals("*")) { //e.g. element Resource of Resources
+            List<ConfigModel> childConfigModels = null;
+            try {
+                Class<?> subType = model.classLoaderHolder.get().loadClass(model.targetTypeName);
+                childConfigModels = domDocument.getAllModelsImplementing(subType);
+            } catch (ClassNotFoundException e) {
+                throw new GeneratorException(e);
             }
-            if (keyAttributeName == null)//nothing, so pick the first one
-            {
-                Set<String> attributeNames =  model.getAttributeNames();
-                if(!attributeNames.isEmpty()) {
-                    keyAttributeName = getBeanName(attributeNames.iterator().next());
-                } else {
-                    //TODO carried forward from old generator. Should never reach here. But we do. Need to follow up.
-                    keyAttributeName = "ThisIsAModelBug:NoKeyAttr"; //no attr choice fo a key!!! Error!!!
+            if (childConfigModels != null) {
+                for (ConfigModel childConfigModel : childConfigModels) {
+                    processNonLeafChildConfigModel(childConfigModel, element, domDocument, classWriter);
                 }
+            } else {
+                //e.g. model.targetTypeName == "engine" (Application/Module/Engine)
+                processNonLeafChildConfigModel(model, element, domDocument, classWriter);
+            }
+        } else { // => !childElement.isLeaf() && !elementName.equals("*")
+            if (beanName.equals("Property")) {
+                classWriter.createGetChildResource("property", "PropertiesBagResource");
+            } else {
+                String childResourceClassName = getClassName(beanName);
+                if(element.isCollection()) {
+                    childResourceClassName = "List" + childResourceClassName;
+                }
+                classWriter.createGetChildResource(model.getTagName(), childResourceClassName);
+            }
 
+            if (element.isCollection()) {
+                generateList(model, domDocument);
+            } else {
+                generateSingle(model, domDocument);
             }
-        } else {
-            keyAttributeName = getBeanName(model.key.substring(1, model.key.length()));
         }
-        return keyAttributeName;
     }
 
     /**
-     * //TODO think of a better name after understanding what data is processed.
      * process given childConfigModel.
      * @param childConfigModel
      * @param childElement
@@ -246,14 +201,14 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
      * @param classWriter
      */
     private void processNonLeafChildConfigModel(ConfigModel childConfigModel, ConfigModel.Property childElement, DomDocument domDocument, ClassWriter classWriter) {
-        String childResourceClassName = getClassName("List" + getLastAfterDot(childConfigModel.targetTypeName));
+        String childResourceClassName = getClassName("List" + getUnqualifiedTypeName(childConfigModel.targetTypeName));
         String childPath = childConfigModel.getTagName();
         classWriter.createGetChildResource(childPath, childResourceClassName);
         if (childElement.isCollection()) {
             generateList(childConfigModel, domDocument);
         } else {
-            //TODO think when would the code flow come here. We are generating a "List" getter here. What would happen if the code comes here. Who would generate the List we referred to above?
-            generateSingle(childConfigModel, domDocument);
+            //The code flow should never reach here. NonLeaf ChildElements are assumed to be collection typed that is why we generate childResource as
+            //generateSingle(childConfigModel, domDocument);
         }
     }
 
@@ -271,7 +226,6 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
         }
     }
-
 
     /**
      * Generate resources for commands mapped under given parentBeanName
@@ -339,6 +293,19 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     }
 
     /**
+     * @param className
+     * @return true if the given className is already generated. false otherwise.
+     */
+    private boolean alreadyGenerated(String className) {
+        boolean retVal = true;
+        if (!alreadyGenerated.contains(className)) {
+            alreadyGenerated.add(className);
+            retVal = false;
+        }
+        return retVal;
+    }
+
+    /**
      * @param beanName
      * @return generated class name for given beanName
      */
@@ -371,12 +338,40 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     }
 
     /**
-     * TODO Rename this method to more meaningful name
-     * @param input
-     * @return
+     * @param model
+     * @return name of the key attribute for the given model.
      */
-    private String getLastAfterDot(String input) {
-        return input.substring(input.lastIndexOf(".") + 1, input.length());
+    private String getKeyAttributeName(ConfigModel model) {
+        String keyAttributeName = null;
+        if (model.key == null) {
+            for (String s : model.getAttributeNames()) {//no key, by default use the name attr
+                if (s.equals("name")) {
+                    keyAttributeName = getBeanName(s);
+                }
+            }
+            if (keyAttributeName == null)//nothing, so pick the first one
+            {
+                Set<String> attributeNames =  model.getAttributeNames();
+                if(!attributeNames.isEmpty()) {
+                    keyAttributeName = getBeanName(attributeNames.iterator().next());
+                } else {
+                    //TODO carried forward from old generator. Should never reach here. But we do for ConfigExtension and WebModuleConfig
+                    keyAttributeName = "ThisIsAModelBug:NoKeyAttr"; //no attr choice fo a key!!! Error!!!
+                }
+
+            }
+        } else {
+            keyAttributeName = getBeanName(model.key.substring(1, model.key.length()));
+        }
+        return keyAttributeName;
+    }
+
+    /**
+     * @param qualifiedTypeName
+     * @return unqualified type name for given qualified type name. This is a substring of qualifiedTypeName after last "."
+     */
+    private String getUnqualifiedTypeName(String qualifiedTypeName) {
+        return qualifiedTypeName.substring(qualifiedTypeName.lastIndexOf(".") + 1, qualifiedTypeName.length());
     }
 
     private void processRedirectsAnnotation(ConfigModel model) {
@@ -461,6 +456,5 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
             new HashMap<String, CollectionLeafMetaData>() {{
         put("JvmOptions",new CollectionLeafMetaData("create-jvm-options", "delete-jvm-options", "JvmOption"));
     }};
-
 
 }
