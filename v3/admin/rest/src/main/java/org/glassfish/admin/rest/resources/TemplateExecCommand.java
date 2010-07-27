@@ -121,7 +121,11 @@ public class TemplateExecCommand {
         if (exitCode != ActionReport.ExitCode.FAILURE) {
             results.setStatusCode(200); /*200 - ok*/
         } else {
-            throw new CliFailureException(actionReport.getMessage());
+	    Throwable ex = actionReport.getFailureCause();
+	    ex = (ex == null) ?
+		new CliFailureException(actionReport.getMessage()) :
+		new CliFailureException(actionReport.getMessage(), ex);
+            throw (RuntimeException) ex;
         }
 
         return results;

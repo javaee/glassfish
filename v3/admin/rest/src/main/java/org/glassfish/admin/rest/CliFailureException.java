@@ -45,4 +45,8 @@ public class CliFailureException extends RuntimeException {
     public CliFailureException(String message) {
         super(message);
     }
+
+    public CliFailureException(String message, Throwable ex) {
+        super(message, ex);
+    }
 }
