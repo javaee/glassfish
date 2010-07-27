@@ -2520,6 +2520,7 @@ public class EJBTimerService
      * Called from TimerBeanContainer
      */
     public void onShutdown() {
+        shutdown();
         try {
             DateFormat dateFormat =  
                 new SimpleDateFormat(TIMER_SERVICE_DOWNTIME_FORMAT);

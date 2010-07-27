@@ -461,7 +461,8 @@ public class EjbContainerUtilImpl
                         File rootScratchDir = env.getApplicationStubPath();
                         File appScratchDir = new File(rootScratchDir, appName);
                         String resourceName = getTimerResource();
-                        if (env.isDas() && (appScratchDir.createNewFile() && !isUpgrade(resourceName))) {
+                        //if (env.isDas() && (appScratchDir.createNewFile() && !isUpgrade(resourceName))) {
+                        if (appScratchDir.createNewFile() && !isUpgrade(resourceName)) {
                             params.origin = OpsParams.Origin.deploy;
                         } else {
                             params.origin = OpsParams.Origin.load;
