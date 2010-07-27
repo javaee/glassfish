@@ -37,27 +37,45 @@
 
 package com.sun.enterprise.v3.admin.commands;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.server.logging.GFFileHandler;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
-
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * @author cmott
  */
-@Service(name="rotate-log")
-@Scoped(Singleton.class)        // no per-execution state
+@Cluster({RuntimeType.INSTANCE})
+@Service(name = "rotate-log")
+@Scoped(PerLookup.class)
+@I18n("rotate.log")
 public class RotateLog implements AdminCommand {
 
     @Inject
     GFFileHandler gf;
 
+    @Inject
+    Domain domain;
+
+    @Param(optional = true)
+    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+
     public void execute(AdminCommandContext context) {
+
+        final ActionReport report = context.getActionReport();
+        
         gf.rotate();
+
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }
