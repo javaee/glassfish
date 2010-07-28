@@ -64,7 +64,7 @@ import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
-import com.sun.enterprise.security.embedded.EmbeddedSecurityUtil;
+import com.sun.enterprise.security.EmbeddedSecurity;
 import org.glassfish.server.ServerEnvironmentImpl;
 
 import org.jvnet.hk2.component.Habitat;
@@ -167,10 +167,11 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 habitat = ejb.habitat;
                 try {
                      if (rs != null) {
-/** Need to resolve package dependencies
                           // If we are running from an existing install, copy over security files to the temp instance
-                          EmbeddedSecurityUtil.copyConfigFiles(habitat, rs.instance_root, rs.domain_file);
-**/
+                          EmbeddedSecurity es = habitat.getByContract(EmbeddedSecurity.class);
+                          if (es != null) {
+                              es.copyConfigFiles(habitat, rs.instance_root, rs.domain_file);
+                          }
                      }
 
                     server.start();
