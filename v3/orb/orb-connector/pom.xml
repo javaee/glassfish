@@ -88,7 +88,8 @@
         <dependency>
            <groupId>org.glassfish.cluster</groupId>
            <artifactId>cluster-admin</artifactId>
-           <version>${project.version}</version>
+	   <version>${project.version}</version>
+	   <scope>test</scope>
        </dependency>
         <dependency>
            <groupId>org.glassfish.common</groupId>
