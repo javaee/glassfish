@@ -81,7 +81,9 @@ public class WebExtender implements Extender, SynchronousBundleListener
     }
 
     public void start() {
-        started.set(true);
+        if (started.getAndSet(true)) {
+            return;
+        }
         wc = new OSGiWebContainer(context);
         registerWmd();
         context.addBundleListener(this);

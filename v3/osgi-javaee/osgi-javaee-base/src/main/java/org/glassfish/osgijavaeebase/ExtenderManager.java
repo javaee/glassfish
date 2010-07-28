@@ -36,6 +36,7 @@
 
 package org.glassfish.osgijavaeebase;
 
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
@@ -47,8 +48,6 @@ import org.jvnet.hk2.component.Habitat;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
 
 /**
  * It is responsible for starting any registered {@link Extender} service
@@ -65,7 +64,6 @@ public class ExtenderManager
     private static final Logger logger =
             Logger.getLogger(ExtenderManager.class.getPackage().getName());
     private BundleContext context;
-    private Habitat habitat; // handle to HK2 service registry
     private Events events;
     private EventListener listener;
     private ServiceTracker extenderTracker;
@@ -96,7 +94,9 @@ public class ExtenderManager
         stopExtenders();
     }
 
-    public void startExtenders() {
+    public synchronized void startExtenders() {
+        // Because of a race condition, we can be started multiple times, so check if already started
+        if (extenderTracker != null) return;
         extenderTracker = new ExtenderTracker(context);
         extenderTracker.open();
     }
@@ -167,7 +167,7 @@ public class ExtenderManager
         {
             logger.logp(Level.FINE, "ExtenderManager$GlassFishServerTracker", "addingService", "Habitat has been created");
             ServiceReference habitatServiceRef = context.getServiceReference(Habitat.class.getName());
-            habitat = Habitat.class.cast(context.getService(habitatServiceRef));
+            Habitat habitat = Habitat.class.cast(context.getService(habitatServiceRef));
             events = habitat.getComponent(Events.class);
             listener = new EventListener() {
                 public void event(Event event)
@@ -180,6 +180,10 @@ public class ExtenderManager
                 }
             };
             events.register(listener);
+            // We can get into infinite waiting loop if server is already started. So check the status once.
+            if (habitat.getComponent(ServerEnvironment.class).getStatus() == ServerEnvironment.Status.started) {
+                startExtenders();
+            }
             close(); // no need to track any more
             return super.addingService(reference);
         }
