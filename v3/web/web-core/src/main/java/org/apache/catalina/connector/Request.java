@@ -2756,7 +2756,7 @@ public class Request
      * between nodes in a cluster and session fixation prevention during the
      * authentication process.
      * 
-     * @param newSessionId   The session to change the session ID for
+     * @param session   The session to change the session ID for
      */
     public void changeSessionId(String newSessionId) {
         // This should only ever be called if there was an old session ID but
@@ -3908,7 +3908,7 @@ public class Request
          * methods (in which case asyncStarted would have been set to false),
          * perform an error dispatch with a status code equal to 500.
          */
-        if (!asyncContext.isDispatchInScope() && !isAsyncComplete && isAsyncStarted()) {
+        if (!isAsyncComplete && isAsyncStarted()) {
             ((HttpServletResponse) response).setStatus(
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setError();
@@ -4177,26 +4177,16 @@ public class Request
         }
 
         @Override
-        public boolean timeout() {
+        public void timeout(boolean forceClose) {
             // If the buffers are empty, commit the response header
-            boolean result = true;
-
             try {
                 if (log.isLoggable(Level.FINE)) {
                     log.log(Level.FINE, "RequestAttachement.timeout: " + res);
                 }
-                cancel();
+                getCompletionHandler().cancelled(getAttachment());
             } finally {
-                Request req = (Request)getAttachment();
-                final AsyncContextImpl asyncContext = req.asyncContext;
-                if (asyncContext != null && !asyncContext.getAndResetDispatchInScope()) {
                 completeProcessing();
-                } else {
-                    result = false;
             }
         }
-
-            return result;
     }
-}
 }
