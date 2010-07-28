@@ -37,20 +37,26 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 
+import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.GenericCrudCommand;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.Properties;
-
-import org.jvnet.hk2.annotations.*;
-import org.jvnet.hk2.component.*;
-import org.jvnet.hk2.config.*;
-import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.I18n;
-import org.glassfish.api.admin.*;
-import org.glassfish.config.support.GenericCrudCommand;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.config.serverbeans.*;
+import java.util.logging.Logger;
+import java.io.File;
 
 /**
  *  This is a remote command that copies a config to a destination config.
@@ -62,16 +68,11 @@ import com.sun.enterprise.config.serverbeans.*;
 @Service(name = "copy-config")
 @I18n("copy.config.command")
 @Scoped(PerLookup.class)
-public final class CopyConfigCommand implements AdminCommand {
-
-    @Param(primary=true, multiple=true)
-    List<String> configs;
+public final class CopyConfigCommand extends CopyConfig {
 
     @Inject
-    Domain domain;
+    ServerEnvironment env;
 
-    @Param(optional=true, separator=':')
-    String systemproperties;
 
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CopyConfigCommand.class);
@@ -150,6 +151,21 @@ public final class CopyConfigCommand implements AdminCommand {
 
                 }
             }   ,domain.getConfigs());
+
+            Logger logger = context.getLogger();
+            try {
+                File configConfigDir = new File(env.getConfigDirPath(),
+                        configName);
+                new File(configConfigDir, "docroot").mkdirs();
+                new File(configConfigDir, "lib/ext").mkdirs();
+            }
+            catch(Exception e) {
+                logger.warning(localStrings.getLocalString(
+                        "Config.copyConfigError",
+                        "CopyConfig error") +
+                        "  " + e.getLocalizedMessage());
+            }
+
 
         } catch (TransactionFailure e) {
             e.printStackTrace();

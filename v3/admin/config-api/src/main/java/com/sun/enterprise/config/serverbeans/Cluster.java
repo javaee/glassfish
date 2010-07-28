@@ -41,9 +41,11 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import java.io.*;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.config.support.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -498,6 +500,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         @Inject
         Domain domain;
 
+        @Inject
+        CommandRunner runner;
+
         /**
          * Decorates the newly CRUD created cluster configuration instance.
          * tasks :
@@ -555,35 +560,16 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                             config.getName(), instance.getName()));
                 }
 
-                Configs configs = domain.getConfigs();
-                Configs writableConfigs = t.enroll(configs);
-
-                final Config configCopy;
-                try {
-                    configCopy = (Config) config.deepCopy(writableConfigs);
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE, localStrings.getLocalString(Cluster.class,
-                            "Cluster.error_while_copying",
-                            "Error while copying the default configuration {0}",
-                            e.toString(), e));
-                    throw new TransactionFailure(e.toString(),e);
-                }
-
 
                 final String configName = instance.getName() + "-config";
                 instance.setConfigRef(configName);
+                final CopyConfig command = (CopyConfig) runner
+                        .getCommand("copy-config", context.getActionReport(), context.getLogger());
+                command.configs= new ArrayList<String>();
+                command.configs.add("default-config");
+                command.configs.add(configName);
+                command.execute(context);
 
-                try {
-                    File configConfigDir = new File(env.getConfigDirPath(), configName);
-                    new File(configConfigDir, "docroot").mkdirs();
-                    new File(configConfigDir, "lib/ext").mkdirs();
-                }
-                catch(Exception e) {
-                    // no big deal - just ignore
-                }
-
-                configCopy.setName(configName);
-                writableConfigs.getConfig().add(configCopy);
             }  else {
 
                 // cluster using specified config
