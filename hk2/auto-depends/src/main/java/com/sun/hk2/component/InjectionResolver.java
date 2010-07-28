@@ -37,6 +37,7 @@
 package com.sun.hk2.component;
 
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Inhabitant;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -102,11 +103,15 @@ public abstract class InjectionResolver<U extends Annotation> {
      * the annotated annotation.
      *
      * @param component injection target instance
+     * @param onBehalfOf inhabitant doing the injection for
      * @param annotated is the annotated java element {@link java.lang.reflect.Method}
      * or {@link java.lang.reflect.Field}
      * @param type type of the expected return
      * @return the resource to be injected
      * @throws ComponentException if the resource cannot be located.
      */
-    public abstract <V> V getValue(Object component, AnnotatedElement annotated, Class<V> type) throws ComponentException;
+    public abstract <V> V getValue(Object component,
+        Inhabitant<?> onBehalfOf,
+        AnnotatedElement annotated,
+        Class<V> type) throws ComponentException;
 }

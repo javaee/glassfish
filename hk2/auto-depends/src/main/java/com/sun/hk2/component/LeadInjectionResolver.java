@@ -48,15 +48,14 @@ import org.jvnet.hk2.component.Inhabitant;
  */
 public class LeadInjectionResolver extends InjectionResolver<Lead>{
 
-  private final Inhabitant<?> onBehalfOf;
-
-  
-  protected LeadInjectionResolver(Inhabitant<?> onBehalfOf) {
+    protected LeadInjectionResolver() {
       super(Lead.class);
-      this.onBehalfOf = onBehalfOf;
     }
   
-    public <V> V getValue(Object component, AnnotatedElement target, Class<V> type) throws ComponentException {
+    public <V> V getValue(Object component,
+                Inhabitant<?> onBehalfOf,
+                AnnotatedElement target,
+                Class<V> type) throws ComponentException {
         Inhabitant<?> lead = onBehalfOf.lead();
         if (lead==null) {
             // TODO: we should be able to check this error at APT, too.
