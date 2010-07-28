@@ -51,7 +51,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
             host0 = InetAddress.getLocalHost().getHostName();
         }
         catch (Exception e) {
-            host0 = "localhost";
+            host0 = LOCALHOST;
         }
         host = host0;
         System.out.println("Host= " + host);
@@ -74,71 +74,182 @@ public class LBCommandsTest extends AdminBaseDevTest {
     }
 
     public void run() {
-        startDomain();
+        asadmin("start-domain");
         createInstances();
 
+        int i = 1;
         //create,list LB config
-        report("Test-create-http-lb-config", asadmin("create-http-lb-config", LB_CONFIG));
+        runTest(i++ + ".create-http-lb-config", asadmin("create-http-lb-config", LB_CONFIG));
         AsadminReturn ret = asadminWithOutput("list-http-lb-configs");
         boolean success = ret.out.indexOf(LB_CONFIG) >= 0;
-        report("Test-list-http-lb-configs", success);
+        runTest(i++ + ".list-http-lb-configs", success);
+
+        runTest(i++ + ".re-create-http-lb-config", !asadmin("create-http-lb-config", LB_CONFIG));
 
         //create/delete cluster-ref for LB
-        report("Test-create-http-lb-cluster-ref", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
-        report("Test-delete-http-lb-cluster-ref", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
+        runTest(i++ + ".create-http-lb-cluster-ref", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
+        runTest(i++ + ".re-create-http-lb-cluster-ref", !asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
+
+        //enable/disable clusters for LB
+        runTest(i++ + ".enable-http-lb-server-for-cluster", asadmin("enable-http-lb-server", CLUSTER));
+        runTest(i++ + ".disable-http-lb-server-for-cluster", asadmin("disable-http-lb-server", CLUSTER));
+
+        runTest(i++ + ".delete-http-lb-config", !asadmin("delete-http-lb-config", LB_CONFIG));
+
+        //re-create HC
+        runTest(i++ + ".re-create-http-health-checker-for-cluster", !asadmin("create-http-health-checker", CONFIG_OPTION, LB_CONFIG, TIMEOUT_OPTION, "30", INTERVAL_OPTION, "5", CLUSTER));
+        //re-create HC without specifying lb config name
+        runTest(i++ + ".re-create-http-health-checker-for-cluster", !asadmin("create-http-health-checker", TIMEOUT_OPTION, "30", INTERVAL_OPTION, "5", CLUSTER));
+
+        ret = asadminWithOutput("list-http-lb-configs", LB_CONFIG);
+        success = ret.out.indexOf(CLUSTER) >= 0;
+        runTest(i++ + ".list-http-lb-configs", success);
+
+        ret = asadminWithOutput("list-http-lb-configs", CLUSTER);
+        success = ret.out.indexOf(LB_CONFIG) >= 0;
+        runTest(i++ + ".list-http-lb-configs", success);
+
+        runTest(i++ + ".delete-http-health-checker-for-cluster", asadmin("delete-http-health-checker", CONFIG_OPTION, LB_CONFIG, CLUSTER));
+        runTest(i++ + ".delete-http-health-checker-for-cluster", !asadmin("delete-http-health-checker", CONFIG_OPTION, LB_CONFIG, CLUSTER));
+
+        runTest(i++ + ".delete-http-lb-cluster-ref", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
 
         //create server-ref for LB
-        report("Test-create-http-lb-server-ref-1", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
-        report("Test-create-http-lb-server-ref-2", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE1));
+        runTest(i++ + ".create-http-lb-server-ref", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
+        runTest(i++ + ".create-http-lb-server-ref", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE1));
 
-                //enable/disable servers for LB
-        report("Test-enable-http-lb-server", !asadmin("enable-http-lb-server", STANDALONE_INSTANCE2));
-        report("Test-disable-http-lb-server", asadmin("disable-http-lb-server", STANDALONE_INSTANCE2));
-        report("Test-enable-http-lb-server-1", asadmin("enable-http-lb-server", STANDALONE_INSTANCE2));
+        ret = asadminWithOutput("list-http-lb-configs", LB_CONFIG);
+        success = ret.out.indexOf(STANDALONE_INSTANCE1) >= 0;
+        runTest(i++ + ".list-http-lb-configs", success);
+
+        ret = asadminWithOutput("list-http-lb-configs", STANDALONE_INSTANCE2);
+        success = ret.out.indexOf(LB_CONFIG) >= 0;
+        runTest(i++ + ".list-http-lb-configs", success);
+
+        runTest(i++ + ".re-create-http-lb-server-ref", !asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE1));
+
+        //enable/disable servers for LB
+        runTest(i++ + ".enable-http-lb-server", !asadmin("enable-http-lb-server", STANDALONE_INSTANCE2));
+
+        runTest(i++ + ".delete-http-lb-server-ref", !asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
+
+
+        runTest(i++ + ".disable-http-lb-server", asadmin("disable-http-lb-server", STANDALONE_INSTANCE2));
+        runTest(i++ + ".enable-http-lb-server", asadmin("enable-http-lb-server", STANDALONE_INSTANCE2));
 
         //delete/create health checker
-        report("Test-delete-http-health-checker", asadmin("delete-http-health-checker", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
-        report("Test-create-http-health-checker", asadmin("create-http-health-checker", CONFIG_OPTION, LB_CONFIG, "--timeout", "30", "--interval", "5", STANDALONE_INSTANCE2));
+        runTest(i++ + ".delete-http-health-checker", asadmin("delete-http-health-checker", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
+        runTest(i++ + ".delete-http-health-checker", !asadmin("delete-http-health-checker", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
+        runTest(i++ + ".create-http-health-checker", asadmin("create-http-health-checker", CONFIG_OPTION, LB_CONFIG, TIMEOUT_OPTION, "30", INTERVAL_OPTION, "5", STANDALONE_INSTANCE2));
+        runTest(i++ + ".re-create-http-health-checker-for-server", !asadmin("create-http-health-checker", CONFIG_OPTION, LB_CONFIG, TIMEOUT_OPTION, "30", INTERVAL_OPTION, "5", STANDALONE_INSTANCE2));
 
-        //delete server-ref for LB
-        report("Test-delete-http-lb-server-ref-1", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
-        report("Test-delete-http-lb-server-ref-2", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE1));
+        runTest(i++ + ".disable-http-lb-server", asadmin("disable-http-lb-server", STANDALONE_INSTANCE2));
+        runTest(i++ + ".disable-http-lb-server", asadmin("disable-http-lb-server", STANDALONE_INSTANCE1));
+        
+        //delete server-ref for LB, but no apps
+        runTest(i++ + ".delete-http-lb-server-ref", !asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
+        //force delete
+        runTest(i++ + ".delete-http-lb-server-ref", asadmin("delete-http-lb-ref", "--force", "true", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
 
         //configure weights
-        report("Test-configure-lb-weight", asadmin("configure-lb-weight", "--cluster", CLUSTER, "cl1-ins1=2:cl1-ins2=3:cl1-ins3=5"));
+        runTest(i++ + ".configure-lb-weight", asadmin("configure-lb-weight", CLUSTER_OPTION, CLUSTER, "cl1-ins1=2:cl1-ins2=3:cl1-ins3=5"));
 
         //configure weight for non-existing instance
-        report("Test-configure-lb-weight-1", !asadmin("configure-lb-weight", "--cluster", CLUSTER, "foo=10"));
+        runTest(i++ + ".configure-lb-weight", !asadmin("configure-lb-weight", CLUSTER_OPTION, CLUSTER, "foo=10"));
 
         //configure weight for standalone instance
-        report("Test-configure-lb-weight-2", !asadmin("configure-lb-weight", "--cluster", CLUSTER, "ins1=10"));
+        runTest(i++ + ".configure-lb-weight", !asadmin("configure-lb-weight", CLUSTER_OPTION, CLUSTER, "ins1=10"));
 
         // deploy an application to the cluster
         File webapp = new File("resources", "helloworld.war");
         asadmin("deploy", "--target", CLUSTER, webapp.getAbsolutePath());
+        asadmin("create-application-ref", "--target", STANDALONE_INSTANCE1, "helloworld");
+        asadmin("create-application-ref", "--target", STANDALONE_INSTANCE2, "helloworld");
 
         //disable/enable application for LB
-        report("Test-enable-http-lb-application", !asadmin("enable-http-lb-application", "--name" , "helloworld", CLUSTER));
-        report("Test-disable-http-lb-application", asadmin("disable-http-lb-application", "--name" , "helloworld", CLUSTER));
-        report("Test-enable-http-lb-application-1", asadmin("enable-http-lb-application", "--name" , "helloworld", CLUSTER));
+        runTest(i++ + ".enable-http-lb-application", !asadmin("enable-http-lb-application", NAME_OPTION , "helloworld", STANDALONE_INSTANCE1));
 
-        //undeploy the app
-        asadmin("undeploy", "--target", CLUSTER, "helloworld");
+        runTest(i++ + "create-http-lb-server-ref", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
+        runTest(i++ + ".delete-http-lb-server-ref", !asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
+
+        //delete server-ref's for LB after app and server is disabled
+        runTest(i++ + ".disable-http-lb-application", asadmin("disable-http-lb-application", NAME_OPTION , "helloworld", STANDALONE_INSTANCE1));
+        runTest(i++ + ".disable-http-lb-application", asadmin("disable-http-lb-application", NAME_OPTION , "helloworld", STANDALONE_INSTANCE2));
+
+        runTest(i++ + ".disable-http-lb-server", asadmin("disable-http-lb-server", STANDALONE_INSTANCE2));
+
+        runTest(i++ + ".delete-http-lb-server-ref", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE1));
+        runTest(i++ + ".delete-http-lb-server-ref", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE2));
+
+        runTest(i++ + ".enable-http-lb-application", asadmin("enable-http-lb-application", NAME_OPTION , "helloworld", STANDALONE_INSTANCE1));
+        runTest(i++ + ".enable-http-lb-application", asadmin("enable-http-lb-application", NAME_OPTION , "helloworld", STANDALONE_INSTANCE2));
+
+        //disable/enable application for LB
+        runTest(i++ + ".enable-http-lb-application-for-cluster", !asadmin("enable-http-lb-application", NAME_OPTION , "helloworld", CLUSTER));
+        //deleting cluster ref while app is enabled won't fail
+        runTest(i++ + ".create-http-lb-cluster-ref", asadmin("create-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
+        runTest(i++ + ".delete-http-lb-cluster-ref", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
+
+        runTest(i++ + ".disable-http-lb-server", asadmin("disable-http-lb-server", CLUSTER));
+        runTest(i++ + ".disable-http-lb-application-for-cluster", asadmin("disable-http-lb-application", NAME_OPTION , "helloworld", CLUSTER));
+
+        //delete ref after app is disabled, should pass
+        //runTest(i++ + ".delete-http-lb-cluster-ref", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, CLUSTER));
+
+        runTest(i++ + ".enable-http-lb-application-for-cluster", asadmin("enable-http-lb-application", NAME_OPTION , "helloworld", CLUSTER));
 
         //delete the Lb config
-        report("Test-delete-http-lb-config", asadmin("delete-http-lb-config", LB_CONFIG));
+        runTest(i++ + ".delete-http-lb-config", asadmin("delete-http-lb-config", LB_CONFIG));
+
+        //create lb-config with target specified
+        runTest(i++ + ".create-http-lb-config", asadmin("create-http-lb-config", "--target", STANDALONE_INSTANCE1, LB_CONFIG));
+
+        //re-create should fail
+        runTest(i++ + ".create-http-lb-config", !asadmin("create-http-lb-config", "--target", STANDALONE_INSTANCE1, LB_CONFIG));
+
+        //will fail since it contains refs
+        runTest(i++ + ".delete-http-lb-config", !asadmin("delete-http-lb-config", LB_CONFIG));
+
+        //remove the refs and delete
+        runTest(i++ + ".disable-http-lb-server", asadmin("disable-http-lb-server", STANDALONE_INSTANCE1));
+        runTest(i++ + ".disable-http-lb-application-for-server", asadmin("disable-http-lb-application", NAME_OPTION , "helloworld", STANDALONE_INSTANCE1));
+        runTest(i++ + ".delete-http-lb-server-ref", asadmin("delete-http-lb-ref", CONFIG_OPTION, LB_CONFIG, STANDALONE_INSTANCE1));
+        runTest(i++ + ".delete-http-lb-config", asadmin("delete-http-lb-config", LB_CONFIG));
 
         //create the load balancer
-        report("Test-create-http-lb", asadmin("create-http-lb", "--devicehost", "localhost", "--deviceport", "9000", "lb1"));
+        runTest(i++ + ".create-http-lb", asadmin("create-http-lb", DEVICEHOST_OPTION, LOCALHOST, DEVICEPORT_OPTION, "9000", LB_NAME));
         ret = asadminWithOutput("list-http-lbs");
-        success = ret.out.indexOf("lb1") >= 0;
-        report("Test-list-http-lbs", success);
+        success = ret.out.indexOf(LB_NAME) >= 0;
+        runTest(i++ + ".list-http-lbs", success);
+
+        runTest(i++ + ".create-http-lb", !asadmin("create-http-lb", DEVICEHOST_OPTION, LOCALHOST, DEVICEPORT_OPTION, "9000", LB_NAME));
 
         //delete the load balancer
-        report("Tests-delete-http-lb", asadmin("delete-http-lb", "lb1"));
-        
+        runTest(i++ + ".delete-http-lb", asadmin("delete-http-lb", LB_NAME));
+
+        //create the load balancer using all options
+        runTest(i++ + ".create-http-lb", asadmin("create-http-lb", DEVICEHOST_OPTION,
+                LOCALHOST, DEVICEPORT_OPTION, "9000", "--sslproxyhost", "myhost",
+                "--sslproxyport", "6600", "--target", CLUSTER, "--lbpolicy", "user-defined",
+                "--lbpolicymodule", "lbmodule.so", "--healthcheckerurl", "/test",
+                "--healthcheckerinterval", "60", "--healthcheckertimeout", "20",
+                "--lbenableallinstances", "false", "--lbenableallapplications", "false",
+                "--lbweight", "cl1-ins1=2:cl1-ins2=3:cl1-ins3=5", "--responsetimeout", "20",
+                "--httpsrouting", "true", "--reloadinterval", "30", "--monitor", "true",
+                "--routecookie", "false", "--property", "name1=value1:name2=value2",
+                LB_NAME));
+        ret = asadminWithOutput("list-http-lbs");
+        success = ret.out.indexOf(LB_NAME) >= 0;
+        runTest(i++ + ".list-http-lbs", success);
+
+        //delete the load balancer
+        runTest(i++ + ".delete-http-lb", asadmin("delete-http-lb", LB_NAME));
+
+        //undeploy the app
+        asadmin("undeploy", "--target", "domain", "helloworld");
+
         deleteInstances();
-        stopDomain();
+        asadmin("stop-domain");
 	stat.printSummary();
     }
 
@@ -146,15 +257,15 @@ public class LBCommandsTest extends AdminBaseDevTest {
     private void createInstances() {
         asadmin("create-cluster", CLUSTER);
 
-        asadmin("create-instance", "--cluster", CLUSTER, "--node",
-                "localhost", INSTANCE1);
-        asadmin("create-instance", "--cluster", CLUSTER, "--node",
-                "localhost", INSTANCE2);
-        asadmin("create-instance", "--cluster", CLUSTER, "--node",
-                "localhost", INSTANCE3);
+        asadmin("create-instance", CLUSTER_OPTION, CLUSTER, NODE_OPTION,
+                LOCALHOST, INSTANCE1);
+        asadmin("create-instance", CLUSTER_OPTION, CLUSTER, NODE_OPTION,
+                LOCALHOST, INSTANCE2);
+        asadmin("create-instance", CLUSTER_OPTION, CLUSTER, NODE_OPTION,
+                LOCALHOST, INSTANCE3);
 
-        asadmin("create-instance", "--node", "localhost", STANDALONE_INSTANCE1);
-        asadmin("create-instance", "--node", "localhost", STANDALONE_INSTANCE2);
+        asadmin("create-instance", NODE_OPTION, LOCALHOST, STANDALONE_INSTANCE1);
+        asadmin("create-instance", NODE_OPTION, LOCALHOST, STANDALONE_INSTANCE2);
     }
 
     private void deleteInstances() {
@@ -167,6 +278,15 @@ public class LBCommandsTest extends AdminBaseDevTest {
 
         asadmin("delete-cluster", CLUSTER);
     }
+
+    private void runTest(String tName, boolean status) {
+        if(!status) {
+            System.out.println("ABOVE TEST = " + tName + " FAILED!!!");
+            System.out.println("-------------------------------------------------------");
+        }
+        report(tName, status);
+    }
+    
     private final String host;
     private final File glassFishHome;
     private static final String CLUSTER = "cl1";
@@ -176,5 +296,14 @@ public class LBCommandsTest extends AdminBaseDevTest {
     private static final String STANDALONE_INSTANCE1 = "ins1";
     private static final String STANDALONE_INSTANCE2 = "ins2";
     private static final String LB_CONFIG = "lb-config1";
+    private static final String LOCALHOST="localhost";
+    private static final String LB_NAME="lb1";
     private static final String CONFIG_OPTION="--config";
+    private static final String TIMEOUT_OPTION="--timeout";
+    private static final String INTERVAL_OPTION="--interval";
+    private static final String NAME_OPTION="--name";
+    private static final String CLUSTER_OPTION="--cluster";
+    private static final String DEVICEHOST_OPTION="--devicehost";
+    private static final String DEVICEPORT_OPTION="--deviceport";
+    private static final String NODE_OPTION="--node";
 }
