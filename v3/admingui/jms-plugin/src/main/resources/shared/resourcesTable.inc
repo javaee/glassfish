@@ -73,9 +73,9 @@
                     if (#{pageSession['rest-api']}){
                         urlencode(value="#{td.value.JndiName}" encoding="UTF-8" result="#{pageSession.encodedJndiName}");
                         gf.getEntityAttrs(endpoint="#{pageSession.parentUrl}/connector-resource/#{pageSession.encodedJndiName}", valueMap="#{requestScope.connResMap}");
-                        setAttribute(key="connRes" value="#{requestScope.connResMap['Enabled']}");
+                        setAttribute(key="connRes" value="#{requestScope.connResMap['enabled']}");
                         gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{pageSession.encodedJndiName}", valueMap="#{requestScope.resourceRefMap}");
-                        setAttribute(key="resourceRef" value="#{requestScope.resourceRefMap['Enabled']}");
+                        setAttribute(key="resourceRef" value="#{requestScope.resourceRefMap['enabled']}");
                     }
                     if (!#{pageSession['rest-api']}){
                         getProxyAttribute(objectNameStr="amx:pp=/domain/resources,type=connector-resource,name=#{td.value.JndiName}", attrName="Enabled", value="#{requestScope.connRes}");
@@ -91,7 +91,7 @@
                     if (#{pageSession['rest-api']}){
                        urlencode(value="#{td.value.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
                        gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{pageSession.encodedName}", valueMap="#{requestScope.resourceRefMap}");
-                       setAttribute(key="resourceRef" value="#{requestScope.resourceRefMap['Enabled']}");
+                       setAttribute(key="resourceRef" value="#{requestScope.resourceRefMap['enabled']}");
                     }
                     if (!#{pageSession['rest-api']}){
                          getProxyAttribute(objectNameStr="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{td.value.Name}", attrName="Enabled", value="#{requestScope.resourceRef}");

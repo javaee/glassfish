@@ -48,8 +48,8 @@
 
         createMap(result=>$attribute{nameMap});
         mapPut(map="$attribute{nameMap}", key="selected", value="#{false}");
-        mapPut(map="$attribute{nameMap}", key="Name", value="Name");
-        mapPut(map="$attribute{nameMap}", key="Value", value="#{pageSession.physDestName}");
+        mapPut(map="$attribute{nameMap}", key="name", value="Name");
+        mapPut(map="$attribute{nameMap}", key="value", value="#{pageSession.physDestName}");
         listAdd(list="$attribute{newList}", value="$attribute{nameMap}");
         //REST - TO DO
         setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
@@ -67,19 +67,19 @@
                         result => $attribute{resultEndPoint});
         //createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
          //       attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}", result => $attribute{objStr});
-        //createResourceRef(resourceName="#{pageSession.valueMap['Name']}", enabled="#{pageSession.valueMap2['Enabled'] == 'true'}");
+        //createResourceRef(resourceName="#{pageSession.valueMap['name']}", enabled="#{pageSession.valueMap2['enabled'] == 'true'}");
 
         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
 
         createMap(result=>$attribute{nameMap});
         mapPut(map="$attribute{nameMap}", key="selected", value="false");
-        mapPut(map="$attribute{nameMap}", key="Name", value="Name");
-        mapPut(map="$attribute{nameMap}", key="Value", value="#{pageSession.physDestName}");
+        mapPut(map="$attribute{nameMap}", key="name", value="Name");
+        mapPut(map="$attribute{nameMap}", key="value", value="#{pageSession.physDestName}");
         listAdd(list="$attribute{newList}", value="$attribute{nameMap}");
         //REST - TO DO
         if (#{pageSession['rest-api']}) {
-        setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['Name']}");
+        setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['name']}");
         }
         setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
         gf.redirect(page="#{parentPage}")

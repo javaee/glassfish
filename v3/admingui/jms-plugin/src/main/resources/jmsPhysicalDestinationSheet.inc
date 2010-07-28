@@ -1,3 +1,41 @@
+
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+
+ Contributor(s):
+
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+
+-->
+
 <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
     <sun:button id="def" rendered="#{edit}" primary="#{false}"  text="$resource{i18n.button.LoadDefaults}" >
         <!command
@@ -45,42 +83,43 @@
         </sun:property>
 
         <sun:property id="maxNumMsgsProp" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.MaxNumMsgs}" helpText="$resource{i18njms.jmsPhysDestinations.MaxNumMsgsHelp}" >
-            <sun:textField id="maxNumMsgs" text="#{pageSession.valueMap['MaxNumMsgs']}" columns="$int{6}"/>
+            <sun:textField id="maxNumMsgs" text="#{pageSession.valueMap['maxNumMsgs']}" columns="$int{6}"/>
+	    "VM: --------> #{pageSession.valueMap}
         </sun:property>
         <sun:property id="maxBytesPerMsgProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.MaxBytesPerMsg}" helpText="$resource{i18njms.jmsPhysDestinations.MaxBytesPerMsgHelp}" >
-            <sun:textField id="maxBytesPerMsg" text="#{pageSession.valueMap['MaxBytesPerMsg']}" columns="$int{6}"/>
+            <sun:textField id="maxBytesPerMsg" text="#{pageSession.valueMap['maxBytesPerMsg']}" columns="$int{6}"/>
         </sun:property>
         <sun:property id="maxTotalMsgBytesProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.MaxTotalMsgBytes}" helpText="$resource{i18njms.jmsPhysDestinations.MaxTotalMsgBytesHelp}" >
-            <sun:textField id="maxTotalMsgBytes" text="#{pageSession.valueMap['MaxTotalMsgBytes']}" columns="$int{6}"/>
+            <sun:textField id="maxTotalMsgBytes" text="#{pageSession.valueMap['maxTotalMsgBytes']}" columns="$int{6}"/>
         </sun:property>
         <sun:property id="limitBehaviorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.LimitBehavior}" helpText="$resource{i18njms.jmsPhysDestinations.LimitBehaviorHelp}" >
             <sun:dropDown id="Type" values={"REJECT_NEWEST", "FLOW_CONTROL","REMOVE_OLDEST","REMOVE_LOW_PRIORITY"}
                           labels={"Reject newest messages", "Slow down producers", "Throw out oldest", "Throw out lowest-priority messages"}
-                          selected="#{pageSession.valueMap['LimitBehavior']}"/>
+                          selected="#{pageSession.valueMap['limitBehavior']}"/>
         </sun:property>
         <sun:property id="maxNumProducersProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.MaxNumProducers}" helpText="$resource{i18njms.jmsPhysDestinations.MaxNumProducersHelp}" >
-            <sun:textField id="maxNumProducers" text="#{pageSession.valueMap['MaxNumProducers']}" columns="$int{6}"/>
+            <sun:textField id="maxNumProducers" text="#{pageSession.valueMap['maxNumProducers']}" columns="$int{6}"/>
         </sun:property>
         <sun:property id="maxNumActiveConsumersProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" rendered="#{pageSesssion.destType != 'topic'" label="$resource{i18njms.jmsPhysDestinations.MaxNumActiveConsumers}" helpText="$resource{i18njms.jmsPhysDestinations.MaxNumActiveConsumersHelp}" >
-            <sun:textField id="maxNumActiveConsumers" text="#{pageSession.valueMap['MaxNumActiveConsumers']}" columns="$int{6}"/>
+            <sun:textField id="maxNumActiveConsumers" text="#{pageSession.valueMap['maxNumActiveConsumers']}" columns="$int{6}"/>
         </sun:property>
         <sun:property id="maxNumBackupConsumersProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" rendered="#{pageSesssion.destType != 'topic'" label="$resource{i18njms.jmsPhysDestinations.MaxNumBackupConsumers}" helpText="$resource{i18njms.jmsPhysDestinations.MaxNumBackupConsumersHelp}" >
-            <sun:textField id="maxNumBackupConsumers" text="#{pageSession.valueMap['MaxNumBackupConsumers']}" columns="$int{6}"/>
+            <sun:textField id="maxNumBackupConsumers" text="#{pageSession.valueMap['maxNumBackupConsumers']}" columns="$int{6}"/>
         </sun:property>
         <sun:property id="consumerFlowLimitProp" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.ConsumerFlowLimit}" helpText="$resource{i18njms.jmsPhysDestinations.ConsumerFlowLimitHelp}" >
-            <sun:textField id="consumerFlowLimit" text="#{pageSession.valueMap['ConsumerFlowLimit']}" columns="$int{6}"/>
+            <sun:textField id="consumerFlowLimit" text="#{pageSession.valueMap['consumerFlowLimit']}" columns="$int{6}"/>
         </sun:property>
         <sun:property id="localDeliveryPreferredProp" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" rendered="#{pageSesssion.destType != 'topic'" label="$resource{i18njms.jmsPhysDestinations.LocalDeliveryPreferred}" helpText="$resource{i18njms.jmsPhysDestinations.LocalDeliveryPreferredHelp}" >
-            <sun:dropDown id="localDeliveryPreferred" values={"true", "false"} labels={"True", "False"} selected="#{pageSession.valueMap['LocalDeliveryPreferred']}" selectedValue="true"/>
+            <sun:dropDown id="localDeliveryPreferred" values={"true", "false"} labels={"True", "False"} selected="#{pageSession.valueMap['localDeliveryPreferred']}" selectedValue="true"/>
         </sun:property>
         <sun:property id="useDmqProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.UseDMQ}" helpText="$resource{i18njms.jmsPhysDestinations.UseDMQHelp}" >
-            <sun:dropDown id="useDmq" values={"true", "false"} labels={"True", "False"} selected="#{pageSession.valueMap['UseDMQ']}" selectedValue="true"/>
+            <sun:dropDown id="useDmq" values={"true", "false"} labels={"True", "False"} selected="#{pageSession.valueMap['useDMQ']}" selectedValue="true"/>
         </sun:property>
         <sun:property id="validateSchemaProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.ValidateXMLSchemaEnabled}" helpText="$resource{i18njms.jmsPhysDestinations.ValidateXMLSchemaEnabledHelp}" >
-            <sun:dropDown id="validateXMLSchemaEnabled" values={"true", "false"} labels={"True", "False"} selected="#{pageSession.valueMap['ValidateXMLSchemaEnabled']}" selectedValue="true"/>
+            <sun:dropDown id="validateXMLSchemaEnabled" values={"true", "false"} labels={"True", "False"} selected="#{pageSession.valueMap['validateXMLSchemaEnabled']}" selectedValue="true"/>
         </sun:property>
         <sun:property id="xmlSchemeUrlProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.XMLSchemaURIList}" helpText="$resource{i18njms.jmsPhysDestinations.XMLSchemaURIListHelp}" >
-            <sun:textField id="xmlSchemaURIList" text="#{pageSession.valueMap['XMLSchemaURIList']}" columns="$int{55}"/>
+            <sun:textField id="xmlSchemaURIList" text="#{pageSession.valueMap['xmlSchemaURIList']}" columns="$int{55}"/>
         </sun:property>
     </sun:propertySheetSection>
 </sun:propertySheet>

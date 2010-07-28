@@ -51,7 +51,7 @@
             setPageSessionAttribute(key="childType2" value="connector-resource");
             //REST - for setproxyProperties after creating an entity.
             setPageSessionAttribute(key="restObjStr", value="amx:pp=/domain/resources,type=#{pageSession.childType}");
-            setPageSessionAttribute(key="convertToFalseList" value={"FailAllConnections", "IsConnectionValidationRequired"});
+            setPageSessionAttribute(key="convertToFalseList" value={"failAllConnections", "isConnectionValidationRequired"});
             //REST related
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
             setPageSessionAttribute(key="rest-api" value="true");
@@ -59,8 +59,8 @@
             gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType2}", valueMap="#{pageSession.valueMap2}");
             gf.getDefaultValues(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref", valueMap="#{pageSession.resourceRef}");
             
-            mapPut(map="#{pageSession.valueMap}", key="ResourceAdapterName", value="jmsra");
-            mapPut(map="#{pageSession.valueMap2}", key="Enabled", value="true");
+            mapPut(map="#{pageSession.valueMap}", key="resourceAdapterName", value="jmsra");
+            mapPut(map="#{pageSession.valueMap2}", key="enabled", value="true");
 
             //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{false}" );

@@ -42,7 +42,7 @@
             saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
                 convertToFalse="#{pageSession.convertToFalseList}"
             );
-            saveBeanAttributes(objectNameStr="#{pageSession.resourceRefObjectNameStr}", attrs="#{pageSession.resourceRef}", convertToFalse={"Enabled"});
+            saveBeanAttributes(objectNameStr="#{pageSession.resourceRefObjectNameStr}", attrs="#{pageSession.resourceRef}", convertToFalse={"enabled"});
             if(#{pageSession.has2Objects}){
                 saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}", attrs="#{pageSession.valueMap2}", skipAttrs="#{pageSession.skipAttrsList2}",
                     convertToFalse="#{pageSession.convertToFalseList2}"
@@ -55,7 +55,7 @@
                 gf.updateEntity(endpoint="#{pageSession.selfUrl}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
                     convertToFalse="#{pageSession.convertToFalseList}"
                 );
-                gf.updateEntity(endpoint="#{pageSession.resourceRefUrl}", attrs="#{pageSession.resourceRef}", convertToFalse={"Enabled"});
+                gf.updateEntity(endpoint="#{pageSession.resourceRefUrl}", attrs="#{pageSession.resourceRef}", convertToFalse={"enabled"});
                 if(#{pageSession.has2Objects}){
                     gf.updateEntity(endpoint="#{pageSession.selfUrl2}", attrs="#{pageSession.valueMap2}", skipAttrs="#{pageSession.skipAttrsList2}",
                         convertToFalse="#{pageSession.convertToFalseList2}"
@@ -78,8 +78,8 @@
     <!command
         // Create connector-resource
         // Update the connector-resource with the Name specified on the connector-connection-pool
-        mapPut(map="#{pageSession.valueMap2}", key="PoolName", value="#{pageSession.valueMap['Name']}");
-        mapPut(map="#{pageSession.valueMap2}", key="Name", value="#{pageSession.valueMap['Name']}");
+        mapPut(map="#{pageSession.valueMap2}", key="poolName", value="#{pageSession.valueMap['name']}");
+        mapPut(map="#{pageSession.valueMap2}", key="name", value="#{pageSession.valueMap['name']}");
         if (!#{pageSession['rest-api']}) {
         createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType2}"
                 attrs="#{pageSession.valueMap2}", convertToFalse="#{pageSession.convertToFalseList2}", result => $attribute{objStr3});
@@ -89,7 +89,7 @@
             attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}", result => $attribute{objStr});
 
         // resource is always enabled.  resource-ref toggles
-        createResourceRef(resourceName="#{pageSession.valueMap['Name']}", enabled="#{!empty pageSession.resourceRef['Enabled']}");
+        createResourceRef(resourceName="#{pageSession.valueMap['name']}", enabled="#{!empty pageSession.resourceRef['enabled']}");
         }
         if (#{pageSession['rest-api']}) {
          // Create connector-connection-pool
@@ -104,7 +104,7 @@
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
             //REST - TO DO
             if (#{pageSession['rest-api']}) {
-                setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['Name']}");
+                setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['name']}");
             }
             setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
         }
