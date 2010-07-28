@@ -178,8 +178,8 @@ public class DefaultRunLevelService
 
   private RunLevelState<Void> delegate;
   
-  private Integer current;
-  private Integer planned;
+  private volatile Integer current;
+  private volatile Integer planned;
   
   private final HashMap<Integer, Recorder> recorders;
   private volatile Recorder activeRecorder;
@@ -263,7 +263,7 @@ public class DefaultRunLevelService
   }
 
   private void proceedToWorker(int runLevel) {
-    int current = (null == this.current) ? -2 : this.current;
+    int current = (null == getCurrentRunLevel()) ? -2 : getCurrentRunLevel();
     if (runLevel > current) {
       for (int rl = current + 1; rl <= runLevel; rl++) {
         upActiveRecorder(rl);
@@ -275,9 +275,6 @@ public class DefaultRunLevelService
     } else {
       this.current = current;
     }
-    
-    // remember to null these for proper constraint checking
-    reset();
   }
 
   private void reset() {
