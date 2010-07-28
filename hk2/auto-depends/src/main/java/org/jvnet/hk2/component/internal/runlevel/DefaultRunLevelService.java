@@ -265,7 +265,7 @@ public class DefaultRunLevelService
   private void proceedToWorker(int runLevel) {
     int current = (null == this.current) ? -2 : this.current;
     if (runLevel > current) {
-      for (int rl = current; rl <= runLevel; rl++) {
+      for (int rl = current + 1; rl <= runLevel; rl++) {
         upActiveRecorder(rl);
       }
     } else if (runLevel < current) {

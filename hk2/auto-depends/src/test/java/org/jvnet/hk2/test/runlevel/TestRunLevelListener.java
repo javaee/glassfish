@@ -42,7 +42,6 @@ public class TestRunLevelListener implements RunLevelListener {
     calls.add(Call.onProgress(state));
     if (null != proceedToWaitFor && 
         state.getCurrentRunLevel() == proceedToWaitFor) {
-      proceedToWaitFor = null;
       proceedToRls.proceedTo(proceedToGoTo);
     }
   }
