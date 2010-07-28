@@ -51,18 +51,17 @@
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/node/#{pageSession.encodedNodeName}");
         setPageSessionAttribute(key="childType" value="node");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{requestScope.aMap}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
+
         gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/ssh-connector" exists="#{requestScope.sshConnectorExist}");
         if (#{requestScope.sshConnectorExist}){
-            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector", currentMap="#{requestScope.aMap}"  valueMap="#{requestScope.aMap}");
+            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector", currentMap="#{pageSession.valueMap}"  valueMap="#{pageSession.valueMap}");
             gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth" exists="#{requestScope.sshConnectorExist}");
             if (#{requestScope.sshConnectorExist}){
-                gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth", currentMap="#{requestScope.aMap}"  valueMap="#{requestScope.aMap}");
+                gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth", currentMap="#{pageSession.valueMap}"  valueMap="#{pageSession.valueMap}");
             }
         }
-        println("================= #{requestScope.aMap}")
-        gf.nodeAttrToArgs(in="#{requestScope.aMap}" out="#{pageSession.valueMap}");
-        println("================= #{pageSession.valueMap}")
+//        gf.nodeAttrToArgs(in="#{requestScope.aMap}" out="#{pageSession.valueMap}");
         setPageSessionAttribute(key="edit" value="#{true}");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{false}" );

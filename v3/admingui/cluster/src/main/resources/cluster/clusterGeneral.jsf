@@ -53,7 +53,7 @@
         setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="rest-api" value="true");
 
-        gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}", valueMap="#{pageSession.valueMap}");
+        gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}.json", valueMap="#{pageSession.valueMap}");
         gf.getChildrenNamesList(endpoint="#{pageSession.resourceUrl}/server-ref" id="ref" result="#{pageSession.instanceList}" );
         //TODO: determine #instance thats up and #instance that is down
 
@@ -99,23 +99,23 @@
                 <sun:staticText id="clusterName"text="#{encodedClusterName}" />
             </sun:property>
             <sun:property id="configNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Configuration}" >
-                <sun:hyperlink id="configlink" text="#{pageSession.valueMap['ConfigRef']}"
-                    url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.valueMap['ConfigRef']}" />
+                <sun:hyperlink id="configlink" text="#{pageSession.valueMap['configRef']}"
+                    url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.valueMap['configRef']}" />
             </sun:property>
 
             <sun:property id="gmsEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.GMS}" helpText="$resource{i18ncs.cluster.GMSHelp}">
-                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['GmsEnabled']}" selectedValue="true" />
+                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['gmsEnabled']}" selectedValue="true" />
             </sun:property>
 
            <sun:property id="gmsMulticastPort"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.gmsMulticastPort}" helpText="$resource{i18ncs.cluster.gmsMulticastPortHelp}">
-                <sun:textField id="gmsMulticastPort"  styleClass="port" columns="$int{60}" text="#{pageSession.valueMap['GmsMulticastPort']}"/>
+                <sun:textField id="gmsMulticastPort"  styleClass="port" columns="$int{60}" text="#{pageSession.valueMap['gmsMulticastPort']}"/>
             </sun:property>
             <sun:property id="gmsMulticastAddress"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.gmsMulticastAddress}" helpText="$resource{i18ncs.cluster.gmsMulticastAddressHelp}">
-                <sun:textField id="gmsMulticastAddress"  columns="$int{60}" text="#{pageSession.valueMap['GmsMulticastAddress']}"/>
+                <sun:textField id="gmsMulticastAddress"  columns="$int{60}" text="#{pageSession.valueMap['gmsMulticastAddress']}"/>
             </sun:property>
 
             <sun:property id="GmsBindInterfaceAddress"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.gmsBindInterfaceAddress}" helpText="$resource{i18ncs.cluster.gmsBindInterfaceAddressHelp}">
-                <sun:textField id="GmsBindInterfaceAddress"  columns="$int{60}" text="#{pageSession.valueMap['GmsBindInterfaceAddress']}"/>
+                <sun:textField id="GmsBindInterfaceAddress"  columns="$int{60}" text="#{pageSession.valueMap['gmsBindInterfaceAddress']}"/>
             </sun:property>
 
             <sun:property id="instanceStatusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}" >
