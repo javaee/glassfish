@@ -83,7 +83,7 @@ public class ResourceEntry {
     /**
      * Loaded class.
      */
-    public Class<?> loadedClass = null;
+    public volatile Class<?> loadedClass = null;
 
 
     /**

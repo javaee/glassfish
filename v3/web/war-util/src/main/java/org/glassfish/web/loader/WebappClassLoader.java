@@ -960,9 +960,7 @@ public class WebappClassLoader
             }
             if ((clazz == null) && hasExternalRepositories) {
                 try {
-                    synchronized(this) {
-                        clazz = super.findClass(name);
-                    }
+                    clazz = super.findClass(name);
                 } catch(AccessControlException ace) {
                     if (logger.isLoggable(Level.WARNING)) {
                         logger.log(Level.WARNING,  "WebappClassLoader.findClassInternal(" + name
@@ -1347,6 +1345,39 @@ public class WebappClassLoader
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
 
+        return (loadClass(name, false));
+    }
+
+
+    /**
+     * Load the class with the specified name, searching using the following
+     * algorithm until it finds and returns the class.  If the class cannot
+     * be found, returns <code>ClassNotFoundException</code>.
+     * <ul>
+     * <li>Call <code>findLoadedClass(String)</code> to check if the
+     *     class has already been loaded.  If it has, the same
+     *     <code>Class</code> object is returned.</li>
+     * <li>If the <code>delegate</code> property is set to <code>true</code>,
+     *     call the <code>loadClass()</code> method of the parent class
+     *     loader, if any.</li>
+     * <li>Call <code>findClass()</code> to find this class in our locally
+     *     defined repositories.</li>
+     * <li>Call the <code>loadClass()</code> method of our parent
+     *     class loader, if any.</li>
+     * </ul>
+     * If the class was found using the above steps, and the
+     * <code>resolve</code> flag is <code>true</code>, this method will then
+     * call <code>resolveClass(Class)</code> on the resulting Class object.
+     *
+     * @param name Name of the class to be loaded
+     * @param resolve If <code>true</code> then resolve the class
+     *
+     * @exception ClassNotFoundException if the class was not found
+     */
+    @Override
+    protected Class<?> loadClass(String name, boolean resolve)
+        throws ClassNotFoundException {
+
         if (logger.isLoggable(Level.FINER)) {
             logger.finer("loadClass(" + name + ")");
         }
@@ -1485,40 +1516,6 @@ public class WebappClassLoader
             }
         }
 
-        throw new ClassNotFoundException(name);
-    }
-
-
-    /**
-     * Load the class with the specified name, searching using the following
-     * algorithm until it finds and returns the class.  If the class cannot
-     * be found, returns <code>ClassNotFoundException</code>.
-     * <ul>
-     * <li>Call <code>findLoadedClass(String)</code> to check if the
-     *     class has already been loaded.  If it has, the same
-     *     <code>Class</code> object is returned.</li>
-     * <li>If the <code>delegate</code> property is set to <code>true</code>,
-     *     call the <code>loadClass()</code> method of the parent class
-     *     loader, if any.</li>
-     * <li>Call <code>findClass()</code> to find this class in our locally
-     *     defined repositories.</li>
-     * <li>Call the <code>loadClass()</code> method of our parent
-     *     class loader, if any.</li>
-     * </ul>
-     * If the class was found using the above steps, and the
-     * <code>resolve</code> flag is <code>true</code>, this method will then
-     * call <code>resolveClass(Class)</code> on the resulting Class object.
-     *
-     * @param name Name of the class to be loaded
-     * @param resolve If <code>true</code> then resolve the class
-     *
-     * @exception ClassNotFoundException if the class was not found
-     */
-    @Override
-    protected Class<?> loadClass(String name, boolean resolve)
-        throws ClassNotFoundException {
-
-        Class<?> clazz = loadClass(name);
         if (clazz != null) {
             if (resolve) {
                 resolveClass(clazz);
