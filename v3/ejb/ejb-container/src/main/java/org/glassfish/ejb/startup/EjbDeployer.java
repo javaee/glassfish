@@ -266,7 +266,7 @@ public class EjbDeployer
             }
         }
         //Security related cleanup is to be done for the undeploy event
-        if( params.origin.isUndeploy()) {
+        if( params.origin.isUndeploy()|| params.origin.isDeploy()) {
 
             //Removing EjbSecurityManager for undeploy case
             String appName = params.name();
@@ -310,15 +310,6 @@ public class EjbDeployer
         }
         
         EjbBundleDescriptor bundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
-        policyLoader.loadPolicy();
-        if (bundle != null) {
-            for (EjbDescriptor desc : bundle.getEjbs()) {
-                 /* create and register security manager for each EJB
-                  * WHEN THIS CODE EXECUTED ONLY ON DAS, REGISTRATION WAS NOT DONE
-                  */
-                this.ejbSecManagerFactory.createManager(desc, true);
-            }
-        }
 
         DeployCommandParameters dcp =
                 dc.getCommandParameters(DeployCommandParameters.class);
