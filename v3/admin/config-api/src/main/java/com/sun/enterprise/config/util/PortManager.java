@@ -124,24 +124,18 @@ public final class PortManager {
             // the ServerPorts class
             Map<String, Integer> reassigned = reassignPorts();
             Set<Map.Entry<String, Integer>> entries = reassigned.entrySet();
-            StringBuilder logMessage = new StringBuilder();
             List<SystemProperty> sps = newServer.getSystemProperty();
 
-            for (Map.Entry<String, Integer> entry : entries) {
-                String name = entry.getKey();
-                int port = entry.getValue();
-                changeSystemProperty(sps, name, "" + port); // do not want commas in the int!
-                logMessage.append("\n").append(name).append("=").append("" + port);
+            if (entries.size() > 0) {
+                for (Map.Entry<String, Integer> entry : entries) {
+                    String name = entry.getKey();
+                    int port = entry.getValue();
+                    changeSystemProperty(sps, name, "" + port); // do not want commas in the int!
+                }
+                return generateAssignedPortMessage(reassigned);
             }
-
-            if (logMessage.length() > 0) {
-                String msg = Strings.get("PortManager.reassign.summary", serverName, logMessage.toString());
-                logger.info(msg);
-                return msg;
-            }
-            
-            return null;
-
+            else
+                return generateAssignedPortMessage(newServerPorts.getMap());
         }
         catch (Exception e) {
             throw new TransactionFailure(e.toString(), e);
@@ -158,29 +152,18 @@ public final class PortManager {
         sb.append("All Ports in all other servers on same host: " + allPorts);
         return sb.toString();
     }
-    /*
-     * This method is used at creation time and later on in order to get a message
-     * back to a remote client that just created this server.
-     * If there are any system-property reassignments of ports for the given server
-     * return a String representation.
-     * If not return null.
-     */
 
-    public static String generateReassignPortMessage(final Server server) {
+    private String generateAssignedPortMessage(final Map<String, Integer> ports) {
         try {
-            StringBuilder logMessage = new StringBuilder();
-            List<SystemProperty> props = server.getSystemProperty();
+            Set<Map.Entry<String, Integer>> entries = ports.entrySet();
+            StringBuilder sb = new StringBuilder();
 
-            for (SystemProperty sp : props) {
-                String name = sp.getName();
-                String value = sp.getValue();
-
-                if (StringUtils.ok(name) && StringUtils.ok(value) && PORTSLIST.contains(name))
-                    logMessage.append("\n").append(name).append("=").append(value);
+            for (Map.Entry<String, Integer> entry : entries) {
+                String name = entry.getKey();
+                int port = entry.getValue();
+                sb.append("\n").append(name).append("=").append("" + port);
             }
-
-            if (logMessage.length() > 0)
-                return Strings.get("PortManager.reassign.summary", server.getName(), logMessage.toString());
+            return Strings.get("PortManager.port.summary", serverName, sb.toString());
         }
         catch (Exception e) {
             // fall through

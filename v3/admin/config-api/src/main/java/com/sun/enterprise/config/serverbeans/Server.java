@@ -269,9 +269,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @DuckTyped
     boolean isRunning();
 
-    @DuckTyped
-    String generateReassignPortMessage();
-
     class Duck {
 
         public static boolean isCluster(Server server) {
@@ -421,10 +418,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 // drop through...
             }
             return false;
-        }
-
-        public static String generateReassignPortMessage(Server server) {
-            return PortManager.generateReassignPortMessage(server);
         }
     }
 
