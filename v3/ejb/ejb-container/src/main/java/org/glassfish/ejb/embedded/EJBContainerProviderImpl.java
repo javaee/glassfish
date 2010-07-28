@@ -167,8 +167,10 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 habitat = ejb.habitat;
                 try {
                      if (rs != null) {
+/** Need to resolve package dependencies
                           // If we are running from an existing install, copy over security files to the temp instance
                           EmbeddedSecurityUtil.copyConfigFiles(habitat, rs.instance_root, rs.domain_file);
+**/
                      }
 
                     server.start();
