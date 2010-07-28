@@ -78,12 +78,12 @@
         <!-- commented out, refer to issue# 8903 -->
         <!--
         <sun:property id="ReapIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.reapIntervalLabel}" helpText="$resource{i18n_web.webManager.reapIntervalHelp}" >
-            <sun:textField id="ReapInterval" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['ReapIntervalInSeconds']}" />
+            <sun:textField id="ReapInterval" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['reapIntervalInSeconds']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
         -->
         <sun:property id="DirectoryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webStore.directoryLabel}" helpText="$resource{i18n_web.webStore.directoryHelp}" >
-            <sun:textField id="Directory" columns="$int{50}" text="#{pageSession.valueMap['Directory']}" />
+            <sun:textField id="Directory" columns="$int{50}" text="#{pageSession.valueMap['directory']}" />
         </sun:property>
     </sun:propertySheetSection>
     </sun:propertySheet>

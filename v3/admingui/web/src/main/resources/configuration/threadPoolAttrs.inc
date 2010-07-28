@@ -43,27 +43,27 @@
             <sun:staticText id="name" text="#{pageSession.Name}"/>
         </sun:property> 
         <sun:property id="nameProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" helpText="$resource{i18n_web.threadPool.nameHelp}">
-            <sun:textField id="nameText" text="#{pageSession.valueMap['Name']}" columns="$int{55}" styleClass="required" required="#{true}" />
+            <sun:textField id="nameText" text="#{pageSession.valueMap['name']}" columns="$int{55}" styleClass="required" required="#{true}" />
         </sun:property>
 
         <sun:property id="classname"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.classname}" helpText="$resource{i18n_web.threadPool.classnameHelp}">
-        <sun:textField id="classname" styleClass="required" columns="$int{50}" text="#{pageSession.valueMap['Classname']}" />
+        <sun:textField id="classname" styleClass="required" columns="$int{50}" text="#{pageSession.valueMap['classname']}" />
         </sun:property>
 
         <sun:property id="max"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.maxQueue}" helpText="$resource{i18n_web.threadPool.maxQueueHelp}">
-        <sun:textField id="max" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['MaxQueueSize']}" />
+        <sun:textField id="max" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['maxQueueSize']}" />
         </sun:property>
 
         <sun:property id="maxThread"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.maxThread}" helpText="$resource{i18n_web.threadPool.maxThreadHelp}">
-        <sun:textField id="maxThread" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['MaxThreadPoolSize']}" />
+        <sun:textField id="maxThread" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['maxThreadPoolSize']}" />
         </sun:property>
 
         <sun:property id="minThread"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.minThread}" helpText="$resource{i18n_web.threadPool.minThreadHelp}">
-        <sun:textField id="minThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['MinThreadPoolSize']}" />
+        <sun:textField id="minThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['minThreadPoolSize']}" />
         </sun:property>
 
         <sun:property id="timeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.timeout}" helpText="$resource{i18n_web.threadPool.timeoutHelp}">
-        <sun:textField id="timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['IdleThreadTimeoutSeconds']}" />
+        <sun:textField id="timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['idleThreadTimeoutSeconds']}" />
         <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 

@@ -53,7 +53,7 @@
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.Name}");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="convertToFalseList" value={"DisplayConfiguration", "EnableSnoop", "TcpNoDelay"});
+        setPageSessionAttribute(key="convertToFalseList" value={"displayConfiguration", "enableSnoop", "tcpNoDelay"});
         //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );

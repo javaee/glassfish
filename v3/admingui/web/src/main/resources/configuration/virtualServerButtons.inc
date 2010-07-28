@@ -42,14 +42,14 @@
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     convertArrayToCommaString(array="#{pageSession.selectedNetworkListeners}"  commaString="#{requestScope.tmp}");
-                    mapPut(map="#{pageSession.valueMap}" key="NetworkListeners" value="$attribute{tmp}");
+                    mapPut(map="#{pageSession.valueMap}" key="networkListeners" value="$attribute{tmp}");
                     getRequestValue(key="stateGp" value="#{requestScope.stateGp}");
                     getRequestValue(key="ssoGroup" value="#{requestScope.ssoGroup}");
                     getRequestValue(key="accessLoggingFlagGp" value="#{requestScope.accessLoggingFlagGp}");
 
-                    mapPut(map="#{pageSession.valueMap}" key="State" value="#{requestScope.stateGp}");
-                    mapPut(map="#{pageSession.valueMap}" key="SsoEnabled" value="#{requestScope.ssoGroup}");
-                    mapPut(map="#{pageSession.valueMap}" key="AccessLoggingEnabled" value="#{requestScope.accessLoggingFlagGp}");
+                    mapPut(map="#{pageSession.valueMap}" key="state" value="#{requestScope.stateGp}");
+                    mapPut(map="#{pageSession.valueMap}" key="ssoEnabled" value="#{requestScope.ssoGroup}");
+                    mapPut(map="#{pageSession.valueMap}" key="accessLoggingEnabled" value="#{requestScope.accessLoggingFlagGp}");
 
                     gf.createEntity(endpoint="#{pageSession.selfUrl}"
                         attrs="#{pageSession.valueMap}"
@@ -65,7 +65,7 @@
                     if(#{pageSession.configName}=server-config){
                         listAdd(list="#{requestScope.instanceList}" value="server" index="0");
                     }
-                    EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['Id']}",instanceList="#{requestScope.instanceList}");
+                    EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['id']}",instanceList="#{requestScope.instanceList}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
@@ -77,10 +77,10 @@
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     convertArrayToCommaString(array="#{pageSession.selectedNetworkListeners}"  commaString="#{requestScope.tmp}");
-                    mapPut(map="#{pageSession.valueMap}" key="NetworkListeners" value="$attribute{tmp}");
-                    mapPut(map="#{pageSession.valueMap}" key="State" value="#{requestScope.stateGp}");
-                    mapPut(map="#{pageSession.valueMap}" key="SsoEnabled" value="#{requestScope.ssoGroup}");
-                    mapPut(map="#{pageSession.valueMap}" key="AccessLoggingEnabled" value="#{requestScope.accessLoggingFlagGp}");
+                    mapPut(map="#{pageSession.valueMap}" key="networkListeners" value="$attribute{tmp}");
+                    mapPut(map="#{pageSession.valueMap}" key="state" value="#{requestScope.stateGp}");
+                    mapPut(map="#{pageSession.valueMap}" key="ssoEnabled" value="#{requestScope.ssoGroup}");
+                    mapPut(map="#{pageSession.valueMap}" key="accessLoggingEnabled" value="#{requestScope.accessLoggingFlagGp}");
                     gf.createEntity(endpoint="#{pageSession.selfUrl}"
                             attrs="#{pageSession.valueMap}"
                             skipAttrs="#{pageSession.skipAttrsList}"
@@ -97,10 +97,10 @@
                     if(#{pageSession.configName}=server-config){
                         listAdd(list="#{requestScope.instanceList}" value="server" index="0");
                     }
-                    EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['Id']}",instanceList="#{requestScope.instanceList}");
+                    EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['id']}",instanceList="#{requestScope.instanceList}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    setAttribute(key="objStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/http-service,type=virtual-server,name=#{pageSession.valueMap['Id']}");
+                    setAttribute(key="objStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/http-service,type=virtual-server,name=#{pageSession.valueMap['id']}");
                     setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                     gf.redirect(page="#{parentPage}?configName=#{configName}")
                 />

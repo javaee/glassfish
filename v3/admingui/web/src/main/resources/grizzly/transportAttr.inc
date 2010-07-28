@@ -44,66 +44,66 @@
     </sun:property>
 
     <sun:property id="IdTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.transportName}">
-        <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['Name']}" columns="$int{60}" required="#{true}" />
+        <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['name']}" columns="$int{60}" required="#{true}" />
     </sun:property>
 
     <sun:property id="Classname"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.Classname}"  helpText="$resource{i18n_web.transport.ClassnameHelp}">
-        <sun:textField id="Classname" columns="$int{60}" text="#{pageSession.valueMap['Classname']}" />
+        <sun:textField id="Classname" columns="$int{60}" text="#{pageSession.valueMap['classname']}" />
     </sun:property>
 
 
     <sun:property id="SelectionKeyHandler"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.SelectionKeyHandler}"  helpText="$resource{i18n_web.transport.SelectionKeyHandlerHelp}">
-        <sun:textField id="SelectionKeyHandler"  columns="$int{60}" text="#{pageSession.valueMap['SelectionKeyHandler']}" />
+        <sun:textField id="SelectionKeyHandler"  columns="$int{60}" text="#{pageSession.valueMap['selectionKeyHandler']}" />
     </sun:property>
 
     <sun:property id="ByteBufferType"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.ByteBufferType}"  helpText="$resource{i18n_web.transport.ByteBufferTypeHelp}">
-        <sun:dropDown id="ByteBufferType" selected="#{pageSession.valueMap['ByteBufferType']}" labels={"HEAP", "DIRECT"}  />
+        <sun:dropDown id="ByteBufferType" selected="#{pageSession.valueMap['byteBufferType']}" labels={"HEAP", "DIRECT"}  />
     </sun:property>
 
     <sun:property id="BufferSizeBytes"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.BufferSizeBytes}"  helpText="$resource{i18n_web.transport.BufferSizeBytesHelp}">
-        <sun:textField id="BufferSizeBytes" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['BufferSizeBytes']}" />
+        <sun:textField id="BufferSizeBytes" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['bufferSizeBytes']}" />
         <sun:staticText id="bytes" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
     </sun:property>
 
     <sun:property id="AcceptorThreads"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.AcceptorThreads}" helpText="$resource{i18n_web.transport.AcceptorThreadsHelp}">
-        <sun:textField id="AcceptorThreads" columns="$int{20}" styleClass="intAllowMinusOne" text="#{pageSession.valueMap['AcceptorThreads']}" />
+        <sun:textField id="AcceptorThreads" columns="$int{20}" styleClass="intAllowMinusOne" text="#{pageSession.valueMap['acceptorThreads']}" />
     </sun:property>
 
     <sun:property id="MaxConnectionsCount"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.MaxConnectionsCount}"  helpText="$resource{i18n_web.transport.MaxConnectionsCountHelp}">
-        <sun:textField id="MaxConnectionsCount" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['MaxConnectionsCount']}" />
+        <sun:textField id="MaxConnectionsCount" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['maxConnectionsCount']}" />
     </sun:property>
 
     <sun:property id="IdleKeyTimeoutSeconds"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.IdleKeyTimeoutSeconds}"  helpText="$resource{i18n_web.transport.IdleKeyTimeoutSecondsHelp}">
-        <sun:textField id="IdleKeyTimeoutSeconds" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['IdleKeyTimeoutSeconds']}" />
+        <sun:textField id="IdleKeyTimeoutSeconds" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['idleKeyTimeoutSeconds']}" />
         <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
     </sun:property>
 
     <sun:property id="ReadTimeoutMillis"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.ReadTimeoutMillis}" helpText="$resource{i18n_web.transport.ReadTimeoutMillisHelp}">
-        <sun:textField id="ReadTimeoutMillis" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['ReadTimeoutMillis']}" />
+        <sun:textField id="ReadTimeoutMillis" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['readTimeoutMillis']}" />
         <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
     </sun:property>
 
     <sun:property id="SelectorPollTimeoutMillis"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.SelectorPollTimeoutMillis}" helpText="$resource{i18n_web.transport.SelectorPollTimeoutMillisHelp}">
-        <sun:textField id="SelectorPollTimeoutMillis" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['SelectorPollTimeoutMillis']}" />
+        <sun:textField id="SelectorPollTimeoutMillis" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['selectorPollTimeoutMillis']}" />
         <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
     </sun:property>
 
 
     <sun:property id="WriteTimeoutMillis"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.WriteTimeoutMillis}"  helpText="$resource{i18n_web.transport.WriteTimeoutMillisHelp}">
-        <sun:textField id="WriteTimeoutMillis" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['WriteTimeoutMillis']}" />
+        <sun:textField id="WriteTimeoutMillis" columns="$int{20}" styleClass="integer" text="#{pageSession.valueMap['writeTimeoutMillis']}" />
         <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
     </sun:property>
 
     <sun:property id="DisplayConfiguration"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.DisplayConfiguration}"  helpText="$resource{i18n_web.transport.DisplayConfigurationHelp}" >
-        <sun:checkbox  selected="#{pageSession.valueMap['DisplayConfiguration']}" selectedValue="true" />
+        <sun:checkbox  selected="#{pageSession.valueMap['displayConfiguration']}" selectedValue="true" />
     </sun:property>
 
     <sun:property id="EnableSnoop"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.EnableSnoop}"  helpText="$resource{i18n_web.transport.EnableSnoopHelp}" >
-        <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['EnableSnoop']}" selectedValue="true" />
+        <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enableSnoop']}" selectedValue="true" />
     </sun:property>
 
      <sun:property id="TcpNoDelay"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.TcpNoDelay}" helpText="$resource{i18n_web.transport.TcpNoDelayHelp}">
-        <sun:checkbox  selected="#{pageSession.valueMap['TcpNoDelay']}" selectedValue="true" />
+        <sun:checkbox  selected="#{pageSession.valueMap['tcpNoDelay']}" selectedValue="true" />
     </sun:property>
 
     </sun:propertySheetSection>
