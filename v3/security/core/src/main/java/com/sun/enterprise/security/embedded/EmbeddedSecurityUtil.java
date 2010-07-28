@@ -37,6 +37,7 @@ package com.sun.enterprise.security.embedded;
 
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.security.EmbeddedSecurity;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;
@@ -51,18 +52,27 @@ import javax.xml.stream.XMLStreamReader;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.types.Property;
 
 /**
  * Utility file to copy the security related config files
  * from the passed non-embedded instanceDir to the embedded
  * server instance's config.
+ * This is a service that is protected. This implements
+ * the Contract EmbeddedSecurity
+ * 
  * @author Nithya Subramanian
  */
-public class EmbeddedSecurityUtil {
 
-    public static void copyConfigFiles(Habitat habitat, File fromInstanceDir, File domainXml) throws IOException, XMLStreamException {
+@Service
+@Scoped(Singleton.class)
+public class EmbeddedSecurityUtil implements EmbeddedSecurity {
+
+    public void copyConfigFiles(Habitat habitat, File fromInstanceDir, File domainXml) throws IOException, XMLStreamException {
         //For security reasons, permit only an embedded server instance to carry out the copy operations
         ServerEnvironment se = habitat.getComponent(ServerEnvironment.class);
         if (!isEmbedded(se)) {
@@ -112,7 +122,7 @@ public class EmbeddedSecurityUtil {
 
     }
 
-    public static String parseFileName(String fullFilePath) {
+    public String parseFileName(String fullFilePath) {
         if (fullFilePath == null) {
             return null;
         }
@@ -120,14 +130,14 @@ public class EmbeddedSecurityUtil {
         return fullFilePath.substring(beginIndex + 1);
     }
 
-    public static boolean isEmbedded(ServerEnvironment se) {
+    public boolean isEmbedded(ServerEnvironment se) {
         if (se.getRuntimeType() == RuntimeType.EMBEDDED) {
             return true;
         }
         return false;
     }
 
-    public static List<String> getKeyFileNames(SecurityService securityService) {
+    public List<String> getKeyFileNames(SecurityService securityService) {
         List<String> keyFileNames = new ArrayList<String>();
 
         List<AuthRealm> authRealms = securityService.getAuthRealm();
