@@ -36,6 +36,7 @@
 package com.sun.enterprise.security.common;
 
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.security.EmbeddedSecurity;
 import com.sun.enterprise.security.embedded.EmbeddedSecurityUtil;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
@@ -65,13 +66,16 @@ public class EmbeddedSecurityLifeCycle
     private static final Logger _logger = LogDomains.getLogger(EmbeddedSecurityLifeCycle.class, LogDomains.SECURITY_LOGGER);
 
     @Inject
+    private EmbeddedSecurity embeddedSecurity;
+
+    @Inject
     private SecurityService securityService;
 
     @Override
     public void creation(Server server) {
 
         //If the instanceRoot is not set to a non-embedded GF install,
-        //copy the security confif files from the classpath to the instanceRoot/config dir
+        //copy the security config files from the security.jar to the instanceRoot/config dir
 
         EmbeddedFileSystem fileSystem = server.getFileSystem();
         File instanceRoot = fileSystem.instanceRoot;
@@ -81,10 +85,10 @@ public class EmbeddedSecurityLifeCycle
 
         try {
             //Get the keyfile names from the security service
-            List<String> keyFileNames = EmbeddedSecurityUtil.getKeyFileNames(securityService);
+            List<String> keyFileNames = embeddedSecurity.getKeyFileNames(securityService);
             for(String keyFileName:keyFileNames) {
                 //Copy the keyfiles in instanceRoot/config. If file is already present, then exit (handled by getManagedFile)
-                FileUtils.getManagedFile("config" + File.separator + EmbeddedSecurityUtil.parseFileName(keyFileName), instanceRoot);
+                FileUtils.getManagedFile("config" + File.separator + embeddedSecurity.parseFileName(keyFileName), instanceRoot);
             }
             //Copy the other security files to instanceRoot/config
             //Assuming that these files are present as config/filename in the embedded jar file and are to be extracted that way/
