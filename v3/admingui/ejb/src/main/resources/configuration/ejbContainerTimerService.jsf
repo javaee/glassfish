@@ -55,7 +55,7 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/ejb-container");
         setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/ejb-container/ejb-timer-service");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
 
         //REST-TODO take care property table
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
@@ -82,18 +82,18 @@
          <!-- Text Field section -->
          <sun:propertySheetSection id="propertySectionTextField">
             <sun:property id="MinDeliveryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.ejbTimerSettings.minDeliveryLabel}" helpText="$resource{i18n_ejb.ejbTimerSettings.minDeliveryHelp}">
-                <sun:textField id="MinDelivery" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['MinimumDeliveryIntervalInMillis']}" />
+                <sun:textField id="MinDelivery" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['minimumDeliveryIntervalInMillis']}" />
                 <sun:staticText id="msecs" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
             </sun:property>
             <sun:property id="MaxRedeliveryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.ejbTimerSettings.maxRedeliveryLabel}" helpText="$resource{i18n_ejb.ejbTimerSettings.maxRedeliveryHelp}">
-                <sun:textField id="MaxRedelivery" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['MaxRedeliveries']}" />
+                <sun:textField id="MaxRedelivery" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['maxRedeliveries']}" />
             </sun:property>
             <sun:property id="RedeliveryIntrProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.ejbTimerSettings.redeliveryIntrLabel}" helpText="$resource{i18n_ejb.ejbTimerSettings.redeliveryIntrHelp}">
-                <sun:textField id="RedeliveryIntr" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['RedeliveryIntervalInternalInMillis']}" />
+                <sun:textField id="RedeliveryIntr" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['redeliveryIntervalInternalInMillis']}" />
                 <sun:staticText id="msecs" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
             </sun:property>
             <sun:property id="TimerDatasourceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.ejbTimerSettings.timerDatasourceLabel}" helpText="$resource{i18n_ejb.ejbTimerSettings.timerDatasourceLabelHelp}">
-                <sun:textField id="TimerDatasource"  columns="$int{50}" text="#{pageSession.valueMap['TimerDatasource']}" />
+                <sun:textField id="TimerDatasource"  columns="$int{50}" text="#{pageSession.valueMap['timerDatasource']}" />
             </sun:property>
          </sun:propertySheetSection>
      </sun:propertySheet>
@@ -105,4 +105,3 @@
     "<br/>
 </define>
 </composition>
-
