@@ -52,14 +52,12 @@ import java.security.PrivilegedAction;
  * Creates an object from its constructor.
  * @author Kohsuke Kawaguchi
  */
+@SuppressWarnings("unchecked")
 public class ConstructorWomb<T> extends AbstractWombImpl<T> {
-    private final Habitat habitat;
     private final ScopeInstance singletonScope;
 
-
     public ConstructorWomb(Class<T> type, Habitat habitat, MultiMap<String,String> metadata) {
-        super(type,metadata);
-        this.habitat = habitat;
+        super(type, habitat, metadata);
         singletonScope = habitat.singletonScope;
     }
 
@@ -84,7 +82,7 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
         ScopeInstance si = (scoped == null ? singletonScope : getScope(scoped));
         if (System.getSecurityManager() != null) {
           AccessController.doPrivileged(new PrivilegedAction() {
-              //doprivileged required for running with SecurityManager ON
+              // privileged required for running with SecurityManager ON
               public java.lang.Object run() {
                   inject(habitat, t, onBehalfOf);
                   return null;

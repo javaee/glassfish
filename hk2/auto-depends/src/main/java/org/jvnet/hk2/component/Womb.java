@@ -46,6 +46,7 @@ package org.jvnet.hk2.component;
  * @author Kohsuke Kawaguchi
  * @see Wombs
  */
+@SuppressWarnings("unchecked")
 public interface Womb<T> extends Inhabitant<T> {
 
     /**

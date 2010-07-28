@@ -46,12 +46,12 @@ import org.jvnet.hk2.component.Inhabitant;
  * Injection Resolver responsible for Lead Annotation type.
  * 
  */
-/*public*/ class LeadInjectionResolver extends InjectionResolver<Lead>{
+public class LeadInjectionResolver extends InjectionResolver<Lead>{
 
   private final Inhabitant<?> onBehalfOf;
 
   
-  /*public*/ LeadInjectionResolver(Inhabitant<?> onBehalfOf) {
+  protected LeadInjectionResolver(Inhabitant<?> onBehalfOf) {
       super(Lead.class);
       this.onBehalfOf = onBehalfOf;
     }
