@@ -45,6 +45,7 @@ public class JvmSettingsTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_JVM_GENERAL_SETTINGS = "JVM General Settings";
     private static final String TRIGGER_JVM_PATH_SETTINGS = "JVM Path Settings";
     private static final String TRIGGER_JVM_OPTIONS = "Manage JVM options for the server.";
+    private static final String TRIGGER_JVM_PROFILER_SETTINGS = "JVM Profiler Settings";
 
     @Test
     public void testJvmGeneralSettings() {
@@ -68,5 +69,22 @@ public class JvmSettingsTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:javaConfigTab:jvmOptions", TRIGGER_JVM_OPTIONS);
 
         assertTableRowCount("propertyForm:basicTable", count);
+    }
+
+    @Test
+    public void testJvmProfiler() {
+        clickAndWait("treeForm:tree:configurations:server-config:jvmSettings:jvmSettings_link", TRIGGER_JVM_GENERAL_SETTINGS);
+        clickAndWait("propertyForm:javaConfigTab:profiler", TRIGGER_JVM_PROFILER_SETTINGS);
+        
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:profilerNameProp:ProfilerName", "profiler" + generateRandomString());
+        int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton", "Options");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "-Dfoo=" + generateRandomString());
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_JVM_PROFILER_SETTINGS);
+        assertTableRowCount("propertyForm:basicTable", count);
+
+        clickAndWait("propertyForm:javaConfigTab:pathSettings", TRIGGER_JVM_PATH_SETTINGS);
+        clickAndWait("propertyForm:javaConfigTab:profiler", TRIGGER_JVM_PROFILER_SETTINGS);
+        selenium.click("propertyForm:propertyContentPage:topButtons:deleteButton");
+        assertTrue(selenium.getConfirmation().matches("^Profiler will be deleted\\.  Continue[\\s\\S]$"));
     }
 }
