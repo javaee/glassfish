@@ -56,11 +56,11 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/iiop-service");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
         //REST-TODO take care of property table
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         //set the following for including buttons.inc
-        setPageSessionAttribute(key="convertToFalseList" value={"SecurityEnabled" "Enabled"})
+        setPageSessionAttribute(key="convertToFalseList" value={"securityEnabled" "enabled"})
         setPageSessionAttribute(key="edit" value="#{true}" )
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" )
         setPageSessionAttribute(key="showCancelButton" value="#{true}" )

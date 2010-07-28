@@ -50,7 +50,7 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/iiop-service");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
         // REST - TODO
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/orb.jsf?configName=#{pageSession.configName}");
@@ -63,7 +63,7 @@
         setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl2}/#{pageSession.childType2}");
         setPageSessionAttribute(key="rest-api" value="true");
         setPageSessionAttribute(key="convertToFalseList2" value={"ClientAuthenticationRequired"});
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}.json", valueMap="#{pageSession.valueMap2}");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
@@ -84,8 +84,8 @@
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     convertArrayToCommaString(array="#{pageSession.selectedThreadPools}"  commaString="#{requestScope.tmp}");
-                    mapPut(map="#{pageSession.valueMap}" key="UseThreadPoolIds" value="$attribute{tmp}");
-                    //convertArrayToCommaString(array="#{pageSession.selectedThreadPools}"  commaString="#{pageSession.valueMap['UseThreadPoolIds']}")
+                    mapPut(map="#{pageSession.valueMap}" key="useThreadPoolIds" value="$attribute{tmp}");
+                    //convertArrayToCommaString(array="#{pageSession.selectedThreadPools}"  commaString="#{pageSession.valueMap['useThreadPoolIds']}")
                     saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}");
@@ -122,22 +122,22 @@
                         type="thread-pool" result="#{pageSession.threadPools}");
                     getListBoxOptions(
                         availableList="#{pageSession.threadPools}",
-                        selectedCommaString="#{pageSession.valueMap['UseThreadPoolIds']}",
+                        selectedCommaString="#{pageSession.valueMap['useThreadPoolIds']}",
                         availableListResult="#{pageSession.availableThreadPools}",
                         selectedOptions="#{pageSession.selectedThreadPools}");
                 />
                 </sun:listbox>
             </sun:property>
             <sun:property id="MaxMsgSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.orb.maxMsgSizeLabel}" helpText="$resource{i18n_corba.orb.maxMsgSizeHelp}">
-                <sun:dropDown id="MaxMsgSize" selected="#{pageSession.valueMap['MessageFragmentSize']}" labels={"1024", "2048", "4096", "8192", "16384", "32768"} />
+                <sun:dropDown id="MaxMsgSize" selected="#{pageSession.valueMap['messageFragmentSize']}" labels={"1024", "2048", "4096", "8192", "16384", "32768"} />
                 <sun:staticText id="bytes" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
             </sun:property>
             <sun:property id="TotalConnsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.orb.totalConnsLabel}" helpText="$resource{i18n_corba.orb.totalConnsHelp}">
-                <sun:textField id="TotalConns" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['MaxConnections']}" >
+                <sun:textField id="TotalConns" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['maxConnections']}" >
                  </sun:textField>
             </sun:property>
             <sun:property id="IIOPClientProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.orb.iiopClientLabel}" >
-                <sun:checkbox label="$resource{i18n.desc.Required}" selected="#{pageSession.valueMap2['ClientAuthenticationRequired']}" selectedValue="true" />
+                <sun:checkbox label="$resource{i18n.desc.Required}" selected="#{pageSession.valueMap2['clientAuthenticationRequired']}" selectedValue="true" />
             </sun:property>
          </sun:propertySheetSection>
      </sun:propertySheet>
