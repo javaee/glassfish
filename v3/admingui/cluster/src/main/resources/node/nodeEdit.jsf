@@ -55,10 +55,10 @@
 
         gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/ssh-connector" exists="#{requestScope.sshConnectorExist}");
         if (#{requestScope.sshConnectorExist}){
-            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector", currentMap="#{pageSession.valueMap}"  valueMap="#{pageSession.valueMap}");
+            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector.json", currentMap="#{pageSession.valueMap}"  valueMap="#{pageSession.valueMap}");
             gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth" exists="#{requestScope.sshConnectorExist}");
             if (#{requestScope.sshConnectorExist}){
-                gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth", currentMap="#{pageSession.valueMap}"  valueMap="#{pageSession.valueMap}");
+                gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth.json", currentMap="#{pageSession.valueMap}"  valueMap="#{pageSession.valueMap}");
             }
         }
 //        gf.nodeAttrToArgs(in="#{requestScope.aMap}" out="#{pageSession.valueMap}");

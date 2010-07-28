@@ -43,21 +43,21 @@
         </sun:property>
 
         <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.status}" >
-            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.fileMap['Enabled']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.fileMap['enabled']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="maxAge"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.fileCache.maxAge}" helpText="$resource{i18n_web.fileCache.maxAgeHelp}" >
-            <sun:textField id="maxAge" columns="$int{20}" text="#{pageSession.fileMap['MaxAgeSeconds']}" />
+            <sun:textField id="maxAge" columns="$int{20}" text="#{pageSession.fileMap['maxAgeSeconds']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
         <sun:property id="maxCacheSizeBytes"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.fileCache.MaxCacheSizeBytes}" helpText="$resource{i18n_web.fileCache.MaxCacheSizeBytesHelp}" >
-            <sun:textField id="maxCacheSizeBytes" columns="$int{20}" text="#{pageSession.fileMap['MaxCacheSizeBytes']}" />
+            <sun:textField id="maxCacheSizeBytes" columns="$int{20}" text="#{pageSession.fileMap['maxCacheSizeBytes']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
         </sun:property>
 
         <sun:property id="maxFile"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.fileCache.MaxFileCount}" helpText="$resource{i18n_web.fileCache.MaxFileCountHelp}" >
-            <sun:textField id="maxFile" columns="$int{20}" text="#{pageSession.fileMap['MaxFilesCount']}" />
+            <sun:textField id="maxFile" columns="$int{20}" text="#{pageSession.fileMap['maxFilesCount']}" />
         </sun:property>
 
 </sun:propertySheetSection>

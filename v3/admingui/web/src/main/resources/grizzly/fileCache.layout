@@ -59,7 +59,7 @@
         setPageSessionAttribute(key="rest-api" value="true");
         gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}" exists="#{requestScope.exist}");
         if (#{requestScope.exist}){
-            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.fileMap}");
+            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.fileMap}");
             setPageSessionAttribute(key="edit" value="#{true}" );
         }
         if (! #{requestScope.exist}){

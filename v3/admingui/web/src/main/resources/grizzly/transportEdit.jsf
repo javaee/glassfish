@@ -52,7 +52,7 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/transports");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.Name}");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"displayConfiguration", "enableSnoop", "tcpNoDelay"});
         //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         //set the following for including buttons.inc
