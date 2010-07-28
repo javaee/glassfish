@@ -47,20 +47,19 @@ import org.jvnet.hk2.component.MultiMap;
  *
  * @author Kohsuke Kawaguchi
  */
+@SuppressWarnings("unchecked")
 public class FactoryWomb<T> extends AbstractWombImpl<T> {
     private final Inhabitant<? extends Factory> factory;
-    private final Habitat habitat;
 
     public FactoryWomb(Class<T> type, Class<? extends Factory> factory, Habitat habitat, MultiMap<String,String> metadata) {
         this(type,habitat.getInhabitantByType(factory),habitat,metadata);
     }
 
     public FactoryWomb(Class<T> type, Inhabitant<? extends Factory> factory, Habitat habitat, MultiMap<String,String> metadata) {
-        super(type,metadata);
+        super(type, habitat, metadata);
         assert factory!=null;
         assert habitat!=null;
         this.factory = factory;
-        this.habitat = habitat;
     }
 
     public T create(Inhabitant onBehalfOf) throws ComponentException {

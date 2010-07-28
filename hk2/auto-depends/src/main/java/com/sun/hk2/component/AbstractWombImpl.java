@@ -44,11 +44,13 @@ import org.jvnet.hk2.component.*;
 @SuppressWarnings("unchecked")
 public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> implements Womb<T> {
     protected final Class<T> type;
+    protected final Habitat habitat; 
     private final MultiMap<String,String> metadata;
     private final InjectionManager injectionMgr = new InjectionManager();
 
-    public AbstractWombImpl(Class<T> type, MultiMap<String,String> metadata) {
+    public AbstractWombImpl(Class<T> type, Habitat habitat, MultiMap<String,String> metadata) {
         this.type = type;
+        this.habitat = habitat;
         this.metadata = metadata;
     }
 

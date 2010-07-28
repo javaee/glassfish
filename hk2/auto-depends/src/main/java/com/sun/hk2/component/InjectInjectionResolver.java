@@ -50,13 +50,13 @@ import org.jvnet.tiger_types.Types;
 /**
  * InjectInjectionResolver, handles all Inject annotations
  */
-/*public*/ class InjectInjectionResolver extends InjectionResolver<Inject> {
+public class InjectInjectionResolver extends InjectionResolver<Inject> {
 
     private final Habitat habitat;
     private final Inhabitant<?> onBehalfOf;
 
     
-    /*public*/ InjectInjectionResolver(Habitat habitat, Inhabitant<?> onBehalfOf) {
+    protected InjectInjectionResolver(Habitat habitat, Inhabitant<?> onBehalfOf) {
         super(Inject.class);
         this.habitat = habitat;
         this.onBehalfOf = onBehalfOf;
