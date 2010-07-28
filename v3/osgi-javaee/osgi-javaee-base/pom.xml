@@ -60,11 +60,6 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>glassfish</artifactId>
-            <version>${project.version}</version>
-        </dependency>        
-        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
