@@ -90,11 +90,18 @@ public class AsyncContextImpl implements AsyncContext {
     // defaults to false
     private AtomicBoolean isDispatchInProgress = new AtomicBoolean(); 
 
+    private ThreadLocal<Boolean> isDispatchInScope = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return Boolean.FALSE;
+        }
+    };
+
     private AtomicBoolean isOkToConfigure = new AtomicBoolean(true); 
 
     private long asyncTimeoutMillis = DEFAULT_ASYNC_TIMEOUT_MILLIS;
 
-    private LinkedList<AsyncListenerContext> asyncListenerContexts =
+    private final LinkedList<AsyncListenerContext> asyncListenerContexts =
         new LinkedList<AsyncListenerContext>();
 
     // The number of times this AsyncContext has been reinitialized via a call
@@ -164,6 +171,7 @@ public class AsyncContextImpl implements AsyncContext {
         }
         ApplicationDispatcher dispatcher = (ApplicationDispatcher)
             servletRequest.getRequestDispatcher(zeroArgDispatchTarget);
+        isDispatchInScope.set(true);
         if (dispatcher != null) {
             if (isDispatchInProgress.compareAndSet(false, true)) {
                 pool.execute(new Handler(this, dispatcher, origRequest));
@@ -186,6 +194,7 @@ public class AsyncContextImpl implements AsyncContext {
         }
         ApplicationDispatcher dispatcher = (ApplicationDispatcher)
             servletRequest.getRequestDispatcher(path);
+        isDispatchInScope.set(true);
         if (dispatcher != null) {
             if (isDispatchInProgress.compareAndSet(false, true)) {
                 pool.execute(new Handler(this, dispatcher, origRequest));
@@ -208,6 +217,7 @@ public class AsyncContextImpl implements AsyncContext {
         }
         ApplicationDispatcher dispatcher = (ApplicationDispatcher)
             context.getRequestDispatcher(path);
+        isDispatchInScope.set(true);
         if (dispatcher != null) {
             if (isDispatchInProgress.compareAndSet(false, true)) {
                 pool.execute(new Handler(this, dispatcher, origRequest));
@@ -221,6 +231,16 @@ public class AsyncContextImpl implements AsyncContext {
             log.warning("Unable to acquire RequestDispatcher for " + path +
                         "in servlet context " + context.getContextPath());
         }
+    }
+
+    boolean isDispatchInScope() {
+        return isDispatchInScope.get();
+    }
+
+    boolean getAndResetDispatchInScope() {
+        final boolean flag = isDispatchInScope.get();
+        isDispatchInScope.set(Boolean.FALSE);
+        return flag;
     }
 
     @Override
@@ -270,6 +290,7 @@ public class AsyncContextImpl implements AsyncContext {
         }
     }
 
+    @Override
     public <T extends AsyncListener> T createListener(Class<T> clazz)
             throws ServletException {
         T listener = null;
@@ -370,6 +391,7 @@ public class AsyncContextImpl implements AsyncContext {
             this.origRequest = origRequest;
         }
        
+        @Override
         public void run() {
             asyncContext.isStartAsyncInScope.set(Boolean.TRUE);
             origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
