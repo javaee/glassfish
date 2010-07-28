@@ -90,7 +90,8 @@
             <sun:property id="JmxServUrlProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.jmxServUrlLabel}" >
                 <sun:staticText id="JmxServUrl" text="#{pageSession.jmxURL}" />
                 <!beforeCreate
-                    getProxyAttribute(objectNameStr="#{sessionScope.RUNTIME}" attrName="JMXServiceURLs" index="0" value="#{pageSession.jmxURL}")
+                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/jmx-urls.json", method="get", result="#{requestScope.result}");
+                    setPageSessionAttribute(key="jmxURL" value="#{requestScope.result.data['jmx-service-urls'][0]}");
                 />
             </sun:property>
             <sun:property id="SecurityProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.securityLabel}" >
