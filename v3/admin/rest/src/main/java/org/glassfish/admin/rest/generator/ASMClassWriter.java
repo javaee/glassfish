@@ -36,7 +36,15 @@
 package org.glassfish.admin.rest.generator;
 
 
+import com.sun.enterprise.util.SystemPropertyConstants;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.security.PrivilegedActionException;
+import java.security.ProtectionDomain;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -46,20 +54,25 @@ import org.objectweb.asm.Type;
  * @author Ludovic Champenois
  */
 public class ASMClassWriter implements ClassWriter, Opcodes {
-    private static final String GENERATED_PATH ="org/glassfish/admin/rest/resources/generated/";
+    private static final String GENERATED_PATH ="org/glassfish/admin/rest/resources/generatedASM/";
 
     private org.objectweb.asm.ClassWriter cw = new org.objectweb.asm.ClassWriter(0);
     private String className;
-    private String baseClassName;
-    private String resourcePath;
+  //  private String baseClassName;
+  //  private String resourcePath;
 
     public ASMClassWriter(String className, String baseClassName, String resourcePath) {
         this.className = className;
-        this.baseClassName = baseClassName;
-        this.resourcePath = resourcePath;
+   //     this.baseClassName = baseClassName;
+   //     this.resourcePath = resourcePath;
 
+        if (baseClassName.indexOf(".") != -1) {
+            baseClassName = baseClassName.replace('.', '/');
+        } else {
+            baseClassName = "org/glassfish/admin/rest/resources/" + baseClassName;
+        }
         cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, GENERATED_PATH + className , null,
-                "org/glassfish/admin/rest/resources/" + baseClassName , null);
+                 baseClassName , null);
 
         if (resourcePath != null) {
             AnnotationVisitor av0 = cw.visitAnnotation("Ljavax/ws/rs/Path;", true);
@@ -71,7 +84,7 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, "org/glassfish/admin/rest/resources/" + baseClassName , "<init>", "()V");
+        mv.visitMethodInsn(INVOKESPECIAL,  baseClassName , "<init>", "()V");
         mv.visitInsn(RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
@@ -81,7 +94,42 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
 
     @Override
     public void createGetCommandResourcePaths(List<CommandResourceMetaData> commandMetaData) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "getCommandResourcesPaths", "()[[Ljava/lang/String;", null, null);
+        mv.visitCode();
+        mv.visitIntInsn(BIPUSH, commandMetaData.size());   //11 number of entries
+        mv.visitTypeInsn(ANEWARRAY, "[Ljava/lang/String;");  //first outer array
+        int index= -1;
+        for (CommandResourceMetaData metaData : commandMetaData) {
+            index++;
+            switch (index){//inner array has 3 strings,
+                case 0: mv.visitInsn(DUP);mv.visitInsn(ICONST_0);mv.visitInsn(ICONST_3);break;
+                case 1: mv.visitInsn(DUP);mv.visitInsn(ICONST_1);mv.visitInsn(ICONST_3);break;
+                case 2: mv.visitInsn(DUP);mv.visitInsn(ICONST_2);mv.visitInsn(ICONST_3);break;
+                case 3: mv.visitInsn(DUP);mv.visitInsn(ICONST_3);mv.visitInsn(ICONST_3);break;
+                case 4: mv.visitInsn(DUP);mv.visitInsn(ICONST_4);mv.visitInsn(ICONST_3);break;
+                case 5: mv.visitInsn(DUP);mv.visitInsn(ICONST_5);mv.visitInsn(ICONST_3);break;
+                default: mv.visitInsn(DUP);mv.visitIntInsn(BIPUSH, index);mv.visitInsn(ICONST_3);break;  //6 and bigger is DIFFERENT!!!
+            } //switch
+
+
+            mv.visitTypeInsn(ANEWARRAY, "java/lang/String");  //inner array
+
+            mv.visitInsn(DUP);mv.visitInsn(ICONST_0);
+            mv.visitLdcInsn(metaData.resourcePath);
+            mv.visitInsn(AASTORE);mv.visitInsn(DUP);mv.visitInsn(ICONST_1);
+            mv.visitLdcInsn(metaData.httpMethod);
+            mv.visitInsn(AASTORE);mv.visitInsn(DUP);mv.visitInsn(ICONST_2);
+            mv.visitLdcInsn(metaData.command);
+            mv.visitInsn(AASTORE);mv.visitInsn(AASTORE);
+
+        } //for
+
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(7, 1);
+        mv.visitEnd();
+
     }
 
     @Override
@@ -95,7 +143,7 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, GENERATED_PATH + className, "resourceContext", "Lcom/sun/jersey/api/core/ResourceContext;");
-        mv.visitLdcInsn(Type.getType("LGENERATED_PATH" + commandResourceClassName + ";"));
+        mv.visitLdcInsn(Type.getType("L" + GENERATED_PATH + commandResourceClassName + ";"));
         mv.visitMethodInsn(INVOKEINTERFACE, "com/sun/jersey/api/core/ResourceContext", "getResource", "(Ljava/lang/Class;)Ljava/lang/Object;");
         mv.visitTypeInsn(CHECKCAST, GENERATED_PATH + commandResourceClassName );
         mv.visitVarInsn(ASTORE, 1);
@@ -106,13 +154,70 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
     }
 
     @Override
-    public void createCommandResourceConstructor(String commandResourceClassName, String commandName, String httpMethod, boolean linkedToParent, CommandResourceMetaData.ParameterMetaData[] commandParams, String commandDisplayName, String commandAction) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void createCommandResourceConstructor(String commandResourceClassName, String commandName, 
+            String httpMethod, boolean linkedToParent,
+            CommandResourceMetaData.ParameterMetaData[] commandParams,
+            String commandDisplayName,
+            String commandAction) {
+
+
+/*
+
+cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, "org/glassfish/admin/rest/resources/generated/ApplicationDisableResource", null, "org/glassfish/admin/rest/resources/TemplateCommandPostResource", null);
+cw.visitInnerClass("org/glassfish/admin/rest/resources/generated/ApplicationDisableResource$1", null, null, 0);
+MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+mv.visitCode();
+mv.visitVarInsn(ALOAD, 0);
+mv.visitLdcInsn(commandResourceClassName);
+mv.visitLdcInsn(commandName);
+mv.visitLdcInsn(httpMethod);
+        if (!httpMethod.equals("GET")) {
+
+   mv.visitLdcInsn(commandAction);
+   mv.visitLdcInsn(commandAction);
+        }
+mv.visitTypeInsn(NEW, "org/glassfish/admin/rest/resources/generated/ApplicationDisableResource$1");
+mv.visitInsn(DUP);
+mv.visitMethodInsn(INVOKESPECIAL, "org/glassfish/admin/rest/resources/generated/ApplicationDisableResource$1", "<init>", "()V");
+mv.visitInsn(ICONST_1);
+
+//next is different based on parent
+mv.visitMethodInsn(INVOKESPECIAL, "org/glassfish/admin/rest/resources/TemplateCommandPostResource", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/HashMap;Z)V");
+mv.visitInsn(RETURN);
+mv.visitMaxs(8, 1);  //GET is 6!!!
+mv.visitEnd();
+
+//get:
+cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, "org/glassfish/admin/rest/resources/generated/AuthRealmListGroupNamesResource", null, "org/glassfish/admin/rest/resources/TemplateCommandGetResource", null);
+cw.visitInnerClass("org/glassfish/admin/rest/resources/generated/AuthRealmListGroupNamesResource$1", null, null, 0);
+mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+mv.visitCode();
+mv.visitVarInsn(ALOAD, 0);
+mv.visitLdcInsn("AuthRealmListGroupNamesResource");
+mv.visitLdcInsn("__list-group-names");
+mv.visitLdcInsn("GET");
+mv.visitTypeInsn(NEW, "org/glassfish/admin/rest/resources/generated/AuthRealmListGroupNamesResource$1");
+mv.visitInsn(DUP);
+mv.visitMethodInsn(INVOKESPECIAL, "org/glassfish/admin/rest/resources/generated/AuthRealmListGroupNamesResource$1", "<init>", "()V");
+mv.visitInsn(ICONST_1);
+mv.visitMethodInsn(INVOKESPECIAL, "org/glassfish/admin/rest/resources/TemplateCommandGetResource", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/HashMap;Z)V");
+mv.visitInsn(RETURN);
+mv.visitMaxs(6, 1);
+mv.visitEnd();
+*/
+
     }
 
     @Override
     public void done() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        cw.visitEnd();
+        try {
+            defineClass(this.getClass());
+        } catch (Exception ex) {
+            Logger.getLogger(ASMClassWriter.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+        }
+
     }
 
     @Override
@@ -137,7 +242,13 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
 
     @Override
     public void createGetChildResource(String path, String childResourceClassName) {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + childResourceClassName, "()L"+ GENERATED_PATH + childResourceClassName + ";", null, null);
+        String childClass;
+        if (childResourceClassName.equals("PropertiesBagResource")){
+            childClass = "org/glassfish/admin/rest/resources/PropertiesBagResource";
+        }else {
+            childClass = GENERATED_PATH + childResourceClassName;
+        }
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + childResourceClassName, "()L"+ childClass + ";", null, null);
 
         AnnotationVisitor av0 = mv.visitAnnotation("Ljavax/ws/rs/Path;", true);
         av0.visit("value", path + "/");
@@ -146,15 +257,15 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, GENERATED_PATH + className, "resourceContext", "Lcom/sun/jersey/api/core/ResourceContext;");
-        mv.visitLdcInsn(Type.getType("LGENERATED_PATH" + childResourceClassName + ";"));
+        mv.visitLdcInsn(Type.getType("L" + childClass + ";"));
         mv.visitMethodInsn(INVOKEINTERFACE, "com/sun/jersey/api/core/ResourceContext", "getResource", "(Ljava/lang/Class;)Ljava/lang/Object;");
-        mv.visitTypeInsn(CHECKCAST, GENERATED_PATH + childResourceClassName);
+        mv.visitTypeInsn(CHECKCAST, childClass);
         mv.visitVarInsn(ASTORE, 1);
         mv.visitVarInsn(ALOAD, 1);
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKEVIRTUAL, GENERATED_PATH + className, "getEntity", "()Lorg/jvnet/hk2/config/Dom;");
         mv.visitLdcInsn(path);
-        mv.visitMethodInsn(INVOKEVIRTUAL, GENERATED_PATH + childResourceClassName, "setParentAndTagName", "(Lorg/jvnet/hk2/config/Dom;Ljava/lang/String;)V");
+        mv.visitMethodInsn(INVOKEVIRTUAL, childClass, "setParentAndTagName", "(Lorg/jvnet/hk2/config/Dom;Ljava/lang/String;)V");
         mv.visitVarInsn(ALOAD, 1);
         mv.visitInsn(ARETURN);
         mv.visitMaxs(3, 2);
@@ -164,7 +275,7 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
     @Override
     public void createGetChildResourceForListResources(String keyAttributeName, String childResourceClassName) {
 
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + childResourceClassName , "(Ljava/lang/String;)LGENERATED_PATH" + childResourceClassName + ";", null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + childResourceClassName , "(Ljava/lang/String;)L" + GENERATED_PATH + childResourceClassName + ";", null, null);
 
         AnnotationVisitor av0 = mv.visitAnnotation("Ljavax/ws/rs/Path;", true);
         av0.visit("value", "{" + keyAttributeName + "}/");
@@ -224,7 +335,95 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
     }
 
     public byte[] getByteClass() {
-        cw.visitEnd();
         return cw.toByteArray();
     }
+
+    public String defineClass(Class similarClass) throws Exception {
+
+        String generatedClassName = "org.glassfish.admin.rest.resources.generatedASM.";
+        generatedClassName =  generatedClassName + className;
+
+        byte[] byteContent = getByteClass();
+        debug(generatedClassName,byteContent);
+        ProtectionDomain pd = similarClass.getProtectionDomain();
+
+        java.lang.reflect.Method jm = null;
+        for (java.lang.reflect.Method jm2 : ClassLoader.class.getDeclaredMethods()) {
+            if (jm2.getName().equals("defineClass") && jm2.getParameterTypes().length == 5) {
+                jm = jm2;
+                break;
+            }
+        }
+
+        final java.lang.reflect.Method clM = jm;
+        try {
+            java.security.AccessController.doPrivileged(
+                    new java.security.PrivilegedExceptionAction() {
+
+                        public java.lang.Object run() throws Exception {
+                            if (!clM.isAccessible()) {
+                                clM.setAccessible(true);
+                            }
+                            return null;
+                        }
+                    });
+
+            clM.invoke(/*similarClass.getClassLoader()*/Thread.currentThread().getContextClassLoader(), generatedClassName, byteContent, 0,
+                    byteContent.length, pd);
+
+            //load it
+            Class c=null;
+
+            try {
+               c= similarClass.getClassLoader().loadClass(generatedClassName);
+            } catch (ClassNotFoundException cnfEx) {
+                throw new RuntimeException(cnfEx);
+            }
+
+            return generatedClassName;
+        } catch (PrivilegedActionException pEx) {
+            throw new RuntimeException(pEx);
+        } catch (IllegalAccessException illegalAccessException) {
+            throw new RuntimeException(illegalAccessException);
+        } catch (InvocationTargetException invtEx) {
+            throw new RuntimeException(invtEx);
+        }
+
+    }
+
+    /*
+     dump bytecode in class files so that we can  decompile them to check the real content
+    */
+    private void debug(String clsName, byte[] classData) {
+
+
+        // the path is horribly long.  Let's just write t directly into the
+        // lib dir.  It is not for loading as a class but just for us humans
+        // to decompile to figure out what is going on.  No need to make it even harder!
+        clsName = clsName.replace('.', '/');
+        clsName = clsName.replace('\\', '/'); // just in case Windows?  unlikely...
+        int index = clsName.lastIndexOf("/");
+
+        if (index >= 0) {
+            clsName = clsName.substring(index + 1);
+        }
+
+        try {
+            String rootPath = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY)
+                    + File.separator + "lib" + File.separator;
+
+            String fileName = rootPath + clsName + ".class";
+
+
+            File file = new File(fileName);
+            file.getParentFile().mkdirs();
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(classData);
+            fos.flush();
+            fos.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }
