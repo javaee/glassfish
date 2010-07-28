@@ -57,11 +57,13 @@ import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 @Service(name = "create-local-instance")
 @Scoped(PerLookup.class)
 public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesystemCommand {
+    private final String CONFIG = "config";
+    private final String CLUSTER = "cluster";
 
-    @Param(name = "config", optional = true)
+    @Param(name = CONFIG, optional = true)
     private String configName;
 
-    @Param(name = "cluster", optional = true)
+    @Param(name = CLUSTER, optional = true)
     private String clusterName;
 
     @Param(name = "systemproperties", optional = true, separator = ':')
@@ -323,5 +325,23 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             }
         }
         return instanceHostName;
+    }
+
+    @Override
+    public String getUsage() {
+        String str = super.getUsage();
+        String newStr = str;
+        StringBuffer sb = new StringBuffer(str);
+        String config = "--"+CONFIG+" <"+CONFIG+">";
+        String cluster = "--"+CLUSTER+" <"+CLUSTER+">";
+        String oldConfigCluster = "["+config+"] ["+cluster+"]";
+        String newConfigCluster = "["+config+" | "+cluster+"]";
+        int start = sb.indexOf(oldConfigCluster);
+        if (start != -1) {
+            int end = start + oldConfigCluster.length();
+            StringBuffer newsb = sb.replace(start, end, newConfigCluster);
+            newStr = newsb.toString();
+        }
+        return newStr;
     }
 }
