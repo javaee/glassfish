@@ -47,9 +47,9 @@
                         onlyUseAttrs="#{pageSession.onlyUseAttrs}"
                     );
                     prepareSuccessfulMsg();
-                    if ("#{valueMap['Ping']}") {
+                    if ("#{valueMap['ping']}") {
                         // REST-TODO
-                        pingJdbcConnectionPool(jndiName="#{valueMap['Name']}", wmsg="$resource{i18njdbc.msg.warning.poolSavedPingFailed}");
+                        pingJdbcConnectionPool(jndiName="#{valueMap['name']}", wmsg="$resource{i18njdbc.msg.warning.poolSavedPingFailed}");
                     }
                     gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />

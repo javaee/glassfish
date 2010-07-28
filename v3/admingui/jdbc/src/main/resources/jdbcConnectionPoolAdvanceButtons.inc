@@ -40,8 +40,8 @@
         <sun:button id="saveButton"  text="$resource{i18n.button.Save}"
                 onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}') && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
-            if ("#{pageSession.valueMap['LazyConnectionAssociation']}") {
-                    setValueExpression(expression="#{pageSession.valueMap['LazyConnectionEnlistment']}", value="#{true}");
+            if ("#{pageSession.valueMap['lazyConnectionAssociation']}") {
+                    setValueExpression(expression="#{pageSession.valueMap['lazyConnectionEnlistment']}", value="#{true}");
             }
 
             gf.createEntity(endpoint="#{pageSession.resourceUrl}"
@@ -51,8 +51,8 @@
                     );
 
             prepareSuccessfulMsg();
-            if ("#{valueMap['Ping']}") {
-                pingJdbcConnectionPool(jndiName="#{valueMap['Name']}", wmsg="$resource{i18njdbc.msg.warning.poolSavedPingFailed}");
+            if ("#{valueMap['ping']}") {
+                pingJdbcConnectionPool(jndiName="#{valueMap['name']}", wmsg="$resource{i18njdbc.msg.warning.poolSavedPingFailed}");
             }
             gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />

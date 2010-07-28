@@ -39,7 +39,7 @@
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
 	setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.editPageTitle}" guiOnLoad="initDisableFields('#{valueMap.ResType}');" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.editPageTitle}" guiOnLoad="initDisableFields('#{valueMap.resType}');" >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -57,11 +57,11 @@
         setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
         setPageSessionAttribute(key="rest-api" value="true");
 
-        gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}", valueMap="#{pageSession.valueMap}");
+        gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}.json", valueMap="#{pageSession.valueMap}");
 
-        setPageSessionAttribute(key="type" value="#{valueMap.ResType}");
-        setPageSessionAttribute(key="convertToFalseList" value={"IsConnectionValidationRequired" "FailAllConnections" "AllowNonComponentCallers" "NonTransactionalConnections" "IsIsolationLevelGuaranteed"});
-        setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+        setPageSessionAttribute(key="type" value="#{valueMap.resType}");
+        setPageSessionAttribute(key="convertToFalseList" value={"isConnectionValidationRequired" "failAllConnections" "allowNonComponentCallers" "nonTransactionalConnections" "isIsolationLevelGuaranteed"});
+        setPageSessionAttribute(key="skipAttrsList", value={"jndiName"});
 
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
@@ -128,5 +128,3 @@
 
 </define>
 </composition>
-
-

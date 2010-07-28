@@ -42,7 +42,7 @@
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
         <sun:property id="nameNew"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
-            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['Name']}" />
+            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['name']}" />
         </sun:property>
 
         <sun:property id="name"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
@@ -50,7 +50,7 @@
         </sun:property>
 
         <sun:property id="poolNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}"  helpText="$resource{i18njdbc.jdbcResource.poolHelp}">
-            <sun:dropDown id="PoolName" selected="#{pageSession.valueMap['PoolName']}" labels="$pageSession{jdbcList}"  values="$pageSession{jdbcList}" >
+            <sun:dropDown id="PoolName" selected="#{pageSession.valueMap['poolName']}" labels="$pageSession{jdbcList}"  values="$pageSession{jdbcList}" >
             <!beforeCreate
                 gf.getChildrenNamesList(endpoint="#{pageSession.parentUrl}/jdbc-connection-pool", result="#{pageSession.jdbcList}");
             />
@@ -58,12 +58,12 @@
         </sun:property>   
 
         <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
-            <sun:textField id="desc" columns="$int{55}" text="#{pageSession.valueMap['Description']}" />      
+            <sun:textField id="desc" columns="$int{55}" text="#{pageSession.valueMap['description']}" />      
         </sun:property>
 
         <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" visible="#{false}" />
-            <sun:checkbox id="enabled" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['Enabled']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" visible="#{false}" />
+            <sun:checkbox id="enabled" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['enabled']}" selectedValue="true" />
         </sun:property>
         "<br /><br />
     </sun:propertySheetSection>

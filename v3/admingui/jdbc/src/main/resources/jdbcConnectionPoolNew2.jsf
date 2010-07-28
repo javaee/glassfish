@@ -60,7 +60,7 @@
         setPageSessionAttribute(key="restObjStr", value="amx:pp=/domain/resources,type=#{pageSession.childType}");
         
         updateProxyProperties(propertyList="#{wizardPoolProperties}" TableList=>$attribute{tableList});
-        setPageSessionAttribute(key="convertToFalseList" value={"IsConnectionValidationRequired" "FailAllConnections" "AllowNonComponentCallers" "NonTransactionalConnections" "IsIsolationLevelGuaranteed"});
+        setPageSessionAttribute(key="convertToFalseList" value={"isConnectionValidationRequired" "failAllConnections" "allowNonComponentCallers" "nonTransactionalConnections" "isIsolationLevelGuaranteed"});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );

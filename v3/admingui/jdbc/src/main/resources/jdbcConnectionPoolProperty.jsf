@@ -52,7 +52,7 @@
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
-        setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+        setPageSessionAttribute(key="skipAttrsList", value={"jndiName"});
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         />
     </event>
@@ -70,8 +70,8 @@
                 getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                 setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                 prepareSuccessfulMsg();
-                if ("#{valueMap['Ping']}") {
-                    pingJdbcConnectionPool(jndiName="#{valueMap['Name']}", wmsg="$resource{i18njdbc.msg.warning.poolSavedPingFailed}");
+                if ("#{valueMap['ping']}") {
+                    pingJdbcConnectionPool(jndiName="#{valueMap['name']}", wmsg="$resource{i18njdbc.msg.warning.poolSavedPingFailed}");
                 }
                 gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
@@ -93,5 +93,3 @@
 #include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
-
-

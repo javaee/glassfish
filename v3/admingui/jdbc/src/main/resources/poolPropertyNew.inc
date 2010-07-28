@@ -56,7 +56,7 @@
         <sun:dropDown  id="datasource" selected="#{wizardPoolExtra.DatasourceClassname}" labels="$attribute{DSList}"  disabled="#{!wizardPoolExtra.dsClassname}" submitForm="#{true}" immediate="#{true}">
             <!command
                     setAttribute(key="click" value="$this{component}");
-                    mapPut(map="#{wizardPoolExtra}" key="DatasourceClassname" value="#{click.selected}");
+                    mapPut(map="#{wizardPoolExtra}" key="datasourceClassname" value="#{click.selected}");
                     updateJdbcConnectionPoolPropertiesTable();
                     gf.navigate(page="#{selfPage}");
                 />
