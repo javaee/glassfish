@@ -90,10 +90,10 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
                     Strings.get("ConfigClusterConflict"));
         }
 
-        if (node != null) { //Uncomment when _validate-node is implemented - Issue 12544.
+        if (node != null) {
             //Has to be before super.validate(), so if node is bogus CommandException should be
             //thrown and command fail. The bogus node directory should not get created in super.validate().
-            //validateNode(node, getInstallRootPath(), getInstanceHostName(true));
+            validateNode(node, getInstallRootPath(), getInstanceHostName(true));
         }
 
         super.validate();  // instanceName is validated and set in super.validate(), directories created
@@ -284,10 +284,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     private int validateNode(String name, String installdir, String nodeHost) throws CommandException {
         ArrayList<String> argsList = new ArrayList<String>();
         argsList.add(0, "_validate-node");
-        if (name != null) {
-            argsList.add("--name");
-            argsList.add(name);
-        }
+
         if (nodeDir != null) {
             argsList.add("--nodedir");
             argsList.add(nodeDir);
@@ -300,6 +297,8 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             argsList.add("--installdir");
             argsList.add(installdir);
         }
+
+        argsList.add(name);
 
         String[] argsArray = new String[argsList.size()];
         argsArray = argsList.toArray(argsArray);
