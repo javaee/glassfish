@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,36 +33,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.rest;
+package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.*;
+public class DomainGetRuntimeInfoResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource  {
 
-import com.sun.jersey.api.client.ClientResponse;
-import java.util.HashMap;
-import java.util.Map;
-import org.junit.Test;
-
-/**
- *
- * @author jasonlee
- */
-public class ExternalResourceTest extends RestTestBase {
-    protected static final String URL_EXTERNAL_RESOURCE = "/domain/resources/external-jndi-resource";
-    @Test
-    public void createAndDeleteExternalResource() {
-        final String resourceName = "resource_" + generateRandomString();
-        final String jndiName = "jndi/"+resourceName;
-        Map<String, String> newResource = new HashMap<String, String>() {{
-            put("id", resourceName);
-            put("jndilookupname", jndiName);
-            put("factoryClass", "org.glassfish.resources.custom.factory.PrimitivesAndStringFactory");
-            put("restype", "java.lang.Double");
-        }};
-        ClientResponse response = post (URL_EXTERNAL_RESOURCE, newResource);
-        checkStatusForSuccess(response);
-
-        response = get(URL_EXTERNAL_RESOURCE + "/" + resourceName);
-        checkStatusForSuccess(response);
-
-        response = delete(URL_EXTERNAL_RESOURCE + "/" + resourceName);
-        checkStatusForSuccess(response);
+   public DomainGetRuntimeInfoResource() {
+       super(
+          "DomainGetRuntimeInfoResource",
+          "_get-runtime-info",
+          "GET",
+          (java.util.HashMap<String, String>) null ,
+          false);
     }
 }

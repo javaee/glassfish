@@ -39,18 +39,6 @@ import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
 public class SystemApplicationsResource extends TemplateResource  {
 
-	@Path("extension-module/")
-	public ListExtensionModuleResource getListExtensionModuleResource() {
-		ListExtensionModuleResource resource = resourceContext.getResource(ListExtensionModuleResource.class);
-		resource.setParentAndTagName(getEntity() , "extension-module");
-		return resource;
-	}
-	@Path("appclient-module/")
-	public ListAppclientModuleResource getListAppclientModuleResource() {
-		ListAppclientModuleResource resource = resourceContext.getResource(ListAppclientModuleResource.class);
-		resource.setParentAndTagName(getEntity() , "appclient-module");
-		return resource;
-	}
 	@Path("application/")
 	public ListApplicationResource getListApplicationResource() {
 		ListApplicationResource resource = resourceContext.getResource(ListApplicationResource.class);
@@ -63,10 +51,10 @@ public class SystemApplicationsResource extends TemplateResource  {
 		resource.setParentAndTagName(getEntity() , "connector-module");
 		return resource;
 	}
-	@Path("lifecycle-module/")
-	public ListLifecycleModuleResource getListLifecycleModuleResource() {
-		ListLifecycleModuleResource resource = resourceContext.getResource(ListLifecycleModuleResource.class);
-		resource.setParentAndTagName(getEntity() , "lifecycle-module");
+	@Path("j2ee-application/")
+	public ListJ2eeApplicationResource getListJ2eeApplicationResource() {
+		ListJ2eeApplicationResource resource = resourceContext.getResource(ListJ2eeApplicationResource.class);
+		resource.setParentAndTagName(getEntity() , "j2ee-application");
 		return resource;
 	}
 	@Path("ejb-module/")
@@ -75,10 +63,22 @@ public class SystemApplicationsResource extends TemplateResource  {
 		resource.setParentAndTagName(getEntity() , "ejb-module");
 		return resource;
 	}
-	@Path("j2ee-application/")
-	public ListJ2eeApplicationResource getListJ2eeApplicationResource() {
-		ListJ2eeApplicationResource resource = resourceContext.getResource(ListJ2eeApplicationResource.class);
-		resource.setParentAndTagName(getEntity() , "j2ee-application");
+	@Path("appclient-module/")
+	public ListAppclientModuleResource getListAppclientModuleResource() {
+		ListAppclientModuleResource resource = resourceContext.getResource(ListAppclientModuleResource.class);
+		resource.setParentAndTagName(getEntity() , "appclient-module");
+		return resource;
+	}
+	@Path("lifecycle-module/")
+	public ListLifecycleModuleResource getListLifecycleModuleResource() {
+		ListLifecycleModuleResource resource = resourceContext.getResource(ListLifecycleModuleResource.class);
+		resource.setParentAndTagName(getEntity() , "lifecycle-module");
+		return resource;
+	}
+	@Path("extension-module/")
+	public ListExtensionModuleResource getListExtensionModuleResource() {
+		ListExtensionModuleResource resource = resourceContext.getResource(ListExtensionModuleResource.class);
+		resource.setParentAndTagName(getEntity() , "extension-module");
 		return resource;
 	}
 	@Path("web-module/")
