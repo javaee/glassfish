@@ -139,7 +139,7 @@ public final class CreateHTTPHealthCheckerCommand implements AdminCommand {
 
             for (LbConfig lc:match){
                 createHealthCheckerInternal(url,interval,timeout,
-                    lc, config, target);
+                    lc, lc.getName(), target);
             }
         }
    
@@ -175,7 +175,7 @@ public final class CreateHTTPHealthCheckerCommand implements AdminCommand {
     {
         // invalid lb config name
         if (lbConfigName == null) {
-            String msg = localStrings.getLocalString("InvalidLbConfigName", "No such LB configuration");
+            String msg = localStrings.getLocalString("InvalidLbConfigName", "Invalid LB configuration.");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             return;

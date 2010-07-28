@@ -155,6 +155,14 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
             return;
         }
 
+        if (config==null && lbname==null) {
+            String msg = localStrings.getLocalString("SpecifyConfigOrLBName",
+                    "Please specify either LB name or LB config name.");
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
+        }
+
         if (config != null) {
             if (lbconfigs.getLbConfig(config) == null) {
                 String msg = localStrings.getLocalString("LbConfigDoesNotExist",
@@ -208,7 +216,15 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
         }
 
         // create lb ref
-        createLBRef(target, config);
+        try {
+            createLBRef(target, config);
+        } catch (CommandException ce) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(ce.getMessage());
+            report.setFailureCause(ce);
+            return;
+        }
+        
         if(healthcheckerurl != null ){
             try {
                 final CreateHTTPHealthCheckerCommand command =
@@ -229,7 +245,7 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
 //                    return;
             }
         }
-        if(Boolean.getBoolean(lbenableallinstances)) {
+        if(Boolean.parseBoolean(lbenableallinstances)) {
             try {
                 final EnableHTTPLBServerCommand command = (EnableHTTPLBServerCommand)runner
                         .getCommand("enable-http-lb-server", report, context.getLogger());
@@ -245,10 +261,10 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
             }
 
         }
-        if(Boolean.getBoolean(lbenableallapplications)) {
+        if(Boolean.parseBoolean(lbenableallapplications)) {
             List<ApplicationRef> appRefs = domain.getApplicationRefsInTarget(target);
 
-            if ((appRefs.size() > 0) && Boolean.getBoolean(lbenableallapplications)) {
+            if ((appRefs.size() > 0) && Boolean.parseBoolean(lbenableallapplications)) {
                 for(ApplicationRef ref:appRefs) {
                     //enable only user applications
                     if(isUserApp(ref.getRef())) {
@@ -259,37 +275,39 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
         }
     }
 
-    public void createLBRef(String target, String configName) {
+    public void createLBRef(String target, String configName) throws CommandException {
         logger.fine("[LB-ADMIN] createLBRef called for target " + target);
 
-            // target is a cluster
-            if (tgt.isCluster(target)) {
-                addClusterToLbConfig(configName, target);
-                logger.info(localStrings.getLocalString("http_lb_admin.AddClusterToConfig",
-                        "Added cluster {0} to load balancer {1}", target, configName));
+        // target is a cluster
+        if (tgt.isCluster(target)) {
+            addClusterToLbConfig(configName, target);
+            logger.info(localStrings.getLocalString("http_lb_admin.AddClusterToConfig",
+                    "Added cluster {0} to load balancer {1}", target, configName));
 
 
-            // target is a server
-            } else if (domain.isServer(target)) {
-                addServerToLBConfig(configName, target);
-                logger.info(localStrings.getLocalString("http_lb_admin.AddServerToConfig",
-                        "Added server {0} to load balancer {1}", target, configName));
+        // target is a server
+        } else if (domain.isServer(target)) {
+            addServerToLBConfig(configName, target);
+            logger.info(localStrings.getLocalString("http_lb_admin.AddServerToConfig",
+                    "Added server {0} to load balancer {1}", target, configName));
 
-            } else {
-                String msg = localStrings.getLocalString("InvalidTarget", "Invalid target", target);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage(msg);
-                return;
-            }
+        } else {
+            String msg = localStrings.getLocalString("InvalidTarget", "Invalid target", target);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
+        }
     }
 
-    private void addServerToLBConfig(final String configName, final String serverName) {
+    private void addServerToLBConfig(final String configName, final String serverName)
+                throws CommandException {
         LbConfig lbConfig = lbconfigs.getLbConfig(configName);
 
         ServerRef sRef = lbConfig.getRefByRef(ServerRef.class, serverName);
         if (sRef != null) {
-            // already exists
-            return;
+            String msg = localStrings.getLocalString("LBServerRefExists",
+                   "LB config already contains a server-ref for target {0}", target);
+            throw new CommandException(msg);
         }
 
         Server server = domain.getServerNamed(serverName);
@@ -305,13 +323,13 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
 
         try {
             ConfigSupport.apply(new SingleConfigCode<LbConfig>() {
-                    @Override
-                    public Object run(LbConfig param) throws PropertyVetoException, TransactionFailure {
-                        ServerRef ref = param.createChild(ServerRef.class);
-                        ref.setRef(serverName);
-                        param.getClusterRefOrServerRef().add(ref);
-                        return Boolean.TRUE;
-                    }
+                @Override
+                public Object run(LbConfig param) throws PropertyVetoException, TransactionFailure {
+                    ServerRef ref = param.createChild(ServerRef.class);
+                    ref.setRef(serverName);
+                    param.getClusterRefOrServerRef().add(ref);
+                    return Boolean.TRUE;
+                }
             }, lbConfig);
         } catch (TransactionFailure ex) {
             String msg = localStrings.getLocalString("FailedToAddServerRef",
@@ -324,30 +342,32 @@ public final class CreateHTTPLBRefCommand extends LBCommandsBase
 
     }
 
-    private void addClusterToLbConfig(final String configName, final String clusterName) {
+    private void addClusterToLbConfig(final String configName, final String clusterName)
+                throws CommandException {
         LbConfig lbConfig = lbconfigs.getLbConfig(configName);
 
         ClusterRef cRef = lbConfig.getRefByRef(ClusterRef.class, clusterName);
         if (cRef != null) {
-            // already exists
-            return;
+            String msg = localStrings.getLocalString("LBClusterRefExists",
+                   "LB config already contains a cluster-ref for target {0}", target);
+            throw new CommandException(msg);
         }
 
         try {
             ConfigSupport.apply(new SingleConfigCode<LbConfig>() {
-                    @Override
-                    public Object run(LbConfig param) throws PropertyVetoException, TransactionFailure {
-                        ClusterRef ref = param.createChild(ClusterRef.class);
-                        ref.setRef(clusterName);
-                        if(lbpolicy != null) {
-                            ref.setLbPolicy(lbpolicy);
-                        }
-                        if(lbpolicymodule != null) {
-                            ref.setLbPolicyModule(lbpolicymodule);
-                        }
-                        param.getClusterRefOrServerRef().add(ref);
-                        return Boolean.TRUE;
+                @Override
+                public Object run(LbConfig param) throws PropertyVetoException, TransactionFailure {
+                    ClusterRef ref = param.createChild(ClusterRef.class);
+                    ref.setRef(clusterName);
+                    if(lbpolicy != null) {
+                        ref.setLbPolicy(lbpolicy);
                     }
+                    if(lbpolicymodule != null) {
+                        ref.setLbPolicyModule(lbpolicymodule);
+                    }
+                    param.getClusterRefOrServerRef().add(ref);
+                    return Boolean.TRUE;
+                }
             }, lbConfig);
         } catch (TransactionFailure ex) {
             String msg = localStrings.getLocalString("FailedToAddClusterRef",

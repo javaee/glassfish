@@ -137,8 +137,9 @@ public final class DeleteHTTPHealthCheckerCommand implements AdminCommand {
 
         // invalid lb config name
         if (lbConfig == null) {
+            String msg = localStrings.getLocalString("InvalidLbConfigName", "Invalid LB configuration.");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage("InvalidLbConfigName");
+            report.setMessage(msg);
             return;
         }
 

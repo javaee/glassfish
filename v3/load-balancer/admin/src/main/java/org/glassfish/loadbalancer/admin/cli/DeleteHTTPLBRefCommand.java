@@ -168,47 +168,49 @@ public final class DeleteHTTPLBRefCommand extends LBCommandsBase
             report.setMessage(msg);
             return;
         }
-        if (Boolean.getBoolean(sRef.getLbEnabled())) {
-            String msg = localStrings.getLocalString("ServerNeedsToBeDisabled",
-                    "Server [{0}] needs to be disabled before it can be removed from the load balancer.",
-                    serverName);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
-            return;
-        }
-        // check if its applications are LB disabled.
-        Server s = domain.getServerNamed(serverName);
-
-        if (s == null ) {
-            String msg = localStrings.getLocalString("ServerNotDefined",
-                        "Server {0} cannot be used as target", target);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
-            return;
-        }
-        List<ApplicationRef> appRefs = domain.getApplicationRefsInTarget(target);
-
-        if (appRefs == null ) {
-            String msg = localStrings.getLocalString("AppRefsNotDefined",
-                    "Application refs does not exist in server {0}", target);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
-            return;
-        }
-        boolean appsLbEnabled = false;
-        for(ApplicationRef aRef:appRefs) {
-            if(Boolean.getBoolean(aRef.getLbEnabled())) {
-                appsLbEnabled = true;
-                break;
+        if (!Boolean.parseBoolean(force)) {
+            if (Boolean.parseBoolean(sRef.getLbEnabled())) {
+                String msg = localStrings.getLocalString("ServerNeedsToBeDisabled",
+                        "Server [{0}] needs to be disabled before it can be removed from the load balancer.",
+                        serverName);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+                return;
             }
-        }
+            // check if its applications are LB disabled.
+            Server s = domain.getServerNamed(serverName);
 
-        if (appsLbEnabled) {
-            String msg = localStrings.getLocalString("AppsNotDisabled",
-                    "All referenced applications must be disabled in LB");
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage("");
-            return;
+            if (s == null ) {
+                String msg = localStrings.getLocalString("ServerNotDefined",
+                            "Server {0} cannot be used as target", target);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+                return;
+            }
+            List<ApplicationRef> appRefs = domain.getApplicationRefsInTarget(target);
+
+            if (appRefs == null  || appRefs.size() == 0 ) {
+                String msg = localStrings.getLocalString("AppRefsNotDefined",
+                        "Application refs does not exist in server {0}", target);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+                return;
+            }
+            boolean appLbEnabled = false;
+            for(ApplicationRef aRef:appRefs) {
+                if(Boolean.parseBoolean(aRef.getLbEnabled())) {
+                    appLbEnabled = true;
+                    break;
+                }
+            }
+
+            if (appLbEnabled) {
+                String msg = localStrings.getLocalString("AppsNotDisabled",
+                        "All referenced applications must be disabled in LB");
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+                return;
+            }
         }
 
         removeServerRef(lbConfig, sRef);
@@ -222,31 +224,33 @@ public final class DeleteHTTPLBRefCommand extends LBCommandsBase
             // does not exist, just return from here
             return;
         }
-        Cluster c = domain.getClusterNamed(clusterName);        
-        if ( c == null ) {
-            String msg = localStrings.getLocalString("ClusterNotDefined",
-                        "Cluster {0} cannot be used as target", target);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
-            return;
-        }
-        
-        List<ServerRef> sRefs = c.getServerRef();
-        boolean refLbEnabled = false;
-        for(ServerRef ref:sRefs) {
-            if(Boolean.getBoolean(ref.getLbEnabled())) {
-                refLbEnabled = true;
+
+        if (!Boolean.parseBoolean(force)) {
+            Cluster c = domain.getClusterNamed(clusterName);
+            if ( c == null ) {
+                String msg = localStrings.getLocalString("ClusterNotDefined",
+                            "Cluster {0} cannot be used as target", target);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+                return;
+            }
+
+            List<ServerRef> sRefs = c.getServerRef();
+            boolean refLbEnabled = false;
+            for(ServerRef ref:sRefs) {
+                if(Boolean.parseBoolean(ref.getLbEnabled())) {
+                    refLbEnabled = true;
+                }
+            }
+
+            if (refLbEnabled) {
+                String msg = localStrings.getLocalString("ServerNeedsToBeDisabled",
+                        "Server [{0}] needs to be disabled before it can be removed from the load balancer.", target);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+                return;
             }
         }
-
-        if (refLbEnabled) {
-            String msg = localStrings.getLocalString("ServerNeedsToBeDisabled",
-                    "Server [{0}] needs to be disabled before it can be removed from the load balancer.", target);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
-            return;
-        }
- 
         removeClusterRef(lbConfig, cRef);
     }
 
