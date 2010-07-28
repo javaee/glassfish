@@ -114,6 +114,7 @@ public class NodeTest extends AdminBaseDevTest {
         testLocalHostNode();
         testCreateNodeSsh();
         testCreateNodeConfig();
+        testValidateNodeCommand();
         testBasicCluster();
         stopDomain();
         stat.printSummary();
@@ -265,6 +266,12 @@ public class NodeTest extends AdminBaseDevTest {
         System.out.printf("Starting cluster %s\n", CNAME);
         report("node-start-cluster1", asadmin("start-cluster", CNAME));
 
+        try {
+            // Give instances time to come up
+            Thread.sleep(5 * 1000);
+        } catch (InterruptedException e) {
+        }
+
         AsadminReturn ret = asadminWithOutput("list-instances", "--verbose");
         System.out.printf("After start-cluster list-instances returned:\n%s\n",
                 ret.out);
@@ -277,7 +284,7 @@ public class NodeTest extends AdminBaseDevTest {
 
         try {
             // Give instances time to come down
-            Thread.sleep(4 * 1000);
+            Thread.sleep(5 * 1000);
         } catch (InterruptedException e) {
         }
 
@@ -292,6 +299,60 @@ public class NodeTest extends AdminBaseDevTest {
         report("node-delete-instance1", asadmin("delete-instance", INAME1));
         report("node-delete-instance2", asadmin("delete-instance", INAME2));
         report("node-delete-cluster1", asadmin("delete-cluster", CNAME));
+    }
+
+    /*
+     * Tests create-node-config and delete-node-config
+     */
+    private void testValidateNodeCommand() {
+
+        String testNamePrefix = "node-validate-command-";
+        String nodeName = "n_manhattan";
+        String INSTALL_DIR = "/foo/bar";
+        String NODE_DIR = "/foo/bar/node/dir";
+        String NODE_HOST = "foobar.com";
+        String NODE_HOST_2 = "FooBar.com";
+
+        // Create a config node
+        report(testNamePrefix + "create", asadmin("create-node-config", nodeName));
+
+        // Validate node and add nodehost and installdir
+        report(testNamePrefix + "_validate_add_host", asadmin("_validate-node",
+                "--nodehost", NODE_HOST,
+                "--installdir", INSTALL_DIR,
+                "--nodedir", NODE_DIR,
+                nodeName));
+
+        // If hostname changes case that's OK
+        report(testNamePrefix + "_validate_ok_host", asadmin("_validate-node",
+                "--nodehost", NODE_HOST_2,
+                nodeName));
+
+        // Install dir no change
+        report(testNamePrefix + "_validate_ok_installdir", asadmin("_validate-node",
+                "--installdir", INSTALL_DIR,
+                nodeName));
+
+        report(testNamePrefix + "_validate_ok_installdir", asadmin("_validate-node",
+                "--nodedir", NODE_DIR,
+                nodeName));
+
+        // If hostname changes that's not OK
+        report(testNamePrefix + "_validate_bad_host", ! asadmin("_validate-node",
+                "--nodehost", "fffoobar.com",
+                nodeName));
+
+        // If installdir changes that's not OK
+        report(testNamePrefix + "_validate_bad_installdir", ! asadmin("_validate-node",
+                "--installdir", "/fooooooo/bar",
+                nodeName));
+
+        // If node doesn't exist that is not OK
+        report(testNamePrefix + "_validate_missing_node", ! asadmin("_validate-node",
+                "bogusnodename"));
+
+        // Delete it
+        report(testNamePrefix + "_delete", asadmin("delete-node-config", nodeName));
     }
 
     /**
