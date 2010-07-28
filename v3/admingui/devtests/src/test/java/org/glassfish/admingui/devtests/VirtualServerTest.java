@@ -51,6 +51,7 @@ public class VirtualServerTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:configurations:server-config:virtualServers:virtualServers_link", TRIGGER_VIRTUAL_SERVERS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_VIRTUAL_SERVER);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", serverName);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:hostsProp:Hosts", "localhost");
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
 
         selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
