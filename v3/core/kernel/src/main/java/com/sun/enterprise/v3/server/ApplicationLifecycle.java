@@ -1123,6 +1123,7 @@ public class ApplicationLifecycle implements Deployment {
                                 break;
                             }
                         }
+                        updateClusterAppRefWithInstanceUpdate(t, servr, appName, enabled);
                     }
                     Cluster cluster = ((Domain)param).getClusterNamed(target);
                     if (cluster != null) {
@@ -1229,6 +1230,60 @@ public class ApplicationLifecycle implements Deployment {
         return new DeploymentContextBuidlerImpl(logger, params, report);
     }
 
+    /**
+     * Updates the "enabled" setting of the cluster's app ref for the
+     * given app if a change to the "enabled" setting of the app ref on one of 
+     * the cluster's instances implies a cluster-level change.
+     * <p>
+     * If the app is enabled on any single instance in a cluster
+     * then the cluster state needs to be enabled.  If
+     * the app is disabled on all instances in the cluster
+     * then the cluster state should be disabled.  This method makes sure the
+     * cluster-level app ref enabled state is correct, given the current values
+     * of the app refs on the cluster's instances combined with the new value 
+     * for the specified instance.
+     * 
+     * @param t current config Transaction in progress
+     * @param servr the Server for which the app ref has been enabled or disabled
+     * @param appName the name of the app whose app ref has been enabled or disabled
+     * @param isNewInstanceAppRefStateEnabled whether the new instance app ref state is enabled (false if disabled)
+     */
+    private void updateClusterAppRefWithInstanceUpdate(
+            final Transaction t,
+            final Server servr,
+            final String appName,
+            final boolean isNewInstanceAppRefStateEnabled) 
+                throws TransactionFailure, PropertyVetoException {
+        final Cluster clusterContainingInstance = servr.getCluster();
+        if (clusterContainingInstance != null) {
+            /*
+             * Update the cluster state also if needed.
+             */
+            boolean isAppRefEnabledOnAnyClusterInstance = false;
+            for (Server inst : clusterContainingInstance.getInstances()) {
+                /*
+                 * The app ref for the server just changed above
+                 * still has its old state when fetched using
+                 * inst.getApplicationRef(appName).  So when we
+                 * encounter the same server in the list of
+                 * cluster instances, use the "enabled" value --
+                 * which we just used above to update the app ref
+                 * for the targeted instance -- below when
+                 * we need to consider the "enabled" value for the
+                 * just-changed instance.
+                 */
+                isAppRefEnabledOnAnyClusterInstance |= (
+                        servr.getName().equals(inst.getName())
+                            ? isNewInstanceAppRefStateEnabled
+                            : Boolean.parseBoolean(inst.getApplicationRef(appName).getEnabled()));
+            }
+            final ApplicationRef clusterAppRef =
+                    clusterContainingInstance.getApplicationRef(appName);
+            if (Boolean.parseBoolean(clusterAppRef.getEnabled()) != isAppRefEnabledOnAnyClusterInstance) {
+                t.enroll(clusterAppRef).setEnabled(String.valueOf(isAppRefEnabledOnAnyClusterInstance));
+            }
+        }
+    }
 
     // cannot put it on the builder itself since the builder is an official API.
     private ReadableArchive getArchive(DeploymentContextBuilder builder) throws IOException {
