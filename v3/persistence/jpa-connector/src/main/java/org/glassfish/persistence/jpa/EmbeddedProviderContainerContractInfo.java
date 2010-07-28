@@ -116,6 +116,26 @@ public class EmbeddedProviderContainerContractInfo extends ServerProviderContain
         params.add("connectionpoolid", CONNECTION_POOL_ID);
         params.add("jndi_name", DEFAULT_EMBEDDED_DS_NAME);
         runCommand("create-jdbc-resource", params);
+
+        // The actual publishing of the resource into JNDI tree happens in response to asynchronous event
+        // To make sure that the event actually got dispatched and the resource did get published, try to look up
+        // the resource before returning
+        final int NO_OF_RETRIES = 5;
+        final int MILIS_TO_SLEEP = 200;
+        boolean lookupSucceeded = false;
+        for (int i = 0 ; i < NO_OF_RETRIES && !lookupSucceeded; i++) {
+            try {
+                lookupDataSource(DEFAULT_EMBEDDED_DS_NAME);
+                lookupSucceeded = true;
+            } catch (NamingException e) {
+                try {
+                    //Sleep to give the asynchronous notification a chance to go through
+                    Thread.sleep(MILIS_TO_SLEEP);
+                } catch (InterruptedException e1) {
+                    //ignore
+                }
+            } 
+        }
     }
 
     /**
