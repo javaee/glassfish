@@ -75,6 +75,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.servlet.SingleThreadModel;
 import java.io.*;
 import java.net.*;
+import java.nio.channels.FileChannel;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -116,6 +117,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
     private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(WebServicesDeployer.class);
 
+    private Set<String> publishedFiles;
     
     /**
      * Constructor
@@ -394,7 +396,37 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
       
     }
 
-     public void downloadFile(URL httpUrl, File toFile) throws Exception {
+    /**
+     * Copies file from source to destination
+     *
+     * @param src
+     * @param dest
+     * @throws IOException
+     */
+    private static void copyFile(File src, File dest) throws IOException {
+        if (!dest.exists()) {
+            dest.getParentFile().mkdirs();
+            dest.createNewFile();
+        }
+
+        FileChannel srcChannel = null;
+        FileChannel destChannel = null;
+        try {
+            srcChannel = new FileInputStream(src).getChannel();
+            destChannel = new FileOutputStream(dest).getChannel();
+            destChannel.transferFrom(srcChannel, 0, srcChannel.size());
+        }
+        finally {
+            if (srcChannel != null) {
+                srcChannel.close();
+            }
+            if (destChannel != null) {
+                destChannel.close();
+            }
+        }
+    }
+
+    public void downloadFile(URL httpUrl, File toFile) throws Exception {
         InputStream is = null;
         FileOutputStream os = null;
         try {
@@ -727,11 +759,13 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     @Override
     public void clean(DeploymentContext dc) {
         super.clean(dc);
+        /*
         UndeployCommandParameters params = dc.getCommandParameters(UndeployCommandParameters.class);
         if (params != null)  {
             final Artifacts generatedArtifacts = DeploymentUtils.generatedArtifacts(dc);
             generatedArtifacts.clearArtifacts() ;
-        }
+        } */
+        deletePublishedFiles(dc);
 
     }
 
@@ -752,6 +786,9 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     /**
      * Populate the wsdl files entries to download (if any) (Only for webservices which
      * use file publishing).
+     *
+     * TODO File publishing currently works only for wsdls packaged in the application for jax-ws.
+     * Need to publish the dynamically generated wsdls as well. Lazy creation of WSEndpoint objects prohibits it now.
      */
     private void populateWsdlFilesForPublish(
             DeploymentContext dc, WebServicesDescriptor wsDesc) throws IOException {
@@ -804,6 +841,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             // META-INF/wsdl or WEB-INF/wsdl will be written to the publish
             // directory.
             ArrayList<Artifacts.FullAndPartURIs> alist = new ArrayList<Artifacts.FullAndPartURIs>();
+            /* Fix for CR 6960684: Don't rely on DownloadableArtifacts for wsdl publishing.
             while(entries.hasMoreElements()) {
                 String name = (String) entries.nextElement();
                 String wsdlName = stripWsdlDir(name,bundle) ;
@@ -821,10 +859,61 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 }
             }
             DeploymentUtils.downloadableArtifacts(dc).addArtifacts(alist);
+            */
+            while (entries.hasMoreElements()) {
+                String name = (String) entries.nextElement();
+                String wsdlName = stripWsdlDir(name, bundle);
+                File clientwsdl = new File(parent, wsdlName);
+                File fulluriFile = new File(sourceDir, name);
+                if (!fulluriFile.isDirectory()) {
+                    publishFile(fulluriFile, clientwsdl, dc);
+                }
+            }
 
         }
     }
 
+    private void publishFile(File file, File publishLocation, DeploymentContext dc) throws IOException {
+        if (publishedFiles == null) {
+            publishedFiles = new HashSet<String>();
+        }
+        publishedFiles.add(publishLocation.getAbsolutePath());
+        /*
+                String wsdeployer_key = WebServicesDeployer.class.getName();
+                Properties wsmoduleProps = dc.getModulePropsMap().get(wsdeployer_key);
+                 if(wsmoduleProps == null) {
+                    wsmoduleProps = new Properties();
+                    dc.getModulePropsMap().put(wsdeployer_key,wsmoduleProps);
+                  }
+                int fileNumber = wsmoduleProps.size();
+                wsmoduleProps.put("published.file."+(fileNumber+1),publishLocation.getAbsolutePath());
+                */
+        copyFile(file, publishLocation);
+    }
+
+    private void deletePublishedFiles(DeploymentContext dc) {
+        if (publishedFiles != null) {
+            for (Iterator<String> itr = publishedFiles.iterator(); itr.hasNext();) {
+                File f = new File(itr.next());
+                if (f.exists()) {
+                    f.delete();
+                }
+            }
+
+        }
+        /*
+                String wsdeployer_key = WebServicesDeployer.class.getName();
+                Properties wsmoduleProps = dc.getModulePropsMap().get(wsdeployer_key);
+                if(wsmoduleProps != null) {
+                    for(Map.Entry<Object,Object> e: wsmoduleProps.entrySet()) {
+                        File f = new File((String)e.getValue());
+                            if(f.exists()) {
+                                f.delete();
+                        }
+                }
+            }
+            */
+    }
     /**
      * This is to be used for filepublishing only. Incase of wsdlImports and wsdlIncludes
      * we need to copy the nested wsdls from applications folder to the generated/xml folder
