@@ -333,6 +333,7 @@ public class ClusterHandler {
     }
 
 
+/*
     @Handler(id = "gf.nodeAttrToArgs",
         input = {
             @HandlerInput(name = "in", type = Map.class)
@@ -353,6 +354,7 @@ public class ClusterHandler {
         out.put("sshkeyfile", in.get("Keyfile"));
         handlerCtx.setOutputValue("out", out);
     }
+*/
 
 
     public static String CLUSTER_RESOURCE_NAME = "org.glassfish.cluster.admingui.Strings";
@@ -362,5 +364,3 @@ public class ClusterHandler {
     public static String NOT_RUNNING = "NOT_RUNNING";
     public static String PARTIALLY_RUNNING = "PARTIALLY_RUNNING";
 }
-        
- 

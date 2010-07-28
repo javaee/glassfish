@@ -53,7 +53,7 @@
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
 
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
 
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
@@ -80,43 +80,43 @@
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
       <sun:property id="reloadProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.Reload}" helpText="$resource{i18nc.domain.ReloadHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['DynamicReloadEnabled']}" selectedValue="true" >
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['dynamicReloadEnabled']}" selectedValue="true" >
             </sun:checkbox>
         </sun:property>
         <sun:property id="reloadIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.ReloadPollInterval}" helpText="$resource{i18nc.domain.ReloadPollIntervalHelp}">
-            <sun:textField id="ReloadInterval" styleClass="integer" columns="$int{15}" text="#{pageSession.valueMap['DynamicReloadPollIntervalInSeconds']}">
+            <sun:textField id="ReloadInterval" styleClass="integer" columns="$int{15}" text="#{pageSession.valueMap['dynamicReloadPollIntervalInSeconds']}">
 
             </sun:textField>
             <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
         <sun:property id="AdminTimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AdminTimeout}" helpText="$resource{i18nc.domain.AdminTimeoutHelp}">
-            <sun:textField id="AdminTimeout" styleClass="integer" columns="$int{15}" text="#{pageSession.valueMap['AdminSessionTimeoutInMinutes']}"/>
+            <sun:textField id="AdminTimeout" styleClass="integer" columns="$int{15}" text="#{pageSession.valueMap['adminSessionTimeoutInMinutes']}"/>
             <sun:staticText id="mins" style="padding: 8pt" text="$resource{i18n.common.Minutes}"/>
         </sun:property>
     </sun:propertySheetSection>
     <sun:propertySheetSection id="propertSectionAutoDeploy" label="$resource{i18nc.domain.AutoDeploySettings}" >
         <sun:property id="AutoDeployProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AutoDeploy}" helpText="$resource{i18nc.domain.AutoDeployHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['AutodeployEnabled']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['autodeployEnabled']}" selectedValue="true" />
         </sun:property>
        <sun:property id="AutoDeployIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AutoDeployPollInterval}" helpText="$resource{i18nc.domain.AutoDeployPollIntervalHelp}">
-            <sun:textField id="AutoDeployInterval" styleClass="integer" columns="$int{15}" text="#{pageSession.valueMap['AutodeployPollingIntervalInSeconds']}" />
+            <sun:textField id="AutoDeployInterval" styleClass="integer" columns="$int{15}" text="#{pageSession.valueMap['autodeployPollingIntervalInSeconds']}" />
             <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
         <sun:property id="AutoDeployTimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AutoDeployTimeout}" helpText="$resource{i18nc.domain.AutoDeployTimeoutHelp}">
-            <sun:textField id="AutoDeployTimeout" styleClass="integer" columns="$int{15}" text="#{pageSession.valueMap['AutodeployRetryTimeout']}" />
+            <sun:textField id="AutoDeployTimeout" styleClass="integer" columns="$int{15}" text="#{pageSession.valueMap['autodeployRetryTimeout']}" />
             <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
        <sun:property id="AutoDeployDirectoryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AutoDeployDirectory}" helpText="$resource{i18nc.domain.AutoDeployDirectoryHelp}">
-            <sun:textField id="AutoDeployDirectory" columns="$int{55}" text="#{pageSession.valueMap['AutodeployDir']}" />
+            <sun:textField id="AutoDeployDirectory" columns="$int{55}" text="#{pageSession.valueMap['autodeployDir']}" />
         </sun:property>
         <sun:property id="transprop"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.deployXmlValidation}" helpText="$resource{i18nc.domain.deployXmlValidationHelp}" >
-                    <sun:dropDown id="trans" selected="#{pageSession.valueMap['DeployXmlValidation']}" labels={"$resource{i18nc.domain.Full}" "$resource{i18nc.domain.Parsing}"  "$resource{i18nc.domain.None}"}  values={"full" "parsing"  "none"} />
+                    <sun:dropDown id="trans" selected="#{pageSession.valueMap['deployXmlValidation']}" labels={"$resource{i18nc.domain.Full}" "$resource{i18nc.domain.Parsing}"  "$resource{i18nc.domain.None}"}  values={"full" "parsing"  "none"} />
                 </sun:property>
         <sun:property id="VerifierProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.Verifier}" helpText="$resource{i18nc.domain.VerifierHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['AutodeployVerifierEnabled']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['autodeployVerifierEnabled']}" selectedValue="true" />
         </sun:property>
          <sun:property id="PrecompileProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.Precompile}" helpText="$resource{i18nc.domain.PrecompileHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['AutodeployJspPrecompilationEnabled']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['autodeployJspPrecompilationEnabled']}" selectedValue="true" />
         </sun:property>
     "<br /><br />
     </sun:propertySheetSection>

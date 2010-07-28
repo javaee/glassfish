@@ -57,6 +57,7 @@ import org.glassfish.admingui.common.util.RestResponse;
 
 public class RestApiHandlers {
     public static final String FORM_ENCODING = "application/x-www-form-urlencoded";
+    // FIXME: Change this to "application/json"
     public static final String RESPONSE_TYPE = "application/xml";
     public static final String GUI_TOKEN_FOR_EMPTY_PROPERTY_VALUE = "()";
     public static final Client JERSEY_CLIENT = Client.create();
@@ -94,32 +95,49 @@ public class RestApiHandlers {
     }
 
     /**
-     * For the given REST endpoint, retrieve the values of the entity and return those as a Map.  If the entity is not
-     * found, an Exception is thrown.  This is the REST-based alternative to getProxyAttrs.
+     *	<p> For the given REST endpoint, retrieve the values of the entity and
+     *	    return those as a Map.  If the entity is not found, an Exception is
+     *	    thrown.  This is the REST-based alternative to getProxyAttrs.</p>
      */
     @Handler(id = "gf.getEntityAttrs",
             input = {
                     @HandlerInput(name = "endpoint", type = String.class, required = true),
-                    @HandlerInput(name = "currentMap", type = Map.class)},
+                    @HandlerInput(name = "currentMap", type = Map.class),
+		    @HandlerInput(name = "key", type=String.class, defaultValue="entity")},
             output = {
                     @HandlerOutput(name = "valueMap", type = Map.class)
             })
     public static void getEntityAttrs(HandlerContext handlerCtx) {
+	// Get the inputs...
+	String key = (String) handlerCtx.getInputValue("key");
+	String endpoint = (String) handlerCtx.getInputValue("endpoint");
+	Map<String, Object> currentMap = (Map<String, Object>) handlerCtx.getInputValue("currentMap");
+	Map<String, Object> valueMap = null;
+
         try {
-            String endpoint = (String) handlerCtx.getInputValue("endpoint");
-            Map currentMap = (Map) handlerCtx.getInputValue("currentMap");
-            RestResponse response = get(endpoint);
-            if (!response.isSuccess()) {
-                throw new Exception (response.getResponseBody());
+	    // Use restRequest to query the endpoint
+            Map<String, Object> result = restRequest(endpoint, (Map<String, Object>) null, "get", handlerCtx);
+	    int responseCode = (Integer) result.get("responseCode");
+            if ((responseCode < 200) || (responseCode > 299)) {
+                throw new RuntimeException((String) result.get("responseBody"));
             }
-            Map valueMap =  getEntityAttrs(response.getResponseBody());
-            if (currentMap != null){
-                valueMap.putAll(currentMap);
-            }
-            handlerCtx.setOutputValue("valueMap",  valueMap);
+
+	    // Pull off the attribute Map
+	    valueMap = (Map<String, Object>) result.get("data");
+	    if (valueMap.containsKey(key)) {
+		valueMap = (Map<String, Object>) valueMap.get(key);
+	    }
+
+	    // Current values already set?
+	    if (currentMap != null) {
+		valueMap.putAll(currentMap);
+	    }
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
+
+	// Return the Map
+	handlerCtx.setOutputValue("valueMap",  valueMap);
     }
 
     @Handler(id = "gf.checkIfEndPointExist",
@@ -176,22 +194,22 @@ public class RestApiHandlers {
             output = {
                     @HandlerOutput(name="result", type=Map.class)})
     public static void restRequest(HandlerContext handlerCtx) {
-
         Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
-        String method = ((String) handlerCtx.getInputValue("method")).toLowerCase();
+        String method = (String) handlerCtx.getInputValue("method");
         handlerCtx.setOutputValue("result",  restRequest(endpoint, attrs, method, handlerCtx));
     }
 
 
-    public static Map restRequest(String endpoint, Map attrs, String method, HandlerContext handlerCtx){
+    public static Map restRequest(String endpoint, Map<String, Object> attrs, String method, HandlerContext handlerCtx) {
         if (attrs == null) {
             attrs = new HashMap<String, Object>();
         }
         method = method.toLowerCase();
 
-        //we can move to fine level later.
-        GuiUtil.getLogger().info("restRequest: endpoint=" + endpoint + "\nattrs="+attrs + "\nmethod="+method);
+// FIXME: Move to fine level later.
+        GuiUtil.getLogger().info("restRequest: endpoint=" + endpoint + "\nattrs=" + attrs + "\nmethod=" + method);
+
 	// Execute the request...
         RestResponse response = null;
         if ("post".equals(method)) {
@@ -206,7 +224,10 @@ public class RestApiHandlers {
     }
 
 
-    private static Map parseResponse(RestResponse response, HandlerContext handlerCtx, String endpoint, Map attrs){
+    /**
+     *
+     */
+    private static Map<String, Object> parseResponse(RestResponse response, HandlerContext handlerCtx, String endpoint, Map attrs) {
 	// Parse the response
         if (response != null) {
 	    try {
@@ -216,13 +237,31 @@ public class RestApiHandlers {
                         "RestResponse.getResponse() failed.  endpoint = '"
                         + endpoint + "'; attrs = '" + attrs + "'; RestResponse: "
                         + response);
-                    //If this is called from jsf as handler, stop processing and show error.
+                    // If this is called from jsf, stop processing/show error.
                     if (handlerCtx != null){
-                        GuiUtil.handleError(handlerCtx, (String) ((Map) response.getResponse().get("messages")).get("message"));
+			Object msgs = response.getResponse().get("messages");
+			if (msgs == null) {
+			    GuiUtil.handleError(handlerCtx, "REST Request '"
+				+ endpoint + "' failed with response code '"
+				+ status + "'." );
+			} else if (msgs instanceof List) {
+			    StringBuilder builder = new StringBuilder("");
+			    for (Object obj : ((List<Object>) msgs)) {
+				if ((obj instanceof Map) && ((Map<String, Object>) obj).containsKey("message")) {
+				    obj = ((Map<String, Object>) obj).get("message");
+				}
+				builder.append(obj.toString());
+			    }
+			    GuiUtil.handleError(handlerCtx, builder.toString());
+			} else if (msgs instanceof Map) {
+			    GuiUtil.handleError(handlerCtx,
+				((Map<String, Object>) msgs).get("message").toString());
+			} else {
+			    throw new RuntimeException("Unexpected message type.");
+			}
                     }
                 }
 		return response.getResponse();
-
 	    } catch (Exception ex) {
 		GuiUtil.getLogger().severe(
 		    "RestResponse.getResponse() failed.  endpoint = '"
@@ -231,8 +270,9 @@ public class RestApiHandlers {
                 if (handlerCtx != null){
                     //If this is called from the jsf as handler, we want to stop processing and show error
                     //instead of dumping the exception on screen.
-                    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("error.checkServerLog"));
-                }else{
+                    // GuiUtil.getMessage("error.checkServerLog")
+		    GuiUtil.handleException(handlerCtx, ex);
+                } else {
                     //if this is called by other java handler, we tell the called handle the exception.
                     throw new RuntimeException(ex);
                 }
@@ -355,7 +395,7 @@ public class RestApiHandlers {
     }
 
 
-    public static Map getAttributesMap(String endpoint){
+    public static Map getAttributesMap(String endpoint) {
         RestResponse response = get(endpoint);
         if (!response.isSuccess()) {
             return new HashMap();
@@ -398,11 +438,25 @@ public class RestApiHandlers {
 	    if (value instanceof List) {
 		String key = entry.getKey();
 		for (Object obj : ((List) value)) {
-		    formData.add(key, obj);
+		    try {
+			formData.add(key, obj);
+		    } catch (ClassCastException ex) {
+			// FIXME: Change to fine()
+			GuiUtil.getLogger().info("Unable to add key (" + key + ") w/ value (" + obj + ").");
+			// Allow it to continue b/c this property most likely
+			// should have been excluded for this request
+		    }
 		}
 	    } else {
 		//formData.putSingle(entry.getKey(), (value != null) ? value.toString() : value);
-		formData.putSingle(entry.getKey(), value);
+		try {
+		    formData.putSingle(entry.getKey(), value);
+		} catch (ClassCastException ex) {
+		    // FIXME: Change to fine()
+		    GuiUtil.getLogger().info("Unable to add key (" + entry.getKey() + ") w/ value (" + value + ").");
+		    // Allow it to continue b/c this property most likely
+		    // should have been excluded for this request
+		}
 	    }
         }
         return formData;
@@ -488,6 +542,9 @@ public class RestApiHandlers {
         }
     }
 
+    /**
+     * @deprecated
+     */
     public static Map<String, String> getEntityAttrs(String entity) {
         Map<String, String> attrs = new HashMap<String, String>();
         try {
@@ -571,7 +628,7 @@ public class RestApiHandlers {
      * @throws Exception
      */
     public static List<Map> buildChildEntityList(String parent, String childType, List skipList, List includeList, String id) throws Exception {
-        
+
         String endpoint = parent.endsWith("/") ?  parent + childType : parent + "/" + childType;
         boolean hasSkip =(skipList == null) ? false : true;
         boolean hasInclude =(includeList == null) ? false : true;

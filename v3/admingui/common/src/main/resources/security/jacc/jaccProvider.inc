@@ -37,16 +37,16 @@
 <sun:propertySheet id="propertySheet">			 
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="IdStaticProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
-                <sun:staticText id="IdStatic" text="#{pageSession.valueMap['Name']}"/>
+                <sun:staticText id="IdStatic" text="#{pageSession.valueMap['name']}"/>
             </sun:property> 
             <sun:property id="IdTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" helpText="$resource{i18nc.jacc.NameHelp}">
-                <sun:textField id="IdText" text="#{pageSession.valueMap['Name']}" columns="$int{55}" styleClass="required" required="#{true}" />
+                <sun:textField id="IdText" text="#{pageSession.valueMap['name']}" columns="$int{55}" styleClass="required" required="#{true}" />
             </sun:property> 
             <sun:property id="policyConfigProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jacc.PolicyConfig}" helpText="$resource{i18nc.jacc.PolicyConfigHelp}">
-                <sun:textField id="PolicyConfig" columns="$int{75}" text="#{pageSession.valueMap['PolicyConfigurationFactoryProvider']}" styleClass="required" required="#{true}"/>
+                <sun:textField id="PolicyConfig" columns="$int{75}" text="#{pageSession.valueMap['policyConfigurationFactoryProvider']}" styleClass="required" required="#{true}"/>
             </sun:property>      
             <sun:property id="policyProviderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jacc.PolicyProvider}" helpText="$resource{i18nc.jacc.PolicyProviderHelp}">
-                <sun:textField id="PolicyProvider" columns="$int{75}" text="#{pageSession.valueMap['PolicyProvider']}" styleClass="required" required="#{true}"/>
+                <sun:textField id="PolicyProvider" columns="$int{75}" text="#{pageSession.valueMap['policyProvider']}" styleClass="required" required="#{true}"/>
             </sun:property>      
         </sun:propertySheetSection>
 </sun:propertySheet>    

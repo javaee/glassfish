@@ -50,7 +50,7 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/java-config");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
 
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstProfiler.jsf");
         setPageSessionAttribute(key="childType" value="profiler");
@@ -61,14 +61,14 @@
         gf.checkIfEndPointExist(endpoint="#{pageSession.profilerUrl}" exists="#{pageSession.edit}");
 
         if(#{edit}) {
-            gf.getEntityAttrs(endpoint="#{pageSession.profilerUrl}", valueMap="#{pageSession.valueMap}");
+            gf.getEntityAttrs(endpoint="#{pageSession.profilerUrl}.json", valueMap="#{pageSession.valueMap}");
             //REST-TODO take care of property table
             getJvmOptionsValues(endpoint="#{pageSession.profilerUrl}/jvm-options.json"  result=>$attribute{tableList});
         }
         if(!#{edit}) {
-            gf.getEntityAttrs(endpoint="#{pageSession.createProfilerUrl}", valueMap="#{pageSession.valueMap}");
+            gf.getEntityAttrs(endpoint="#{pageSession.createProfilerUrl}.json", valueMap="#{pageSession.valueMap}");
         }
-        setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
+        setPageSessionAttribute(key="convertToFalseList" value={"enabled"});
     />
     </event>
             <sun:form id="propertyForm">

@@ -46,33 +46,34 @@
         <!beforeCreate
             setSessionAttribute(key="javaConfigTab" value="pathSettings");
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
+	    // FIXME: I don't think the following 2 lines are used. -Ken
             setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
             setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=server-config");
             
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/java-config");
             setPageSessionAttribute(key="rest-api" value="true");
-            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
 
-            formatStringsforDisplay(string="#{pageSession.valueMap['ServerClasspath']}"  formattedString="#{requestScope.scp}");
-            mapPut(map="#{pageSession.valueMap}" key="ServerClasspath" value="$attribute{scp}");
-            formatStringsforDisplay(string="#{pageSession.valueMap['SystemClasspath']}"  formattedString="#{requestScope.syscp}");
-            mapPut(map="#{pageSession.valueMap}" key="SystemClasspath" value="$attribute{syscp}");
-            formatStringsforDisplay(string="#{pageSession.valueMap['ClasspathPrefix']}"  formattedString="#{requestScope.cpp}");
-            mapPut(map="#{pageSession.valueMap}" key="ClasspathPrefix" value="$attribute{cpp}");
-            formatStringsforDisplay(string="#{pageSession.valueMap['ClasspathSuffix']}"  formattedString="#{requestScope.cps}");
-            mapPut(map="#{pageSession.valueMap}" key="ClasspathSuffix" value="$attribute{cps}");
+            formatStringsforDisplay(string="#{pageSession.valueMap['serverClasspath']}"  formattedString="#{requestScope.scp}");
+            mapPut(map="#{pageSession.valueMap}" key="serverClasspath" value="$attribute{scp}");
+            formatStringsforDisplay(string="#{pageSession.valueMap['systemClasspath']}"  formattedString="#{requestScope.syscp}");
+            mapPut(map="#{pageSession.valueMap}" key="systemClasspath" value="$attribute{syscp}");
+            formatStringsforDisplay(string="#{pageSession.valueMap['classpathPrefix']}"  formattedString="#{requestScope.cpp}");
+            mapPut(map="#{pageSession.valueMap}" key="classpathPrefix" value="$attribute{cpp}");
+            formatStringsforDisplay(string="#{pageSession.valueMap['classpathSuffix']}"  formattedString="#{requestScope.cps}");
+            mapPut(map="#{pageSession.valueMap}" key="classpathSuffix" value="$attribute{cps}");
 
-            formatStringsforDisplay(string="#{pageSession.valueMap['NativeLibraryPathPrefix']}"  formattedString="#{requestScope.npp}");
-            mapPut(map="#{pageSession.valueMap}" key="NativeLibraryPathPrefix" value="$attribute{npp}");
-            formatStringsforDisplay(string="#{pageSession.valueMap['NativeLibraryPathSuffix']}"  formattedString="#{requestScope.nps}");
-            mapPut(map="#{pageSession.valueMap}" key="NativeLibraryPathSuffix" value="$attribute{nps}");
+            formatStringsforDisplay(string="#{pageSession.valueMap['nativeLibraryPathPrefix']}"  formattedString="#{requestScope.npp}");
+            mapPut(map="#{pageSession.valueMap}" key="nativeLibraryPathPrefix" value="$attribute{npp}");
+            formatStringsforDisplay(string="#{pageSession.valueMap['nativeLibraryPathSuffix']}"  formattedString="#{requestScope.nps}");
+            mapPut(map="#{pageSession.valueMap}" key="nativeLibraryPathSuffix" value="$attribute{nps}");
 
-            setPageSessionAttribute(key="convertToFalseList" value={"EnvClasspathIgnored"});
+            setPageSessionAttribute(key="convertToFalseList" value={"envClasspathIgnored"});
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstJvmPathSettings.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
             setPageSessionAttribute(key="skipAttrsList", 
-                    value={"EnvClasspathIgnored" "ServerClasspath" "SystemClasspath" "ClasspathPrefix" "ClasspathSuffix"
-                        "RmicOptions" "JavacOptions" "JavaHome" "DebugOptions" "DebugEnabled" "BytecodePreprocessors"});
+                    value={"envClasspathIgnored" "serverClasspath" "systemClasspath" "classpathPrefix" "classpathSuffix"
+                        "rmicOptions" "javacOptions" "javaHome" "debugOptions" "debugEnabled" "bytecodePreprocessors"});
         />   
     </event> 
             <sun:form id="propertyForm">

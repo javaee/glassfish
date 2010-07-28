@@ -49,15 +49,16 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/admin-service");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
         // REST - TODO
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/configuration/jmxConnectorEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
         setPageSessionAttribute(key="skipAttrsList" value={"SystemJmxConnectorName", "Name", "Type"});
 
-        setPageSessionAttribute(key="objectNameStr2" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=#{pageSession.valueMap['SystemJmxConnectorName']}")
-        setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl}/admin-service/jmx-connector/#{pageSession.valueMap['SystemJmxConnectorName']}");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
+	// FIXME: I don't think the following line is used anymore... -Ken
+        //setPageSessionAttribute(key="objectNameStr2" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=#{pageSession.valueMap['systemJmxConnectorName']}")
+        setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl}/admin-service/jmx-connector/#{pageSession.valueMap['systemJmxConnectorName']}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}.json", valueMap="#{pageSession.valueMap2}");
         setPageSessionAttribute(key="convertToFalseList2" value={"SecurityEnabled"});
 
         //set the following for including buttons.inc
@@ -82,10 +83,10 @@
 <sun:propertySheet id="propertySheet" requiredFields="#{hasRequiredFields}">
     <sun:propertySheetSection id="propertySheetSection">
             <sun:property id="JmxNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.jmxNameLabel}" >
-                <sun:staticText id="JmxName" text="#{pageSession.valueMap2['Name']}" />
+                <sun:staticText id="JmxName" text="#{pageSession.valueMap2['name']}" />
             </sun:property>
             <sun:property id="JmxProtocolProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.jmxProtocolLabel}" >
-                <sun:staticText id="JmxProtocol" text="#{pageSession.valueMap2['Protocol']}" />
+                <sun:staticText id="JmxProtocol" text="#{pageSession.valueMap2['protocol']}" />
             </sun:property>
             <sun:property id="JmxServUrlProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.jmxServUrlLabel}" >
                 <sun:staticText id="JmxServUrl" text="#{pageSession.jmxURL}" />
@@ -95,16 +96,16 @@
                 />
             </sun:property>
             <sun:property id="SecurityProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.securityLabel}" >
-                <sun:checkbox id="Security" label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap2['SecurityEnabled']}" selectedValue="true" />
+                <sun:checkbox id="Security" label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap2['securityEnabled']}" selectedValue="true" />
             </sun:property>
             <sun:property id="AddressProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.addressLabel}" helpText="$resource{i18n.edJmxConnector.addressHelp}" >
-                <sun:textField id="Address" styleClass="required" columns="$int{40}" text="#{pageSession.valueMap2['Address']}" required="#{true}" />
+                <sun:textField id="Address" styleClass="required" columns="$int{40}" text="#{pageSession.valueMap2['address']}" required="#{true}" />
             </sun:property>
             <sun:property id="PortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.portLabel}" helpText="$resource{i18n.edJmxConnector.portHelp}" >
-                <sun:textField id="Port" styleClass="required port" columns="$int{40}" text="#{pageSession.valueMap2['Port']}" required="#{true}" />
+                <sun:textField id="Port" styleClass="required port" columns="$int{40}" text="#{pageSession.valueMap2['port']}" required="#{true}" />
             </sun:property>
             <sun:property id="RealmNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.realmNameLabel}" helpText="$resource{i18n.edJmxConnector.realmNameHelp}" >
-                <sun:textField id="RealmName" styleClass="required" columns="$int{40}" text="#{pageSession.valueMap2['AuthRealmName']}" required="#{true}" />
+                <sun:textField id="RealmName" styleClass="required" columns="$int{40}" text="#{pageSession.valueMap2['authRealmName']}" required="#{true}" />
             </sun:property>
 
 
@@ -128,5 +129,3 @@
 #include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
-
-

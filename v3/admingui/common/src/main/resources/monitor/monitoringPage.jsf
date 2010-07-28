@@ -52,8 +52,8 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="convertToFalseList" value={"DtraceEnabled", "MonitoringEnabled", "MbeanEnabled"});
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="convertToFalseList" value={"dtraceEnabled", "monitoringEnabled", "mbeanEnabled"});
         // REST - TODO
         getMonitorLevels(endpoint="#{pageSession.selfUrl}" monitorCompList="#{requestScope.tableList}")
         //getValidMonitorLevels(monitorLevelList="#{pageSession.levelList}")
@@ -86,13 +86,13 @@
 <sun:propertySheet id="propertySheet">
     <sun:propertySheetSection id="propertSectionTextField">
         <sun:property id="monServiceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{common.monitoring.monService}"  helpText="$resource{common.monitoring.monServiceHelp}">
-            <sun:checkbox id="momServiceCheckbox"  label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['MonitoringEnabled']}" selectedValue="true" />
+            <sun:checkbox id="momServiceCheckbox"  label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['monitoringEnabled']}" selectedValue="true" />
         </sun:property>
         <sun:property id="monMbeansProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{common.monitoring.monMbeans}"  helpText="$resource{common.monitoring.monMbeansHelp}">
-            <sun:checkbox id="momBbeanCheckbox" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['MbeanEnabled']}" selectedValue="true" />
+            <sun:checkbox id="momBbeanCheckbox" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['mbeanEnabled']}" selectedValue="true" />
         </sun:property>
         <sun:property id="dtraceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{common.monitoring.DTrace}" helpText="$resource{common.monitoring.DTraceHelp}">
-            <sun:checkbox id="dtraceCheckbox"  label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['DtraceEnabled']}" selectedValue="true" />
+            <sun:checkbox id="dtraceCheckbox"  label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['dtraceEnabled']}" selectedValue="true" />
         </sun:property>
         "<br /><br />
     </sun:propertySheetSection>

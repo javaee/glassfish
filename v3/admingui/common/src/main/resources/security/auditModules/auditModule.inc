@@ -39,15 +39,15 @@
         
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="IdStaticProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
-                <sun:staticText id="IdStatic" text="#{pageSession.valueMap['Name']}"/>
+                <sun:staticText id="IdStatic" text="#{pageSession.valueMap['name']}"/>
             </sun:property> 
 
             <sun:property id="IdTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-                <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['Name']}" columns="$int{55}" required="#{true}" />
+                <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['name']}" columns="$int{55}" required="#{true}" />
             </sun:property> 
 
             <sun:property id="classNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.Classname}">                           
-                <sun:textField id="ClassName" styleClass="required" text="#{pageSession.valueMap['Classname']}" columns="$int{55}" required="#{true}" />
+                <sun:textField id="ClassName" styleClass="required" text="#{pageSession.valueMap['classname']}" columns="$int{55}" required="#{true}" />
             </sun:property>
 
         </sun:propertySheetSection>

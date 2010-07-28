@@ -177,14 +177,14 @@
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                         if (#{pageSession['rest-api']}) {
-                            setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['Name']}");
+                            setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['name']}");
                         }
                         setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                     }
 
                     //when creating resource, need to create the resource-ref
                     if (#{pageSession.createResourceRef}){
-                        mapPut(map="#{pageSession.valueMap2}" key="ref" value="#{pageSession.valueMap['Name']}")
+                        mapPut(map="#{pageSession.valueMap2}" key="ref" value="#{pageSession.valueMap['name']}")
                         createProxy(parentObjectNameStr="amx:pp=/domain/servers,type=server,name=server" childType="resource-ref"
                             attrs="#{pageSession.valueMap2}"
                             convertToFalse={"Enabled"} );

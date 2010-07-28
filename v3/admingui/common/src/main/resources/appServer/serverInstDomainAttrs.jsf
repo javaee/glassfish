@@ -47,7 +47,7 @@
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf?");
             setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}");
             setPageSessionAttribute(key="rest-api" value="true");
-            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
             //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );
             setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
@@ -66,13 +66,13 @@
 <sun:propertySheet id="propertySheet">
     <sun:propertySheetSection id="propertSectionTextField">
         <sun:property id="appRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AppRoot}" helpText="$resource{i18nc.domain.AppRootHelp}">
-            <sun:textField id="AppRoot" columns="$int{55}" text="#{pageSession.valueMap['ApplicationRoot']}"/>
+            <sun:textField id="AppRoot" columns="$int{55}" text="#{pageSession.valueMap['applicationRoot']}"/>
         </sun:property>
         <sun:property id="logRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.LogRoot}" helpText="$resource{i18nc.domain.LogRootHelp}">
-            <sun:textField id="LogRoot" columns="$int{55}" text="#{pageSession.valueMap['LogRoot']}"/>
+            <sun:textField id="LogRoot" columns="$int{55}" text="#{pageSession.valueMap['logRoot']}"/>
         </sun:property>
         <sun:property id="localeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.Locale}" helpText="$resource{i18nc.domain.LocaleHelp}">
-            <sun:textField id="Locale" columns="$int{55}" text="#{pageSession.valueMap['Locale']}"/>
+            <sun:textField id="Locale" columns="$int{55}" text="#{pageSession.valueMap['locale']}"/>
         </sun:property>
     "<br/>
     </sun:propertySheetSection>

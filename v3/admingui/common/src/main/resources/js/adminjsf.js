@@ -702,7 +702,6 @@ admingui.nav = {
      */
     refreshTree: function(refreshNodeId) {
         admingui.util.log("Updating tree node " + refreshNodeId);
-	var viewId = '/common/peTree.inc';
         var refreshNode = null;
         if (refreshNodeId) {
             refreshNode = admingui.nav.getTreeFrameElementById(refreshNodeId);
@@ -777,6 +776,7 @@ admingui.nav = {
                         admingui.nav.copyStyleAndClass(childNodes, oldNode);
                     }
                 } catch (err) {
+alert(err);
 // FIXME: Log error
                 }
             } else {

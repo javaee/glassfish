@@ -38,8 +38,8 @@
 gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}" exists="#{requestScope.exist}")
 if (#{requestScope.exist}){
     setPageSessionAttribute(key="edit" value="#{true}" )
-    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}" valueMap="#{pageSession.valueMap}");
-    convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['Ssl3TlsCiphers']}"
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json" valueMap="#{pageSession.valueMap}");
+    convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['ssl3TlsCiphers']}"
         CommonCiphersList="#{pageSession.selectedCommon}"
         EphemeralCiphersList="#{pageSession.selectedEphemeral}"
         OtherCiphersList="#{pageSession.selectedOther}"
@@ -49,15 +49,15 @@ if (#{requestScope.exist}){
 if (! #{requestScope.exist}){
     setPageSessionAttribute(key="edit" value="#{false}" )
     gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}")
-    convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['Ssl3TlsCiphers']}"
+    convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['ssl3TlsCiphers']}"
         CommonCiphersList="#{pageSession.selectedCommon}"
         EphemeralCiphersList="#{pageSession.selectedEphemeral}"
         OtherCiphersList="#{pageSession.selectedOther}"
         EccCiphersList="#{pageSession.selectedEcc}")
 }
-//set the following for including buttons.inc
 
-setPageSessionAttribute(key="convertToFalseList" value={"Ssl3Enabled" "TlsEnabled" "ClientAuthEnabled" })
+//set the following for including buttons.inc
+setPageSessionAttribute(key="convertToFalseList" value={"ssl3Enabled" "tlsEnabled" "clientAuthEnabled" })
 setPageSessionAttribute(key="showDefaultButton" value="#{false}" )
 setPageSessionAttribute(key="hasPropertySheet" value="#{true}" )
 setPageSessionAttribute(key="hasPropertyTable" value="#{false}" )

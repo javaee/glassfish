@@ -49,20 +49,21 @@
             setSessionAttribute(key="eeJvmSettingsTab" value="eeJvmGeneral");
             setSessionAttribute(key="javaConfigTab" value="jvmGeneral");
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
+	    // FIXME: I don't think the following 2 lines should be used anymore... -Ken
             setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
             setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=server-config");
             
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/java-config");
             setPageSessionAttribute(key="rest-api" value="true");
-            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
             
-            setPageSessionAttribute(key="convertToFalseList" value={"DebugEnabled"});
+            setPageSessionAttribute(key="convertToFalseList" value={"debugEnabled"});
             setPageSessionAttribute(key="childType" value="java-config");
             //REST-TODO take care of property table
             getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});            
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstJvmGeneral.jsf?configName=#{pageSession.configName}");
-            setPageSessionAttribute(key="skipAttrsList", value={"EnvClasspathIgnored" "ServerClasspath" "SystemClasspath" "ClasspathPrefix" "ClasspathSuffix" "NativeLibraryPathPrefix" "NativeLibraryPathSuffix"});
+            setPageSessionAttribute(key="skipAttrsList", value={"envClasspathIgnored" "serverClasspath" "systemClasspath" "classpathPrefix" "classpathSuffix" "nativeLibraryPathPrefix" "nativeLibraryPathSuffix"});
              //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );
             setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
