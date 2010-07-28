@@ -55,7 +55,7 @@
         setPageSessionAttribute(key="has2Objects" value="#{true}" );  //for editPageButtons.inc
         setPageSessionAttribute(key="childType2" value="backend-principal");
         createMap(result="#{pageSession.valueMap2}");
-        setPageSessionAttribute(key="skipAttrsList", value={"UserGroupCommaStr" , "PrincipalCommaStr"});
+        setPageSessionAttribute(key="skipAttrsList", value={"userGroupCommaStr" , "principalCommaStr"});
          //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{false}" );

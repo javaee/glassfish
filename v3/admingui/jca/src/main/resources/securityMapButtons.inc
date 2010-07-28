@@ -40,9 +40,9 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkClassname()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                convertSecurityMapPropsToStringArray(edit="true", userGroups="#{pageSession.valueMap['UserGroupCommaStr']}", principals="#{pageSession.valueMap['PrincipalCommaStr']}", usersOptions="#{usersOptionU}", principalsSA =>$attribute{principalsSA}  usersSA =>$attribute{usersSA});
-                mapPut(map="#{pageSession.valueMap}" key="UserGroup" value="#{usersSA}")
-                mapPut(map="#{pageSession.valueMap}" key="Principal" value="#{principalsSA}")
+                convertSecurityMapPropsToStringArray(edit="true", userGroups="#{pageSession.valueMap['userGroupCommaStr']}", principals="#{pageSession.valueMap['principalCommaStr']}", usersOptions="#{usersOptionU}", principalsSA =>$attribute{principalsSA}  usersSA =>$attribute{usersSA});
+                mapPut(map="#{pageSession.valueMap}" key="userGroup" value="#{usersSA}")
+                mapPut(map="#{pageSession.valueMap}" key="principal" value="#{principalsSA}")
                 if(#{pageSession.hasPropertySheet}){
                     saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
@@ -63,12 +63,12 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') &&  checkClassname() ) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                convertSecurityMapPropsToStringArray(edit="false", userGroups="#{pageSession.valueMap['UserGroupCommaStr']}", principals="#{pageSession.valueMap['PrincipalCommaStr']}", usersOptions="#{usersOptionU}",  principalsSA =>$attribute{principalsSA} usersSA =>$attribute{usersSA});
+                convertSecurityMapPropsToStringArray(edit="false", userGroups="#{pageSession.valueMap['userGroupCommaStr']}", principals="#{pageSession.valueMap['principalCommaStr']}", usersOptions="#{usersOptionU}",  principalsSA =>$attribute{principalsSA} usersSA =>$attribute{usersSA});
                 if($attribute{usersSA}){
-                   mapPut(map="#{pageSession.valueMap}" key="UserGroup" value="#{usersSA}")
+                   mapPut(map="#{pageSession.valueMap}" key="userGroup" value="#{usersSA}")
                 }
                 if($attribute{principalsSA}) {
-                    mapPut(map="#{pageSession.valueMap}" key="Principal" value="#{principalsSA}")
+                    mapPut(map="#{pageSession.valueMap}" key="principal" value="#{principalsSA}")
                 }
                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"

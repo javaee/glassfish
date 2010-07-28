@@ -54,7 +54,7 @@
     setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
     setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
     setPageSessionAttribute(key="rest-api" value="true");
-    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
     //REST - TO DO
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
     //set the following for including buttons.inc
@@ -62,7 +62,7 @@
     setPageSessionAttribute(key="showCancelButton" value="#{true}" );
     setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
     setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
-    setPageSessionAttribute(key="skipAttrsList", value={"ResourceAdapterName"});
+    setPageSessionAttribute(key="skipAttrsList", value={"resourceAdapterName"});
     />
 </event>
 <sun:form id="propertyForm">

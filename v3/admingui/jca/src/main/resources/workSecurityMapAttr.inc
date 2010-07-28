@@ -48,7 +48,7 @@
         </sun:property>
 
         <sun:property id="mapNameNew" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.securityMapName}" >
-            <sun:textField id="mapName"   styleClass="required" text="#{pageSession.valueMap['Name']}" required="#{true}"/>
+            <sun:textField id="mapName"   styleClass="required" text="#{pageSession.valueMap['name']}" required="#{true}"/>
         </sun:property>
                 <sun:property id="groupProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.workSecurityMap.Group}">
 
@@ -56,7 +56,7 @@
                     onClick="enableWorkSecurityMapFields('users'); "
                 />
             "<br /><br />
-            <sun:textField id="eisgrouptext" columns="$int{55}" text="#{pageSession.valueMap2['GroupMapping']}" >
+            <sun:textField id="eisgrouptext" columns="$int{55}" text="#{pageSession.valueMap2['groupMapping']}" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{eisuserGroupsId});
                     />
@@ -74,7 +74,7 @@
                     onClick="javascript: enableWorkSecurityMapFields('principals');"
                 />
             "<br /><br />
-            <sun:textField id="eisprincipals" columns="$int{55}" text="#{pageSession.valueMap2['PrincipalMapping']}" >
+            <sun:textField id="eisprincipals" columns="$int{55}" text="#{pageSession.valueMap2['principalMapping']}" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{eisprincipalsId});
                     />
@@ -87,7 +87,7 @@
                 />
         </sun:property>
         <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
-            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResourceAdapterName']}" labels="$pageSession{connectorList}"  >
+            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['resourceAdapterName']}" labels="$pageSession{connectorList}"  >
                 <!beforeCreate
                      //REST - TO DO
                      getApplicationBySnifferType(type="connector"  result="#{pageSession.connectorList}")
@@ -96,10 +96,10 @@
            </sun:dropDown>
         </sun:property>
      <sun:property id="descriptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
-            <sun:textField id="descAdaptor" columns="$int{55}" text="#{pageSession.valueMap['Description']}" />
+            <sun:textField id="descAdaptor" columns="$int{55}" text="#{pageSession.valueMap['description']}" />
         </sun:property>
         <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}" >
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
        </sun:property>
 
 </sun:propertySheetSection>

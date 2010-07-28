@@ -43,7 +43,7 @@
                     //REST- TO DO
                     saveWorkSecurityMap(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}" valueMap2="#{pageSession.valueMap2}" usersOptionG="#{usersOptionG}" usersOptionP="#{usersOptionP}" );
                 prepareSuccessfulMsg();
-                gf.redirect(page="#{selfPage}&mapName=#{pageSession.valueMap['Name']}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{selfPage}&mapName=#{pageSession.valueMap['name']}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"

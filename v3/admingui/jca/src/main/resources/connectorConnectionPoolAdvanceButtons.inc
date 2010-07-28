@@ -47,9 +47,9 @@
                 onlyUseAttrs="#{pageSession.onlyUseAttrs}"
             );
             prepareSuccessfulMsg();
-            if ("#{valueMap['Ping']}") {
+            if ("#{valueMap['ping']}") {
                 //REST-TO DO
-                pingJdbcConnectionPool(jndiName="#{valueMap['Name']}", wmsg="$resource{i18njca.msg.warning.poolSavedPingFailed}");
+                pingJdbcConnectionPool(jndiName="#{valueMap['name']}", wmsg="$resource{i18njca.msg.warning.poolSavedPingFailed}");
             }
             gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         />

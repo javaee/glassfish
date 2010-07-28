@@ -50,14 +50,14 @@
     setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
     setPageSessionAttribute(key="childType" value="connector-connection-pool");
-    setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+    setPageSessionAttribute(key="skipAttrsList", value={"jndiName"});
     //REST - TO DO
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
     //REST related
     setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
     setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
     setPageSessionAttribute(key="rest-api" value="true");
-    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
 
     //set the following for including buttons.inc
     />
@@ -77,8 +77,8 @@
                 //REST - TO DO
                 setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                 prepareSuccessfulMsg();
-                if ("#{valueMap['Ping']}") {
-                    pingJdbcConnectionPool(jndiName="#{valueMap['Name']}", wmsg="$resource{i18njca.msg.warning.poolSavedPingFailed}");
+                if ("#{valueMap['ping']}") {
+                    pingJdbcConnectionPool(jndiName="#{valueMap['name']}", wmsg="$resource{i18njca.msg.warning.poolSavedPingFailed}");
                 }
                 gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
@@ -100,5 +100,3 @@
 #include "/common/shared/changeButtonsJS.inc" 
 </define>
 </composition>
-
-

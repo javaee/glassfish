@@ -55,24 +55,24 @@
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
         setPageSessionAttribute(key="childType" value="security-map");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="UserGroup", value="#{pageSession.tempAttr}");
-        convertArrayToCommaString(array="#{pageSession.tempAttr}"  commaString="#{pageSession.valueMap['UserGroupCommaStr']}");
-        getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="Principal", value="#{pageSession.tempPAttr}");
-        convertArrayToCommaString(array="#{pageSession.tempPAttr}"  commaString="#{pageSession.valueMap['PrincipalCommaStr']}");
-        getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="BackendPrincipal", value="#{pageSession.tempAttrBE}");
+        getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="userGroup", value="#{pageSession.tempAttr}");
+        convertArrayToCommaString(array="#{pageSession.tempAttr}"  commaString="#{pageSession.valueMap['userGroupCommaStr']}");
+        getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="principal", value="#{pageSession.tempPAttr}");
+        convertArrayToCommaString(array="#{pageSession.tempPAttr}"  commaString="#{pageSession.valueMap['principalCommaStr']}");
+        getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="backendPrincipal", value="#{pageSession.tempAttrBE}");
         setPageSessionAttribute(key="has2Objects" value="#{true}" );  //for editPageButtons.inc
         setPageSessionAttribute(key="objectNameStr2", value="#{pageSession.tempAttrBE}");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
-       if(#{pageSession.valueMap['PrincipalCommaStr']}) {
+       if(#{pageSession.valueMap['principalCommaStr']}) {
            setAttribute(key="usersOptionP" value="principals" );
            setPageSessionAttribute(key="myOption" value="principals");
 
         }
-        if(#{pageSession.valueMap['UserGroupCommaStr']}) {
+        if(#{pageSession.valueMap['userGroupCommaStr']}) {
             setAttribute(key="usersOptionU" value="users" );
             setPageSessionAttribute(key="myOption" value="users");
         }
-        setPageSessionAttribute(key="skipAttrsList", value={"UserGroupCommaStr" , "PrincipalCommaStr"});
+        setPageSessionAttribute(key="skipAttrsList", value={"userGroupCommaStr" , "principalCommaStr"});
 
          //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );

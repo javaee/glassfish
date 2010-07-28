@@ -46,7 +46,7 @@
         </sun:property>
 
         <sun:property id="nameNew"  rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.resourceAdapterConfig.Name}">
-            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['Name']}" labels="$pageSession{connectorList}"
+            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['name']}" labels="$pageSession{connectorList}"
                     required="#{true}" submitForm="#{true}" immediate="#{true}" >
                 <!beforeCreate
                      //REST - TO DO
@@ -64,8 +64,8 @@
 
         <sun:property id="threadPoolsIdProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.resourceAdapterConfig.threadPoolId}"
                 helpText="$resource{i18njca.resourceAdapterConfig.ThreadPoolIdsHelp}" >
-            //<sun:textField id="threadpoolsid" columns="$int{55}" text="#{pageSession.valueMap['ThreadPoolIds']}" />
-            <sun:dropDown id="threadpoolsid" selected="#{pageSession.valueMap['ThreadPoolIds']}" labels="#{pageSession.threadPoolList}" >
+            //<sun:textField id="threadpoolsid" columns="$int{55}" text="#{pageSession.valueMap['threadPoolIds']}" />
+            <sun:dropDown id="threadpoolsid" selected="#{pageSession.valueMap['threadPoolIds']}" labels="#{pageSession.threadPoolList}" >
                 <!beforeCreate
                     gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/server-config/thread-pools"
                         result="#{requestScope.tmpList}");
@@ -77,5 +77,3 @@
         "<br /><br />
     </sun:propertySheetSection>
 </sun:propertySheet> 
-
-

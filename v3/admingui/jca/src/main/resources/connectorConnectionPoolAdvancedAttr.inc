@@ -47,34 +47,34 @@
         </sun:property>
 
     <sun:property id="p1"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.validateAtmostOnceInSeconds}" helpText="$resource{i18njca.jcaPool.validateAtmostOnceInSecondsHelp}">
-        <sun:textField id="va" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['ValidateAtmostOncePeriodInSeconds']}" /> 
+        <sun:textField id="va" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['validateAtmostOncePeriodInSeconds']}" /> 
         <sun:staticText id="vasec" text="$resource{i18n.common.Seconds}"/>
     </sun:property>
 
     <sun:property id="p2"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.connectionLeakTimeoutInSeconds}" helpText="$resource{i18njca.jcaPool.connectionLeakTimeoutInSecondsHelp}">
-        <sun:textField id="p2" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['ConnectionLeakTimeoutInSeconds']}"/> 
+        <sun:textField id="p2" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['connectionLeakTimeoutInSeconds']}"/> 
         <sun:staticText id="vasec" text="$resource{i18n.common.Seconds}"/>
    </sun:property>   
 
     <sun:property id="p3"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.connectionLeakReclaim}" helpText="$resource{i18njca.jcaPool.connectionLeakReclaimHelp}">
-        <sun:checkbox  selected="#{pageSession.valueMap['ConnectionLeakReclaim']}" label=" " selectedValue="true"/>
+        <sun:checkbox  selected="#{pageSession.valueMap['connectionLeakReclaim']}" label=" " selectedValue="true"/>
     </sun:property> 
 
     <sun:property id="p4"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.connectionCreationRetryAttempts}" helpText="$resource{i18njca.jcaPool.connectionCreationRetryAttemptsHelp}">
-        <sun:textField id="p4" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['ConnectionCreationRetryAttempts']}"/> 
+        <sun:textField id="p4" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['connectionCreationRetryAttempts']}"/> 
    </sun:property>   
 
     <sun:property id="p5"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.connectionCreationRetryIntervalInSeconds}" helpText="$resource{i18njca.jcaPool.connectionCreationRetryIntervalInSecondsHelp}">
-        <sun:textField id="p5" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['ConnectionCreationRetryIntervalInSeconds']}"/> 
+        <sun:textField id="p5" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['connectionCreationRetryIntervalInSeconds']}"/> 
         <sun:staticText id="p51" text="$resource{i18n.common.Seconds}"/>
    </sun:property>
 
    <sun:property id="poolingProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.pooling}" helpText="$resource{i18njca.jcaPool.poolingHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Pooling']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['pooling']}" selectedValue="true" />
        </sun:property>
 
     <sun:property id="p7"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.lazyConnectionAssociation}" helpText="$resource{i18njca.jcaPool.lazyConnectionAssociationHelp}">
-        <sun:checkbox id="associate"  selected="#{pageSession.valueMap['LazyConnectionAssociation']}" label="$resource{i18n.common.Enabled}" onClick="enableDisableLazyConnection('#{associateId}');" selectedValue="true" >  
+        <sun:checkbox id="associate"  selected="#{pageSession.valueMap['lazyConnectionAssociation']}" label="$resource{i18n.common.Enabled}" onClick="enableDisableLazyConnection('#{associateId}');" selectedValue="true" >  
            <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{associateId});
             />
@@ -82,7 +82,7 @@
    </sun:property>
 
     <sun:property id="p6"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.lazyConnectionEnlistment}" helpText="$resource{i18njca.jcaPool.lazyConnectionEnlistmentHelp}">
-        <sun:checkbox id="enlist"  selected="#{pageSession.valueMap['LazyConnectionEnlistment']}" label="$resource{i18n.common.Enabled}"  selectedValue="true">  
+        <sun:checkbox id="enlist"  selected="#{pageSession.valueMap['lazyConnectionEnlistment']}" label="$resource{i18n.common.Enabled}"  selectedValue="true">  
             <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{enlistId});
             />
@@ -90,16 +90,15 @@
     </sun:property>
 
     <sun:property id="p8"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.associationWithThread}" helpText="$resource{i18njca.jcaPool.associationWithThreadHelp}">
-        <sun:checkbox  selected="#{pageSession.valueMap['AssociateWithThread']}" label="$resource{i18n.common.Enabled}" selectedValue="true"/>  
+        <sun:checkbox  selected="#{pageSession.valueMap['associateWithThread']}" label="$resource{i18n.common.Enabled}" selectedValue="true"/>  
    </sun:property>
 
     <sun:property id="p9"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.matchConnections}" helpText="$resource{i18njca.jcaPool.matchConnectionsHelp}">
-        <sun:checkbox  selected="#{pageSession.valueMap['MatchConnections']}" label="$resource{i18n.common.Enabled}" selectedValue="true"/>  
+        <sun:checkbox  selected="#{pageSession.valueMap['matchConnections']}" label="$resource{i18n.common.Enabled}" selectedValue="true"/>  
    </sun:property>
 
     <sun:property id="p10"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.maxConnectionUsageCount}" helpText="$resource{i18njca.jcaPool.maxConnectionUsageCountHelp}">
-        <sun:textField id="p5" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['MaxConnectionUsageCount']}"/> 
+        <sun:textField id="p5" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['maxConnectionUsageCount']}"/> 
    </sun:property>
 
 </sun:propertySheetSection>
-

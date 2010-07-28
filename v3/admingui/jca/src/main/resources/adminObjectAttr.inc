@@ -50,7 +50,7 @@
         </sun:property>
 
         <sun:property id="nameNew"  rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
-            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['Name']}" >
+            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['name']}" >
             <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{nameNewId});
             />
@@ -59,7 +59,7 @@
 
 
         <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
-            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResAdapter']}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" required="#{true}" submitForm="#{true}" immediate="#{true}">
+            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['resAdapter']}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" required="#{true}" submitForm="#{true}" immediate="#{true}">
                 <!beforeCreate
                      getApplicationBySnifferType(type="connector"  result="#{pageSession.connectorList}")
                      listAdd(list="#{pageSession.connectorList}" value="jmsra")
@@ -89,7 +89,7 @@
         </sun:property>
 
         <sun:property id="resTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  helpText="$resource{i18njca.adminObjectResource.resTypeHelp}">
-            <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{pageSession.valueMap['ResType']}"  labels="$attribute{resourceTypes}" submitForm="#{true}" immediate="#{true}">
+            <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{pageSession.valueMap['resType']}"  labels="$attribute{resourceTypes}" submitForm="#{true}" immediate="#{true}">
             <!afterCreate
                       getClientId(component="$this{component}" clientId=>$page{resTypePropId});
              />
@@ -114,7 +114,7 @@
         </sun:property>  
 
         <sun:property id="className"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.adminObjectResource.classname}" helpText="$resource{i18njca.adminObjectResource.classnameHelp}">
-            <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{pageSession.valueMap['ClassName']}"  labels="$attribute{classNames}" values="$attribute{classNames}" submitForm="#{true}" immediate="#{true}" >
+            <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{pageSession.valueMap['className']}"  labels="$attribute{classNames}" values="$attribute{classNames}" submitForm="#{true}" immediate="#{true}" >
                 <!command
                     setAttribute(key="click" value="$this{component}");
                     setAttribute(key="className" value="#{click.selected}")
@@ -132,11 +132,11 @@
             </sun:dropDown>
         </sun:property>
         <sun:property id="descriptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
-            <sun:textField id="descAdaptor" columns="$int{55}" text="#{pageSession.valueMap['Description']}" />      
+            <sun:textField id="descAdaptor" columns="$int{55}" text="#{pageSession.valueMap['description']}" />      
         </sun:property>
         <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}" >
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['Enabled']}" selectedValue="true" visible="#{false}" />
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['enabled']}" selectedValue="true" visible="#{false}" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
         </sun:property>
         "<br /><br />
     </sun:propertySheetSection>

@@ -54,10 +54,10 @@
     setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
     setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
     setPageSessionAttribute(key="rest-api" value="true");
-    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
 
-    setPageSessionAttribute(key="convertToFalseList" value={"Pooling" "FailAllConnections" "IsConnectionValidationRequired" "AssociateWithThread" "ConnectionLeakReclaim" "LazyConnectionAssociation" "LazyConnectionEnlistment" "MatchConnections"});
-    setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+    setPageSessionAttribute(key="convertToFalseList" value={"pooling" "failAllConnections" "isConnectionValidationRequired" "associateWithThread" "connectionLeakReclaim" "lazyConnectionAssociation" "lazyConnectionEnlistment" "matchConnections"});
+    setPageSessionAttribute(key="skipAttrsList", value={"jndiName"});
     //set the following for including buttons.inc
     setPageSessionAttribute(key="edit" value="#{true}" );
     setPageSessionAttribute(key="showDefaultButton" value="#{true}" );

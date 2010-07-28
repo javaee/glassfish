@@ -48,7 +48,7 @@
     setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
     setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/connector-service");
     setPageSessionAttribute(key="rest-api" value="true");
-    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
     setPageSessionAttribute(key="childType" value="connector-service");
     //set the following for including buttons.inc
     setPageSessionAttribute(key="edit" value="#{true}" );
@@ -69,12 +69,12 @@
     <sun:propertySheetSection id="propertSectionTextField">
 
         <sun:property id="timeout"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorService.shutdownTimeout}" helpText="$resource{i18njca.connectorService.shutdownTimeoutHelp}">
-            <sun:textField id="tiimeout" styleClass="integer" text="#{pageSession.valueMap['ShutdownTimeoutInSeconds']}" columns="$int{20}" />
+            <sun:textField id="tiimeout" styleClass="integer" text="#{pageSession.valueMap['shutdownTimeoutInSeconds']}" columns="$int{20}" />
             <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
         <sun:property id="ClassLoadingPolicy"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorService.classLoadingPolicy}" helpText="$resource{i18njca.connectorService.classLoadingPolicyHelp}">
-            <sun:dropDown id="ClassLoadingPolicy"  selected="#{pageSession.valueMap['ClassLoadingPolicy']}" labels={"derived", "global"} />
+            <sun:dropDown id="ClassLoadingPolicy"  selected="#{pageSession.valueMap['classLoadingPolicy']}" labels={"derived", "global"} />
         </sun:property>
 
     </sun:propertySheetSection>
@@ -85,5 +85,3 @@
             "<br/>
 </define>
 </composition>
-
-
