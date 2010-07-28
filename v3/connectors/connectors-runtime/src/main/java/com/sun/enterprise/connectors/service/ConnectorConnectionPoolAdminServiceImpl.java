@@ -601,13 +601,13 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * @return an unPooled connection
      * @throws ResourceException for various error conditions
      */
-    private Object getUnpooledConnection(String poolName, ResourcePrincipal principal, boolean returnConnectionHandle)
+    public Object getUnpooledConnection(String poolName, ResourcePrincipal principal, boolean returnConnectionHandle)
             throws ResourceException {
         ManagedConnectionFactory mcf = null;
         ResourcePool poolToDeploy = null;
         boolean needToUndeployPool = false;
         ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
-        
+
         try {
             //START CR 6597868
             if (!isPoolReferredByDatabaseResource(poolName)) {

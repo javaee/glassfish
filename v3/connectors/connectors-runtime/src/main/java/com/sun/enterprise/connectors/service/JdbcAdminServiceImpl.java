@@ -107,9 +107,8 @@ public class JdbcAdminServiceImpl extends ConnectorService {
         ManagedConnection mc = null;
         java.sql.Connection con = null;
         try {
+            mc = (ManagedConnection) ccPoolAdmService.getUnpooledConnection(poolName, null, false);
             mcf = ccPoolAdmService.obtainManagedConnectionFactory(poolName);
-            defaultSubject = ccPoolAdmService.getDefaultSubject(poolName, mcf, null);
-            mc = ccPoolAdmService.getManagedConnection(mcf, defaultSubject, null);
 
             if (mc != null) {
                 con = (java.sql.Connection) mc.getConnection(defaultSubject, null);
