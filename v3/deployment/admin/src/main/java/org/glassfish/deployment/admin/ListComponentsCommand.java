@@ -102,6 +102,8 @@ public class ListComponentsCommand  implements AdminCommand {
                             message += getVerboseStatus(app);
                         }
                         childPart.setMessage(message);
+                        part.addProperty(app.getName(), 
+                            getAppSnifferEngines(app, false));
                         numOfApplications++;
                     }
                 }
