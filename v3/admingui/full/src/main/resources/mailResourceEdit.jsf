@@ -44,21 +44,21 @@
 <event>
     <!beforeCreate
     setSessionAttribute(key="resEditTabs" value="general");
-    getRequestValue(key="name" value="#{pageSession.Name}");
-    urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+    getRequestValue(key="name" value="#{pageSession.name}");
+    urlencode(value="#{pageSession.name}" encoding="UTF-8" result="#{pageSession.encodedName}");
     setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/full/mailResourceEdit.jsf?name=#{pageSession.encodedName}");
     setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/full/mailResources.jsf");
-    setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=mail-resource,name=#{pageSession.Name}");
+    setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=mail-resource,name=#{pageSession.name}");
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
     setPageSessionAttribute(key="childType" value="mail-resource");
     //REST related
     setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
     setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
     setPageSessionAttribute(key="rest-api" value="true");
-    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");    
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");    
 
-    setPageSessionAttribute(key="convertToFalseList" value={"Enabled", "Debug"});
-    setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+    setPageSessionAttribute(key="convertToFalseList" value={"enabled", "debug"});
+    setPageSessionAttribute(key="skipAttrsList", value={"jndiName"});
     //REST - TO DO
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
     
@@ -67,7 +67,7 @@
     //REST related
     setPageSessionAttribute(key="parentUrl2", value="#{sessionScope.REST_URL}/servers/server/server");
     setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl2}/#{pageSession.childType2}/#{pageSession.encodedName}");
-    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}.json", valueMap="#{pageSession.valueMap2}");
     //set the following for including buttons.inc
     setPageSessionAttribute(key="edit" value="#{true}" );
     setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
@@ -75,7 +75,7 @@
     setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
     setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
 
-    setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{pageSession.Name}");
+    setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{pageSession.name}");
     setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
     setPageSessionAttribute(key="has2Objects" value="#{true}" );
     />

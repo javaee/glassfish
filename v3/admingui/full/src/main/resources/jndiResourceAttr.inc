@@ -45,7 +45,7 @@
         </sun:property>   
 
         <sun:property id="jndiTextProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}" helpText="$resource{i18n.common.jndiNameHelp}" >
-            <sun:textField id="jnditext" styleClass="required"  text="#{pageSession.valueMap['Name']}" required="#{true}">
+            <sun:textField id="jnditext" styleClass="required"  text="#{pageSession.valueMap['name']}" required="#{true}">
                 <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{jndiNameId});
                 />
@@ -81,21 +81,21 @@
 
 
          <sun:property id="factoryClassProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njmail.jndiResource.factoryClass}" helpText="$resource{i18njmail.jndiResource.factoryClassHelp}">
-            <sun:textField id="factoryClass" styleClass="required"  columns="$int{70}" text="#{pageSession.valueMap['FactoryClass']}" required="#{true}" >
+            <sun:textField id="factoryClass" styleClass="required"  columns="$int{70}" text="#{pageSession.valueMap['factoryClass']}" required="#{true}" >
                 <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{factoryClassTextId});
                     />
              </sun:textField>
         </sun:property>
         <sun:property id="jndiLookupProp"  rendered="#{showJndiLookup}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njmail.jndiResource.jndiLookup}" helpText="$resource{i18njmail.jndiResource.jndiLookupHelp}" >
-            <sun:textField id="jndiLookup" styleClass="required" columns="$int{70}" text="#{pageSession.valueMap['JndiLookupName']}" required="#{true}" >
+            <sun:textField id="jndiLookup" styleClass="required" columns="$int{70}" text="#{pageSession.valueMap['jndiLookupName']}" required="#{true}" >
                 <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{jndiLookupId});
                     />
              </sun:textField>
         </sun:property>
         <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}" >helpText="$resource{i18n.full.descHelp}">
-            <sun:textField id="desc" columns="$int{70}" text="#{pageSession.valueMap['Description']}" >
+            <sun:textField id="desc" columns="$int{70}" text="#{pageSession.valueMap['description']}" >
             <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{descId});
             />
@@ -103,8 +103,8 @@
         </sun:property>
 
         <sun:property id="statusProp" rendered="#{useCheckBox}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" visible="#{false}" />
-            <sun:checkbox id="enabled" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['Enabled']}" selectedValue="true" >
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" visible="#{false}" />
+            <sun:checkbox id="enabled" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['enabled']}" selectedValue="true" >
             <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{statusId});
             />

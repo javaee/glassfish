@@ -40,8 +40,8 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['ResType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
-                mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")
+                updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['resType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
+                mapPut(map="#{pageSession.valueMap}" key="resType" value="#{requestScope.resType}")
 
                 if(#{pageSession.hasPropertySheet}){
                     gf.updateEntity(endpoint="#{pageSession.selfUrl}"  attrs="#{pageSession.valueMap}"
@@ -68,8 +68,8 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                    updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['ResType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
-                    mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")
+                    updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['resType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
+                    mapPut(map="#{pageSession.valueMap}" key="resType" value="#{requestScope.resType}")
                     //mapPut(map="#{pageSession.valueMap}" key="Target" value="domain")
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
@@ -100,9 +100,9 @@
                             setAttribute(key="endp" value="#{sessionScope.REST_URL}/clusters/cluster/#{requestScope.targetName}/resource-ref");
                         }
                         createMap(result="#{requestScope.refsMap}")
-                        mapPut(map="#{requestScope.refsMap}" key="id" value="#{pageSession.valueMap['Name']}")
-                        mapPut(map="#{requestScope.refsMap}" key="Enabled" value="#{pageSession.valueMap2['Enabled']}")
-                        gf.createEntity(endpoint="#{requestScope.endp}" attrs="#{requestScope.refsMap}" convertToFalse={"Enabled"});
+                        mapPut(map="#{requestScope.refsMap}" key="id" value="#{pageSession.valueMap['name']}")
+                        mapPut(map="#{requestScope.refsMap}" key="Enabled" value="#{pageSession.valueMap2['enabled']}")
+                        gf.createEntity(endpoint="#{requestScope.endp}" attrs="#{requestScope.refsMap}" convertToFalse={"enabled"});
                     }
 
                     -->
@@ -111,7 +111,7 @@
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                         //REST - TO DO
                         if (#{pageSession['rest-api']}) {
-                            setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['Name']}");
+                            setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['name']}");
                         }
                         setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                     }
