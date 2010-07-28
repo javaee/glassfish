@@ -53,13 +53,10 @@ import org.jvnet.tiger_types.Types;
 public class InjectInjectionResolver extends InjectionResolver<Inject> {
 
     private final Habitat habitat;
-    private final Inhabitant<?> onBehalfOf;
-
     
-    protected InjectInjectionResolver(Habitat habitat, Inhabitant<?> onBehalfOf) {
+    protected InjectInjectionResolver(Habitat habitat) {
         super(Inject.class);
         this.habitat = habitat;
-        this.onBehalfOf = onBehalfOf;
     }
   
     public boolean isOptional(AnnotatedElement element, Inject annotation) {
@@ -69,7 +66,11 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
     /**
      * Obtains the value to inject, based on the type and {@link Inject} annotation.
      */
-    public <V> V getValue(Object component, AnnotatedElement target, Class<V> type) throws ComponentException {
+    @Override
+    public <V> V getValue(Object component,
+                Inhabitant<?> onBehalfOf,
+                AnnotatedElement target,
+                Class<V> type) throws ComponentException {
         V result;
         if (type.isArray()) {
             Class<?> ct = type.getComponentType();

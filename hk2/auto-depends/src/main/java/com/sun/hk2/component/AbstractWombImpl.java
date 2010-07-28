@@ -46,7 +46,6 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
     protected final Class<T> type;
     protected final Habitat habitat; 
     private final MultiMap<String,String> metadata;
-    private final InjectionManager injectionMgr = new InjectionManager();
 
     public AbstractWombImpl(Class<T> type, Habitat habitat, MultiMap<String,String> metadata) {
         this.type = type;
@@ -79,7 +78,6 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
       if (t instanceof InhabitantRequested) {
           ((InhabitantRequested) t).setInhabitant(onBehalfOf);
       }
-      
     }
 
     public void release() {
@@ -98,11 +96,12 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
      * This method is an utility method for subclasses for performing injection.
      */
     protected void inject(Habitat habitat, T t, Inhabitant<?> onBehalfOf) {
+        InjectionManager injectionMgr = new InjectionManager();
         InjectionResolver<?>[] targets = {
-            new InjectInjectionResolver(habitat, onBehalfOf),
-            new LeadInjectionResolver(onBehalfOf),
+            new InjectInjectionResolver(habitat),
+            new LeadInjectionResolver(),
         };
-        injectionMgr.inject(t, targets);
+        injectionMgr.inject(t, onBehalfOf, targets);
 
         // postContruct call if any
         if (t instanceof PostConstruct) {

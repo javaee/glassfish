@@ -52,31 +52,36 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
+@SuppressWarnings("unchecked")
 public class InjectionManager {
-
 
    /**
      * Initializes the component by performing injection.
      *
      * @param component component instance to inject
+     * @param onBehalfOf the inhabitant to do injection on behalf of
      * @throws ComponentException
      *      if injection failed for some reason.
      */    
-    public void inject(Object component, InjectionResolver... targets) {
-        inject(component, component.getClass(), targets);
-   }
+    public void inject(Object component, Inhabitant<?> onBehalfOf, InjectionResolver... targets) {
+        inject(component, onBehalfOf, component.getClass(), targets);
+    }
+    
     /**
       * Initializes the component by performing injection.
       *
       * @param component component instance to inject
+      * @param onBehalfOf the inhabitant to do injection on behalf of
       * @param type component class
       * @throws ComponentException
       *      if injection failed for some reason.
       */
-     public void inject(Object component, Class type, InjectionResolver... targets) {
+    public void inject(Object component,
+                Inhabitant<?> onBehalfOf,
+                Class type,
+                InjectionResolver... targets) {
 
         try {
-
             assert component!=null;
 
             // TODO: faster implementation needed.
@@ -92,7 +97,7 @@ public class InjectionManager {
 
                         Class fieldType = field.getType();
                         try {
-                            Object value = target.getValue(component, field, fieldType);
+                            Object value = target.getValue(component, onBehalfOf, field, fieldType);
                             if (value != null) {
                                 field.setAccessible(true);
                                 field.set(component, value);
@@ -133,7 +138,8 @@ public class InjectionManager {
 
                         if (setter.getReturnType() != void.class) {
                             if (Collection.class.isAssignableFrom(setter.getReturnType())) {
-                                injectCollection(component, setter, target.getValue(component, method, setter.getReturnType()));
+                                injectCollection(component, setter, 
+                                    target.getValue(component, onBehalfOf, method, setter.getReturnType()));
                                 continue;
                             }
                             throw new ComponentException("Injection failed on %s : setter method is not declared with a void return type",method.toGenericString());
@@ -149,7 +155,7 @@ public class InjectionManager {
                         }
 
                         try {
-                            Object value = target.getValue(component, method, paramTypes[0]);
+                            Object value = target.getValue(component, onBehalfOf, method, paramTypes[0]);
                             if (value != null) {
                                 setter.setAccessible(true);
                                 setter.invoke(component, value);
@@ -189,7 +195,6 @@ public class InjectionManager {
     }
 
     private void injectCollection(Object component, Method method, Object value) {
-        
         if (value==null) {
             return;
         }
