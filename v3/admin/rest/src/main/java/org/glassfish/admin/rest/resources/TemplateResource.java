@@ -150,8 +150,7 @@ public class TemplateResource {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        return new GetResult(getEntity(), getDeleteCommand(),
-                getCommandResourcesPaths(), options());
+        return new GetResult(getEntity(), getDeleteCommand(), getCommandResourcesPaths(), options());
     }
 
 //    public ConfigBean getConfigBean() {

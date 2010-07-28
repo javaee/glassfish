@@ -109,7 +109,6 @@ public class CommandResourceMetaData {
             {"Domain", "uptime", "GET", "uptime", "Uptime"},
             {"Domain", "version", "GET", "version", "Version"},
             {"Domain", "__locations", "GET", "location", "Location"},
-            {"ExternalJndiResource", "delete-jndi-resource", "POST", "delete-resource", "Delete Resource", "id=$parent"},
             {"IiopListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=iiop-listener"},
             {"IiopListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=iiop-listener"},
             {"IiopService", "create-ssl", "POST", "create-ssl", "Create", "type=iiop-service"},

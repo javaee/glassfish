@@ -56,6 +56,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import org.junit.Before;
+import static org.junit.Assert.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -122,19 +123,19 @@ public class RestTestBase {
     }
 
     protected ClientResponse post(String address, Map<String, String> payload) {
-        return client.resource(getAddress(address)).post(ClientResponse.class, buildMultivaluedMap(payload));
+        return client.resource(getAddress(address)).accept(RESPONSE_TYPE).post(ClientResponse.class, buildMultivaluedMap(payload));
     }
 
     protected ClientResponse post(String address) {
-        return client.resource(getAddress(address)).post(ClientResponse.class);
+        return client.resource(getAddress(address)).accept(RESPONSE_TYPE).post(ClientResponse.class);
     }
 
     protected ClientResponse put(String address, Map<String, String> payload) {
-        return client.resource(getAddress(address)).put(ClientResponse.class, buildMultivaluedMap(payload));
+        return client.resource(getAddress(address)).accept(RESPONSE_TYPE).put(ClientResponse.class, buildMultivaluedMap(payload));
     }
 
     protected ClientResponse put(String address) {
-        return client.resource(getAddress(address)).put(ClientResponse.class);
+        return client.resource(getAddress(address)).accept(RESPONSE_TYPE).put(ClientResponse.class);
     }
 
     protected ClientResponse postWithUpload(String address, Map<String, Object> payload) {
@@ -146,7 +147,7 @@ public class RestTestBase {
                 form.field(entry.getKey(), entry.getValue(), MediaType.TEXT_PLAIN_TYPE);
             }
         }
-        return client.resource(getAddress(address)).type(MediaType.MULTIPART_FORM_DATA).post(ClientResponse.class, form);
+        return client.resource(getAddress(address)).type(MediaType.MULTIPART_FORM_DATA).accept(RESPONSE_TYPE).post(ClientResponse.class, form);
     }
 
     protected ClientResponse delete(String address) {
@@ -154,7 +155,7 @@ public class RestTestBase {
     }
 
     protected ClientResponse delete(String address, Map<String, String> payload) {
-        return client.resource(getAddress(address)).queryParams(buildMultivaluedMap(payload)).delete(ClientResponse.class);
+        return client.resource(getAddress(address)).queryParams(buildMultivaluedMap(payload)).accept(RESPONSE_TYPE).delete(ClientResponse.class);
     }
 
     /**
@@ -237,7 +238,7 @@ public class RestTestBase {
     protected void checkStatusForSuccess(ClientResponse cr) {
         int status = cr.getStatus();
         if ((status < 200) || (status > 299)) {
-            throw new RuntimeException(cr.toString());
+            fail("Expected a status between 200 and 299 (inclusive).  Found " + status);
         }
     }
 

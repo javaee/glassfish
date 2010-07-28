@@ -396,6 +396,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     //TODO - fetch command name from config bean(RestRedirect annotation).
     private static final Map<String, String> configBeanToDELETECommand = new HashMap<String, String>() {{
         put("ApplicationRef", "delete-application-ref");
+        put("ExternalJndiResource", "delete-jndi-resource");
         put("JaccProvider", "delete-jacc-provider");
         put("NetworkListener", "delete-network-listener");
         put("Property", "GENERIC-DELETE");
@@ -417,7 +418,6 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         put("ListConnectorConnectionPool", "create-connector-connection-pool");
         put("ListConnectorResource", "create-connector-resource");
         put("ListCustomResource", "create-custom-resource");
-        put("ListExternalJndiResource", "create-jndi-resource");
         put("ListExternalJndiResource", "create-jndi-resource");
         put("ListHttpListener", "create-http-listener");
         put("ListIiopListener", "create-iiop-listener");

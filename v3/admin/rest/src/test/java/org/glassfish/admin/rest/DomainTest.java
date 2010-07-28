@@ -37,6 +37,7 @@ package org.glassfish.admin.rest;
 
 import com.sun.jersey.api.client.ClientResponse;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -66,6 +67,7 @@ public class DomainTest extends RestTestBase {
         payload.put("locale", newLocale);
 
         ClientResponse response = post("/domain", payload);
+        assertTrue(isSuccess(response));
 
         // Reload the domain and make sure our new locale was saved
         Map<String, String> map = getEntityValues(this.get("/domain"));
