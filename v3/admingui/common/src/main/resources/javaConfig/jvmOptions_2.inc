@@ -46,7 +46,7 @@
                 <!command
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    saveJvmOptionValues(objectNameStr="#{pageSession.objectNameStr}" options="$attribute{newList}");
+                    saveJvmOptionValues(endpoint="#{pageSession.selfUrl}" options="$attribute{newList}");
                 prepareSuccessfulMsg();
                 gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />

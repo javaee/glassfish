@@ -50,13 +50,12 @@
             setSessionAttribute(key="eeJvmSettingsTab" value="eeJvmGeneral");
             setSessionAttribute(key="javaConfigTab" value="jvmOptions");
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
-            setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
 
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
-            setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/java-config");
+            setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/java-config/jvm-options");
             setPageSessionAttribute(key="rest-api" value="true");
             //REST-TODO take care of property table
-            getJvmOptionsValues(objectNameStr="#{pageSession.objectNameStr}"  result=>$attribute{tableList});
+            getJvmOptionsValues(endpoint="#{pageSession.parentUrl}/java-config/jvm-options.json"  result=>$attribute{tableList});
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverJvmOptions.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
              //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );

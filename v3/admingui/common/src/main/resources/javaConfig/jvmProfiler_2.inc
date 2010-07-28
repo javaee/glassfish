@@ -48,13 +48,13 @@
                         return submitAndDisable(this, '$resource{i18n.button.Processing}');
                     }" >
                 <!command
-                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                        attrs="#{pageSession.valueMap}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                        result => $attribute{objStr});
+                    gf.createEntity(endpoint="#{pageSession.createProfilerUrl}"
+                            attrs="#{pageSession.valueMap}"
+                            convertToFalse="#{pageSession.convertToFalseList}"
+                            result => $attribute{objStr});
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    saveJvmOptionValues(objectNameStr="amx:pp=/domain/configs/config[server-config]/java-config,type=profiler" options="$attribute{newList}");    
+                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options" options="$attribute{newList}");
                     //prepareSuccessfulMsg();
                     gf.redirect(page="#{selfPage}?configName=#{pageSession.configName}");
                 />
@@ -65,13 +65,13 @@
                         return submitAndDisable(this, '$resource{i18n.button.Processing}');
                     }" >
                 <!command
-                    gf.createEntity(endpoint="#{pageSession.selfUrl}" attrs="#{pageSession.valueMap}"
+                    gf.createEntity(endpoint="#{pageSession.profilerUrl}" attrs="#{pageSession.valueMap}"
                             skipAttrs="#{pageSession.skipAttrsList}"
                             convertToFalse="#{pageSession.convertToFalseList}"
                             onlyUseAttrs="#{pageSession.onlyUseAttrs}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    saveJvmOptionValues(objectNameStr="#{pageSession.profilerObjectNameStr}" options="$attribute{newList}");
+                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options" options="$attribute{newList}");
                 prepareSuccessfulMsg();
                 gf.redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
@@ -82,7 +82,7 @@
                     { disableAllButtons(); return submitAndDisable(this, '$resource{i18n.button.Processing}');}
                     else {return false;} " >
                 <!command
-                    deleteChild(objectNameStr="#{pageSession.parentObjectNameStr}" type="profiler")
+                    gf.restRequest(endpoint="#{pageSession.deleteProfilerUrl}", method="delete");
                     gf.redirect(page="#{selfPage}?configName=#{pageSession.configName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>

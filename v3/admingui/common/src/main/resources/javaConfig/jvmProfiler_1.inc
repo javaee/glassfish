@@ -46,8 +46,6 @@
     <!beforeCreate
         setSessionAttribute(key="javaConfigTab" value="profiler");
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
-        setPageSessionAttribute(key="profilerObjectNameStr", value="amx:pp=/domain/configs/config[server-config]/java-config,type=profiler");
 
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/java-config");
@@ -58,15 +56,17 @@
         setPageSessionAttribute(key="childType" value="profiler");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteProfiler}");
         setPageSessionAttribute(key="profilerUrl", value="#{pageSession.parentUrl}/java-config/profiler");
+        setPageSessionAttribute(key="createProfilerUrl", value="#{pageSession.parentUrl}/java-config/create-profiler");
+        setPageSessionAttribute(key="deleteProfilerUrl", value="#{pageSession.parentUrl}/java-config/profiler/delete-profiler");
         gf.checkIfEndPointExist(endpoint="#{pageSession.profilerUrl}" exists="#{pageSession.edit}");
 
         if(#{edit}) {
             gf.getEntityAttrs(endpoint="#{pageSession.profilerUrl}", valueMap="#{pageSession.valueMap}");
             //REST-TODO take care of property table
-            getJvmOptionsValues(objectNameStr="#{pageSession.profilerObjectNameStr}"  result=>$attribute{tableList});     
+            getJvmOptionsValues(endpoint="#{pageSession.profilerUrl}/jvm-options.json"  result=>$attribute{tableList});
         }
         if(!#{edit}) {
-            gf.getEntityAttrs(endpoint="#{pageSession.profilerUrl}", valueMap="#{pageSession.valueMap}");
+            gf.getEntityAttrs(endpoint="#{pageSession.createProfilerUrl}", valueMap="#{pageSession.valueMap}");
         }
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
     />

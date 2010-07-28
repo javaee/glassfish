@@ -65,6 +65,7 @@ import org.glassfish.admingui.common.util.GuiUtil;
 import javax.management.ObjectName;
 import javax.management.Attribute;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admingui.common.util.RestResponse;
 
 
 public class InstanceHandler {
@@ -130,43 +131,87 @@ public class InstanceHandler {
         }
     }    
 
- @Handler(id="getJvmOptionsValues",
-    input={
-        @HandlerInput(name="objectNameStr",   type=String.class, required=true)},
-    output={
-        @HandlerOutput(name="result", type=java.util.List.class)})
-
-        public static void getJvmOptionsValues(HandlerContext handlerCtx) {
+    @Handler(id="getJvmOptionsValues",
+        input={
+            @HandlerInput(name="endpoint",   type=String.class, required=true),
+            @HandlerInput(name="attrs", type=Map.class, required=false)
+        },
+        output={
+            @HandlerOutput(name="result", type=java.util.List.class)})
+    public static void getJvmOptionsValues(HandlerContext handlerCtx) {
         try{
-            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-            AMXProxy  amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
-            final String[] options = (String[])amx.attributesMap().get("JvmOptions");
-            handlerCtx.setOutputValue("result", GuiUtil.convertArrayToListOfMap(options, "Value"));
+            ArrayList<String> list = getJvmOptions(handlerCtx);
+            handlerCtx.setOutputValue("result", GuiUtil.convertArrayToListOfMap(list.toArray(), "Value"));
         }catch (Exception ex){
             ex.printStackTrace();
             handlerCtx.setOutputValue("result", new HashMap());
         }
-    }   
+    }
+    
+     public static ArrayList getJvmOptions(HandlerContext handlerCtx) {
+        ArrayList<String> list;
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        if (!endpoint.endsWith(".json"))
+            endpoint = endpoint + ".json";
+        Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
+        Map result = (HashMap) RestApiHandlers.restRequest(endpoint, attrs, "get", handlerCtx).get("data");
+        list = (ArrayList) result.get("JvmOption");
+        if (list == null || (list != null && list.get(0).contains("EnD")))
+            list = new ArrayList<String>();
+        return list;
+    }
  
-     @Handler(id="saveJvmOptionValues",
-    input={
-        @HandlerInput(name="objectNameStr",   type=String.class, required=true),
-        @HandlerInput(name="options",   type=List.class)} )
-       public static void saveJvmOptionValues(HandlerContext handlerCtx) {
-        List newList = new ArrayList();
+   @Handler(id="saveJvmOptionValues",
+        input={
+            @HandlerInput(name="endpoint",   type=String.class, required=true),
+            @HandlerInput(name="attrs", type=Map.class, required=false),
+            @HandlerInput(name="options",   type=List.class)} )
+   public static void saveJvmOptionValues(HandlerContext handlerCtx) {
         try {
-            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-            ObjectName objectName = new ObjectName(objectNameStr);
+            String endpoint = (String) handlerCtx.getInputValue("endpoint");
             List<Map<String, String>> options = (List) handlerCtx.getInputValue("options");
+            Map<String, Object> payload = new HashMap<String, Object>();
+            deleteJvmOptions(handlerCtx);
             for (Map<String, String> oneRow : options) {
                 String value = oneRow.get(PROPERTY_VALUE);
-                if (!GuiUtil.isEmpty(value)) {
-                    newList.add(value);
-                }
+                if (value.startsWith("-XX:"))
+                    value = "\"" + value + "\"";
+                payload.put("id", value);
+                addJvmOption(endpoint,payload);
             }
-            V3AMX.setAttribute(objectName, new Attribute("JvmOptions", (String[]) newList.toArray(new String[0])));
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+    public static void addJvmOption(String endpoint, Map payload) throws Exception{
+        if (endpoint.contains("/profiler")) {
+            endpoint = endpoint.substring(0, endpoint.indexOf("/profiler")) + "/jvm-options";
+            payload.put("profiler", "true");
+        }
+        RestResponse response = RestApiHandlers.post(endpoint, payload);
+        if (!response.isSuccess()) {
+            throw new Exception (response.getResponseBody());
+        }
+    }
+
+    public static void deleteJvmOptions(HandlerContext handlerCtx) throws Exception{
+        Map<String, Object> payload = new HashMap<String, Object>();
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        ArrayList list = getJvmOptions(handlerCtx);
+        for (Object s: list) {
+            String str = (String)s;
+            if (str.startsWith("-XX:"))
+                str = "\"" + str + "\"";
+            payload.put("id", str);
+            if (endpoint.contains("/profiler")) {
+                endpoint = endpoint.substring(0, endpoint.indexOf("/profiler")) + "/jvm-options";
+                payload.put("profiler", "true");
+            }
+            RestResponse response = RestApiHandlers.delete(endpoint, payload);
+            if (!response.isSuccess()) {
+                throw new Exception (response.getResponseBody());
+            }
         }
     }
     
