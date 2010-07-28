@@ -381,20 +381,20 @@ public class RunLevelServiceTest {
   @Test
   public void chainedProceedToCalls() throws Exception {
     installTestRunLevelService(false);
+
+    defRLlistener.setProgressProceedTo(1, 4, rls);
     
-    defRLlistener.setProgressProceedTo(50, 51, rls);
-    
-    rls.proceedTo(50);
-    
+    rls.proceedTo(1);
     synchronized (rls) {
       rls.wait(1000);
     }
-    assertEquals(51, defRLS.getCurrentRunLevel());
+    assertEquals(4, defRLS.getCurrentRunLevel());
     assertEquals(null, defRLS.getPlannedRunLevel());
 
-    assertInhabitantsState(51);
-    assertListenerState(true, true, true);
-    assertRecorderState();
+    assertInhabitantsState(4);
+    assertListenerState(true, false, true);
+    
+//    System.out.println(defRLlistener.calls);
   }
   
   /**
@@ -404,20 +404,27 @@ public class RunLevelServiceTest {
   public void chainedProceedToCallsAsync() throws Exception {
     installTestRunLevelService(true);
     
-    defRLlistener.setProgressProceedTo(50, 51, rls);
+    defRLlistener.setProgressProceedTo(1, 4, rls);
     
-    rls.proceedTo(50);
-    
+    rls.proceedTo(1);
     synchronized (rls) {
       rls.wait(1000);
     }
-    assertEquals(51, defRLS.getCurrentRunLevel());
+    if (1 == defRLS.getCurrentRunLevel()) {
+      synchronized (rls) {
+        rls.wait(100);
+      }
+    }
+    
+    assertEquals(4, defRLS.getCurrentRunLevel());
     assertEquals(null, defRLS.getPlannedRunLevel());
 
-    assertInhabitantsState(51);
-    assertListenerState(true, true, true);
-    assertRecorderState();
+    assertInhabitantsState(4);
+    assertListenerState(true, false, true);
+    
+//    System.out.println(defRLlistener.calls);
   }
+  
   
   @SuppressWarnings("unchecked")
   private void installTestRunLevelService(boolean async) {

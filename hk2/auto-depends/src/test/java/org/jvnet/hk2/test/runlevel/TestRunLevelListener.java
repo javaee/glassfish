@@ -2,6 +2,8 @@ package org.jvnet.hk2.test.runlevel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.Ignore;
 import org.jvnet.hk2.annotations.Service;
@@ -39,6 +41,7 @@ public class TestRunLevelListener implements RunLevelListener {
 
   @Override
   public void onProgress(RunLevelState<?> state) {
+    Logger.getAnonymousLogger().log(Level.INFO, state.toString());
     calls.add(Call.onProgress(state));
     if (null != proceedToWaitFor && 
         state.getCurrentRunLevel() == proceedToWaitFor) {
