@@ -1140,6 +1140,9 @@ public class JavaEETransactionManagerSimplified
             String result = sm.getString("transaction.monitor.rollback_invalid_id");
             throw new  IllegalStateException(result);
         } else {
+            if (_logger.isLoggable(Level.FINE))
+                _logger.log(Level.FINE,"TM: Marking txnId " + txnId + " for rollback");
+
              ((Transaction) txnTable.get(txnId)).setRollbackOnly();
          }
 
