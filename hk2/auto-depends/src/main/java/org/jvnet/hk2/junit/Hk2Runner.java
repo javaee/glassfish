@@ -66,11 +66,14 @@ public class Hk2Runner extends Runner {
           new LinkedHashMap<Description, Method>();
     
     private Object instance;
-    
+
+    private final Hk2RunnerOptions options;
+
     
     public Hk2Runner(Class<?> testClass) {
         this.testClass = testClass;
-        description = Description.createSuiteDescription(testClass);
+        this.options = testClass.getAnnotation(Hk2RunnerOptions.class);
+        this.description = Description.createSuiteDescription(testClass);
         
         for (Method m : testClass.getDeclaredMethods()) {
             if (m.getAnnotation(Test.class)!=null) {
@@ -111,7 +114,6 @@ public class Hk2Runner extends Runner {
         }
 
         
-        Hk2RunnerOptions options = testClass.getAnnotation(Hk2RunnerOptions.class);
         boolean reinitPerTest = (null != options) ? options.reinitializePerTest() : false;
         try {
             wombInit();
@@ -173,7 +175,7 @@ public class Hk2Runner extends Runner {
     }
 
     private void wombInit() {
-      singleton = new Hk2TestServices();
+      singleton = new Hk2TestServices(null == options ? null : options.habitatFactory());
       
       Habitat habitat = singleton.getHabitat();
       // so far we don't support extra meta-data on our tests.

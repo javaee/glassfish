@@ -41,6 +41,9 @@ import static com.sun.hk2.component.CompanionSeed.Registerer.createCompanion;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.FactoryWomb;
+import com.sun.hk2.component.InjectInjectionResolver;
+import com.sun.hk2.component.InjectionResolver;
+import com.sun.hk2.component.LeadInjectionResolver;
 
 import static com.sun.hk2.component.InhabitantsFile.CAGE_BUILDER_KEY;
 import com.sun.hk2.component.ScopeInstance;
@@ -136,9 +139,16 @@ public class Habitat {
           }
         }
         this.exec = exec;
+        
         // make the listeners available very early in lifecycle
         addHabitatListener(new SelfListener());
 
+        // add the set of injection resolvers
+        add(new ExistingSingletonInhabitant<InjectionResolver>(InjectionResolver.class,
+                new InjectInjectionResolver()));
+        add(new ExistingSingletonInhabitant<InjectionResolver>(InjectionResolver.class,
+                new LeadInjectionResolver()));
+        
         // make the habitat itself available
         add(new ExistingSingletonInhabitant<Habitat>(Habitat.class,this));
 

@@ -53,25 +53,30 @@ import org.jvnet.hk2.component.MultiMap;
  * 
  * @since 3.1
  */
-// TODO: consider basing LazyInhabitant on this guy
 /* public */class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
 
   /**
    * Real {@link Inhabitant} object.
    */
-  private final Inhabitant<T> delegate;
+  protected volatile Inhabitant<T> real;
 
   /**
    * Those that will receive events
    */
   private HashSet<InhabitantListener> listeners;
 
-  /* public */EventPublishingInhabitant(Inhabitant<T> delegate) {
+  
+  /* public */EventPublishingInhabitant() {
+    this.real = null;
+  }
+  
+  /* public */EventPublishingInhabitant(Inhabitant<?> delegate) {
     this(delegate, null);
   }
 
-  /* public */EventPublishingInhabitant(Inhabitant<T> delegate, InhabitantListener listener) {
-    this.delegate = delegate;
+  @SuppressWarnings("unchecked")
+  /* public */EventPublishingInhabitant(Inhabitant<?> delegate, InhabitantListener listener) {
+    this.real = (Inhabitant<T>) delegate;
     if (null != listener) {
       addInhabitantListener(listener);
     }
@@ -79,39 +84,42 @@ import org.jvnet.hk2.component.MultiMap;
   
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "-" + System.identityHashCode(this)
-        + "(" + delegate + ")";
+      return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
+          "(" + typeName() + ", active: " + real + ")";
   }
 
   @Override
   public String typeName() {
-    return delegate.typeName();
+    return (null == real) ? null : real.typeName();
   }
 
   @Override
   public MultiMap<String, String> metadata() {
-    return delegate.metadata();
+    return (null == real) ? null : real.metadata();
   }
 
   @Override
   public void release() {
-    final boolean wasActive = delegate.isInstantiated();
-    delegate.release();
-    if (wasActive && !delegate.isInstantiated()) {
+    final boolean wasActive = isInstantiated();
+    if (null != real) {
+      real.release();
+    }
+    if (wasActive && !isInstantiated()) {
       notify(InhabitantListener.EventType.INHABITANT_RELEASED);
     }
   }
 
   @Override
   public boolean isInstantiated() {
-    return delegate.isInstantiated();
+    return (null != real && real.isInstantiated());
   }
 
   @Override
   public Class<T> type() {
-    final boolean wasActive = delegate.isInstantiated();
-    Class<T> t = delegate.type();
-    if (!wasActive && delegate.isInstantiated()) {
+    if (null == real) throw new IllegalStateException();
+    final boolean wasActive = real.isInstantiated();
+    Class<T> t = real.type();
+    if (!wasActive && real.isInstantiated()) {
       notify(InhabitantListener.EventType.INHABITANT_ACTIVATED);
     }
     return t;
@@ -120,12 +128,21 @@ import org.jvnet.hk2.component.MultiMap;
   @SuppressWarnings("unchecked")
   @Override
   public T get(Inhabitant onBehalfOf) {
-    final boolean wasActive = delegate.isInstantiated();
-    T result = delegate.get(onBehalfOf);
-    if (!wasActive && delegate.isInstantiated()) {
+    if (null == real) {
+      fetch();
+    }
+    
+    final boolean wasActive = real.isInstantiated();
+    T result = real.get(onBehalfOf);
+    if (!wasActive && real.isInstantiated()) {
       notify(InhabitantListener.EventType.INHABITANT_ACTIVATED);
     }
+    
     return result;
+  }
+
+  protected void fetch() {
+    throw new IllegalStateException();  // responsibility on derived classes
   }
 
 //@Override // for EventPublishingInhabitant

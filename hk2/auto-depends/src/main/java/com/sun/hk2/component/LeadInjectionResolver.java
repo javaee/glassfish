@@ -40,6 +40,7 @@ import java.lang.reflect.AnnotatedElement;
 
 import org.jvnet.hk2.annotations.Lead;
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
 /**
@@ -48,11 +49,13 @@ import org.jvnet.hk2.component.Inhabitant;
  */
 public class LeadInjectionResolver extends InjectionResolver<Lead>{
 
-    protected LeadInjectionResolver() {
+    public LeadInjectionResolver() {
       super(Lead.class);
     }
   
-    public <V> V getValue(Object component,
+    @Override
+    public <V> V getValue(Habitat habitat,
+                Object component,
                 Inhabitant<?> onBehalfOf,
                 AnnotatedElement target,
                 Class<V> type) throws ComponentException {
