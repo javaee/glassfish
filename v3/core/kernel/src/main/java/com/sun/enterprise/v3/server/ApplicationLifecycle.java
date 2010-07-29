@@ -121,6 +121,9 @@ public class ApplicationLifecycle implements Deployment {
     Habitat habitat;
 
     @Inject
+    ArchiveFactory archiveFactory;
+
+    @Inject
     ContainerRegistry containerRegistry;
 
     @Inject
@@ -1349,7 +1352,6 @@ public class ApplicationLifecycle implements Deployment {
             }
             try {
                 Long start = System.currentTimeMillis();
-                ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
                 archiveHandler.expand(archive, archiveFactory.createArchive(expansionDir), initial);
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("Deployment expansion took " + (System.currentTimeMillis() - start));
@@ -1567,5 +1569,84 @@ public class ApplicationLifecycle implements Deployment {
             }
         }
     }
+
+    public boolean isAppEnabled(Application app) {
+        if (Boolean.valueOf(app.getEnabled())) {
+            ApplicationRef appRef = server.getApplicationRef(app.getName());
+            if (appRef != null && Boolean.valueOf(appRef.getEnabled())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void disable(String appName, String target, Application app, 
+        ApplicationInfo appInfo, ActionReport report, Logger logger, 
+        Boolean keepstate, Properties properties) throws Exception {
+        UndeployCommandParameters commandParams =
+            new UndeployCommandParameters();
+        commandParams.origin = UndeployCommandParameters.Origin.unload;
+        commandParams.name = appName;
+        commandParams.target = target;
+        if (keepstate != null) {
+            commandParams.keepstate = keepstate;
+        }
+
+        final ExtendedDeploymentContext deploymentContext =
+                getBuilder(logger, commandParams, report).source(appInfo.getSource()).build();
+        deploymentContext.getAppProps().putAll(
+            app.getDeployProperties());
+        deploymentContext.setModulePropsMap(
+            app.getModulePropertiesMap());
+
+        if (properties != null) {
+            deploymentContext.getAppProps().putAll(properties);
+        }
+
+        appInfo.stop(deploymentContext, deploymentContext.getLogger());
+        appInfo.unload(deploymentContext);
+    }
+
+    public void enable(String target, Application app, ApplicationRef appRef, 
+        ActionReport report, Logger logger) throws Exception {
+        ReadableArchive archive = null; 
+        try {
+            DeployCommandParameters commandParams = app.getDeployParameters(appRef);
+            commandParams.origin = DeployCommandParameters.Origin.load;
+            commandParams.target = target;
+            Properties contextProps = app.getDeployProperties();
+            Map<String, Properties> modulePropsMap = app.getModulePropertiesMap();
+            ApplicationConfigInfo savedAppConfig = new ApplicationConfigInfo(app);
+            URI uri = new URI(app.getLocation());
+            File file = new File(uri);
+
+            if (!file.exists()) {
+                throw new Exception(localStrings.getLocalString("fnf", "File not found", file.getAbsolutePath()));
+            }
+
+            archive = archiveFactory.openArchive(file);
+
+            final ExtendedDeploymentContext deploymentContext =
+                getBuilder(logger, commandParams, report).source(archive).build();
+
+            Properties appProps = deploymentContext.getAppProps();
+            appProps.putAll(contextProps);
+            savedAppConfig.store(appProps);
+
+            if (modulePropsMap != null) {
+                deploymentContext.setModulePropsMap(modulePropsMap);
+            }
+
+            deploy(deploymentContext);
+        } finally {
+            try {
+                if (archive != null) {
+                    archive.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+        }
+    } 
 }
 

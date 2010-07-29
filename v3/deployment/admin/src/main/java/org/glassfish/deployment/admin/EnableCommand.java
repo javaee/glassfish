@@ -45,20 +45,15 @@ import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.FailurePolicy;
-import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.StateCommandParameters;
-import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.common.util.admin.ParameterMapExtractor;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Inject;
@@ -111,9 +106,6 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
 
     @Inject
     Applications applications;
-
-    @Inject
-    ArchiveFactory archiveFactory;
 
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
@@ -175,83 +167,35 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
             }
         }
 
-        // update the domain.xml
-        try {
-            deployment.updateAppEnabledAttributeInDomainXML(name(), target, true);
-        } catch(TransactionFailure e) {
-            logger.warning("failed to set enable attribute for " + name());
-        }
 
         if (!domain.isCurrentInstanceMatchingTarget(target, name(), server.getName(), null)) {
+            // update the domain.xml
+            try {
+                deployment.updateAppEnabledAttributeInDomainXML(name(), target, true);
+            } catch(TransactionFailure e) {
+                logger.warning("failed to set enable attribute for " + name());
+            }
             return;  
         }
 
-        ReadableArchive archive;
-        File file = null;
-        DeployCommandParameters commandParams=null;
-        Properties contextProps = new Properties();
-        Map<String, Properties> modulePropsMap = null;
-        ApplicationConfigInfo savedAppConfig = null;
         try {
             Application app = applications.getApplication(name()); 
             ApplicationRef appRef = domain.getApplicationRefInServer(server.getName(), name());
-            if (app!=null && appRef != null) {
-                commandParams = app.getDeployParameters(appRef);
-                commandParams.origin = Origin.load;
-                commandParams.target = target;
-                contextProps = app.getDeployProperties();
-                modulePropsMap = app.getModulePropertiesMap();
-                savedAppConfig = new ApplicationConfigInfo(app);
+
+            deployment.enable(target, app, appRef, report, logger);
+
+            if (!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
+                // update the domain.xml
+                try {
+                    deployment.updateAppEnabledAttributeInDomainXML(name(), target, true);
+                } catch(TransactionFailure e) {
+                    logger.warning("failed to set enable attribute for " + name());
+                }
             }
-            if (commandParams==null) {
-                report.setMessage(localStrings.getLocalString("bug",
-                    "invalid domain.xml entries, please file a bug"));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;                
-            }
-
-            URI uri = new URI(app.getLocation());
-            file = new File(uri);
-
-            if (!file.exists()) {
-                report.setMessage(localStrings.getLocalString("fnf",
-                    "File not found", file.getAbsolutePath()));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
-
-            archive = archiveFactory.openArchive(file);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error opening deployable artifact : " + file.getAbsolutePath(), e);
-            report.setMessage(localStrings.getLocalString("unknownarchiveformat", "Archive format not recognized"));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
-
-        try {
-            final ExtendedDeploymentContext deploymentContext = 
-                    deployment.getBuilder(logger, commandParams, report).source(archive).build();
-
-            Properties appProps = deploymentContext.getAppProps();
-            appProps.putAll(contextProps);
-            savedAppConfig.store(appProps);
-
-            if (modulePropsMap != null) {
-                deploymentContext.setModulePropsMap(modulePropsMap);
-            }
-
-            deployment.deploy(deploymentContext);
         } catch(Exception e) {
             logger.log(Level.SEVERE, "Error during enabling: ", e);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(e.getMessage());
-        } finally {
-            try {
-                archive.close();
-            } catch(IOException e) {
-                logger.log(Level.INFO, "Error while closing deployable artifact : " + file.getAbsolutePath(), e);
-            }
-        }
+        } 
     }        
 }

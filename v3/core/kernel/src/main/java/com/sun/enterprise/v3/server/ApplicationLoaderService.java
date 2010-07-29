@@ -173,7 +173,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
             // load the referenced enabled applications on this instance 
             // and always (partially) load on DAS so the application
             // information is available on DAS
-            if (isAppEnabled(standaloneAdapter) || server.isDas()) {
+            if (deployment.isAppEnabled(standaloneAdapter) || server.isDas()) {
                 ApplicationRef appRef = server.getApplicationRef(standaloneAdapter.getName());
                 processApplication(standaloneAdapter, appRef, logger);
             }
@@ -188,7 +188,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
             // load the referenced enabled applications on this instance 
             // and always (partially) load on DAS so the application
             // information is available on DAS
-            if (isAppEnabled(app) || server.isDas()) {
+            if (deployment.isAppEnabled(app) || server.isDas()) {
                 ApplicationRef appRef = server.getApplicationRef(app.getName());
                 processApplication(app, appRef, logger);
             }
@@ -336,11 +336,6 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                         app.getDeployParameters(appRef);
                     deploymentParams.target = server.getName();
                     deploymentParams.origin = DeployCommandParameters.Origin.load;
-                    // partial load on DAS case
-                    if (appRef == null) {
-                        deploymentParams.enabled = false; 
-                    }
-
                     archive = archiveFactory.get().openArchive(sourceFile, deploymentParams);
 
                     ActionReport report = new HTMLActionReporter();
@@ -451,23 +446,5 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
             }
             appRegistry.remove(appInfo.getName());
         }
-    }
-
-    private boolean isAppEnabled(Application app) {
-        if (Boolean.valueOf(app.getEnabled())) {
-            ApplicationRef appRef = server.getApplicationRef(app.getName());
-            if (appRef != null && Boolean.valueOf(appRef.getEnabled())) {
-                Cluster cluster = server.getCluster();
-                if (cluster != null) {
-                    ApplicationRef appRef2 = cluster.getApplicationRef(app.getName());
-                    if (appRef2 != null && Boolean.valueOf(appRef2.getEnabled())) {
-                        return true;
-                    }
-                } else {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

@@ -52,11 +52,13 @@ import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.Transaction;
 import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
 
 import java.io.IOException;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Collection;
 import java.util.logging.Logger;
 
@@ -217,4 +219,14 @@ public interface Deployment {
         boolean isRedeploy);
 
     public void validateUndeploymentTarget(String target, String name);
+
+    public boolean isAppEnabled(Application app);
+
+    public void disable(String appName, String target, Application app,
+        ApplicationInfo appInfo, ActionReport report, Logger logger,
+        Boolean keepstate, Properties properties)
+        throws Exception;
+
+    public void enable(String target, Application app, ApplicationRef appRef,
+        ActionReport report, Logger logger) throws Exception;
 }

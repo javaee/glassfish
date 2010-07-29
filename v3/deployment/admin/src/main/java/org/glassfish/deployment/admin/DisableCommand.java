@@ -179,11 +179,6 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
             }
         }
 
-        try {
-            deployment.updateAppEnabledAttributeInDomainXML(appName, target, false);
-        } catch(TransactionFailure e) {
-            logger.warning("failed to set enable attribute for " + appName);
-        }
 
         if (env.isDas()) {
             if (DeploymentUtils.isDomainTarget(target)) {
@@ -202,38 +197,29 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
         }
 
         if (!domain.isCurrentInstanceMatchingTarget(target, appName, server.getName(), null)) {
+            try {
+                deployment.updateAppEnabledAttributeInDomainXML(appName, target, false);
+            } catch(TransactionFailure e) {
+                logger.warning("failed to set enable attribute for " + appName);
+            }
             return;
         }
 
         ApplicationInfo appInfo = deployment.get(appName);
 
         try {
-            UndeployCommandParameters commandParams = 
-                new UndeployCommandParameters();
-            commandParams.origin = this.origin;
-            commandParams.name = appName;
-            commandParams.target = target;
-            if (keepstate != null) {
-                commandParams.keepstate = keepstate;
-            } 
-            
-            final ExtendedDeploymentContext deploymentContext = 
-                    deployment.getBuilder(logger, commandParams, report).source(appInfo.getSource()).build();
-            Application application = applications.getApplication(appName);
-            if (application != null) {
-                deploymentContext.getAppProps().putAll(
-                    application.getDeployProperties());
-                deploymentContext.setModulePropsMap(
-                    application.getModulePropertiesMap());
+            Application app = applications.getApplication(appName);
+
+            deployment.disable(appName, target, app, appInfo, report, logger,
+                keepstate, properties);
+
+            if (!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
+                try {
+                    deployment.updateAppEnabledAttributeInDomainXML(appName, target, false);
+                } catch(TransactionFailure e) {
+                    logger.warning("failed to set enable attribute for " + appName);
+                }
             }
-
-            if (properties!=null) {
-                deploymentContext.getAppProps().putAll(properties);
-            }
-
-            appInfo.stop(deploymentContext, deploymentContext.getLogger());
-            appInfo.unload(deploymentContext);
-
         } catch(Exception e) {
             logger.log(Level.SEVERE, "Error during disabling: ", e);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

@@ -336,7 +336,12 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
             DeployCommandParameters deploymentParams = new DeployCommandParameters(new File(uri));
             deploymentParams.name = app.getName();
             deploymentParams.description = app.getDescription();
-            deploymentParams.enabled = Boolean.parseBoolean(app.getEnabled());
+            if (Boolean.valueOf(app.getEnabled()) && appRef != null && 
+                Boolean.valueOf(appRef.getEnabled())) { 
+                deploymentParams.enabled = Boolean.TRUE;
+            } else {
+                deploymentParams.enabled = Boolean.FALSE;
+            }
             deploymentParams.contextroot = app.getContextRoot();
             deploymentParams.libraries = app.getLibraries();
             deploymentParams.availabilityenabled = Boolean.parseBoolean(app.getAvailabilityEnabled());

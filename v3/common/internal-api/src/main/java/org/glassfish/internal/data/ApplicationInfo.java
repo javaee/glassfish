@@ -72,6 +72,7 @@ public class ApplicationInfo extends ModuleInfo {
     private String libraries;
     private boolean isJavaEEApp = false;
     private ClassLoader appClassLoader;
+    private boolean isLoaded = false;
 
 
     /**
@@ -218,6 +219,10 @@ public class ApplicationInfo extends ModuleInfo {
 
     public void load(ExtendedDeploymentContext context, ProgressTracker tracker)
             throws Exception {
+        if (isLoaded) {
+            logger.fine("Application is already loaded.");
+            return;
+        }
 
         context.setPhase(ExtendedDeploymentContext.Phase.LOAD);
 
@@ -232,6 +237,8 @@ public class ApplicationInfo extends ModuleInfo {
         // put all the transient app meta meta from context to 
         // application info
         transientAppMetaData.putAll(context.getTransientAppMetadata());
+
+        isLoaded = true;
 
         if (events!=null) {
             events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_LOADED, this), false);
@@ -273,6 +280,11 @@ public class ApplicationInfo extends ModuleInfo {
 
     public void unload(ExtendedDeploymentContext context) {
 
+        if (!isLoaded) {
+            logger.fine("Application is already unloaded.");
+            return;
+        }
+
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(appClassLoader);
@@ -281,6 +293,7 @@ public class ApplicationInfo extends ModuleInfo {
             for (ModuleInfo module : getModuleInfos()) {
                 module.unload(getSubContext(module, context));
             }
+            isLoaded = false;
             if (events!=null) {
                 events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_UNLOADED, this), false);
             }
@@ -377,4 +390,9 @@ public class ApplicationInfo extends ModuleInfo {
     public void addModule(ModuleInfo info) {
         modules.add(info);
     }
+
+    public boolean isLoaded() {
+        return isLoaded;
+    }
+
 }
