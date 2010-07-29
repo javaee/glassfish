@@ -120,7 +120,7 @@ public class AppServerStartup implements ModuleStartup {
      */
     private Thread serverThread;
 
-    public void start() {
+    public synchronized void start() {
 
         // See issue #5596 to know why we set context CL as common CL.
         Thread.currentThread().setContextClassLoader(
@@ -361,8 +361,13 @@ public class AppServerStartup implements ModuleStartup {
         }
     }
 
-    public void stop() {
-
+    public synchronized void stop() {
+        if(env.getStatus() != ServerEnvironment.Status.started) {
+            // During shutdown because of shutdown hooks, we can be stopped multiple times.
+            // In such a case, ignore any subsequent stop operations.
+            logger.info("Already stopped, so just returning");
+            return;
+        }
         env.setStatus(ServerEnvironment.Status.stopping);
         events.send(new Event(EventTypes.PREPARE_SHUTDOWN), false);
 
