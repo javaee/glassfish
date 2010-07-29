@@ -49,7 +49,8 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/nodes");
         setPageSessionAttribute(key="childType" value="create-node");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
+        //gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
+        createMap(result="#{pageSession.valueMap}");
         setPageSessionAttribute(key="title" value="$resource{i18ncs.node.NewPageTitle}");
         setPageSessionAttribute(key="titleHelp" value="$resource{i18ncs.node.NewPageTitleHelp}");
         setPageSessionAttribute(key="hasPropertySheet" value="force");
