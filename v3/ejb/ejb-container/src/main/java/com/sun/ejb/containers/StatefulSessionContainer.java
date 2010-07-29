@@ -215,7 +215,7 @@ public final class StatefulSessionContainer
 
 	    initSessionSyncMethods();
 
-        // TODO loadCheckpointInfo();
+        loadCheckpointInfo();
 
         registerMonitorableComponents();
 
