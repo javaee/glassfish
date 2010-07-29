@@ -117,8 +117,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
     private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(WebServicesDeployer.class);
 
-    private Set<String> publishedFiles;
-    
+        
     /**
      * Constructor
      */
@@ -180,7 +179,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 }
             }
             doWebServicesDeployment(app,dc);
-            populateWsdlFilesForPublish(dc,wsDesc);
             Thread.currentThread().setContextClassLoader(oldCl);
             return true;
         } catch (Exception ex) {
@@ -744,7 +742,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     @Override
     public void unload(WebServicesApplication container, DeploymentContext context) {
         final WebServiceDeploymentNotifier notifier = getDeploymentNotifier();
-
+        deletePublishedFiles(container.getPublishedFiles());
         Application app = container.getApplication();
         for(WebService svc : app.getWebServiceDescriptors()) {
             for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
@@ -765,22 +763,26 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             final Artifacts generatedArtifacts = DeploymentUtils.generatedArtifacts(dc);
             generatedArtifacts.clearArtifacts() ;
         } */
-        deletePublishedFiles(dc);
-
+        
     }
 
     @Override
     public WebServicesApplication load(WebServicesContainer container, DeploymentContext context) {
         bean = container.getDeploymentBean();
+        Set<String> publishedFiles = null;
         Application app = context.getModuleMetaData(Application.class);
-        
+        try {
+            publishedFiles = populateWsdlFilesForPublish(context, app.getWebServiceDescriptors());
+        } catch(Exception e) {
+            throw new RuntimeException(e);
+        }
         for(WebService svc : app.getWebServiceDescriptors()) {
             for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
                 bean.deploy(endpoint);
             }
         }
 
-        return new WebServicesApplication(context, env, dispatcher, config, habitat);
+        return new WebServicesApplication(context, env, dispatcher, config, habitat,publishedFiles);
     }
 
     /**
@@ -790,11 +792,11 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
      * TODO File publishing currently works only for wsdls packaged in the application for jax-ws.
      * Need to publish the dynamically generated wsdls as well. Lazy creation of WSEndpoint objects prohibits it now.
      */
-    private void populateWsdlFilesForPublish(
-            DeploymentContext dc, WebServicesDescriptor wsDesc) throws IOException {
+    private Set<String> populateWsdlFilesForPublish(
+            DeploymentContext dc, Set<WebService> webservices) throws IOException {
 
-
-        for (WebService webService : wsDesc.getWebServices()) {
+        Set<String> publishedFiles = new HashSet<String>();
+        for (WebService webService : webservices) {
             if (!webService.hasFilePublishing()) {
                 continue;
             }
@@ -807,7 +809,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             if (!(XModuleType.EAR.equals(moduleType) ||
                     XModuleType.WAR.equals(moduleType) ||
                     XModuleType.EJB.equals(moduleType))) {
-                return;
+                return publishedFiles;
             }
 
             String moduleName = bundle.getApplication().getAppName();
@@ -866,53 +868,28 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 File clientwsdl = new File(parent, wsdlName);
                 File fulluriFile = new File(sourceDir, name);
                 if (!fulluriFile.isDirectory()) {
-                    publishFile(fulluriFile, clientwsdl, dc);
+                    publishFile(fulluriFile, clientwsdl);
+                    publishedFiles.add(clientwsdl.getAbsolutePath());
                 }
             }
 
         }
+        return publishedFiles;
     }
 
-    private void publishFile(File file, File publishLocation, DeploymentContext dc) throws IOException {
-        if (publishedFiles == null) {
-            publishedFiles = new HashSet<String>();
-        }
-        publishedFiles.add(publishLocation.getAbsolutePath());
-        /*
-                String wsdeployer_key = WebServicesDeployer.class.getName();
-                Properties wsmoduleProps = dc.getModulePropsMap().get(wsdeployer_key);
-                 if(wsmoduleProps == null) {
-                    wsmoduleProps = new Properties();
-                    dc.getModulePropsMap().put(wsdeployer_key,wsmoduleProps);
-                  }
-                int fileNumber = wsmoduleProps.size();
-                wsmoduleProps.put("published.file."+(fileNumber+1),publishLocation.getAbsolutePath());
-                */
+    private void publishFile(File file, File publishLocation) throws IOException {
         copyFile(file, publishLocation);
     }
 
-    private void deletePublishedFiles(DeploymentContext dc) {
+    private void deletePublishedFiles(Set<String> publishedFiles) {
         if (publishedFiles != null) {
-            for (Iterator<String> itr = publishedFiles.iterator(); itr.hasNext();) {
-                File f = new File(itr.next());
+            for (String path: publishedFiles) {
+                File f = new File(path);
                 if (f.exists()) {
                     f.delete();
                 }
             }
-
         }
-        /*
-                String wsdeployer_key = WebServicesDeployer.class.getName();
-                Properties wsmoduleProps = dc.getModulePropsMap().get(wsdeployer_key);
-                if(wsmoduleProps != null) {
-                    for(Map.Entry<Object,Object> e: wsmoduleProps.entrySet()) {
-                        File f = new File((String)e.getValue());
-                            if(f.exists()) {
-                                f.delete();
-                        }
-                }
-            }
-            */
     }
     /**
      * This is to be used for filepublishing only. Incase of wsdlImports and wsdlIncludes

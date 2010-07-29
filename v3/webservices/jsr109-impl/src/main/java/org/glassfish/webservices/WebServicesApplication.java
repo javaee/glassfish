@@ -38,6 +38,8 @@
 package org.glassfish.webservices;
 
 import com.sun.enterprise.config.serverbeans.Config;
+
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -95,9 +97,9 @@ public class WebServicesApplication implements ApplicationContainer {
 
     private ClassLoader cl;
     private Application app;
+    private Set<String> publishedFiles;
 
-
-    public WebServicesApplication(DeploymentContext context, ServerEnvironment env, RequestDispatcher dispatcherString, Config config, Habitat habitat){
+    public WebServicesApplication(DeploymentContext context, ServerEnvironment env, RequestDispatcher dispatcherString, Config config, Habitat habitat, Set<String> publishedFiles){
         this.deploymentCtx = context;
         this.dispatcher = dispatcherString;
         this.serverEnvironment = env;
@@ -105,6 +107,7 @@ public class WebServicesApplication implements ApplicationContainer {
         this.adapter = (com.sun.grizzly.tcp.Adapter) new EjbWSAdapter();
         this.config = config;
         this.habitat = habitat;
+        this.publishedFiles = publishedFiles;
     }
     
     public Object getDescriptor() {
@@ -222,4 +225,7 @@ public class WebServicesApplication implements ApplicationContainer {
         }
     }
 
+    Set<String> getPublishedFiles() {
+        return publishedFiles;
+    }
 }
