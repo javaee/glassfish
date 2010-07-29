@@ -363,7 +363,7 @@ public class InstanceTest extends AdminBaseDevTest {
         //    "--node", "bogus", "bogusinstance"));
 
         report("create-node-config-i1n1", asadmin("create-node-config",
-            "--nodedir", nodedir , "--nodehost", "localhost", "--installdir", installdir, node ));
+             node ));
         report("create-local-instance-i1n1", asadmin("create-local-instance",
             "--nodedir", nodedir , "--node", node, instance ));
 
