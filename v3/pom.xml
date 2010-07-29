@@ -168,7 +168,7 @@
         <v3-docs.version>3.0-b08</v3-docs.version>
         <l10n.version>3.0-b73</l10n.version>
         <asm.version>3.1</asm.version>
-        <shoal.version>1.5.5</shoal.version>
+        <shoal.version>1.5.6</shoal.version>
     </properties>
 
 
