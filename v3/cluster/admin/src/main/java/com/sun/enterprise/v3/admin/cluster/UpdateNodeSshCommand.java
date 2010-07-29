@@ -37,6 +37,10 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.config.serverbeans.Nodes;
+import com.sun.enterprise.config.serverbeans.SshConnector;
+import com.sun.enterprise.config.serverbeans.SshAuth;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -49,16 +53,15 @@ import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import java.util.logging.Logger;
 
 /**
- * Remote AdminCommand to create and ssh node.  This command is run only on DAS.
- * Register the node with SSH info on DAS
+ * Remote AdminCommand to update an ssh node.  This command is run only on DAS.
  *
- * @author Carla Mott
+ * @author Joe Di Pol
  */
-@Service(name = "create-node-ssh")
-@I18n("create.node.ssh")
+@Service(name = "update-node-ssh")
+@I18n("update.node.ssh")
 @Scoped(PerLookup.class)
 @Cluster({RuntimeType.DAS})
-public class CreateNodeSshCommand implements AdminCommand  {
+public class UpdateNodeSshCommand implements AdminCommand  {
 
     @Inject
     private CommandRunner cr;
@@ -66,10 +69,13 @@ public class CreateNodeSshCommand implements AdminCommand  {
     @Inject
     Habitat habitat;
 
+    @Inject
+    private Nodes nodes;
+
     @Param(name="name", primary = true)
     private String name;
 
-    @Param(name="nodehost")
+    @Param(name="nodehost", optional=true)
     private String nodehost;
 
     @Param(name = "installdir", optional=true)
@@ -99,11 +105,22 @@ public class CreateNodeSshCommand implements AdminCommand  {
         ActionReport report = context.getActionReport();
         StringBuilder msg = new StringBuilder();
         SSHLauncher sshL=habitat.getComponent(SSHLauncher.class);
+        Node node = null;
 
         logger = context.getLogger();
 
-        setDefaults();
+        // Make sure Node is valid
+        node = nodes.getNode(name);
+        if (node == null) {
+            String m = Strings.get("noSuchNode", node);
+            logger.warning(m);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(m);
+            return;
+        }
 
+        // First create a map that holds the parameters and reflects what
+        // the user passed on the command line.
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
         map.add("installdir", installdir);
@@ -113,24 +130,48 @@ public class CreateNodeSshCommand implements AdminCommand  {
         map.add("sshuser", sshuser);
         map.add("sshkeyfile", sshkeyfile);
 
+        // Now init any parameters that weren't passed into the command
+        // using the values from the config
+        initFromConfig(node);
+
+        // Finally, anything that still isn't set, use the defaults.
+        // These should likely come from config -- but they don't
+        // as of now
+        setDefaults();
+
+        // validateMap holds the union of what the user passed and what was
+        // in the config so we have all the settings needed to validate what
+        // the node will look like after we update it.
+        ParameterMap validateMap = new ParameterMap();
+        validateMap.add("DEFAULT", name);
+        validateMap.add("installdir", installdir);
+        validateMap.add("nodehost", nodehost);
+        validateMap.add("nodedir", nodedir);
+        validateMap.add("sshport", sshport);
+        validateMap.add("sshuser", sshuser);
+        validateMap.add("sshkeyfile", sshkeyfile);
+
+        // Validate the settings
         try {
             NodeUtils nodeUtils = new NodeUtils(logger);
-            nodeUtils.validate(map, sshL);
+            nodeUtils.validate(validateMap, sshL);
         } catch (CommandValidationException e) {
             String m1 = Strings.get("node.ssh.invalid.params");
             if (!force) {
-                String m2 = Strings.get("create.node.ssh.not.created");
+                String m2 = Strings.get("update.node.ssh.not.updated");
                 msg.append(StringUtils.cat(NL, m1, m2, e.getMessage()));
                 report.setMessage(msg.toString());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             } else {
-                String m2 = Strings.get("create.node.ssh.continue.force");
+                String m2 = Strings.get("update.node.ssh.continue.force");
                 msg.append(StringUtils.cat(NL, m1, e.getMessage(), m2));
             }
         }
 
-        CommandInvocation ci = cr.getCommandInvocation("_create-node", report);
+        // Settings are valid. Now use the generic update-node command to
+        // update the node.
+        CommandInvocation ci = cr.getCommandInvocation("_update-node", report);
         ci.parameters(map);
         ci.execute();
 
@@ -144,7 +185,47 @@ public class CreateNodeSshCommand implements AdminCommand  {
         report.setMessage(msg.toString());
     }
 
-    private void setDefaults() {
+    /**
+     * Initialize any parameters not provided by the user from the
+     * configuration.
+     */
+    private void initFromConfig(Node node) {
+        if (nodehost == null) {
+            nodehost = node.getNodeHost();
+        }
+
+        if (installdir == null) {
+            installdir = node.getInstallDir();
+        }
+
+        if (nodedir == null) {
+            nodedir = node.getNodeDir();
+        }
+
+        SshConnector sshc = node.getSshConnector();
+        if (sshc == null) {
+            return;
+        }
+
+        if (sshport == null) {
+            sshport = sshc.getSshPort();
+        }
+
+        SshAuth ssha = sshc.getSshAuth();
+        if (ssha == null) {
+            return;
+        }
+
+        if (sshuser == null) {
+            sshuser = ssha.getUserName();
+        }
+
+        if (sshkeyfile == null) {
+            sshkeyfile = ssha.getKeyfile();
+        }
+    }
+
+   private void setDefaults() {
         if (sshport == null) {
             sshport = NodeUtils.NODE_DEFAULT_SSH_PORT;
         }
