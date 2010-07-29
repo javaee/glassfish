@@ -39,7 +39,6 @@ package org.glassfish.ejb.startup;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.security.PolicyLoader;
 import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.util.IASSecurityException;
@@ -57,7 +56,6 @@ import org.glassfish.ejb.spi.CMPDeployer;
 import org.glassfish.ejb.spi.CMPService;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import com.sun.ejb.codegen.StaticRmiStubGenerator;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 
@@ -67,6 +65,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 import org.glassfish.api.invocation.RegisteredComponentInvocationHandler;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
+import org.glassfish.ejb.security.application.EjbSecurityProbeProvider;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 
 /**
@@ -105,6 +104,8 @@ public class EjbDeployer
     
     private static final Logger _logger =
                 LogDomains.getLogger(EjbDeployer.class, LogDomains.EJB_LOGGER);
+
+    private final EjbSecurityProbeProvider probeProvider = new EjbSecurityProbeProvider();
 
     /**
      * Constructor
@@ -275,7 +276,12 @@ public class EjbDeployer
             if (contextIds != null) {
                 for (String contextId : contextIds) {
                     try {
+                        //TODO:appName is not correct, we need the module name
+                        //from the descriptor.
+                        probeProvider.policyDestructionStartedEvent(contextId);
                         SecurityUtil.removePolicy(contextId);
+                        probeProvider.policyDestructionEndedEvent(contextId);
+                        probeProvider.policyDestructionEvent(contextId);
                     } catch (IASSecurityException ex) {
                         _logger.log(Level.WARNING, "Error removing the policy file " +
                                 "for application " + appName + " " + ex);

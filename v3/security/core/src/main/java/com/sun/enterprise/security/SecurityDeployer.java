@@ -213,9 +213,9 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                     loadPolicy(webBD, true);
                 }
                 String cid = SecurityUtil.getContextID(webBD);
-                websecurityProbeProvider.policyCreationStartedEvent(webBD.getModuleID());
+                websecurityProbeProvider.policyCreationStartedEvent(cid);
                 SecurityUtil.generatePolicyFile(cid);
-                websecurityProbeProvider.policyCreationEndedEvent(webBD.getModuleID());
+                websecurityProbeProvider.policyCreationEndedEvent(cid);
                 websecurityProbeProvider.policyCreationEvent(cid);
                 
             }
@@ -237,9 +237,9 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         try {
             for (EjbBundleDescriptor ejbBD : ejbDescriptors) {
                 String pcid = SecurityUtil.getContextID(ejbBD);
-                ejbProbeProvider.policyCreationStartedEvent(ejbBD.getModuleID());
+                ejbProbeProvider.policyCreationStartedEvent(pcid);
                 SecurityUtil.generatePolicyFile(pcid);
-                ejbProbeProvider.policyCreationEndedEvent(ejbBD.getModuleID());
+                ejbProbeProvider.policyCreationEndedEvent(pcid);
                 ejbProbeProvider.policyCreationEvent(pcid);
                
             }

@@ -926,14 +926,7 @@ public final class EJBSecurityManager
         try {
 
             boolean wasInService = getPolicyFactory().inService(this.contextId);
-           
-            probeProvider.policyDestructionStartedEvent(ejbName);
-            getPolicyFactory().getPolicyConfiguration(this.contextId, true);
-            probeProvider.policyDestructionEndedEvent(ejbName);
             if (wasInService) {
-                
-                probeProvider.policyDestructionEvent(contextId);
-               
                 policy.refresh();
             }
 	    /* 

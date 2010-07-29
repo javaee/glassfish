@@ -253,12 +253,12 @@ public class EjbApplication
 
         for (Container container : containers) {
             if( undeploy ) {
-                container.undeploy();
-                if(container.getSecurityManager() != null) {
-                    container.getSecurityManager().destroy();
-                }
+                container.undeploy();      
             } else {
                 container.onShutdown();
+            }
+            if(container.getSecurityManager() != null) {
+                container.getSecurityManager().destroy();
             }
         }
         
