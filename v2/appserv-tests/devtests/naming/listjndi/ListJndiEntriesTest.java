@@ -43,8 +43,9 @@ import admin.AdminBaseDevTest;
  */
 public class ListJndiEntriesTest extends AdminBaseDevTest {
 
-    public static final String[] EXPECTED_TOKENS = {"UserTransaction:", "java:global:",
-        "jdbc:", "ejb:", "com.sun.enterprise.naming.impl.TransientContext"};
+    public static final String[] EXPECTED_TOKENS = 
+    {"UserTransaction:", "java:global:", "ejb:", "com.sun.enterprise.naming.impl.TransientContext"};
+
     public static final String INSTANCE_RESOURCE_NAME = "INSTANCE_RESOURCE_NAME";
     public static final String CLUSTER_RESOURCE_NAME = "CLUSTER_RESOURCE_NAME";
     public static final String CLUSTER_NAME = "cluster1";
