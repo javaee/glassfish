@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.appserv.test.util.results;
 
 import java.io.File;
@@ -55,6 +54,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
@@ -63,32 +63,31 @@ import javax.xml.stream.events.XMLEvent;
 public class HtmlReportProducer {
     private XMLEventReader reader;
     private XMLEvent event;
-    private boolean print = false;
+    private final static boolean print = false;
     private Stack<Object> context = new Stack<Object>();
     private StringBuilder buffer = new StringBuilder();
     private File input;
     private ReportHandler handler;
     private Map<String, TestSuite> suites = new TreeMap<String, TestSuite>();
+    private final boolean failOnError;
 
     public HtmlReportProducer(String inputFile) throws FileNotFoundException {
+        this(inputFile, true);
+    }
+    public HtmlReportProducer(String inputFile, boolean fail) throws FileNotFoundException {
         input = new File(generateValidReport(inputFile));
         // Use the default (non-validating) parser
         handler = new ReportHandler(new File(input.getParentFile(), "test_results.html"));
+        failOnError = fail;
     }
 
-    private void produce() throws IOException, XMLStreamException {
+    public void produce() throws IOException, XMLStreamException {
         reader = XMLInputFactory.newInstance().createXMLEventReader(new FileReader(input));
         try {
-            nextEvent();
             //noinspection LoopConditionNotUpdatedInsideLoop
-            while (reader.hasNext()) {
+            while (nextEvent() != null) {
                 if (event.isStartElement()) {
-                    final Runnable runnable = getHandler(event);
-                    if (runnable != null) {
-                        runnable.run();
-                    } else {
-                        map();
-                    }
+                    getHandler(event).run();
                 } else if (event.isEndElement()) {
                     if (getHandler(event) != null && !context.isEmpty()) {
 //                        handler.process(pop());
@@ -111,7 +110,6 @@ public class HtmlReportProducer {
                         }
                     }
                 }
-                nextEvent();
             }
             for (TestSuite testSuite : suites.values()) {
                 handler.process(testSuite);
@@ -128,10 +126,15 @@ public class HtmlReportProducer {
             resultsWriter.write(buffer.toString());
             resultsWriter.flush();
             resultsWriter.close();
-            if (handler.fail != 0) {
+            if (failOnError && handler.fail != 0) {
                 System.err.println("All Tests NOT passed, so returning FAILED status.");
                 System.exit(1);
             }
+        } catch(Exception e) {
+            System.out.println("HtmlReportProducer.produce: event = " + event);
+            System.out.println(
+                "HtmlReportProducer.produce: event.getLocation().getLineNumber() = " + event.getLocation()
+                    .getLineNumber());
         } finally {
             reader.close();
         }
@@ -153,7 +156,6 @@ public class HtmlReportProducer {
         String text = null;
         if (attributes.hasNext()) {
             text = attributes.next().getValue();
-            nextEvent();
         } else {
             try {
                 final XMLEvent xmlEvent = nextEvent();
@@ -162,6 +164,7 @@ public class HtmlReportProducer {
                 handle(e);
             }
         }
+        nextEvent();
         set(name, text);
     }
 
@@ -181,8 +184,12 @@ public class HtmlReportProducer {
 
     private XMLEvent nextEvent() {
         try {
-            event = reader.nextEvent();
-            print("next event = " + event.toString().trim());
+            do {
+                event = reader.hasNext() ? reader.nextEvent() : null;
+            } while (event != null && event instanceof Characters && ((Characters) event).isWhiteSpace());
+            if (event != null) {
+                print("next event = " + event.toString().trim());
+            }
             return event;
         } catch (XMLStreamException e) {
             handle(e);
@@ -252,7 +259,6 @@ public class HtmlReportProducer {
 
     void tests() {
         push("=> suite.tests");
-//        push(((TestSuite) context.peek()).getTests());
     }
 
     void test() {
@@ -261,7 +267,6 @@ public class HtmlReportProducer {
 
     void testcases() {
         push("=> test.testcases");
-//        push(((Test) context.peek()).getTestCases());
     }
 
     void testcase() {
@@ -285,9 +290,14 @@ public class HtmlReportProducer {
                 }
             };
         } catch (NoSuchMethodException e) {
-            print(String.format("No handler for %s at (%d:%d)", name, getLineNumber(), getColumn()));
+            return new Runnable() {
+                @Override
+                public void run() {
+                    map();
+                }
+            };
+
         }
-        return null;
     }
 
     private String getEventName(final XMLEvent evt) {
@@ -352,7 +362,6 @@ public class HtmlReportProducer {
             }
             return oFileName;
         }
-
         return notQuiteXml;
     }
 

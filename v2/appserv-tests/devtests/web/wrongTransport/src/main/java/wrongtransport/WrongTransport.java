@@ -86,21 +86,6 @@ public class WrongTransport extends BaseDevTest {
             "--classname", "com.sun.grizzly.config.HttpRedirectFilter",
             "redirect-filter"));
 
-        //  admin-listener-http
-//        report("create-admin-listener-http", asadmin("create-protocol",
-//            "--securityenabled", "true",
-//            "admin-listener-http"));
-//        report("create-admin-http", asadmin("create-http",
-//            "--default-virtual-server", "__asadmin",
-//            "admin-listener-http"));
-//        report("create-admin-ssl", asadmin("create-ssl",
-//            "--certname", "s1as",
-//            "--type", "network-listener",
-//            "--ssl2enabled", "false",
-//            "--ssl3enabled", "false",
-//            "--clientauthenabled", "false",
-//            "admin-listener-http"));
-
         //  pu-protocol
         report("create-pu-protocol", asadmin("create-protocol",
             "pu-protocol"));
@@ -128,7 +113,7 @@ public class WrongTransport extends BaseDevTest {
         report("delete-http-redirect", asadmin("delete-protocol",
             "http-redirect"));
     }
-
+    
     private void checkStatus(HttpURLConnection connection)
         throws Exception {
         int responseCode = connection.getResponseCode();

@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.appserv.test.util.results;
 
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ import java.util.Map;
 
 /**
  * Class holding One Test info.
- * 
+ *
  * @Author : Ramesh Mandava
  * @Last Modified :Initial creation By Ramesh on 10/24/2001
  * @Last Modified : By Ramesh on 1/20/2002 , For preserving order of entry of testcases used a separate
@@ -64,35 +63,35 @@ public class Test {
     }
 
     public Test(String id) {
-        this.id = id.trim();
+        this.id = SimpleReporterAdapter.checkNA(id);
     }
 
     public Test(String id, String name) {
         this(id);
-        this.name = name == null ? ReporterConstants.NA : name.trim();
+        this.name = SimpleReporterAdapter.checkNA(name);
     }
 
     public Test(String id, String name, String description) {
         this(id, name);
-        this.description = description == null ? ReporterConstants.NA : description.trim();
+        this.description = SimpleReporterAdapter.checkNA(description);
     }
 
     public void setStatus(String status) {
-        this.status = status == null ? ReporterConstants.NA : status.trim();
+        this.status = SimpleReporterAdapter.checkNA(status);
     }
 
     public void setStatusDescription(String desc) {
-        statusDescription = desc == null ? ReporterConstants.NA : desc.trim();
+        statusDescription = SimpleReporterAdapter.checkNA(desc);
         expected = null;
         actual = null;
     }
 
     public void setExpected(String expected) {
-        this.expected = expected == null ? ReporterConstants.NA : expected.trim();
+        this.expected = SimpleReporterAdapter.checkNA(expected);
     }
 
     public void setActual(String actual) {
-        this.actual = actual == null ? ReporterConstants.NA : actual.trim();
+        this.actual = SimpleReporterAdapter.checkNA(actual);
     }
 
     public String getId() {
@@ -131,13 +130,9 @@ public class Test {
         List<TestCase> list = testCases.get(testCase.getName());
         if (list == null) {
             list = new ArrayList<TestCase>();
-            list.add(testCase);
             testCases.put(testCase.getName(), list);
-        } else {
-            String newname = testCase.getName() + " -- DUPLICATE" + list.size();
-            testCase.setName(newname);
-            list.add(testCase);
         }
+        list.add(testCase);
     }
 
     @Override

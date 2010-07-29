@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2005-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2001-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,42 +49,26 @@ public class TestCase {
     private String description = ReporterConstants.NA;
     private String status = ReporterConstants.DID_NOT_RUN;
     private String statusDescription = ReporterConstants.NA;
-    private String expected;
-    private String actual;
 
     public TestCase() {
     }
 
     public TestCase(String id) {
-        this.id = id == null ? ReporterConstants.NA : id.trim();
+        this.id = SimpleReporterAdapter.checkNA(id);
     }
 
     public TestCase(String id, String name) {
         this(id);
-        this.name = name == null ? ReporterConstants.NA : name.trim();
+        this.name = SimpleReporterAdapter.checkNA(name);
     }
 
     public TestCase(String id, String name, String description) {
         this(id, name);
-        this.description = description.trim();
+        this.description = SimpleReporterAdapter.checkNA(description);
     }
 
     public void setStatus(String status) {
-        this.status = status == null ? ReporterConstants.NA : status.trim();
-    }
-
-    public void setStatusDescription(String statusDescription) {
-        this.statusDescription = statusDescription == null ? ReporterConstants.NA : statusDescription.trim();
-        expected = null;
-        actual = null;
-    }
-
-    public void setExpected(String expected) {
-        this.expected = expected == null ? ReporterConstants.NA : expected.trim();
-    }
-
-    public void setActual(String actual) {
-        this.actual = actual == null ? ReporterConstants.NA : actual.trim();
+        this.status = SimpleReporterAdapter.checkNA(status);
     }
 
     public String getId() {
@@ -96,7 +80,7 @@ public class TestCase {
     }
 
     public void setName(final String value) {
-        name = value;
+        name = SimpleReporterAdapter.checkNA(value);
     }
 
     public String getDescription() {
@@ -109,14 +93,6 @@ public class TestCase {
 
     public String getStatusDescription() {
         return statusDescription;
-    }
-
-    public String getExpected() {
-        return expected;
-    }
-
-    public String getActual() {
-        return actual;
     }
 
     @Override
@@ -140,9 +116,6 @@ public class TestCase {
         }
         if (!statusDescription.equals(ReporterConstants.NA)) {
             buffer.append("<status value=\"" + status.trim() + "\"><![CDATA[" + statusDescription.trim() + "]]></status>\n");
-        } else if ((expected != null) && (actual != null)) {
-            buffer.append("<status value=\"" + status.trim() + "\"> <expected><![CDATA[" + expected.trim()
-                + "]]></expected><actual><![CDATA[" + actual.trim() + "]]></actual></status>\n");
         } else {
             buffer.append("<status value=\"" + status.trim() + "\">" + "</status>\n");
         }

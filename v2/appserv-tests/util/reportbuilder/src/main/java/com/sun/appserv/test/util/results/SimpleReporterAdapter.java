@@ -43,22 +43,22 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
+@SuppressWarnings({"StringContatenationInLoop"})
 public class SimpleReporterAdapter implements Serializable {
     public static final String PASS = "pass";
     public static final String DID_NOT_RUN = "did_not_run";
     public static final String FAIL = "fail";
     private static final Pattern TOKENIZER;
     private final boolean debug = false;
-    private final Map<String, String> testCaseStatus = new LinkedHashMap<String, String>();
-    private String testSuiteName = getTestSuiteName();
-    private String testSuiteID = testSuiteName + "ID";
-    private String testSuiteDescription;
-    private String ws_home = "appserv-tests";
+    private final String ws_home;
+    private Test test = new Test();
+    private final String testSuiteName;
+    private final String testSuiteID;
+    private final TestSuite suite;
+    private Reporter reporter;
 
     static {
         String pattern = or(
@@ -73,71 +73,83 @@ public class SimpleReporterAdapter implements Serializable {
 
     @Deprecated
     public SimpleReporterAdapter() {
+        this("appserv-tests", null);
     }
 
     @Deprecated
     public SimpleReporterAdapter(String ws_root) {
-        ws_home = ws_root;
+        this(ws_root, null);
     }
 
     public SimpleReporterAdapter(String ws_root, String suiteName) {
         ws_home = ws_root;
-        testSuiteName = suiteName;
+        if (suiteName == null) {
+            testSuiteName = getTestSuiteName();
+        } else {
+            testSuiteName = suiteName;
+        }
         testSuiteID = testSuiteName + "ID";
+        suite = new TestSuite(testSuiteID, testSuiteName);
+        suite.addTest(test);
     }
 
-    public void addStatus(String test, String status) {
-        addStatus(test, status, "");
-    }
-    public void addStatus(String test, String status, String message) {
-        int blankIndex = test.indexOf(" ");
-        String key = test;
-        if (blankIndex != -1) {
-            key = test.substring(test.indexOf(" "));
-        }
-        key = key.trim();
-        if (debug) {
-            System.out.println("Value of key is:" + key);
-        }
-        if (!testCaseStatus.containsKey(key)) {
-            testCaseStatus.put(key, status.toLowerCase());
-        }
+    public Reporter getReporter() {
+        return reporter;
     }
 
-    public void addDescription(String s) {
-        testSuiteDescription = s;
+    public TestSuite getSuite() {
+        return suite;
     }
 
-    public void printStatus() {
+    public void addStatus(String testCaseName, String status) {
+        addStatus(testCaseName, status, "");
+    }
+
+    public void addStatus(String testCaseName, String status, String message) {
+        final TestCase testCase = new TestCase(testCaseName, testCaseName, message);
+        testCase.setStatus(status);
+        test.addTestCase(testCase);
+    }
+
+    public void addDescription(String description) {
+        suite.setDescription(description);
+    }
+
+    @Deprecated
+    public void printSummary(String s) {
+        printSummary();
+    }
+
+    public void printSummary() {
         try {
-            final Reporter reporter = Reporter.getInstance(ws_home);
+            reporter = Reporter.getInstance(ws_home);
             if (debug) {
                 System.out.println("Generating report at " + reporter.getResultFile());
             }
-            reporter.setTestSuite(testSuiteID, testSuiteName, testSuiteDescription);
-            reporter.addTest(testSuiteID, testSuiteID, testSuiteName);
+            reporter.setTestSuite(suite);
             int pass = 0;
             int fail = 0;
             int d_n_r = 0;
             System.out.println("\n\n-----------------------------------------");
-            for (String testCaseName : testCaseStatus.keySet()) {
-                String status = testCaseStatus.get(testCaseName);
-                if (status.equalsIgnoreCase(PASS)) {
-                    pass++;
-                } else if (status.equalsIgnoreCase(DID_NOT_RUN)) {
-                    d_n_r++;
-                } else {
-                    fail++;
+            for (List<TestCase> testCases : test.getTestCases().values()) {
+                for (TestCase testCase : testCases) {
+                    String status = testCase.getStatus();
+                    if (status.equalsIgnoreCase(PASS)) {
+                        pass++;
+                    } else if (status.equalsIgnoreCase(DID_NOT_RUN)) {
+                        d_n_r++;
+                    } else {
+                        fail++;
+                    }
+                    System.out.println(String.format("- %-37s -", testCase.getName() + ": " + status.toUpperCase()));
                 }
-                System.out.println(String.format("- %-37s -", testCaseName + ": " + status.toUpperCase()));
-                reporter.addTestCase(testSuiteID, testSuiteID, testCaseName + "ID", testCaseName);
-                reporter.setTestCaseStatus(testSuiteID, testSuiteID, testCaseName + "ID", status);
             }
             if (pass == 0 && fail == 0 && d_n_r == 0) {
                 d_n_r++;
                 System.out.println(String.format("- %-37s -", testSuiteName + ": " + DID_NOT_RUN));
-                reporter.addTestCase(testSuiteID, testSuiteID, testSuiteID, testSuiteName);
-                reporter.setTestCaseStatus(testSuiteID, testSuiteID, testSuiteID, DID_NOT_RUN);
+                final TestCase testCase = new TestCase(testSuiteID, testSuiteName);
+                testCase.setStatus(DID_NOT_RUN);
+                test.addTestCase(testCase);
             }
             System.out.println("-----------------------------------------");
             result("PASS", pass);
@@ -173,19 +185,6 @@ public class SimpleReporterAdapter implements Serializable {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Deprecated
-    public void printSummary(String s) {
-        printStatus();
-    }
-
-    public void printSummary() {
-        printStatus();
-    }
-
-    public void run() {
-        printSummary();
     }
 
     private String getTestSuiteName() {
@@ -225,10 +224,6 @@ public class SimpleReporterAdapter implements Serializable {
         return file;
     }
 
-    public void clearStatus() {
-        testCaseStatus.clear();
-    }
-
     private static String or(String... tokens) {
         StringBuilder buf = new StringBuilder();
         for (String t : tokens) {
@@ -242,5 +237,9 @@ public class SimpleReporterAdapter implements Serializable {
 
     private static String split(String lookback, String lookahead) {
         return "((?<=" + lookback + ")(?=" + lookahead + "))";
+    }
+
+    public static String checkNA(final String value) {
+        return value == null || value.trim().length() == 0 ? ReporterConstants.NA : value.trim();
     }
 }

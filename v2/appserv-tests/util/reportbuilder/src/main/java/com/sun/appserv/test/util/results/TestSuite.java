@@ -64,17 +64,17 @@ public class TestSuite {
     }
 
     public TestSuite(String id) {
-        this.id = id == null ? ReporterConstants.NA : id.trim();
+        this.id = SimpleReporterAdapter.checkNA(id);
     }
 
     public TestSuite(String id, String name) {
         this(id);
-        this.name = name == null ? ReporterConstants.NA : name.trim();
+        this.name = SimpleReporterAdapter.checkNA(name);
     }
 
     public TestSuite(String id, String name, String description) {
         this(id, name);
-        this.description = description == null ? ReporterConstants.NA : description.trim();
+        this.description = SimpleReporterAdapter.checkNA(description);
     }
 
     public String getId() {
@@ -87,6 +87,10 @@ public class TestSuite {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(final String description) {
+        this.description = SimpleReporterAdapter.checkNA(description);
     }
 
     public Map<String, Test> getTests() {
