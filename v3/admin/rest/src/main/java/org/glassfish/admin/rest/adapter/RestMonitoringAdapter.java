@@ -57,7 +57,7 @@ public class RestMonitoringAdapter extends RestAdapter {
 
 
     @Override
-    protected  Set<Class<?>> getResourcesConfig(){
+    protected  Set<Class<?>> getResourcesConfig(boolean useASM){
         final Set<Class<?>> r = new HashSet<Class<?>>();
         r.add(org.glassfish.admin.rest.resources.MonitoringResource.class);
         r.add(org.glassfish.admin.rest.provider.TreeNodeJsonProvider.class);

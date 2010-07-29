@@ -157,7 +157,9 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
                 //delegate to adapter managed by Jersey.
                 if (adapter == null) {
-                    exposeContext();
+                    //is the URL contains ?ASM=true, force ASM for now. This is for testing period for now.
+                    boolean useASM = "true".equals(req.getParameter("ASM"));
+                    exposeContext(useASM);
                 }
 
                 ((GrizzlyAdapter)adapter).service(req, res);
@@ -343,7 +345,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
 
 
-    protected abstract Set<Class<?>> getResourcesConfig();
+    protected abstract Set<Class<?>> getResourcesConfig(boolean useASM);
 
 
     private ActionReport getClientActionReport(GrizzlyRequest req) {
@@ -383,12 +385,12 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     }
 
 
-    private void exposeContext()
+    private void exposeContext(boolean useASM)
             throws EndpointRegistrationException {
         String context = getContextRoot();
         logger.fine("Exposing rest resource context root: " + context);
         if ((context != null) || (!"".equals(context))) {
-            Set<Class<?>> classes = getResourcesConfig();
+            Set<Class<?>> classes = getResourcesConfig(useASM);
             adapter = LazyJerseyInit.exposeContext(classes, sc);
             ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
             

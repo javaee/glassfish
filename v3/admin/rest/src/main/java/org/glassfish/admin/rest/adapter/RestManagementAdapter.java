@@ -35,13 +35,23 @@
  */
 package org.glassfish.admin.rest.adapter;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import java.util.HashSet;
 import java.util.Set;
 //import org.glassfish.admin.rest.resources.ActionReportResource;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.glassfish.admin.rest.RestService;
+import org.glassfish.admin.rest.generator.ASMResourcesGenerator;
+import org.glassfish.admin.rest.generator.ResourcesGenerator;
+import org.glassfish.admin.rest.generator.TextResourcesGenerator;
 import org.glassfish.admin.rest.resources.GeneratorResource;
 
 import org.glassfish.admin.rest.resources.SessionsResource;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.DomDocument;
 
 /**
  * Adapter for REST management interface
@@ -49,6 +59,7 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service
 public class RestManagementAdapter extends RestAdapter {
+    private static final String CONTEXT = "/management";
 
     @Override
     public String getContextRoot() {
@@ -56,13 +67,26 @@ public class RestManagementAdapter extends RestAdapter {
     }
 
     @Override
-    protected Set<Class<?>> getResourcesConfig() {
+    protected Set<Class<?>> getResourcesConfig(boolean useASM) {
+
+         Class domainResourceClass =org.glassfish.admin.rest.resources.generated.DomainResource.class;
+
+        if (useASM) { //Generate the ASM classes and use the top level one for the DomainResource
+            generateASM();
+            try {
+                domainResourceClass = Class.forName("org.glassfish.admin.rest.resources.generatedASM.DomainResource");
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(RestManagementAdapter.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
         final Set<Class<?>> r = new HashSet<Class<?>>();
 
         // uncomment if you need to run the generator:
-        r.add(GeneratorResource.class);
+     //   r.add(GeneratorResource.class);
         //r.add(ActionReportResource.class);
-        r.add(org.glassfish.admin.rest.resources.generated.DomainResource.class);
+
+        r.add(domainResourceClass);
         r.add(SessionsResource.class); //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
 
         //body readers, not in META-INF/services anymore
@@ -101,5 +125,19 @@ public class RestManagementAdapter extends RestAdapter {
 
         return r;
     }
-    public static final String CONTEXT = "/management";
+
+    private void generateASM() {
+        try {
+            Domain entity = RestService.getDomain();
+            Dom dom = Dom.unwrap(entity);
+            DomDocument document = dom.document;
+            ConfigModel rootModel = dom.document.getRoot().model;
+
+            ResourcesGenerator resourcesGenerator = new ASMResourcesGenerator();
+            resourcesGenerator.generateSingle(rootModel, document);
+            resourcesGenerator.endGeneration();
+        } catch (Exception ex) {
+            Logger.getLogger(GeneratorResource.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
