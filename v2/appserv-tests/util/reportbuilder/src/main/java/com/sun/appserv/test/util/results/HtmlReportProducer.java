@@ -161,7 +161,9 @@ public class HtmlReportProducer {
             }
         }
         nextEvent();
-        set(name, text);
+        if(!"id".equals(name)) {
+            set(name, text);
+        }
     }
 
     private void set(final String field, final String value) {

@@ -44,7 +44,6 @@ package com.sun.appserv.test.util.results;
  * @Last Modified : By Justin Lee on 10/05/2009
  */
 public class TestCase {
-    private String id;
     private String name = ReporterConstants.NA;
     private String description = ReporterConstants.NA;
     private String status = ReporterConstants.DID_NOT_RUN;
@@ -53,26 +52,18 @@ public class TestCase {
     public TestCase() {
     }
 
-    public TestCase(String id) {
-        this.id = SimpleReporterAdapter.checkNA(id);
-    }
-
-    public TestCase(String id, String name) {
-        this(id);
+    public TestCase(String name) {
+        this();
         this.name = SimpleReporterAdapter.checkNA(name);
     }
 
-    public TestCase(String id, String name, String description) {
-        this(id, name);
+    public TestCase(String name, String description) {
+        this(name);
         this.description = SimpleReporterAdapter.checkNA(description);
     }
 
     public void setStatus(String status) {
         this.status = SimpleReporterAdapter.checkNA(status);
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getName() {
@@ -98,8 +89,7 @@ public class TestCase {
     @Override
     public String toString() {
         return "TestCase{" +
-            "id='" + id + '\'' +
-            ", name='" + name + '\'' +
+            "name='" + name + '\'' +
             ", status='" + status + '\'' +
             '}';
     }
@@ -107,7 +97,6 @@ public class TestCase {
     public String toXml() {
         StringBuilder buffer = new StringBuilder();
         buffer.append("<testcase>\n");
-        buffer.append("<id>" + id + "</id>\n");
         if (!name.equals(ReporterConstants.NA)) {
             buffer.append("<name>" + name.trim() + "</name>\n");
         }

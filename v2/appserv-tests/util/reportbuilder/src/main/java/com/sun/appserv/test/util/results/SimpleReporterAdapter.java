@@ -89,7 +89,7 @@ public class SimpleReporterAdapter implements Serializable {
             testSuiteName = suiteName;
         }
         testSuiteID = testSuiteName + "ID";
-        suite = new TestSuite(testSuiteID, testSuiteName);
+        suite = new TestSuite(testSuiteName);
         suite.addTest(test);
     }
 
@@ -106,7 +106,7 @@ public class SimpleReporterAdapter implements Serializable {
     }
 
     public void addStatus(String testCaseName, String status, String message) {
-        final TestCase testCase = new TestCase(testCaseName, testCaseName, message);
+        final TestCase testCase = new TestCase(testCaseName, message);
         testCase.setStatus(status);
         test.addTestCase(testCase);
     }
@@ -147,7 +147,7 @@ public class SimpleReporterAdapter implements Serializable {
             if (pass == 0 && fail == 0 && d_n_r == 0) {
                 d_n_r++;
                 System.out.println(String.format("- %-37s -", testSuiteName + ": " + DID_NOT_RUN));
-                final TestCase testCase = new TestCase(testSuiteID, testSuiteName);
+                final TestCase testCase = new TestCase(testSuiteName);
                 testCase.setStatus(DID_NOT_RUN);
                 test.addTestCase(testCase);
             }

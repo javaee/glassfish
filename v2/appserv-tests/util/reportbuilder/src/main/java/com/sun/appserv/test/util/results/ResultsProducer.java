@@ -98,7 +98,7 @@ public class ResultsProducer {
         skipNonStartElements();
         if (hasNext()) {
             if ("testcase".equals(parser.getLocalName())) {
-                process(new TestCase(read("id"), read("name"),
+                process(new TestCase(read("name"),
                     read("status", "value")));
             } else {
                 next();

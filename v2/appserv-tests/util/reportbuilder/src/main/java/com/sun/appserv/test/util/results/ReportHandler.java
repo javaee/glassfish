@@ -59,37 +59,9 @@ public class ReportHandler {
         writer = new PrintWriter(file);
     }
 
-    void process(Object o) {
-        if (o instanceof TestSuite) {
-            process(((TestSuite) o));
-        }
-    }
-
     void process(TestSuite suite) {
         suite.number = suiteCount++;
         summary.append(buildSummary(suite));
-    }
-
-    private String buildDetail(final TestSuite suite) {
-        StringBuilder table = new StringBuilder(
-            "<div id=\"table" + suite.number + "\" class=\"suiteDetail\"><table width=\"40%\">"
-                + row(null, "td", "Testsuite Name", suite.getName())
-                + row(null, "td", "Testsuite Description", suite.getDescription())
-                + row(null, "th", "Name", "Status"));
-        for (Test test : suite.getTests()) {
-            for (TestCase testCase : test.getTestCases()) {
-                final String status = testCase.getStatus();
-                table.append(String.format("<tr><td>%s</td>%s", testCase.getName(),
-                    cell(status.replaceAll("_", ""), 1, status)));
-            }
-        }
-        return table
-            + "<tr class=\"nav\"><td colspan=\"2\">"
-            + "[<a href=#DetailedResults>Detailed Results</a>"
-            + "|<a href=#Summary>Summary</a>"
-            + "|<a href=#TOP>Top</a>]"
-            + "</td></tr>"
-            + "</table></div><p>";
     }
 
     private String buildSummary(final TestSuite suite) {
@@ -100,7 +72,7 @@ public class ReportHandler {
         }
         return String.format("<tr class=\"%s\"><td width=\"50%%\">%s</td>%s%s%s</tr>",
             resultCssClass(suite),
-            String.format("<a href=\"javascript:showHide('table%s')\">%s</a>", suite.number, suite.getId()) + suite
+            String.format("<a href=\"javascript:showHide('table%s')\">%s</a>", suite.number, suite.getName()) + suite
                 .toHtml(),
             cell("pass", suite.pass, suite.pass),
             cell("fail", suite.fail, suite.fail),

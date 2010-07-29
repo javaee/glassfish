@@ -47,7 +47,6 @@ import java.util.List;
  * @Last Modified : By Justin Lee on 10/05/2009
  */
 public class TestSuite {
-    private String id;
     private String name = ReporterConstants.NA;
     private String description = ReporterConstants.NA;
     private List<Test> tests = new ArrayList<Test>();
@@ -61,17 +60,9 @@ public class TestSuite {
     public TestSuite() {
     }
 
-    public TestSuite(String id) {
-        this.id = SimpleReporterAdapter.checkNA(id);
-    }
-
-    public TestSuite(String id, String name) {
-        this(id);
+    public TestSuite(String name) {
+        this();
         this.name = SimpleReporterAdapter.checkNA(name);
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getName() {
@@ -98,8 +89,7 @@ public class TestSuite {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("TestSuite");
-        sb.append("{id='").append(id).append('\'');
-        sb.append(", name='").append(name).append('\'');
+        sb.append("{name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
         sb.append(", tests=").append(tests);
         sb.append('}');
@@ -109,7 +99,6 @@ public class TestSuite {
     public String toXml() {
         StringBuilder buffer = new StringBuilder();
         buffer.append("<testsuite>\n");
-        buffer.append("<id>" + id.trim() + "</id>\n");
         if (!name.equals(ReporterConstants.NA)) {
             buffer.append("<name>" + name.trim() + "</name>\n");
         }
