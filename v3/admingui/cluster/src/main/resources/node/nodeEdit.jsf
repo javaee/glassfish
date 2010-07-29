@@ -51,17 +51,26 @@
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/node/#{pageSession.encodedNodeName}");
         setPageSessionAttribute(key="childType" value="node");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
-
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.attrMap}");
+        createMap(result="#{pageSession.valueMap}")
+        mapPut(map="#{pageSession.valueMap}"  key="nodehost"  value="#{pageSession.attrMap['nodeHost']}");
+        mapPut(map="#{pageSession.valueMap}"  key="nodedir"  value="#{pageSession.attrMap['nodeDir']}");
+        mapPut(map="#{pageSession.valueMap}"  key="installdir",  value="#{pageSession.attrMap['installDir']}");
+        mapPut(map="#{pageSession.valueMap}"  key="name",  value="#{pageSession.attrMap['name']}");
+        
         gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/ssh-connector" exists="#{requestScope.sshConnectorExist}");
         if (#{requestScope.sshConnectorExist}){
-            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector.json", currentMap="#{pageSession.valueMap}"  valueMap="#{pageSession.valueMap}");
+            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector.json", currentMap="#{pageSession.attrMap}"  valueMap="#{pageSession.attrMap}");
+            mapPut(map="#{pageSession.valueMap}"  key="sshport",  value="#{pageSession.attrMap['sshPort']}");
+
             gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth" exists="#{requestScope.sshConnectorExist}");
             if (#{requestScope.sshConnectorExist}){
-                gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth.json", currentMap="#{pageSession.valueMap}"  valueMap="#{pageSession.valueMap}");
+                gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth.json", currentMap="#{pageSession.attrMap}"  valueMap="#{pageSession.attrMap}");
+                mapPut(map="#{pageSession.valueMap}"  key="sshuser",  value="#{pageSession.attrMap['userName']}");
+                mapPut(map="#{pageSession.valueMap}"  key="sshkeyfile",  value="#{pageSession.attrMap['keyfile']}");
             }
         }
-//        gf.nodeAttrToArgs(in="#{requestScope.aMap}" out="#{pageSession.valueMap}");
+
         setPageSessionAttribute(key="edit" value="#{true}");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{false}" );
