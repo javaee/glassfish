@@ -93,7 +93,6 @@ public class OSGiModulesRegistryImpl
             Logger.logger.log(Level.WARNING, "Cannot load cached metadata, will recreate the cache", e);
             cachedData.clear();
         }
-        boolean writeCache = cachedData.isEmpty();
 
         // Populate registry with pre-installed bundles
         for (final Bundle b : bctx.getBundles()) {
@@ -109,13 +108,6 @@ public class OSGiModulesRegistryImpl
                                 "to module because of exception: {2}",
                         new Object[]{b, b.getLocation(), e});
                 continue;
-            }
-        }
-        if (writeCache) {
-            try {
-                saveCache();
-            } catch (IOException e) {
-                Logger.logger.log(Level.WARNING, "Cannot save metadata to cache", e);
             }
         }
         ServiceReference ref = bctx.getServiceReference(PackageAdmin.class.getName());
@@ -321,6 +313,12 @@ public class OSGiModulesRegistryImpl
             if (OSGiModuleImpl.class.cast(m).isTransientlyActive()) {
                  m.stop();
             }
+        }
+        // Save the cache before clearing modules
+        try {
+            saveCache();
+        } catch (IOException e) {
+            Logger.logger.log(Level.WARNING, "Cannot save metadata to cache", e);
         }
         modules.clear();
 
