@@ -296,7 +296,7 @@ public class JWSAdapterManager implements PostConstruct {
     }
 
     private File modulesDir() {
-        return new File(installRootURI.getRawPath(), "modules");
+        return new File(new File(installRootURI), "modules");
     }
 
     static String publicExtensionHref(final Extension ext) {
