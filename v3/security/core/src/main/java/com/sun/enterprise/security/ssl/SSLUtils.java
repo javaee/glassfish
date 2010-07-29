@@ -71,6 +71,7 @@ import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.Permission;
 import java.util.PropertyPermission;
+import javax.net.ssl.SSLSocketFactory;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
@@ -434,6 +435,34 @@ public final class SSLUtils implements PostConstruct {
                         cert);
                 }
             }
+        }
+    }
+
+    /**
+     * 
+     *
+     * @param alias  the admin key alias
+     * @param protocol the protocol or null, uses "TLS" if this argument is null.
+     * @return the SSLSocketFactory from the initialized SSLContext
+     */
+    public SSLSocketFactory getAdminSocketFactory(String alias, String protocol) {
+
+        try {
+            if (protocol == null) {
+                protocol = "TLS";
+            }
+            SSLContext cntxt = SSLContext.getInstance(protocol);
+            KeyManager[] kMgrs = getKeyManagers();
+            if (alias != null && alias.length() > 0 && kMgrs != null) {
+                for (int i = 0; i < kMgrs.length; i++) {
+                    kMgrs[i] = new J2EEKeyManager((X509KeyManager)kMgrs[i], alias);
+                }
+            }
+            cntxt.init(kMgrs, getTrustManagers(), null);
+
+            return cntxt.getSocketFactory();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
     
