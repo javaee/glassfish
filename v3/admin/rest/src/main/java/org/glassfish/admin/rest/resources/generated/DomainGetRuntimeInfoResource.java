@@ -37,6 +37,7 @@ package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
+import org.glassfish.admin.rest.resources.custom.*;
 public class DomainGetRuntimeInfoResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource  {
 
    public DomainGetRuntimeInfoResource() {

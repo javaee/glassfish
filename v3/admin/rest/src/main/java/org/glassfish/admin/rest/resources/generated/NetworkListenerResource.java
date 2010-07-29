@@ -37,6 +37,7 @@ package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
+import org.glassfish.admin.rest.resources.custom.*;
 public class NetworkListenerResource extends TemplateResource  {
 
 @Path("create-ssl/")
@@ -60,6 +61,14 @@ return new String[][] {{"create-ssl", "POST", "create-ssl"} , {"delete-ssl", "DE
 public String getDeleteCommand() {
 	return "delete-network-listener";
 }
+
+	@Path("find-http-protocol/")
+	public FindHttpProtocolResource getFindHttpProtocolResource() {
+		FindHttpProtocolResource resource = resourceContext.getResource(FindHttpProtocolResource.class);
+		resource.setEntity(getEntity());
+		return resource;
+	}
+
 	@Path("property/")
 	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);

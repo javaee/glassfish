@@ -35,12 +35,10 @@
  */
 package org.glassfish.admin.rest.provider;
 
-import org.glassfish.admin.rest.Util;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Set;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -48,7 +46,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import org.jvnet.hk2.config.Dom;
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**

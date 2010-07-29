@@ -67,7 +67,9 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         String beanName = getBeanName(serverConfigName);
         String className = getClassName(beanName);
 
-        if (alreadyGenerated(className)) return;
+        if (alreadyGenerated(className)) {
+            return;
+        }
 
         String baseClassName = "TemplateResource";
         String resourcePath = null;
@@ -82,6 +84,8 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         generateCommandResources(beanName, classWriter);
 
         generateGetDeleteCommandMethod(beanName, classWriter);
+
+        generateCustomResourceMapping(beanName, classWriter);
 
         for (String elementName : model.getElementNames()) {
             ConfigModel.Property childElement = model.getElement(elementName);
@@ -216,6 +220,15 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         String commandName = configBeanToDELETECommand.get(beanName);
         if (commandName != null) {
             classWriter.createGetDeleteCommand(commandName);
+        }
+    }
+
+    private void generateCustomResourceMapping(String beanName, ClassWriter classWriter) {
+        for (int i = 0; i < configBeanCustomResources.length; i++) {
+            String row[] = configBeanCustomResources[i];
+            if (row[0].equals(beanName)) {
+                classWriter.createCustomResourceMapping(row[1], row[2]);
+            }
         }
     }
 
@@ -401,6 +414,8 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         put("NetworkListener", "delete-network-listener");
         put("Property", "GENERIC-DELETE");
         put("Protocol", "delete-protocol");
+        put("ProtocolFilter", "delete-protocol-filter");
+        put("ProtocolFinder", "delete-protocol-finder");
         put("Transport", "delete-transport");
         put("ThreadPool", "delete-threadpool");
     }};
@@ -435,7 +450,14 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         put("ListTransport", "create-transport");
         put("ListVirtualServer", "create-virtual-server");
         put("ListWorkSecurityMap", "create-connector-work-security-map");
+        put("ProtocolFilter", "create-protocol-filter");
+        put("ProtocolFinder", "create-protocol-finder");
     }};
+
+    private static final String[][] configBeanCustomResources = {
+        // ConfigBean, Custom Resource Class, path
+        {"NetworkListener", "FindHttpProtocolResource", "find-http-protocol"}
+    };
 
     private static class CollectionLeafMetaData {
         String postCommandName;

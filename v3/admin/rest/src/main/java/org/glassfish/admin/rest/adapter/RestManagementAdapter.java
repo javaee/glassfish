@@ -47,7 +47,6 @@ import org.glassfish.admin.rest.generator.ResourcesGenerator;
 import org.glassfish.admin.rest.generator.TextResourcesGenerator;
 import org.glassfish.admin.rest.resources.GeneratorResource;
 
-import org.glassfish.admin.rest.resources.SessionsResource;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.Dom;
@@ -83,11 +82,11 @@ public class RestManagementAdapter extends RestAdapter {
         final Set<Class<?>> r = new HashSet<Class<?>>();
 
         // uncomment if you need to run the generator:
-     //   r.add(GeneratorResource.class);
+        r.add(GeneratorResource.class);
         //r.add(ActionReportResource.class);
 
         r.add(domainResourceClass);
-        r.add(SessionsResource.class); //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
+        r.add(org.glassfish.admin.rest.resources.SessionsResource.class); //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
 
         //body readers, not in META-INF/services anymore
         r.add(org.glassfish.admin.rest.readers.FormReader.class);

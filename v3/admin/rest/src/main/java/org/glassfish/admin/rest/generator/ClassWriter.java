@@ -48,6 +48,8 @@ public interface ClassWriter {
 
     void createCommandResourceConstructor(String commandResourceClassName, String commandName, String httpMethod, boolean linkedToParent, CommandResourceMetaData.ParameterMetaData[] commandParams, String commandDisplayName, String commandAction);
 
+    void createCustomResourceMapping(String resourceClassName, String mappingPath);
+
     /**
      * Called to end creation of class being written by this writer
      */

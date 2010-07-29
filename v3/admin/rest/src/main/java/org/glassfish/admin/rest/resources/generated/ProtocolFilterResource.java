@@ -37,8 +37,13 @@ package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
+import org.glassfish.admin.rest.resources.custom.*;
 public class ProtocolFilterResource extends TemplateResource  {
 
+@Override
+public String getDeleteCommand() {
+	return "delete-protocol-filter";
+}
 	@Path("property/")
 	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);

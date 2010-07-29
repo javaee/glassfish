@@ -37,11 +37,36 @@ package org.glassfish.admin.rest.resources.generated;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
+import org.glassfish.admin.rest.resources.custom.*;
 public class ProtocolResource extends TemplateResource  {
 
 @Path("create-http/")
 public ProtocolCreateHttpResource getProtocolCreateHttpResource() {
 ProtocolCreateHttpResource resource = resourceContext.getResource(ProtocolCreateHttpResource.class);
+return resource;
+}
+
+@Path("create-protocol-filter/")
+public ProtocolCreateProtocolFilterResource getProtocolCreateProtocolFilterResource() {
+ProtocolCreateProtocolFilterResource resource = resourceContext.getResource(ProtocolCreateProtocolFilterResource.class);
+return resource;
+}
+
+@Path("delete-protocol-filter/")
+public ProtocolDeleteProtocolFilterResource getProtocolDeleteProtocolFilterResource() {
+ProtocolDeleteProtocolFilterResource resource = resourceContext.getResource(ProtocolDeleteProtocolFilterResource.class);
+return resource;
+}
+
+@Path("create-protocol-finder/")
+public ProtocolCreateProtocolFinderResource getProtocolCreateProtocolFinderResource() {
+ProtocolCreateProtocolFinderResource resource = resourceContext.getResource(ProtocolCreateProtocolFinderResource.class);
+return resource;
+}
+
+@Path("delete-protocol-finder/")
+public ProtocolDeleteProtocolFinderResource getProtocolDeleteProtocolFinderResource() {
+ProtocolDeleteProtocolFinderResource resource = resourceContext.getResource(ProtocolDeleteProtocolFinderResource.class);
 return resource;
 }
 
@@ -53,7 +78,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][] {{"create-http", "POST", "create-http"} , {"delete-http", "DELETE", "delete-http"} };
+return new String[][] {{"create-http", "POST", "create-http"} , {"create-protocol-filter", "POST", "create-protocol-filter"} , {"delete-protocol-filter", "DELETE", "delete-protocol-filter"} , {"create-protocol-finder", "POST", "create-protocol-finder"} , {"delete-protocol-finder", "DELETE", "delete-protocol-finder"} , {"delete-http", "DELETE", "delete-http"} };
 }
 
 @Override

@@ -95,6 +95,11 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
     }
 
     @Override
+    public void createCustomResourceMapping(String resourceClassName, String mappingPath) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
     public void createGetCommandResourcePaths(List<CommandResourceMetaData> commandMetaData) {
 
 

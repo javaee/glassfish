@@ -120,6 +120,7 @@ public class TextClassWriter implements ClassWriter {
         writer.write("import javax.ws.rs.Path;\n");
         writer.write("import javax.ws.rs.PathParam;\n");
         writer.write("import org.glassfish.admin.rest.resources.*;\n");
+        writer.write("import org.glassfish.admin.rest.resources.custom.*;\n");
     }
 
 
@@ -161,6 +162,21 @@ public class TextClassWriter implements ClassWriter {
             writer.write(commandResourceClassName + " resource = resourceContext.getResource(" + commandResourceClassName + ".class);\n");
             writer.write("return resource;\n");
             writer.write("}\n\n");
+        } catch (IOException e) {
+            throw new GeneratorException(e);
+        }
+    }
+
+    @Override
+    public void createCustomResourceMapping(String resourceClassName, String mappingPath) {
+        try {
+            writer.write("\n");
+            writer.write("\t@Path(\"" + mappingPath + "/\")\n");
+            writer.write("\tpublic " + resourceClassName + " get" + resourceClassName + "() {\n");
+            writer.write("\t\t" + resourceClassName + " resource = resourceContext.getResource(" + resourceClassName + ".class);\n");
+            writer.write("\t\tresource.setEntity(getEntity());\n");
+            writer.write("\t\treturn resource;\n");
+            writer.write("\t}\n\n");
         } catch (IOException e) {
             throw new GeneratorException(e);
         }

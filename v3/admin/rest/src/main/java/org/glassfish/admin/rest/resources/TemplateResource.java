@@ -153,9 +153,6 @@ public class TemplateResource {
         return new GetResult(getEntity(), getDeleteCommand(), getCommandResourcesPaths(), options());
     }
 
-//    public ConfigBean getConfigBean() {
-//        return (ConfigBean) Dom.unwrap(getEntity());
-//    }
     // TODO: This is wrong. Updates are done via PUT
     @POST  //update
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
