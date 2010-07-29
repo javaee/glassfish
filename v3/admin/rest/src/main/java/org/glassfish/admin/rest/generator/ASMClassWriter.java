@@ -65,7 +65,9 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
         this.className = className;
    //     this.baseClassName = baseClassName;
    //     this.resourcePath = resourcePath;
-
+        if (baseClassName.indexOf("TemplateCommand") != -1) { //constructor is created in createCommandResourceConstructor
+            return;
+        }
         if (baseClassName.indexOf(".") != -1) {
             baseClassName = baseClassName.replace('.', '/');
         } else {
@@ -134,7 +136,7 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
 
     @Override
     public void createGetCommandResource(String commandResourceClassName, String resourcePath) {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + commandResourceClassName , "()L"+ GENERATED_PATH  + commandResourceClassName + ";", null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + commandResourceClassName, "()L" + GENERATED_PATH + commandResourceClassName + ";", null, null);
 
         AnnotationVisitor av0 = mv.visitAnnotation("Ljavax/ws/rs/Path;", true);
         av0.visit("value", resourcePath + "/");
@@ -145,7 +147,7 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
         mv.visitFieldInsn(GETFIELD, GENERATED_PATH + className, "resourceContext", "Lcom/sun/jersey/api/core/ResourceContext;");
         mv.visitLdcInsn(Type.getType("L" + GENERATED_PATH + commandResourceClassName + ";"));
         mv.visitMethodInsn(INVOKEINTERFACE, "com/sun/jersey/api/core/ResourceContext", "getResource", "(Ljava/lang/Class;)Ljava/lang/Object;");
-        mv.visitTypeInsn(CHECKCAST, GENERATED_PATH + commandResourceClassName );
+        mv.visitTypeInsn(CHECKCAST, GENERATED_PATH + commandResourceClassName);
         mv.visitVarInsn(ASTORE, 1);
         mv.visitVarInsn(ALOAD, 1);
         mv.visitInsn(ARETURN);
@@ -154,57 +156,61 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
     }
 
     @Override
-    public void createCommandResourceConstructor(String commandResourceClassName, String commandName, 
+    public void createCommandResourceConstructor(String commandResourceClassName, String commandName,
             String httpMethod, boolean linkedToParent,
             CommandResourceMetaData.ParameterMetaData[] commandParams,
             String commandDisplayName,
             String commandAction) {
 
-
-/*
-
-cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, "org/glassfish/admin/rest/resources/generated/ApplicationDisableResource", null, "org/glassfish/admin/rest/resources/TemplateCommandPostResource", null);
-cw.visitInnerClass("org/glassfish/admin/rest/resources/generated/ApplicationDisableResource$1", null, null, 0);
-MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-mv.visitCode();
-mv.visitVarInsn(ALOAD, 0);
-mv.visitLdcInsn(commandResourceClassName);
-mv.visitLdcInsn(commandName);
-mv.visitLdcInsn(httpMethod);
-        if (!httpMethod.equals("GET")) {
-
-   mv.visitLdcInsn(commandAction);
-   mv.visitLdcInsn(commandAction);
+        String baseClassName = "";
+        if (httpMethod.equals("GET")) {
+            baseClassName = "org/glassfish/admin/rest/resources/TemplateCommandGetResource";
+        } else if (httpMethod.equals("DELETE")) {
+            baseClassName = "org/glassfish/admin/rest/resources/TemplateCommandDeleteResource";
+        } else if (httpMethod.equals("POST")) {
+            baseClassName = "org/glassfish/admin/rest/resources/TemplateCommandPostResource";
+        } else {
+            throw new GeneratorException("Invalid httpMethod specified: " + httpMethod);
         }
-mv.visitTypeInsn(NEW, "org/glassfish/admin/rest/resources/generated/ApplicationDisableResource$1");
-mv.visitInsn(DUP);
-mv.visitMethodInsn(INVOKESPECIAL, "org/glassfish/admin/rest/resources/generated/ApplicationDisableResource$1", "<init>", "()V");
-mv.visitInsn(ICONST_1);
+        boolean isget = (httpMethod.equals("GET"));
+
+
+        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, GENERATED_PATH + commandResourceClassName, null,
+                baseClassName, null);
+   //     cw.visitInnerClass(GENERATED_PATH + commandResourceClassName +"$1", null, null, 0);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitLdcInsn(commandResourceClassName);
+        mv.visitLdcInsn(commandName);
+        mv.visitLdcInsn(httpMethod);
+        if (!isget) {
+            mv.visitLdcInsn(commandAction);
+            mv.visitLdcInsn(commandDisplayName);
+        }
+        mv.visitInsn(ACONST_NULL);
+        mv.visitTypeInsn(CHECKCAST, "java/util/HashMap");
+        mv.visitInsn(ICONST_0);
 
 //next is different based on parent
-mv.visitMethodInsn(INVOKESPECIAL, "org/glassfish/admin/rest/resources/TemplateCommandPostResource", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/HashMap;Z)V");
-mv.visitInsn(RETURN);
-mv.visitMaxs(8, 1);  //GET is 6!!!
-mv.visitEnd();
+        if (!isget) {
 
-//get:
-cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, "org/glassfish/admin/rest/resources/generated/AuthRealmListGroupNamesResource", null, "org/glassfish/admin/rest/resources/TemplateCommandGetResource", null);
-cw.visitInnerClass("org/glassfish/admin/rest/resources/generated/AuthRealmListGroupNamesResource$1", null, null, 0);
-mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-mv.visitCode();
-mv.visitVarInsn(ALOAD, 0);
-mv.visitLdcInsn("AuthRealmListGroupNamesResource");
-mv.visitLdcInsn("__list-group-names");
-mv.visitLdcInsn("GET");
-mv.visitTypeInsn(NEW, "org/glassfish/admin/rest/resources/generated/AuthRealmListGroupNamesResource$1");
-mv.visitInsn(DUP);
-mv.visitMethodInsn(INVOKESPECIAL, "org/glassfish/admin/rest/resources/generated/AuthRealmListGroupNamesResource$1", "<init>", "()V");
-mv.visitInsn(ICONST_1);
-mv.visitMethodInsn(INVOKESPECIAL, "org/glassfish/admin/rest/resources/TemplateCommandGetResource", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/HashMap;Z)V");
-mv.visitInsn(RETURN);
-mv.visitMaxs(6, 1);
-mv.visitEnd();
-*/
+            mv.visitMethodInsn(INVOKESPECIAL, baseClassName,
+                    "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/HashMap;Z)V");
+        } else {
+            mv.visitMethodInsn(INVOKESPECIAL, baseClassName,
+                    "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/HashMap;Z)V");
+        }
+        mv.visitInsn(RETURN);
+
+        if (!isget) {
+            mv.visitMaxs(8, 1);  //GET is 6!!!
+        } else {
+            mv.visitMaxs(6, 1);
+
+        }
+        mv.visitEnd();
+
 
     }
 
