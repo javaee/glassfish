@@ -39,7 +39,9 @@ package org.jvnet.hk2.junit;
 import com.sun.hk2.component.*;
 import org.glassfish.hk2.classmodel.reflect.*;
 import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
+import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.HabitatFactory;
 import org.jvnet.hk2.component.Inhabitant;
 
 import java.io.*;
@@ -58,137 +60,153 @@ public class Hk2TestServices {
 
     private Habitat habitat;
     
-    @SuppressWarnings("deprecation")
+    private final HabitatFactory habitatFactory;
+    
     public Hk2TestServices() {
-        System.out.println("Singleton created");
-        String classPath = System.getProperty("surefire.test.class.path");
-        if (classPath==null) {
-            classPath = System.getProperty("java.class.path");
-        }
-        System.out.println("classpath is " + classPath);
-        ParsingContext.Builder builder = new ParsingContext.Builder();
-        final Set<String> annotations = new HashSet<String>();
-        annotations.add("org.jvnet.hk2.annotations.Contract");
-        annotations.add("org.jvnet.hk2.annotations.Service");
+        this(null);
+    }
 
-        builder.config(new ParsingConfig() {
-            final Set<String> empty = Collections.emptySet();
+    @SuppressWarnings("deprecation")
+    public Hk2TestServices(Class<HabitatFactory> habitatFactoryClass) {
+      if (null == habitatFactoryClass || habitatFactoryClass.isInterface()) {
+          habitatFactory = null;
+      } else {
+          try {
+              habitatFactory = habitatFactoryClass.newInstance();
+          } catch (Exception e) {
+              throw new RuntimeException(e);
+          }
+      }
+      
+      System.out.println("Singleton created");
+      String classPath = System.getProperty("surefire.test.class.path");
+      if (classPath==null) {
+          classPath = System.getProperty("java.class.path");
+      }
+      System.out.println("classpath is " + classPath);
+      ParsingContext.Builder builder = new ParsingContext.Builder();
+      final Set<String> annotations = new HashSet<String>();
+      annotations.add("org.jvnet.hk2.annotations.Contract");
+      annotations.add("org.jvnet.hk2.annotations.Service");
 
-            public Set<String> getInjectionTargetAnnotations() {
-                return empty;
-            }
+      builder.config(new ParsingConfig() {
+          final Set<String> empty = Collections.emptySet();
 
-            public Set<String> getInjectionTargetInterfaces() {
-                return annotations;
-            }
+          public Set<String> getInjectionTargetAnnotations() {
+              return empty;
+          }
 
-            public Set<String> getInjectionPointsAnnotations() {
-                return empty;
-            }
-        });
+          public Set<String> getInjectionTargetInterfaces() {
+              return annotations;
+          }
 
-        ParsingContext context = null;
-        try {
-            context = builder.build();
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        Parser parser = new Parser(context);
+          public Set<String> getInjectionPointsAnnotations() {
+              return empty;
+          }
+      });
 
-        final ClassLoader cLoader = this.getClass().getClassLoader();
+      ParsingContext context = null;
+      try {
+          context = builder.build();
+      } catch (Exception e) {
+          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+      Parser parser = new Parser(context);
 
-        final Holder<ClassLoader> holder = new Holder<ClassLoader>() {
-            public ClassLoader get() {
-                return cLoader;
-            }
-        };
-        
-        habitat = new Habitat();
+      final ClassLoader cLoader = this.getClass().getClassLoader();
 
-        HashSet<String> cpSet = new HashSet<String> ();
-        
-        findEntriesInClasspath(cpSet, classPath);
-              
-        List<InhabitantsScanner> metaInfScanners = new ArrayList<InhabitantsScanner>();
+      final Holder<ClassLoader> holder = new Holder<ClassLoader>() {
+          public ClassLoader get() {
+              return cLoader;
+          }
+      };
+      
+      habitat = newHabitat();
 
-        for (String fileName : cpSet) {
-            File f = new File(fileName);
-            if (f.exists()) {
-                try {
-                    System.out.println("Beginning parsing " + fileName);
-                    if (f.isFile()) {
-                        JarFile jarFile = new JarFile(f);
-                        // TODO : add support for other habitat than default.
-                        JarEntry entry = jarFile.getJarEntry(InhabitantsFile.PATH+"/default");
-                        if (entry!=null) {
-                            byte[] buf = new byte[(int) entry.getSize()];
-                            DataInputStream in = new DataInputStream(jarFile.getInputStream(entry));
-                            try {
-                                in.readFully(buf);
-                            } finally {
-                                in.close();
-                            }
-                            System.out.println("Using meta-inf file for " + f.getPath());
-                            metaInfScanners.add(new InhabitantsScanner(new ByteArrayInputStream(buf),
-                                "jar:"+f.toURL()+"!/"+entry.getName()));
-                        } else {
-                            // it's a file but no inhabitant file...
-                            parse(parser, f);
-                        }
-                        jarFile.close();
-                    } else {
-                        // directory, for now, always parse.
-                        File inhabitantFile = new File(f, InhabitantsFile.PATH+File.separator+"default");
-                        if (inhabitantFile.exists()) {
-                            System.out.println("Using meta-inf file for " + f.getPath());
-                            metaInfScanners.add(new InhabitantsScanner(new BufferedInputStream(
-                                    new FileInputStream(inhabitantFile)),
-                                    inhabitantFile.getPath()));
-                        } else {
-                            parse(parser, f);
-                        }
-                    }
-                } catch(IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        try {
-            parser.awaitTermination();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println("Starting to introspect");
-        final InhabitantsParser ip = new InhabitantsParser(habitat);
-        IntrospectionScanner is = new IntrospectionScanner(context);
-        try {
-            ip.parse(is, holder);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println("finished introspecting");
+      HashSet<String> cpSet = new HashSet<String> ();
+      
+      findEntriesInClasspath(cpSet, classPath);
+            
+      List<InhabitantsScanner> metaInfScanners = new ArrayList<InhabitantsScanner>();
 
-        System.out.println("Starting to introspect");
-        for (InhabitantsScanner scanner : metaInfScanners) {
-            try {
-                ip.parse(scanner, holder);
-                scanner.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        System.out.println("finished introspecting");
+      for (String fileName : cpSet) {
+          File f = new File(fileName);
+          if (f.exists()) {
+              try {
+                  System.out.println("Beginning parsing " + fileName);
+                  if (f.isFile()) {
+                      JarFile jarFile = new JarFile(f);
+                      // TODO : add support for other habitat than default.
+                      JarEntry entry = jarFile.getJarEntry(InhabitantsFile.PATH+"/default");
+                      if (entry!=null) {
+                          byte[] buf = new byte[(int) entry.getSize()];
+                          DataInputStream in = new DataInputStream(jarFile.getInputStream(entry));
+                          try {
+                              in.readFully(buf);
+                          } finally {
+                              in.close();
+                          }
+                          System.out.println("Using meta-inf file for " + f.getPath());
+                          metaInfScanners.add(new InhabitantsScanner(new ByteArrayInputStream(buf),
+                              "jar:"+f.toURL()+"!/"+entry.getName()));
+                      } else {
+                          // it's a file but no inhabitant file...
+                          parse(parser, f);
+                      }
+                      jarFile.close();
+                  } else {
+                      // directory, for now, always parse.
+                      File inhabitantFile = new File(f, InhabitantsFile.PATH+File.separator+"default");
+                      if (inhabitantFile.exists()) {
+                          System.out.println("Using meta-inf file for " + f.getPath());
+                          metaInfScanners.add(new InhabitantsScanner(new BufferedInputStream(
+                                  new FileInputStream(inhabitantFile)),
+                                  inhabitantFile.getPath()));
+                      } else {
+                          parse(parser, f);
+                      }
+                  }
+              } catch(IOException e) {
+                  e.printStackTrace();
+              }
+          }
+      }
+      try {
+          parser.awaitTermination();
+      } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+      }
+      System.out.println("Starting to introspect");
+      final InhabitantsParser ip = new InhabitantsParser(habitat);
+      IntrospectionScanner is = new IntrospectionScanner(context);
+      try {
+          ip.parse(is, holder);
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
+      System.out.println("finished introspecting");
 
-        Iterator<String> contracts = habitat.getAllContracts();
-        while (contracts.hasNext()) {
-            String contract = contracts.next();
-            System.out.println("Found contract : " + contract);
-            for (Inhabitant<?> t : habitat.getInhabitantsByContract(contract)) {
-                System.out.println(" --> " + t.typeName() + " "+ t.metadata());
-            }
-        }
-        
-        habitat.initialized();
+      System.out.println("Starting to introspect");
+      for (InhabitantsScanner scanner : metaInfScanners) {
+          try {
+              ip.parse(scanner, holder);
+              scanner.close();
+          } catch (IOException e) {
+              throw new RuntimeException(e);
+          }
+      }
+      System.out.println("finished introspecting");
+
+      Iterator<String> contracts = habitat.getAllContracts();
+      while (contracts.hasNext()) {
+          String contract = contracts.next();
+          System.out.println("Found contract : " + contract);
+          for (Inhabitant<?> t : habitat.getInhabitantsByContract(contract)) {
+              System.out.println(" --> " + t.typeName() + " "+ t.metadata());
+          }
+      }
+      
+      habitat.initialized();
     }
 
     /**
@@ -298,7 +316,15 @@ public class Hk2TestServices {
         });
 
     }
+    
     public Habitat getHabitat() {
         return habitat;
+    }
+
+    public Habitat newHabitat() throws ComponentException {
+        if (null != habitatFactory) {
+          return habitatFactory.newHabitat();
+        }
+        return new Habitat(); 
     }
 }

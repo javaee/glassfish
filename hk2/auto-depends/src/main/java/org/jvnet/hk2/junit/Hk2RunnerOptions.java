@@ -6,6 +6,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.jvnet.hk2.component.HabitatFactory;
+
 /**
  * Provide options for tuning the behavior of the Hk2Runner.
  * 
@@ -22,5 +24,10 @@ public @interface Hk2RunnerOptions {
    * are recreated after each <code>Test</code>.
    */
   boolean reinitializePerTest() default false;
+  
+  /**
+   * Alternative Habitat Factory from the default 
+   */
+  Class<HabitatFactory> habitatFactory() default HabitatFactory.class; 
   
 }

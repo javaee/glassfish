@@ -40,6 +40,7 @@ package com.sun.enterprise.module;
 
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.HabitatFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -52,7 +53,7 @@ import com.sun.hk2.component.InhabitantsParser;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public interface ModulesRegistry extends ModuleChangeListener {
+public interface ModulesRegistry extends ModuleChangeListener, HabitatFactory {
     /**
      * Creates a new child {@link ModulesRegistry} in this {@link ModulesRegistry}.
      */

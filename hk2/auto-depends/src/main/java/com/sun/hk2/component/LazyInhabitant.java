@@ -46,12 +46,9 @@ import org.jvnet.hk2.component.Wombs;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class LazyInhabitant<T> extends AbstractInhabitantImpl<T> {
+public class LazyInhabitant<T> extends EventPublishingInhabitant<T> {
     private final String typeName;
-    /**
-     * Real {@link Inhabitant} object. Lazily created.
-     */
-    private volatile Inhabitant<T> real;
+
     /**
      * Lazy reference to {@link ClassLoader}.
      */
@@ -65,7 +62,7 @@ public class LazyInhabitant<T> extends AbstractInhabitantImpl<T> {
 
     
     public LazyInhabitant(Habitat habitat, Holder<ClassLoader> cl, String typeName, MultiMap<String,String> metadata) {
-      this(habitat, cl, typeName, metadata, null);
+        this(habitat, cl, typeName, metadata, null);
     }
 
     public LazyInhabitant(Habitat habitat, Holder<ClassLoader> cl, String typeName, MultiMap<String,String> metadata, Inhabitant<?> lead) {
@@ -78,20 +75,16 @@ public class LazyInhabitant<T> extends AbstractInhabitantImpl<T> {
     }
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
-            "(" + typeName() + ", active: " + isInstantiated() + ")";
-    }
-    
-    @Override
     public Inhabitant<?> lead() {
         return lead;
     }
     
+    @Override
     public String typeName() {
         return typeName;
     }
-
+    
+    @Override
     public Class<T> type() {
       // fetching is too heavy of an operation because it will activate/write the class
 //        fetch();
@@ -104,30 +97,38 @@ public class LazyInhabitant<T> extends AbstractInhabitantImpl<T> {
         }
     }
 
+    @Override
     public MultiMap<String,String> metadata() {
         return metadata;
     }
 
-    private synchronized void fetch() {
+    @Override
+    protected synchronized void fetch() {
         if (null == real) {
           Class<T> c = loadClass();
           real = Inhabitants.wrapByScope(c,createWomb(c),habitat);
         }
     }
-
+    
     public final ClassLoader getClassLoader() {
-      return classLoader.get();
+        return classLoader.get();
     }
     
     @SuppressWarnings("unchecked")
     private Class<T> loadClass() {
-      final ClassLoader cl = getClassLoader();
-      try {
-          Class<T> c = (Class<T>) cl.loadClass(typeName);
-          return c;
-      } catch (ClassNotFoundException e) {
-          throw new ComponentException("Failed to load "+typeName+" from " + cl, e);
-      }
+        final ClassLoader cl = getClassLoader();
+        try {
+            Class<T> c = (Class<T>) cl.loadClass(typeName);
+            return c;
+        } catch (ClassNotFoundException e) {
+            throw new ComponentException("Failed to load "+typeName+" from " + cl, e);
+        }
+    }
+
+    @Override
+    public synchronized void release() {
+        super.release();
+        real = null;
     }
 
     /**
@@ -137,20 +138,4 @@ public class LazyInhabitant<T> extends AbstractInhabitantImpl<T> {
         return Wombs.create(c,habitat,metadata);
     }
 
-    @SuppressWarnings("unchecked")
-    public T get(Inhabitant onBehalfOf) throws ComponentException {
-        fetch();
-        return real.get(onBehalfOf);
-    }
-
-    public synchronized void release() {
-        if (null != real) {
-            real.release();
-            real = null;
-        }
-    }
-
-    public boolean isInstantiated() {
-        return (real!=null && real.isInstantiated());
-    }
 }

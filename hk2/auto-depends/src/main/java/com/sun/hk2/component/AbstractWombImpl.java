@@ -36,6 +36,8 @@
  */
 package com.sun.hk2.component;
 
+import java.util.Collection;
+
 import org.jvnet.hk2.component.*;
 
 /**
@@ -96,11 +98,10 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
      * This method is an utility method for subclasses for performing injection.
      */
     protected void inject(Habitat habitat, T t, Inhabitant<?> onBehalfOf) {
-        InjectionManager injectionMgr = new InjectionManager();
-        InjectionResolver<?>[] targets = {
-            new InjectInjectionResolver(habitat),
-            new LeadInjectionResolver(),
-        };
+        InjectionManager injectionMgr = new InjectionManager(habitat);
+        
+        Collection<InjectionResolver> targets = habitat.getAllByType(InjectionResolver.class);
+        assert(!targets.isEmpty());
         injectionMgr.inject(t, onBehalfOf, targets);
 
         // postContruct call if any
