@@ -333,30 +333,6 @@ public class ClusterHandler {
     }
 
 
-/*
-    @Handler(id = "gf.nodeAttrToArgs",
-        input = {
-            @HandlerInput(name = "in", type = Map.class)
-            },
-        output = {
-            @HandlerOutput(name = "out", type = Map.class)
-        })
-    public static void nodeAttrToArgs(HandlerContext handlerCtx) {
-        Map in = (Map) handlerCtx.getInputValue("in");
-        Map out = new HashMap();
-        out.put("name", in.get("Name"));
-        out.put("nodehost", in.get("NodeHost"));
-        out.put("nodedir", in.get("NodeDir"));
-        out.put("installdir", in.get("InstallDir"));
-        out.put("sshhost", in.get("SshHost"));
-        out.put("sshport", in.get("SshPort"));
-        out.put("sshuser", in.get("UserName"));
-        out.put("sshkeyfile", in.get("Keyfile"));
-        handlerCtx.setOutputValue("out", out);
-    }
-*/
-
-
     public static String CLUSTER_RESOURCE_NAME = "org.glassfish.cluster.admingui.Strings";
 
     //The following is defined in v3/cluster/admin/src/main/java/..../cluster/Constants.java
