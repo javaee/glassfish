@@ -131,8 +131,8 @@ public class SimpleReporterAdapter implements Serializable {
             int fail = 0;
             int d_n_r = 0;
             System.out.println("\n\n-----------------------------------------");
-            for (List<TestCase> testCases : test.getTestCases().values()) {
-                for (TestCase testCase : testCases) {
+            for (Test test : suite.getTests()) {
+                for (TestCase testCase : test.getTestCases()) {
                     String status = testCase.getStatus();
                     if (status.equalsIgnoreCase(PASS)) {
                         pass++;

@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.appserv.test.util.results;
 
 import java.io.BufferedReader;
@@ -43,7 +42,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.List;
 
 public class ReportHandler {
     int pass;
@@ -78,13 +76,11 @@ public class ReportHandler {
                 + row(null, "td", "Testsuite Name", suite.getName())
                 + row(null, "td", "Testsuite Description", suite.getDescription())
                 + row(null, "th", "Name", "Status"));
-        for (Test test : suite.getTests().values()) {
-            for (List<TestCase> list : test.getTestCases().values()) {
-                for (TestCase testCase : list) {
-                    final String status = testCase.getStatus();
-                    table.append(String.format("<tr><td>%s</td>%s", testCase.getName(),
-                        cell(status.replaceAll("_", ""), 1, status)));
-                }
+        for (Test test : suite.getTests()) {
+            for (TestCase testCase : test.getTestCases()) {
+                final String status = testCase.getStatus();
+                table.append(String.format("<tr><td>%s</td>%s", testCase.getName(),
+                    cell(status.replaceAll("_", ""), 1, status)));
             }
         }
         return table
@@ -97,16 +93,15 @@ public class ReportHandler {
     }
 
     private String buildSummary(final TestSuite suite) {
-        for (Test test : suite.getTests().values()) {
-            for (List<TestCase> list : test.getTestCases().values()) {
-                for (TestCase testCase : list) {
-                    process(suite, testCase);
-                }
+        for (Test test : suite.getTests()) {
+            for (TestCase testCase : test.getTestCases()) {
+                process(suite, testCase);
             }
         }
         return String.format("<tr class=\"%s\"><td width=\"50%%\">%s</td>%s%s%s</tr>",
             resultCssClass(suite),
-            String.format("<a href=\"javascript:showHide('table%s')\">%s</a>", suite.number, suite.getId()) + suite.toHtml(),
+            String.format("<a href=\"javascript:showHide('table%s')\">%s</a>", suite.number, suite.getId()) + suite
+                .toHtml(),
             cell("pass", suite.pass, suite.pass),
             cell("fail", suite.fail, suite.fail),
             cell("didnotrun", suite.didNotRun, suite.didNotRun));

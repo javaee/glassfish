@@ -36,12 +36,9 @@
 
 package org.glassfish.devtests.reportbuilder;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 
 import com.sun.appserv.test.util.results.HtmlReportProducer;
@@ -59,25 +56,18 @@ public class ReportTest {
         stat.addStatus("second test", SimpleReporterAdapter.FAIL);
         stat.printSummary();
 
-        final Map<String, Test> map = stat.getSuite().getTests();
-        Assert.assertEquals(map.size(), 1, "Should be only 1 Test");
-        final Map<String, List<TestCase>> testCases = map.values().iterator().next().getTestCases();
-        int count = 0;
-        final Collection<List<TestCase>> list = testCases.values();
-        for (List<TestCase> cases : list) {
-            count += cases.size();
-        }
-        Assert.assertEquals(count, 3, "Should have 3 test cases");
+        final List<Test> tests = stat.getSuite().getTests();
+        Assert.assertEquals(tests.size(), 1, "Should be only 1 Test");
+        final List<TestCase> testCases = tests.iterator().next().getTestCases();
+        Assert.assertEquals(testCases.size(), 3, "Should have 3 test cases");
 
         // first test
-        final Iterator<List<TestCase>> iterator = list.iterator();
-        List<TestCase> testCase = iterator.next();
-        Assert.assertEquals(testCase.get(0).getStatus(), SimpleReporterAdapter.FAIL, "Should have failed.");
+        final Iterator<TestCase> iterator = testCases.iterator();
+        Assert.assertEquals(iterator.next().getStatus(), SimpleReporterAdapter.FAIL, "Should have failed.");
 
         // second test
-        testCase = iterator.next();
-        Assert.assertEquals(testCase.get(0).getStatus(), SimpleReporterAdapter.PASS, "Should have passed.");
-        Assert.assertEquals(testCase.get(1).getStatus(), SimpleReporterAdapter.FAIL, "Should have failed.");
+        Assert.assertEquals(iterator.next().getStatus(), SimpleReporterAdapter.PASS, "Should have passed.");
+        Assert.assertEquals(iterator.next().getStatus(), SimpleReporterAdapter.FAIL, "Should have failed.");
     }
 
     public void htmlReporter() throws IOException, XMLStreamException {

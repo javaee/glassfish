@@ -45,11 +45,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import java.util.Stack;
-import java.util.TreeMap;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -68,7 +68,7 @@ public class HtmlReportProducer {
     private StringBuilder buffer = new StringBuilder();
     private File input;
     private ReportHandler handler;
-    private Map<String, TestSuite> suites = new TreeMap<String, TestSuite>();
+    private List<TestSuite> suites = new ArrayList<TestSuite>();
     private final boolean failOnError;
 
     public HtmlReportProducer(String inputFile) throws FileNotFoundException {
@@ -94,11 +94,7 @@ public class HtmlReportProducer {
                         Object obj = pop();
                         if (obj instanceof TestSuite) {
                             TestSuite suite = (TestSuite) obj;
-                            if (suites.get(suite.getName()) != null) {
-                                suites.get(suite.getName()).merge(suite);
-                            } else {
-                                suites.put(suite.getName(), suite);
-                            }
+                            suites.add(suite);
                         } else if (obj instanceof Test) {
                             pop();
                             ((TestSuite) context.peek()).addTest((Test) obj);
@@ -111,7 +107,7 @@ public class HtmlReportProducer {
                     }
                 }
             }
-            for (TestSuite testSuite : suites.values()) {
+            for (TestSuite testSuite : suites) {
                 handler.process(testSuite);
             }
             handler.printHtml();

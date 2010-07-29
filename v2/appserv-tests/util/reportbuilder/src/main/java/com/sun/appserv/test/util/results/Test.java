@@ -57,7 +57,7 @@ public class Test {
     private String statusDescription = ReporterConstants.OPTIONAL;
     private String expected;
     private String actual;
-    private Map<String, List<TestCase>> testCases = new LinkedHashMap<String, List<TestCase>>();
+    private List<TestCase> testCases = new ArrayList<TestCase>();
 
     public Test() {
     }
@@ -122,17 +122,12 @@ public class Test {
         return actual;
     }
 
-    public Map<String, List<TestCase>> getTestCases() {
+    public List<TestCase> getTestCases() {
         return testCases;
     }
 
     public void addTestCase(TestCase testCase) {
-        List<TestCase> list = testCases.get(testCase.getName());
-        if (list == null) {
-            list = new ArrayList<TestCase>();
-            testCases.put(testCase.getName(), list);
-        }
-        list.add(testCase);
+        testCases.add(testCase);
     }
 
     @Override
@@ -165,7 +160,7 @@ public class Test {
             buffer.append("<status value=\"" + status + "\">");
             if (!description.equals(ReporterConstants.OPTIONAL)) {
                 buffer.append("<![CDATA[" + description.trim() + "]]>");
-            } else if ((expected != null) && (actual != null)) {
+            } else if (expected != null && actual != null) {
                 buffer.append("<expected><![CDATA[" + expected.trim() + "]]></expected>"
                     + "<actual><![CDATA[" + actual.trim() + "]]></actual>");
             }
@@ -173,10 +168,8 @@ public class Test {
         }
         if (!testCases.isEmpty()) {
             buffer.append("<testcases>\n");
-            for (List<TestCase> list : testCases.values()) {
-                for (TestCase myTestCase : list) {
-                    buffer.append(myTestCase.toXml());
-                }
+            for (TestCase myTestCase : testCases) {
+                buffer.append(myTestCase.toXml());
             }
             buffer.append("</testcases>\n");
         }
@@ -184,11 +177,4 @@ public class Test {
         return buffer.toString();
     }
 
-    public void merge(final Test test) {
-        for (List<TestCase> list : test.getTestCases().values()) {
-            for (TestCase testCase : list) {
-                addTestCase(testCase);
-            }
-        }
-    }
 }

@@ -33,12 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.appserv.test.util.results;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * @Class: TestSuite
@@ -52,7 +50,7 @@ public class TestSuite {
     private String id;
     private String name = ReporterConstants.NA;
     private String description = ReporterConstants.NA;
-    private Map<String, Test> tests = new TreeMap<String, Test>();
+    private List<Test> tests = new ArrayList<Test>();
     int pass;
     int fail;
     int didNotRun;
@@ -72,11 +70,6 @@ public class TestSuite {
         this.name = SimpleReporterAdapter.checkNA(name);
     }
 
-    public TestSuite(String id, String name, String description) {
-        this(id, name);
-        this.description = SimpleReporterAdapter.checkNA(description);
-    }
-
     public String getId() {
         return id;
     }
@@ -93,16 +86,12 @@ public class TestSuite {
         this.description = SimpleReporterAdapter.checkNA(description);
     }
 
-    public Map<String, Test> getTests() {
+    public List<Test> getTests() {
         return tests;
     }
 
     public void addTest(Test test) {
-        if (tests.get(test.getName()) == null) {
-            tests.put(test.getName(), test);
-        } else {
-            tests.get(test.getName()).merge(test);
-        }
+        tests.add(test);
     }
 
     @Override
@@ -128,7 +117,7 @@ public class TestSuite {
             buffer.append("<description><![CDATA[" + description.trim() + "]]></description>\n");
         }
         buffer.append("<tests>\n");
-        for (Test myTest : tests.values()) {
+        for (Test myTest : tests) {
             buffer.append(myTest.toXml());
         }
         buffer.append("</tests>\n");
@@ -142,13 +131,11 @@ public class TestSuite {
                 + ReportHandler.row(null, "td", "Testsuite Name", getName())
                 + ReportHandler.row(null, "td", "Testsuite Description", getDescription())
                 + ReportHandler.row(null, "th", "Name", "Status"));
-        for (Test test : getTests().values()) {
-            for (List<TestCase> list : test.getTestCases().values()) {
-                for (TestCase testCase : list) {
-                    final String status = testCase.getStatus();
-                    table.append(String.format("<tr><td>%s</td>%s", testCase.getName(),
-                        ReportHandler.cell(status.replaceAll("_", ""), 1, status)));
-                }
+        for (Test test : getTests()) {
+            for (TestCase testCase : test.getTestCases()) {
+                final String status = testCase.getStatus();
+                table.append(String.format("<tr><td>%s</td>%s", testCase.getName(),
+                    ReportHandler.cell(status.replaceAll("_", ""), 1, status)));
             }
         }
         return table
@@ -167,11 +154,5 @@ public class TestSuite {
 
     public void setWritten(final boolean written) {
         this.written = written;
-    }
-
-    public void merge(final TestSuite suite) {
-        for (Test test : suite.getTests().values()) {
-            addTest(test);
-        }
     }
 }
