@@ -47,11 +47,12 @@ import org.jvnet.hk2.component.Inhabitant;
  *
  * @author Kohsuke Kawaguchi
  */
+@SuppressWarnings("unchecked")
 final class DomProxyWomb<T extends ConfigBeanProxy> extends AbstractWombImpl<T> {
     private final Dom dom;
 
     public DomProxyWomb(Class<T> type, MultiMap<String, String> metadata, Dom dom) {
-        super(type, metadata);
+        super(type, null, metadata);
         this.dom = dom;
     }
 
