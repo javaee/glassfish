@@ -31,7 +31,7 @@ public class NodeTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHost:NodeHost", "localhost");
         selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome", "/NodeDir");
         selenium.type("propertyForm:propertySheet:propertSectionTextField:installdir:installDir", "/InstallDir");
-        selenium.click("propertyForm:propertySheet:propertSectionTextField:force:sun_checkbox171");
+        selenium.click("propertyForm:propertySheet:propertSectionTextField:force:force");
         selenium.type("propertyForm:propertySheet:sshConnector:sshNodeHome:sshport", "24");
         selenium.type("propertyForm:propertySheet:sshAuth:UserName:UserName", "sshUserName");
         selenium.type("propertyForm:propertySheet:sshAuth:Keyfile:Keyfile", "sshKeyFile");
