@@ -37,7 +37,8 @@
 
 <!facet pageButtonsTop>
     <sun:panelGroup id="topButtons">
-        <sun:button id="saveButton" text="$resource{i18n.button.Save}"  >
+        <sun:button id="saveButton" text="$resource{i18n.button.Save}"
+             onClick=" return submitAndDisable(this, '$resource{i18n.button.Processing}'); " >
             <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
