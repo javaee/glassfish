@@ -53,12 +53,6 @@ public class SingletonInhabitant<T> extends AbstractWombInhabitantImpl<T> {
         super(womb);
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
-            "(" + object + ")";
-    }
-    
     @SuppressWarnings("unchecked")
     @Override
     public T get(Inhabitant onBehalfOf) {
