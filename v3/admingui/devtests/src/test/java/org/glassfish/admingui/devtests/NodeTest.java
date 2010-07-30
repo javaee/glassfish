@@ -70,7 +70,8 @@ public class NodeTest extends BaseSeleniumTestClass {
         assertTrue(selenium.isTextPresent(nodeName));
 
         //Verify the node is created with the value specified.
-        clickAndWait( getLinkIdByLinkText("propertyForm:nodesTable:rowGroup1:1:col1:link", nodeName), TRIGGER_EDIT_NODE) ;
+        clickAndWait( getLinkIdByLinkText("propertyForm:nodesTable", nodeName), TRIGGER_EDIT_NODE) ;
+
         assertTrue(selenium.isTextPresent(nodeName));
         assertEquals("localhost", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:NodeHost:NodeHost"));
         assertEquals("/NodeDir", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome"));
