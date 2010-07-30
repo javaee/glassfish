@@ -155,6 +155,11 @@ public class DummyNetworkListener implements NetworkListener {
     }
 
     @Override
+    public String findHttpProtocolName() {
+        return null;
+    }
+
+    @Override
     public Protocol findHttpProtocol() {
         return null;
     }
