@@ -42,6 +42,7 @@ import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.net.NetUtils;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -210,9 +211,21 @@ public class ValidateNodeCommand implements AdminCommand {
             String value, String configValue)
             throws CommandValidationException {
 
-        // To validate if two hostnames match we just do a case insensitive
-        // string comparison.
-        validateString(propname, value, configValue, true);
+        try {
+            // First do a simple case insensitve string comparison. If that
+            // matches then it's good enough for us.
+            validateString(propname, value, configValue, true);
+            return;
+        } catch (CommandValidationException e) {
+            // Strings don't match, but we could have a case of
+            // "sidewinder" and "sidewinder.us.oracle.com". NetUtils
+            // isEqual() handles this check.
+            if (! NetUtils.isEqual(value, configValue)) {
+                throw new CommandValidationException(
+                    Strings.get("attribute.mismatch",
+                            propname, value, configValue));
+            }
+        }
     }
 
     private void validateString(String propname,
