@@ -82,7 +82,7 @@
                 <sun:textField id="installDir" columns="$int{60}" text="#{pageSession.valueMap['installdir']}" />
             </sun:property>
             <sun:property id="force"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.force}" helpText="$resource{i18ncs.node.forceHelp}">
-                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['force']}" selectedValue="true" />
+                <sun:checkbox id="force" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['force']}" selectedValue="true" />
             </sun:property>
         </sun:propertySheetSection>
 
