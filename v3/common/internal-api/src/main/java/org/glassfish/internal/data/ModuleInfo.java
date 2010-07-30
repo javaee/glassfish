@@ -37,7 +37,6 @@
 package org.glassfish.internal.data;
 
 import java.beans.PropertyVetoException;
-import java.lang.instrument.ClassFileTransformer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -50,7 +49,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.net.URLClassLoader;
 
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
@@ -158,8 +156,6 @@ public class ModuleInfo {
         ActionReport report = context.getActionReport();
         context.setPhase(ExtendedDeploymentContext.Phase.LOAD);
         moduleClassLoader = context.getClassLoader();
-
-        installTransformers(context);
 
         Set<EngineRef> filteredEngines = new LinkedHashSet<EngineRef>();
 
@@ -384,51 +380,6 @@ public class ModuleInfo {
             Engine engine = module.createChild(Engine.class);
             module.getEngines().add(engine);
             ref.save(engine);
-        }
-    }
-
-    private void installTransformers(ExtendedDeploymentContext context) throws Exception{
-        ActionReport report = context.getActionReport();
-        if (!context.getTransformers().isEmpty()) {
-            // add the class file transformers to the new class loader
-            try {
-                InstrumentableClassLoader icl = InstrumentableClassLoader.class.cast(context.getFinalClassLoader());
-                String isComposite = context.getAppProps().getProperty(
-                    ServerTags.IS_COMPOSITE);
-
-                if (Boolean.valueOf(isComposite) && 
-                    icl instanceof URLClassLoader) {
-                    URLClassLoader urlCl = (URLClassLoader)icl;
-                    if (this instanceof ApplicationInfo) {
-                        // for ear lib PUs, let's install the
-                        // tranformers with the EarLibClassLoader
-                        icl = InstrumentableClassLoader.class.cast(urlCl.getParent().getParent());
-                    } else {
-                        // for modules inside the ear, let's install the 
-                        // transformers with the EarLibClassLoader in 
-                        // addition to installing them to module classloader
-                        ClassLoader libCl = urlCl.getParent().getParent();
-                        if (!(libCl instanceof URLClassLoader)) {
-                            // web module
-                            libCl = libCl.getParent();
-                        }
-                        if (libCl instanceof URLClassLoader) {
-                            InstrumentableClassLoader libIcl = InstrumentableClassLoader.class.cast(libCl);
-                            for (ClassFileTransformer transformer : context.getTransformers()) {
-                                libIcl.addTransformer(transformer);
-                            }
-                        }
-            
-                    }
-                }
-                for (ClassFileTransformer transformer : context.getTransformers()) {
-                    icl.addTransformer(transformer);
-                }
-
-            } catch (Exception e) {
-                report.failure(logger, "Class loader used for loading application cannot handle bytecode enhancer", e);
-                throw e;
-            }
         }
     }
 }
