@@ -87,6 +87,7 @@ public class CommandResourceMetaData {
             {"Application", "disable", "POST", "disable", "Disable", "id=$parent"},
             {"Application", "enable", "POST", "enable", "Enable", "id=$parent"},
             {"Application", "show-component-status", "GET", "show-component-status", "Show Component Status", "id=$parent"},
+            {"Application", "_get-deployment-configurations", "GET", "_get-deployment-configurations", "Get Deployment Configurations", "appname=$parent"},
             {"AuthRealm", "__list-group-names", "GET", "list-group-names", "List Group Names", "realmName=$parent"},
             {"AuthRealm", "__supports-user-management", "GET", "supports-user-management", "Check Support", "realmName=$parent"},
             {"AuthRealm", "create-file-user", "POST", "create-user", "Create", "authrealmname=$parent"},

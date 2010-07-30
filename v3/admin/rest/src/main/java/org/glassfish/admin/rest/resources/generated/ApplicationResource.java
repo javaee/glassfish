@@ -58,9 +58,15 @@ ApplicationShowComponentStatusResource resource = resourceContext.getResource(Ap
 return resource;
 }
 
+@Path("_get-deployment-configurations/")
+public Application_getDeploymentConfigurationsResource getApplication_getDeploymentConfigurationsResource() {
+Application_getDeploymentConfigurationsResource resource = resourceContext.getResource(Application_getDeploymentConfigurationsResource.class);
+return resource;
+}
+
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][] {{"disable", "POST", "disable"} , {"enable", "POST", "enable"} , {"show-component-status", "GET", "show-component-status"} };
+return new String[][] {{"disable", "POST", "disable"} , {"enable", "POST", "enable"} , {"show-component-status", "GET", "show-component-status"} , {"_get-deployment-configurations", "GET", "_get-deployment-configurations"} };
 }
 
 	@Path("module/")
