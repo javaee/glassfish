@@ -114,9 +114,11 @@ monitoring     web  800
 	<!afterCreate
 	    includeIntegrations(type="org.glassfish.admingui:navNode" root="#{pageSession.treeId}");
 	    foreach(var="configName" list="#{pageSession.configsList}") {
-		gf.encodeId(id="${configName}" result="#{requestScope.configNameId}");
-		buildUIComponentTree(layoutElement="$attribute{configTreeNodeLE}" parent="$attribute{configsTreeNode}");
-		includeIntegrations(type="org.glassfish.admingui:navNode" root="#{pageSession.treeId}");
+		if ("!(${configName}=#{pageSession.configsList[0]})") {
+		    gf.encodeId(id="${configName}" result="#{requestScope.configNameId}");
+		    buildUIComponentTree(layoutElement="$attribute{configTreeNodeLE}" parent="$attribute{configsTreeNode}");
+		    includeIntegrations(type="org.glassfish.admingui:navNode" root="$attribute{configsTreeNode}");
+		}
 	    }
 	/>
     </event>
