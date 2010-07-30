@@ -37,6 +37,7 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.ParameterMap;
@@ -130,6 +131,7 @@ class ClusterCommandHelper {
         // not work so we can summarize our results.
         StringBuilder failedServerNames = new StringBuilder();
         StringBuilder succeededServerNames = new StringBuilder();
+        ReportResult reportResult = new ReportResult();
         boolean failureOccurred = false;
 
         // Save command output to return in ActionReport
@@ -165,16 +167,26 @@ class ClusterCommandHelper {
                 // Bummer, the command had an error. Log and save output
                 failureOccurred = true;
                 failedServerNames.append(server.getName()).append(" ");
+                reportResult.failedServerNames.add(server.getName());
                 msg = report.getMessage();
                 logger.severe(msg);
                 output.append(msg).append(NL);
             } else {
                 // Command worked. Note that too.
                 succeededServerNames.append(server.getName()).append(" ");
+                reportResult.succeededServerNames.add(server.getName());
             }
         }
 
         report.setActionExitCode(ExitCode.SUCCESS);
+        
+        // too error prone to parse report message to get list of failed or succeeded server names.
+        if (failureOccurred) {
+            report.setResultType(List.class, reportResult.failedServerNames);
+        } else {
+            report.setResultType(List.class, reportResult.succeededServerNames);
+        }
+
 
         // Display summary of started servers if in verbose mode or we
         // had one or more failures.
@@ -199,4 +211,11 @@ class ClusterCommandHelper {
         report.setMessage(output.toString());
         return report;
     }
+
+    static public class ReportResult {
+        final public List<String> succeededServerNames = new LinkedList<String>();
+        final public List<String> failedServerNames = new LinkedList<String>();
+    }
 }
+
+
