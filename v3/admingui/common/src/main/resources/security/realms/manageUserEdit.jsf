@@ -97,26 +97,26 @@
                             <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.realmName}" >
                                 <sun:staticText id="NameStatic" text="#{pageSession.Name}"/>
                             </sun:property>
-                            <sun:property id="userIdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.Userid}">
+                            <sun:property id="userIdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.manageUsers.UserID}">
                                 <sun:staticText id="UserId" text="#{pageSession.User}"/>
                             </sun:property>                       
 
-                            <sun:property id="groupListProp2"  rendered="#{isAdminRealm}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.GroupList}" >
+                            <sun:property id="groupListProp2"  rendered="#{isAdminRealm}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.manageUsers.GroupList}" >
                                 <sun:staticText id="GroupList2" text="#{pageSession.groupList}" rendered="#{isAdminRealm}"/>
                             </sun:property>
 
-                            <sun:property id="groupListProp" rendered="#{!isAdminRealm}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.GroupList}" helpText="$resource{i18nc.manageUsers.GroupListHelp}">
+                            <sun:property id="groupListProp" rendered="#{!isAdminRealm}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.manageUsers.GroupList}" helpText="$resource{i18nc.manageUsers.GroupListHelp}">
                                 <sun:textField id="GroupList" text="#{pageSession.groupList}" rendered="#{!isAdminRealm}" columns="$int{55}"/>
                             </sun:property>
 
-                            <sun:property id="newPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.NewPassword}">                           
+                            <sun:property id="newPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.manageUsers.NewPassword}">
                                 <sun:passwordField id="NewPassword" columns="$int{25}" text="#{pageSession.password}"  >
                                     <!afterCreate
                                         getClientId(component="$this{component}" clientId=>$page{ps1});
                                     />
                                 </sun:passwordField>     
                             </sun:property>  
-                            <sun:property id="confirmPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.ConfirmNewPassword}">                           
+                            <sun:property id="confirmPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.manageUsers.ConfirmNewPassword}">
                                 <sun:passwordField id="ConfirmPassword" columns="$int{25}" text="#{pageSession.confirmPassword}"  >
                                     <!afterCreate
                                         getClientId(component="$this{component}" clientId=>$page{ps2});

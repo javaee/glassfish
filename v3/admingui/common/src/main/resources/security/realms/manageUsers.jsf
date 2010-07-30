@@ -132,7 +132,7 @@
                             />
                     </sun:tableColumn>
 
-                    <sun:tableColumn headerText="$resource{i18nc.manageUsers.UserID}" rowHeader="$boolean{true}" id="col1">
+                    <sun:tableColumn headerText="$resource{i18nc.manageUsers.UserIdCol}" rowHeader="$boolean{true}" id="col1">
                         <sun:hyperlink id="link" text="#{td.value.users}"
                         url="/common/security/realms/manageUserEdit.jsf?user=#{td.value.users}&name=#{pageSession.Name}&configName=#{configName}" />
                     </sun:tableColumn>
