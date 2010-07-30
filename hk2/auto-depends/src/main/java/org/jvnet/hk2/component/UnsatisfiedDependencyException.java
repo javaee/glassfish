@@ -50,23 +50,17 @@ import java.lang.annotation.Annotation;
  *
  * @author Jerome Dochez
  */
+@SuppressWarnings("serial")
 public class UnsatisfiedDependencyException extends ComponentException {
 
-    Member member = null;
+    final AnnotatedElement member;
 
 
-    public UnsatisfiedDependencyException(Field target) {
+    public UnsatisfiedDependencyException(AnnotatedElement target) {
         this(target,null);
     }
-    public UnsatisfiedDependencyException(Field target,Throwable cause) {
-        super("Unsatisfied dependency exception : " + target,cause);
-        this.member = target;
-    }
-    public UnsatisfiedDependencyException(Method target) {
-        this(target,null);
-    }
-    public UnsatisfiedDependencyException(Method target,Throwable cause) {
-        super("Unsatisfied dependency exception : " + target,cause);
+    public UnsatisfiedDependencyException(AnnotatedElement target, Throwable cause) {
+        super("Unsatisfied dependency exception : " + target, cause);
         this.member = target;
     }
 
@@ -79,7 +73,7 @@ public class UnsatisfiedDependencyException extends ComponentException {
     }
 
     public String getUnsatisfiedName() {
-        String name = member.getName();
+        String name = (member instanceof Member) ? ((Member)member).getName() : member.toString();
         if (isMethod()) {
             return name.substring(3).toLowerCase();
         }
