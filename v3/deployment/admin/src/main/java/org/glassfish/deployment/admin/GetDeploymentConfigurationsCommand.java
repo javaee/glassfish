@@ -41,6 +41,15 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.internal.data.EngineRef;
+import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -48,6 +57,9 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
+
+import java.util.Map;
+import java.io.IOException;
 
 /**
  * Get deployment configurations command
@@ -62,11 +74,70 @@ public class GetDeploymentConfigurationsCommand implements AdminCommand {
     @Param(primary=true)
     private String appname = null;
 
+    @Inject
+    ApplicationRegistry appRegistry;
+
     /**
      * Entry point from the framework into the command execution
      * @param context context for the command.
      */
     public void execute(AdminCommandContext context) {
+        final ActionReport report = context.getActionReport();
+
+        ActionReport.MessagePart part = report.getTopMessagePart();
+
+        final ApplicationInfo appInfo = appRegistry.get(appname);
+
+        if (appInfo == null) {
+            return;
+        }
+
+        try
+        {
+            if (appInfo.getEngineRefs().size() > 0)
+            {
+                // composite archive case, i.e. ear
+                for (EngineRef ref : appInfo.getEngineRefs())
+                {
+                    Sniffer appSniffer = ref.getContainerInfo().getSniffer();
+                    addToResultDDList("", appSniffer.getDeploymentConfigurations(appInfo.getSource()), part);
+                }
+
+                for (ModuleInfo moduleInfo : appInfo.getModuleInfos())
+                {
+                    for (Sniffer moduleSniffer : moduleInfo.getSniffers())
+                    {
+                        ReadableArchive moduleArchive = appInfo.getSource().getSubArchive(moduleInfo.getName());
+                        addToResultDDList(moduleInfo.getName(), moduleSniffer.getDeploymentConfigurations(moduleArchive), part);
+                    }
+                }
+            }
+            else
+            {
+                // standalone module
+                for (Sniffer sniffer : appInfo.getSniffers())
+                {
+                    addToResultDDList(appname, sniffer.getDeploymentConfigurations(appInfo.getSource()), part);
+                }
+            }
+        }
+        catch ( final IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
+    private void addToResultDDList(String moduleName, Map<String, String> snifferConfigs, ActionReport.MessagePart part)
+    {
+        for (String pathKey : snifferConfigs.keySet())
+        {
+            ActionReport.MessagePart childPart = part.addChild();
+            childPart.addProperty(DeploymentProperties.MODULE_NAME, 
+                moduleName);
+            childPart.addProperty(DeploymentProperties.DD_PATH, 
+                pathKey);
+            childPart.addProperty(DeploymentProperties.DD_CONTENT, 
+                snifferConfigs.get(pathKey));
+        }
+    }
 }

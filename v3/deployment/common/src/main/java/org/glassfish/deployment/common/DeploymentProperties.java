@@ -522,6 +522,10 @@ public class DeploymentProperties extends Properties {
     public static final String APP_CONFIG = "appConfig";
     public static final String STATE = "state";
     public static final String MODULE_INFO = "moduleInfo";
+    public static final String MODULE_NAME = "module-name";
+    public static final String DD_PATH =  "dd-path";
+    public static final String DD_CONTENT = "dd-content";
+
     
     // internal use - from .reload support
     public static final String KEEP_REPOSITORY_DIRECTORY = "keepreposdir";
