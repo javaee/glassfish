@@ -17,6 +17,7 @@
 	<ant dir="asyncejbclient" target="all"/>
         <ant dir="serviceejbclient" target="all"/>
 	<ant dir="portejbclient" target="all"/>
+	<ant dir="localremoteejbwebservice" target="all"/>
 	<ant dir="libdependent" target="all"/>
 	<ant dir="messagectxt" target="all"/>
 	<ant dir="singleton" target="all"/>
