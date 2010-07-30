@@ -41,6 +41,8 @@ import com.trilead.ssh2.KnownHosts;
 import org.glassfish.cluster.ssh.util.HostVerifier;
 import org.glassfish.cluster.ssh.util.SSHUtil;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.config.serverbeans.Node;
@@ -56,6 +58,7 @@ import java.util.logging.Logger;
 import java.util.Formatter;
 
 @Service(name="SSHLauncher")
+@Scoped(PerLookup.class)
 public class SSHLauncher {
 
   /**
