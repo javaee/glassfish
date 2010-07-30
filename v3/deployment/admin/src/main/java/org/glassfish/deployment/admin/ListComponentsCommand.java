@@ -41,6 +41,8 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.container.Sniffer;
@@ -78,11 +80,17 @@ public class ListComponentsCommand  implements AdminCommand {
     @Param(optional=true, defaultValue="false", shortName="v")
     public Boolean verbose = false;
 
+    @Param(optional=true, defaultValue="false")
+    public Boolean subcomponents = false;
+
     @Inject
     protected Domain domain;
 
     @Inject
     SnifferManager snifferManager;
+ 
+    @Inject
+    CommandRunner commandRunner;
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListComponentsCommand.class);    
 
@@ -100,6 +108,10 @@ public class ListComponentsCommand  implements AdminCommand {
                                     + getAppSnifferEngines(app, true);
                         if( verbose ){
                             message += getVerboseStatus(app);
+                        } 
+                        if (subcomponents) {
+                            displaySubComponents(app.getName(), report, 
+                                childPart);
                         }
                         childPart.setMessage(message);
                         part.addProperty(app.getName(), 
@@ -226,5 +238,21 @@ public class ListComponentsCommand  implements AdminCommand {
     boolean displaySnifferEngine(String engType) {
         final Sniffer sniffer = snifferManager.getSniffer(engType);
         return sniffer.isUserVisible();
+    }
+
+    private void displaySubComponents(String appName, ActionReport report,
+        ActionReport.MessagePart part) {
+        ActionReport subReport = report.addSubActionsReport();
+        CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("list-sub-components", subReport);
+
+        final ParameterMap parameters = new ParameterMap();
+        parameters.add("DEFAULT", appName);
+
+        inv.parameters(parameters).execute();
+
+        ActionReport.MessagePart subPart = subReport.getTopMessagePart();       
+        for (ActionReport.MessagePart childPart: subPart.getChildren()) {
+            part.addChild().setMessage("  " + childPart.getMessage());
+        }
     }
 }
