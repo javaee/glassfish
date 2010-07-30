@@ -70,14 +70,18 @@ public class HttpClient {
             String url = "http://" + host + ":" + port +
                     "/" + appName + "/" + servletName;
             for (int i = 0; i < 3; i++) {
-                accessApplication(url);
+                if (! accessApplication(url)) {
+		   break;
+		}
             }
 
 	    startInstance(instance);
             url = "http://" + host + ":" + port +
                     "/" + appName + "/" + servletName;
             for (int i = 0; i < 3; i++) {
-                accessApplication(url);
+                if (! accessApplication(url)) {
+		   break;
+		}
             }
     }
 
@@ -88,7 +92,7 @@ public class HttpClient {
 	    System.out.println("Process stop-instance "  + instName + " finished...");
 	    Thread.sleep(3 * 1000);
 	} catch (Exception ex) {
-	    System.err.println("Error while starting instance " + instName);
+	    System.err.println("Error while stopping instance " + instName);
 	}
     }
 
@@ -99,11 +103,11 @@ public class HttpClient {
 	    System.out.println("Process start-instance "  + instName + " finished...");
 	    Thread.sleep(3 * 1000);
 	} catch (Exception ex) {
-	    System.err.println("Error while stopping instance " + instName);
+	    System.err.println("Error while starting instance " + instName);
 	}
     }
 
-    private void accessApplication(String urlStr) {
+    private boolean accessApplication(String urlStr) {
 	try {
             for (int i = 0; i < 3; i++) {
                 System.out.println("Iteration[" + i + " / 3] Connecting to " + urlStr);
@@ -118,13 +122,16 @@ public class HttpClient {
                     stateInfo = info;
                     System.out.println("Passed " + stateInfo);
                 } else {
-
                     System.out.println("Failed " + info);
+		    return false;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
+
+        return true;
     }
 
     private SessionStateInfo extractSessionStates(URLConnection uc)
