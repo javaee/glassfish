@@ -163,7 +163,6 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
                 PersistenceUnitLoader puLoader = context.getTransientAppMetaData(getUniquePuIdentifier(pud), PersistenceUnitLoader.class);
                 if (puLoader != null) {
                     emfsInitializedForThisBundle.add(puLoader.getEMF());
-                    puLoader.doJava2DB();
                 }
             }
         };
@@ -187,7 +186,7 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
 
     @Override
     public void postConstruct() {
-        //events.register(this);
+        events.register(this);
     }
 
     @Override
