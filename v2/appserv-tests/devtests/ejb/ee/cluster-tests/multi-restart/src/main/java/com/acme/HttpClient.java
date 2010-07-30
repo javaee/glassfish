@@ -69,6 +69,7 @@ public class HttpClient {
 	    stopInstance(instance);
             String url = "http://" + host + ":" + port +
                     "/" + appName + "/" + servletName;
+            System.out.println("** ACCESSING URL : " + url);
             for (int i = 0; i < 3; i++) {
                 if (! accessApplication(url)) {
 		   break;
@@ -109,22 +110,19 @@ public class HttpClient {
 
     private boolean accessApplication(String urlStr) {
 	try {
-            for (int i = 0; i < 3; i++) {
-                System.out.println("Iteration[" + i + " / 3] Connecting to " + urlStr);
-                URL url = new URL(urlStr);
-                URLConnection uc = url.openConnection();
-                uc.setRequestProperty("Cookie", stateInfo.getJsessionCookie());
-                uc.connect();
-                SessionStateInfo info = extractSessionStates(uc);
-                info.setAccessCount(++_accessCount);
-                boolean result = compareSessionStates(stateInfo, info);
-                if (result) {
-                    stateInfo = info;
-                    System.out.println("Passed " + stateInfo);
-                } else {
-                    System.out.println("Failed " + info);
-		    return false;
-                }
+            URL url = new URL(urlStr);
+            URLConnection uc = url.openConnection();
+            uc.setRequestProperty("Cookie", stateInfo.getJsessionCookie());
+            uc.connect();
+            SessionStateInfo info = extractSessionStates(uc);
+            info.setAccessCount(++_accessCount);
+            boolean result = compareSessionStates(stateInfo, info);
+            if (result) {
+                stateInfo = info;
+                System.out.println("Passed " + stateInfo);
+            } else {
+                System.out.println("Failed " + info);
+		return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
