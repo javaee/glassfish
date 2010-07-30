@@ -109,7 +109,7 @@
         </antcall>  
     </target>
  
-    <target name="private-all" if="PE">
+    <target name="private-all">
         <antcall target="create.user"/>
         <antcall target="assemble"/>
         <antcall target="declare-test">

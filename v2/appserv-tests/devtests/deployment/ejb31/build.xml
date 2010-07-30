@@ -9,7 +9,7 @@
 	&commonBuild;
 
         <!-- Only run the tests in PE mode till all tests pass in EE -->
-	<target name="private-all" if="PE">
+	<target name="private-all">
 		<ant dir="ejblite" target="private-all">
 			<property name="build" value="${build}/ejblite"/>
 		</ant>

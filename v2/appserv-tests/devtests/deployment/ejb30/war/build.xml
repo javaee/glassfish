@@ -8,7 +8,7 @@
 
 	&commonBuild;
 
-	<target name="private-all" if="PE">
+	<target name="private-all">
 		<ant dir="jsp" target="private-all">
 			<property name="build" value="${build}/jsp"/>
 		</ant>
