@@ -129,6 +129,27 @@ public class RestUtilHandlers {
         handlerCtx.setOutputValue("propsMap",  propsMap);
         handlerCtx.setOutputValue("listEmpty",  keyList.isEmpty());
      }
+
+     public static List<String> getListFromMapKey(List<Map<String, String>> props) {
+        List<String> keyList = new ArrayList<String>();
+        if (props != null) {
+            for (Map<String, String> oneProp : props) {
+                keyList.add(oneProp.get("name"));
+            }
+        }
+        return keyList;
+    }
+
+    public static Map<String, String> getMapFromMapKey(List<Map<String, String>> props) {
+        Map<String, String> propsMap = new HashMap<String, String>();
+        if (props != null) {
+            for (Map<String, String> oneProp : props) {
+                String key = oneProp.get("name");
+                propsMap.put(key.substring(0, key.indexOf("=")), key.substring(key.indexOf("=") + 1));
+            }
+        }
+        return propsMap;
+    }
 }
         
  

@@ -36,6 +36,7 @@
 -->
 <!-- jca/jcaResourceEdit.jsf -->
 <!initPage
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
     setResourceBundle(key="help_jca" bundle="org.glassfish.jca.admingui.Helplinks")
 />
@@ -78,7 +79,18 @@
                 setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                 prepareSuccessfulMsg();
                 if ("#{valueMap['ping']}") {
-                    pingJdbcConnectionPool(jndiName="#{valueMap['name']}", wmsg="$resource{i18njca.msg.warning.poolSavedPingFailed}");
+                    urlencode(value="#{valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
+                    gf.createAttributeMap(keys={"id"} values={"$pageSession{encodeName}"} map="#{requestScope.attrMap}");
+                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
+                                   attrs="#{requestScope.attrMap}"
+                                   method="GET"
+                                   result="#{requestScope.result}");
+                    if ("#{requestScope.result.data['exit_code']} = SUCCESS") {
+                         prepareAlertMsg(summary="$resource{i18n.msg.PingSucceed}", type="success");
+                    }
+                    if ("!(#{requestScope.result.data['exit_code']} = SUCCESS)") {
+                         prepareAlertMsg(summary="$resource{i18njca.msg.warning.poolSavedPingFailed}", type="error");
+                    }                    
                 }
                 gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />

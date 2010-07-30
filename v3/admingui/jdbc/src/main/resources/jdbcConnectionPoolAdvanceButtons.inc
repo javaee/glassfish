@@ -52,7 +52,18 @@
 
             prepareSuccessfulMsg();
             if ("#{valueMap['ping']}") {
-                pingJdbcConnectionPool(jndiName="#{valueMap['name']}", wmsg="$resource{i18njdbc.msg.warning.poolSavedPingFailed}");
+                urlencode(value="#{valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
+                gf.createAttributeMap(keys={"id"} values={"$pageSession{encodeName}"} map="#{requestScope.attrMap}");
+                gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
+                               attrs="#{requestScope.attrMap}"
+                               method="get"
+                               result="#{requestScope.result}");
+                if ("#{requestScope.result.data['exit_code']} = SUCCESS") {
+                     prepareAlertMsg(summary="$resource{i18n.msg.PingSucceed}", type="success");
+                }
+                if ("!(#{requestScope.result.data['exit_code']} = SUCCESS)") {
+                     prepareAlertMsg(summary="$resource{i18njdbc.msg.warning.poolSavedPingFailed}", type="error");
+                }
             }
             gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />

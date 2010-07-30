@@ -37,6 +37,7 @@
 <!-- jca/jcaResourceNew.jsf -->
 
 <!initPage
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
     setResourceBundle(key="help_jca" bundle="org.glassfish.jca.admingui.Helplinks")
     setAttribute(key="edit" value="#{false}");

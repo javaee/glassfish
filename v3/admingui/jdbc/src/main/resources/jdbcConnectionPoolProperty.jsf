@@ -36,6 +36,7 @@
 -->
 <!-- jdbc/jdbcConnectionPoolProperty.jsf -->
 <!initPage
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
 	setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks");
 />
@@ -49,10 +50,16 @@
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolProperty.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=jdbc-connection-pool,name=#{pageSession.Name}");
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
+        //REST related
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
+        setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
+        setPageSessionAttribute(key="rest-api" value="true");
+
+        gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}", valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="skipAttrsList", value={"jndiName"});
+        //REST - TO DO        
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         />
     </event>
@@ -71,7 +78,18 @@
                 setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                 prepareSuccessfulMsg();
                 if ("#{valueMap['ping']}") {
-                    pingJdbcConnectionPool(jndiName="#{valueMap['name']}", wmsg="$resource{i18njdbc.msg.warning.poolSavedPingFailed}");
+                    urlencode(value="#{valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
+                    gf.createAttributeMap(keys={"id"} values={"$pageSession{encodeName}"} map="#{requestScope.attrMap}");
+                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
+                                   attrs="#{requestScope.attrMap}"
+                                   method="get"
+                                   result="#{requestScope.result}");
+                    if ("#{requestScope.result.data['exit_code']} = SUCCESS") {
+                         prepareAlertMsg(summary="$resource{i18n.msg.PingSucceed}", type="success");
+                    }
+                    if ("!(#{requestScope.result.data['exit_code']} = SUCCESS)") {
+                         prepareAlertMsg(summary="$resource{i18njdbc.msg.warning.poolSavedPingFailed}", type="error");
+                    }
                 }
                 gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />

@@ -57,6 +57,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -200,7 +201,30 @@ public class CommonHandlers {
         }
         handlerCtx.setOutputValue("finalList", list);
     }
-    
+
+    /**
+     *	<p> This handler creates a map with the given keys and values </p>
+     *
+     *  <p> Output value: "map" -- Type: <code>Map</code>/</p>
+     *	@param	handlerCtx	The HandlerContext.
+     */
+    @Handler(id="gf.createAttributeMap",
+    	input={
+        @HandlerInput(name="keys", type=java.util.List.class),
+        @HandlerInput(name="values", type=java.util.List.class)},
+        output={
+        @HandlerOutput(name="map", type=java.util.Map.class)})
+    public static void createAttributeMap(HandlerContext handlerCtx) {
+        List<String> keys = (List<String>) handlerCtx.getInputValue("keys");
+        List<String> values = (List) handlerCtx.getInputValue("values");
+        Map<String, Object> map = new HashMap<String, Object>();
+        if (keys != null && values != null) {
+            for (int i = 0; i < keys.size(); i++) {
+                map.put(keys.get(i), values.get(i));
+            }
+        }
+        handlerCtx.setOutputValue("map", map);
+    }
     
     /**
      * <p> This handler returns the encoded String using the type specified.

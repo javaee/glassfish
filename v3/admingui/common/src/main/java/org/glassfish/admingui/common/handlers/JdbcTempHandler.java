@@ -60,6 +60,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 import org.glassfish.admin.amx.intf.config.ConnectorConnectionPool;
@@ -74,92 +76,6 @@ public class JdbcTempHandler {
     public JdbcTempHandler() {
     }
 
-    /**
-     *	<p> This handler pings the  Jdbc Connection Pool
-     *  For the case where the ping is implicitedly done y GUI during create and edit where Ping is enabled,
-     *  give out the warning but don't specify that Ping succeeded.
-     */
-    @Handler(id = "pingJdbcConnectionPool",
-        input = {
-            @HandlerInput(name = "jndiName", type = String.class, required = true),
-            @HandlerInput(name = "wmsg", type = String.class)})
-    public static void pingJdbcConnectionPool(HandlerContext handlerCtx) {
-
-        String jndiName = (String) handlerCtx.getInputValue("jndiName");
-        String warningMsg = (String) handlerCtx.getInputValue("wmsg");
-        boolean showSuccess = false;
-        String type = "warning";
-
-        if (GuiUtil.isEmpty(warningMsg)){
-            showSuccess = true;
-            warningMsg = GuiUtil.getMessage("msg.Error");
-            type = "error";
-        }
-        try {
-            Map<String, Object> statusMap = V3AMX.getInstance().getConnectorRuntime().pingJDBCConnectionPool(jndiName);
-
-            if ((Boolean) statusMap.get(PING_CONNECTION_POOL_KEY)) {
-                if (showSuccess){
-                    GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("msg.PingSucceed"), null);
-                }
-            } else {
-                GuiUtil.prepareAlert(handlerCtx, type, warningMsg, statusMap.get(REASON_FAILED_KEY).toString());
-            }
-
-        } catch (Exception ex) {
-            GuiUtil.handleException(handlerCtx, ex);
-        }
-    }
-
-    /**
-     *	<p> This handler flushes the  Jdbc Connection Pool
-     */
-    @Handler(id = "flushConnectionPool",
-        input = {
-            @HandlerInput(name = "jndiName", type = String.class, required = true)})
-    public static void flushConnectionPool(HandlerContext handlerCtx) {
-
-        String jndiName = (String) handlerCtx.getInputValue("jndiName");
-        try {
-
-            Map<String, Object> statusMap = V3AMX.getInstance().getConnectorRuntime().flushConnectionPool(jndiName);
-
-            if ((Boolean) statusMap.get(FLUSH_CONNECTION_POOL_KEY)) {
-                GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("msg.FlushSucceed"), null);
-            } else {
-                GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), statusMap.get(REASON_FAILED_KEY).toString());
-            }
-
-        } catch (Exception ex) {
-            GuiUtil.handleException(handlerCtx, ex);
-        }
-    }
-
-    /*
-     * This handler returns a list of table names.
-     */
-    @Handler(id = "getTableNames",
-        input = {
-            @HandlerInput(name = "name", type = String.class, required = true)},
-        output = {
-            @HandlerOutput(name = "result", type = List.class)})
-    public static void getTableNames(HandlerContext handlerCtx) {
-        String name = (String) handlerCtx.getInputValue("name");
-        List result = new ArrayList();
-        Map<String, Object> tn = V3AMX.getInstance().getConnectorRuntime().getValidationTableNames(name);
-        if (tn != null) {
-            Set keys = (Set) tn.get(VALIDATION_TABLE_NAMES_KEY);
-            if (keys != null) {
-                Iterator iter = keys.iterator();
-                while (iter.hasNext()) {
-                    result.add(iter.next());
-                }
-            } else if(tn.get(REASON_FAILED_KEY) != null) {
-                GuiUtil.getLogger().warning(tn.get(REASON_FAILED_KEY).toString());
-            }
-            handlerCtx.setOutputValue("result", result);
-        }
-    }
     /**
      *	<p> This handler gets the default values and resource type and puts them in session
      */
@@ -192,7 +108,7 @@ public class JdbcTempHandler {
     /**
      *	<p> This handler gets the datasource classname and properties and sets them in session
      */
-    @Handler(id = "updateJDBCPoolWizardStep1")
+    @Handler(id = "gf.updateJDBCPoolWizardStep1")
     public static void updateJDBCPoolWizardStep1(HandlerContext handlerCtx) {
         //Map pool = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPool");
         Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
@@ -207,8 +123,8 @@ public class JdbcTempHandler {
         String previousResType = (String) extra.get("PreviousResType");
         String previousDB = (String) extra.get("PreviousDB");
 
-        if (resType.equals(previousResType) && dbVendor.equals(previousDB) ){
-                //&& !GuiUtil.isEmpty((String) extra.get("DatasourceClassname"))) {
+        if (resType.equals(previousResType) && dbVendor.equals(previousDB)) {
+            //&& !GuiUtil.isEmpty((String) extra.get("DatasourceClassname"))) {
             //User didn't change type and DB, keep the datasource classname as the same.
         } else {
 
@@ -216,17 +132,17 @@ public class JdbcTempHandler {
                 List dsl = new ArrayList();
                 try {
                     String classname = "";
-                    GuiUtil.getLogger().fine("======= getJdbcDriverClassNames(" + dbVendor + ", " + resType + ")");
-                    Map<String, Object> dcn = V3AMX.getInstance().getConnectorRuntime().getJdbcDriverClassNames(dbVendor, resType);
-                    GuiUtil.getLogger().fine("======= returns " + ((dcn == null)? "NULL" : " Map of size " + dcn.size()));
-                    if (dcn != null) {
-                        dsl = new ArrayList((Set) dcn.get(JDBC_DRIVER_CLASS_NAMES_KEY));
-                        GuiUtil.getLogger().fine("=======  # of items for JDBC_DRIVER_CLASS_NAMES_KEY  " + dsl.size() );
-                        for(int i=0; i< dsl.size(); i++){
-                            GuiUtil.getLogger().fine( "classname[" + i + "] : " + dsl.get(i));
+
+                    dsl = getJdbcDriverClassNames(dbVendor, resType, false);
+
+                    if (guiLogger.isLoggable(Level.FINE)) {
+                        guiLogger.fine("======= getJdbcDriverClassNames(" + dbVendor + ", " + resType + ")");
+                        guiLogger.fine("=======  # of items for JDBC_DRIVER_CLASS_NAMES_KEY  " + dsl.size());
+                        for (int i = 0; i < dsl.size(); i++) {
+                            guiLogger.fine("classname[" + i + "] : " + dsl.get(i));
                         }
                     }
-                    
+
                     List<Map<String, String>> noprops = new ArrayList<Map<String, String>>();
                     String dslName = (dsl != null && (dsl.size() > 0)) ? (String) dsl.get(0) : "";
                     if (resType.equals(DRIVER)) {
@@ -241,14 +157,19 @@ public class JdbcTempHandler {
                         extra.put("dsClassname", Boolean.TRUE);
                         extra.put("DatasourceClassname", dslName);
                     }
-                    GuiUtil.getLogger().fine("===== getConnectionDefinitionPropertiesAndDefaults(\"" + dslName + "\"," + resType +")");
-                    Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults(dslName, resType);
-                    if (result != null) {
-                        Map<String, String> props = (Map) result.get(CONN_DEFINITION_PROPS_KEY);
-                        GuiUtil.getLogger().fine("=======  getConnectionDefinitionPropertiesAndDefaults returns # of properties: " + props.size());
+                    if (guiLogger.isLoggable(Level.FINE)) {
+                        guiLogger.fine("===== getConnectionDefinitionPropertiesAndDefaults(\"" + dslName + "\"," + resType + ")");
+                    }
+                    Map<String, String> props = getConnectionDefinitionPropertiesAndDefaults(dslName, resType);
+                    if (props.size() > 0) {
+                        if (guiLogger.isLoggable(Level.FINE)) {
+                            guiLogger.fine("=======  getConnectionDefinitionPropertiesAndDefaults returns # of properties: " + props.size());
+                        }
                         handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
-                    }else {
-                        GuiUtil.getLogger().fine("======= getConnectionDefinitionPropertiesAndDefaults returns NULL");
+                    } else {
+                        if (guiLogger.isLoggable(Level.FINE)) {
+                            guiLogger.fine("======= getConnectionDefinitionPropertiesAndDefaults returns NULL");
+                        }
                         handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", noprops);
                     }
                 } catch (Exception ex) {
@@ -257,7 +178,7 @@ public class JdbcTempHandler {
             } else {
                 // Allow user to provide DataSource ClassName when resourceType is not of type Driver
                 // or is not selected.
-                if (DRIVER.equals(resType)){
+                if (DRIVER.equals(resType)) {
                     extra.put("DatasourceClassnameField", "");
                     extra.put("dsClassname", Boolean.FALSE);
                 } else {
@@ -275,24 +196,29 @@ public class JdbcTempHandler {
      /**
      *	<p> updates the wizard map properties on step 2
      */
-    @Handler(id = "updateJdbcConnectionPoolPropertiesTable")
+    @Handler(id = "gf.updateJdbcConnectionPoolPropertiesTable")
     public static void updateJdbcConnectionPoolPropertiesTable(HandlerContext handlerCtx) {
         Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
         String resType = (String) extra.get("ResType");
         String classname = (String) extra.get("DatasourceClassname");
         List<Map<String, String>> noprops = new ArrayList<Map<String, String>>();
-        GuiUtil.getLogger().fine("===== getConnectionDefinitionPropertiesAndDefaults(\"" + classname + "\"," + resType + ")");
-        Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults(classname, resType);
-        if (result != null) {
-            Map<String, String> props = (Map) result.get(CONN_DEFINITION_PROPS_KEY);
-            GuiUtil.getLogger().fine("=======  getConnectionDefinitionPropertiesAndDefaults returns # of properties: " + props.size());
+        if (guiLogger.isLoggable(Level.FINE)) {
+            guiLogger.fine("===== getConnectionDefinitionPropertiesAndDefaults(\"" + classname + "\"," + resType + ")");
+        }
+        Map<String, String> props = getConnectionDefinitionPropertiesAndDefaults(classname, resType);
+        if (props.size() != 0) {
+            if (guiLogger.isLoggable(Level.FINE)) {
+                guiLogger.fine("=======  getConnectionDefinitionPropertiesAndDefaults returns # of properties: " + props.size());
+            }
             handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
         } else {
-            GuiUtil.getLogger().fine("======= getConnectionDefinitionPropertiesAndDefaults returns NULL");
+            if (guiLogger.isLoggable(Level.FINE)) {
+                guiLogger.fine("======= getConnectionDefinitionPropertiesAndDefaults returns NULL");
+            }
             handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", noprops);
         }
     }
-    
+
     /**
      *	<p> updates the wizard map properties on step 2
      */
@@ -323,67 +249,6 @@ public class JdbcTempHandler {
             return;
         }
 
-    }
-
-    /*
-     * Save the attributes of the proxy.
-     */
-    @Handler(id = "saveJdbcConnectionPool",
-        input = {
-            @HandlerInput(name = "objectNameStr", type = String.class, required = true),
-            @HandlerInput(name = "attrs", type = Map.class),
-            @HandlerInput(name = "skipAttrs", type = List.class),
-            @HandlerInput(name = "convertToFalse", type = List.class),
-            @HandlerInput(name = "onlyUseAttrs", type = List.class)})
-    public static void saveJdbcConnectionPool(HandlerContext handlerCtx) {
-        try {
-            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-            Map attrs = (Map) handlerCtx.getInputValue("attrs");
-
-            String resourceType = (String) attrs.get("ResType");
-            if(resourceType.equals("java.sql.Driver")) {
-                attrs.put("DatasourceClassname", "");
-            } else {
-                attrs.put("DriverClassname", "");
-            }
-           
-            List<String> skipAttrs = (List) handlerCtx.getInputValue("skipAttrs");
-            if (skipAttrs != null) {
-                for (String sk : skipAttrs) {
-                    if (attrs.keySet().contains(sk)) {
-                        attrs.remove(sk);
-                    }
-                }
-            }
-
-            List<String> onlyUseAttrs = (List) handlerCtx.getInputValue("onlyUseAttrs");
-            if (onlyUseAttrs != null) {
-                Map newAttrs = new HashMap();
-                for (String key : onlyUseAttrs) {
-                    if (attrs.keySet().contains(key)) {
-                        newAttrs.put(key, attrs.get(key));
-                    }
-                }
-                attrs = newAttrs;
-            }
-
-
-            List<String> convertToFalse = (List) handlerCtx.getInputValue("convertToFalse");
-            if (convertToFalse != null) {
-                for (String sk : convertToFalse) {
-                    if (attrs.keySet().contains(sk)) {
-                        if (attrs.get(sk) == null) {
-                            attrs.remove(sk);
-                            attrs.put(sk, "false");
-                        }
-                    }
-                }
-            }
-
-           V3AMX.setAttributes(objectNameStr, attrs);
-        } catch (Exception ex) {
-            GuiUtil.handleException(handlerCtx, ex);
-        }
     }
 
      @Handler(id = "getJMSFactoriesTable",
@@ -417,15 +282,59 @@ public class JdbcTempHandler {
         handlerCtx.setOutputValue("result", result);
      }
 
+     private static List getJdbcDriverClassNames(String dbVendor, String resType, boolean introspect) {
+        String endpoint = (String) GuiUtil.getSessionValue("REST_URL");
+        endpoint = endpoint + "/resources/get-jdbc-driver-class-names.json";
+        Map<String, Object> attrs = new HashMap<String, Object>();
+        attrs.put("dbVendor", dbVendor);
+        attrs.put("restype", resType);
+        attrs.put("introspect", ((Boolean) introspect).toString());
+        List<String> jdbcClassNames = new ArrayList<String>();
+        try {
+            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null);
+            jdbcClassNames = RestUtilHandlers.getListFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("result"));
+        } catch (Exception ex) {
+            GuiUtil.getLogger().severe("Error in getJdbcDriverClassNames ; \nendpoint = " + endpoint + "attrs=" + attrs + "method=GET");
+            //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
+        }
+        return jdbcClassNames;
+    }
+
+    private static List getDatabaseVendorNames() {
+        String endpoint = (String) GuiUtil.getSessionValue("REST_URL");
+        endpoint = endpoint + "/resources/get-database-vendor-names.json";
+        List<String> vendorList = new ArrayList<String> ();
+        try {
+            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null);
+            vendorList = RestUtilHandlers.getListFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("result"));
+        } catch (Exception ex) {
+            GuiUtil.getLogger().severe("Error in getDatabaseVendorNames ; \nendpoint = " + endpoint + "attrs=null method=GET");
+            //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
+        }
+        return vendorList;
+    }
+
+    private static Map<String, String> getConnectionDefinitionPropertiesAndDefaults(String datasourceClassName, String resType) {
+        String endpoint = (String) GuiUtil.getSessionValue("REST_URL");
+        endpoint = endpoint + "/resources/get-connection-definition-properties-and-defaults.json";
+        Map<String, Object> attrs = new HashMap<String, Object>();
+        attrs.put("connectionDefinitionClass", datasourceClassName);
+        attrs.put("restype", resType);
+        Map<String, String> connDefProps = new HashMap<String, String>();
+        try {
+            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null);
+            connDefProps = RestUtilHandlers.getMapFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("result"));
+        } catch (Exception ex) {
+            GuiUtil.getLogger().severe("Error in getJdbcDriverClassNames ; \nendpoint = " + endpoint + "attrs=" + attrs + "method=GET");
+            //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
+        }
+        return connDefProps;
+    }
+
+    public static Logger guiLogger = GuiUtil.getLogger();
     public static final String REASON_FAILED_KEY = "ReasonFailedKey";
     //public static final  String SET_KEY = "SetKey";
     //public static final  String BOOLEAN_KEY = "BooleanKey";
-    static private final String CONN_DEFINITION_PROPS_KEY = "ConnDefinitionPropsKey";
-    static private final String PING_CONNECTION_POOL_KEY = "PingConnectionPoolKey";
-    static private final String FLUSH_CONNECTION_POOL_KEY = "FlushConnectionPoolKey";
-    static private final String VALIDATION_TABLE_NAMES_KEY = "ValidationTableNamesKey";
-    static private final String JDBC_DRIVER_CLASS_NAMES_KEY = "JdbcDriverClassNamesKey";
-    static private final String DATABASE_VENDOR_NAMES_KEY = "DatabaseVendorNamesKey";
 
     static private final String DATA_SOURCE = "javax.sql.DataSource";
     static private final String XADATA_SOURCE = "javax.sql.XADataSource";
@@ -446,7 +355,7 @@ public class JdbcTempHandler {
     static private List dbVendorList = new ArrayList();
 
     static {
-        dbVendorList =  new ArrayList((Set)V3AMX.getInstance().getConnectorRuntime().getDatabaseVendorNames().get(DATABASE_VENDOR_NAMES_KEY));
+        dbVendorList =  getDatabaseVendorNames();
         dbVendorList.add(0, "");
         resTypeList.add("");
         resTypeList.add(DATA_SOURCE);
@@ -469,5 +378,3 @@ public class JdbcTempHandler {
 //        Collections.sort(dbVendorList);
     }
 }
-        
- 

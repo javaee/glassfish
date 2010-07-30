@@ -150,7 +150,13 @@
                 <!beforeCreate
                     if(#{pageSession.valueMap['isConnectionValidationRequired']}) {
                         if ( "#{pageSession.valueMap.connectionValidationMethod}=table" ) {
-                            getTableNames(name="#{pageSession.Name}" result="#{pageSession.tableNameList}");
+                            gf.createAttributeMap(keys={"poolname"} values={"$pageSession{encodedName}"} map="#{requestScope.attrMap}");
+                            gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-validation-table-names.json"
+                                           attrs="#{requestScope.attrMap}"
+                                           method="get"
+                                           result="#{requestScope.result}");
+                            gf.getMessageProps(messageListProps="#{requestScope.result.data.result}"
+                                               keyList="#{pageSession.tableNameList}");                            
                         }
                     }
                 />

@@ -65,8 +65,18 @@
                         setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                     }
                     if ("#{sessionScope.wizardMap['Ping']}") {
-                        //REST - TO DO
-                        pingJdbcConnectionPool(jndiName="#{sessionScope.wizardMap['Name']}" , wmsg="$resource{i18njca.msg.warning.poolCreatedPingFailed}");
+                        urlencode(value="#{sessionScope.wizardMap['Name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
+                        gf.createAttributeMap(keys={"id"} values={"$pageSession{encodeName}"} map="#{requestScope.attrMap}");
+                        gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
+                                       attrs="#{requestScope.attrMap}"
+                                       method="GET"
+                                       result="#{requestScope.result}");
+                        if ("#{requestScope.result.data['exit_code']} = SUCCESS") {
+                             prepareAlertMsg(summary="$resource{i18n.msg.PingSucceed}", type="success");
+                        }
+                        if ("!(#{requestScope.result.data['exit_code']} = SUCCESS)") {
+                             prepareAlertMsg(summary="$resource{i18njca.msg.warning.poolCreatedPingFailed}", type="error");
+                        }
                         setSessionAttribute(key="wizardMap" value="#{null}")
                         setSessionAttribute(key="wizardPoolExtra" value="#{null}")
                         setSessionAttribute(key="wizardPoolProperties" value="#{null}")

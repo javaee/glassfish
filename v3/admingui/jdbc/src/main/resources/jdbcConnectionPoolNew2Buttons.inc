@@ -52,7 +52,6 @@
         onClick="document.getElementById('form2:validate').value='true'; if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
        <!command
             updateJdbcConnectionPoolWizardStep2();
-//            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
             gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}",
                     attrs="#{wizardMap}"
                     convertToFalse="#{pageSession.convertToFalseList}"
@@ -65,7 +64,18 @@
                 setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
             }
             if ("#{wizardMap['Ping']}") {
-                pingJdbcConnectionPool(jndiName="#{wizardMap['Name']}" , wmsg="$resource{i18njdbc.msg.warning.poolCreatedPingFailed}");
+                urlencode(value="#{wizardMap['Name']}" encoding="UTF-8" result="#{pageSession.encodedName}");
+                gf.createAttributeMap(keys={"id"} values={"$pageSession{encodedName}"} map="#{requestScope.attrMap}");
+                gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
+                               attrs="#{requestScope.attrMap}"
+                               method="get"
+                               result="#{requestScope.result}");
+                if ("#{requestScope.result.data['exit_code']} = SUCCESS") {
+                     prepareAlertMsg(summary="$resource{i18n.msg.PingSucceed}", type="success");
+                }
+                if ("!(#{requestScope.result.data['exit_code']} = SUCCESS)") {
+                     prepareAlertMsg(summary="$resource{i18njdbc.msg.warning.poolCreatedPingFailed}", type="error");
+                }
                 setSessionAttribute(key="wizardMap" value="#{null}")
                 setSessionAttribute(key="wizardPoolExtra" value="#{null}")
                 setSessionAttribute(key="wizardPoolProperties" value="#{null}")

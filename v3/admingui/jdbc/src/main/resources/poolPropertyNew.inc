@@ -57,7 +57,7 @@
             <!command
                     setAttribute(key="click" value="$this{component}");
                     mapPut(map="#{wizardPoolExtra}" key="datasourceClassname" value="#{click.selected}");
-                    updateJdbcConnectionPoolPropertiesTable();
+                    gf.updateJdbcConnectionPoolPropertiesTable();
                     gf.navigate(page="#{selfPage}");
                 />
         </sun:dropDown>

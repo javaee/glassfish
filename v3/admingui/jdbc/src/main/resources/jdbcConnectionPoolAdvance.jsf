@@ -35,6 +35,7 @@
 -->
 <!-- jdbc/jdbcConnectionPoolAdvance.jsf -->
 <!initPage
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
 	setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks");
 />
