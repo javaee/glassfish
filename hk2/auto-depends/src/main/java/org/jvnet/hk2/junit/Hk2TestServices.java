@@ -163,7 +163,7 @@ public class Hk2TestServices {
                                   new FileInputStream(inhabitantFile)),
                                   inhabitantFile.getPath()));
                       } else {
-                          parse(parser, f);
+                          parseAlways(parser, f);
                       }
                   }
               } catch(IOException e) {
@@ -302,6 +302,7 @@ public class Hk2TestServices {
             manifest = jar.getManifest();
             jar.close();
         }
+        
         if (manifest!=null) {
             String imports = manifest.getMainAttributes().getValue("Import-Package");
             if (imports==null || imports.indexOf("hk2")==-1) {
@@ -309,12 +310,16 @@ public class Hk2TestServices {
                 return;
             }
         }
-        parser.parse(f, new Runnable() {
-            public void run() {
-                System.out.println("Finished introspecting " + f.getName());
-            }
-        });
+        
+        parseAlways(parser, f);
+    }
 
+    private void parseAlways(Parser parser, final File f) throws IOException {
+      parser.parse(f, new Runnable() {
+          public void run() {
+              System.out.println("Finished introspecting " + f.getName());
+          }
+      });
     }
     
     public Habitat getHabitat() {
