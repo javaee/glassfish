@@ -67,7 +67,7 @@ public class Hk2TestServices {
     }
 
     @SuppressWarnings("deprecation")
-    public Hk2TestServices(Class<HabitatFactory> habitatFactoryClass) {
+    public Hk2TestServices(Class<? extends HabitatFactory> habitatFactoryClass) {
       if (null == habitatFactoryClass || habitatFactoryClass.isInterface()) {
           habitatFactory = null;
       } else {

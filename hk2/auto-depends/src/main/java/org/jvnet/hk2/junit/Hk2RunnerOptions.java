@@ -28,6 +28,6 @@ public @interface Hk2RunnerOptions {
   /**
    * Alternative Habitat Factory from the default 
    */
-  Class<HabitatFactory> habitatFactory() default HabitatFactory.class; 
+  Class<? extends HabitatFactory> habitatFactory() default HabitatFactory.class; 
   
 }

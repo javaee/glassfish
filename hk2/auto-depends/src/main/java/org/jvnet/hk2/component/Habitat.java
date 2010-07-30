@@ -382,7 +382,7 @@ public class Habitat {
         String name = i.typeName();
         byType.add(name,i);
 
-        // for each companion, create an inhabitat that goes with the lead and hook them up
+        // for each companion, create an inhabitant that goes with the lead and hook them up
         List<Inhabitant> companions=null;
         for(Inhabitant<?> c : getInhabitantsByAnnotation(CompanionSeed.class,name)) {
             if(companions==null)
