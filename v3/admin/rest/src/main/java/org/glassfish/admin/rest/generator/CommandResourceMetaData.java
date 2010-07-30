@@ -127,7 +127,7 @@ public class CommandResourceMetaData {
             {"NetworkListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
             {"NetworkListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"},
             {"Node", "delete-node-ssh", "DELETE", "delete-node", "Delete Node", "id=$parent"},
-            {"Node", "_update-node", "POST", "_update-node", "Update Node", "id=$parent"},
+            {"Node", "_update-node", "POST", "_update-node", "Update Node", "name=$parent"},
             {"Nodes", "create-node-ssh", "POST", "create-node", "Create Node"},
             {"Protocol", "create-http", "POST", "create-http", "Create", "id=$parent"},
             {"Protocol", "create-protocol-filter", "POST", "create-protocol-filter", "Create", "protocol=$parent"},
