@@ -207,7 +207,7 @@ UNKNOWN: 0
 2. Running with EE installation on Remote Instance 
    (DEPL_TARGET=SERVER)
 
-PASS: 86
+PASS: 96
 FAIL: 0
 UNKNOWN: 0
 
@@ -293,6 +293,16 @@ UNKNOWN: 0
 [PASSED] session : ejb30/session Test asadmin redeploy  
 [PASSED] session2 : ejb30/session2 Test asadmin deploy  
 [PASSED] session2 : ejb30/session2 Test asadmin redeploy   
+[PASSED] security : ejb30/security Test asadmin deploy
+[PASSED] security : ejb30/security Test asadmin redeploy
+[PASSED] xmloverride : ejb30/security Test asadmin deploy
+[PASSED] xmloverride : ejb30/security Test asadmin redeploy
+[PASSED] jsp : ejb30/war/jsp Test asadmin deploy
+[PASSED] jsp : ejb30/war/jsp Test asadmin redeploy
+[PASSED] servlet : ejb30/war/servlet Test asadmin deploy
+[PASSED] servlet : ejb30/war/servlet Test asadmin redeploy
+[PASSED] javamodule : ejb31/ejblite/javamodule Test asadmin deploy
+[PASSED] javamodule : ejb31/ejblite/javamodule Test asadmin redeploy
 [PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin deploy  
 [PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin re-deploy
 [PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin deploy  
@@ -303,11 +313,11 @@ UNKNOWN: 0
 3. Running with EE installation on Remote Instance and Cluster
    (DEPL_TARGET=CLUSTER)
 
-PASS: 157
+PASS: 167
 FAIL: 0
 UNKNOWN: 0
 
-PASSED] servletonly : war/servletonly Test asadmin deploy (server)
+[PASSED] servletonly : war/servletonly Test asadmin deploy (server)
 [PASSED] servletonly : war/servletonly Test asadmin deploy (cluster-inst1)
 [PASSED] servletonly : war/servletonly Test asadmin redeploy (server)
 [PASSED] servletonly : war/servletonly Test asadmin redeploy (cluster-inst1)
@@ -460,6 +470,16 @@ PASSED] servletonly : war/servletonly Test asadmin deploy (server)
 [PASSED] session : ejb30/session Test asadmin redeploy
 [PASSED] session2 : ejb30/session2 Test asadmin deploy
 [PASSED] session2 : ejb30/session2 Test asadmin redeploy
+[PASSED] security : ejb30/security Test asadmin deploy
+[PASSED] security : ejb30/security Test asadmin redeploy
+[PASSED] xmloverride : ejb30/security Test asadmin deploy
+[PASSED] xmloverride : ejb30/security Test asadmin redeploy
+[PASSED] jsp : ejb30/war/jsp Test asadmin deploy
+[PASSED] jsp : ejb30/war/jsp Test asadmin redeploy
+[PASSED] servlet : ejb30/war/servlet Test asadmin deploy
+[PASSED] servlet : ejb30/war/servlet Test asadmin redeploy
+[PASSED] javamodule : ejb31/ejblite/javamodule Test asadmin deploy
+[PASSED] javamodule : ejb31/ejblite/javamodule Test asadmin redeploy
 [PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin deploy
 [PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin re-deploy
 [PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin deploy
