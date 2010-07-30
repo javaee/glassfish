@@ -96,7 +96,32 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
 
     @Override
     public void createCustomResourceMapping(String resourceClassName, String mappingPath) {
-        throw new UnsupportedOperationException("Not supported yet.");
+
+        //gen in custom package!
+        String completeName = "org/glassfish/admin/rest/resources/custom/" + resourceClassName;
+        String baseClassName = GENERATED_PATH + className;
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get" + resourceClassName, "()L" + completeName + ";", null, null);
+
+        AnnotationVisitor av0 = mv.visitAnnotation("Ljavax/ws/rs/Path;", true);
+        av0.visit("value", mappingPath + "/");
+        av0.visitEnd();
+
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitFieldInsn(GETFIELD, baseClassName, "resourceContext", "Lcom/sun/jersey/api/core/ResourceContext;");
+        mv.visitLdcInsn(Type.getType("L" + completeName + ";"));
+        mv.visitMethodInsn(INVOKEINTERFACE, "com/sun/jersey/api/core/ResourceContext", "getResource", "(Ljava/lang/Class;)Ljava/lang/Object;");
+        mv.visitTypeInsn(CHECKCAST, completeName);
+        mv.visitVarInsn(ASTORE, 1);
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, baseClassName, "getEntity", "()Lorg/jvnet/hk2/config/Dom;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, completeName, "setEntity", "(Lorg/jvnet/hk2/config/Dom;)V");
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(2, 2);
+        mv.visitEnd();
+
     }
 
     @Override
