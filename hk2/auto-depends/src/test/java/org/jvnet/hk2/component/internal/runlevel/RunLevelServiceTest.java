@@ -379,7 +379,7 @@ public class RunLevelServiceTest {
    * Verifies the behavior of an OnProgress recipient, calling proceedTo()
    */
   @Test
-  public void chainedProceedToCalls() throws Exception {
+  public void chainedStartupProceedToCalls() throws Exception {
     installTestRunLevelService(false);
 
     defRLlistener.setProgressProceedTo(1, 4, rls);
@@ -401,7 +401,7 @@ public class RunLevelServiceTest {
    * Verifies the behavior of an OnProgress recipient, calling proceedTo()
    */
   @Test
-  public void chainedProceedToCallsAsync() throws Exception {
+  public void chainedStartupProceedToCallsAsync() throws Exception {
     installTestRunLevelService(true);
     
     defRLlistener.setProgressProceedTo(1, 4, rls);
@@ -425,6 +425,59 @@ public class RunLevelServiceTest {
 //    System.out.println(defRLlistener.calls);
   }
   
+  
+  /**
+   * Verifies the behavior of an OnProgress recipient, calling proceedTo()
+   */
+  @Test
+  public void chainedShutdownProceedToCalls() throws Exception {
+    installTestRunLevelService(false);
+
+    defRLlistener.setProgressProceedTo(4, 0, rls);
+    rls.proceedTo(4);
+    
+    synchronized (rls) {
+      rls.wait(1000);
+    }
+    assertEquals(0, defRLS.getCurrentRunLevel());
+    assertEquals(null, defRLS.getPlannedRunLevel());
+
+    assertInhabitantsState(4);
+    assertListenerState(true, false, true);
+    
+//    System.out.println(defRLlistener.calls);
+  }
+  
+  /**
+   * Verifies the behavior of an OnProgress recipient, calling proceedTo()
+   */
+  @Test
+  public void chainedShutdownProceedToCallsAsync() throws Exception {
+    installTestRunLevelService(true);
+    
+    installTestRunLevelService(false);
+
+    defRLlistener.setProgressProceedTo(4, 0, rls);
+    rls.proceedTo(4);
+    
+    synchronized (rls) {
+      rls.wait(1000);
+    }
+    if (1 == defRLS.getCurrentRunLevel()) {
+      synchronized (rls) {
+        rls.wait(100);
+      }
+    }
+    
+    assertEquals(0, defRLS.getCurrentRunLevel());
+    assertEquals(null, defRLS.getPlannedRunLevel());
+
+    assertInhabitantsState(4);
+    assertListenerState(true, false, true);
+    
+//    System.out.println(defRLlistener.calls);
+  }
+
   
   @SuppressWarnings("unchecked")
   private void installTestRunLevelService(boolean async) {

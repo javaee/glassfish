@@ -269,7 +269,7 @@ public class DefaultRunLevelService
         upActiveRecorder(rl);
       }
     } else if (runLevel < current) {
-      for (int rl = current; rl >= runLevel; rl--) {
+      for (int rl = current; rl > runLevel; rl--) {
         downActiveRecorder(rl);
       }
     } else {
@@ -351,7 +351,7 @@ public class DefaultRunLevelService
     }
     
     // don't set current until we've actually reached it
-    current = runLevel;
+    current = runLevel-1;
 
     if (planned == current) {
       // needed for the chained case
