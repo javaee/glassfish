@@ -132,12 +132,12 @@ public class ReplicationStore extends HAStoreBase {
 /*
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("ReplicationStore>>doValveSave:id =" + ((HASession)session).getIdInternal());
-            _logger.fine("ReplicationStore>>doValveSave:valid =" + ((StandardSession)session).getIsValid());
+            _logger.fine("ReplicationStore>>doValveSave:valid =" + session.getIsValid());
             _logger.fine("ReplicationStore>>doValveSave:ssoId=" + ((HASession)session).getSsoId());            
         }        
 */
         // begin 6470831 do not save if session is not valid
-        if( !((StandardSession)session).getIsValid() ) {
+        if( !session.getIsValid() ) {
             return;
         }
         // end 6470831         

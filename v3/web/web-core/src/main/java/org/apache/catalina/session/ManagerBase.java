@@ -746,9 +746,12 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
         // Recycle or create a Session instance
         Session session = null;
         session = createEmptySession();
-        StandardSession sess = (StandardSession) session;
-        //always lock
-        sess.lockForeground(); 
+        //XXX need to revisit
+        if (session instanceof StandardSession) {
+            StandardSession sess = (StandardSession) session;
+            //always lock
+            sess.lockForeground(); 
+        }
 
         // Initialize the properties of the new session and return it
         session.setNew(true);
@@ -793,11 +796,14 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
         session.setCreationTime(System.currentTimeMillis());
         session.setMaxInactiveInterval(this.maxInactiveInterval);
 
-        //START OF 6364900
-        StandardSession sess = (StandardSession) session;
-        //always lock
-        sess.lockForeground();        
-        //END OF 6364900        
+        //XXX need to revisit
+        if (session instanceof StandardSession) {
+            //START OF 6364900
+            StandardSession sess = (StandardSession) session;
+            //always lock
+            sess.lockForeground();        
+            //END OF 6364900        
+        }
 
         session.setId(sessionId);
         sessionCounter++;

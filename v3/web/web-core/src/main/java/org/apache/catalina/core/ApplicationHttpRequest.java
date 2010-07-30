@@ -589,8 +589,11 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                             context.getManager().findSession(
                                 other.getId(),
                                 requestedSessionVersion);
-                        incrementSessionVersion((StandardSession) localSession,
-                                                context);
+                        //XXX need to revisit
+                        if (localSession instanceof StandardSession) {
+                            incrementSessionVersion((StandardSession) localSession,
+                                                    context);
+                        }
                     } else {
                         localSession =
                             context.getManager().findSession(other.getId());
@@ -605,7 +608,9 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                     //START OF 6364900
                     localSession = 
                         context.getManager().createSession(other.getId());
-                    if (isSessionVersioningSupported) {
+                    //XXX need to revisit
+                    if (isSessionVersioningSupported &&
+                            localSession instanceof StandardSession) {
                         incrementSessionVersion((StandardSession) localSession,
                                                 context);
                     }

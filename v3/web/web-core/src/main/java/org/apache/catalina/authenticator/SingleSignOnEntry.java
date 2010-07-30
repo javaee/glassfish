@@ -173,7 +173,7 @@ public class SingleSignOnEntry {
              */
             // Invalidate this session
             // if it is not already invalid(ated)
-            if( ((StandardSession)sessions[i]).getIsValid() ) {
+            if( (sessions[i]).getIsValid() ) {
                 sessions[i].expire();
             }
             //6406580 END

@@ -235,9 +235,16 @@ public interface Session {
 
 
     /**
-     * Return the <code>isValid</code> flag for this session.
+     * Expire the expired session if necessary and
+     * return the <code>isValid</code> flag for this session.
      */
     public boolean isValid();
+
+
+    /**
+     * Return the <code>isValid</code> flag for this session.
+     */
+    public boolean getIsValid();
 
 
     // --------------------------------------------------------- Public Methods
