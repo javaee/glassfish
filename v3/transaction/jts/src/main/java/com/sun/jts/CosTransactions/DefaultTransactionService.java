@@ -207,33 +207,33 @@ public class DefaultTransactionService implements TransactionService,
             String serverName = "UnknownHost"/*#Frozen*/;
             if(properties.getProperty(JTS_XA_SERVER_NAME) != null) {
                  serverName = properties.getProperty(JTS_XA_SERVER_NAME);
+                 if (_logger.isLoggable(Level.FINE))
+                     _logger.log(Level.FINE,"DTR: Got serverName from JTS_XA_SERVER_NAME");
+
             } else {
                 try {
                     serverName = InetAddress.getLocalHost().getHostName();
+                    if (_logger.isLoggable(Level.FINE))
+                        _logger.log(Level.FINE,"DTR: Got serverName from InetAddress.getLocalHost().getHostName()");
+
                 } catch (UnknownHostException ex) {
                 }
             }
             if( serverId != null ) {
-                String tempServerName = serverName + "," + 
-                        Configuration.getPropertyValue(Configuration.INSTANCE_NAME) + 
-                        ",P" + serverId/*#Frozen*/;
-                if (tempServerName.length() > 56) {
-                    int hc = tempServerName.hashCode();
-                    String newString = Integer.toString(hc);
+                Configuration.setServerName(getAdjustedServerName(serverName + "," +
+                        Configuration.getPropertyValue(Configuration.INSTANCE_NAME) +
+                        ",P" + serverId/*#Frozen*/), true);
+                if (_logger.isLoggable(Level.FINE))
+                    _logger.log(Level.FINE,"DTR: Recoverable Server");
 
-                    if (hc < 0) {
-                         newString = newString.replace("-", "R");
-                    }
-
-                    int hcLength = (56 - newString.length());
-                    tempServerName = tempServerName.substring(0, hcLength) + newString;
-                }
-                Configuration.setServerName(tempServerName, true);
                 recoverable = true;
             } else {
                 long timestamp = System.currentTimeMillis();
-                Configuration.setServerName(serverName + ",T" +
-                                            String.valueOf(timestamp)/*#Frozen*/, false);
+                Configuration.setServerName(getAdjustedServerName(serverName + 
+                         ",T" + String.valueOf(timestamp)/*#Frozen*/), false);
+                if (_logger.isLoggable(Level.FINE))
+                    _logger.log(Level.FINE,"DTR: Non-Recoverable Server");
+
             }
 
             // Set up the POA objects for transient and persistent references.
@@ -454,6 +454,25 @@ public class DefaultTransactionService implements TransactionService,
 
     public static boolean isORBAvailable() {
         return (orb != null);
+    }
+
+    private static String getAdjustedServerName(String originalName) {
+        String tempServerName = originalName;
+        if (tempServerName.length() > 56) {
+            int hc = tempServerName.hashCode();
+            String newString = Integer.toString(hc);
+
+            if (hc < 0) {
+                 newString = newString.replace("-", "R");
+            }
+
+            int hcLength = (56 - newString.length());
+            tempServerName = tempServerName.substring(0, hcLength) + newString;
+        }
+        if (_logger.isLoggable(Level.FINE))
+            _logger.log(Level.FINE,"DTR: Adjusted serverName " + originalName + " to: " + tempServerName );
+
+        return tempServerName;
     }
 }
 
