@@ -97,7 +97,7 @@
             />
         </sun:passwordField>
         </sun:property>
-        <sun:property id="confirmPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.ConfirmNewPassword}">
+        <sun:property id="confirmPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.ConfirmNewPassword}">
             <sun:passwordField id="ConfirmPassword"  columns="$int{25}" text="#{pageSession.valueMap['adminPassword']}" styleClass="required" required="#{true}"  >
                 <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{ps2});
