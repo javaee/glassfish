@@ -53,7 +53,7 @@ import org.jvnet.hk2.component.MultiMap;
  * 
  * @since 3.1
  */
-/* public */class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
+public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
 
   /**
    * Real {@link Inhabitant} object.
