@@ -67,7 +67,7 @@
     <sun:propertySheet id="propertySheet">
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="staticnameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
-                <sun:staticText id="IdStatic" text="#{pageSession.valueMap['name']}"/>
+                <sun:staticText id="IdStatic" text="#{pageSession.nodeName}"/>
             </sun:property>
             <sun:property id="nameProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" helpText="$resource{i18ncs.node.NameHelp}">
                 <sun:textField id="name" text="#{pageSession.valueMap['id']}" columns="$int{60}" styleClass="required" required="#{true}" />

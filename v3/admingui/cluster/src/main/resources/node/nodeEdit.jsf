@@ -56,7 +56,7 @@
         mapPut(map="#{pageSession.valueMap}"  key="nodehost"  value="#{pageSession.attrMap['nodeHost']}");
         mapPut(map="#{pageSession.valueMap}"  key="nodedir"  value="#{pageSession.attrMap['nodeDir']}");
         mapPut(map="#{pageSession.valueMap}"  key="installdir",  value="#{pageSession.attrMap['installDir']}");
-        mapPut(map="#{pageSession.valueMap}"  key="name",  value="#{pageSession.attrMap['name']}");
+        //mapPut(map="#{pageSession.valueMap}"  key="name",  value="#{pageSession.attrMap['name']}");
         
         gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/ssh-connector" exists="#{requestScope.sshConnectorExist}");
         if (#{requestScope.sshConnectorExist}){
