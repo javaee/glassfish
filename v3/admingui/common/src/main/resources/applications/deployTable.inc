@@ -114,7 +114,7 @@
 
         "&#160;|&#160;
 
-        <sun:hyperlink id="restartLink" text="$resource{i18n.deployTable.restart}">
+        <sun:hyperlink id="restartLink" text="$resource{i18n.deployTable.reload}">
             <!command
                 prepareSuccessfulMsg();
                 restartApplication(appName="#{td.value.name}");
