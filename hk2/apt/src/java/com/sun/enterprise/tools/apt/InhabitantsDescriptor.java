@@ -39,7 +39,6 @@ package com.sun.enterprise.tools.apt;
 import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.InhabitantsFile;
 import com.sun.hk2.component.InhabitantsScanner;
-import com.sun.hk2.component.KeyValuePairParser;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 
 import java.io.File;
