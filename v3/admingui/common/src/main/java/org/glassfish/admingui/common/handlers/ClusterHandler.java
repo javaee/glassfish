@@ -215,6 +215,14 @@ public class ClusterHandler {
         if (errorInstances.size() > 0){
             String details = GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "instance.error."+"action" , new String[]{""+errorInstances});
             GuiUtil.handleError(handlerCtx, details);
+        }else{
+            if(action.equals("stop-instance")){
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    //e.printStackTrace();
+                }
+            }
         }
      }
 
