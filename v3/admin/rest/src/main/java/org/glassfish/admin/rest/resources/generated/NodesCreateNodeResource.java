@@ -47,7 +47,6 @@ public class NodesCreateNodeResource extends org.glassfish.admin.rest.resources.
           "POST",
           "Create Node",
           "create-node",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

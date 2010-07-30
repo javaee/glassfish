@@ -45,9 +45,12 @@ public class AuthRealmListUsersResource extends org.glassfish.admin.rest.resourc
           "AuthRealmListUsersResource",
           "list-file-users",
           "GET",
-          new java.util.HashMap<String, String>() {{
-                    put("authrealmname","$parent");
-       }},
           true);
     }
+@Override
+protected java.util.HashMap<String, String> getCommandParams() {
+	java.util.HashMap<String, String> hm = new java.util.HashMap<String, String>();
+	hm.put("authrealmname","$parent");
+	return hm;
+}
 }

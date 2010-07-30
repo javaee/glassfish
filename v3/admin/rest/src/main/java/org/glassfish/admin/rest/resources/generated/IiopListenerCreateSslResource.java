@@ -47,10 +47,13 @@ public class IiopListenerCreateSslResource extends org.glassfish.admin.rest.reso
           "POST",
           "Create",
           "create-ssl",
-          new java.util.HashMap<String, String>() {{
-                    put("id","$parent");
-                    put("type","iiop-listener");
-       }},
           true);
     }
+@Override
+protected java.util.HashMap<String, String> getCommandParams() {
+	java.util.HashMap<String, String> hm = new java.util.HashMap<String, String>();
+	hm.put("id","$parent");
+	hm.put("type","iiop-listener");
+	return hm;
+}
 }

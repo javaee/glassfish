@@ -47,7 +47,6 @@ public class JmsServiceDeleteJmsdestResource extends org.glassfish.admin.rest.re
           "POST",
           "Delete",
           "delete-jmsdest",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

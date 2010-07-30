@@ -47,7 +47,6 @@ public class DomainCreateInstanceResource extends org.glassfish.admin.rest.resou
           "POST",
           "Create Instance",
           "create-instance",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

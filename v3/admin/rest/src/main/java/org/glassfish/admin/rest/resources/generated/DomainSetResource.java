@@ -38,13 +38,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import org.glassfish.admin.rest.resources.*;
 import org.glassfish.admin.rest.resources.custom.*;
-public class ResourcesGetJdbcDriverClassNamesResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource  {
+public class DomainSetResource extends org.glassfish.admin.rest.resources.TemplateCommandPostResource  {
 
-   public ResourcesGetJdbcDriverClassNamesResource() {
+   public DomainSetResource() {
        super(
-          "ResourcesGetJdbcDriverClassNamesResource",
-          "_get-jdbc-driver-class-names",
-          "GET",
+          "DomainSetResource",
+          "set",
+          "POST",
+          "Set Configuration Variable",
+          "set",
           false);
     }
 }

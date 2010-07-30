@@ -218,29 +218,52 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
             mv.visitLdcInsn(commandAction);
             mv.visitLdcInsn(commandDisplayName);
         }
-        mv.visitInsn(ACONST_NULL);
-        mv.visitTypeInsn(CHECKCAST, "java/util/HashMap");
-        mv.visitInsn(ICONST_0);
+
+        mv.visitInsn(ICONST_1);
 
 //next is different based on parent
         if (!isget) {
 
             mv.visitMethodInsn(INVOKESPECIAL, baseClassName,
-                    "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/HashMap;Z)V");
+                    "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V");
         } else {
             mv.visitMethodInsn(INVOKESPECIAL, baseClassName,
-                    "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/HashMap;Z)V");
+                    "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V");
+
         }
         mv.visitInsn(RETURN);
 
         if (!isget) {
-            mv.visitMaxs(8, 1);  //GET is 6!!!
+            mv.visitMaxs(7, 1);  //GET is 5!!!
         } else {
-            mv.visitMaxs(6, 1);
+            mv.visitMaxs(5, 1);
 
         }
         mv.visitEnd();
 
+        if (commandParams != null) {
+
+            mv = cw.visitMethod(ACC_PROTECTED, "getCommandParams", "()Ljava/util/HashMap;", "()Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/String;>;", null);
+            mv.visitCode();
+            mv.visitTypeInsn(NEW, "java/util/HashMap");
+            mv.visitInsn(DUP);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/util/HashMap", "<init>", "()V");
+            mv.visitVarInsn(ASTORE, 1);
+
+            for (CommandResourceMetaData.ParameterMetaData commandParam : commandParams) {
+                mv.visitVarInsn(ALOAD, 1);
+                mv.visitLdcInsn(commandParam.name);
+                mv.visitLdcInsn(commandParam.value);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/HashMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+                mv.visitInsn(POP);
+            }
+
+
+            mv.visitVarInsn(ALOAD, 1);
+            mv.visitInsn(ARETURN);
+            mv.visitMaxs(3, 2);
+            mv.visitEnd();
+        }
 
     }
 

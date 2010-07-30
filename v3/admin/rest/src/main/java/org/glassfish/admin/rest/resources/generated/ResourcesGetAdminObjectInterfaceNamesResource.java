@@ -45,7 +45,6 @@ public class ResourcesGetAdminObjectInterfaceNamesResource extends org.glassfish
           "ResourcesGetAdminObjectInterfaceNamesResource",
           "_get-admin-object-interface-names",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

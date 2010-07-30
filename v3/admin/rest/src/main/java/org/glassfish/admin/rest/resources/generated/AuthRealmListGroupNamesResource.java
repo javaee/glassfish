@@ -45,9 +45,12 @@ public class AuthRealmListGroupNamesResource extends org.glassfish.admin.rest.re
           "AuthRealmListGroupNamesResource",
           "__list-group-names",
           "GET",
-          new java.util.HashMap<String, String>() {{
-                    put("realmName","$parent");
-       }},
           true);
     }
+@Override
+protected java.util.HashMap<String, String> getCommandParams() {
+	java.util.HashMap<String, String> hm = new java.util.HashMap<String, String>();
+	hm.put("realmName","$parent");
+	return hm;
+}
 }

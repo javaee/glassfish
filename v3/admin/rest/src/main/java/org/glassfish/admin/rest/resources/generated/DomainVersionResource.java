@@ -45,7 +45,6 @@ public class DomainVersionResource extends org.glassfish.admin.rest.resources.Te
           "DomainVersionResource",
           "version",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

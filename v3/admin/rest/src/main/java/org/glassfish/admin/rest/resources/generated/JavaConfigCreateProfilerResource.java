@@ -47,7 +47,6 @@ public class JavaConfigCreateProfilerResource extends org.glassfish.admin.rest.r
           "POST",
           "Create Profiler",
           "create-profiler",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

@@ -45,7 +45,6 @@ public class ResourcesPingConnectionPoolResource extends org.glassfish.admin.res
           "ResourcesPingConnectionPoolResource",
           "ping-connection-pool",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

@@ -45,7 +45,6 @@ public class ListApplicationListSubComponentsResource extends org.glassfish.admi
           "ListApplicationListSubComponentsResource",
           "list-sub-components",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

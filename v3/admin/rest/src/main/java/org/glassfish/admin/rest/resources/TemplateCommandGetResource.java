@@ -35,7 +35,6 @@
  */
 package org.glassfish.admin.rest.resources;
 
-import java.util.HashMap;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -59,9 +58,9 @@ import org.glassfish.api.admin.ParameterMap;
 public class TemplateCommandGetResource extends TemplateExecCommand {
 
     public TemplateCommandGetResource(String resourceName, String commandName, String commandMethod,
-            HashMap<String, String> m, boolean b) {
+             boolean b) {
 
-        super(resourceName, commandName, commandMethod, "", "", m, b);
+        super(resourceName, commandName, commandMethod, "", "", b);
         parameterType = Constants.QUERY_PARAMETER;
     }
 

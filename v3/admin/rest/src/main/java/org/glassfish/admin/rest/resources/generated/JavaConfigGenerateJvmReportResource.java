@@ -47,7 +47,6 @@ public class JavaConfigGenerateJvmReportResource extends org.glassfish.admin.res
           "POST",
           "Generate Report",
           "generate-jvm-report",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

@@ -35,7 +35,6 @@
  */
 package org.glassfish.admin.rest.resources;
 
-import java.util.HashMap;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -66,8 +65,8 @@ import org.glassfish.api.admin.ParameterMap;
  */
 public class TemplateCommandDeleteResource extends TemplateExecCommand {
 
-    public TemplateCommandDeleteResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, HashMap<String, String> m, boolean b) {
-        super(resourceName, commandName, commandMethod, commandAction, commandDisplayName, m, b);
+    public TemplateCommandDeleteResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName,  boolean b) {
+        super(resourceName, commandName, commandMethod, commandAction, commandDisplayName, b);
         parameterType = Constants.MESSAGE_PARAMETER;
     }
 

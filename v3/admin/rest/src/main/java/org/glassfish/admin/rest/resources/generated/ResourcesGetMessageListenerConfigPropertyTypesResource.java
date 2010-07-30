@@ -45,7 +45,6 @@ public class ResourcesGetMessageListenerConfigPropertyTypesResource extends org.
           "ResourcesGetMessageListenerConfigPropertyTypesResource",
           "_get-message-listener-config-property-types",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

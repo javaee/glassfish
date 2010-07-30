@@ -45,7 +45,6 @@ public class ResourcesGetMessageListenerConfigPropertiesResource extends org.gla
           "ResourcesGetMessageListenerConfigPropertiesResource",
           "_get-message-listener-config-properties",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

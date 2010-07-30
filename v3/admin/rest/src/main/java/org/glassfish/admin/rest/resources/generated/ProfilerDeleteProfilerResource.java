@@ -46,9 +46,6 @@ public class ProfilerDeleteProfilerResource extends org.glassfish.admin.rest.res
           "DELETE",
           "Delete Profiler",
           "delete-profiler",
-          new java.util.HashMap<String, String>() {{
-                    put("id","$parent");
-       }},
           true);
     }
 }

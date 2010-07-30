@@ -45,7 +45,6 @@ public class ResourcesGetAdminObjectClassNamesResource extends org.glassfish.adm
           "ResourcesGetAdminObjectClassNamesResource",
           "_get-admin-object-class-names",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

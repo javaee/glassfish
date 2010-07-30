@@ -47,9 +47,12 @@ public class IiopServiceDeleteSslResource extends org.glassfish.admin.rest.resou
           "DELETE",
           "Delete",
           "delete-ssl",
-          new java.util.HashMap<String, String>() {{
-                    put("type","iiop-service");
-       }},
           false);
     }
+@Override
+protected java.util.HashMap<String, String> getCommandParams() {
+	java.util.HashMap<String, String> hm = new java.util.HashMap<String, String>();
+	hm.put("type","iiop-service");
+	return hm;
+}
 }

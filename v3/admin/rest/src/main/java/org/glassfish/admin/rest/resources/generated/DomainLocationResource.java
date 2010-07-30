@@ -45,7 +45,6 @@ public class DomainLocationResource extends org.glassfish.admin.rest.resources.T
           "DomainLocationResource",
           "__locations",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

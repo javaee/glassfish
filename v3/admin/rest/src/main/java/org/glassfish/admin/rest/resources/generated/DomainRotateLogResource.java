@@ -47,7 +47,6 @@ public class DomainRotateLogResource extends org.glassfish.admin.rest.resources.
           "POST",
           "RotateLog",
           "rotate-log",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

@@ -47,7 +47,6 @@ public class JmsServiceCreateJmsdestResource extends org.glassfish.admin.rest.re
           "POST",
           "Create",
           "create-jmsdest",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

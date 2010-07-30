@@ -45,7 +45,6 @@ public class DomainUptimeResource extends org.glassfish.admin.rest.resources.Tem
           "DomainUptimeResource",
           "uptime",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

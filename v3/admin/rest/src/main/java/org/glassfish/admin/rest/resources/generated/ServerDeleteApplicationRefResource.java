@@ -45,9 +45,6 @@ public class ServerDeleteApplicationRefResource extends org.glassfish.admin.rest
           "DELETE",
           "Delete Application Ref",
           "delete-application-ref",
-          new java.util.HashMap<String, String>() {{
-                    put("target","$parent");
-       }},
           true);
     }
 }

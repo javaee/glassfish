@@ -136,17 +136,22 @@ public class TextClassWriter implements ClassWriter {
                 writer.write("          \"" + commandAction + "\",\n");
                 writer.write("          \"" + commandDisplayName + "\",\n");
             }
-            if(commandParams != null) {
-                writer.write("          new java.util.HashMap<String, String>() {{\n");
-                for (CommandResourceMetaData.ParameterMetaData commandParam : commandParams) {
-                    writer.write("                    put(\"" + commandParam.name + "\",\"" + commandParam.value + "\");\n");
-                }
-                writer.write("       }},\n");
-            } else {
-                writer.write("          (java.util.HashMap<String, String>) null ,\n");
-            }
+
             writer.write("          " + linkedToParent + ");\n");
             writer.write("    }\n");
+
+            if (commandParams != null) {
+                writer.write("@Override\n");
+                writer.write("protected java.util.HashMap<String, String> getCommandParams() {\n");
+                writer.write("\tjava.util.HashMap<String, String> hm = new java.util.HashMap<String, String>();\n");
+                for (CommandResourceMetaData.ParameterMetaData commandParam : commandParams) {
+                    writer.write("\thm.put(\"" + commandParam.name + "\",\"" + commandParam.value + "\");\n");
+                }
+
+                writer.write("\treturn hm;\n");
+                writer.write("}\n");
+            }
+
         } catch (IOException e) {
             throw new GeneratorException(e);
         }

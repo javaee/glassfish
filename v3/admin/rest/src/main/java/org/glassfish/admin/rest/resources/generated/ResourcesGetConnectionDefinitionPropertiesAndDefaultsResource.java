@@ -45,7 +45,6 @@ public class ResourcesGetConnectionDefinitionPropertiesAndDefaultsResource exten
           "ResourcesGetConnectionDefinitionPropertiesAndDefaultsResource",
           "_get-connection-definition-properties-and-defaults",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

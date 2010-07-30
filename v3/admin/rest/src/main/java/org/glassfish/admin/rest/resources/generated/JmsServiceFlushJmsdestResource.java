@@ -47,7 +47,6 @@ public class JmsServiceFlushJmsdestResource extends org.glassfish.admin.rest.res
           "POST",
           "Flush",
           "flush-jmsdest",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

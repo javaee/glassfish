@@ -45,7 +45,6 @@ public class JmsServiceJmsPingResource extends org.glassfish.admin.rest.resource
           "JmsServiceJmsPingResource",
           "jms-ping",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

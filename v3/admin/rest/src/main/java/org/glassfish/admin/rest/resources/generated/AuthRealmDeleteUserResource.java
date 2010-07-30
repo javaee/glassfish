@@ -47,9 +47,12 @@ public class AuthRealmDeleteUserResource extends org.glassfish.admin.rest.resour
           "DELETE",
           "Delete",
           "delete-user",
-          new java.util.HashMap<String, String>() {{
-                    put("authrealmname","$parent");
-       }},
           true);
     }
+@Override
+protected java.util.HashMap<String, String> getCommandParams() {
+	java.util.HashMap<String, String> hm = new java.util.HashMap<String, String>();
+	hm.put("authrealmname","$parent");
+	return hm;
+}
 }

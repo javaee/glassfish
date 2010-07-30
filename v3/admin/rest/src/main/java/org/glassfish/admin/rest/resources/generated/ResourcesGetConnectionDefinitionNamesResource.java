@@ -45,7 +45,6 @@ public class ResourcesGetConnectionDefinitionNamesResource extends org.glassfish
           "ResourcesGetConnectionDefinitionNamesResource",
           "_get-connection-definition-names",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

@@ -47,7 +47,6 @@ public class DomainStopResource extends org.glassfish.admin.rest.resources.Templ
           "POST",
           "Stop",
           "stop",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

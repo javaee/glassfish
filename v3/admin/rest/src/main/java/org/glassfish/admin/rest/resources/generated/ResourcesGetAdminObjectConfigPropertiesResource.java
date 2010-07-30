@@ -45,7 +45,6 @@ public class ResourcesGetAdminObjectConfigPropertiesResource extends org.glassfi
           "ResourcesGetAdminObjectConfigPropertiesResource",
           "_get-admin-object-config-properties",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

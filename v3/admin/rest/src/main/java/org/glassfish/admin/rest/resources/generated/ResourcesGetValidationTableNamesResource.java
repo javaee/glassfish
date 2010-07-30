@@ -45,7 +45,6 @@ public class ResourcesGetValidationTableNamesResource extends org.glassfish.admi
           "ResourcesGetValidationTableNamesResource",
           "_get-validation-table-names",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

@@ -45,7 +45,6 @@ public class ListApplicationGetContextRootResource extends org.glassfish.admin.r
           "ListApplicationGetContextRootResource",
           "_get-context-root",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

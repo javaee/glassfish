@@ -47,9 +47,12 @@ public class ProtocolCreateProtocolFinderResource extends org.glassfish.admin.re
           "POST",
           "Create",
           "create-protocol-finder",
-          new java.util.HashMap<String, String>() {{
-                    put("protocol","$parent");
-       }},
           true);
     }
+@Override
+protected java.util.HashMap<String, String> getCommandParams() {
+	java.util.HashMap<String, String> hm = new java.util.HashMap<String, String>();
+	hm.put("protocol","$parent");
+	return hm;
+}
 }

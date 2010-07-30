@@ -45,7 +45,6 @@ public class JmsServiceListJmsdestResource extends org.glassfish.admin.rest.reso
           "JmsServiceListJmsdestResource",
           "list-jmsdest",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

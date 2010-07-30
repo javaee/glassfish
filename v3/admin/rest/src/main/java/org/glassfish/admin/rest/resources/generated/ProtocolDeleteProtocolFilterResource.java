@@ -47,9 +47,12 @@ public class ProtocolDeleteProtocolFilterResource extends org.glassfish.admin.re
           "DELETE",
           "Delete",
           "delete-protocol-filter",
-          new java.util.HashMap<String, String>() {{
-                    put("protocol","$parent");
-       }},
           true);
     }
+@Override
+protected java.util.HashMap<String, String> getCommandParams() {
+	java.util.HashMap<String, String> hm = new java.util.HashMap<String, String>();
+	hm.put("protocol","$parent");
+	return hm;
+}
 }

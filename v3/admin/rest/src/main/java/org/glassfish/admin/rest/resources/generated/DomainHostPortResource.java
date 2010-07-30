@@ -45,7 +45,6 @@ public class DomainHostPortResource extends org.glassfish.admin.rest.resources.T
           "DomainHostPortResource",
           "_get-host-and-port",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

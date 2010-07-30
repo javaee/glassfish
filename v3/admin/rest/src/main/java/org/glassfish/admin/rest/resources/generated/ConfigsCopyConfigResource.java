@@ -47,7 +47,6 @@ public class ConfigsCopyConfigResource extends org.glassfish.admin.rest.resource
           "POST",
           "Copy Config",
           "copy-config",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

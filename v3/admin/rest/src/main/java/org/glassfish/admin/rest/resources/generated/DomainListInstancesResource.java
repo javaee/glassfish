@@ -45,7 +45,6 @@ public class DomainListInstancesResource extends org.glassfish.admin.rest.resour
           "DomainListInstancesResource",
           "list-instances",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

@@ -45,7 +45,6 @@ public class ResourcesGetDatabaseVendorNamesResource extends org.glassfish.admin
           "ResourcesGetDatabaseVendorNamesResource",
           "_get-database-vendor-names",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

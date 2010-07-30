@@ -45,7 +45,6 @@ public class DomainListLoggerLevelsResource extends org.glassfish.admin.rest.res
           "DomainListLoggerLevelsResource",
           "list-logger-levels",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

@@ -45,7 +45,6 @@ public class ListAuthRealmListPredefinedAuthrealmClassnamesResource extends org.
           "ListAuthRealmListPredefinedAuthrealmClassnamesResource",
           "__list-predefined-authrealm-classnames",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

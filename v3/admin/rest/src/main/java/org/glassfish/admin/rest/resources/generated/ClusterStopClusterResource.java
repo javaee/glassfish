@@ -47,9 +47,12 @@ public class ClusterStopClusterResource extends org.glassfish.admin.rest.resourc
           "POST",
           "Stop Cluster",
           "stop-cluster",
-          new java.util.HashMap<String, String>() {{
-                    put("id","$parent");
-       }},
           true);
     }
+@Override
+protected java.util.HashMap<String, String> getCommandParams() {
+	java.util.HashMap<String, String> hm = new java.util.HashMap<String, String>();
+	hm.put("id","$parent");
+	return hm;
+}
 }

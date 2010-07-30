@@ -45,7 +45,6 @@ public class ResourcesGetConnectorConfigJavaBeansResource extends org.glassfish.
           "ResourcesGetConnectorConfigJavaBeansResource",
           "_get-connector-config-java-beans",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

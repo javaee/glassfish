@@ -45,7 +45,6 @@ public class ResourcesGetMcfConfigPropertiesResource extends org.glassfish.admin
           "ResourcesGetMcfConfigPropertiesResource",
           "_get-mcf-config-properties",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

@@ -45,7 +45,6 @@ public class ResourcesGetActivationSpecClassResource extends org.glassfish.admin
           "ResourcesGetActivationSpecClassResource",
           "_get-activation-spec-class",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

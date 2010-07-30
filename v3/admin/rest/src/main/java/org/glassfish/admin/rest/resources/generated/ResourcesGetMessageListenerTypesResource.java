@@ -45,7 +45,6 @@ public class ResourcesGetMessageListenerTypesResource extends org.glassfish.admi
           "ResourcesGetMessageListenerTypesResource",
           "_get-message-listener-types",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

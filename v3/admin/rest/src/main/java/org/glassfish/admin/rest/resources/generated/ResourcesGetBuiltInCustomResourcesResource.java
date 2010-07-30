@@ -45,7 +45,6 @@ public class ResourcesGetBuiltInCustomResourcesResource extends org.glassfish.ad
           "ResourcesGetBuiltInCustomResourcesResource",
           "_get-built-in-custom-resources",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

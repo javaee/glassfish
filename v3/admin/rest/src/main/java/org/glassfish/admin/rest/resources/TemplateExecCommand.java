@@ -75,7 +75,7 @@ public class TemplateExecCommand {
     protected String commandDisplayName;
     protected String commandMethod;
     protected String commandAction;
-    protected HashMap<String, String> commandParams = null;
+//    protected HashMap<String, String> commandParams = null;
     protected boolean isLinkedToParent = false;
     /* * parameterType the type of parameter. Possible values are
      *        Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
@@ -83,13 +83,12 @@ public class TemplateExecCommand {
      */
     protected int parameterType;
     public TemplateExecCommand(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, 
-            HashMap<String, String> commandParams, boolean isLinkedToParent) {
+             boolean isLinkedToParent) {
         this.resourceName = resourceName;
         this.commandName = commandName;
         this.commandMethod = commandMethod;
         this.commandAction = commandAction;
         this.commandDisplayName = commandDisplayName;
-        this.commandParams = commandParams;
         this.isLinkedToParent = isLinkedToParent;
 
     }
@@ -103,7 +102,7 @@ public class TemplateExecCommand {
         try {
             //command method metadata
             MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(
-                    commandName, commandParams, parameterType , RestService.getHabitat(), RestService.logger);
+                    commandName, getCommandParams(), parameterType , RestService.getHabitat(), RestService.logger);
             optionsResult.putMethodMetaData(commandMethod, methodMetaData);
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
@@ -131,7 +130,15 @@ public class TemplateExecCommand {
         return results;
     }
 
+    /*override it
+     *
+     * 
+     */
+    protected HashMap<String, String> getCommandParams() {
+        return null;
+    }
     protected void processCommandParams(ParameterMap data) {
+        HashMap<String, String> commandParams = getCommandParams();
         if (commandParams != null) {
             //formulate parent-link attribute for this command resource
             //Parent link attribute may or may not be the id/target attribute

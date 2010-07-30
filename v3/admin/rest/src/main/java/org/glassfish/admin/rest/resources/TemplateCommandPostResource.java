@@ -35,7 +35,6 @@
  */
 package org.glassfish.admin.rest.resources;
 
-import java.util.HashMap;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -44,16 +43,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
 import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.ResourceUtil;
 
-
-
-
 import org.glassfish.admin.rest.results.CommandResourceGetResult;
 import org.glassfish.admin.rest.results.ActionReportResult;
-import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.api.admin.ParameterMap;
 
 /**
@@ -65,8 +59,8 @@ import org.glassfish.api.admin.ParameterMap;
  */
 public class TemplateCommandPostResource extends TemplateExecCommand {
 
-    public TemplateCommandPostResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, HashMap<String, String> commandParams, boolean isLinkedToParent) {
-        super(resourceName, commandName, commandMethod, commandAction, commandDisplayName, commandParams, isLinkedToParent);
+    public TemplateCommandPostResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName,  boolean isLinkedToParent) {
+        super(resourceName, commandName, commandMethod, commandAction, commandDisplayName, isLinkedToParent);
         parameterType = Constants.MESSAGE_PARAMETER;
     }
 

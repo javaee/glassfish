@@ -47,7 +47,6 @@ public class DomainSetLogLevelResource extends org.glassfish.admin.rest.resource
           "POST",
           "LogLevel",
           "set-log-level",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

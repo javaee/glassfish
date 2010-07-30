@@ -45,7 +45,6 @@ public class ResourcesGetSystemRarsAllowingPoolCreationResource extends org.glas
           "ResourcesGetSystemRarsAllowingPoolCreationResource",
           "_get-system-rars-allowing-pool-creation",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

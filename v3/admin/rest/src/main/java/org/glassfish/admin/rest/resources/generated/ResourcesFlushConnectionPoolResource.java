@@ -47,7 +47,6 @@ public class ResourcesFlushConnectionPoolResource extends org.glassfish.admin.re
           "POST",
           "Flush Connection Pool",
           "flush-connection-pool",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

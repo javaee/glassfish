@@ -45,7 +45,6 @@ public class ResourcesGetResourceAdapterConfigPropertiesResource extends org.gla
           "ResourcesGetResourceAdapterConfigPropertiesResource",
           "_get-resource-adapter-config-properties",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

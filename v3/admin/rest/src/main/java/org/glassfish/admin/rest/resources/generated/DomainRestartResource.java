@@ -47,7 +47,6 @@ public class DomainRestartResource extends org.glassfish.admin.rest.resources.Te
           "POST",
           "Restart",
           "restart",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }

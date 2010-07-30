@@ -45,7 +45,6 @@ public class DomainGetRuntimeInfoResource extends org.glassfish.admin.rest.resou
           "DomainGetRuntimeInfoResource",
           "_get-runtime-info",
           "GET",
-          (java.util.HashMap<String, String>) null ,
           false);
     }
 }
