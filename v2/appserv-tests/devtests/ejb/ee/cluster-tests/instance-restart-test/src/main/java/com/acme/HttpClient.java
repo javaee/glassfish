@@ -14,8 +14,6 @@ public class HttpClient {
     private String host;
     private String port;
 
-    private String failoverPort;
-
     private volatile SessionStateInfo stateInfo = new SessionStateInfo();
     String cookie;
 
@@ -28,7 +26,6 @@ public class HttpClient {
     public HttpClient(String[] args) {
         host = "localhost";
         port = args[0];
-        failoverPort = args[1];
     }
 
     public void doTest() {
@@ -63,23 +60,30 @@ public class HttpClient {
                 boolean result = compareSessionStates(stateInfo, info);
                 if (result) {
                     stateInfo = info;
-                    System.out.println("Passed " + stateInfo);
+                    System.out.println("Passed: " + stateInfo);
                 } else {
-
-                    System.out.println("Failed " + info);
+                    System.out.println("*****************************************************************");
+                    System.out.println("Failed: " + info);
+                    System.out.println("*****************************************************************");
                 }
             }
 
 
-            System.out.println("Stopping inst1...");
+            System.out.println("Stopping inst1....");
             Process proc = Runtime.getRuntime().exec(ASADMIN + "  stop-instance inst1");
             proc.waitFor();
             Thread.sleep(3 * 1000);
             System.out.println("Process stop-instance finished...");
 
+            System.out.println("(Re)starting inst1....");
+            proc = Runtime.getRuntime().exec(ASADMIN + "  start-instance inst1");
+            proc.waitFor();
+            System.out.println("Process start-instance finished...");
+            Thread.sleep(3 * 1000);
 
-            System.out.println("Redirecting traffic to " + failoverPort + "...");
-            url = "http://" + host + ":" + failoverPort +
+
+            System.out.println("RESUMING traffic to " + port + "...");
+            url = "http://" + host + ":" + port +
                     "/" + appName + "/" + servletName;
             for (int i = 0; i < 3; i++) {
                 System.out.println("Connecting for the " + i + " time....");
@@ -111,7 +115,7 @@ public class HttpClient {
         for (int i = 1; (headerName = uc.getHeaderFieldKey(i)) != null; i++) {
             if (headerName.equals("Set-Cookie")) {
                 tmpSessState.setJsessionCookie(uc.getHeaderField(i));
-                System.out.println("JUST READ COOKIE: " + uc.getHeaderField(i));
+                //System.out.println("JUST READ COOKIE: " + uc.getHeaderField(i));
             }
         }
 
