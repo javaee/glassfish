@@ -40,16 +40,16 @@ import org.glassfish.admin.rest.resources.*;
 import org.glassfish.admin.rest.resources.custom.*;
 public class LbConfigResource extends TemplateResource  {
 
-	@Path("cluster-ref/")
-	public ListClusterRefResource getListClusterRefResource() {
-		ListClusterRefResource resource = resourceContext.getResource(ListClusterRefResource.class);
-		resource.setParentAndTagName(getEntity() , "cluster-ref");
-		return resource;
-	}
 	@Path("server-ref/")
 	public ListServerRefResource getListServerRefResource() {
 		ListServerRefResource resource = resourceContext.getResource(ListServerRefResource.class);
 		resource.setParentAndTagName(getEntity() , "server-ref");
+		return resource;
+	}
+	@Path("cluster-ref/")
+	public ListClusterRefResource getListClusterRefResource() {
+		ListClusterRefResource resource = resourceContext.getResource(ListClusterRefResource.class);
+		resource.setParentAndTagName(getEntity() , "cluster-ref");
 		return resource;
 	}
 	@Path("property/")

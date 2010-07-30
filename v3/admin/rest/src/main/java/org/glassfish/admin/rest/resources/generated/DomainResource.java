@@ -77,12 +77,6 @@ DomainRotateLogResource resource = resourceContext.getResource(DomainRotateLogRe
 return resource;
 }
 
-@Path("set/")
-public DomainSetResource getDomainSetResource() {
-DomainSetResource resource = resourceContext.getResource(DomainSetResource.class);
-return resource;
-}
-
 @Path("set-log-level/")
 public DomainSetLogLevelResource getDomainSetLogLevelResource() {
 DomainSetLogLevelResource resource = resourceContext.getResource(DomainSetLogLevelResource.class);
@@ -121,7 +115,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][] {{"create-instance", "POST", "create-instance"} , {"host-port", "GET", "_get-host-and-port"} , {"list-logger-levels", "GET", "list-logger-levels"} , {"list-instances", "GET", "list-instances"} , {"restart", "POST", "restart-domain"} , {"rotate-log", "POST", "rotate-log"} , {"set", "POST", "set"} , {"set-log-level", "POST", "set-log-level"} , {"stop", "POST", "stop-domain"} , {"uptime", "GET", "uptime"} , {"version", "GET", "version"} , {"get-runtime-info", "GET", "_get-runtime-info"} , {"location", "GET", "__locations"} };
+return new String[][] {{"create-instance", "POST", "create-instance"} , {"host-port", "GET", "_get-host-and-port"} , {"list-logger-levels", "GET", "list-logger-levels"} , {"list-instances", "GET", "list-instances"} , {"restart", "POST", "restart-domain"} , {"rotate-log", "POST", "rotate-log"} , {"set-log-level", "POST", "set-log-level"} , {"stop", "POST", "stop-domain"} , {"uptime", "GET", "uptime"} , {"version", "GET", "version"} , {"get-runtime-info", "GET", "_get-runtime-info"} , {"location", "GET", "__locations"} };
 }
 
 	@Path("resources/")

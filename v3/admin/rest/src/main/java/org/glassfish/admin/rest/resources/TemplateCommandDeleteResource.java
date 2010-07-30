@@ -44,7 +44,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
-import com.sun.jersey.spi.container.ContainerRequest;
 import java.util.List;
 import javax.ws.rs.DELETE;
 import org.glassfish.admin.rest.Constants;

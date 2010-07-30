@@ -35,16 +35,27 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import com.sun.enterprise.v3.common.ActionReporter;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import org.codehaus.jettison.json.JSONException;
 import org.glassfish.admin.rest.results.ActionReportResult;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.Produces;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONObject;
+import org.glassfish.api.ActionReport.MessagePart;
 
 /**
  * @author Ludovic Champenois
+ * @author Jason Lee
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
@@ -54,16 +65,125 @@ public class ActionReportResultJsonProvider extends BaseProvider<ActionReportRes
     }
 
     @Override
-    protected String getContent(ActionReportResult proxy) {
-        String result = "";
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+    public String getContent(ActionReportResult proxy) {
+        ActionReporter ar = (ActionReporter)proxy.getActionReport();
         try {
-            proxy.getActionReport().writeReport(baos);
-            result = result + baos.toString();
-        } catch (IOException ex) {
+            JSONObject result = processReport(ar);
+            return result.toString(4);
+        } catch (JSONException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+
+    protected JSONObject processReport(ActionReporter ar) throws JSONException {
+        JSONObject result = new JSONObject();
+        result.put("message", ar.getMessage());
+        result.put("command", ar.getActionDescription());
+        result.put("exit_code", ar.getActionExitCode());
+        
+        Properties properties = ar.getTopMessagePart().getProps();
+        if (properties != null) {
+            result.put("properties", properties);
+        }
+
+        Properties extraProperties = ar.getExtraProperties();
+        if (extraProperties != null) {
+            result.put("extraProperties", getExtraProperties(result, extraProperties));
+        }
+
+        List<MessagePart> children = ar.getTopMessagePart().getChildren();
+        if (children.size() > 0) {
+            result.put("children", processChildren(children));
+        }
+
+        List<ActionReporter> subReports = ar.getSubActionsReport();
+        if (subReports.size() > 0) {
+            result.put("subReports", processSubReports(subReports));
         }
 
         return result;
+    }
+
+    protected JSONArray processChildren(List<MessagePart> parts) throws JSONException {
+        JSONArray array = new JSONArray();
+
+        for (MessagePart part : parts) {
+            JSONObject object = new JSONObject();
+            object.put("message", part.getMessage());
+            object.put("properites", part.getProps());
+            List<MessagePart> children = part.getChildren();
+            if (children.size() > 0) {
+                object.put("children", processChildren(part.getChildren()));
+            }
+            array.put(object);
+        }
+
+        return array;
+    }
+
+    protected JSONArray processSubReports(List<ActionReporter> subReports) throws JSONException {
+        JSONArray array = new JSONArray();
+
+        for (ActionReporter subReport : subReports) {
+            array.put(processReport(subReport));
+        }
+
+        return array;
+    }
+
+    protected JSONObject getExtraProperties(JSONObject object, Properties props) throws JSONException {
+        JSONObject extraProperties = new JSONObject();
+        for (Map.Entry<Object, Object> entry : props.entrySet()) {
+            String key = entry.getKey().toString();
+            Object value = getJsonObject(entry.getValue());
+            extraProperties.put(key, value);
+        }
+
+        return extraProperties;
+    }
+
+    protected Object getJsonObject(Object object) throws JSONException {
+        Object result = null;
+        if (object instanceof Collection) {
+            result = processCollection((Collection)object);
+        } else if (object instanceof Map) {
+            result = processMap((Map)object);
+        } else {
+            result = object;
+        }
+
+        return result;
+    }
+
+    protected JSONArray processCollection(Collection c) throws JSONException {
+        JSONArray result = new JSONArray();
+        Iterator i = c.iterator();
+        while (i.hasNext()) {
+            Object item = getJsonObject(i.next());
+            result.put(item);
+        }
+
+        return result;
+    }
+
+    protected JSONObject processMap(Map map) throws JSONException {
+        JSONObject result = new JSONObject();
+
+        for (Map.Entry entry : (Set<Map.Entry>)map.entrySet()) {
+            result.put(entry.getKey().toString(), getJsonObject(entry.getValue()));
+        }
+
+        return result;
+    }
+
+    protected <T> T getFieldValue (ActionReporter ar, String name, T type) {
+        try {
+            Class<?> clazz = ar.getClass().getSuperclass();
+            Field field = clazz.getDeclaredField(name);
+            field.setAccessible(true);
+            return (T)field.get(ar);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

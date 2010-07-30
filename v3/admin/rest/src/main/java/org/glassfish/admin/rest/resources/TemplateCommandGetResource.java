@@ -57,9 +57,7 @@ import org.glassfish.api.admin.ParameterMap;
  */
 public class TemplateCommandGetResource extends TemplateExecCommand {
 
-    public TemplateCommandGetResource(String resourceName, String commandName, String commandMethod,
-             boolean b) {
-
+    public TemplateCommandGetResource(String resourceName, String commandName, String commandMethod, boolean b) {
         super(resourceName, commandName, commandMethod, "", "", b);
         parameterType = Constants.QUERY_PARAMETER;
     }

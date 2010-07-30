@@ -36,19 +36,26 @@
 package org.glassfish.admin.rest.resources;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.remote.JMXServiceURL;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.glassfish.admin.rest.logviewer.LogViewerResource;
 import org.glassfish.admin.rest.RestService;
+import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.results.StringListResult;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.external.amx.AMXGlassfish;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.Dom;
@@ -91,5 +98,25 @@ public class GlassFishDomainResource extends TemplateResource {
         } catch (final JMException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @POST
+    @Path("set/")
+    @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+    public ActionReportResult setDomainConfig(HashMap<String, String> data) {
+        TemplateExecCommand resource = new TemplateExecCommand("DomainResource", "set", "POST", "commandAction", "set", false);
+        resource.requestHeaders = requestHeaders;
+        
+        final Iterator<Entry<String, String>> iterator = data.entrySet().iterator();
+        if (iterator.hasNext()) {
+            ParameterMap fixed = new ParameterMap();
+            Map.Entry entry = iterator.next();
+            fixed.add("DEFAULT", entry.getKey()+"="+entry.getValue());
+
+            return resource.executeCommand(fixed);
+        }
+
+        throw new RuntimeException("You must supply exactly one configuration option."); //i18n
     }
 }
