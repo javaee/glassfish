@@ -98,6 +98,10 @@ public abstract class ActionReporter extends ActionReport {
         this.actionDescription = message;
     }
 
+    public String getActionDescription() {
+        return actionDescription;
+    }
+
     @Override
     public void setFailureCause(Throwable t) {
         this.exception = t;
@@ -124,6 +128,10 @@ public abstract class ActionReporter extends ActionReport {
         }
         subActions.add(subAction);
         return subAction;
+    }
+
+    public List<ActionReporter> getSubActionsReport() {
+        return subActions;
     }
 
     @Override
