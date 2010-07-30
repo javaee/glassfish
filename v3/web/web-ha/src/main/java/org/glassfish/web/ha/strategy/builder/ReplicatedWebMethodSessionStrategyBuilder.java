@@ -52,7 +52,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 
-@Service(name="ha")
+@Service(name="replicated")
 public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceStrategyBuilder {
     @Inject
     ReplicationWebEventPersistentManager rwepMgr;
