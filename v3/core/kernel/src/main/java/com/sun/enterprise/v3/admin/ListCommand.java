@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.v3.admin;
 
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -64,6 +66,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
  * Time: 1:27:53 AM
  */
 @Service(name="list")
+@Cluster(RuntimeType.DAS)
 @Scoped(PerLookup.class)
 public class ListCommand extends V2DottedNameSupport implements AdminCommand {
 

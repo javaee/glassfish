@@ -35,17 +35,20 @@
  */
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.admin.util.ClusterOperationUtil;
+import com.sun.enterprise.config.serverbeans.Server;
+import org.glassfish.api.admin.*;
+import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
@@ -54,9 +57,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.admin.config.LegacyConfigurationUpgrade;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * User: Jerome Dochez
@@ -64,9 +65,10 @@ import java.util.Collection;
  * Time: 4:39:05 AM
  */
 @Service(name="set")
+@Cluster(RuntimeType.INSTANCE)
 @Scoped(PerLookup.class)
 @I18n("set")
-public class SetCommand extends V2DottedNameSupport implements AdminCommand {
+public class SetCommand extends V2DottedNameSupport implements AdminCommand, PostConstruct {
 
     @Inject
     Habitat habitat;
@@ -77,11 +79,27 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
     @Inject
     ConfigSupport config;
 
+    @Inject
+    Target targetService;
+
     @Param(primary = true, multiple = true)
     String[] values;
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(SetCommand.class);
-    
+
+    private HashMap<String, Integer> targetLevel = null;
+
+    public void postConstruct() {
+        targetLevel = new HashMap<String, Integer>();
+        targetLevel.put("applications", 0);
+        targetLevel.put("system-applications", 0);
+        targetLevel.put("resources", 0);
+        targetLevel.put("configs", 3);
+        targetLevel.put("clusters", 3);
+        targetLevel.put("servers", 3);
+        targetLevel.put("nodes", 3);
+    }
+
     public void execute(AdminCommandContext context) {
         for (String value : values) {
             if (!set(context, value))
@@ -275,6 +293,57 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                 fail(context, localStrings.getLocalString("admin.set.configuration.notfound", "No configuration found for {0}", targetName));
                 return false;
             }
+        }
+        if(targetService.isThisDAS() && !replicateSetCommand(context, targetName, value))
+            return false;
+        return true;
+    }
+
+    private String getElementFromString(String name, int index) {
+        StringTokenizer token = new StringTokenizer(name, ".");
+        String target = null;
+        for(int j = 0; j < index; j++) {
+            if(token.hasMoreTokens())
+                target = token.nextToken();
+        }
+        return target;
+    }
+
+    private boolean replicateSetCommand(AdminCommandContext context, String targetName, String value) {
+        String firstElementOfName = targetName.substring(0, targetName.indexOf('.'));
+        Integer targetElementLocation = targetLevel.get(firstElementOfName);
+        if(targetElementLocation == null)
+            return true;
+        List<Server> replicationInstances = null;
+        if(targetElementLocation == 0) {
+            if("resources".equals(firstElementOfName)) {
+                replicationInstances = targetService.getAllInstances();
+            }
+            if("applications".equals(firstElementOfName)) {
+                String appName = getElementFromString(targetName, 3);
+                if (appName == null) {
+                    fail(context, localStrings.getLocalString("admin.set.invalid.appname",
+                            "Unable to extract application name from {0}", targetName));
+                    return false;
+                }
+                replicationInstances = targetService.getInstances(domain.getAllReferencedTargetsForApplication(appName));
+            }
+        } else {
+            String target = getElementFromString(targetName, targetElementLocation);
+            if (target == null) {
+                fail(context, localStrings.getLocalString("admin.set.invalid.target",
+                        "Unable to extract replication target from {0}", targetName));
+                return false;
+            }
+            replicationInstances = targetService.getInstances(target);
+        }
+        if(replicationInstances.size() != 0) {
+            ParameterMap params = new ParameterMap();
+            params.set("DEFAULT", targetName+"="+value);
+            ActionReport.ExitCode ret = ClusterOperationUtil.replicateCommand("set", FailurePolicy.Error,
+                    FailurePolicy.Warn, replicationInstances, context, params, habitat);
+            if(!ret.equals(ActionReport.ExitCode.SUCCESS))
+                return false;
         }
         return true;
     }

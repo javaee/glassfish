@@ -141,6 +141,16 @@ public class Target {
     }
 
     /**
+     * Given a list instance names, get List<Server>
+     */
+    public List<Server> getInstances(List<String> names) {
+        List<Server> instances = new ArrayList<Server>();
+        for(String aName : names)
+            instances.addAll(getInstances(aName));
+        return instances;        
+    }
+
+    /**
      * Given the name of a target, returns a list of Server objects. If given target is a standalone server,
      * then the server's Server element is returned in the list. If the target is a cluster, then the list of Server
      * elements that represent all server instances of that cluster is returned.

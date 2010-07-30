@@ -82,6 +82,8 @@ public class ClusterOperationUtil {
             List<InstanceCommandExecutor> execList = getInstanceCommandList(commandName,
                                     instancesForReplication, context.getLogger(), habitat);
             for(InstanceCommandExecutor rac : execList) {
+                if(CommandTarget.DAS.isValid(habitat, rac.getServer().getName()))
+                    continue;
                 if (intermediateDownloadDir != null) {
                     rac.setFileOutputDirectory(
                         subdirectoryForInstance(intermediateDownloadDir, rac));

@@ -30,20 +30,20 @@
     <orderEntry type="library" exported="" name="Maven: org.glassfish:bean-validator:3.0-JBoss-4.0.2_03" level="project" />
     <orderEntry type="module" module-name="glassfish-api" exported="" />
     <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:config-types:1.0.32" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-utils:1.9.19-beta6" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-lzma:1.9.19-beta6" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-utils:1.9.19-beta7" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-lzma:1.9.19-beta7" level="project" />
     <orderEntry type="module" module-name="config-api" exported="" />
     <orderEntry type="module" module-name="common-util" exported="" />
     <orderEntry type="module" module-name="javax.servlet" exported="" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-config:1.9.19-beta6" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-config:1.9.19-beta7" level="project" />
     <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:osgi-adapter:1.0.32" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-comet:1.9.19-beta6" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-http:1.9.19-beta6" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-framework:1.9.19-beta6" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-rcm:1.9.19-beta6" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-portunif:1.9.19-beta6" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-websockets:1.9.19-beta6" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-http-servlet:1.9.19-beta6" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-comet:1.9.19-beta7" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-http:1.9.19-beta7" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-framework:1.9.19-beta7" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-rcm:1.9.19-beta7" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-portunif:1.9.19-beta7" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-websockets:1.9.19-beta7" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.grizzly:grizzly-http-servlet:1.9.19-beta7" level="project" />
     <orderEntry type="module" module-name="glassfish-mbeanserver" exported="" />
     <orderEntry type="module" module-name="jmxremote_optional-repackaged" exported="" />
     <orderEntry type="module" module-name="amx-config" exported="" />
