@@ -215,14 +215,23 @@ public class BaseSeleniumTestClass {
     }
 
     protected void deleteRow(String buttonId, String tableId, String triggerText, String selectColId, String valueColId) {
+        rowActionWithConfirm( buttonId,  tableId,  triggerText,  selectColId,  valueColId);
+        waitForPageLoad(triggerText, true);
+    }
+
+     protected void rowActionWithConfirm(String buttonId, String tableId, String triggerText) {
+        rowActionWithConfirm(buttonId, tableId, triggerText, "col0", "col1");
+    }
+
+    protected void rowActionWithConfirm(String buttonId, String tableId, String triggerText, String selectColId, String valueColId) {
         selenium.chooseOkOnNextConfirmation();
         selectTableRowByValue(tableId, triggerText, selectColId, valueColId);
         selenium.click(buttonId);
         if (selenium.isConfirmationPresent()) {
             selenium.getConfirmation();
         }
-        waitForPageLoad(triggerText, true);
     }
+
 
     /**
      * This method will scan the all ths links for the link with the given text.  We can't rely on a link's position
@@ -269,6 +278,24 @@ public class BaseSeleniumTestClass {
         }
 
     }
+
+    protected String getTableRowByValue(String tableId, String value, String valueColId) {
+        try {
+            int row = 0;
+            while (true) { // iterate over any rows
+                // Assume one row group for now and hope it doesn't bite us
+                String text = selenium.getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
+                if (text.equals(value)) {
+                    return tableId + ":rowGroup1:" + row  ;
+                }
+                row++;
+            }
+        } catch (Exception e) {
+            Assert.fail("The specified row was not found: " + value);
+            return "";
+        }
+    }
+
 
     protected int addTableRow(String tableId, String buttonId) {
         return addTableRow(tableId, buttonId, "Additional Properties");

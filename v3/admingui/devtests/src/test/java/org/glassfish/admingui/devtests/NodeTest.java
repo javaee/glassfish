@@ -83,7 +83,7 @@ public class NodeTest extends BaseSeleniumTestClass {
 
         //Test Delete Node
         deleteRow("propertyForm:nodesTable:topActionsGroup1:button1", "propertyForm:nodesTable", nodeName);
-        waitForCondition("document.getElementById('propertyForm:nodesTable:topActionsGroup1:button1').text != 'Processing...'", 10000);
+        waitForCondition("document.getElementById('propertyForm:nodesTable:topActionsGroup1:button1').value != 'Processing...'", 50000);
         assertFalse(selenium.isTextPresent(nodeName));
     }
 
