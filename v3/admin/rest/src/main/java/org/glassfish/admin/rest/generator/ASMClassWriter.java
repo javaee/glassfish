@@ -218,8 +218,11 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
             mv.visitLdcInsn(commandAction);
             mv.visitLdcInsn(commandDisplayName);
         }
-
-        mv.visitInsn(ICONST_1);
+        if (linkedToParent == true) {
+            mv.visitInsn(ICONST_1);
+        } else {
+            mv.visitInsn(ICONST_0);
+        }
 
 //next is different based on parent
         if (!isget) {
