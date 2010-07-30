@@ -38,6 +38,10 @@ package org.glassfish.persistence.jpa;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.*;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.Events;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
@@ -48,6 +52,7 @@ import org.glassfish.persistence.common.Java2DBProcessorHelper;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
 
 import javax.persistence.EntityManagerFactory;
 import java.util.*;
@@ -58,7 +63,7 @@ import java.util.*;
  * @author Mitesh Meswani
  */
 @Service
-public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationContainer> {
+public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationContainer> implements PostConstruct, EventListener {
 
     @Inject
     private ConnectorRuntime connectorRuntime;
@@ -68,6 +73,9 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
 
     @Inject
     private ServerEnvironmentImpl serverEnvironment;
+
+    @Inject
+    private Events events;
 
     @Override public MetaData getMetaData() {
 
@@ -83,7 +91,7 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
     protected void cleanArtifacts(DeploymentContext dc) throws DeploymentException {
         // Drop tables if needed on undeploy.
         OpsParams params = dc.getCommandParameters(OpsParams.class);
-        if (params.origin.isUndeploy() && (serverEnvironment.isDas() || serverEnvironment.isEmbedded())) {
+        if (params.origin.isUndeploy() && isDas()) {
             Java2DBProcessorHelper helper = new Java2DBProcessorHelper(dc);
             helper.init();
             helper.createOrDropTablesInDB(false, "JPA"); // NOI18N
@@ -109,7 +117,7 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
                Set<BundleDescriptor> bundles = application.getBundleDescriptors();
 
                 // Iterate through all the bundles for the app and collect pu references in referencedPus
-                List<PersistenceUnitDescriptor> referencedPus = new ArrayList<PersistenceUnitDescriptor>();
+                final List<PersistenceUnitDescriptor> referencedPus = new ArrayList<PersistenceUnitDescriptor>();
                 for (BundleDescriptor bundle : bundles) {
                     Collection<? extends PersistenceUnitDescriptor> pusReferencedFromBundle = bundle.findReferencedPUs();
                     for(PersistenceUnitDescriptor pud : pusReferencedFromBundle) {
@@ -117,29 +125,22 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
                     }
                 }
 
-                RootDeploymentDescriptor currentBundle = context.getModuleMetaData(BundleDescriptor.class);
-                if (currentBundle == null) {
-                    // We are being called for an application
-                    currentBundle = application;
-                }
-
-                // Initialize pus for only this bundle here to enable transformers to work properly.
-                // This is because classloader from deploymentContext is for this bundle only
-                Collection<PersistenceUnitsDescriptor> pusDescriptorForThisBundle = currentBundle.getExtensionsDescriptors(PersistenceUnitsDescriptor.class);
-                for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
-                    for (PersistenceUnitDescriptor pud : persistenceUnitsDescriptor.getPersistenceUnitDescriptors()) {
+                //Iterate through all the PUDs for this bundle and if it is referenced, load the corresponding pu
+                PersistenceUnitDescriptorIterator pudIterator = new PersistenceUnitDescriptorIterator() {
+                    @Override void visitPUD(PersistenceUnitDescriptor pud, DeploymentContext context) {
                         if(referencedPus.contains(pud)) {
-                            boolean isDas = serverEnvironment.isDas() || serverEnvironment.isEmbedded();
-                            ProviderContainerContractInfo providerContainerContractInfo = serverEnvironment.getRuntimeType().isEmbedded() ?
+                            boolean isDas = isDas();
+                            ProviderContainerContractInfo providerContainerContractInfo = serverEnvironment.isEmbedded() ?
                                     new EmbeddedProviderContainerContractInfo(context, connectorRuntime, habitat, isDas) :
                                     new ServerProviderContainerContractInfo(context, connectorRuntime, isDas);
                             PersistenceUnitLoader puLoader = new PersistenceUnitLoader(pud, providerContainerContractInfo);
-                            // Store the puLoader in context. It is retrieved in load() to execute java2db and to
+                            // Store the puLoader in context. It is retrieved to execute java2db and to
                             // store the loaded emfs in a JPAApplicationContainer object for cleanup
                             context.addTransientAppMetaData(getUniquePuIdentifier(pud), puLoader );
                         }
                     }
-                }
+                };
+                pudIterator.iteratePUDs(context);
             }
 
 //        StatsProviderManager.register("jpa", PluginPoint.SERVER, "jpa/eclipselink", new EclipseLinkStatsProvider());
@@ -152,25 +153,22 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
      */
     @Override
     public JPApplicationContainer load(JPAContainer container, DeploymentContext context) {
-        RootDeploymentDescriptor currentBundle = context.getModuleMetaData(BundleDescriptor.class);
-        if (currentBundle == null) {
-            // We are being called for an application
-            currentBundle = context.getModuleMetaData(Application.class);
-        }
+        final List<EntityManagerFactory> emfsInitializedForThisBundle = new ArrayList<EntityManagerFactory>();
 
-        List<EntityManagerFactory> emfsInitializedForThisBundle = new ArrayList<EntityManagerFactory>();
-        Collection<PersistenceUnitsDescriptor> pusDescriptorForThisBundle = currentBundle.getExtensionsDescriptors(PersistenceUnitsDescriptor.class);
-        for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
-            for (PersistenceUnitDescriptor pud : persistenceUnitsDescriptor.getPersistenceUnitDescriptors()) {
-                //PersistenceUnitsDescriptor corresponds to  persistence.xml. A bundle can only have one persitence.xml except
-                // when the bundle is an application which can have multiple persitence.xml under jars in root of ear and lib.
+        //iterate through all the PersistenceUnitDescriptor for this bundle. If it is initialized, add it to emfsInitializedForThisBundle
+        PersistenceUnitDescriptorIterator pudIterator = new PersistenceUnitDescriptorIterator() {
+            @Override void visitPUD(PersistenceUnitDescriptor pud, DeploymentContext context) {
+                //PersistenceUnitsDescriptor corresponds to  persistence.xml. A bundle can only have one persistence.xml except
+                // when the bundle is an application which can have multiple persistence.xml under jars in root of ear and lib.
                 PersistenceUnitLoader puLoader = context.getTransientAppMetaData(getUniquePuIdentifier(pud), PersistenceUnitLoader.class);
                 if (puLoader != null) {
                     emfsInitializedForThisBundle.add(puLoader.getEMF());
                     puLoader.doJava2DB();
                 }
             }
-        }
+        };
+        pudIterator.iteratePUDs(context);
+
         return new JPApplicationContainer(emfsInitializedForThisBundle);
     }
 
@@ -183,4 +181,76 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
         return pud.getAbsolutePuRoot() + pud.getName();
      }
 
+    private boolean isDas() {
+        return serverEnvironment.isDas() || serverEnvironment.isEmbedded();
+    }
+
+    @Override
+    public void postConstruct() {
+        //events.register(this);
+    }
+
+    @Override
+    public void event(Event event) {
+        if (event.is(Deployment.APPLICATION_PREPARED) && isDas() ) { //We do java2db only on das
+            ExtendedDeploymentContext context = (ExtendedDeploymentContext)event.hook();
+            Map<String, ExtendedDeploymentContext> deploymentContexts = context.getModuleDeploymentContexts();
+
+            for (DeploymentContext deploymentContext : deploymentContexts.values()) {
+                //execute java2db for each bundle level pus
+                executeJava2DB(deploymentContext);
+            }
+            //execute java2db for the app level pus
+            executeJava2DB(context);
+        }
+    }
+
+    private void executeJava2DB(final DeploymentContext context) {
+
+        //iterate through all the PersistenceUnitDescriptor for this bundle. If it is initialized, execute jdava2db on it
+        PersistenceUnitDescriptorIterator pudIterator = new PersistenceUnitDescriptorIterator() {
+            @Override void visitPUD(PersistenceUnitDescriptor pud, DeploymentContext context) {
+                //PersistenceUnitsDescriptor corresponds to  persistence.xml. A bundle can only have one persitence.xml except
+                // when the bundle is an application which can have multiple persitence.xml under jars in root of ear and lib.
+                PersistenceUnitLoader puLoader = context.getTransientAppMetaData(getUniquePuIdentifier(pud), PersistenceUnitLoader.class);
+                if (puLoader != null) {
+                    puLoader.doJava2DB();
+                }
+            }
+        };
+
+        pudIterator.iteratePUDs(context);
+
+    }
+
+    /**
+     * Helper class to centralize the code for loop that iterates through all the PersistenceUnitDescriptor for a given DeploymentContext (and hence the corresponding bundle)
+     */
+    private static abstract class PersistenceUnitDescriptorIterator {
+        /**
+         * Iterate through all the PersistenceUnitDescriptors for the given context (and hence corresponding bundle) and call visitPUD for each of them
+         * @param context
+         */
+        void iteratePUDs(DeploymentContext context) {
+            RootDeploymentDescriptor currentBundle = context.getModuleMetaData(BundleDescriptor.class);
+            if (currentBundle == null) {
+                    // We are being called for an application
+                    currentBundle = context.getModuleMetaData(Application.class);
+                }
+
+            Collection<PersistenceUnitsDescriptor> pusDescriptorForThisBundle = currentBundle.getExtensionsDescriptors(PersistenceUnitsDescriptor.class);
+            for (PersistenceUnitsDescriptor persistenceUnitsDescriptor : pusDescriptorForThisBundle) {
+                    for (PersistenceUnitDescriptor pud : persistenceUnitsDescriptor.getPersistenceUnitDescriptors()) {
+                        visitPUD(pud, context);
+                    }
+            }
+
+        }
+
+        /**
+         * Called for each PersistenceUnitDescriptor visited by this iterator.
+         */
+        abstract void visitPUD(PersistenceUnitDescriptor pud, DeploymentContext context);
+
+    }
 }
