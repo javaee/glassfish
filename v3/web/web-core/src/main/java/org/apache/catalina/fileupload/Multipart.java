@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class Multipart {
 
@@ -107,14 +108,14 @@ public class Multipart {
 
     private boolean isMultipart() {
 
-        if (!request.getMethod().toLowerCase().equals("post")) {
+        if (!request.getMethod().toLowerCase(Locale.ENGLISH).equals("post")) {
             return false;
         }
         String contentType = request.getContentType();
         if (contentType == null) {
             return false;
         }
-        if (contentType.toLowerCase().startsWith("multipart/form-data")) {
+        if (contentType.toLowerCase(Locale.ENGLISH).startsWith("multipart/form-data")) {
             return true;
         }
         return false;

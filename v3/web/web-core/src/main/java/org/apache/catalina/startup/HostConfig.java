@@ -68,6 +68,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -482,7 +483,7 @@ public class HostConfig
             if (deployed.contains(files[i]))
                 continue;
             File dir = new File(configBase, files[i]);
-            if (files[i].toLowerCase().endsWith(".xml")) {
+            if (files[i].toLowerCase(Locale.ENGLISH).endsWith(".xml")) {
 
                 deployed.add(files[i]);
 
@@ -536,7 +537,7 @@ public class HostConfig
             if (deployed.contains(files[i]))
                 continue;
             File dir = new File(appBase, files[i]);
-            if (files[i].toLowerCase().endsWith(".war") && dir.isFile()
+            if (files[i].toLowerCase(Locale.ENGLISH).endsWith(".war") && dir.isFile()
                     && !invalidWars.contains(files[i])) {
 
                 deployed.add(files[i]);

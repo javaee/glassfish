@@ -59,6 +59,7 @@ import org.apache.catalina.loader.StandardClassLoader;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -203,7 +204,7 @@ public final class ClassLoaderFactory {
                     continue;
                 String filenames[] = directory.list();
                 for (int j = 0; j < filenames.length; j++) {
-                    String filename = filenames[j].toLowerCase();
+                    String filename = filenames[j].toLowerCase(Locale.ENGLISH);
                     if (!filename.endsWith(".jar"))
                         continue;
                     File file = new File(directory, filenames[j]);

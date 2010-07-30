@@ -55,6 +55,7 @@
 package org.apache.catalina.util;
 
 import java.util.Hashtable;
+import java.util.Locale;
 
 /**
  * MIME2Java is a convenience class which handles conversions between MIME charset names
@@ -617,7 +618,7 @@ public class MIME2Java {
      * @see #reverse
      */
     public static String convert(String mimeCharsetName) {
-        return (String)s_enchash.get(mimeCharsetName.toUpperCase());
+        return (String)s_enchash.get(mimeCharsetName.toUpperCase(Locale.ENGLISH));
     }
 
     /**
@@ -635,6 +636,6 @@ public class MIME2Java {
      * @see #convert
      */
     public static String reverse(String encoding) {
-        return (String)s_revhash.get(encoding.toUpperCase());
+        return (String)s_revhash.get(encoding.toUpperCase(Locale.ENGLISH));
     }
 }

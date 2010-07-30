@@ -62,9 +62,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Locale;
 /**
  * Servlet to process SSI requests within a webpage. Mapped to a path from
  * within web.xml.
@@ -178,8 +184,8 @@ public class SSIServlet extends HttpServlet {
                     + path + "'");
         // Exclude any resource in the /WEB-INF and /META-INF subdirectories
         // (the "toUpperCase()" avoids problems on Windows systems)
-        if (path == null || path.toUpperCase().startsWith("/WEB-INF")
-                || path.toUpperCase().startsWith("/META-INF")) {
+        if (path == null || path.toUpperCase(Locale.ENGLISH).startsWith("/WEB-INF")
+                || path.toUpperCase(Locale.ENGLISH).startsWith("/META-INF")) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
             log("Can't serve file: " + path);
             return;

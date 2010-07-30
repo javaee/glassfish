@@ -60,6 +60,7 @@ import java.io.File;
 import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
@@ -297,7 +298,7 @@ public class CGIProcessEnvironment extends ProcessEnvironment {
         String header = null;
         while (headers.hasMoreElements()) {
             header = null;
-            header = (headers.nextElement()).toUpperCase();
+            header = (headers.nextElement()).toUpperCase(Locale.ENGLISH);
             //REMIND: rewrite multiple headers as if received as single
             //REMIND: change character set
             //REMIND: I forgot what the previous REMIND means

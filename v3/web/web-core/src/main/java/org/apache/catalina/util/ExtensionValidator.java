@@ -65,7 +65,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.NoSuchElementException;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
@@ -122,7 +128,7 @@ public final class ExtensionValidator {
         // build a list of jar files in the classpath
         while (strTok.hasMoreTokens()) {
             String classpathItem = strTok.nextToken();
-            if (classpathItem.toLowerCase().endsWith(".jar")) {
+            if (classpathItem.toLowerCase(Locale.ENGLISH).endsWith(".jar")) {
                 File item = new File(classpathItem);
                 if (item.exists()) {
                     try {
@@ -149,7 +155,7 @@ public final class ExtensionValidator {
                 }
                 File[] files = targetDir.listFiles();
                 for (int i = 0; i < files.length; i++) {
-                    if (files[i].getName().toLowerCase().endsWith(".jar")) {
+                    if (files[i].getName().toLowerCase(Locale.ENGLISH).endsWith(".jar")) {
                         try {
                             addSystemResource(files[i]);
                         } catch (IOException e) {
@@ -236,7 +242,7 @@ public final class ExtensionValidator {
             }
             while ((ne != null) && ne.hasMoreElements()) {
                 Binding binding = (Binding)ne.nextElement();
-                if (!binding.getName().toLowerCase().endsWith(".jar")) {
+                if (!binding.getName().toLowerCase(Locale.ENGLISH).endsWith(".jar")) {
                     continue;
                 }
                 Object obj =

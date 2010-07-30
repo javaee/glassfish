@@ -62,6 +62,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.StringTokenizer;
 /**
  * The entry point to SSI processing. This class does the actual parsing,
@@ -173,7 +174,7 @@ public class SSIProcessor {
                         // during the loop
                         String configErrMsg = ssiMediator.getConfigErrMsg();
                         SSICommand ssiCommand =
-                                commands.get(strCmd.toLowerCase());
+                                commands.get(strCmd.toLowerCase(Locale.ENGLISH));
                         String errorMessage = null;
                         if (ssiCommand == null) {
                             errorMessage = "Unknown command: " + strCmd;
