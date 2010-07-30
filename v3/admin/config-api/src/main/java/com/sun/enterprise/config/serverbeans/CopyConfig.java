@@ -59,4 +59,6 @@ public abstract class CopyConfig implements AdminCommand {
     @Param(optional=true, separator=':')
     protected String systemproperties;
 
+    protected Config copyOfConfig;
+
 }

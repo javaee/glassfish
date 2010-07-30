@@ -147,6 +147,7 @@ public final class CopyConfigCommand extends CopyConfig {
                     }
                     destCopy.setName(configName);
                     configs.getConfig().add(destCopy);
+                    copyOfConfig = destCopy;
                     return destCopy;
 
                 }

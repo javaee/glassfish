@@ -62,6 +62,7 @@ import org.glassfish.quality.ToDo;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,6 +70,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.CommandRunner;
 
 /**
  *
@@ -434,6 +436,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         @Inject
         private ServerEnvironment env;
 
+        @Inject
+        CommandRunner runner;
+
         @Override
         public void decorate(AdminCommandContext context, Server instance) throws TransactionFailure, PropertyVetoException {
             Config ourConfig = null;
@@ -545,36 +550,16 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     logger.log(Level.SEVERE, msg);
                     throw new TransactionFailure(msg);
                 }
-
-                Configs configs = domain.getConfigs();
-                Configs writableConfigs = tx.enroll(configs);
-
-                final Config configCopy;
-                try {
-                    configCopy = (Config) defaultConfig.deepCopy(writableConfigs);
-                }
-                catch (Exception e) {
-                    logger.log(Level.SEVERE, localStrings.getLocalString(Server.class,
-                            "Cluster.error_while_copying",
-                            "Error while copying the default configuration {0}",
-                            e.toString(), e));
-                    throw new TransactionFailure(e.toString(), e);
-                }
-                ourConfig = configCopy;
-
-                final String configName = instance.getName() + "-config";
+               final String configName = instance.getName() + "-config";
                 instance.setConfigRef(configName);
-                try {
-                    File configConfigDir = new File(env.getConfigDirPath(), configName);
-                    new File(configConfigDir, "docroot").mkdirs();
-                    new File(configConfigDir, "lib/ext").mkdirs();
-                }
-                catch (Exception e) {
-                    // no big deal - just ignore
-                }
+               final CopyConfig command = (CopyConfig) runner
+                        .getCommand("copy-config", context.getActionReport(), context.getLogger());
+                command.configs= new ArrayList<String>();
+                command.configs.add("default-config");
+                command.configs.add(configName);
+                command.execute(context);
+                ourConfig = command.copyOfConfig;
 
-                configCopy.setName(configName);
-                writableConfigs.getConfig().add(configCopy);
             }
 
             for (Resource resource : domain.getResources().getResources()) {
