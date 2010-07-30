@@ -613,35 +613,35 @@ public class Habitat {
               ListenersByTypeInhabitant.class.getName(),
               index);
       if (null != sameListeners && !sameListeners.listeners.isEmpty()) {
-        try {
-          exec.execute(new Runnable() {
-            public void run() {
-              Iterator<HabitatListener> iter = sameListeners.listeners.iterator();
-              while (iter.hasNext()) {
-                Object entry = iter.next();
-                HabitatListener listener = 
-                  (entry instanceof HabitatListener) ? 
-                      (HabitatListener)entry :
-                      (HabitatListener)((Inhabitant)entry).get();
+        exec.execute(new Runnable() {
+          public void run() {
+            Iterator<HabitatListener> iter = sameListeners.listeners.iterator();
+            while (iter.hasNext()) {
+              Object entry = iter.next();
+              HabitatListener listener = 
+                (entry instanceof HabitatListener) ? 
+                    (HabitatListener)entry :
+                    (HabitatListener)((Inhabitant)entry).get();
+              try {
                 boolean keepMe = innerCall.inhabitantChanged(listener);
                 if (!keepMe) {
                   removeHabitatListener(listener);
                 }
-              }
-              
-              // we take the extraListenerToBeNotified because
-              //  (a) we want to have all notifications in the executor, and
-              //  (b) it might trigger an exception that we want to trap
-              if (null != extraListenerToBeNotified) {
-                extraListenerToBeNotified.get().inhabitantChanged(event, Habitat.this, extraListenerToBeNotified);
+              } catch (Exception e){
+                // don't percolate the exception since it may negatively impact processing
+                Logger.getLogger(Habitat.class.getName()).
+                  log(Level.WARNING, "exception caught from listener: ", e);
               }
             }
-          });
-        } catch (Exception e){
-          // don't percolate the exception since it may negatively impact processing
-          Logger.getLogger(Habitat.class.getName()).
-            log(Level.WARNING, "exception caught from listener: ", e);
-        }
+            
+            // we take the extraListenerToBeNotified because
+            //  (a) we want to have all notifications in the executor, and
+            //  (b) it might trigger an exception that we want to trap
+            if (null != extraListenerToBeNotified) {
+              extraListenerToBeNotified.get().inhabitantChanged(event, Habitat.this, extraListenerToBeNotified);
+            }
+          }
+        });
       }
     }
 
