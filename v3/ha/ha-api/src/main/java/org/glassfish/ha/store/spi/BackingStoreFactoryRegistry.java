@@ -44,6 +44,8 @@ import java.util.Properties;
 import java.util.HashMap;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author bhavanishankar@dev.java.net
@@ -74,6 +76,9 @@ public final class BackingStoreFactoryRegistry {
                     "for persistene-type " + type + " already exists");
         }
         factories.put(type, factory);
+        Logger.getLogger(BackingStoreFactoryRegistry.class.getName()).log(Level.INFO, "Registered "
+            + factory.getClass().getName() + " for persistence-type = " + type
+            + " in BackingStoreFactoryRegistry");
     }
 
     /**
