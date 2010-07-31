@@ -588,7 +588,7 @@ public class DelegatedRecoveryManager {
             Xid[] inDoubtXids = RecoveryManager.getInDoubtXids(xaResource);
             // uniqueXids.clear();
                 if (inDoubtXids == null || inDoubtXids.length == 0) {
-                    break; // all in-doubt xids have been obtained.
+                    continue; // go to the next resource
                 }
                 
                 for (int i = 0; i < inDoubtXids.length; i++) {
