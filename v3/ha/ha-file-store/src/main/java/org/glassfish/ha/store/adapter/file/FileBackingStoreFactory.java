@@ -68,7 +68,7 @@ public class FileBackingStoreFactory
     }
 
     @Override
-    public <K extends Serializable, V extends Serializable> BackingStore<K, V> createBackingStore(
+    public <K extends Serializable, V extends Storeable> BackingStore<K, V> createBackingStore(
             BackingStoreConfiguration<K, V> conf)
                 throws BackingStoreException {
         FileBackingStore<K, V> fs = new FileBackingStore<K, V>();

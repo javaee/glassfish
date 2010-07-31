@@ -39,6 +39,7 @@ package org.glassfish.ha.store.adapter.file;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreConfiguration;
 import org.glassfish.ha.store.api.BackingStoreException;
+import org.glassfish.ha.store.api.Storeable;
 
 import java.io.*;
 
@@ -50,7 +51,7 @@ import java.util.logging.*;
  *
  * @author Mahesh Kannan
  */
-public class FileBackingStore<K extends Serializable, V extends Serializable>
+public class FileBackingStore<K extends Serializable, V extends Storeable>
         extends BackingStore<K, V> {
 
     protected Logger logger =

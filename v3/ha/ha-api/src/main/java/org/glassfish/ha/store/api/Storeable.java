@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,36 +34,58 @@
  * holder.
  */
 
-package org.glassfish.ha.store.impl;
+package org.glassfish.ha.store.api;
 
-import org.glassfish.ha.store.api.*;
-import org.jvnet.hk2.annotations.Service;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.Set;
+
 
 /**
- * @author Mahesh Kannan
+ * A Storeable is an interface that must be implemented by objects that
+ * are to be presisted in the backing store.
+ *
+ * @author Mahesh.Kannan@Sun.Com
  */
-@Service(name="noop")
-public class NoOpBackingStoreFactory
-    implements BackingStoreFactory {
+public interface Storeable
+        extends Serializable {
 
-    private static BackingStoreTransaction _noOpTransaction = new BackingStoreTransaction() {
-        public void commit() {}
-    };
+    /**
+     * Get the version of this entry. -1 means that this entry has no version
+     *
+     * @return The version or null if this entry has no version
+     */
+    public long _storeable_getVersion();
 
-    @Override
-    public <K extends Serializable, V extends Storeable> BackingStore<K, V> createBackingStore(
-            BackingStoreConfiguration<K, V> conf)
-                throws BackingStoreException {
-        NoOpBackingStore<K, V> store =  new NoOpBackingStore<K, V>();
-        store.initialize(conf);
+    public void _storeable_setVersion(long version);
 
-        return store;
-    }
+    public long _storeable_getLastAccessTime();
 
-    @Override
-    public BackingStoreTransaction createBackingStoreTransaction() {
-        return _noOpTransaction;
-    }
+    public void _storeable_setLastAccessTime(long version);
+
+    public long _storeable_getMaxIdleTime();
+
+    public void _storeable_setMaxIdleTime(long version);
+
+    /**
+     * Providers can cache this
+     * @return an array of attribute names
+     */
+    public String[] _storeable_getAttributeNames();
+
+    /**
+     * Providers can cache this
+     * @return  A boolean array each representing the dirty status of the attribute whose name
+     *  can be found at the same index in the array returned by _getAttributeNames()
+     */
+    public boolean[] _storeable_getDirtyStatus();
+
+    public void _storeable_writeState(OutputStream os)
+        throws IOException;
+
+    public void _storeable_readState(InputStream is)
+        throws IOException;
+
 }

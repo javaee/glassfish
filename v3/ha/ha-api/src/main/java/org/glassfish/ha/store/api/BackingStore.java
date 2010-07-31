@@ -63,7 +63,7 @@ import java.util.Collections;
  * @author Mahesh.Kannan@Sun.Com
  * @author Larry.White@Sun.Com
  */
-public abstract class BackingStore<K extends Serializable, V extends Serializable> {
+public abstract class BackingStore<K extends Serializable, V extends Serializable> { //FIXME: After shoal integration make it V extends Storeable
 
     BackingStoreConfiguration<K, V> conf;
 

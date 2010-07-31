@@ -44,15 +44,16 @@ package com.sun.ejb.spi.sfsb.store;
 
 import org.glassfish.ha.store.annotations.Attribute;
 import org.glassfish.ha.store.annotations.StoreEntry;
+import org.glassfish.ha.store.api.Storeable;
 
-import java.io.Serializable;
+import java.io.*;
 
 /**
  * @author Mahesh Kannan
  */
 @StoreEntry
 public class SFSBBeanState
-        implements Serializable {
+        implements Storeable {
 
     private Serializable sessionId = null;
 
@@ -62,7 +63,9 @@ public class SFSBBeanState
 
     private byte[] state = null;
 
-    private long version;
+    private long version = -1;
+
+    private long maxIdleTime;
 
     public SFSBBeanState(Serializable sessionId, long lastAccess, boolean isNew, byte[] state, long version) {
         this.sessionId = sessionId;
@@ -115,5 +118,89 @@ public class SFSBBeanState
     @Attribute
     public void setVersion(long version) {
         this.version = version;
+    }
+
+    public long getMaxIdleTime() {
+        return maxIdleTime;
+    }
+
+    @Attribute
+    public void setMaxIdleTime(long maxIdleTime) {
+        this.maxIdleTime = maxIdleTime;
+    }
+
+    @Override
+    public long _storeable_getVersion() {
+        return getVersion();
+    }
+
+    @Override
+    public void _storeable_setVersion(long version) {
+        setVersion(version);
+    }
+
+    @Override
+    public long _storeable_getLastAccessTime() {
+        return getLastAccess();
+    }
+
+    @Override
+    public void _storeable_setLastAccessTime(long lastAccessTime) {
+        setLastAccess(lastAccessTime);
+    }
+
+    @Override
+    public long _storeable_getMaxIdleTime() {
+        return getMaxIdleTime();
+    }
+
+    @Override
+    public void _storeable_setMaxIdleTime(long maxIdleTime) {
+        setMaxIdleTime(maxIdleTime);
+    }
+
+    @Override
+    public String[] _storeable_getAttributeNames() {
+        return new String[0];  //FIXME
+    }
+
+    @Override
+    public boolean[] _storeable_getDirtyStatus() {
+        return new boolean[0]; //FIXME
+    }
+
+    @Override
+    public void _storeable_writeState(OutputStream os) throws IOException {
+        ObjectOutputStream oos = new ObjectOutputStream(os);
+        try {
+            oos.writeObject(sessionId);
+            oos.writeLong(version);
+            oos.writeLong(lastAccess);
+            oos.writeLong(maxIdleTime);
+            oos.writeBoolean(isNew);
+            oos.writeInt(state.length);
+            oos.write(state);
+        } finally {
+            try { oos.flush(); oos.close(); } catch (Exception ex) {}
+        }
+    }
+
+    @Override
+    public void _storeable_readState(InputStream is) throws IOException {
+        ObjectInputStream ois = new ObjectInputStream(is);
+        try {
+            sessionId = (Serializable) ois.readObject();
+            version = ois.readLong();
+            lastAccess = ois.readLong();
+            maxIdleTime = ois.readLong();
+            isNew = ois.readBoolean();
+            int len = ois.readInt();
+            state = new byte[len];
+            ois.read(state);
+        } catch (ClassNotFoundException cnfEx) {
+            throw new IOException(cnfEx);
+        } finally {
+            try { ois.close(); } catch (Exception ex) {}
+        }
     }
 }

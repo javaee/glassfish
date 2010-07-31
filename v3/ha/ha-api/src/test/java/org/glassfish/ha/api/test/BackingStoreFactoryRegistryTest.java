@@ -39,12 +39,12 @@ package org.glassfish.ha.api.test;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.glassfish.ha.store.api.BackingStore;
-import org.glassfish.ha.store.api.BackingStoreConfiguration;
-import org.glassfish.ha.store.api.BackingStoreException;
-import org.glassfish.ha.store.api.BackingStoreFactory;
+import org.glassfish.ha.store.api.*;
 import org.glassfish.ha.store.spi.BackingStoreFactoryRegistry;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 
 /**
@@ -201,8 +201,52 @@ public class BackingStoreFactoryRegistryTest
     }
 
     private static final class NoopData
-        implements Serializable {
+        implements Storeable {
 
+        @Override
+        public long _storeable_getVersion() {
+            return 0;
+        }
+
+        @Override
+        public void _storeable_setVersion(long version) {
+        }
+
+        @Override
+        public long _storeable_getLastAccessTime() {
+            return 0;
+        }
+
+        @Override
+        public void _storeable_setLastAccessTime(long version) {
+        }
+
+        @Override
+        public long _storeable_getMaxIdleTime() {
+            return 0;
+        }
+
+        @Override
+        public void _storeable_setMaxIdleTime(long version) {
+        }
+
+        @Override
+        public String[] _storeable_getAttributeNames() {
+            return new String[0];
+        }
+
+        @Override
+        public boolean[] _storeable_getDirtyStatus() {
+            return new boolean[0];
+        }
+
+        @Override
+        public void _storeable_writeState(OutputStream os) throws IOException {
+        }
+
+        @Override
+        public void _storeable_readState(InputStream is) throws IOException {
+        }
     }
 
 

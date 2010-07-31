@@ -34,36 +34,19 @@
  * holder.
  */
 
-package org.glassfish.ha.store.impl;
-
-import org.glassfish.ha.store.api.*;
-import org.jvnet.hk2.annotations.Service;
+package org.glassfish.ha.store.api;
 
 import java.io.Serializable;
 
 /**
- * @author Mahesh Kannan
+ * @param <K> The key type
+ * @param <V> The value type
+ *
+ * @author Mahesh.Kannan@Sun.Com
  */
-@Service(name="noop")
-public class NoOpBackingStoreFactory
-    implements BackingStoreFactory {
+public interface StoreEntryProcessor<K, V extends Storeable>
+    extends Serializable {
 
-    private static BackingStoreTransaction _noOpTransaction = new BackingStoreTransaction() {
-        public void commit() {}
-    };
+    public Serializable process(K key, V value);
 
-    @Override
-    public <K extends Serializable, V extends Storeable> BackingStore<K, V> createBackingStore(
-            BackingStoreConfiguration<K, V> conf)
-                throws BackingStoreException {
-        NoOpBackingStore<K, V> store =  new NoOpBackingStore<K, V>();
-        store.initialize(conf);
-
-        return store;
-    }
-
-    @Override
-    public BackingStoreTransaction createBackingStoreTransaction() {
-        return _noOpTransaction;
-    }
 }
