@@ -47,31 +47,27 @@ import static org.junit.Assert.assertTrue;
  * @author anilam
  */
 public class NodeTest extends BaseSeleniumTestClass {
-    public static final String TRIGGER_NODES_PAGE = "Nodes (";
-    public static final String TRIGGER_NEW_NODE_PAGE = "KeyFile:";
-    public static final String TRIGGER_EDIT_NODE = "KeyFile:";
+    private static final String TRIGGER_NODES_PAGE = "Nodes (";
+    private static final String TRIGGER_NEW_NODE_PAGE = "KeyFile:";
+    private static final String TRIGGER_EDIT_NODE = "KeyFile:";
+    private static final String TRIGGER_SAVE_SUCCESS = "New values successfully saved";
+    private final String TRIGGER_INSTANCES_PAGE = "Server Instances (";
+    private final String TRIGGER_NEW_INSTANCE_PAGE = "Configuration:";
+
 
     @Test
     public void testCreateAndDeleteNode() {
         final String nodeName = "testNode" + generateRandomString();
 
-        //Test Node is created successfully
-        clickAndWait("treeForm:tree:nodeTreeNode:nodeTreeNode_link", TRIGGER_NODES_PAGE);
-        clickAndWait("propertyForm:nodesTable:topActionsGroup1:newButton", TRIGGER_NEW_NODE_PAGE);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:nameProp:name", nodeName);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHost:NodeHost", "localhost");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome", "/NodeDir");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:installdir:installDir", "/InstallDir");
-        selenium.click("propertyForm:propertySheet:propertSectionTextField:force:force");
-        selenium.type("propertyForm:propertySheet:sshConnector:sshNodeHome:sshport", "24");
-        selenium.type("propertyForm:propertySheet:sshAuth:UserName:UserName", "sshUserName");
-        selenium.type("propertyForm:propertySheet:sshAuth:Keyfile:Keyfile", "sshKeyFile");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_NODES_PAGE);
+        createNode(nodeName);
         assertTrue(selenium.isTextPresent(nodeName));
+        String prefix = getTableRowByValue("propertyForm:nodesTable", nodeName, "col1");
+        assertTrue(selenium.isTextPresent(nodeName));
+        assertEquals(nodeName, selenium.getText(prefix + ":col1:link"));
+        assertEquals("localhost", selenium.getText(prefix + ":col2:nodeHostCol"));
 
         //Verify the node is created with the value specified.
         clickAndWait( getLinkIdByLinkText("propertyForm:nodesTable", nodeName), TRIGGER_EDIT_NODE) ;
-
         assertTrue(selenium.isTextPresent(nodeName));
         assertEquals("localhost", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:NodeHost:NodeHost"));
         assertEquals("/NodeDir", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome"));
@@ -83,8 +79,79 @@ public class NodeTest extends BaseSeleniumTestClass {
 
         //Test Delete Node
         deleteRow("propertyForm:nodesTable:topActionsGroup1:button1", "propertyForm:nodesTable", nodeName);
-        waitForCondition("document.getElementById('propertyForm:nodesTable:topActionsGroup1:button1').value != 'Processing...'", 50000);
         assertFalse(selenium.isTextPresent(nodeName));
     }
 
+
+    @Test
+    public void testUpdateNode() {
+        final String nodeName = "testNode" + generateRandomString();
+        createNode(nodeName);
+        clickAndWait( getLinkIdByLinkText("propertyForm:nodesTable", nodeName), TRIGGER_EDIT_NODE);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHost:NodeHost", "localhosttest");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome", "/tmp/test");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:installdir:installDir", "/tmp/installTest");
+        selenium.type("propertyForm:propertySheet:sshConnector:sshNodeHome:sshport", "44");
+        selenium.type("propertyForm:propertySheet:sshAuth:UserName:UserName", "sUserName");
+        selenium.type("propertyForm:propertySheet:sshAuth:Keyfile:Keyfile", "sKeyFile");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SAVE_SUCCESS );
+
+        assertEquals("localhosttest", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:NodeHost:NodeHost" ));
+        assertEquals("/tmp/test", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome" ));
+        assertEquals("/tmp/installTest", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:installdir:installDir" ));
+        assertEquals("44", selenium.getValue("propertyForm:propertySheet:sshConnector:sshNodeHome:sshport" ));
+        assertEquals("sUserName", selenium.getValue("propertyForm:propertySheet:sshAuth:UserName:UserName" ));
+        assertEquals("sKeyFile", selenium.getValue("propertyForm:propertySheet:sshAuth:Keyfile:Keyfile" ));
+        clickAndWait("treeForm:tree:nodeTreeNode:nodeTreeNode_link", TRIGGER_NODES_PAGE);
+        deleteRow("propertyForm:nodesTable:topActionsGroup1:button1", "propertyForm:nodesTable", nodeName);
+    }
+
+    /* Create a Node,  create an instance with this node,  delete this node will cause error */
+    @Test
+    public void testDeleteWithInstance(){
+        final String nodeName = "testNode" + generateRandomString();
+        final String instanceName = "testInstance" + generateRandomString();
+
+        createNode(nodeName);
+        assertTrue(selenium.isTextPresent(nodeName));
+        createInstance(instanceName, nodeName);
+        assertTrue(selenium.isTextPresent(instanceName));
+        clickAndWait("treeForm:tree:nodeTreeNode:nodeTreeNode_link", TRIGGER_NODES_PAGE);
+        rowActionWithConfirm("propertyForm:nodesTable:topActionsGroup1:button1", "propertyForm:nodesTable", nodeName);
+        waitForCondition("document.getElementById('propertyForm:nodesTable:topActionsGroup1:button1').value != 'Processing...'", 50000);
+        assertTrue(selenium.isTextPresent(nodeName));
+
+        //cleanup
+        clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
+        deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
+        assertFalse(selenium.isTextPresent(instanceName));
+        clickAndWait("treeForm:tree:nodeTreeNode:nodeTreeNode_link", TRIGGER_NODES_PAGE);
+        deleteRow("propertyForm:nodesTable:topActionsGroup1:button1", "propertyForm:nodesTable", nodeName);
+        assertFalse(selenium.isTextPresent(nodeName));
+
+    }
+
+    private void createNode(String nodeName){
+        clickAndWait("treeForm:tree:nodeTreeNode:nodeTreeNode_link", TRIGGER_NODES_PAGE);
+        clickAndWait("propertyForm:nodesTable:topActionsGroup1:newButton", TRIGGER_NEW_NODE_PAGE);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:nameProp:name", nodeName);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHost:NodeHost", "localhost");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome", "/NodeDir");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:installdir:installDir", "/InstallDir");
+        selenium.click("propertyForm:propertySheet:propertSectionTextField:force:force");
+        selenium.type("propertyForm:propertySheet:sshConnector:sshNodeHome:sshport", "24");
+        selenium.type("propertyForm:propertySheet:sshAuth:UserName:UserName", "sshUserName");
+        selenium.type("propertyForm:propertySheet:sshAuth:Keyfile:Keyfile", "sshKeyFile");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_NODES_PAGE);
+    }
+
+    private void createInstance(String instanceName, String nodeName){
+        clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
+        clickAndWait("propertyForm:instancesTable:topActionsGroup1:newButton", TRIGGER_NEW_INSTANCE_PAGE );
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
+        selenium.select("propertyForm:propertySheet:propertSectionTextField:node:node", "label="+nodeName);
+        selenium.select("propertyForm:propertySheet:propertSectionTextField:configProp:Config", "label=default-config");
+        selenium.click("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_INSTANCES_PAGE);
+    }
 }
