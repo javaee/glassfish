@@ -104,12 +104,54 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n.common.name.header}" rowHeader="$boolean{true}" id="col1">
+        <event>
+            <!beforeEncode
+                setPageSessionAttribute(key="nodeName" value="#{td.value.Name}");
+            />
+        </event>
         <sun:hyperlink id="link" text="#{td.value.Name}"
                    url="#{pageSession.editLink}?nodeName=#{td.value.Name}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18ncs.node.nodeHostCol}"  rowHeader="$boolean{true}" id="col2">
         <sun:staticText escape="true" id="nodeHostCol" value="#{td.value.NodeHost}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn
+        headerText="$resource{i18ncs.clusters.instanceCol}"
+        rowHeader="$boolean{true}" id="col3">
+         <event>
+            <!beforeEncode
+                createMap(result="#{pageSession.statusAttrs}");
+                mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{pageSession.nodeName}" );
+                gf.callRestAndExtractMsgProps(
+                    endpoint="#{sessionScope.REST_URL}/list-instances.xml"
+                    attrs="#{pageSession.statusAttrs}"
+                    method="GET"
+                    keyList="#{requestScope.instanceList}" propsMap="#{requestScope.propsMap}");
+            />
+         </event>
+            <foreach key="instance" list="#{requestScope.instanceList}">
+                <event>
+                <!beforeEncode
+                    setAttribute(key="status" value="#{requestScope.propsMap[ '${instance}']}");
+                    gf.containedIn(list="#{pageSession.standaloneList}" testStr="#{requestScope.instance}" contain="#{requestScope.isStandalone}" );
+                    urlencode(value="#{requestScope.instance}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+                    if (#{requestScope.isStandalone}){
+                        setAttribute(key="iurl" value="#{request.contextPath}/cluster/standalone/standaloneInstanceEdit.jsf?instanceName=#{pageSession.encodedInstanceName}");
+                    }
+
+                    if ( !#{requestScope.isStandalone}){
+                        setAttribute(key="iurl" value="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?instanceName=#{pageSession.encodedInstanceName}" );
+                    }
+                    setAttribute(key="statusString" value="$resource{i18nc.status.$attribute{status}}  &nbsp; $resource{i18nc.status.image.$attribute{status}}");
+                />
+                </event>
+                <sun:hyperlink url="#{requestScope.iurl}" text="#{requestScope.instance}" />
+                "&nbsp;&nbsp;&nbsp;
+                <staticText id="colStopped" value="#{requestScope.statusString}" />
+                "<br />
+            </foreach>
     </sun:tableColumn>
 
     </sun:tableRowGroup>
