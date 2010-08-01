@@ -53,6 +53,9 @@ public class BaseSeleniumTestClass {
     public static final String MSG_NEW_VALUES_SAVED = "New values successfully saved.";
     public static final String TRIGGER_COMMON_TASKS = "Please Register";
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
+    public static final String MSG_ERROR_OCCURED = "An error has occurred";
+
+
     protected static Selenium selenium;
     protected static int TIMEOUT = 120;
 
