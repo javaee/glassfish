@@ -53,7 +53,7 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
     public void testAddingNetworkListener() {
         final String listenerName = "listener"+generateRandomString();
 
-        clickAndWait("treeForm:tree:configuration:networkConfig:networkListeners:networkListeners_link", TRIGGER_NETWORK_LISTENERS);
+        clickAndWait("treeForm:tree:configurations:server-config:networkConfig:networkListeners:networkListeners_link", TRIGGER_NETWORK_LISTENERS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_NETWORK_LISTENER);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:nameNew:name", listenerName);
         selenium.click("propertyForm:propertySheet:propertSectionTextField:prop1:existingRdBtn");
@@ -110,7 +110,7 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
         final String maxPostSize = Integer.toString(generateRandomNumber(2097152));
         final String compressableMime = Integer.toString(generateRandomNumber(4096));
 
-        clickAndWait("treeForm:tree:configuration:networkConfig:protocols:protocols_link", TRIGGER_PROTOCOLS);
+        clickAndWait("treeForm:tree:configurations:server-config:networkConfig:protocols:protocols_link", TRIGGER_PROTOCOLS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_PROTOCOL);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:nameNew:name", protocol);
         selenium.type("propertyForm:propertySheet:fileTextField:maxAge:maxAge", maxAge);

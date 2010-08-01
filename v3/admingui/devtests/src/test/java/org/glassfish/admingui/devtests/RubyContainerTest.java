@@ -50,7 +50,7 @@ import static org.junit.Assert.assertEquals;
 public class RubyContainerTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_RUBY_CONTAINER = "Container to host Ruby web applications such as Ruby on Rails, Merb, Sinatra or any Rack based Ruby application.";
 
-    @Test
+//    @Test
     public void testRubyContainer() {
         final String initialPoolSize = Integer.toString(generateRandomNumber(10));
         final String minPoolSize = Integer.toString(generateRandomNumber(10));

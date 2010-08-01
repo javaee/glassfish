@@ -46,6 +46,7 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_NEW_IIOP_LISTENER = "New IIOP Listener";
     private static final String TRIGGER_EDIT_IIOP_LISTENER = "Edit IIOP Listener";
     private static final String TRIGGER_ORB = "The Object Request Broker (ORB) is the central component of CORBA";
+    private static final String TRIGGER_ORB_SUCCESS = "New values successfully saved";
 
     @Test
     public void testAddIiopListener() {
@@ -53,7 +54,7 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
         final String networkAddress = "0.0.0.0";
         final String listenerPort = "1234";
 
-        clickAndWait("treeForm:tree:configuration:orb:iiopListeners:iiopListeners_link", TRIGGER_IIOP_LISTENERS);
+        clickAndWait("treeForm:tree:configurations:server-config:orb:iiopListeners:iiopListeners_link", TRIGGER_IIOP_LISTENERS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_IIOP_LISTENER);
         selenium.type("propertyForm:propertySheet:generalSettingsSetion:IiopNameTextProp:IiopNameText", iiopName);
         selenium.type("propertyForm:propertySheet:generalSettingsSetion:NetwkAddrProp:NetwkAddr", networkAddress);
@@ -84,7 +85,7 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:configurations:server-config:orb:orb_link", TRIGGER_ORB);
         selenium.type("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns", totalConn);
         selenium.select("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize", "label="+maxMsgSize);
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_ORB_SUCCESS);
         assertEquals(totalConn, selenium.getValue("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns"));
         assertEquals(maxMsgSize, selenium.getValue("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize"));
 

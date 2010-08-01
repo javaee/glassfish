@@ -69,7 +69,7 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
 
     @Test
     public void testLogLevels() {
-        clickAndWait("treeForm:tree:configuration:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
+        clickAndWait("treeForm:tree:configurations:server-config:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
         clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
         String newLevel = "WARNING";
         if ("WARNING".equals(selenium.getValue("form1:basicTable:rowGroup1:0:col3:level"))) {

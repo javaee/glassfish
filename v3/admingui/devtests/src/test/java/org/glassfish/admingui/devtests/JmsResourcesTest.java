@@ -111,7 +111,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
 /*
     @Test
     public void testAddingTransport() {
-        selenium.click("treeForm:tree:configuration:networkConfig:transports:transports_link");
+        selenium.click("treeForm:tree:configurations:server-config:networkConfig:transports:transports_link");
         verifyTrue(selenium.isTextPresent("Click New to define a new transport. Click the name of an existing transport to modify its settings."));
         selenium.click("propertyForm:configs:topActionsGroup1:newButton");
         verifyTrue(selenium.isTextPresent("New Transport"));
