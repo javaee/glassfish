@@ -35,9 +35,9 @@
  holder.
 -->
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
-<!ENTITY reporting SYSTEM "./../../../config/report.xml">
+<!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+<!ENTITY reporting SYSTEM "./../../../../config/report.xml">
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
