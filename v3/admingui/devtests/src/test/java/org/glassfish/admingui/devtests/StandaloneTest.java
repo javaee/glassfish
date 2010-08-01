@@ -57,11 +57,11 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         
         String prefix = getTableRowByValue("propertyForm:instancesTable", instanceName, "col1");
         assertTrue(selenium.isTextPresent(instanceName));
-        assertEquals(instanceName, selenium.getText(prefix + ":col1:link"));
-        assertEquals(instanceName+"-config", selenium.getText(prefix + ":col3:configlink"));
-        assertEquals("localhost", selenium.getText(prefix + ":col5:nodeAgentlink"));
-        assertEquals("Stopped", selenium.getText(prefix + ":col6"));
-        assertEquals("100", selenium.getValue(prefix + ":col2:weight"));
+        assertEquals(instanceName, selenium.getText(prefix + "col1:link"));
+        assertEquals(instanceName+"-config", selenium.getText(prefix + "col3:configlink"));
+        assertEquals("localhost", selenium.getText(prefix + "col5:nodeAgentlink"));
+        assertEquals("Stopped", selenium.getText(prefix + "col6"));
+        assertEquals("100", selenium.getValue(prefix + "col2:weight"));
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
     }
 
@@ -81,7 +81,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         rowActionWithConfirm("propertyForm:instancesTable:topActionsGroup1:button2", "propertyForm:instancesTable", instanceName);
         waitForCondition("document.getElementById('propertyForm:instancesTable:topActionsGroup1:button2').value != 'Processing...'", 300000);
         String prefix = getTableRowByValue("propertyForm:instancesTable", instanceName, "col1");
-        assertEquals("Running", selenium.getText(prefix + ":col6"));
+        assertEquals("Running", selenium.getText(prefix + "col6"));
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
     }
 
@@ -94,12 +94,12 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         rowActionWithConfirm("propertyForm:instancesTable:topActionsGroup1:button2", "propertyForm:instancesTable", instanceName);
         waitForCondition("document.getElementById('propertyForm:instancesTable:topActionsGroup1:button2').value != 'Processing...'", 300000);
         String prefix = getTableRowByValue("propertyForm:instancesTable", instanceName, "col1");
-        assertEquals("Running", selenium.getText(prefix + ":col6"));
+        assertEquals("Running", selenium.getText(prefix + "col6"));
         
         //stop it
         rowActionWithConfirm("propertyForm:instancesTable:topActionsGroup1:button3", "propertyForm:instancesTable", instanceName);
         waitForCondition("document.getElementById('propertyForm:instancesTable:topActionsGroup1:button3').value != 'Processing...'", 300000);
-        assertEquals("Stopped", selenium.getText(prefix + ":col6"));
+        assertEquals("Stopped", selenium.getText(prefix + "col6"));
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
     }
 

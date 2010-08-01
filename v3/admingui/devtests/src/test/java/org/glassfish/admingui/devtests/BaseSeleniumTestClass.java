@@ -289,7 +289,7 @@ public class BaseSeleniumTestClass {
                 // Assume one row group for now and hope it doesn't bite us
                 String text = selenium.getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
                 if (text.equals(value)) {
-                    return tableId + ":rowGroup1:" + row  ;
+                    return tableId + ":rowGroup1:" + row +":" ;
                 }
                 row++;
             }
