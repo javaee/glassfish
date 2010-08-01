@@ -107,7 +107,7 @@
     </sun:tableColumn>
 
      <sun:tableColumn
-        headerText="$resource{i18nc.configurations.targetCol}"
+        headerText="$resource{i18nc.configurations.instanceCol}"
         rowHeader="$boolean{true}" id="col3">
          <event>
             <!beforeEncode
