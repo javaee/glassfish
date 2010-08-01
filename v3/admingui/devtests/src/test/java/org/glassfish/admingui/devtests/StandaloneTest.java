@@ -50,12 +50,11 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
     final String TRIGGER_INSTANCES_PAGE = "Server Instances (";
     final String TRIGGER_NEW_PAGE = "Configuration:";
 
-//    @Test
+    @Test
     public void testCreateStandaloneInstance() {
         String instanceName = "standAlone" + generateRandomString();
         createStandAloneInstance(instanceName);
         
-        //We are hardcoding this to be row 0, can we use a wildcard ?
         String prefix = getTableRowByValue("propertyForm:instancesTable", instanceName, "col1");
         assertTrue(selenium.isTextPresent(instanceName));
         assertEquals(instanceName, selenium.getText(prefix + ":col1:link"));
@@ -66,7 +65,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
     }
 
-//    @Test
+    @Test
     public void testDeleteStandaloneInstance() {
         String instanceName = "standAlone" + generateRandomString();
         createStandAloneInstance(instanceName);
@@ -75,7 +74,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
 
     }
 
-//    @Test
+    @Test
     public void testStartStandaloneInstance() {
         String instanceName = "standAlone" + generateRandomString();
         createStandAloneInstance(instanceName);
