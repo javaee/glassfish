@@ -266,8 +266,8 @@ public class ClusterHandler {
                 if (code != 200 && code != 201){
                     Object body = response.get("responseBody");
                     errorInstances.add(body.toString());
+                    break;
                 }
-                break;
             }else{
                 errorInstances.add(nodeName);
                 break;
