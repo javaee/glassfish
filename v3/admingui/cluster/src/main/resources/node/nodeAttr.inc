@@ -42,8 +42,10 @@
                     {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/nodes/node/#{pageSession.encodedNodeName}/_update-node" method="post" attrs="#{pageSession.valueMap}")
-                    gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-                />
+                    prepareSuccessfulMsg();
+                    gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+
+                    />
             </sun:button>
 
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
