@@ -52,7 +52,7 @@
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component="#{requestScope.tableRowGroup}");
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
-            gf.nodeAction(rows="#{requestScope.selectedRows}", action="delete-node" );
+            gf.nodeAction(rows="#{requestScope.selectedRows}", action="delete-node" , nodeInstanceMap="#{pageSession.nodeInstanceMap}");
             gf.redirect(page="/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         />
     </sun:button>
@@ -70,6 +70,8 @@
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/cluster/node/nodes.jsf");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/cluster/node/nodeEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18ncs.nodes.TableTitle}");
+        createMap(result="#{pageSession.nodeInstanceMap}");
+
     />
     </event>
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+"nodes");</script>
@@ -129,6 +131,7 @@
                     attrs="#{pageSession.statusAttrs}"
                     method="GET"
                     keyList="#{requestScope.instanceList}" propsMap="#{requestScope.propsMap}");
+                mapPut(map="#{pageSession.nodeInstanceMap}" key="#{pageSession.nodeName}" value="#{requestScope.instanceList}");
             />
          </event>
             <foreach key="instance" list="#{requestScope.instanceList}">
