@@ -57,7 +57,7 @@
         gf.getChildrenNamesList(endpoint="#{pageSession.resourceUrl}/server-ref" id="ref" result="#{pageSession.instanceList}" );
         //TODO: determine #instance thats up and #instance that is down
 
-        setPageSessionAttribute(key="convertToFalseList" value={"HeartbeatEnabled", "GmsEnabled"} );
+        setPageSessionAttribute(key="convertToFalseList" value={ "gmsEnabled"} );
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
@@ -104,7 +104,7 @@
             </sun:property>
 
             <sun:property id="gmsEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.GMS}" helpText="$resource{i18ncs.cluster.GMSHelp}">
-                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['gmsEnabled']}" selectedValue="true" />
+                <sun:checkbox id="gmscb" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['gmsEnabled']}" selectedValue="true" />
             </sun:property>
 
            <sun:property id="gmsMulticastPort"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.gmsMulticastPort}" helpText="$resource{i18ncs.cluster.gmsMulticastPortHelp}">

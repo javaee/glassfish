@@ -170,7 +170,7 @@
                 />
             </event>
             
-            <sun:hyperlink url="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?clusterName=#{pageSession.clusterName}&instanceName=#{instance}" text="#{instance}" />
+            <sun:hyperlink id="iLink" url="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?clusterName=#{pageSession.clusterName}&instanceName=#{instance}" text="#{instance}" />
             "&nbsp;&nbsp;&nbsp;
             <staticText id="colStopped" value="#{requestScope.statusString}" />
             "<br />
