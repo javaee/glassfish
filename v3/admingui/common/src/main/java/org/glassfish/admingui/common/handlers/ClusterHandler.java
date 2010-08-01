@@ -239,22 +239,32 @@ public class ClusterHandler {
         String prefix = GuiUtil.getSessionValue("REST_URL") + "/nodes/node/";
 
         for (Map oneRow : rows) {
+            int code = 500;
             String nodeName = (String) oneRow.get("Name");
             if(action.equals("delete-node")){
                 try{
-                       response = RestApiHandlers.restRequest(prefix + nodeName + "/" + action , null, "post" ,null);
+                       response = RestApiHandlers.restRequest(prefix + nodeName + "/" + action + ".json" , null, "post" ,null);
                 }catch (Exception ex){
                     GuiUtil.getLogger().severe("Error in nodeAction ; \nendpoint = " + prefix + nodeName + "/" + action  + "attrsMap=" + null);
                     response = null;
                 }
             }
-            if (response ==null){
+            //TODO:  we may want to extract the exact error when issue# 12861 is fixed.
+            if (response != null){
+                code = (Integer) response.get("responseCode");
+                if (code != 200 && code != 201){
+                    Object body = response.get("responseBody");
+                    errorInstances.add(body.toString());
+                }
+                break;
+            }else{
                 errorInstances.add(nodeName);
+                break;
             }
         }
         if (errorInstances.size() > 0){
             String details = GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "node.error.delete" , new String[]{""+errorInstances});
-            GuiUtil.handleError(handlerCtx, details);
+            GuiUtil.prepareAlert(handlerCtx, "error",  GuiUtil.getMessage("msg.Error"), details);
         }
      }
 
