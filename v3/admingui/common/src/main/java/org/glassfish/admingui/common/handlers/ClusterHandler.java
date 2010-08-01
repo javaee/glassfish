@@ -230,9 +230,14 @@ public class ClusterHandler {
     @Handler(id = "gf.nodeAction",
         input = {
             @HandlerInput(name = "rows", type = List.class, required = true),
-            @HandlerInput(name = "action", type = String.class, required = true)})
+            @HandlerInput(name = "action", type = String.class, required = true),
+            @HandlerInput(name = "nodeInstanceMap", type = Map.class)})
     public static void nodeAction(HandlerContext handlerCtx) {
         String action = (String) handlerCtx.getInputValue("action");
+        Map nodeInstanceMap = (Map) handlerCtx.getInputValue("nodeInstanceMap");
+        if (nodeInstanceMap == null){
+            nodeInstanceMap=new HashMap();
+        }
         List<Map> rows =  (List<Map>) handlerCtx.getInputValue("rows");
         List errorInstances = new ArrayList();
         Map response = null;
@@ -241,6 +246,12 @@ public class ClusterHandler {
         for (Map oneRow : rows) {
             int code = 500;
             String nodeName = (String) oneRow.get("Name");
+            List instancesList = (List)nodeInstanceMap.get(nodeName);
+            if ( instancesList!= null && (instancesList.size()) != 0){
+                GuiUtil.prepareAlert(handlerCtx, "error",  GuiUtil.getMessage("msg.Error"),
+                        GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "nodes.instanceExistError", new String[]{ nodeInstanceMap.get(nodeName).toString(), nodeName}));
+                return;
+            }
             if(action.equals("delete-node")){
                 try{
                        response = RestApiHandlers.restRequest(prefix + nodeName + "/" + action + ".json" , null, "post" ,null);
