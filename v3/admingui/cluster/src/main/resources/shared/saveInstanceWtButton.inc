@@ -42,9 +42,11 @@
             <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows="#{requestScope.selectedRows}");
-            prepareSuccessfulMsg();
             gf.saveInstanceWeight(rows="#{requestScope.selectedRows}" );
             setAttribute(key="selectedRows" value="${selectedRows}");
+            prepareSuccessfulMsg();
+            gf.redirect(page="#{pageSession.listLink}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+
             />
         </sun:button>
     </sun:panelGroup>
