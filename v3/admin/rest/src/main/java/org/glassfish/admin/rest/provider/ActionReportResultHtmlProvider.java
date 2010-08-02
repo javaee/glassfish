@@ -35,16 +35,16 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import com.sun.enterprise.v3.common.ActionReporter;
 import org.glassfish.admin.rest.results.ActionReportResult;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.glassfish.admin.rest.utils.xml.XmlArray;
+import org.glassfish.admin.rest.utils.xml.XmlMap;
+import org.glassfish.api.ActionReport;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.Produces;
-import static org.glassfish.admin.rest.Util.*;
+import java.util.*;
 
 /**
  * @author Ludovic Champenois
@@ -57,31 +57,169 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
     }
 
     @Override
-    protected String getContent(ActionReportResult proxy) {
-        String result = ProviderUtil.getHtmlHeader();
-        String uri = uriInfo.getAbsolutePath().toString();
-        String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
-        String parentName =
-            upperCaseFirstLetter(eleminateHypen(getParentName(uri)));
+    public String getContent(ActionReportResult proxy) {
+        ActionReporter ar = (ActionReporter) proxy.getActionReport();
+        StringBuilder result = new StringBuilder(ProviderUtil.getHtmlHeader());
+//        String uri = uriInfo.getAbsolutePath().toString();
+//        String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
+//        String parentName =
+//                upperCaseFirstLetter(eleminateHypen(getParentName(uri)));
 
-        result = result + "<h1>" + name + "</h1>";
+        result.append("<h1>")
+                .append(ar.getActionDescription())
+                .append("</h1><div>");
 
         if (proxy.isError()) {
-            result = result + "<h2>Error:</h2>";
-            result = result + proxy.getErrorMessage() + "<br>";
+            result.append("<h2>Error:</h2>")
+                    .append(proxy.getErrorMessage())
+                    .append("<br>");
         } else {
-            result = result + "<h2>" + parentName + " - " + name + "</h2>";
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-            try {
-                proxy.getActionReport().writeReport(baos);
-                result = result + baos.toString() + "<br>";
-            } catch (IOException ex) {
-                Logger.getLogger(ActionReportResultHtmlProvider.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            result
+//                    .append("<h2>")
+//                    .append(parentName)
+//                    .append(" - ")
+//                    .append(name)
+//                    .append("</h2>")
+                    .append(processReport(ar));
         }
-        result = "<div>" + result + "</div>" + "<br>";
+        return result.append("</div><br></body></html>").toString();
+    }
 
-        result = result + "</body></html>";
+    protected String processReport(ActionReporter ar) {
+        StringBuilder result = new StringBuilder();
+        result.append("<h1>GlassFish ")
+                .append(ar.getActionDescription())
+                .append(" command report</h1><h2>")
+                .append(ar.getMessage() != null ? ar.getMessage() : "")
+                .append("</h2><h2>Exit Code: ")
+                .append(ar.getActionExitCode().toString())
+                .append("</h2><hr>");
+
+        Properties properties = ar.getTopMessagePart().getProps();
+        if (!properties.isEmpty()) {
+            result.append(processProperties(properties));
+        }
+
+        Properties extraProperties = ar.getExtraProperties();
+        if ((extraProperties != null) && (!extraProperties.isEmpty())) {
+            result.append(getExtraProperties(extraProperties));
+        }
+
+        List<ActionReport.MessagePart> children = ar.getTopMessagePart().getChildren();
+        if (children.size() > 0) {
+            result.append(processChildren(children));
+        }
+
+        List<ActionReporter> subReports = ar.getSubActionsReport();
+        if (subReports.size() > 0) {
+            result.append(processSubReports(subReports));
+        }
+
+        return result.toString();
+    }
+
+    protected String processProperties(Properties props) {
+        StringBuilder result = new StringBuilder("<h3>Properties</h3>");
+//        result.append("<table border=\"1\" style=\"border-collapse: collapse\">");
+//        for (Map.Entry entry : props.entrySet()) {
+//            result.append("<tr><td>")
+//                    .append(entry.getKey())
+//                    .append("</td><td>")
+//                    .append(entry.getValue())
+//                    .append("</td></tr>");
+//        }
+        result.append(processMap(props));
+
+        return result.append("</table>").toString();
+    }
+
+    protected String getExtraProperties(Properties props) {
+        StringBuilder result = new StringBuilder("<h3>Extra Properties</h3>");
+//        result.append("<table border=\"1\" style=\"border-collapse: collapse\">");
+//        for (Map.Entry<Object, Object> entry : props.entrySet()) {
+//            String key = entry.getKey().toString();
+//            String value = getHtmlRepresentation(entry.getValue());
+//            result.append("<tr><td>")
+//                    .append(key)
+//                    .append("</td><td>")
+//                    .append(value)
+//                    .append("</td></tr>");
+//        }
+        result.append(processMap(props));
+
+        return result.toString();
+    }
+
+    protected String processChildren(List<ActionReport.MessagePart> parts) {
+        StringBuilder result = new StringBuilder("<h3>Children</h3><ul>");
+
+        for (ActionReport.MessagePart part : parts) {
+            result.append("<li><table border=\"1\" style=\"border-collapse: collapse\">")
+                    .append("<tr><td>Message</td>")
+                    .append("<td>")
+                    .append(part.getMessage())
+                    .append("</td></tr><td>Properites</td><td>")
+                    .append(processMap(part.getProps()))
+                    .append("</td></tr>");
+            List<ActionReport.MessagePart> children = part.getChildren();
+            if (children.size() > 0) {
+                result.append("<tr><td>Children</td><td>")
+                        .append(processChildren(part.getChildren()))
+                        .append("</td></tr>");
+            }
+            result.append("</table></li>");
+        }
+
+        return result.append("</ul>").toString();
+    }
+
+    protected String processSubReports(List<ActionReporter> subReports) {
+        StringBuilder result = new StringBuilder("<h3>Sub Reports</h3><ul>");
+
+        for (ActionReporter subReport : subReports) {
+            result.append(processReport(subReport));
+        }
+
+        return result.append("</ul>").toString();
+    }
+
+    protected String getHtmlRepresentation(Object object) {
+        String result = null;
+        if (object instanceof Collection) {
+            result = processCollection((Collection) object);
+        } else if (object instanceof Map) {
+            result = processMap((Map) object);
+        } else {
+            result = object.toString();
+        }
+
         return result;
+    }
+
+    protected String processCollection(Collection c) {
+        StringBuilder result = new StringBuilder("<ul>");
+        Iterator i = c.iterator();
+        while (i.hasNext()) {
+            result.append("<li>")
+                    .append(getHtmlRepresentation(i.next()))
+                    .append("</li>");
+        }
+
+        return result.append("</li>").toString();
+    }
+
+    protected String processMap(Map map) {
+        StringBuilder result = new StringBuilder("<table border=\"1\" style=\"border-collapse: collapse\">");
+        result.append("<tr><th>key</th><th>value</th></tr>");
+
+        for (Map.Entry entry : (Set<Map.Entry>) map.entrySet()) {
+            result.append("<tr><td>")
+                    .append(entry.getKey())
+                    .append("</td><td>")
+                    .append(getHtmlRepresentation(entry.getValue()))
+                    .append("</td></tr>");
+        }
+
+        return result.append("</table>").toString();
     }
 }

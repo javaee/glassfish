@@ -36,43 +36,23 @@
 package org.glassfish.admin.rest;
 
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
-import static org.glassfish.admin.rest.Util.*;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.CommandModel;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.admin.RestRedirects;
-import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.api.Param;
-import org.jvnet.hk2.config.ConfigModel;
-import org.jvnet.hk2.config.Dom;
+import org.glassfish.api.admin.*;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.*;
+
+import javax.ws.rs.core.*;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
+import static org.glassfish.admin.rest.Util.*;
 
 
 /**
@@ -84,14 +64,15 @@ import org.jvnet.hk2.config.Dom;
 public class ResourceUtil {
     //TODO this is copied from org.jvnet.hk2.config.Dom. If we are not able to encapsulate the conversion in Dom, need to make sure that the method convertName is refactored into smaller methods such that trimming of prefixes stops. We will need a promotion of HK2 for this.
     static final Pattern TOKENIZER;
+
     static {
         String pattern = or(
-                split("x","X"),     // AbcDef -> Abc|Def
-                split("X","Xx"),    // USArmy -> US|Army
+                split("x", "X"),     // AbcDef -> Abc|Def
+                split("X", "Xx"),    // USArmy -> US|Army
                 //split("\\D","\\d"), // SSL2 -> SSL|2
-                split("\\d","\\D")  // SSL2Connector -> SSL|2|Connector
+                split("\\d", "\\D")  // SSL2Connector -> SSL|2|Connector
         );
-        pattern = pattern.replace("x","\\p{Lower}").replace("X","\\p{Upper}");
+        pattern = pattern.replace("x", "\\p{Lower}").replace("X", "\\p{Upper}");
         TOKENIZER = Pattern.compile(pattern);
     }
 
@@ -134,6 +115,7 @@ public class ResourceUtil {
     /**
      * Returns the name of the command associated with
      * this resource,if any, for the given operation.
+     *
      * @param type the given resource operation
      * @return String the associated command name for the given operation.
      */
@@ -141,9 +123,7 @@ public class ResourceUtil {
 
         Class<? extends ConfigBeanProxy> cbp = null;
         try {
-            cbp = (Class<? extends ConfigBeanProxy>)
-                configBean.model.classLoaderHolder.get().loadClass(
-                    configBean.model.targetTypeName);
+            cbp = (Class<? extends ConfigBeanProxy>) configBean.model.classLoaderHolder.get().loadClass(configBean.model.targetTypeName);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -162,15 +142,16 @@ public class ResourceUtil {
 
     /**
      * Executes the specified __asadmin command.
+     *
      * @param commandName the command to execute
-     * @param parameters the command parameters
-     * @param habitat the habitat
+     * @param parameters  the command parameters
+     * @param habitat     the habitat
      * @return ActionReport object with command execute status details.
      */
     public static ActionReport runCommand(String commandName,
-            HashMap<String, String> parameters, Habitat habitat, String resultType) {
+                                          HashMap<String, String> parameters, Habitat habitat, String resultType) {
         ParameterMap p = new ParameterMap();
-        for (Map.Entry<String,String> entry : parameters.entrySet()) {
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
             p.set(entry.getKey(), entry.getValue());
         }
 
@@ -180,19 +161,19 @@ public class ResourceUtil {
     public static ActionReport runCommand(String commandName, ParameterMap parameters, Habitat habitat, String resultType) {
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
         ActionReport ar = new RestActionReporter();
-//                habitat.getComponent(ActionReport.class,resultType);
 
         cr.getCommandInvocation(commandName, ar).parameters(parameters).execute();
         return ar;
     }
 
     /**
-    * Executes the specified __asadmin command.
-    * @param commandName the command to execute
-    * @param parameters the command parameters
-    * @param habitat the habitat
-    * @return ActionReport object with command execute status details.
-    */
+     * Executes the specified __asadmin command.
+     *
+     * @param commandName the command to execute
+     * @param parameters  the command parameters
+     * @param habitat     the habitat
+     * @return ActionReport object with command execute status details.
+     */
     public static ActionReport runCommand(String commandName,
                                           Properties parameters, Habitat habitat, String typeOfResult) {
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
@@ -208,45 +189,48 @@ public class ResourceUtil {
 
     /**
      * Constructs and returns the resource method meta-data.
+     *
      * @param command the command associated with the resource method
      * @param habitat the habitat
-     * @param logger the logger to use
+     * @param logger  the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
     public static MethodMetaData getMethodMetaData(String command, Habitat habitat,
-            Logger logger) {
+                                                   Logger logger) {
         return getMethodMetaData(command, Constants.MESSAGE_PARAMETER,
                 habitat, logger);
     }
 
     /**
      * Constructs and returns the resource method meta-data.
-     * @param command the command associated with the resource method
+     *
+     * @param command       the command associated with the resource method
      * @param parameterType the type of parameter. Possible values are
-     *        Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
-     * @param habitat the habitat
-     * @param logger the logger to use
+     *                      Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
+     * @param habitat       the habitat
+     * @param logger        the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
     public static MethodMetaData getMethodMetaData(String command,
-            int pamameterType, Habitat habitat, Logger logger) {
-        return getMethodMetaData(command, null, pamameterType, habitat, logger);
+                                                   int parameterType, Habitat habitat, Logger logger) {
+        return getMethodMetaData(command, null, parameterType, habitat, logger);
     }
 
     /**
      * Constructs and returns the resource method meta-data.
-     * @param command the command assocaited with the resource method
+     *
+     * @param command             the command assocaited with the resource method
      * @param commandParamsToSkip the command parameters for which not to
-     *        include the meta-data.
-     * @param parameterType the type of parameter. Possible values are
-     *        Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
-     * @param habitat the habitat
-     * @param logger the logger to use
+     *                            include the meta-data.
+     * @param parameterType       the type of parameter. Possible values are
+     *                            Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
+     * @param habitat             the habitat
+     * @param logger              the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
     public static MethodMetaData getMethodMetaData(String command,
-            HashMap<String, String> commandParamsToSkip, int parameterType,
-                Habitat habitat, Logger logger) {
+                                                   HashMap<String, String> commandParamsToSkip, int parameterType,
+                                                   Habitat habitat, Logger logger) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
         if (command != null) {
@@ -255,12 +239,12 @@ public class ResourceUtil {
                 params = getParamMetaData(command, habitat, logger);
             } else {
                 params = getParamMetaData(command, commandParamsToSkip.keySet(),
-                    habitat, logger);
+                        habitat, logger);
             }
 
             Iterator<CommandModel.ParamModel> iterator = params.iterator();
             CommandModel.ParamModel paramModel;
-            while(iterator.hasNext()) {
+            while (iterator.hasNext()) {
                 paramModel = iterator.next();
                 Param param = paramModel.getParam();
 
@@ -268,7 +252,7 @@ public class ResourceUtil {
 
 
                 String parameterName =
-                    (param.primary())?"id":paramModel.getName();
+                        (param.primary()) ? "id" : paramModel.getName();
 
                 // If the Param has an alias, use it instead of the name
                 String alias = param.alias();
@@ -291,6 +275,7 @@ public class ResourceUtil {
     /**
      * Resolve command parameter value of $parent for the parameter
      * in the given map.
+     *
      * @param uriInfo the uri context to extract parent name value.
      */
     public static void resolveParentParamValue(HashMap<String, String> commandParams, UriInfo uriInfo) {
@@ -302,7 +287,7 @@ public class ResourceUtil {
             String key;
             while (iterator.hasNext()) {
                 key = iterator.next();
-                if (commandParams.get(key).equals( Constants.PARENT_NAME_VARIABLE)) {
+                if (commandParams.get(key).equals(Constants.PARENT_NAME_VARIABLE)) {
                     commandParams.put(key, parent);
                     break;
                 }
@@ -313,6 +298,7 @@ public class ResourceUtil {
     /**
      * Constructs and returns the resource method meta-data. This method is
      * called to get meta-data in case of update method (POST).
+     *
      * @param configBean the config bean associated with the resource.
      * @return MethodMetaData the meta-data store for the resource method.
      */
@@ -323,9 +309,10 @@ public class ResourceUtil {
     /**
      * Constructs and returns the resource method meta-data. This method is
      * called to get meta-data in case of update method (POST).
-     * @param configBean the config bean associated with the resource.
+     *
+     * @param configBean    the config bean associated with the resource.
      * @param parameterType the type of parameter. Possible values are
-     *        Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
+     *                      Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
      * @return MethodMetaData the meta-data store for the resource method.
      */
     public static MethodMetaData getMethodMetaData(ConfigBean configBean, int parameterType) {
@@ -333,9 +320,9 @@ public class ResourceUtil {
 
         if (configBean != null) {
             Class<? extends ConfigBeanProxy> configBeanProxy = null;
-             try {
+            try {
                 configBeanProxy = (Class<? extends ConfigBeanProxy>)
-                    configBean.model.classLoaderHolder.get().loadClass(configBean.model.targetTypeName);
+                        configBean.model.classLoaderHolder.get().loadClass(configBean.model.targetTypeName);
 
                 Set<String> attributeNames = configBean.model.getAttributeNames();
                 for (String attributeName : attributeNames) {
@@ -449,9 +436,10 @@ public class ResourceUtil {
 
     /**
      * Constructs and returns the parameter meta-data.
+     *
      * @param command the command associated with the resource method
      * @param habitat the habitat
-     * @param logger the logger to use
+     * @param logger  the logger to use
      * @return Collection the meta-data for the parameter of the resource method.
      */
     public static Collection<CommandModel.ParamModel> getParamMetaData(
@@ -465,40 +453,41 @@ public class ResourceUtil {
 
     /**
      * Constructs and returns the parameter meta-data.
-     * @param command the command associated with the resource method
+     *
+     * @param command             the command associated with the resource method
      * @param commandParamsToSkip the command parameters for which not to
-     *        include the meta-data.
-     * @param habitat the habitat
-     * @param logger the logger to use
+     *                            include the meta-data.
+     * @param habitat             the habitat
+     * @param logger              the logger to use
      * @return Collection the meta-data for the parameter of the resource method.
      */
     public static Collection<CommandModel.ParamModel> getParamMetaData(
             String commandName, Collection<String> commandParamsToSkip,
-                Habitat habitat, Logger logger) {
+            Habitat habitat, Logger logger) {
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
         CommandModel cm = cr.getModel(commandName, logger);
         Collection<String> parameterNames = cm.getParametersNames();
 
         ArrayList<CommandModel.ParamModel> metaData =
-            new ArrayList<CommandModel.ParamModel>();
+                new ArrayList<CommandModel.ParamModel>();
         CommandModel.ParamModel paramModel;
         for (String name : parameterNames) {
             paramModel = cm.getModelFor(name);
             String parameterName =
-                (paramModel.getParam().primary())?"id":paramModel.getName();
+                    (paramModel.getParam().primary()) ? "id" : paramModel.getName();
 
             boolean skipParameter = false;
             try {
                 skipParameter = commandParamsToSkip.contains(parameterName);
             } catch (Exception e) {
                 String errorMessage =
-                    localStrings.getLocalString("rest.metadata.skip.error",
-                        "Parameter \"{0}\" may be redundant and not required.",
-                            new Object[] {parameterName});
+                        localStrings.getLocalString("rest.metadata.skip.error",
+                                "Parameter \"{0}\" may be redundant and not required.",
+                                new Object[]{parameterName});
                 Logger.getLogger(ResourceUtil.class.getName()).log(Level.INFO,
-                    null, errorMessage);
+                        null, errorMessage);
                 Logger.getLogger(ResourceUtil.class.getName()).log(Level.INFO,
-                    null, e);
+                        null, e);
             }
 
             if (!skipParameter) {
@@ -511,6 +500,7 @@ public class ResourceUtil {
     }
 
     //removes entries with empty value from the given Map
+
     public static void purgeEmptyEntries(HashMap<String, String> data) {
         Set<String> keys = data.keySet();
         Iterator<String> iterator = keys.iterator();
@@ -522,18 +512,19 @@ public class ResourceUtil {
                 iterator = keys.iterator();
             }
         }
-     }
+    }
 
     /**
      * Constructs and returns the appropriate response object based on the client.
-     * @param status the http status code for the response
-     * @param message message for the response
+     *
+     * @param status         the http status code for the response
+     * @param message        message for the response
      * @param requestHeaders request headers of the request
      * @return Response the response object to be returned to the client
      */
-    public static Response getResponse(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo){
-        if(isBrowser(requestHeaders)) {
-            message = getHtml(message, uriInfo,false);
+    public static Response getResponse(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
+        if (isBrowser(requestHeaders)) {
+            message = getHtml(message, uriInfo, false);
         }
         return Response.status(status).entity(message).build();
     }
@@ -541,6 +532,7 @@ public class ResourceUtil {
     /**
      * special case for the delete operation: we need to give back the URI of the parent
      * since the resource we are on is deleted
+     *
      * @param status
      * @param message
      * @param requestHeaders
@@ -548,9 +540,9 @@ public class ResourceUtil {
      * @return
      */
     public static Response getDeleteResponse(int status, String message,
-            HttpHeaders requestHeaders, UriInfo uriInfo){
-        if(isBrowser(requestHeaders)) {
-            message = getHtml(message, uriInfo,true);
+                                             HttpHeaders requestHeaders, UriInfo uriInfo) {
+        if (isBrowser(requestHeaders)) {
+            message = getHtml(message, uriInfo, true);
         }
         return Response.status(status).entity(message).build();
     }
@@ -584,6 +576,7 @@ public class ResourceUtil {
     }
 
     //Construct parameter meta-data from the model
+
     static ParameterMetaData getParameterMetaData(CommandModel.ParamModel paramModel) {
         Param param = paramModel.getParam();
         ParameterMetaData parameterMetaData = new ParameterMetaData();
@@ -597,6 +590,7 @@ public class ResourceUtil {
     }
 
     //Construct parameter meta-data from the attribute annotation
+
     static ParameterMetaData getParameterMetaData(Attribute attribute) {
         ParameterMetaData parameterMetaData = new ParameterMetaData();
         parameterMetaData.putAttribute(Constants.TYPE, getXsdType(attribute.dataType().toString()));
@@ -613,8 +607,9 @@ public class ResourceUtil {
     }
 
     //rename the given input parameter
+
     private static boolean renameParameter(HashMap<String, String> data,
-        String parameterToRename, String newName) {
+                                           String parameterToRename, String newName) {
         if ((data.containsKey(parameterToRename))) {
             String value = data.get(parameterToRename);
             data.remove(parameterToRename);
@@ -625,6 +620,7 @@ public class ResourceUtil {
     }
 
     //print given parameter meta-data.
+
     private static void print(Collection<CommandModel.ParamModel> params) {
         for (CommandModel.ParamModel pm : params) {
             System.out.println("Command Param: " + pm.getName());
@@ -635,13 +631,14 @@ public class ResourceUtil {
     }
 
     //returns true only if the request is from browser
+
     private static boolean isBrowser(HttpHeaders requestHeaders) {
         boolean isClientAcceptsHtml = false;
         MediaType media = requestHeaders.getMediaType();
         java.util.List<String> acceptHeaders =
-            requestHeaders.getRequestHeader(HttpHeaders.ACCEPT);
+                requestHeaders.getRequestHeader(HttpHeaders.ACCEPT);
 
-        for (String header: acceptHeaders) {
+        for (String header : acceptHeaders) {
             if (header.contains(MediaType.TEXT_HTML)) {
                 isClientAcceptsHtml = true;
                 break;
@@ -676,13 +673,14 @@ public class ResourceUtil {
 
     /**
      * Translates all param names in </code>sourceMap</code> that corresponds to camelCasedName of a command param into corresponding command param name
-     * @param sourceMap - The input. Contains untranslated names
+     *
+     * @param sourceMap   - The input. Contains untranslated names
      * @param commandName - The command we want to translate for
      * @param habitat
      * @param logger
      * @return A HashMap<String, String> that contains (1) all the entries from <code>sourceMap<code> whose key matches camleCaseName of
-     * one of the parameters of command. The key of this entry is translated to corresponding command param name (2)
-     * All the remaining entries from sourceMap as it is.
+     *         one of the parameters of command. The key of this entry is translated to corresponding command param name (2)
+     *         All the remaining entries from sourceMap as it is.
      */
     public static HashMap<String, String> translateCamelCasedNamesToCommandParamNames(HashMap<String, String> sourceMap, String commandName, Habitat habitat, Logger logger) {
         //TODO after Bills changes to call toLowerCase() this translation might not be required as he will accept camleCased parameters. Remove this code then.
@@ -693,7 +691,7 @@ public class ResourceUtil {
         for (CommandModel.ParamModel paramModel : paramModels) {
             Param param = paramModel.getParam();
             String camelCaseName = param.alias();
-            if(sourceMap.containsKey(camelCaseName)) {
+            if (sourceMap.containsKey(camelCaseName)) {
                 String paramValue = sourceMap.remove(camelCaseName);
                 translatedMap.put(paramModel.getName(), paramValue);
             }
@@ -705,13 +703,14 @@ public class ResourceUtil {
 
     }
 
-    private static String split(String lookback,String lookahead) {
-        return "((?<="+lookback+")(?="+lookahead+"))";
+    private static String split(String lookback, String lookahead) {
+        return "((?<=" + lookback + ")(?=" + lookahead + "))";
     }
+
     private static String or(String... tokens) {
         StringBuilder buf = new StringBuilder();
         for (String t : tokens) {
-            if(buf.length()>0)  buf.append('|');
+            if (buf.length() > 0) buf.append('|');
             buf.append(t);
         }
         return buf.toString();
@@ -719,9 +718,9 @@ public class ResourceUtil {
 
     public static String convertToXMLName(String name) {
         // tokenize by finding 'x|X' and 'X|Xx' then insert '-'.
-        StringBuilder buf = new StringBuilder(name.length()+5);
-        for(String t : TOKENIZER.split(name)) {
-            if(buf.length()>0) {
+        StringBuilder buf = new StringBuilder(name.length() + 5);
+        for (String t : TOKENIZER.split(name)) {
+            if (buf.length() > 0) {
                 buf.append('-');
             }
             buf.append(t.toLowerCase());
@@ -746,6 +745,7 @@ public class ResourceUtil {
      * among all the possible AcceptableMediaTypes
      * 
      */
+
     public static String getResultType(HttpHeaders requestHeaders) {
         String result = "html";
         String firstOne = null;

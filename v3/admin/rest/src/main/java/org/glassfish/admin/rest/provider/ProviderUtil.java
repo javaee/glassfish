@@ -617,6 +617,7 @@ public class ProviderUtil {
         result = result + "dt {clear: both;float:left;width: 210px;padding: 4px 0 2px 0;text-align:left}";
         result = result + "dd {float: left;width: 200px;margin: 0 0 8px 0;padding-left: 6px;}";
         result = result + ".separator{clear:both}";
+        result = result + "td {vertical-align: top}";
         result = result + "</style>";
         return result;
     }
