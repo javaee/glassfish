@@ -35,6 +35,14 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.glassfish.admin.rest.Constants;
+import org.glassfish.external.statistics.Statistic;
+import org.glassfish.external.statistics.Stats;
+import org.glassfish.flashlight.datatree.TreeNode;
+
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
@@ -42,15 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.Produces;
-
-import org.glassfish.admin.rest.Constants;
-import org.glassfish.flashlight.datatree.TreeNode;
-import org.glassfish.external.statistics.Stats;
-import org.glassfish.external.statistics.Statistic;
-import static org.glassfish.admin.rest.Util.*;
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**

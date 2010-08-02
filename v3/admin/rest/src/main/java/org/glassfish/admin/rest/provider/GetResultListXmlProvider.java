@@ -35,16 +35,15 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.results.GetResultList;
-import java.util.List;
-
 import org.jvnet.hk2.config.Dom;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.Produces;
+import java.util.List;
 
-import org.glassfish.admin.rest.Constants;
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**

@@ -115,7 +115,6 @@ public class ApplicationTest extends RestTestBase {
         }};
 
         try {
-            System.out.println(new File(".").getAbsolutePath());
             deployApp(newApp);
             ClientResponse response = get(URL_SUB_COMPONENTS + "?id=" + appName);
             checkStatusForSuccess(response);

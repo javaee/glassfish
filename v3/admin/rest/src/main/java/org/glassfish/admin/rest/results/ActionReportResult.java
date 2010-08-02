@@ -49,6 +49,10 @@ public class ActionReportResult extends Result {
     /**
      * Constructor
      */
+    public ActionReportResult(String name, ActionReport r) {
+        this(name, r, new OptionsResult());    
+    }
+
     public ActionReportResult(String name, ActionReport r,  OptionsResult metaData) {
         __name = name;
         __message = r;

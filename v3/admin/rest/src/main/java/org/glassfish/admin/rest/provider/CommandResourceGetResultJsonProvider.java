@@ -35,15 +35,16 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.glassfish.admin.rest.results.CommandResourceGetResult;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.Produces;
-import org.codehaus.jettison.json.JSONException;
-import static org.glassfish.admin.rest.Util.*;
 
-import org.codehaus.jettison.json.JSONObject;
+import static org.glassfish.admin.rest.Util.eleminateHypen;
+import static org.glassfish.admin.rest.Util.upperCaseFirstLetter;
 
 /**
  * @author Rajeshwar Patil

@@ -35,24 +35,22 @@
  */
 package org.glassfish.admin.rest.provider;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
-
-//import javax.management.j2ee.statistics.Statistics; //?
 import org.glassfish.external.statistics.Statistic;
 import org.glassfish.external.statistics.Stats;
+import org.glassfish.flashlight.datatree.TreeNode;
 
 import javax.ws.rs.Produces;
-
-import org.glassfish.flashlight.datatree.TreeNode;
-import static org.glassfish.admin.rest.Util.*;
-import static org.glassfish.admin.rest.provider.ProviderUtil.*;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
  * @author Rajeshwar Patil

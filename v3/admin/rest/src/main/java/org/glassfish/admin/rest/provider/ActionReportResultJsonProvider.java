@@ -36,22 +36,17 @@
 package org.glassfish.admin.rest.provider;
 
 import com.sun.enterprise.v3.common.ActionReporter;
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.glassfish.admin.rest.results.ActionReportResult;
+import org.glassfish.api.ActionReport.MessagePart;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.Produces;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONObject;
-import org.glassfish.api.ActionReport.MessagePart;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * @author Ludovic Champenois

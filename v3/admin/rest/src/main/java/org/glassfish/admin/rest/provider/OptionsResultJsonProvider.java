@@ -35,18 +35,18 @@
  */
 package org.glassfish.admin.rest.provider;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.glassfish.admin.rest.results.OptionsResult;
-import java.util.Iterator;
-import java.util.Set;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.Produces;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONObject;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**

@@ -37,8 +37,6 @@ package org.glassfish.admin.rest.provider;
 
 import com.sun.enterprise.v3.common.ActionReporter;
 import org.glassfish.admin.rest.results.ActionReportResult;
-import org.glassfish.admin.rest.utils.xml.XmlArray;
-import org.glassfish.admin.rest.utils.xml.XmlMap;
 import org.glassfish.api.ActionReport;
 
 import javax.ws.rs.Produces;
@@ -60,10 +58,6 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
     public String getContent(ActionReportResult proxy) {
         ActionReporter ar = (ActionReporter) proxy.getActionReport();
         StringBuilder result = new StringBuilder(ProviderUtil.getHtmlHeader());
-//        String uri = uriInfo.getAbsolutePath().toString();
-//        String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
-//        String parentName =
-//                upperCaseFirstLetter(eleminateHypen(getParentName(uri)));
 
         result.append("<h1>")
                 .append(ar.getActionDescription())
@@ -71,18 +65,11 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
         if (proxy.isError()) {
             result.append("<h2>Error:</h2>")
-                    .append(proxy.getErrorMessage())
-                    .append("<br>");
+                    .append(proxy.getErrorMessage());
         } else {
-            result
-//                    .append("<h2>")
-//                    .append(parentName)
-//                    .append(" - ")
-//                    .append(name)
-//                    .append("</h2>")
-                    .append(processReport(ar));
+            result.append(processReport(ar));
         }
-        return result.append("</div><br></body></html>").toString();
+        return result.append("</div></body></html>").toString();
     }
 
     protected String processReport(ActionReporter ar) {
@@ -120,14 +107,6 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
     protected String processProperties(Properties props) {
         StringBuilder result = new StringBuilder("<h3>Properties</h3>");
-//        result.append("<table border=\"1\" style=\"border-collapse: collapse\">");
-//        for (Map.Entry entry : props.entrySet()) {
-//            result.append("<tr><td>")
-//                    .append(entry.getKey())
-//                    .append("</td><td>")
-//                    .append(entry.getValue())
-//                    .append("</td></tr>");
-//        }
         result.append(processMap(props));
 
         return result.append("</table>").toString();
@@ -135,16 +114,6 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
     protected String getExtraProperties(Properties props) {
         StringBuilder result = new StringBuilder("<h3>Extra Properties</h3>");
-//        result.append("<table border=\"1\" style=\"border-collapse: collapse\">");
-//        for (Map.Entry<Object, Object> entry : props.entrySet()) {
-//            String key = entry.getKey().toString();
-//            String value = getHtmlRepresentation(entry.getValue());
-//            result.append("<tr><td>")
-//                    .append(key)
-//                    .append("</td><td>")
-//                    .append(value)
-//                    .append("</td></tr>");
-//        }
         result.append(processMap(props));
 
         return result.toString();

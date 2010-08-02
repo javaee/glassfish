@@ -61,34 +61,55 @@ import org.codehaus.jettison.json.JSONObject;
  * @author jasonlee
  */
 public class MarshallingUtils {
-
-    public static String getJsonForProperties(final Map<String, String> properties) {
-        return getJsonForProperties(new ArrayList<Map<String, String>>() {{ add(properties); }} );
-    }
-
-    public static String getJsonForProperties(List<Map<String, String>> properties) {
-        JSONArray ja = new JSONArray();
-
-        for (Map<String, String> property : properties) {
-            ja.put(getJsonObjectForMap(property));
-        }
-
-        return ja.toString();
-    }
-
     public static List<Map<String, String>> getPropertiesFromJson(String json) {
-        List<Map<String, String>> properties;
+        List<Map<String, String>> properties = null;
         json = json.trim();
         if (json.startsWith("{")) {
             properties = new ArrayList<Map<String, String>>();
             properties.add(processJsonMap(json));
         } else if (json.startsWith("[")) {
-            properties = processJsonList(json);
+            try {
+                properties = processJsonArray(new JSONArray(json));
+            } catch (JSONException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         } else {
             throw new RuntimeException("The JSON string must start with { or ["); // i18n
         }
 
         return properties;
+    }
+
+    public static List<Map<String, String>> getPropertiesFromXml(String xml) {
+        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        InputStream input = null;
+        try {
+            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+            inputFactory.setProperty(XMLInputFactory.IS_VALIDATING, false);
+            input = new ByteArrayInputStream(xml.trim().getBytes("UTF-8"));
+            XMLStreamReader parser = inputFactory.createXMLStreamReader(input);
+            while (parser.hasNext()) {
+                int event = parser.next();
+                switch (event) {
+                    case XMLStreamConstants.START_ELEMENT: {
+                        if ("list".equals(parser.getLocalName())) {
+                            list = processXmlList(parser);
+                        }
+                        break;
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(MarshallingUtils.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                input.close();
+            } catch (IOException ex) {
+                Logger.getLogger(MarshallingUtils.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return list;
     }
 
     public static String getXmlForProperties(final Map<String, String> properties) {
@@ -124,57 +145,16 @@ public class MarshallingUtils {
         }
     }
 
-    public static List<Map<String, String>> getPropertiesFromXml(String xml) {
-        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-        InputStream input = null;
-        try {
-            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-            inputFactory.setProperty(XMLInputFactory.IS_VALIDATING, false);
-            input = new ByteArrayInputStream(xml.trim().getBytes("UTF-8"));
-            XMLStreamReader parser = inputFactory.createXMLStreamReader(input);
-            while (parser.hasNext()) {
-                int event = parser.next();
-                switch (event) {
-                    case XMLStreamConstants.START_ELEMENT: {
-                        if ("list".equals(parser.getLocalName())) {
-                            list = processXmlList(parser);
-                        }
-                        break;
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(MarshallingUtils.class.getName()).log(Level.SEVERE, null, ex);
-            throw new RuntimeException(ex);
-        } finally {
-            try {
-                input.close();
-            } catch (IOException ex) {
-                Logger.getLogger(MarshallingUtils.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return list;
-    }
-
-    public static JSONObject getJsonObjectForMap(Map<String, String> property) throws RuntimeException {
-        JSONObject jo = new JSONObject();
-        for (Map.Entry<String, String> elem : property.entrySet()) {
-            try {
-                jo.put(elem.getKey(), elem.getValue());
-            } catch (JSONException ex) {
-                Logger.getLogger(MarshallingUtils.class.getName()).log(Level.SEVERE, null, ex);
-                throw new RuntimeException(ex);
-            }
-        }
-
-        return jo;
-    }
-
     public static Map buildMapFromDocument(String text) {
         Map map = null;
+        if (text == null) {
+            return new HashMap();
+        }
+
+        text = text.trim();
 
         if (text.startsWith("{")) {
-
+            map = processJsonMap(text);
         } else if (text.startsWith("<")) {
             InputStream input = null;
             try {
@@ -210,99 +190,64 @@ public class MarshallingUtils {
         return map;
     }
 
-    private static Map<String, String> processJsonMap(String json) {
-        Map<String, String> map = new HashMap<String, String>();
+    private static Map processJsonMap(String json) {
+        Map map;
+        try {
+            map = processJsonObject(new JSONObject(json));
+        } catch (JSONException e) {
+            map = new HashMap();
+        }
+        return map;
+    }
+
+    private static Map processJsonObject(JSONObject jo) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            Iterator i = jo.keys();
+            while (i.hasNext()) {
+                String key = (String)i.next();
+                Object value = jo.get(key);
+                if (value instanceof JSONArray) {
+                    map.put(key, processJsonArray((JSONArray)value));
+                } else if (value instanceof JSONObject) {
+                    map.put(key, processJsonObject((JSONObject)value));
+                } else {
+                    map.put(key, value);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 
         return map;
     }
 
-    private static List<Map<String, String>> processJsonList(String json) {
-        List<Map<String, String>> properties = new ArrayList<Map<String, String>>();
+    private static List processJsonArray(JSONArray ja) {
+        List results = new ArrayList();
+
         try {
-            JSONArray ja = new JSONArray(json);
             for (int i = 0; i < ja.length(); i++) {
-                JSONObject jo = ja.getJSONObject(i);
-                Map<String, String> property = new HashMap<String, String>();
-                Iterator iter = jo.keys();
-                while (iter.hasNext()) {
-                    String key = (String) iter.next();
-                    property.put(key, (String) jo.get(key));
-                }
-                properties.add(property);
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(MarshallingUtils.class.getName()).log(Level.SEVERE, null, ex);
-            throw new RuntimeException(ex);
-        }
-
-        return properties;
-    }
-
-    private static List processXmlList(XMLStreamReader parser) throws XMLStreamException {
-        List list = new ArrayList();
-        boolean endOfList = false;
-        while (!endOfList) {
-            int event = parser.next();
-            switch (event) {
-                case XMLStreamConstants.START_ELEMENT: {
-//                    if ("entry".equals(parser.getLocalName())) {
-//                        list.add(processXmlListEntry(parser));
-//                    }
-                    if ("map".equals(parser.getLocalName())) {
-                        list.add(processXmlMap(parser));
-                    }
-                    break;
-                }
-                case XMLStreamConstants.END_ELEMENT: {
-                    if ("list".equals(parser.getLocalName())) {
-                        endOfList = true;
-                    }
-                    break;
-                }
-                default: {
-                    throw new RuntimeException ("XML parsing error"); // i18n
+                Object entry = ja.get(i);
+                if (entry instanceof JSONArray) {
+                    results.add(processJsonArray((JSONArray)entry));
+                } else if (entry instanceof JSONObject) {
+                    results.add(processJsonObject((JSONObject)entry));
+                } else {
+                    results.add(entry);
                 }
             }
-        }
-        return list;
-    }
-
-    private static Object processXmlListEntry(XMLStreamReader parser) throws XMLStreamException {
-        Object entry = null;
-        boolean endOfEntry = false;
-
-        while (!endOfEntry) {
-            int event = parser.next();
-            switch (event) {
-                case XMLStreamConstants.ATTRIBUTE: {
-                    if ("value".equals(parser.getLocalName())) {
-                        entry = parser.getText();
-                    }
-                    break;
-                }
-                case XMLStreamConstants.START_ELEMENT: {
-                    if ("map".equals(parser.getLocalName())) {
-                        entry = processXmlMap(parser);
-                    }
-                    break;
-                }
-                case XMLStreamConstants.END_ELEMENT: {
-                    if ("entry".equals(parser.getLocalName())) {
-                        endOfEntry = true;
-                    }
-                    break;
-                }
-            }
+        } catch (JSONException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        return entry;
+        return results;
     }
 
     private static Map processXmlMap(XMLStreamReader parser) throws XMLStreamException {
         boolean endOfMap = false;
         Map<String, Object> entry = new HashMap<String, Object>();
         String key = null;
-        boolean needValue = true;
+        String element = null;
         while (!endOfMap) {
             int event = parser.next();
             switch (event) {
@@ -312,7 +257,6 @@ public class MarshallingUtils {
                         String value = parser.getAttributeValue(null, "value");
                         if (value != null) {
                             entry.put(key, value);
-                            needValue = false;
                             key = null;
                         }
                     } else if ("map".equals(parser.getLocalName())) {
@@ -321,6 +265,8 @@ public class MarshallingUtils {
                     } else if ("list".equals(parser.getLocalName())) {
                         List value = processXmlList(parser);
                         entry.put(key, value);
+                    } else {
+                        element = parser.getLocalName();
                     }
                     break;
                 }
@@ -328,42 +274,70 @@ public class MarshallingUtils {
                     if ("map".equals(parser.getLocalName())) {
                         endOfMap = true;
                     }
+                    element = null;
                     break;
                 }
                 default: {
-                    throw new RuntimeException ("XML parsing error"); // i18n
+                    String text=parser.getText();
+                    if (element != null) {
+                        if ("number".equals(element)) {
+                            if (text.contains(".")) {
+                                entry.put(key, Double.parseDouble(text));
+                            } else {
+                                entry.put(key, Long.parseLong(text));
+                            }
+                        } else if ("string".equals(element)) {
+                            entry.put(key, text);
+                        }
+
+                        element = null;
+                    }
                 }
             }
         }
         return entry;
     }
 
-    public static void main(String... args) {
-        String json = "[{\"name\":\"foo1\",\"value\":\"bar1\",\"description\":\"baz1\"},{\"name\":\"foo2\",\"value\":\"bar2\",\"description\":\"baz2\"},{\"name\":\"foo3\",\"value\":\"bar3\",\"description\":\"baz3\"}]";
+    private static List processXmlList(XMLStreamReader parser) throws XMLStreamException {
+        List list = new ArrayList();
+        boolean endOfList = false;
+        String element = null;
+        while (!endOfList) {
+            int event = parser.next();
+            switch (event) {
+                case XMLStreamConstants.START_ELEMENT: {
+                    if ("map".equals(parser.getLocalName())) {
+                        list.add(processXmlMap(parser));
+                    } else {
+                        element = parser.getLocalName();
+                    }
+                    break;
+                }
+                case XMLStreamConstants.END_ELEMENT: {
+                    if ("list".equals(parser.getLocalName())) {
+                        endOfList = true;
+                    }
+                    element = null;
+                    break;
+                }
+                default: {
+                    String text = parser.getText();
+                    if (element != null) {
+                        if ("number".equals(element)) {
+                            if (text.contains(".")) {
+                                list.add(Double.parseDouble(text));
+                            } else {
+                                list.add(Long.parseLong(text));
+                            }
+                        } else if ("string".equals(element)) {
+                            list.add(text);
+                        }
 
-        String xml = "<list>" +
-                "<map><entry key=\"name\" value=\"foo1\"/><entry key=\"value\" value=\"bar1\"/><entry key=\"description\" value=\"baz1\"/></map>" +
-                "<map><entry key=\"name\" value=\"foo2\"/><entry key=\"value\" value=\"bar2\"/><entry key=\"description\" value=\"baz2\"/></map>" +
-                "<map><entry key=\"name\" value=\"foo3\"/><entry key=\"value\" value=\"bar3\"/><entry key=\"description\" value=\"baz3\"/></map>" +
-                "</list>";
-
-        List<Map<String, String>> properties = getPropertiesFromJson(json);
-        System.out.println("************");
-        System.out.println("getPropertiesFromJson = " + properties);
-
-        String newJson = getJsonForProperties(properties);
-        System.out.println("************");
-        System.out.println("newJson = " + newJson);
-
-        properties = getPropertiesFromXml(xml);
-        System.out.println("************");
-        System.out.println("getPropertiesFromXml = " +properties);
-
-        String newXml = getXmlForProperties(properties);
-        System.out.println("************");
-        System.out.println("xml = " + xml);
-        System.out.println("newXml = " + newXml);
-        properties = getPropertiesFromXml(newXml);
-        System.out.println(properties);
+                        element = null;
+                    }
+                }
+            }
+        }
+        return list;
     }
 }

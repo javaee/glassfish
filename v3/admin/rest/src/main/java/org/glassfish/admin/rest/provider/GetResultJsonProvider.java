@@ -36,20 +36,20 @@
 package org.glassfish.admin.rest.provider;
 
 import org.codehaus.jettison.json.JSONArray;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.glassfish.admin.rest.results.GetResult;
-import java.util.Set;
-
 import org.jvnet.hk2.config.Dom;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.Produces;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.Util.eleminateHypen;
+import static org.glassfish.admin.rest.Util.getName;
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**

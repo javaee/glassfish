@@ -35,14 +35,15 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.results.CommandResourceGetResult;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.Produces;
 
-import org.glassfish.admin.rest.Constants;
-import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.Util.eleminateHypen;
+import static org.glassfish.admin.rest.Util.upperCaseFirstLetter;
 
 /**
  * @author Rajeshwar Patil

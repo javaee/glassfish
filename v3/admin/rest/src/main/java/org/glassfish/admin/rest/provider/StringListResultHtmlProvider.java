@@ -37,9 +37,10 @@ package org.glassfish.admin.rest.provider;
 
 import org.glassfish.admin.rest.results.StringListResult;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.Produces;
+
 import static org.glassfish.admin.rest.Util.*;
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 

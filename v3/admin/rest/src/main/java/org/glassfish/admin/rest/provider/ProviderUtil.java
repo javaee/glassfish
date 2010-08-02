@@ -35,37 +35,27 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
+import org.glassfish.admin.rest.Constants;
+import org.glassfish.admin.rest.ResourceUtil;
+import org.glassfish.admin.rest.Util;
 import org.glassfish.admin.rest.results.OptionsResult;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import org.glassfish.external.statistics.Statistic;
+import org.glassfish.external.statistics.impl.StatisticImpl;
+import org.jvnet.hk2.config.ConfigBean;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.jvnet.hk2.config.ConfigBean;
-
-import org.glassfish.admin.rest.Constants;
-import org.glassfish.admin.rest.ResourceUtil;
-import org.glassfish.admin.rest.Util;
-import org.glassfish.external.statistics.impl.StatisticImpl;
-import org.glassfish.external.statistics.Statistic;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
-import org.codehaus.jettison.json.JSONArray;
 
 
 /**

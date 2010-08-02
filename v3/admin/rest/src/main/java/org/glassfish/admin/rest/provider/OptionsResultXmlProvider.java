@@ -35,16 +35,17 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.results.OptionsResult;
+
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Provider;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.Produces;
-
-import org.glassfish.admin.rest.Constants;
-import static org.glassfish.admin.rest.provider.ProviderUtil.*;
+import static org.glassfish.admin.rest.provider.ProviderUtil.getEndXmlElement;
+import static org.glassfish.admin.rest.provider.ProviderUtil.quote;
 
 /**
  * XML provider for OptionsResult.

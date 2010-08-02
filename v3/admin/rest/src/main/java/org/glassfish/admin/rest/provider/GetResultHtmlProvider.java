@@ -36,17 +36,17 @@
 package org.glassfish.admin.rest.provider;
 
 import org.glassfish.admin.rest.results.GetResult;
-import static org.glassfish.admin.rest.Util.*;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.Dom;
+
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Provider;
 import java.util.List;
 import java.util.Set;
 
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.Dom;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.Produces;
-import org.jvnet.hk2.config.ConfigModel;
+import static org.glassfish.admin.rest.Util.*;
 
 /**
  *
