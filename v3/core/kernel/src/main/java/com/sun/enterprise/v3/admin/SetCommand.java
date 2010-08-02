@@ -192,6 +192,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                     ConfigSupport.createAndSet((ConfigBean) parentNode, Property.class, attributes );
                     success(context, targetName, value);
                     runLegacyChecks(context);
+                    if(targetService.isThisDAS() && !replicateSetCommand(context, targetName, value))
+                        return false;
                     return true;
                 } catch (TransactionFailure transactionFailure) {
                     //fail(context, "Could not change the attributes: " +

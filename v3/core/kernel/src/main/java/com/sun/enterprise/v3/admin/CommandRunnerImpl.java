@@ -850,6 +850,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 report, inv.inboundPayload(), inv.outboundPayload());
 
         List<RuntimeType> runtimeTypes = new ArrayList<RuntimeType>();
+        FailurePolicy fp = null;
         Set<CommandTarget> targetTypesAllowed = new HashSet<CommandTarget>();
 
         // If this glassfish installation does not have stand alone instances / clusters at all, then
@@ -934,6 +935,7 @@ public class CommandRunnerImpl implements CommandRunner {
             if(clAnnotation == null) {
                 runtimeTypes.add(RuntimeType.DAS);
                 runtimeTypes.add(RuntimeType.INSTANCE);
+                fp = FailurePolicy.Error;
             } else {
                 if(clAnnotation.value().length == 0) {
                     runtimeTypes.add(RuntimeType.DAS);
@@ -942,6 +944,11 @@ public class CommandRunnerImpl implements CommandRunner {
                     for(RuntimeType t : clAnnotation.value()) {
                         runtimeTypes.add(t);
                     }
+                }
+                if(clAnnotation.ifFailure() == null) {
+                    fp = FailurePolicy.Error;
+                } else {
+                    fp = clAnnotation.ifFailure();
                 }
             }
 
@@ -1055,7 +1062,8 @@ public class CommandRunnerImpl implements CommandRunner {
                     doCommand(model, command, context);
                 }
 
-                if(!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
+                if(!FailurePolicy.applyFailurePolicy(fp,
+                        report.getActionExitCode()).equals(ActionReport.ExitCode.FAILURE)) {
                     //Run Supplemental commands that have to be run after this command on this instance type
                     supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
                             Supplemental.Timing.After, context, parameters, ufm.optionNameToFileMap());
@@ -1095,9 +1103,10 @@ public class CommandRunnerImpl implements CommandRunner {
 
         if(processEnv.getProcessType().isEmbedded())
             return;
-        if(doReplication && (!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) &&
-                (serverEnv.isDas()) &&
-                    (runtimeTypes.contains(RuntimeType.INSTANCE) || runtimeTypes.contains(RuntimeType.ALL)) ) {
+        if(doReplication &&
+                (!FailurePolicy.applyFailurePolicy(fp, report.getActionExitCode()).equals(ActionReport.ExitCode.FAILURE)) &&
+                    (serverEnv.isDas()) &&
+                        (runtimeTypes.contains(RuntimeType.INSTANCE) || runtimeTypes.contains(RuntimeType.ALL)) ) {
             ClusterExecutor executor = null;
             if(model.getClusteringAttributes() != null && model.getClusteringAttributes().executor() != null) {
                 executor = habitat.getComponent(model.getClusteringAttributes().executor());

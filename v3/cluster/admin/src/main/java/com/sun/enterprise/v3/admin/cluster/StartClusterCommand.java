@@ -36,15 +36,12 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import java.util.logging.Logger;
+
+import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.CommandException;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -55,6 +52,7 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 @I18n("start.cluster.command")
 @Service(name = "start-cluster")
+@Cluster(value={RuntimeType.DAS}, ifFailure=FailurePolicy.Warn)
 @Scoped(PerLookup.class)
 public class StartClusterCommand implements AdminCommand, PostConstruct {
 
