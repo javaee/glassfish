@@ -124,6 +124,7 @@ public class CommandResourceMetaData {
             {"JmsService", "list-jmsdest", "GET", "list-jmsdest", "JmsDest"},
             {"ListApplication", "_get-context-root", "GET", "get-context-root", "Get Context Root"},
             {"ListApplication", "list-sub-components", "GET", "list-sub-components", "List Subcomponents"},
+            {"ListApplication", "list-components", "GET", "list-components", "List Components" },
             {"ListAuthRealm", "__list-predefined-authrealm-classnames", "GET", "list-predefined-authrealm-classnames", "List Auth Realms"},
             {"NetworkListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
             {"NetworkListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"},

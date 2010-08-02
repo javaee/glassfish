@@ -34,46 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import org.glassfish.admin.rest.resources.*;
-import org.glassfish.admin.rest.resources.custom.*;
-public class ListApplicationResource extends TemplateListOfResource  {
+public class ListApplicationListComponentsResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource  {
 
+   public ListApplicationListComponentsResource() {
+       super(
+          "ApplicationListComponentsResource",
+          "list-components",
+          "GET",
+          true);
+    }
 
-	@Path("{Name}/")
-	public ApplicationResource getApplicationResource(@PathParam("Name") String id) {
-		ApplicationResource resource = resourceContext.getResource(ApplicationResource.class);
-		resource.setBeanByKey(entity, id);
-		return resource;
-	}
-
-@Path("get-context-root/")
-public ListApplicationGetContextRootResource getListApplicationGetContextRootResource() {
-ListApplicationGetContextRootResource resource = resourceContext.getResource(ListApplicationGetContextRootResource.class);
-return resource;
-}
-
-@Path("list-sub-components/")
-public ListApplicationListSubComponentsResource getListApplicationListSubComponentsResource() {
-ListApplicationListSubComponentsResource resource = resourceContext.getResource(ListApplicationListSubComponentsResource.class);
-return resource;
-}
-
-@Path("list-components/")
-public ListApplicationListComponentsResource getListApplicationListComponentsResource() {
-ListApplicationListComponentsResource resource = resourceContext.getResource(ListApplicationListComponentsResource.class);
-return resource;
-}
-
-
-@Override
-public String[][] getCommandResourcesPaths() {
-return new String[][] {{"get-context-root", "GET", "_get-context-root"} , {"list-sub-components", "GET", "list-sub-components"}, {"list-components", "GET", "list-components"} };
-}
-
-@Override
-public String getPostCommand() {
-	return "deploy";
-}
 }
