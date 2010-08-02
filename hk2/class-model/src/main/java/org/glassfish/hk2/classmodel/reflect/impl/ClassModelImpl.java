@@ -38,6 +38,7 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
 
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -45,14 +46,14 @@ import java.util.*;
  */
 public class ClassModelImpl extends ExtensibleTypeImpl<ClassModel> implements ClassModel {
 
-    final Set<InterfaceModel> implementedIntf = Collections.synchronizedSet(new HashSet<InterfaceModel>());
+    final Set<TypeProxy<InterfaceModel>> implementedIntf = Collections.synchronizedSet(new HashSet<TypeProxy<InterfaceModel>>());
     final Map<String, FieldModel> fields = Collections.synchronizedMap(new HashMap<String, FieldModel>());
 
-    public ClassModelImpl(ModelBuilder tb) {
-        super(tb);
+    public ClassModelImpl(String name, TypeProxy<Type> sink, URI definingURI, TypeProxy parent) {
+        super(name, sink, definingURI, parent);
     }
 
-    void isImplementing(InterfaceModel intf) {
+    void isImplementing(TypeProxy<InterfaceModel> intf) {
         implementedIntf.add(intf);
     }
     
@@ -62,7 +63,7 @@ public class ClassModelImpl extends ExtensibleTypeImpl<ClassModel> implements Cl
 
     @Override
     public Collection<InterfaceModel> getInterfaces() {
-        return Collections.unmodifiableCollection(implementedIntf);
+        return TypeProxy.adapter(implementedIntf);
     }
 
     @Override
@@ -74,7 +75,7 @@ public class ClassModelImpl extends ExtensibleTypeImpl<ClassModel> implements Cl
     protected void print(StringBuffer sb) {
         super.print(sb);
         sb.append(", interfaces=[");
-        for (InterfaceModel im : implementedIntf) {
+        for (TypeProxy<InterfaceModel> im : implementedIntf) {
             sb.append(" ").append(im.getName());
         }
         sb.append("]");

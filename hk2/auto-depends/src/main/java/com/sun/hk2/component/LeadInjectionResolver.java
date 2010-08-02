@@ -49,13 +49,15 @@ import org.jvnet.hk2.component.Inhabitant;
  */
 public class LeadInjectionResolver extends InjectionResolver<Lead>{
 
-    public LeadInjectionResolver() {
-      super(Lead.class);
+    final Habitat habitat;
+    
+    public LeadInjectionResolver(Habitat habitat) {
+        super(Lead.class);
+        this.habitat = habitat;
     }
   
     @Override
-    public <V> V getValue(Habitat habitat,
-                Object component,
+    public <V> V getValue(Object component,
                 Inhabitant<?> onBehalfOf,
                 AnnotatedElement target,
                 Class<V> type) throws ComponentException {

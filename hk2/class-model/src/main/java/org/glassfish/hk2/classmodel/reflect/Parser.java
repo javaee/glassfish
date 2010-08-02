@@ -35,6 +35,8 @@
  */
 package org.glassfish.hk2.classmodel.reflect;
 
+import org.glassfish.hk2.classmodel.reflect.impl.TypeBuilder;
+import org.glassfish.hk2.classmodel.reflect.impl.TypesImpl;
 import org.glassfish.hk2.classmodel.reflect.util.DirectoryArchive;
 import org.glassfish.hk2.classmodel.reflect.util.JarArchive;
 import org.objectweb.asm.ClassReader;
@@ -42,9 +44,8 @@ import org.objectweb.asm.ClassReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.net.URI;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -57,18 +58,43 @@ import java.util.logging.Level;
 public class Parser {
 
     private final ParsingContext context;
+    private final Parser parent;
+    private final Map<String, Parser> children = new HashMap<String, Parser>();
+    private final Map<URI, Types> processedURI = Collections.synchronizedMap(new HashMap<URI, Types>());
 
     private final List<Future<Result>> futures = Collections.synchronizedList(new ArrayList<Future<Result>>());
+    private ExecutorService executorService = null;
+    
     public Parser(ParsingContext context) {
         this.context = context;
+        executorService = context.executorService;
+        parent = null;
     }
 
+    private Parser(ParsingContext context, Parser parent) {
+        this.context = context;
+        executorService = context.executorService;
+        this.parent = parent;
+    }
     public Exception[] awaitTermination() throws InterruptedException {
         return awaitTermination(10, TimeUnit.SECONDS);
     }
-    
-    public synchronized Exception[] awaitTermination(int timeOut, TimeUnit unit) throws InterruptedException {
 
+    public Parser pushContext(String name) {
+
+        ParsingContext childContext = new ParsingContext(context);
+        Parser childParser = new Parser(childContext);
+
+        children.put(name, childParser);
+        return childParser;
+    }
+
+    public Parser popContext(String name) {
+        return children.get(name);
+
+    }
+
+    public synchronized Exception[] awaitTermination(int timeOut, TimeUnit unit) throws InterruptedException {
 
         List<Exception> exceptions = new ArrayList<Exception>();
         if (context.logger.isLoggable(Level.FINE)) {
@@ -92,12 +118,17 @@ public class Parser {
             } catch (ExecutionException e) {
                 exceptions.add(e);
             }
+            if (executorService!=null) {
+                executorService.shutdown();
+                executorService=null;
+            }
         }
         return exceptions.toArray(new Exception[exceptions.size()]);
     }
 
     public void parse(final File source, final Runnable doneHook) throws IOException {
-        final ArchiveAdapter adapter = source.isFile()?new JarArchive(new JarFile(source)):new DirectoryArchive(source);
+        // todo : use protocol to lookup implementation
+        final ArchiveAdapter adapter = source.isFile()?new JarArchive(source.toURI()):new DirectoryArchive(source);
         final Runnable cleanUpAndNotify = new Runnable() {
           @Override
           public void run() {
@@ -108,7 +139,8 @@ public class Parser {
                 throw new RuntimeException(e);
               }
             } finally {
-              doneHook.run();
+                if (doneHook!=null)
+                    doneHook.run();
             }
           }
         };
@@ -117,51 +149,137 @@ public class Parser {
 
     public synchronized void parse(final ArchiveAdapter source, final Runnable doneHook) throws IOException {
 
-        if (context.logger.isLoggable(Level.FINE)) {
-            context.logger.log(Level.FINE, "submitting file " + source.getName());
+        Types types = getResult(source.getURI());
+        if (types!=null) {
+            if (!processedURI.containsKey(source.getURI())) {
+                processedURI.put(source.getURI(), types);    
+            }
+            System.out.println("Skipping reparsing..." + source.getURI());
+            return;
         }
-        futures.add(context.executorService.submit(new Callable<Result>() {
+        
+        if (context.logger.isLoggable(Level.FINE)) {
+            context.logger.log(Level.FINE, "submitting file " + source.getURI().getPath());
+        }
+        futures.add(getExecutorService().submit(new Callable<Result>() {
             @Override
             public Result call() throws Exception {
                 try {
                     if (context.logger.isLoggable(Level.FINE)) {
-                        context.logger.log(Level.FINE, "elected file " + source.getName());
+                        context.logger.log(Level.FINE, "elected file " + source.getURI().getPath());
                     }
                     doJob(source, doneHook);
-                    return new Result(source.getName(), null);
+                    
+                    return new Result(source.getURI().getPath(), null);
                 } catch (Exception e) {
                     context.logger.log(Level.SEVERE, "Exception while parsing file " + source, e);
-                    return new Result(source.getName(), e);
+                    return new Result(source.getURI().getPath(), e);
                 }
             }
         }));
     }
 
+    private Types getResult(URI uri) {
+        Types types = processedURI.get(uri);
+        if (types==null && parent!=null) {
+            types = parent.getResult(uri);
+        }
+        return types;
+    }
+
+    private void saveResult(URI uri, Types types) {
+        this.processedURI.put(uri, types);
+        if (parent!=null) {
+            parent.saveResult(uri, types);
+        }
+    }
+
     private void doJob(final ArchiveAdapter adapter, final Runnable doneHook) throws Exception {
         if (context.archiveSelector==null || context.archiveSelector.selects(adapter)) {
             if (context.logger.isLoggable(Level.FINE)) {
-                context.logger.log(Level.FINE, "Parsing file " + adapter.getName());
+                context.logger.log(Level.FINE, "Parsing file " + adapter.getURI().getPath());
             }
-            for (final ArchiveAdapter.Entry entry : adapter) {
-                if (entry.name.endsWith(".class")) {
-                    if (context.logger.isLoggable(Level.FINER)) {
-                        context.logger.log(Level.FINER, "Parsing class " + entry.name);
-                    }
-                    InputStream is = adapter.getInputStream(entry.name);
-                    ClassReader cr = new ClassReader(is);
-                    cr.accept(context.getClassVisitor(), ClassReader.SKIP_DEBUG);
-                    is.close();
-                }
+            final URI uri = adapter.getURI();
+
+                    adapter.onEachEntry(new ArchiveAdapter.EntryTask() {
+                         @Override
+                         public void on(ArchiveAdapter.Entry entry, InputStream is) throws IOException {
+                             if (entry.name.endsWith(".class")) {
+                                 if (context.logger.isLoggable(Level.FINER)) {
+                                     context.logger.log(Level.FINER, "Parsing class " + entry.name);
+                                 }
+                                 ClassReader cr = new ClassReader(is);
+                                 cr.accept(context.getClassVisitor(uri, entry.name), ClassReader.SKIP_DEBUG);
+                              }
+                         }
+                });
+                saveResult(uri, context.getTypes());
             }
             if (context.logger.isLoggable(Level.FINE)) {
-                context.logger.log(Level.FINE, "before running doneHook" + adapter.getName());
+                context.logger.log(Level.FINE, "before running doneHook" + adapter.getURI().getPath());
             }
-            doneHook.run();
+            if (doneHook!=null)
+                doneHook.run();
             if (context.logger.isLoggable(Level.FINE)) {
-                context.logger.log(Level.FINE, "after running doneHook " + adapter.getName());
+                context.logger.log(Level.FINE, "after running doneHook " + adapter.getURI().getPath());
             }
         }
+
+    /**
+     * Returns the context this parser instance was initialized with during
+     * the call to {@link Parser#Parser(ParsingContext)}
+     *
+     * @return the parsing context this parser uses to store the parsing
+     * activities results.
+     */
+    public ParsingContext getContext() {
+        return context;
     }
+
+    public Types getTypes() {
+        if (!children.isEmpty()) {
+            return new Types() {
+                @Override
+                public Collection<Type> getAllTypes() {
+                    List<Type> types = new ArrayList<Type>();
+                    types.addAll(context.getTypes().getAllTypes());
+                    for (Parser child : children.values()) {
+                        types.addAll(child.getTypes().getAllTypes());
+                    }
+                    return types;
+                }
+
+                @Override
+                public Type getBy(String name) {
+                    return null;  //To change body of implemented methods use File | Settings | File Templates.
+                }
+
+                @Override
+                public <T extends Type> T getBy(Class<T> type, String name) {
+                    return null;  //To change body of implemented methods use File | Settings | File Templates.
+                }
+            };
+        } else {
+            return context.getTypes();
+        }
+    }
+
+    private synchronized ExecutorService getExecutorService() {
+        if (executorService==null) {
+            Runtime runtime = Runtime.getRuntime();
+            int nrOfProcessors = runtime.availableProcessors();
+            executorService = Executors.newFixedThreadPool(nrOfProcessors, new ThreadFactory() {
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread t = new Thread(r);
+                        t.setName("Hk2-jar-scanner");
+                        return t;
+                    }
+                });
+        }
+        return executorService;
+    }
+    
 
     private class Result {
         final String name;

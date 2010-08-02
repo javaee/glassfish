@@ -40,11 +40,19 @@ package org.glassfish.hk2.classmodel.reflect;
  *
  * @author Jerome Dochez
  */
-public interface FieldModel extends AnnotatedElement {
+public interface FieldModel extends Member, AnnotatedElement {
 
     /**
      * Returns the declared type of the field
+     * 
      * @return the field type
      */
     public ExtensibleType getType();
+
+    /**
+     * Returns the declaring type of this field, which is a class.
+     *
+     * @return the field declaring class.
+     */
+    public ClassModel getDeclaringType();
 }

@@ -38,6 +38,7 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,26 +49,21 @@ import java.util.Map;
  */
 public class InterfaceModelImpl extends ExtensibleTypeImpl<InterfaceModel> implements InterfaceModel {
 
-    public final Map<String, ClassModel> implementors = Collections.synchronizedMap(new HashMap <String, ClassModel>());
-
-    public InterfaceModelImpl(ModelBuilder tb) {
-        super(tb);
+    public InterfaceModelImpl(String name, TypeProxy<Type> sink, URI definingURI, TypeProxy parent) {
+        super(name, sink, definingURI, parent);
     }
 
     @Override
     public Collection<ClassModel> allImplementations() {
-        return Collections.unmodifiableCollection(implementors.values());
+        return Collections.unmodifiableCollection(sink.getImplementations());
     }
 
-    void addImplementation(ClassModel implementation) {
-        implementors.put(implementation.getName(), implementation);
-    }
 
     @Override
     protected void print(StringBuffer sb) {
         super.print(sb);
         sb.append(", implementors=[");
-        for (ClassModel cm : implementors.values()) {
+        for (ClassModel cm : sink.getImplementations()) {
             sb.append(" ").append(cm.getName());
         }
         sb.append("]");

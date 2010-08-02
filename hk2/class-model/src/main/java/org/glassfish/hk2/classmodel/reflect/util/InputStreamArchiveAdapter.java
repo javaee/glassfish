@@ -33,76 +33,54 @@
  *  only if the new code is made subject to such option by the copyright
  *  holder.
  */
-package org.glassfish.hk2.classmodel.reflect.impl;
 
-import org.glassfish.hk2.classmodel.reflect.*;
+package org.glassfish.hk2.classmodel.reflect.util;
 
-import java.util.*;
+import org.glassfish.hk2.classmodel.reflect.ArchiveAdapter;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 
 /**
- * Implementation of the Type abstraction.
- *
+ * Archive adapter based on a single InputStream instance.
  * @author Jerome Dochez
  */
-public class TypeImpl extends AnnotatedElementImpl implements Type {
+public class InputStreamArchiveAdapter implements ArchiveAdapter {
+    
+    final private InputStream is;
+    final private URI uri;
 
-    final TypeProxy<Type> sink;
-    final List<MethodModel> methods = new ArrayList<MethodModel>();
-    final Set<URI> definingURIs=new HashSet<URI>();
-
-
-    public TypeImpl(String name, TypeProxy<Type> sink, URI definingURI) {
-        super(name);
-        this.sink = sink;
-        definingURIs.add(definingURI);
-        this.sink.set(this);
+    public InputStreamArchiveAdapter(URI uri, InputStream is) {
+        this.uri = uri;
+        this.is = is;
     }
 
     @Override
-    public Collection<URI> getDefiningURIs() {
-        return Collections.unmodifiableSet(definingURIs);
-    }
-
-    void addDefiningURI(URI uri) {
-        definingURIs.add(uri);
+    public URI getURI() {
+        return uri;
     }
 
     @Override
-    public boolean wasDefinedIn(Collection<URI> uris) {
-        for (URI uri : uris) {
-            if (definingURIs.contains(uri)) {
-                return true;
-            }
+    public Manifest getManifest() throws IOException {
+        throw new IOException("Not Implemented");
+    }
+
+    @Override
+    public void onEachEntry(EntryTask task) throws IOException {
+        JarInputStream jis = new JarInputStream(is);
+        JarEntry ja;
+        while ((ja=jis.getNextJarEntry())!=null) {
+            Entry je = new Entry(ja.getName(), ja.getSize(), ja.isDirectory());
+            task.on(je, is);
         }
-        return false;
-    }
-
-    void addMethod(MethodModelImpl m) {
-        methods.add(m);
     }
 
     @Override
-    public Collection<MethodModel> getMethods() {
-        return Collections.unmodifiableList(methods);
-    }
-
-    TypeProxy getProxy() {
-        return sink;
-    }
-
-    @Override
-    public Collection<FieldModel> getFieldReferences() {
-        return Collections.unmodifiableSet(sink.getFieldRefs());
-    }
-
-    @Override
-    protected void print(StringBuffer sb) {
-        super.print(sb);    //To change body of overridden methods use File | Settings | File Templates.
-        sb.append(", subclasses=[");
-        for (AnnotatedElement cm : sink.getSubTypeRefs()) {
-            sb.append(" ").append(cm.getName());
-        }
-        sb.append("]");
+    public void close() throws IOException {
+        is.close();
     }
 }

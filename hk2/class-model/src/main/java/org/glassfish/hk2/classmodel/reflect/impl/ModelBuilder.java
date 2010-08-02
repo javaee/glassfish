@@ -37,86 +37,23 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
 import org.objectweb.asm.Opcodes;
+import java.net.URI;
+import java.util.Collection;
 
 /**
  * convenient class to build model implementations
  */
-public class ModelBuilder {
+class ModelBuilder {
 
     public final String name;
     public final TypeProxy sink;
-    public TypeProxy parent;
+    public final TypeProxy parent;
+    public final URI definingURI;
 
-    public interface ElementType {
-        public TypeImpl make(ModelBuilder tb);
-    }
-
-    public enum types implements ElementType {
-        Class {
-            @Override
-            public TypeImpl make(ModelBuilder tb) {
-                return new ClassModelImpl(tb);
-            }},
-        Interface {
-            @Override
-            public TypeImpl make(ModelBuilder tb) {
-                return new InterfaceModelImpl(tb);
-            }},
-        Annotation {
-            @Override
-            public TypeImpl make(ModelBuilder tb) {
-                return new AnnotationTypeImpl(tb);
-            }}
-
-    }    
-
-    public ModelBuilder(String name, TypeProxy sink) {
+    public ModelBuilder(String name, TypeProxy sink, URI definingURI, TypeProxy parent) {
         this.name = name;
         this.sink = sink;
-    }
-
-    public ModelBuilder setParent(TypeProxy parent) {
+        this.definingURI = definingURI;
         this.parent = parent;
-        return this;
-    }
-
-    public synchronized TypeImpl build(int access) {
-        if ((access & Opcodes.ACC_ANNOTATION)==Opcodes.ACC_ANNOTATION) {
-           return build(types.Annotation);
-        } else
-        if ((access & Opcodes.ACC_INTERFACE)==Opcodes.ACC_INTERFACE) {
-            return build(types.Interface);
-        } else {
-            return build(types.Class);
-        }
-
-    }
-
-    public InterfaceModelImpl buildInterface() {
-        if (sink.get()==null) {
-            return new InterfaceModelImpl(this);
-        } else {
-            return (InterfaceModelImpl) sink.get();
-        }
-    }
-
-    public AnnotationTypeImpl buildAnnotation() {
-        if (sink.get()==null) {
-            return new AnnotationTypeImpl(this);
-        } else {
-            return (AnnotationTypeImpl) sink.get();
-        }
-    }
-
-    public ClassModel buildClass() {
-        if (sink.get()==null) {
-            return new ClassModelImpl(this);
-        } else {
-            return (ClassModel) sink.get();
-        }
-    }
-
-    public TypeImpl build(ModelBuilder.ElementType type) {
-        return type.make(this);
     }
 }

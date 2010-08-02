@@ -53,5 +53,5 @@ import javax.xml.stream.XMLStreamException;
  */
 @Contract
 public interface Populator {
-    void run(ConfigParser parser);
+    void run(ConfigParser parser) throws BootException;
 }

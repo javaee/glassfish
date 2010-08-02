@@ -55,10 +55,22 @@ import java.util.logging.Logger;
 @SuppressWarnings("unchecked")
 public class InjectionManager {
 
-    private final Habitat habitat;
+/**    private final Habitat habitat;
     
     public InjectionManager(Habitat habitat) {
         this.habitat = habitat;
+    }
+**/
+   /**
+     * Initializes the component by performing injection.
+     *
+     * @param component component instance to inject
+     * @param targets the injection resolvers to resolve all injection points
+     * @throws ComponentException
+     *      if injection failed for some reason.
+     */
+    public void inject(Object component,InjectionResolver... targets) {
+        inject(component, null, component.getClass(), targets);
     }
   
    /**
@@ -66,26 +78,44 @@ public class InjectionManager {
      *
      * @param component component instance to inject
      * @param onBehalfOf the inhabitant to do injection on behalf of
+     * @param targets the injection resolvers to resolve all injection points
      * @throws ComponentException
      *      if injection failed for some reason.
      */    
-    public void inject(Object component, Inhabitant<?> onBehalfOf, Collection<InjectionResolver> targets) {
+    public void inject(Object component, Inhabitant<?> onBehalfOf, InjectionResolver... targets) {
         inject(component, onBehalfOf, component.getClass(), targets);
     }
-    
+
+    /**
+      * Initializes the component by performing injection.
+      *
+      * @param component component instance to inject
+      * @param type component class
+      * @param targets the injection resolvers to resolve all injection points
+      * @throws ComponentException
+      *      if injection failed for some reason.
+      */
+    public void inject(Object component,
+                Class type,
+                InjectionResolver... targets) {
+
+        inject(component, null, type, targets);
+    }
+
     /**
       * Initializes the component by performing injection.
       *
       * @param component component instance to inject
       * @param onBehalfOf the inhabitant to do injection on behalf of
       * @param type component class
+      * @param targets the injection resolvers to resolve all injection points
       * @throws ComponentException
       *      if injection failed for some reason.
       */
     public void inject(Object component,
                 Inhabitant<?> onBehalfOf,
                 Class type,
-                Collection<InjectionResolver> targets) {
+                InjectionResolver... targets) {
 
         try {
             assert component!=null;
@@ -103,7 +133,7 @@ public class InjectionManager {
 
                         Class fieldType = field.getType();
                         try {
-                            Object value = target.getValue(habitat, component, onBehalfOf, field, fieldType);
+                            Object value = target.getValue(component, onBehalfOf, field, fieldType);
                             if (value != null) {
                                 field.setAccessible(true);
                                 field.set(component, value);
@@ -145,7 +175,7 @@ public class InjectionManager {
                         if (setter.getReturnType() != void.class) {
                             if (Collection.class.isAssignableFrom(setter.getReturnType())) {
                                 injectCollection(component, setter, 
-                                    target.getValue(habitat, component, onBehalfOf, method, setter.getReturnType()));
+                                    target.getValue(component, onBehalfOf, method, setter.getReturnType()));
                                 continue;
                             }
                             throw new ComponentException("Injection failed on %s : setter method is not declared with a void return type",method.toGenericString());
@@ -161,7 +191,7 @@ public class InjectionManager {
                         }
 
                         try {
-                            Object value = target.getValue(habitat, component, onBehalfOf, method, paramTypes[0]);
+                            Object value = target.getValue(component, onBehalfOf, method, paramTypes[0]);
                             if (value != null) {
                                 setter.setAccessible(true);
                                 setter.invoke(component, value);

@@ -50,11 +50,9 @@ public class AnnotatedElementImpl implements AnnotatedElement {
 
     public final Set<AnnotationModel> annotations = Collections.synchronizedSet(new HashSet<AnnotationModel>());
 
-    public AnnotatedElementImpl(ModelBuilder tb) {
-        this.name = tb.name;
+    public AnnotatedElementImpl(String name) {
+        this.name = name;
     }
-
-
 
     @Override
     public String getName() {

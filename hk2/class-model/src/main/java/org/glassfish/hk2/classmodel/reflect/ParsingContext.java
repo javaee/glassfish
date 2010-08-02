@@ -36,14 +36,18 @@
 package org.glassfish.hk2.classmodel.reflect;
 
 import org.glassfish.hk2.classmodel.reflect.impl.ModelClassVisitor;
+import org.glassfish.hk2.classmodel.reflect.impl.TypeBuilder;
+import org.glassfish.hk2.classmodel.reflect.impl.TypesCtr;
 import org.glassfish.hk2.classmodel.reflect.impl.TypesImpl;
 import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
 import org.objectweb.asm.ClassVisitor;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.net.URI;
 import java.util.logging.Logger;
 
 /**
@@ -93,7 +97,7 @@ public class ParsingContext {
 
     }
 
-    final private TypesImpl types = new TypesImpl();
+    final private TypesCtr types = new TypesCtr();
     final ExecutorService executorService;
     final ArchiveSelector archiveSelector;
     final Logger logger;
@@ -102,8 +106,7 @@ public class ParsingContext {
     private ParsingContext(Builder builder) {
         Runtime runtime = Runtime.getRuntime();
         int nrOfProcessors = runtime.availableProcessors();        
-        this.executorService = builder.executorService==null ? 
-            Executors.newFixedThreadPool(nrOfProcessors) : builder.executorService;
+        this.executorService = builder.executorService;
         this.archiveSelector = builder.archiveSelector;
         this.logger = builder.logger;
         this.config = builder.config!=null?builder.config:new ParsingConfig() {
@@ -125,12 +128,30 @@ public class ParsingContext {
         };
     }
 
-    public ClassVisitor getClassVisitor() {
-        return new ModelClassVisitor(this);
+    public ParsingContext(ParsingContext parent) {
+        this.executorService = parent.executorService;
+        this.archiveSelector = parent.archiveSelector;
+        this.logger = parent.logger;
+        this.config = parent.config;
+    }
+
+    Map<URI, TypeBuilder> builders = new HashMap<URI, TypeBuilder>();
+
+    public synchronized TypeBuilder getTypeBuilder(URI definingURI) {
+        TypeBuilder builder = builders.get(definingURI);
+        if (builder==null) {
+            builder = new TypesImpl(types, definingURI);
+            builders.put(definingURI, builder);
+        }
+        return builder;
     }
 
     public Types getTypes() {
         return types;
+    }
+
+    public ClassVisitor getClassVisitor(URI uri, String entryName) {
+        return new ModelClassVisitor(this, uri, entryName);
     }
 
     public ParsingConfig getConfig() {

@@ -38,6 +38,7 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
 
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -47,8 +48,8 @@ public class AnnotationTypeImpl extends InterfaceModelImpl implements Annotation
 
     private final Set<AnnotatedElement> references = new HashSet<AnnotatedElement>();
 
-    public AnnotationTypeImpl(ModelBuilder tb) {
-        super(tb);
+    public AnnotationTypeImpl(String name, TypeProxy<Type> sink, URI definingURI) {
+        super(name, sink, definingURI, null);
     }
 
     public Collection<AnnotatedElement> allAnnotatedTypes() {

@@ -37,8 +37,10 @@
 package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
+import org.objectweb.asm.Opcodes;
 
 import java.util.*;
+import java.net.URI;
 
 /**
  * Results of a parsing activity, all java resources are inventoried in three
@@ -46,81 +48,67 @@ import java.util.*;
  *
  * @author Jerome Dochez
  */
-public class TypesImpl implements Types, TypeBuilder {
+public class TypesImpl implements TypeBuilder {
 
-    public TypesImpl() {
-        System.out.println("TypesIMpl creation");
+    final URI definingURI;
+    final TypesCtr types;
+    
+    public TypesImpl(TypesCtr types, URI definingURI) {
+        this.definingURI = definingURI;
+        this.types = types;
     }
 
-    public Collection<Type> getAllTypes() {
-        List<Type> allTypes = new ArrayList<Type>();
-        for (TypeProxy typeProxy : map.values()) {
-            if (typeProxy.get()!=null) {
-                allTypes.add(typeProxy.get());
-            }
+    public Class<? extends Type> getType(int access) {
+        if ((access & Opcodes.ACC_ANNOTATION)==Opcodes.ACC_ANNOTATION) {
+           return AnnotationType.class;
+        } else
+        if ((access & Opcodes.ACC_INTERFACE)==Opcodes.ACC_INTERFACE) {
+            return InterfaceModel.class;
+        } else {
+            return ClassModel.class;
         }
-        return allTypes;
-    }
 
-    @Override
-    public Type getBy(String name) {
-        TypeProxy proxy = map.get(name);
-        return (proxy!=null?proxy.get():null);
-    }
-
-    @Override
-    public <T extends Type> T getBy(Class<T> type, String name) {
-        Type t = getBy(name);
-        try {
-            return type.cast(t);
-        } catch (ClassCastException e) {
-            return null;
-        }
-    }
-
-    public ModelBuilder getModelBuilder(String name, String parentName) {
-        ModelBuilder mb = new ModelBuilder(name, getHolder(name));
-        mb.parent = getHolder(parentName);
-        return mb;
     }
 
     public synchronized TypeImpl getType(int access, String name, TypeProxy parent) {
-        TypeProxy typeProxy = getHolder(name);
+        Class<? extends Type> requestedType = getType(access);
+
+        TypeProxy<Type> typeProxy = types.getHolder(name, requestedType);
         if (typeProxy.get()==null) {
-            ModelBuilder mb = new ModelBuilder(name, typeProxy);
-            mb.parent = parent;
-            return mb.build(access);
+            if ((access & Opcodes.ACC_ANNOTATION)==Opcodes.ACC_ANNOTATION) {
+               return new AnnotationTypeImpl(name, typeProxy, definingURI);
+            } else
+            if ((access & Opcodes.ACC_INTERFACE)==Opcodes.ACC_INTERFACE) {
+                return new InterfaceModelImpl(name, typeProxy, definingURI, parent);
+            } else {
+                return new ClassModelImpl(name, typeProxy, definingURI, parent);
+            }
+        } else {
+            TypeImpl impl = (TypeImpl) typeProxy.get();
+            impl.addDefiningURI(definingURI);
+            return impl;
         }
-        return (TypeImpl) typeProxy.get();
     }
 
-    public synchronized ClassModel getClassModel(String name) {
-        ModelBuilder mb = new ModelBuilder(name, getHolder(name));
-        return mb.buildClass();
+    public FieldModelImpl getFieldModel(String name, TypeProxy type, ClassModel declaringType) {
+        return new FieldModelImpl(name, type, declaringType);
     }
 
-    public synchronized InterfaceModelImpl getInterface(String name) {
-        ModelBuilder mb = new ModelBuilder(name, getHolder(name));
-        return mb.buildInterface();
-    }
-
-    public synchronized AnnotationTypeImpl getAnnotation(String name) {
-        ModelBuilder mb = new ModelBuilder(name, getHolder(name));
-        return mb.buildAnnotation();
-    }
-
-    public FieldModelImpl getFieldModel(String name, TypeProxy type) {
-        return new FieldModelImpl(new ModelBuilder(name, null), type);
-    }
-
-    public synchronized TypeProxy getHolder(String name) {
-        TypeProxy typeProxy = map.get(name);
-        if (typeProxy ==null) {
-            typeProxy = new TypeProxy(null, name);
-            map.put(name, typeProxy);
+    @Override
+    public TypeProxy getHolder(String name) {
+        TypeProxy proxy = getHolder(name, InterfaceModel.class);
+        if (proxy!=null) {
+            return proxy;
         }
-        return typeProxy;
+        proxy = getHolder(name, ClassModel.class);
+        if (proxy!=null) {
+            return proxy;
+        }
+        return getHolder(name, AnnotationType.class);
     }
 
-    private final Map<String, TypeProxy> map = new HashMap<String, TypeProxy>();
+    @Override
+    public <T extends Type> TypeProxy<T> getHolder(String name, Class<T> type) {
+        return (TypeProxy<T>) types.getHolder(name, type);
+    }
 }

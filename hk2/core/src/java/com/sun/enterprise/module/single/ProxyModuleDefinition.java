@@ -42,11 +42,8 @@ import com.sun.enterprise.module.ModuleDependency;
 import com.sun.enterprise.module.common_impl.ByteArrayInhabitantsDescriptor;
 import com.sun.hk2.component.InhabitantsFile;
 
+import java.util.*;
 import java.util.jar.Manifest;
-import java.util.Collections;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.DataInputStream;
@@ -78,8 +75,23 @@ public class ProxyModuleDefinition implements ModuleDefinition {
             manifest = new ManifestProxy(classLoader, mappings);
             for (String habitatName : habitatNames) {
                 Enumeration<URL> inhabitants = classLoader.getResources(InhabitantsFile.PATH+'/'+habitatName);
+                Set<File> processedFiles = new HashSet<File>();
                 while (inhabitants.hasMoreElements()) {
                     URL url = inhabitants.nextElement();
+                    if (url.getProtocol().equals("jar")) {
+                        int index = url.getPath().indexOf("!");
+                        if (index>0 && url.getPath().length()>5) {
+                            String path = url.getPath().substring(5, url.getPath().indexOf("!"));
+                            File f = new File(path);
+                            if (f.exists()) {
+                                f = f.getCanonicalFile();
+                                if (processedFiles.contains(f)) {
+                                    continue;
+                                }
+                                processedFiles.add(f);
+                            }   
+                        }
+                    }
                     metadata.addHabitat(habitatName,
                         new ByteArrayInhabitantsDescriptor(url, readFully(url))
                     );

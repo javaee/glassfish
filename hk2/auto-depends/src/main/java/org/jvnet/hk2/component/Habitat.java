@@ -145,9 +145,9 @@ public class Habitat {
 
         // add the set of injection resolvers
         add(new ExistingSingletonInhabitant<InjectionResolver>(InjectionResolver.class,
-                new InjectInjectionResolver()));
+                new InjectInjectionResolver(this)));
         add(new ExistingSingletonInhabitant<InjectionResolver>(InjectionResolver.class,
-                new LeadInjectionResolver()));
+                new LeadInjectionResolver(this)));
         
         // make the habitat itself available
         add(new ExistingSingletonInhabitant<Habitat>(Habitat.class,this));
