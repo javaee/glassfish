@@ -36,15 +36,16 @@
 
 package com.sun.enterprise.server.logging;
 
+import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
-import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.common.BooleanLatch;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
-import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.logging.Task;
 import org.glassfish.config.support.TranslatedConfigView;
+import org.glassfish.internal.api.ServerContext;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -52,22 +53,16 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
-import com.sun.appserv.server.util.Version;
-
 
 import java.io.*;
 import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Vector;
-import java.util.ResourceBundle;
-import java.util.Collection;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.*;
+import java.util.logging.Formatter;
 
 /**
  * GFFileHandler publishes formatted log Messages to a FILE.
@@ -347,7 +342,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
      * A simple getter to access the current log file written by
      * this FileHandler.
      */
-    File getCurrentLogFile( ) {
+    public File getCurrentLogFile( ) {
         return absoluteFile;
     }
 
