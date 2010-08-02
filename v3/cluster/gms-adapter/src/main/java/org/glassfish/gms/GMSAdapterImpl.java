@@ -416,13 +416,14 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER).setLevel(Level.CONFIG);
         if (gms != null) {
             try {
-
-                // todo remove these in future. just verifying that these handlers are getting registered and getting called.
                 registerJoinedAndReadyNotificationListener(this);
                 registerJoinNotificationListener(this);
                 registerFailureNotificationListener(this);
                 registerPlannedShutdownListener(this);
                 registerFailureSuspectedListener(this);
+
+                // this must be here or appointed recovery server notification is not printed out for automated testing.
+                registerFailureRecoveryListener("GlassfishV31", this);
 
                 glassfishEventListener = new org.glassfish.api.event.EventListener() {
                     @Override
