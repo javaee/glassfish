@@ -204,6 +204,12 @@
            <artifactId>ha-file-store</artifactId>
            <version>${project.version}</version>
        </dependency>
+        <!-- gms-bootstrap module -->
+       <dependency>
+            <groupId>org.glassfish.cluster</groupId>
+            <artifactId>gms-bootstrap</artifactId>
+            <version>${project.version}</version>
+       </dependency>
         <!-- Shared OSGi support for Java EE -->
        <dependency>
             <groupId>org.glassfish</groupId>
