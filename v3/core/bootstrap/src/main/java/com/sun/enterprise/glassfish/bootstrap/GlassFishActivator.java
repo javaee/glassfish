@@ -177,7 +177,12 @@ public class GlassFishActivator implements BundleActivator {
         // 1. Start cofigadmin as we depend on its service.
         startConfigAdmin();
 
-        // 2.  Start osgi-adapter (this is a hk2 bootstrap module)
+        // 2. Start osgi-resource-locator bundle. We need to start this bundle here, because this bundle
+        // may be required by other bundles like StAX and Jersey. Please note, this bundle uses
+        // LAZY-ACTIVATION, so merely starting it has negligible effect on startup time.
+        startBundle("org.glassfish.hk2.osgi-resource-locator");
+
+        // 3.  Start osgi-adapter (this is a hk2 bootstrap module)
         startBundle("com.sun.enterprise.osgi-adapter");
     }
 

@@ -88,6 +88,14 @@
 	    <version>${project.version}</version>
 	    <type>zip</type>
         </dependency>
+        <dependency>
+            <!-- This bundle is used to provide support for META-INF/services in OSGi environment.
+                 Since we are changing StAX, JAXB, JAX-RS bundles to use this facility, nucleus distro
+                 seems to be the best place to package this bundle.
+            -->
+            <groupId>org.glassfish.hk2</groupId>
+	    <artifactId>osgi-resource-locator</artifactId>
+        </dependency>
    </dependencies>
 
     <profiles>
