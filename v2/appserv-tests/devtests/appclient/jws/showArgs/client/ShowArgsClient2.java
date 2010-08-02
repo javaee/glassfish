@@ -48,8 +48,6 @@ public class ShowArgsClient2 {
 
     private String expectedArgsFileSpec = null;
     
-    private static String statusFileSpec = null;
-    
     private Vector<String> otherArgs = new Vector<String>();
     
     private Map<String,String> optionValues = new HashMap<String,String>();
@@ -63,27 +61,13 @@ public class ShowArgsClient2 {
      */
     public static void main(String[] args) {
         int status = 1;
-        System.err.println("Just entered client2.main");
+        System.out.println("Just entered client2.main");
         try {
             new ShowArgsClient2().run(args);
             status = 0;
         } catch (Throwable thr) {
             status = 1;
             throw new RuntimeException("Client detected the following error", thr);
-        } finally {
-            if (statusFileSpec != null) {
-                File statusFile = null;
-                try {
-                    statusFile = new File(statusFileSpec);
-                    System.out.println("Status file is " + statusFile.getAbsolutePath());
-                    PrintWriter writer = new PrintWriter(new FileOutputStream(statusFile));
-                    writer.println("client.status=" + status);
-                    writer.close();
-                } catch (Throwable thr) {
-                    System.err.println("Error writing final status to file " + statusFileSpec);
-                    thr.printStackTrace(System.err);
-                }
-            }
         }
         
     }
@@ -91,9 +75,9 @@ public class ShowArgsClient2 {
     private void run(String[] args) throws FileNotFoundException, IOException {
         System.err.println("Command line arguments from client #2:");
         for (String arg : args) {
-            System.err.println(arg);
+            System.out.println(arg);
         }
-        System.err.println();
+        System.out.println();
         prepareArguments(args);
         
         /*
@@ -101,7 +85,7 @@ public class ShowArgsClient2 {
          *trace file in the Java Web Start directory if Java Web Start tracing is on.
          */
         if (outStream == null) {
-            outStream = System.err;
+            outStream = System.out;
         }
         
         outStream.println("Command line arguments:");

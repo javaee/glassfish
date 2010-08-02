@@ -14,9 +14,17 @@
     &testproperties;
     &jwsSetup;
 
-        
 
-    <target name="all" depends="build,deploy,run,undeploy"/>
+    <!--
+        This test is intended for Java Web Start launching only.  In fact,
+        the main test will fail if launched using the appclient script because
+        the customized JNLP adds a JAR that is neither in the EAR's library
+        directory nor in a JAR's manifest Class-Path.
+    -->
+
+    <property name="summaryFilePath" value="testSummary.txt"/>
+
+    <target name="all" depends="init-report,build,deploy,run,undeploy,report"/>
 
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>
@@ -42,7 +50,13 @@
             <param name="application.xml" value="ear/application-with-client-2-at-subdir.xml"/>
         </antcall>
     </target> 
-   
+
+   <!--
+       other.jar contains a class used from the client.  We package it
+       separately so we can refer to it from the custom JNLP document.  This
+       makes sure that the custom JNLP is being processed correctly and,
+       therefore, other.jar is being downloaded correctly.
+   -->
     <target name="build.other.jar" depends="compile">
         <antcall target="package-other-jar">
             <param name="appclientjar.files" value="${build.classes.dir}"/>
@@ -64,25 +78,7 @@
     </target>
 
     <target name="build.client2" depends="compile">
-<!--
-  <mkdir dir="${assemble.dir}"/>
-  <antcall target="package-appclientjar-common">
-    <param name="appclientjar.files"
-      value="${build.classes.dir}"/>
-    <param name="appclient.jar"
-      value="${assemble.dir}/${appname}-client.jar"/>
-  </antcall>
--->
-<!--
-        <antcall target="spc-package-appclientjar-common">
-            <param name="appclientjar.files" value="${build.classes.dir}"/>
-            <param name="application-client.xml" value="client2/application-client.xml"/>
-            <param name="sun-application-client.xml" value="client2/sun-application-client.xml"/>
-            <param name="appclientjar.classes" value="**/client2/*.class" />
-            <param name="appclient.jar" value="${assemble.dir}/${appname}-client2.jar"/>
-            <param name="appclient.manifest" value="./client2/MANIFEST.MF"/>
-        </antcall>
--->
+
 <!--
     Add client 2 to a subdirectory of the EAR directory.
 -->
@@ -119,6 +115,9 @@
 </target>
 
 
+<!--
+    Build the client JAR to include the custom JNLP.
+-->
 <target name="spc-package-appclientjar-common">
   <mkdir dir="${assemble.dir}"/>
   <property name="appclient.manifest" value="./client/MANIFEST.MF"/>
@@ -153,8 +152,8 @@
     <target name="deploy"
             depends="init-common">
         <antcall target="deploy.ear"/>
-        <antcall target="deploy.client"/>
-        <antcall target="deploy.client2"/>
+<!--        <antcall target="deploy.client"/>
+        <antcall target="deploy.client2"/>-->
     </target>
 
     <target name="deploy.ear" depends="build.ear">
@@ -180,7 +179,7 @@
     
     <target name="undeploy" depends="init-common">
         <antcall target="undeploy.ear"/>
-        <antcall target="undeploy.clients"/>
+<!--        <antcall target="undeploy.clients"/>-->
     </target>
     
     <target name="undeploy.ear" depends="init-common">
@@ -199,10 +198,21 @@
             <arg line="${appname}-client2"/>
         </exec>
     </target>
+
+    <target name="init-report">
+        <delete failonerror="false" file="${summaryFilePath}"/>
+    </target>
+    
+    <target name="report">
+        <concat>
+            <fileset dir="." includes="${summaryFilePath}"/>
+        </concat>
+    </target>
     
     <target name="run" depends="init-common">
-        <antcall target="test.standalone.client"/>
-        <antcall target="test.embedded.client"/>
+<!--        <antcall target="test.standalone.client"/>-->
+        <antcall target="test.embedded.clients"/>
+        
     </target>
 
     <target name="test.standalone.client">
@@ -211,47 +221,74 @@
         </antcall>
     </target>
 
-    <target name="test.embedded.client">
-        <antcall target="test.client">
-            <param name="urlpath" value="/${appname}App/${clientname}"/>
+    <target name="test.embedded.clients">
+        <antcall target="run-jws-client">
+            <param name="clientname" value="showArgs-client"/>
+            <param name="appclient.application.args" value="clientWithOther"/>
+            <param name="expectedFragment" value="From other.Other"/>
+            <param name="testName" value="JavaWSWithOther"/>
+        </antcall>
+
+        <antcall target="run-jws-client">
+            <param name="clientname" value="client2/showArgs-client2"/>
+            <param name="appclient.application.args" value="thisWillShowItWorked"/>
+            <param name="expectedFragment" value="${appclient.application.args}"/>
+            <param name="testName" value="JavaWS-client2"/>
         </antcall>
     </target>
 
-    <target name="test.client" depends="init-common">
-    
-        <fail unless="urlpath">Please specify the argument 'urlpath' when invoking test.client</fail>
-        <!--
-            The very simple client under test just writes the arguments it 
-            receives out to a file.  
-        -->
-        
-        <!-- Get a current time stamp to demonstrate that the client receives the correct arguments. -->
-        <tstamp prefix="test.client">
-            <format property="FULL" pattern="yyyyMMdd hh:mm:ss.SSS"/>
-        </tstamp>
-        <echo>Test time is ${test.client.FULL}</echo>
+    <target name="run-jws-client">
+        <property name="use.javaws" value="true"/>
+        <tempfile property="clientOutputFile" prefix="appclient" suffix=".txt"/>
+        <antcall target="launch-appclient-javaws">
+            <param name="javaws.lib.jar" value="${env.APS_HOME}/lib/AntExtras.jar"/>
+            <param name="clientOutputFile" value="${clientOutputFile}"/>
+            <param name="clientname" value="${clientname}"/>
+            <param name="appclient.application.args" value="${appclient.application.args}"/>
+        </antcall>
+        <loadresource property="runclientCommonOutput">
+            <file file="${clientOutputFile}"/>
+        </loadresource>
+        <echo>${runclientCommonOutput}</echo>
 
-        <!-- create a unique output file for the client to use -->
-        <tempfile destdir="${build.classes.dir}" prefix="jws" suffix=".out" property="output.file.spec"/>
-        <touch file="${output.file.spec}"/>
-        <neutralize property="output.file.neutral" file="${output.file.spec}" id="output.file.id"/>
-
-        <run-jws 
-            urlpath="${urlpath}"
-            args="-out ${output.file.neutral} this is a test at ${test.client.FULL}"
-            resultproperty="result"
-            />
-        
-        <!-- I want the client output dumped to the console to see it -->
-        <concat>
-            <path refid="output.file.id"/>
-        </concat>
-        
-        <delete file="${output.file.neutral}"/>
-        
+        <antcall target="jws-check-runclient-output">
+            <param name="expectedFragment" value="${expectedFragment}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
     </target>
+
+    
     
     <target name="usage">
         <antcall target="usage-common"/>
     </target>
+
+    <target name="jws-check-runclient-output" depends="init-common" >
+        <echo message="checking runclient output..."/>
+        <condition property="isClientOutputDirty">
+            <or>
+                <not>
+                    <contains string="${runclientCommonOutput}" substring="${expectedFragment}" casesensitive="yes"/>
+                </not>
+                <contains string="${runclientCommonOutput}" substring="exception" casesensitive="no"/>
+            </or>
+        </condition>
+        <antcall target="jws-check-runclient-clean" inheritAll="true">
+            <param name="testName" value="${testName}"/>
+        </antcall>
+        <antcall target="jws-check-runclient-dirty" inheritAll="true">
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="jws-check-runclient-clean" unless="isClientOutputDirty">
+        <echo file="${summaryFilePath}" append="true" >
+[PASS] ${testName}</echo>
+    </target>
+
+    <target name="jws-check-runclient-dirty" if="isClientOutputDirty">
+        <echo file="${summaryFilePath}" append="true" >
+[FAIL] ${testName}</echo>
+    </target>
+
 </project>
