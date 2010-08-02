@@ -400,6 +400,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     private void initializeGMS() throws GMSException{
         Properties configProps = new Properties();
+        int HA_MAX_GMS_MESSAGE_LENGTH =  4 * (1024 * 1024)  + (2 * 1024);  // Default to 4 MB limit in glassfish.
+        configProps.put(ServiceProviderConfigurationKeys.MAX_MESSAGE_LENGTH.toString(), Integer.toString(HA_MAX_GMS_MESSAGE_LENGTH));
 
 
         // read GMS configuration from domain.xml
