@@ -36,21 +36,20 @@
 package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.ClassModel;
+import org.glassfish.hk2.classmodel.reflect.Type;
 
 /**
  * Plug-able interface to build type
  */
 public interface TypeBuilder {
 
-    public TypeImpl getType(int access, String name, TypeProxy parent);
+    Class<? extends Type> getType(int access);
 
-    public ClassModel getClassModel(String name);
+    TypeImpl getType(int access, String name, TypeProxy parent);
 
-    public InterfaceModelImpl getInterface(String name);
+    FieldModelImpl getFieldModel(String name, TypeProxy type, ClassModel declaringType);
 
-    public AnnotationTypeImpl getAnnotation(String name);
+    TypeProxy getHolder(String name);
 
-    public FieldModelImpl getFieldModel(String name, TypeProxy type);
-
-    public TypeProxy getHolder(String name);
+    <T extends Type> TypeProxy<T> getHolder(String name, Class<T> type);
 }

@@ -47,8 +47,13 @@ package org.glassfish.hk2.classmodel.reflect;
 public interface ExtensibleType<T extends ExtensibleType> extends Type {
 
     /**
-     * Return the parent type instance
-     * @return the parent type instance
+     * Return the parent type instance. If there are more than one parent
+     * with the same FQCN within the various URI we parsed, we return the
+     * one defined within the same URI (if it exists). If there is more
+     * than one parsed metadata with the same FQCN and none of them are
+     * defined within the same URI as this type, then null is returned.
+     *
+     * @return the parent type instance or null
      */
     public T getParent();
 }

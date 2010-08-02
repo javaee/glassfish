@@ -39,6 +39,7 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 import org.glassfish.hk2.classmodel.reflect.*;
 
 import java.util.*;
+import java.net.URI;
 
 /**
  * Implementation of an extensible type (Class or Interface)
@@ -47,9 +48,9 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
 
     final TypeProxy parent;
 
-    public ExtensibleTypeImpl(ModelBuilder tb) {
-        super(tb);
-        this.parent =  tb.parent;
+    public ExtensibleTypeImpl(String name, TypeProxy<Type> sink, URI definingURI, TypeProxy parent) {
+        super(name, sink, definingURI);
+        this.parent =  parent;
     }
 
     public T getParent() {

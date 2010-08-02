@@ -33,76 +33,29 @@
  *  only if the new code is made subject to such option by the copyright
  *  holder.
  */
-package org.glassfish.hk2.classmodel.reflect.impl;
-
-import org.glassfish.hk2.classmodel.reflect.*;
-
-import java.util.*;
-import java.net.URI;
+package org.glassfish.hk2.classmodel.reflect;
 
 /**
- * Implementation of the Type abstraction.
+ * A member is a field or method declared on a class or interface
  *
  * @author Jerome Dochez
  */
-public class TypeImpl extends AnnotatedElementImpl implements Type {
+public interface Member {
 
-    final TypeProxy<Type> sink;
-    final List<MethodModel> methods = new ArrayList<MethodModel>();
-    final Set<URI> definingURIs=new HashSet<URI>();
+    public enum Type { FIELD, METHOD }
+
+    /**
+     * returns the type of the member
+     * @return the member type as a value of @link{Member#Type}
+     */
+    Type getMemberType();
+
+    /**
+     * return the type declaring this member
+     *
+     * @return the type declaring the member
+     */
+    ExtensibleType<?> getDeclaringType();
 
 
-    public TypeImpl(String name, TypeProxy<Type> sink, URI definingURI) {
-        super(name);
-        this.sink = sink;
-        definingURIs.add(definingURI);
-        this.sink.set(this);
-    }
-
-    @Override
-    public Collection<URI> getDefiningURIs() {
-        return Collections.unmodifiableSet(definingURIs);
-    }
-
-    void addDefiningURI(URI uri) {
-        definingURIs.add(uri);
-    }
-
-    @Override
-    public boolean wasDefinedIn(Collection<URI> uris) {
-        for (URI uri : uris) {
-            if (definingURIs.contains(uri)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    void addMethod(MethodModelImpl m) {
-        methods.add(m);
-    }
-
-    @Override
-    public Collection<MethodModel> getMethods() {
-        return Collections.unmodifiableList(methods);
-    }
-
-    TypeProxy getProxy() {
-        return sink;
-    }
-
-    @Override
-    public Collection<FieldModel> getFieldReferences() {
-        return Collections.unmodifiableSet(sink.getFieldRefs());
-    }
-
-    @Override
-    protected void print(StringBuffer sb) {
-        super.print(sb);    //To change body of overridden methods use File | Settings | File Templates.
-        sb.append(", subclasses=[");
-        for (AnnotatedElement cm : sink.getSubTypeRefs()) {
-            sb.append(" ").append(cm.getName());
-        }
-        sb.append("]");
-    }
 }

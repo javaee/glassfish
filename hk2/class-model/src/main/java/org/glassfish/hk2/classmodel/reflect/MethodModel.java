@@ -38,7 +38,7 @@ package org.glassfish.hk2.classmodel.reflect;
 /**
  * Model to represent a method declaration
  */
-public interface MethodModel extends AnnotatedElement {
+public interface MethodModel extends Member, AnnotatedElement {
 
     /**
      * Returns the class or interface model this method belongs to.

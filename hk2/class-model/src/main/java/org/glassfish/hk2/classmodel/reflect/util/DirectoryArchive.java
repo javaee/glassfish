@@ -39,9 +39,7 @@ import org.glassfish.hk2.classmodel.reflect.ArchiveAdapter;
 
 import java.io.*;
 import java.nio.channels.Channels;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.net.URI;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -50,29 +48,16 @@ import java.util.jar.Manifest;
  */
 public class DirectoryArchive implements ArchiveAdapter {
     public final File directory;
-    private ArrayList<InputStream> inputStreams = new ArrayList<InputStream>();
-    public final List<Entry> entries = new ArrayList<Entry>();
 
     public DirectoryArchive(File directory) {
         this.directory = directory;
-        parse(directory);
     }
 
     @Override
-    public String getName() {
-        return directory.getName();
+    public URI getURI() {
+        return directory.toURI();
     }
 
-    @Override
-    public InputStream getInputStream(String entry) throws IOException {
-        File source = new File(directory, unmangle(entry));
-        if (source.exists()) {
-           InputStream is = Channels.newInputStream((new FileInputStream(source)).getChannel());
-           inputStreams.add(is);
-           return is;
-        }
-        throw new IOException("Cannot find entry getName " + entry);
-    }
 
     @Override
     public Manifest getManifest() throws IOException {
@@ -89,16 +74,28 @@ public class DirectoryArchive implements ArchiveAdapter {
     }
 
     @Override
-    public Iterator<Entry> iterator() {
-        return entries.iterator();
+    public void onEachEntry(EntryTask task) throws IOException {
+        parse(directory, task);
     }
 
-    private void parse(File dir) {
+    private void parse(File dir, EntryTask task) throws IOException {
+ 
         for (File f : dir.listFiles()) {
-            entries.add(new Entry(mangle(f), f.length(), f.isDirectory()));
-            if (f.isDirectory()) {
-                parse(f);
+            Entry ae = new Entry(mangle(f), f.length(), f.isDirectory());
+            if (!f.isDirectory()) {
+                InputStream is = null;
+                try {
+                    is = Channels.newInputStream((new FileInputStream(f)).getChannel());
+                    task.on(ae, is);
+                } finally {
+                    if (is!=null) {
+                        is.close();
+                    }
+                }
+            } else {
+                parse(f, task);
             }
+
         }
     }
 
@@ -107,15 +104,7 @@ public class DirectoryArchive implements ArchiveAdapter {
         return relativePath.replace(File.separatorChar, '/');
     }
 
-    private String unmangle(String name) {
-        return name.replace('/', File.separatorChar);
-    }
-
     @Override
     public void close() throws IOException {
-      for (InputStream is : inputStreams) {
-        is.close();
-      }
-      inputStreams.clear();
     }
 }

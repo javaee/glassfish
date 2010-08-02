@@ -39,6 +39,7 @@ package org.glassfish.hk2.classmodel.reflect;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.jar.Manifest;
 
 /**
@@ -46,23 +47,14 @@ import java.util.jar.Manifest;
  *
  * @author Jerome Dochez
  */
-public interface ArchiveAdapter extends Iterable<ArchiveAdapter.Entry>, Closeable {
+public interface ArchiveAdapter extends Closeable {
 
     /**
-     * Returns the name of the archive
+     * Returns the URI of the archive
      *
-     * @return name of the archive
+     * @return URI of the archive
      */
-    public String getName();
-
-    /**
-     * Returns an input stream to read the content of the archive entry
-     *
-     * @param entry name of the entry to read from
-     * @return InputStream instance to read the entry content from
-     * @throws IOException when the InputStream instance cannot be created.
-     */
-    public InputStream getInputStream(String entry) throws IOException;
+    public URI getURI();
 
     /**
      * Returns the manifest instance for the archive.
@@ -72,11 +64,45 @@ public interface ArchiveAdapter extends Iterable<ArchiveAdapter.Entry>, Closeabl
      */
     public Manifest getManifest() throws IOException ;
 
+    /**
+     * defines the notion of an archive entry task which is a task
+     * aimed to be run on particular archive entry.
+     */
+    public interface EntryTask {
+        /**
+         * callback to do some processing on an archive entry.
+         *
+         * @param e the archive entry information such as its name, size...
+         * @param is the archive entry input stream to access the archive entry
+         * content.
+         * @throws IOException if the input stream reading generates a failure
+         */
+        public void on(final Entry e, InputStream is) throws IOException;
+    }
+
+    /**
+     * perform a task on each archive entry
+     *
+     * @param task the task to perform
+     * @throws IOException can be generated while reading the archive entries
+     */
+    public void onEachEntry(EntryTask task) throws IOException;
+
+
+    /**
+     * Definition of an archive entry
+     */
     public final class Entry {
         final public String name;
         final public long size;
         final boolean isDirectory;
 
+        /**
+         * creates a new archive entry
+         * @param name the entry name
+         * @param size the entry size
+         * @param isDirectory true if this entry is a directory
+         */
         public Entry(String name, long size, boolean isDirectory) {
             this.name = name;
             this.size = size;

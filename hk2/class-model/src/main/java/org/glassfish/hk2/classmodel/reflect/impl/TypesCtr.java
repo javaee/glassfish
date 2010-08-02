@@ -35,74 +35,66 @@
  */
 package org.glassfish.hk2.classmodel.reflect.impl;
 
-import org.glassfish.hk2.classmodel.reflect.*;
+import org.glassfish.hk2.classmodel.reflect.Type;
+import org.glassfish.hk2.classmodel.reflect.Types;
 
 import java.util.*;
-import java.net.URI;
 
 /**
- * Implementation of the Type abstraction.
- *
+ * contains all the parsed types references.
  * @author Jerome Dochez
  */
-public class TypeImpl extends AnnotatedElementImpl implements Type {
-
-    final TypeProxy<Type> sink;
-    final List<MethodModel> methods = new ArrayList<MethodModel>();
-    final Set<URI> definingURIs=new HashSet<URI>();
-
-
-    public TypeImpl(String name, TypeProxy<Type> sink, URI definingURI) {
-        super(name);
-        this.sink = sink;
-        definingURIs.add(definingURI);
-        this.sink.set(this);
-    }
-
+public class TypesCtr implements Types {
+    
     @Override
-    public Collection<URI> getDefiningURIs() {
-        return Collections.unmodifiableSet(definingURIs);
-    }
-
-    void addDefiningURI(URI uri) {
-        definingURIs.add(uri);
-    }
-
-    @Override
-    public boolean wasDefinedIn(Collection<URI> uris) {
-        for (URI uri : uris) {
-            if (definingURIs.contains(uri)) {
-                return true;
+    public Type getBy(String name) {
+        for (Map<String, TypeProxy<Type>> map : storage.values()) {
+            TypeProxy proxy = map.get(name);
+            if (proxy!=null) {
+                return proxy.get();
             }
         }
-        return false;
-    }
-
-    void addMethod(MethodModelImpl m) {
-        methods.add(m);
+        return null;
     }
 
     @Override
-    public Collection<MethodModel> getMethods() {
-        return Collections.unmodifiableList(methods);
-    }
-
-    TypeProxy getProxy() {
-        return sink;
-    }
-
-    @Override
-    public Collection<FieldModel> getFieldReferences() {
-        return Collections.unmodifiableSet(sink.getFieldRefs());
-    }
-
-    @Override
-    protected void print(StringBuffer sb) {
-        super.print(sb);    //To change body of overridden methods use File | Settings | File Templates.
-        sb.append(", subclasses=[");
-        for (AnnotatedElement cm : sink.getSubTypeRefs()) {
-            sb.append(" ").append(cm.getName());
+    public <T extends Type> T getBy(Class<T> type, String name) {
+        Type t = getBy(name);
+        try {
+            return type.cast(t);
+        } catch (ClassCastException e) {
+            return null;
         }
-        sb.append("]");
     }
+
+    public synchronized <T extends Type> TypeProxy<Type> getHolder(String name, Class<T> type) {
+        Map<String, TypeProxy<Type>> typeStorage = storage.get(type);
+        if (typeStorage==null) {
+            typeStorage = new HashMap<String, TypeProxy<Type>>();
+            storage.put(type, typeStorage);
+        }
+        TypeProxy<Type> typeProxy = typeStorage.get(name);
+        if (typeProxy ==null) {
+            typeProxy = new TypeProxy<Type>(null, name);
+            typeStorage.put(name, typeProxy);
+        }
+        return typeProxy;
+    }
+
+    @Override
+    public Collection<Type> getAllTypes() {
+        List<Type> allTypes = new ArrayList<Type>();
+        for (Map<String, TypeProxy<Type>> map : storage.values()) {
+            for (TypeProxy typeProxy : map.values()) {
+                if (typeProxy.get()!=null) {
+                    allTypes.add(typeProxy.get());
+                }
+            }
+        }
+        return allTypes;
+    }
+
+
+    private final Map<Class, Map<String, TypeProxy<Type>>> storage=new HashMap<Class, Map<String, TypeProxy<Type>>>();
+        
 }

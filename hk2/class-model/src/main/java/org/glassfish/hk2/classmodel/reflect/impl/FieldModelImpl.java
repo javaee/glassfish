@@ -35,6 +35,7 @@
  */
 package org.glassfish.hk2.classmodel.reflect.impl;
 
+import org.glassfish.hk2.classmodel.reflect.ClassModel;
 import org.glassfish.hk2.classmodel.reflect.ExtensibleType;
 import org.glassfish.hk2.classmodel.reflect.FieldModel;
 
@@ -44,10 +45,22 @@ import org.glassfish.hk2.classmodel.reflect.FieldModel;
 public class FieldModelImpl extends AnnotatedElementImpl implements FieldModel {
 
     final TypeProxy type;
+    private final ClassModel declaringType;
 
-    public FieldModelImpl(ModelBuilder mb, TypeProxy type) {
-        super(mb);
+    public FieldModelImpl(String name, TypeProxy type, ClassModel declaringType) {
+        super(name);
         this.type = type;
+        this.declaringType = declaringType;
+    }
+
+    @Override
+    public Type getMemberType() {
+        return Type.FIELD;
+    }
+
+    @Override
+    public ClassModel getDeclaringType() {
+        return declaringType;
     }
 
     @Override

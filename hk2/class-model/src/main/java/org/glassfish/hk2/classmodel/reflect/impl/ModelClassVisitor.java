@@ -36,8 +36,13 @@
 
 package org.glassfish.hk2.classmodel.reflect.impl;
 
+import org.glassfish.hk2.classmodel.reflect.AnnotationType;
+import org.glassfish.hk2.classmodel.reflect.ExtensibleType;
+import org.glassfish.hk2.classmodel.reflect.InterfaceModel;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 import org.objectweb.asm.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * ASM class visitor, used to build to model
@@ -48,24 +53,34 @@ public class ModelClassVisitor implements ClassVisitor {
 
     private final ParsingContext ctx;
     private final TypeBuilder typeBuilder;
+    private final URI definingURI;
+    private final String entryName;
     TypeImpl type;
     boolean deepVisit =false;
 
-    public ModelClassVisitor(ParsingContext ctx) {
+    public ModelClassVisitor(ParsingContext ctx, URI definingURI, String entryName) {
         this.ctx = ctx;
-        if (!(ctx.getTypes() instanceof TypeBuilder)) {
-            throw new RuntimeException("Wrong context for this model class visitor");
-        }
-        typeBuilder = (TypeBuilder) ctx.getTypes();
+        this.definingURI = definingURI;
+        this.entryName = entryName;
+        typeBuilder = ctx.getTypeBuilder(definingURI);
     }
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {        
 
         String parentName = (superName!=null?org.objectweb.asm.Type.getObjectType(superName).getClassName():null);
-        TypeProxy parent = (parentName!=null?typeBuilder.getHolder(parentName):null);
+        TypeProxy parent = (parentName!=null?typeBuilder.getHolder(parentName, typeBuilder.getType(access)):null);
         String className = org.objectweb.asm.Type.getObjectType(name).getClassName();
-        type = typeBuilder.getType(access, className, parent);
+        URI classDefURI=null;
+        try {
+            int index = entryName.length() - name.length() - 6;
+            String newPath=(index>0?definingURI.getPath() + entryName.substring(0, index):definingURI.getPath());
+            classDefURI = new URI(definingURI.getScheme(), newPath, definingURI.getFragment());
+
+        } catch (URISyntaxException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        type = ctx.getTypeBuilder(classDefURI).getType(access, className, parent);
         deepVisit =ctx.getConfig().getInjectionTargetAnnotations().isEmpty();
 
         // reverse index
@@ -78,9 +93,9 @@ public class ModelClassVisitor implements ClassVisitor {
             ClassModelImpl classModel = (ClassModelImpl) type;
             for (String intf : interfaces) {
                 String interfaceName = org.objectweb.asm.Type.getObjectType(intf).getClassName();
-                InterfaceModelImpl im = typeBuilder.getInterface(interfaceName);
-                classModel.isImplementing(im);
-                im.addImplementation(classModel);
+                TypeProxy<InterfaceModel> typeProxy = typeBuilder.getHolder(interfaceName, InterfaceModel.class);
+                classModel.isImplementing(typeProxy);
+                typeProxy.getImplementations().add(classModel);
 
             }
         } catch(ClassCastException e) {
@@ -104,7 +119,8 @@ public class ModelClassVisitor implements ClassVisitor {
         
         desc = unwrap(desc);
 
-        final AnnotationTypeImpl at = typeBuilder.getAnnotation(desc);
+
+        final AnnotationTypeImpl at = (AnnotationTypeImpl) typeBuilder.getType(Opcodes.ACC_ANNOTATION, desc, null );
         final AnnotationModelImpl am = new AnnotationModelImpl(type, at);
 
         // reverse index
@@ -170,13 +186,13 @@ public class ModelClassVisitor implements ClassVisitor {
             return null;
         }
 
-        org.objectweb.asm.Type type = org.objectweb.asm.Type.getType(desc);
-        if (type==org.objectweb.asm.Type.INT_TYPE || type==org.objectweb.asm.Type.BOOLEAN_TYPE) {
-            return null;
-        }
+        org.objectweb.asm.Type asmType = org.objectweb.asm.Type.getType(desc);
+//        if (type==org.objectweb.asm.Type.INT_TYPE || type==org.objectweb.asm.Type.BOOLEAN_TYPE) {
+//            return null;
+//        }
 
-        TypeProxy fieldType =  typeBuilder.getHolder(type.getClassName());
-        final FieldModelImpl field = typeBuilder.getFieldModel(name, fieldType);
+        TypeProxy fieldType =  typeBuilder.getHolder(asmType.getClassName());
+        final FieldModelImpl field = typeBuilder.getFieldModel(name, fieldType, cm);
 
         // reverse index.
         fieldType.getFieldRefs().add(field);
@@ -186,7 +202,7 @@ public class ModelClassVisitor implements ClassVisitor {
         return new FieldVisitor() {
             @Override
             public AnnotationVisitor visitAnnotation(String s, boolean b) {
-                AnnotationTypeImpl annotationType = typeBuilder.getAnnotation(unwrap(s));
+                AnnotationTypeImpl annotationType = (AnnotationTypeImpl) typeBuilder.getType(Opcodes.ACC_ANNOTATION, unwrap(s), null );
                 AnnotationModelImpl annotationModel = new AnnotationModelImpl(field, annotationType);
 
                 // reverse index.
@@ -215,7 +231,14 @@ public class ModelClassVisitor implements ClassVisitor {
             return null;
         }
 
-        MethodModelImpl method = new MethodModelImpl(new ModelBuilder(name, null));
+        ExtensibleType cm;
+        try {
+             cm = (ExtensibleType) type;
+        } catch (Exception e) {
+            return null;
+        }
+
+        MethodModelImpl method = new MethodModelImpl(name, cm);
         type.addMethod(method);
         return null;
     }

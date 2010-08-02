@@ -43,6 +43,7 @@ import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.ResolveError;
+import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
@@ -155,12 +156,12 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
             habitat.initialized();
             
             return habitat;
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ComponentException("Failed to create a habitat",e);
         }
     }
 
-    protected void populateConfig(Habitat habitat) {
+    protected void populateConfig(Habitat habitat) throws BootException {
         ConfigParser configParser = new ConfigParser(habitat);
         for( Populator p : habitat.getAllByContract(Populator.class) )
             p.run(configParser);

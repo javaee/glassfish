@@ -46,16 +46,21 @@ import java.util.List;
 public class MethodModelImpl extends AnnotatedElementImpl implements MethodModel {
 
     final List<Parameter> parameters = new ArrayList<Parameter>();
-    final TypeProxy owner;
+    final ExtensibleType<?> owner;
 
-    public MethodModelImpl(ModelBuilder mb) {
-        super(mb);
-        owner= mb.parent;
+    public MethodModelImpl(String name, ExtensibleType owner) {
+        super(name);
+        this.owner = owner;
+    }
+
+    @Override
+    public Type getMemberType() {
+        return Type.METHOD;
     }
 
     @Override
     public ExtensibleType<?> getDeclaringType() {
-        return (ExtensibleType<?>) owner.get();
+        return owner;
     }
 
     @Override

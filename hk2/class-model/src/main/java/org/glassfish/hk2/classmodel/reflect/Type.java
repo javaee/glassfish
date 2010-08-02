@@ -37,6 +37,7 @@
 package org.glassfish.hk2.classmodel.reflect;
 
 import java.util.Collection;
+import java.net.URI;
 
 /**
  * A type defines java type which can be an interface or a class.
@@ -51,7 +52,7 @@ public interface Type extends AnnotatedElement {
      *
      * @return methods declared on this type
      */
-    public Collection<MethodModel> getMethods();
+    Collection<MethodModel> getMethods();
 
     /**
      * Returns a unmodifiable collection of fields references. A field
@@ -60,5 +61,19 @@ public interface Type extends AnnotatedElement {
      *
      * @return fields references on this type
      */
-    public Collection<FieldModel> getFieldReferences(); 
+    Collection<FieldModel> getFieldReferences();
+
+    /**
+     * Returns the defining URIs
+     * @return a collection of URIs in which the type was defined
+     */
+    Collection<URI> getDefiningURIs();
+
+    /**
+     * Determine if this type was defined in one of the passed URI or not
+     *
+     * @param uris collection of URI to check if this type was defined in them.
+     * @return true if this type as defined in one the passed URI
+     */
+    boolean wasDefinedIn(Collection<URI> uris);
 }

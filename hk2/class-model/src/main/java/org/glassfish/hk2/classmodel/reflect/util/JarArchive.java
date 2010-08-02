@@ -38,12 +38,12 @@ package org.glassfish.hk2.classmodel.reflect.util;
 
 import org.glassfish.hk2.classmodel.reflect.ArchiveAdapter;
 
+import java.net.URI;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -54,34 +54,60 @@ import java.util.jar.Manifest;
 public class JarArchive implements ArchiveAdapter {
 
     private final JarFile jar;
-    private final List<Entry> entries = new ArrayList<Entry>();
+    private final URI uri;
 
-    public JarArchive(JarFile jar) {
-        this.jar = jar;
-        Enumeration<JarEntry> enumEntries = jar.entries();
-        while(enumEntries.hasMoreElements()) {
-            JarEntry ja = enumEntries.nextElement();
-            entries.add(new Entry(ja.getName(), ja.getSize(), ja.isDirectory()));
-        }
-    }
-
-    public InputStream getInputStream(String entry) throws IOException {
-        JarEntry jarEntry  = jar.getJarEntry(entry);
-        if (jarEntry==null) {
-            throw new IOException("Entry not found " + jarEntry);
-        }
-        return jar.getInputStream(jarEntry);
+    public JarArchive(URI uri) throws IOException
+    {
+        File f = new File(uri);
+        this.uri = uri;
+        this.jar = new JarFile(f);    
     }
 
     @Override
-    public String getName() {
-        return jar.getName();
+    public URI getURI() {
+        return uri;
     }
 
     @Override
-    public Iterator<Entry> iterator() {
-        return entries.iterator();
-    }
+     public void onEachEntry(EntryTask task) throws IOException {
+         Enumeration<JarEntry> enumEntries = jar.entries();
+         while(enumEntries.hasMoreElements()) {
+             JarEntry ja = enumEntries.nextElement();
+             if (ja.getName().endsWith(".jar")) {
+                 InputStreamArchiveAdapter subArchive = null;
+                 try {
+                     URI subURI = null;
+                     try {
+                         subURI = new URI("jar:"+uri+"!/"+ja.getName());
+                     } catch (URISyntaxException e) {
+                         try {
+                             subURI = new URI(ja.getName());
+                         } catch (URISyntaxException e1) {
+                             // ignore...
+                         }
+                     }
+                     subArchive = new InputStreamArchiveAdapter(subURI,
+                             jar.getInputStream(jar.getEntry(ja.getName())));
+                     subArchive.onEachEntry(task);
+                 } finally {
+                     if (subArchive!=null) {
+                         subArchive.close();
+                    }
+                 }
+             }
+             InputStream is = null;
+             try {
+                 is = jar.getInputStream(ja);
+                 task.on(new Entry(ja.getName(), ja.getSize(), ja.isDirectory()), is);
+             } finally {
+                 if (is!=null) {
+                     is.close();
+                 }
+             }
+         }
+
+     }
+    
 
     @Override
     public Manifest getManifest() throws IOException {

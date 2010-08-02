@@ -36,10 +36,12 @@
 
 package org.glassfish.hk2.classmodel.reflect.impl;
 
+import org.glassfish.hk2.classmodel.reflect.ClassModel;
 import org.glassfish.hk2.classmodel.reflect.FieldModel;
 import org.glassfish.hk2.classmodel.reflect.Type;
 
 import java.util.*;
+import java.net.URI;
 
 /**
  * Proxy for types, used in place until the type can be properly instantiated.
@@ -47,23 +49,24 @@ import java.util.*;
  *
  * @author Jerome Dochez
  */
-public class TypeProxy {
+public class TypeProxy<T extends Type> {
 
-    private Type value = null;
+    private T value = null;
     private final String name;
-    private final Notifier<Type> notifier;
+    private final Notifier<T> notifier;
     private final Set<FieldModel> fieldRefs;
     private final Set<Type> subTypeRefs;
+    private final Set<ClassModel> implementations = new HashSet<ClassModel>(); 
 
 
-    public TypeProxy(Notifier<Type> notifier, String name) {
+    public TypeProxy(Notifier<T> notifier, String name) {
         this.notifier = notifier;
         this.name = name;
         fieldRefs = new HashSet<FieldModel>();
         subTypeRefs = new HashSet<Type>();
     }
 
-    public <U extends Type> void set(U  value) {
+    public void set(T  value) {
         this.value = value;
         if (notifier!=null) {
             notifier.valueSet(value);
@@ -71,16 +74,17 @@ public class TypeProxy {
 
     }
 
-    public Type get() {
+    public T get() {
         return value;
     }
 
     public String getName() {
+        if (value!=null) return value.getName();
         return name;
     }
     
-    public interface Notifier<U> {
-        public void valueSet(U value);
+    public interface Notifier<T> {
+        public void valueSet(T value);
     }
 
     public Set<FieldModel> getFieldRefs() {
@@ -89,5 +93,40 @@ public class TypeProxy {
 
     public Set<Type> getSubTypeRefs() {
         return subTypeRefs;
+    }
+
+    public Set<ClassModel> getImplementations() {
+        return implementations;
+    }
+
+    public static <U extends Type> Collection<U> adapter(final Collection<TypeProxy<U>> source) {
+        return new AbstractCollection<U>() {
+
+            @Override
+            public Iterator<U> iterator() {
+                final Iterator<TypeProxy<U>> itr = source.iterator();
+                return new Iterator<U>() {
+                    @Override
+                    public boolean hasNext() {
+                        return itr.hasNext();
+                    }
+
+                    @Override
+                    public U next() {
+                        return itr.next().get();
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+
+            @Override
+            public int size() {
+                return source.size();
+            }
+        };
     }
 }
