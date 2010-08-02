@@ -104,6 +104,8 @@ public class TestSuite {
         }
         if (!description.equals(ReporterConstants.NA)) {
             buffer.append("<description><![CDATA[" + description.trim() + "]]></description>\n");
+        } else {
+            buffer.append("<description></description>\n");
         }
         buffer.append("<tests>\n");
         for (Test myTest : tests) {

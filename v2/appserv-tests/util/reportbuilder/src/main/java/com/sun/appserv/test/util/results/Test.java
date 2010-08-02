@@ -142,6 +142,8 @@ public class Test {
         }
         if (!description.equals(ReporterConstants.NA)) {
             buffer.append("<description><![CDATA[" + description.trim() + "]]></description>\n");
+        } else {
+            buffer.append("<description></description>\n");
         }
         if (!status.equals(ReporterConstants.OPTIONAL)) {
             buffer.append("<status value=\"" + status + "\">");
