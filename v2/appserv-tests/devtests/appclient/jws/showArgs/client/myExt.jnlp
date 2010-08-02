@@ -1,0 +1,11 @@
+<jnlp>
+  <information>
+    <title>Custom Title - myExt</title>
+    <vendor>Acme Software</vendor>
+    <description>This is my customized information for the developer-provided extension</description>
+  </information>
+  <resources>
+    <jar href="other.jar"/>
+  </resources>
+  <component-desc/>
+</jnlp>

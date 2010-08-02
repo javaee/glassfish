@@ -23,4 +23,7 @@
   <module>
      <java>showArgs-client.jar</java>
   </module>
+  <module>
+     <java>showArgs-client2.jar</java>
+  </module>
 </application>

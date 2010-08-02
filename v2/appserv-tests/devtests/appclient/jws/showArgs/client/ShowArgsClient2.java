@@ -19,7 +19,8 @@
  * [name of copyright owner]
  */
 
-package com.sun.s1asdev.deployment.appclient.jws.showArgs.client;
+package com.sun.s1asdev.deployment.appclient.jws.showArgs.client2;
+
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,14 +34,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-import com.sun.s1asdev.deployment.appclient.jws.showArgs.other.Other;
+
 
 
 /**
  *
  * @author tjquinn
  */
-public class ShowArgsClient {
+public class ShowArgsClient2 {
     
     private String outFileSpec = null;
     private PrintStream outStream = null;
@@ -54,7 +55,7 @@ public class ShowArgsClient {
     private Map<String,String> optionValues = new HashMap<String,String>();
     
     /** Creates a new instance of ShowArgsClient */
-    public ShowArgsClient() {
+    public ShowArgsClient2() {
     }
     
     /**
@@ -62,8 +63,9 @@ public class ShowArgsClient {
      */
     public static void main(String[] args) {
         int status = 1;
+        System.err.println("Just entered client2.main");
         try {
-            new ShowArgsClient().run(args);
+            new ShowArgsClient2().run(args);
             status = 0;
         } catch (Throwable thr) {
             status = 1;
@@ -87,12 +89,11 @@ public class ShowArgsClient {
     }
     
     private void run(String[] args) throws FileNotFoundException, IOException {
-        System.out.println("Result from invoking method in other.jar: " + Other.hi());
-        System.out.println("Command line arguments:");
+        System.err.println("Command line arguments from client #2:");
         for (String arg : args) {
-            System.out.println(arg);
+            System.err.println(arg);
         }
-        System.out.println();
+        System.err.println();
         prepareArguments(args);
         
         /*
@@ -100,10 +101,13 @@ public class ShowArgsClient {
          *trace file in the Java Web Start directory if Java Web Start tracing is on.
          */
         if (outStream == null) {
-            outStream = System.out;
+            outStream = System.err;
         }
         
         outStream.println("Command line arguments:");
+        for (int i = 0; i < 25; i++) {
+            outStream.println("This is a test line to use up some space: " + i);
+        }
         for (String arg : args) {
             outStream.println(arg);
         }
@@ -157,14 +161,14 @@ public class ShowArgsClient {
 //        statusFileSpec = optionValues.get("statusFile");
 //        expectedArgsFileSpec = optionValues.get("expectedArgsFile");
         
-        System.out.println("out = " + outFileSpec);
+        System.err.println("out = " + outFileSpec);
         if (outFile != null) {
-            System.out.println("     which is the file " + outFile.getAbsolutePath());
+            System.err.println("     which is the file " + outFile.getAbsolutePath());
         }
-//        System.out.println("statusFile = " + statusFileSpec);
-//        System.out.println("expectedArgsFile = " + expectedArgsFileSpec);
+//        System.err.println("statusFile = " + statusFileSpec);
+//        System.err.println("expectedArgsFile = " + expectedArgsFileSpec);
 
-        System.out.println("Other arguments: " + otherArgs);
+        System.err.println("Other arguments: " + otherArgs);
         
 //        if (outFileSpec == null || statusFileSpec == null || expectedArgsFileSpec == null) {
 //            throw new IllegalArgumentException("At least one of -out, -statusFile, and -expectedArgsFile is missing and all are required");

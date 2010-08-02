@@ -34,23 +34,127 @@
         <antcall target="build.ear"/> <!-- also builds the client -->
     </target>
     
-    <target name="build.ear" depends="build.client">
-        <antcall target="ear-common">
+    <target name="build.ear" depends="build.clients,build.other.jar">
+        <antcall target="spc-ear-common">
+<!--
             <param name="application.xml" value="ear/application-with-client-at-top-level.xml"/>
+-->
+            <param name="application.xml" value="ear/application-with-client-2-at-subdir.xml"/>
         </antcall>
     </target> 
-    
-    <target name="build.client" depends="compile">
-        <antcall target="appclient-jar-common">
-            <param name="application-client.xml" value="client/application-client.xml"/>
-            <param name="appclientjar.classes" value="**/*.class" />
+   
+    <target name="build.other.jar" depends="compile">
+        <antcall target="package-other-jar">
+            <param name="appclientjar.files" value="${build.classes.dir}"/>
+            <param name="other.classes" value="**/other/**/*.class" />
         </antcall>
     </target>
-    
-    <target name="deploy" 
+
+    <target name="build.clients" depends="build.client,build.client2"/>
+
+    <target name="build.client" depends="compile">
+        <antcall target="spc-package-appclientjar-common">
+            <param name="appclientjar.files" value="${build.classes.dir}"/>
+            <param name="other.classes" value="**/other/**/*.class"/>
+            <param name="application-client.xml" value="client/application-client.xml"/>
+            <param name="sun-application-client.xml" value="client/sun-application-client.xml"/>
+            <param name="appclientjar.classes" value="**/client/*.class" />
+            <param name="appclient.jar" value="${assemble.dir}/${appname}-client.jar"/>
+        </antcall>
+    </target>
+
+    <target name="build.client2" depends="compile">
+<!--
+  <mkdir dir="${assemble.dir}"/>
+  <antcall target="package-appclientjar-common">
+    <param name="appclientjar.files"
+      value="${build.classes.dir}"/>
+    <param name="appclient.jar"
+      value="${assemble.dir}/${appname}-client.jar"/>
+  </antcall>
+-->
+<!--
+        <antcall target="spc-package-appclientjar-common">
+            <param name="appclientjar.files" value="${build.classes.dir}"/>
+            <param name="application-client.xml" value="client2/application-client.xml"/>
+            <param name="sun-application-client.xml" value="client2/sun-application-client.xml"/>
+            <param name="appclientjar.classes" value="**/client2/*.class" />
+            <param name="appclient.jar" value="${assemble.dir}/${appname}-client2.jar"/>
+            <param name="appclient.manifest" value="./client2/MANIFEST.MF"/>
+        </antcall>
+-->
+<!--
+    Add client 2 to a subdirectory of the EAR directory.
+-->
+        <mkdir dir="${assemble.dir}"/>
+        <mkdir dir="${assemble.dir}/client2"/>
+
+        <antcall target="spc-package-appclientjar-common">
+            <param name="appclientjar.files" value="${build.classes.dir}"/>
+            <param name="application-client.xml" value="client2/application-client.xml"/>
+            <param name="sun-application-client.xml" value="client2/sun-application-client.xml"/>
+            <param name="appclientjar.classes" value="**/client2/*.class" />
+            <param name="appclient.jar" value="${assemble.dir}/client2/${appname}-client2.jar"/>
+            <param name="appclient.manifest" value="./client2/MANIFEST.MF"/>
+        </antcall>
+    </target>
+
+<target name="spc-ear-common">
+  <delete file="${assemble.dir}/${appname}.ear"/>
+  <mkdir dir="${assemble.dir}"/>
+  <mkdir dir="${build.classes.dir}/META-INF"/>
+  <copy file="${sun-application.xml}" tofile="${build.classes.dir}/META-INF/sun-application.xml"        failonerror="false"/>
+  <ear earfile="${assemble.dir}/${appname}App.ear"
+    appxml="${application.xml}">
+    <fileset dir="${assemble.dir}">
+      <include name="*.jar"/>
+      <include name="client2/*.jar"/>
+      <include name="*.war"/>
+    </fileset>
+    <fileset dir="${build.classes.dir}">
+        <include name="META-INF/sun-application.xml"/>
+    </fileset>
+    <fileset dir="${env.APS_HOME}/lib" includes="reporter.jar"/>
+  </ear>
+</target>
+
+
+<target name="spc-package-appclientjar-common">
+  <mkdir dir="${assemble.dir}"/>
+  <property name="appclient.manifest" value="./client/MANIFEST.MF"/>
+  <delete file="${appclient.jar}"/>
+  <echo message="common.xml: Generating appclient-jar inside build directory"
+      level="verbose"/>
+  <mkdir dir="${build.classes.dir}/META-INF"/>
+  <copy file="./client/myLaunch.jnlp" toDir="${build.classes.dir}" failonerror="true" verbose="true"/>
+  <copy file="./client/myExt.jnlp" toDir="${build.classes.dir}" failonerror="true" verbose="true"/>
+  <copy file="${application-client.xml}"
+        tofile="${build.classes.dir}/META-INF/application-client.xml"
+        failonerror="false"/>
+  <delete file="${build.classes.dir}/META-INF/sun-application-client.xml"/>
+  <copy file="${sun-application-client.xml}" tofile="${build.classes.dir}/META-INF/sun-application-client.xml"
+        failonerror="false"/>
+  <jar jarfile="${appclient.jar}" basedir="${appclientjar.files}"
+    update="true" includes="${appclientjar.classes} **/*.jnlp" excludes="${other.classes}"
+    manifest="${appclient.manifest}">
+    <metainf dir="${build.classes.dir}/META-INF">
+      <include name="application-client.xml"/>
+      <include name="sun-application-client.xml"/>
+    </metainf>
+  </jar>
+</target>
+
+<target name="package-other-jar">
+    <mkdir dir="${assemble.dir}"/>
+    <jar jarfile="${assemble.dir}/other.jar" basedir="${appclientjar.files}"
+        includes="${other.classes}"/>
+</target>
+
+    <target name="deploy"
             depends="init-common">
         <antcall target="deploy.ear"/>
         <antcall target="deploy.client"/>
+        <antcall target="deploy.client2"/>
     </target>
 
     <target name="deploy.ear" depends="build.ear">
@@ -62,10 +166,21 @@
             <param name="deployed.app" value="${assemble.dir}/${appname}-client.jar"/>
         </antcall>
     </target>
+
+    <target name="deploy.client2" depends="build.client2">
+  <exec executable="${ASADMIN}" failonerror="true">
+    <arg line="deploy"/>
+    <arg line="${as.props}"/>
+    <arg line="--upload=true"/>
+    <arg line="--retrieve ${assemble.dir}"/>
+    <arg line="--target ${appserver.instance.name}"/>
+    <arg line="${assemble.dir}/${appname}-client2.jar"/>
+  </exec>
+    </target>
     
     <target name="undeploy" depends="init-common">
         <antcall target="undeploy.ear"/>
-        <antcall target="undeploy.client"/>
+        <antcall target="undeploy.clients"/>
     </target>
     
     <target name="undeploy.ear" depends="init-common">
@@ -74,6 +189,15 @@
 
     <target name="undeploy.client" depends="init-common">
         <antcall target="undeploy-client-common"/>
+    </target>
+
+    <target name="undeploy.client2" depends="init-common">
+        <exec executable="${ASADMIN}" failonerror="false">
+            <arg line="undeploy"/>
+            <arg line="${as.props}"/>
+            <arg line="--target ${appserver.instance.name}"/>
+            <arg line="${appname}-client2"/>
+        </exec>
     </target>
     
     <target name="run" depends="init-common">

@@ -1,0 +1,18 @@
+<jnlp>
+  <information>
+    <title>Custom Title</title>
+    <vendor>Acme Software</vendor>
+    <description>This is my customized information</description>
+  </information>
+  <security> <!-- should be ignored -->
+    <j2ee-application-client-permissions/>
+  </security>
+  <resources>
+    <jar href="reporter.jar"/>
+    <property name="myExtra.prop" value="some value"/>
+    <extension href="showArgs-client.jar!myExt.jnlp"/>
+  </resources>
+  <application-desc main-class="my.Main">
+    <argument>excluded</argument>
+  </application-desc>
+</jnlp>
