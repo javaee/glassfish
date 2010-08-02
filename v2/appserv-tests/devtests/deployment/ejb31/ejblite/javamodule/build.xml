@@ -37,7 +37,7 @@
     <target name="deploy.asadmin" depends="prepare">
         <antcall target="common.deploy.asadmin">
             <param name="arg.list" value="--retrieve ${archivedir} --name ${testName}-web --contextroot ${testName} ${all.war}"/>
-            <param name="testName" value="${testName}"/>
+            <param name="testName" value="${testName}-web"/>
         </antcall>
     </target>
 
@@ -45,7 +45,7 @@
     <target name="redeploy.asadmin" depends="prepare">
         <antcall target="common.redeploy.asadmin">
             <param name="arg.list" value="--retrieve ${archivedir} --name ${testName}-web  --contextroot ${testName} ${all.war}"/>
-            <param name="testName" value="${testName}"/>
+            <param name="testName" value="${testName}-web"/>
         </antcall>
     </target>
 
@@ -69,7 +69,7 @@
     <target name="undeploy.asadmin" depends="prepare">
         <antcall target="common.undeploy.asadmin">
             <param name="arg.list" value="${testName}-web"/>
-            <param name="testName" value="${testName}"/>
+            <param name="testName" value="${testName}-web"/>
         </antcall>
     </target>
 
