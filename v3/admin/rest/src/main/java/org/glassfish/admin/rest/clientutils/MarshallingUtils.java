@@ -170,13 +170,53 @@ public class MarshallingUtils {
         return jo;
     }
 
-    protected static Map<String, String> processJsonMap(String json) {
+    public static Map buildMapFromDocument(String text) {
+        Map map = null;
+
+        if (text.startsWith("{")) {
+
+        } else if (text.startsWith("<")) {
+            InputStream input = null;
+            try {
+                XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+                inputFactory.setProperty(XMLInputFactory.IS_VALIDATING, false);
+                input = new ByteArrayInputStream(text.trim().getBytes("UTF-8"));
+                XMLStreamReader parser = inputFactory.createXMLStreamReader(input);
+                while (parser.hasNext()) {
+                    int event = parser.next();
+                    switch (event) {
+                        case XMLStreamConstants.START_ELEMENT: {
+                            if ("map".equals(parser.getLocalName())) {
+                                map = processXmlMap(parser);
+                            }
+                            break;
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(MarshallingUtils.class.getName()).log(Level.SEVERE, null, ex);
+                throw new RuntimeException(ex);
+            } finally {
+                try {
+                    input.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(MarshallingUtils.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        } else {
+            throw new RuntimeException ("An unknown document type was provided:  " + text.substring(0, 10));
+        }
+
+        return map;
+    }
+
+    private static Map<String, String> processJsonMap(String json) {
         Map<String, String> map = new HashMap<String, String>();
 
         return map;
     }
 
-    protected static List<Map<String, String>> processJsonList(String json) {
+    private static List<Map<String, String>> processJsonList(String json) {
         List<Map<String, String>> properties = new ArrayList<Map<String, String>>();
         try {
             JSONArray ja = new JSONArray(json);
@@ -198,7 +238,7 @@ public class MarshallingUtils {
         return properties;
     }
 
-    protected static List processXmlList(XMLStreamReader parser) throws XMLStreamException {
+    private static List processXmlList(XMLStreamReader parser) throws XMLStreamException {
         List list = new ArrayList();
         boolean endOfList = false;
         while (!endOfList) {
@@ -227,7 +267,7 @@ public class MarshallingUtils {
         return list;
     }
 
-    protected static Object processXmlListEntry(XMLStreamReader parser) throws XMLStreamException {
+    private static Object processXmlListEntry(XMLStreamReader parser) throws XMLStreamException {
         Object entry = null;
         boolean endOfEntry = false;
 
@@ -258,21 +298,29 @@ public class MarshallingUtils {
         return entry;
     }
 
-    protected static Map processXmlMap(XMLStreamReader parser) throws XMLStreamException {
+    private static Map processXmlMap(XMLStreamReader parser) throws XMLStreamException {
         boolean endOfMap = false;
-        Map<String, String> entry = new HashMap();
+        Map<String, Object> entry = new HashMap<String, Object>();
+        String key = null;
+        boolean needValue = true;
         while (!endOfMap) {
             int event = parser.next();
             switch (event) {
                 case XMLStreamConstants.START_ELEMENT: {
                     if ("entry".equals(parser.getLocalName())) {
-                        String name = parser.getAttributeValue(null, "key");
+                        key = parser.getAttributeValue(null, "key");
                         String value = parser.getAttributeValue(null, "value");
-                        entry.put(name, value);
+                        if (value != null) {
+                            entry.put(key, value);
+                            needValue = false;
+                            key = null;
+                        }
                     } else if ("map".equals(parser.getLocalName())) {
-                        throw new RuntimeException("Unexpected XML element found:  " + parser.getLocalName());
+                        Map value = processXmlMap(parser);
+                        entry.put(key, value);
                     } else if ("list".equals(parser.getLocalName())) {
-                        throw new RuntimeException("Unexpected XML element found:  " + parser.getLocalName());
+                        List value = processXmlList(parser);
+                        entry.put(key, value);
                     }
                     break;
                 }

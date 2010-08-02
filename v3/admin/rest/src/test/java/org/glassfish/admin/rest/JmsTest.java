@@ -79,7 +79,7 @@ public class JmsTest extends RestTestBase {
 
         // Create connection pool
         ClientResponse response = post(URL_CONNECTOR_CONNECTION_POOL, ccp_attrs);
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
 
         // Check connection pool creation
         Map<String, String> pool = getEntityValues(get(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName));
@@ -87,7 +87,7 @@ public class JmsTest extends RestTestBase {
 
         // Create connector resource
         response = post(URL_CONNECTOR_RESOURCE, cr_attrs);
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
 
         // Check connector resource
         Map<String, String> resource = getEntityValues(get(URL_CONNECTOR_RESOURCE + "/" + poolName));
@@ -97,7 +97,7 @@ public class JmsTest extends RestTestBase {
         response = post(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName, new HashMap<String, String>() {{
                 put("description", poolName);
         }});
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
 
         pool = getEntityValues(get(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName));
         assertTrue(pool.get("description").equals(poolName));
@@ -106,7 +106,7 @@ public class JmsTest extends RestTestBase {
         response = post(URL_CONNECTOR_RESOURCE + "/" + poolName, new HashMap<String, String>() {{
                 put("description", poolName);
         }});
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
 
         resource = getEntityValues(get(URL_CONNECTOR_RESOURCE + "/" + poolName));
         assertTrue(pool.get("description").equals(poolName));
@@ -115,7 +115,7 @@ public class JmsTest extends RestTestBase {
         response = delete(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName, new HashMap<String, String>() {{
                 put("cascade", "true");
         }});
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
     }
 
     @Test
@@ -134,13 +134,13 @@ public class JmsTest extends RestTestBase {
         }};
 
         ClientResponse response = post(URL_ADMIN_OBJECT_RESOURCE, attrs);
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
 
         Map<String, String> entity = getEntityValues(get(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName));
         assertFalse(entity.isEmpty());
 
         response = delete(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName);
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
     }
 
     @Test
@@ -154,23 +154,23 @@ public class JmsTest extends RestTestBase {
         // Test Create
         ClientResponse response = post(URL_CREATE_JMS_DEST, newDest);
         // This command returns 200 instead of 201, for some reason.  Odd.
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
 
         // Test creation. There's no CLI for editing a JMS destination, so we query
         // the broker for the newly created destination to make sure it knows about it
-        List<String> list = getCommandResults(get(URL_LIST_JMS_DEST));
-        assertTrue(list.contains(jmsDestName));
+        String results = get(URL_LIST_JMS_DEST).getEntity(String.class);
+        assertTrue(results.contains(jmsDestName));
 
         // Test deletion
         response = post(URL_DELETE_JMS_DEST, newDest); // You POST to commands
-        assertTrue(isSuccess(response));
-        list = getCommandResults(get(URL_LIST_JMS_DEST));
-        assertFalse(list.contains(jmsDestName));
+        checkStatusForSuccess(response);
+        results = get(URL_LIST_JMS_DEST).getEntity(String.class);
+        assertFalse(results.contains(jmsDestName));
     }
 
     @Test
     public void testJmsPing() {
-        List<String> results = getCommandResults(get(URL_PING_JMS));
+        String results = get(URL_PING_JMS).getEntity(String.class);
         assertTrue(results.contains("JMS-ping command executed successfully"));
     }
 
@@ -182,7 +182,7 @@ public class JmsTest extends RestTestBase {
         }};
 
         ClientResponse response = post(URL_FLUSH_JMS_DEST, payload);
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
     }
 
     @Test
@@ -198,7 +198,7 @@ public class JmsTest extends RestTestBase {
 
         // Test create
         ClientResponse response = post(URL_JMS_HOST, newHost);
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
 
         // Test edit
         Map<String, String> entity = getEntityValues(get(URL_JMS_HOST + "/" + jmsHostName));
@@ -206,12 +206,12 @@ public class JmsTest extends RestTestBase {
         assertEquals(jmsHostName, entity.get("name"));
         entity.put("port", "8686");
         response = post(URL_JMS_HOST + "/" + jmsHostName, entity);
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
         entity = getEntityValues(get(URL_JMS_HOST + "/" + jmsHostName));
         assertEquals("8686", entity.get("port"));
 
         // Test delete
         response = delete(URL_JMS_HOST + "/" + jmsHostName);
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
     }
 }

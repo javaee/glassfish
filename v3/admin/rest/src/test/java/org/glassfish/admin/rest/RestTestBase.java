@@ -46,10 +46,7 @@ import java.io.File;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.DocumentBuilder;
@@ -190,10 +187,27 @@ public class RestTestBase {
     protected List<String> getCommandResults(ClientResponse response) {
         String xml = response.getEntity(String.class);
         List<String> results = new ArrayList<String>();
+        Map map = MarshallingUtils.buildMapFromDocument(xml);
+        String message = (String)map.get("message");
+        if (message != null && !"".equals(message)) {
+            results.add(message);
+        }
+
+        Object children = map.get("children");
+        if (children instanceof List) {
+            for (Object child : (List)children) {
+                Map childMap = (Map) child;
+                message = (String)childMap.get("message");
+                if (message != null) {
+                    results.add(message);
+                }
+            }
+        }
+        /*
         Document document = getDocument(xml);
 
         Element root = document.getDocumentElement();
-        NodeList nl = root.getElementsByTagName("message-part");
+        NodeList nl = root.getElementsByTagName("children");
         if (nl.getLength() > 0) {
             Node child;
             for (int i = 0; i < nl.getLength(); i++) {
@@ -203,6 +217,7 @@ public class RestTestBase {
                 }
             }
         }
+        */
 
         return results;
     }
@@ -219,7 +234,12 @@ public class RestTestBase {
     }
 
     public List<Map<String, String>> getProperties(ClientResponse response) {
-        return MarshallingUtils.getPropertiesFromXml(response.getEntity(String.class));
+        Map responseMap = MarshallingUtils.buildMapFromDocument(response.getEntity(String.class));
+        Map extraProperties = (Map)responseMap.get("extraProperties");
+        if (extraProperties != null) {
+            return (List)extraProperties.get("properties");
+        }
+        return new ArrayList<Map<String, String>>();
     }
 
     private MultivaluedMap buildMultivaluedMap(Map<String, String> payload) {

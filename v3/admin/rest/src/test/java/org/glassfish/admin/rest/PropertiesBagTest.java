@@ -55,7 +55,7 @@ public class PropertiesBagTest extends RestTestBase {
     @Test
     public void propertyRetrieval() {
         ClientResponse response = get(URL_DOMAIN_PROPERTIES);
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
         List<Map<String, String>> properties = getProperties(response);
         assertTrue(isPropertyFound(properties, PROP_DOMAIN_NAME));
     }
@@ -74,9 +74,9 @@ public class PropertiesBagTest extends RestTestBase {
                 .header("Content-Type", RESPONSE_TYPE)
                 .accept(RESPONSE_TYPE)
                 .post(ClientResponse.class, MarshallingUtils.getXmlForProperties(domainProps));
-            assertTrue(isSuccess(response));
+            checkStatusForSuccess(response);
             response = get(URL_DOMAIN_PROPERTIES);
-            assertTrue(isSuccess(response));
+            checkStatusForSuccess(response);
             List<Map<String, String>> properties = getProperties(response);
             assertTrue(isPropertyFound(properties, propName));
             assertFalse(isPropertyFound(properties, PROP_DOMAIN_NAME));
@@ -89,9 +89,9 @@ public class PropertiesBagTest extends RestTestBase {
     public void deleteProperties() {
         try {
             ClientResponse response = delete(URL_DOMAIN_PROPERTIES);
-            assertTrue(isSuccess(response));
+            checkStatusForSuccess(response);
             response = get(URL_DOMAIN_PROPERTIES);
-            assertTrue(isSuccess(response));
+            checkStatusForSuccess(response);
             List<Map<String, String>> properties = getProperties(response);
             assertEquals(0, properties.size());
         } finally {
@@ -110,9 +110,9 @@ public class PropertiesBagTest extends RestTestBase {
                 .header("Content-Type", RESPONSE_TYPE)
                 .accept(RESPONSE_TYPE)
                 .put(ClientResponse.class, MarshallingUtils.getXmlForProperties(domainProps));
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
         response = get(URL_DOMAIN_PROPERTIES);
-        assertTrue(isSuccess(response));
+        checkStatusForSuccess(response);
         assertTrue(isPropertyFound(getProperties(response), PROP_DOMAIN_NAME));
     }
 

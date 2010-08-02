@@ -63,8 +63,8 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
 import static org.glassfish.admin.rest.Util.*;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
@@ -96,7 +96,7 @@ public class ResourceUtil {
     }
 
     private ResourceUtil() {
-        
+
     }
 
     /**
@@ -179,7 +179,8 @@ public class ResourceUtil {
 
     public static ActionReport runCommand(String commandName, ParameterMap parameters, Habitat habitat, String resultType) {
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
-        ActionReport ar = habitat.getComponent(ActionReport.class,resultType);
+        ActionReport ar = new RestActionReporter();
+//                habitat.getComponent(ActionReport.class,resultType);
 
         cr.getCommandInvocation(commandName, ar).parameters(parameters).execute();
         return ar;
@@ -193,16 +194,16 @@ public class ResourceUtil {
     * @return ActionReport object with command execute status details.
     */
     public static ActionReport runCommand(String commandName,
-           Properties parameters, Habitat habitat, String typeOfResult) {
-       CommandRunner cr = habitat.getComponent(CommandRunner.class);
-       ActionReport ar = habitat.getComponent(ActionReport.class, typeOfResult);
+                                          Properties parameters, Habitat habitat, String typeOfResult) {
+        CommandRunner cr = habitat.getComponent(CommandRunner.class);
+        ActionReport ar = new RestActionReporter();
         ParameterMap p = new ParameterMap();
         for (String prop : parameters.stringPropertyNames()) {
             p.set(prop, parameters.getProperty(prop));
         }
 
-       cr.getCommandInvocation(commandName, ar).parameters(p).execute();
-       return ar;
+        cr.getCommandInvocation(commandName, ar).parameters(p).execute();
+        return ar;
     }
 
     /**
@@ -637,7 +638,7 @@ public class ResourceUtil {
     private static boolean isBrowser(HttpHeaders requestHeaders) {
         boolean isClientAcceptsHtml = false;
         MediaType media = requestHeaders.getMediaType();
-        java.util.List<String> acceptHeaders = 
+        java.util.List<String> acceptHeaders =
             requestHeaders.getRequestHeader(HttpHeaders.ACCEPT);
 
         for (String header: acceptHeaders) {
@@ -690,7 +691,7 @@ public class ResourceUtil {
         Collection<CommandModel.ParamModel> paramModels = cm.getParameters();
         HashMap<String, String> translatedMap = new HashMap<String, String>();
         for (CommandModel.ParamModel paramModel : paramModels) {
-            Param param = paramModel.getParam(); 
+            Param param = paramModel.getParam();
             String camelCaseName = param.alias();
             if(sourceMap.containsKey(camelCaseName)) {
                 String paramValue = sourceMap.remove(camelCaseName);

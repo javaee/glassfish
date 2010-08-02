@@ -37,10 +37,8 @@ package org.glassfish.admin.rest.resources;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.jersey.api.core.ResourceContext;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import javax.validation.ValidationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -119,7 +117,9 @@ public class PropertiesBagResource {
             properties.add(entry);
         }
 
-        ar.getTopMessagePart().getProps().put("properties", properties);
+        Properties extraProperties = new Properties();
+        extraProperties.put("properties", properties);
+        ar.setExtraProperties(extraProperties);
 
         return new ActionReportResult("properties", ar, new OptionsResult(Util.getResourceName(uriInfo)));
     }
