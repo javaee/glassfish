@@ -53,6 +53,7 @@
         setPageSessionAttribute(key="appRefObjectName" value="amx:pp=/domain/servers/server[server],type=application-ref,name=#{pageSession.Name}");
         getProxyAttrs(objectNameStr="#{pageSession.appRefObjectName}" valueMap="#{pageSession.valueMap2}")
         getApplicationEnabled(objectNameStr="#{pageSession.objectNameStr}" enabled="#{pageSession.valueMap2['Enabled']}")
+        gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
     />
     </event>
 

@@ -44,6 +44,7 @@
         getRequestValue(key="cancelPage" default="#{listPageLink}" value="#{pageSession.cancelPage}");
         setPageSessionAttribute(key="enabled" value="#{true}");
         createMap(result="#{pageSession.deployMap}")
+        gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
     />
     </event>
     <sun:form id="form">

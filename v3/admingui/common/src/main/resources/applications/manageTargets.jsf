@@ -65,7 +65,7 @@
             <sun:button id="saveButton"  text="$resource{i18n.button.Save}" 
                     onClick="submitAndDisable(this, '$resource{i18n.button.Processing}'); return false;" >
                 <!command
-                    changeAppTargets(appName="#{pageSession.appName}" targets="#{pageSession.selectedTargets}");
+                    gf.changeAppTargets(appName="#{pageSession.appName}" targets="#{pageSession.selectedTargets}");
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{request.contextPath}/common/applications/targetListing.jsf?appName=#{pageSession.encodedAppName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />

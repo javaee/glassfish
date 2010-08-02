@@ -77,7 +77,7 @@ public class RestUtilHandlers {
             @HandlerOutput(name = "propsMap", type = Map.class),
             @HandlerOutput(name = "listEmpty", type = Boolean.class)
         })
-    public static void callRestAndExtractResponse(HandlerContext handlerCtx) {
+    public static void callRestAndExtractMsgProps(HandlerContext handlerCtx) {
         Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         String method = ((String) handlerCtx.getInputValue("method")).toLowerCase();
@@ -114,7 +114,7 @@ public class RestUtilHandlers {
     }
 
 
-    public static void processProps(List<Map<String, String>>props, HandlerContext handlerCtx){
+    private static void processProps(List<Map<String, String>>props, HandlerContext handlerCtx){
         List keyList = new ArrayList();
         Map propsMap = new HashMap();
         try{
@@ -150,6 +150,6 @@ public class RestUtilHandlers {
         }
         return propsMap;
     }
-}
-        
- 
+                }
+
+  

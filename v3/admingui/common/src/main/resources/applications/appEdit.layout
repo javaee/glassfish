@@ -33,7 +33,6 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- applications/appEdit.inc -->
 
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.enterpriseApplications.editPageTitle}" guiTemplateOnLoad="admingui.help.pluginId = 'common';">
 <!define name="content">
@@ -42,19 +41,23 @@
         setSessionAttribute(key="appGeneralTabs" value="general");
         getRequestValue(key="appName" value="#{pageSession.appName}");
         urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
+
+        setPageSessionAttribute(key="selfUrl" value="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}");
+        setPageSessionAttribute(key="appRefUrl" value="#{sessionScope.REST_URL}/servers/server/server/application-ref/#{pageSession.encodedAppName}");
         gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
-        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}");
-        //test is the app is still available.
-        proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
-        if (! #{requestScope.exist}){
-            gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        gf.getTargetEnableInfo(appName="#{pageSession.appName}" status="#{pageSession.status}")
+        if (#{pageSession.onlyDASExist}){
+            gf.getEntityAttrs(endpoint="#{pageSession.appRefUrl}" valueMap="#{pageSession.valueMap2}");
+            mapPut(map="#{pageSession.valueMap2}"  key="enabled" value="#{pageSession.status}");
+            setPageSessionAttribute(key="origState" value="#{pageSession.status}");
+            setPageSessionAttribute(key="finalShowVS" value="#{pageSession.showVS}");
         }
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="appRefObjectName" value="amx:pp=/domain/servers/server[server],type=application-ref,name=#{pageSession.appName}");
-        getProxyAttrs(objectNameStr="#{pageSession.appRefObjectName}" valueMap="#{pageSession.valueMap2}")
-        getApplicationEnabled(objectNameStr="#{pageSession.objectNameStr}" enabled="#{pageSession.valueMap2['Enabled']}")
-        setPageSessionAttribute(key="origState" value="#{pageSession.valueMap2['Enabled']}");
-        getProxyProperties(objectNameStr="#{pageSession.objectNameStr}"  result="#{pageSession.propMap}");
+
+        if (!#{pageSession.onlyDASExist}){
+            setPageSessionAttribute(key="finalShowVS" value="#{false}");
+        }
 
         if (! #{pageSession.hasPageTitle}){
             setPageSessionAttribute(key="pageTitle" value="$resource{i18n.enterpriseApplications.editPageTitle}");
@@ -63,9 +66,12 @@
         if (! #{pageSession.hasPageTitleHelp}){
             setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.enterpriseApplications.editPageTitleHelp}");
         }
-        setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
-        setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
-        
+        setPageSessionAttribute(key="convertToFalseList2" value={"enabled"});
+        setPageSessionAttribute(key="convertToFalseList" value={"enabled"});
+
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}");
+        getProxyProperties(objectNameStr="#{pageSession.objectNameStr}"  result="#{pageSession.propMap}");
+
     />
     </event>
         <sun:form id="propertyForm">
@@ -81,30 +87,35 @@
     <sun:panelGroup id="topButtons">
         <sun:button id="saveButton" text="$resource{i18n.button.Save}" primary="#{true}">
             <!command
-                if (#{pageSession.showVS}){
-                    convertArrayToCommaString(array="#{pageSession.selectedVS}"  commaString="#{requestScope.tmp}");
-                    mapPut(map="#{pageSession.valueMap2}" key="VirtualServers" value="#{requestScope.tmp}");
-                }
-                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                    skipAttrs="#{pageSession.skipAttrsList}"
-                    convertToFalse="#{pageSession.convertToFalseList}"
-                    onlyUseAttrs="#{pageSession.onlyUseAttrs}"
-                );
+                gf.createEntity(endpoint="#{pageSession.selfUrl}"
+                    attrs="#{pageSession.valueMap}"
+                    convertToFalse="#{pageSession.convertToFalseList}");
 
-                saveBeanAttributes(objectNameStr="#{pageSession.appRefObjectName}"  attrs="#{pageSession.valueMap2}"
-                    skipAttrs="#{pageSession.skipAttrsList2}"
-                    convertToFalse="#{pageSession.convertToFalseList2}"
-                    onlyUseAttrs="#{pageSession.onlyUseAttrs2}"
-                );
                 propMapToList(propMap="#{pageSession.propMap}" convertToFalse="#{pageSession.convertToFalseProp}" propList="#{requestScope.propList}")
                 setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="#{requestScope.propList}" );
-                compare(obj1="#{pageSession.origState}" obj2="#{valueMap2['Enabled']}" objEqual="#{requestScope.noChange}");
-                if (!#{requestScope.noChange}){
-                    if (#{valueMap2['Enabled']}){
-                        restartApplication(appName="#{pageSession.appName}");
+
+                if (#{pageSession.onlyDASExist}){
+                    if (#{pageSession.showVS}){
+                        convertArrayToCommaString(array="#{pageSession.selectedVS}"  commaString="#{requestScope.tmp}");
+                        mapPut(map="#{pageSession.valueMap2}" key="VirtualServers" value="#{requestScope.tmp}");
                     }
-                    if (!#{valueMap2['Enabled']}){
-                        disableApplication(appName="#{pageSession.appName}");
+                    gf.createEntity(endpoint="#{pageSession.appRefUrl}"
+                        attrs="#{pageSession.valueMap2}"
+                        convertToFalse="#{pageSession.convertToFalseList2}");
+                    compare(obj1="#{pageSession.status}" obj2="#{valueMap2['enabled']}" objEqual="#{requestScope.noChange}");
+                    if (!#{requestScope.noChange}){
+                        if (#{valueMap2['enabled']}){
+                            gf.reloadApplication(appName="#{pageSession.appName}");
+                        }
+                        if (!#{valueMap2['enabled']}){
+                            createMap(result="#{requestScope.attrsMap}");
+                            mapPut(map="#{requestScope.attrsMap}"  key="target" value="server");
+                            gf.restRequest(
+                                endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}/disable.json" method="POST"
+                                attrs="#{requestScope.attrsMap}"
+                                result="#{pageSession.json}");
+
+                        }
                     }
                 }
                 prepareSuccessfulMsg();

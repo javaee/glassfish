@@ -246,7 +246,7 @@ public class DeploymentHandler {
      *  <p> Input  value: "appType" -- Type: <code>String</code></p>
      *	@param	handlerCtx	The HandlerContext.
      */
-    @Handler(id="undeploy",
+    @Handler(id="gf.undeploy",
     input={
         @HandlerInput(name="selectedRows", type=List.class, required=true)})
     public static void undeploy(HandlerContext handlerCtx) {
@@ -321,7 +321,7 @@ public class DeploymentHandler {
      *  <p> Input  value: "enabled" -- Type: <code>Boolean</code></p>
      *	@param	handlerCtx	The HandlerContext.
      */
-    @Handler(id = "changeAppStatus",
+    @Handler(id = "gf.changeAppStatus",
     input = {
         @HandlerInput(name = "selectedRows", type = List.class, required = true),
         @HandlerInput(name = "enabled", type = Boolean.class, required = true)

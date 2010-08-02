@@ -105,51 +105,6 @@ public class WebAppHandlers {
     }
 
 
-    @Handler(id = "showContextRoot",
-        input = {
-            @HandlerInput(name = "objectNameStr", type = String.class, required = true)},
-        output = {
-            @HandlerOutput(name = "value", type = Boolean.class)})
-    public static void showContextRoot(HandlerContext handlerCtx) {
-
-            // If this is a ear file,  or context-root is not specified, do not show the context root.
-        String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-        String isEar = V3AMX.getPropValue(V3AMX.objectNameToProxy(objectNameStr), DFDeploymentProperties.IS_COMPOSITE);
-        if (isEar == null || !isEar.equals("true")){
-            handlerCtx.setOutputValue("value", Boolean.TRUE);
-        }else{
-            handlerCtx.setOutputValue("value", Boolean.FALSE);
-        }
-    }
-
-
-
-    /**
-     *	<p> This handler save  the values for all the attributes of the Application
-     *  <p> Input  value: "name" -- Type: <code> java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id = "saveApplicationInfo",
-        input = {
-            @HandlerInput(name = "appAttr", type = Map.class, required = true),
-            @HandlerInput(name = "appRefAttr", type = Map.class, required = true),
-            @HandlerInput(name = "appObjectName", type = String.class, required = true),
-            @HandlerInput(name = "appRefObjectName", type = String.class, required = true)
-        })
-    public static void saveApplicationInfo(HandlerContext handlerCtx) {
-        Map appAttr = (Map) handlerCtx.getInputValue("appAttr");
-        Map appRefAttr = (Map) handlerCtx.getInputValue("appRefAttr");
-        String appObjectName = (String) handlerCtx.getInputValue("appObjectName");
-        String appRefObjectName = (String) handlerCtx.getInputValue("appRefObjectName");
-        V3AMX.setAttribute(appObjectName, new Attribute("ContextRoot", appAttr.get("ContextRoot")));
-        V3AMX.setAttribute(appObjectName, new Attribute("Description", appAttr.get("Description")));
-        String enStr = (String) appAttr.get("Enabled");
-        if (enStr == null )
-            enStr = "false";
-        V3AMX.setAttribute(appRefObjectName, new Attribute("Enabled", enStr));
-        V3AMX.setAttribute(appRefObjectName, new Attribute("VirtualServers", appRefAttr.get("VirtualServers")));
-    }
-
     @Handler(id = "getSubComponents",
         input = {
             @HandlerInput(name = "appName", type = String.class, required = true)},
@@ -291,192 +246,8 @@ public class WebAppHandlers {
         return endpointMap;
      }
 
-    /**
-     *	<p> This handler returns the list of applications for populating the table.
-     *  <p> Input  value: "serverName" -- Type: <code> java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id = "getDeployedAppsInfo",
-        input = {
-            @HandlerInput(name = "serverName", type = String.class, required = true),
-            @HandlerInput(name = "filterValue", type = String.class)},
-        output = {
-            @HandlerOutput(name = "filters", type = java.util.List.class),
-            @HandlerOutput(name = "result", type = java.util.List.class)})
-    public static void getDeployedAppsInfo(HandlerContext handlerCtx) {
-        String serverName = (String) handlerCtx.getInputValue("serverName");
-        String filterValue = (String) handlerCtx.getInputValue("filterValue");
-        Set filters = new TreeSet();
-        filters.add("");
-        if (GuiUtil.isEmpty(filterValue))
-            filterValue = null;
-        List result = new ArrayList();
-
-        //TODO REST
-        //convert after issue#12712 is resolved.
-        Map<String, AMXProxy> application = V3AMX.getInstance().getApplications().childrenMap("application");
-        for (AMXProxy oneApp : application.values()) {
-            if(V3AMX.getPropValue(oneApp, DFDeploymentProperties.IS_LIFECYCLE) != null){
-                continue;   //we don't want to display lifecycle.
-            }
-            HashMap oneRow = new HashMap();
-            oneRow.put("name", oneApp.getName());
-            oneRow.put("selected", false);
-            oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(oneApp.getName()));
-            List sniffersList = AppUtil.getAllSniffers(oneApp);
-            oneRow.put("sniffersList", sniffersList);
-            oneRow.put("sniffers", sniffersList.toString());
-            for(int ix=0; ix< sniffersList.size(); ix++)
-                filters.add(sniffersList.get(ix));
-            if (filterValue != null){
-                if (! sniffersList.contains(filterValue))
-                    continue;
-            }
-            getLaunchInfo(serverName, oneApp, oneRow);
-            result.add(oneRow);
-        }
-        handlerCtx.setOutputValue("result", result);
-        handlerCtx.setOutputValue("filters", new ArrayList(filters));
-    }
-
-
-    @Handler(id = "gf.getTargetListInfo",
-        input = {
-            @HandlerInput(name = "appName", type = String.class, required = true)},
-        output = {
-            @HandlerOutput(name = "result", type = java.util.List.class)})
-    public static void getTargetListInfo(HandlerContext handlerCtx) {
-        String appName = (String) handlerCtx.getInputValue("appName");
-        String prefix = (String) GuiUtil.getSessionValue("REST_URL");
-        List clusters = TargetUtil.getClusters();
-        List standalone = TargetUtil.getStandaloneInstances();
-        standalone.add("server");
-        List<String> targetList = DeployUtil.getApplicationTarget(appName);
-        List result = new ArrayList();
-        Map attrs = null;
-        String endpoint="";
-        for(String oneTarget : targetList){
-            HashMap oneRow = new HashMap();
-            if (clusters.contains(oneTarget)){
-                endpoint = "/clusters/cluster/" + oneTarget + "/application-ref/" + appName;
-                attrs = RestApiHandlers.getAttributesMap(prefix + endpoint);
-            }else{
-                endpoint = "/servers/server/" + oneTarget + "/application-ref/" + appName;
-                attrs = RestApiHandlers.getAttributesMap(prefix  + endpoint);
-            }
-            oneRow.put("selected", false);
-            oneRow.put("endpoint", endpoint);
-            oneRow.put("targetName", oneTarget);
-            oneRow.put("enabled", attrs.get("Enabled"));
-            oneRow.put("lbEnabled", attrs.get("LbEnabled"));
-            result.add(oneRow);
-        }
-        handlerCtx.setOutputValue("result", result);
-    }
-
-
-
-    @Handler(id = "gf.getApplicationTarget",
-        input = {
-            @HandlerInput(name = "appName", type = String.class, required = true)},
-        output = {
-            @HandlerOutput(name = "result", type = java.util.List.class)})
-    public static void getApplicationTarget(HandlerContext handlerCtx) {
-        String appName = (String) handlerCtx.getInputValue("appName");
-        handlerCtx.setOutputValue( "result", DeployUtil.getApplicationTarget(appName));
-    }
-
-
-     @Handler(id = "gf.changeTargetStatus",
-        input = {
-            @HandlerInput(name = "selectedRows", type = List.class, required = true),
-            @HandlerInput(name = "Enabled", type = String.class, required = true),
-            @HandlerInput(name = "forLB", type = Boolean.class, required = true)})
-    public static void changeTargetStatus(HandlerContext handlerCtx) {
-        String Enabled = (String) handlerCtx.getInputValue("Enabled");
-        List<Map>  selectedRows = (List) handlerCtx.getInputValue("selectedRows");
-        boolean forLB = (Boolean) handlerCtx.getInputValue("forLB");
-        String prefix = (String) GuiUtil.getSessionValue("REST_URL");
-        for(Map oneRow : selectedRows){
-            Map attrs = new HashMap();
-            String endpoint = (String) oneRow.get("endpoint");
-            if(forLB){
-                attrs.put("LbEnabled", Enabled);
-            }else{
-                attrs.put("Enabled", Enabled);
-            }
-            RestApiHandlers.restRequest(prefix+endpoint, attrs, "post", handlerCtx);
-        }
-     }
-
-
-     @Handler(id="changeAppTargets",
-        input={
-        @HandlerInput(name="appName", type=String.class, required=true),
-        @HandlerInput(name="targets", type=String[].class, required=true )})
-    public static void changeAppTargets(HandlerContext handlerCtx) {
-        String appName = (String)handlerCtx.getInputValue("appName");
-        String[] selTargets = (String[])handlerCtx.getInputValue("targets");
-        List<String> selectedTargets = Arrays.asList(selTargets);
-
-        List clusters = TargetUtil.getClusters();
-        List standalone = TargetUtil.getStandaloneInstances();
-        String clusterEndpoint = GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/";
-        String serverEndpoint = GuiUtil.getSessionValue("REST_URL")+"/servers/server/";
-        standalone.add("server");
-
-        Map attrs = new HashMap();
-        attrs.put("ref", appName);
-        List<String> associatedTargets = DeployUtil.getApplicationTarget(appName);
-        for(String newTarget :  selectedTargets){
-            String endpoint;
-            if (associatedTargets.contains(newTarget)){
-                //no need to add or remove.
-                associatedTargets.remove(newTarget);
-                continue;
-            }else{
-                if (clusters.contains(newTarget)){
-                    endpoint = clusterEndpoint + newTarget + "/application-ref" ;
-                }else{
-                    endpoint = serverEndpoint + newTarget + "/application-ref" ;
-                }
-                RestApiHandlers.restRequest(endpoint, attrs, "post", handlerCtx);
-            }
-         }
-
-         for(String oTarget :  associatedTargets){
-            String endpoint;
-            if (clusters.contains(oTarget)){
-                endpoint = clusterEndpoint + oTarget ;
-            }else{
-                endpoint = serverEndpoint + oTarget ;
-            }
-            Map attrMap = new HashMap();
-            attrMap.put("target", oTarget);
-            RestApiHandlers.restRequest(endpoint + "/application-ref/" + appName, attrMap, "delete", handlerCtx);
-        }
-    }
-
-    @Handler(id = "getConfigName",
-        input = {
-            @HandlerInput(name = "target", type = String.class, required = true)},
-        output = {
-            @HandlerOutput(name = "configName", type = String.class)})
-    public static void getConfigName(HandlerContext handlerCtx) {
-        String target = (String) handlerCtx.getInputValue("target");
-        String endpoint = (String)GuiUtil.getSessionValue("REST_URL");
-        if (target.equals("server")){
-            endpoint = endpoint + "/servers/server/server";
-        }else{
-            List clusters = TargetUtil.getClusters();
-            if (clusters.contains(target)){
-                endpoint = endpoint + "/clusters/cluster/" + target;
-            }else{
-                endpoint = endpoint + "/servers/server/" + target;
-            }
-        }
-        handlerCtx.setOutputValue("configName", RestApiHandlers.getAttributesMap(endpoint).get("ConfigRef"));
-    }
+  
+    
     /*
      * Get the application type for the specified appName.
      * If there isComposite property is true, the appType will be returned as 'ear'
@@ -689,55 +460,6 @@ public class WebAppHandlers {
     }
 
 
-    private static void getLaunchInfo(String serverName, AMXProxy oneApp,  Map oneRow) {
-        Map<String, Object> attrs = oneApp.attributesMap();
-        String contextRoot = (String) attrs.get("ContextRoot");
-        String appName = (String) attrs.get("Name");
-        if (contextRoot == null){
-            contextRoot = "";
-        }
-        boolean enabled = AppUtil.isApplicationEnabled(oneApp);
-        oneRow.put("contextRoot", contextRoot);
-        oneRow.put("hasLaunch", false);
-        //for now, we only allow launch for enabled standalone war file with context root specified in domain.xml
-        if ( !enabled || contextRoot.equals("")){
-            return;
-        }
-        String launchLink = V3AMXUtil.getLaunchLink(serverName, appName);
-        if (! GuiUtil.isEmpty(launchLink)){
-            oneRow.put("hasLaunch", true);
-            oneRow.put("launchLink", launchLink + calContextRoot(contextRoot));
-        }
-
-    }
-
-   @Handler(id = "restartApplication",
-        input = {
-            @HandlerInput(name = "appName", type = String.class, required = true)
-        })
-    public static void restartApplication(HandlerContext handlerCtx) {
-        String appName = (String) handlerCtx.getInputValue("appName");
-        if (DeployUtil.restartApplication(appName, handlerCtx)){
-            GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "restart.successPE"), null);
-        }
-    }
-
-   @Handler(id = "disableApplication",
-        input = {
-            @HandlerInput(name = "appName", type = String.class, required = true)
-        })
-    public static void disableApplication(HandlerContext handlerCtx) {
-        String appName = (String) handlerCtx.getInputValue("appName");
-        //We have to set the domain.xml application-ref to enabled first before calling df, otherwise, it will
-        //think that this app has been disabled and becomes no-op.
-        V3AMX.getInstance().getApplicationRef("server", appName).setEnabled("true");
-        if (DeployUtil.enableApp(appName, handlerCtx, false)){
-            //as expected.
-        }else{
-            GuiUtil.getLogger().warning("Disable Application failed for : " + appName);
-        }
-    }
-
 
    //This is called when user change the default web module of a VS.
    //Need to ensure this VS is in the application-ref virtual server list. If not add it and restart the app for
@@ -779,19 +501,11 @@ public class WebAppHandlers {
                 GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
                 return;
             }
-            DeployUtil.restartApplication(appName, handlerCtx);
+            DeployUtil.reloadApplication(appName, handlerCtx);
         }
    }
 
-   //getVsForDeployment(result="#{pageSession.vsList}");
-   @Handler(id = "getVsForDeployment",
-        output = {
-        @HandlerOutput(name = "result", type = List.class)})
-    public static void getVsForDeployment(HandlerContext handlerCtx) {
-        Set vsSet = V3AMX.getInstance().getConfig("server-config").getHttpService().getVirtualServer().keySet();
-        vsSet.remove("__asadmin");
-        handlerCtx.setOutputValue("result", new ArrayList(vsSet));
-   }
+   
 
    //This handler is called after user deleted one more more VS from the VS table.
    //We need to go through all the application-ref to see if the VS specified still exist.  If it doesn't, we need to

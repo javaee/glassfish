@@ -68,7 +68,7 @@
         <sun:checkbox label="$resource{i18nc.lifecycleModule.preventStart}" selected="#{pageSession.valueMap['is-failure-fatal']}"  selectedValue="true" />
    </sun:property>
 
-   <sun:property id="vsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}">
+   <sun:property id="vsProp"  rendered="#{pageSession.onlyDASExist}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}">
        <sun:listbox id="vs" immediate="#{true}" multiple="#{true}"  rows="$int{4}"
             labels="$pageSession{availableVS}"
             selected="#{pageSession.valueMap2['selectedVS']}" >

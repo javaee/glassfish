@@ -117,7 +117,7 @@
         <sun:hyperlink id="restartLink" text="$resource{i18n.deployTable.reload}">
             <!command
                 prepareSuccessfulMsg();
-                restartApplication(appName="#{td.value.name}");
+                gf.reloadApplication(appName="#{td.value.name}");
                 gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />
         </sun:hyperlink>

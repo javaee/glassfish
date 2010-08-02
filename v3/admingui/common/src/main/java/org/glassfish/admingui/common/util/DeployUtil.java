@@ -142,7 +142,7 @@ public class DeployUtil {
         }
     }
 
-    static public boolean restartApplication(String appName, HandlerContext handlerCtx){
+    static public boolean reloadApplication(String appName, HandlerContext handlerCtx){
         //disable application and then enable it.
         if (enableApp(appName, handlerCtx, false)){
             return enableApp(appName, handlerCtx, true);
@@ -188,8 +188,8 @@ public class DeployUtil {
         }
         return targets;
     }
-    
-    public static String getTargetEnableInfo(String appName){
+
+    public static String getTargetEnableInfo(String appName, boolean useImage){
         String prefix = (String) GuiUtil.getSessionValue("REST_URL");
         List clusters = TargetUtil.getClusters();
         List standalone = TargetUtil.getStandaloneInstances();
@@ -199,7 +199,11 @@ public class DeployUtil {
         if (clusters.isEmpty() && standalone.isEmpty()){
             //just return Enabled or not.
             enabled = (String)RestApiHandlers.getAttributesMap(prefix  +"/servers/server/server/application-ref/"+appName).get("Enabled");
-            return (Boolean.parseBoolean(enabled))? "/resource/images/enabled.png" : "/resource/images/disabled.png";
+            if (useImage){
+                return (Boolean.parseBoolean(enabled))? "/resource/images/enabled.png" : "/resource/images/disabled.png";
+            }else{
+                return enabled;
+            }
         }
         standalone.add("server");  
         List<String> targetList = getApplicationTarget(appName);

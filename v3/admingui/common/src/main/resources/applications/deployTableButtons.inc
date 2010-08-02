@@ -42,6 +42,7 @@
         />
         <sun:button id="deployButton" text="$resource{i18n.button.Deploy}" primary="#{true}">
                 <!command
+                    println("======================= redirect to #{pageSession.nextPageLink}") 
 		    gf.redirect(page="#{pageSession.nextPageLink}") />
         </sun:button>
         <sun:button id="button1" text="$resource{i18n.button.Undeploy}" disabled="#{true}" primary="#{false}"
@@ -51,7 +52,7 @@
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                undeploy(selectedRows="${selectedRows}" );
+                gf.undeploy(selectedRows="${selectedRows}" );
                 gf.navigate(page="#{listPageLink}");
             />
          </sun:button>
@@ -60,7 +61,7 @@
         <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                changeAppStatus(selectedRows="${selectedRows}"  enabled="#{true}")
+                gf.changeAppStatus(selectedRows="${selectedRows}"  enabled="#{true}")
                 gf.navigate(page="#{listPageLink}");
             />
             </sun:button>
@@ -69,7 +70,7 @@
         <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                changeAppStatus(selectedRows="${selectedRows}"  enabled="#{false}")
+                gf.changeAppStatus(selectedRows="${selectedRows}"  enabled="#{false}")
                 gf.navigate(page="#{listPageLink}");
             />
         </sun:button>
