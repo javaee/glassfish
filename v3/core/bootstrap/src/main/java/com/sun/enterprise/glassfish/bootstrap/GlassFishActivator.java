@@ -86,7 +86,7 @@ public class GlassFishActivator implements BundleActivator {
                 final Habitat habitat = main.createHabitat(mr, startupContext);
                 final ModuleStartup gfKernel = main.findStartupService(mr, habitat, null, startupContext);
                 System.out.println("gfKernel = " + gfKernel);
-                return new GlassFish() {
+                final GlassFish glassFish = new GlassFish() {
                     volatile Status status = Status.INIT;
 
                     public synchronized void start() {
@@ -119,13 +119,21 @@ public class GlassFishActivator implements BundleActivator {
                         return status;
                     }
 
-                    public synchronized <T> T lookupService(Class<T> serviceType, String servicetName) {
+                    public synchronized <T> T lookupService(Class<T> serviceType, String serviceName) {
                         if (status != Status.STARTED) {
                             throw new IllegalArgumentException("Server is not started yet. It is in " + status + "state");
                         }
-                        return habitat.getComponent(serviceType, servicetName);
+
+                        // Habitat.getComponent(Class) searches both contract and type maps, but
+                        // getComponent(Class, String) only searches contract map.
+                        return serviceName != null ? habitat.getComponent(serviceType, serviceName) :
+                                habitat.getComponent(serviceType);
                     }
                 };
+
+                // register GlassFish in service registry
+                bundleContext.registerService(GlassFish.class.getName(), glassFish, properties);
+                return glassFish;
             }
         }, null);
     }

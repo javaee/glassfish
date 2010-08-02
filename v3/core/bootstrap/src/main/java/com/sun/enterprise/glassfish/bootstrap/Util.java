@@ -295,7 +295,7 @@ public class Util {
     }
 
 
-    static void substVars(Properties props) {
+    public static void substVars(Properties props) {
         // Perform variable substitution for system properties.
         for (Enumeration e = props.propertyNames(); e.hasMoreElements();) {
             String name = (String) e.nextElement();
