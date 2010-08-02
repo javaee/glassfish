@@ -58,6 +58,9 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
 
@@ -135,10 +138,33 @@ public class ApplicationConfigListener implements TransactionListener,
             appName = ((ApplicationRef)parent).getRef();
         }
         if (enabled) {
-            enableApplication(appName);
+            if (isCurrentInstanceMatchingTarget(parent)) {
+                enableApplication(appName);
+            }
         } else {
-            disableApplication(appName);
+            if (isCurrentInstanceMatchingTarget(parent)) {
+                disableApplication(appName);
+            }
         }
+    }
+
+    private boolean isCurrentInstanceMatchingTarget(Object parent) {
+        // DAS receive all the events, so we need to figure out 
+        // whether we should take action on DAS depending on the event
+        if (parent instanceof ApplicationRef) {
+            Object grandparent = ((ApplicationRef)parent).getParent();
+            if (grandparent instanceof Server) {
+                Server gpServer = (Server)grandparent;      
+                if (server.isDas() && !gpServer.isDas()) {
+                    return false; 
+                }
+            } else if (grandparent instanceof Cluster) {
+                if (server.isDas()) {
+                    return false; 
+                }
+            }
+        }
+        return true;
     }
 
     private void enableApplication(String appName) {        
