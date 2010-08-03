@@ -1,0 +1,4 @@
+-exportcontents: \
+	com.sun.jdo.api.persistence.enhancer.generator; \
+	com.sun.jdo.api.persistence.enhancer.meta; version=${project.osgi.version}
+

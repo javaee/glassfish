@@ -1,0 +1,3 @@
+-exportcontents: \
+	com.sun.jdo.api.persistence.mapping.ejb; \
+	com.sun.jdo.api.persistence.mapping.ejb.beans; version=${project.osgi.version}

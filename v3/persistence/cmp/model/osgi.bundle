@@ -1,0 +1,6 @@
+-exportcontents: \
+	com.sun.jdo.api.persistence.model; \
+	com.sun.jdo.api.persistence.model.jdo; \
+	com.sun.jdo.api.persistence.model.jdo.impl; \
+	com.sun.jdo.api.persistence.model.mapping; \
+	com.sun.jdo.api.persistence.model.mapping.impl; version=${project.osgi.version}

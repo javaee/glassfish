@@ -1,0 +1,3 @@
+-exportcontents: \
+	com.sun.jdo.spi.persistence.generator.database; version=${project.osgi.version}
+

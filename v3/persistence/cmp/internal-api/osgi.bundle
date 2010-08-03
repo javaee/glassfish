@@ -1,0 +1,2 @@
+-exportcontents: \
+	com.sun.jdo.api.persistence.support; version=${project.osgi.version}

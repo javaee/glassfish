@@ -1,0 +1,5 @@
+-exportcontents: \
+	com.sun.jdo.spi.persistence.support.sqlstore.ejb; \
+	com.sun.jdo.spi.persistence.support.sqlstore; \
+	com.sun.jdo.spi.persistence.support.sqlstore.query.jqlc; \
+	com.sun.jdo.spi.persistence.support.sqlstore.utility; version=${project.osgi.version}

@@ -1,0 +1,5 @@
+-exportcontents: \
+	com.sun.jdo.spi.persistence.utility; \
+	com.sun.jdo.spi.persistence.utility.generator; \
+	com.sun.jdo.spi.persistence.utility.generator.io; \
+	com.sun.jdo.spi.persistence.utility.logging; version=${project.osgi.version}
