@@ -45,7 +45,7 @@
     <!beforeCreate
         getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
         urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
-        setSessionAttribute(key="clusterInstanceTabs" value="general");
+        setSessionAttribute(key="standaloneInstanceTabs" value="general");
 
         />
     </event>

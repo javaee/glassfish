@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- cluster/instances.jsf -->
+<!-- standalone/instances.jsf -->
 
 <!initPage
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
@@ -41,7 +41,7 @@
     setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"
-    guiTitle="$resource{i18ncs.cluster.ApplicationsTitle}"
+    guiTitle="$resource{i18ncs.standalone.ApplicationsTitle}"
     guiTemplateOnLoad="admingui.nav.refreshTree();"
 >
 
@@ -49,39 +49,38 @@
     <event>
     <!beforeCreate
 
-        setSessionAttribute(key="clusterTabs" value="clusterApp");
-        getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
-        urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
+        setSessionAttribute(key="standaloneInstanceTabs" value="standaloneApps");
+        getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
+        urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
         getRequestValue(key="filterValue" value=>$page{filterValue});
-        setSessionAttribute(key="onlyDASExist" value="#{true}");
+        setSessionAttribute(key="onlyDASExist" value="#{false}");
         createMap(result="#{pageSession.attrs}")
-        mapPut(map="#{pageSession.attrs}"  key="target"  value="#{pageSession.clusterName}")
+        mapPut(map="#{pageSession.attrs}"  key="target"  value="#{pageSession.instanceName}")
         gf.restRequest( endpoint="#{sessionScope.REST_URL}/applications/application/list-components.json" , method="GET"  attrs="#{pageSession.attrs}" result="#{requestScope.result}");
         gf.getDeployedAppsInfo(appPropsMap="#{requestScope.result.data.properties}" filterValue="#{pageSession.filterValue}", filters=>$attribute{filters} result=>$attribute{listOfRows} );
         setPageSessionAttribute(key="editLink" value="/common/applications/applicationEdit.jsf");
-        setPageSessionAttribute(key="listPageLink" value="/cluster/cluster/clusterApplications.jsf?clusterName=#{pageSession.encodedClusterName}");
+        setPageSessionAttribute(key="listPageLink" value="/cluster/standalone/standaloneApplications.jsf?instanceName=#{pageSession.encodedInstanceName}");
         setPageSessionAttribute(key="targetLink" value="/common/applications/targetListing.jsf");
-        setPageSessionAttribute(key="nextPageLink" value="/common/applications/upload.jsf?cancelPage=#{listPageLink}");
+        setPageSessionAttribute(key="nextPageLink" value="/common/applications/upload.jsf?listPageLink=#{listPageLink}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmUndeploy}");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18ncs.clusterApplications.TableTitle}");
-        setPageSessionAttribute(key="clusterList" value="#{true}" )
     />
     
  </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":clusterTreeNode");</script>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":standaloneInstances");</script>
             <sun:form id="propertyForm">
-#include "/cluster/cluster/clusterTabs.inc"
+#include "/cluster/standalone/standaloneInstanceTabs.inc"
 
 #include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->
 
-<sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.ApplicationsTitle}"
-                 helpText="$resource{i18ncs.cluster.ApplicationsTitleHelp}" />
+<sun:title id="propertyContentPage" title="$resource{i18ncs.standalone.ApplicationsTitle}"
+                 helpText="$resource{i18ncs.standalone.ApplicationsTitleHelp}" />
 
-#include "/cluster/cluster/clusterNameSection.inc"
+#include "/cluster/standalone/instanceNameSection.inc"
 
 #include "/common/applications/deployTable.inc"
-<sun:hidden id="helpKey" value="$resource{help_cluster.clusterApplications}" />
+<sun:hidden id="helpKey" value="$resource{help_cluster.standaloneApplications}" />
 
             </sun:form>
 <f:verbatim>

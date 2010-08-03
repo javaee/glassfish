@@ -68,7 +68,7 @@
 <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.ResourcesTitle}"
                  helpText="$resource{i18ncs.cluster.ResourcesTitleHelp}" >
 </sun:title>
-"<br />
+#include "/cluster/cluster/clusterNameSection.inc"
 <sun:table id="table1" title="$resource{i18n.resourcesTable.resources}"  >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});

@@ -75,10 +75,10 @@
 
 <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.InstancesTitle}"
                  helpText="$resource{i18ncs.cluster.InstancesTitleHelp}" >
+
 #include "/cluster/shared/saveInstanceWtButton.inc"
 </sun:title>
-"<br /> <br />
-
+#include "/cluster/cluster/clusterNameSection.inc"
 #include "/cluster/shared/instancesTable.inc"
 
 <sun:hidden id="helpKey" value="$resource{help_cluster.clusterInstances}" />
