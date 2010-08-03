@@ -1254,7 +1254,7 @@ public class Request
      * Return the names of all defined request parameters for this request.
      */
     @Override
-    public Enumeration getParameterNames() {
+    public Enumeration<String> getParameterNames() {
         if (!requestParametersParsed) {
             parseRequestParameters();
         }

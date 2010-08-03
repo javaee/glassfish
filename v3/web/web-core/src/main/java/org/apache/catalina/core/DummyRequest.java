@@ -97,11 +97,11 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     private String method;
     // END PWC 4707989
 
-    private static Enumeration dummyEnum = new Enumeration(){
+    private static Enumeration<String> dummyEnum = new Enumeration<String>(){
         public boolean hasMoreElements(){
             return false;
         }
-        public Object nextElement(){
+        public String nextElement(){
             return null;
         }
     };
@@ -248,8 +248,8 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public void setSecure(boolean secure) {}
     public void setUserPrincipal(Principal principal) {}
     public String getParameter(String name) { return null; }
-    public Map getParameterMap() { return null; }
-    public Enumeration getParameterNames() { return dummyEnum; }
+    public Map<String, String[]> getParameterMap() { return null; }
+    public Enumeration<String> getParameterNames() { return dummyEnum; }
     public String[] getParameterValues(String name) { return null; }
     public RequestDispatcher getRequestDispatcher(String path) {
         return null;

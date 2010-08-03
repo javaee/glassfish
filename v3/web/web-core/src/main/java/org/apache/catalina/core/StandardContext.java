@@ -5032,8 +5032,7 @@ public class StandardContext
         }
 
         // Load the collected "load on startup" servlets
-        for (Integer key : map.keySet()) {
-            List<Wrapper> list = map.get(key);
+        for (List<Wrapper> list : map.values()) {
             for(Wrapper wrapper : list) {
                 try {
                     wrapper.load();
