@@ -179,10 +179,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             msg = Strings.get("creatingInstance", instance, node);
             logger.info(msg);
             int status =createInstanceRemote();
-            if (status != 0) {
-                // createInstanceRemote set report status and message
-                return;
-            }
+
         } else {
             msg = Strings.get("create.instance.remote.failed",
                     instance, nodeHost, humanVersionOfCommand );
@@ -243,6 +240,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             String humanVersionOfCommand = "asadmin --host " + dasHost +
                     " --port " + dasPort + " create-local-instance" +
                     " --node " + node + " " + instance;
+        try {
                 
             int status = rch.runCommand(node, "_create-instance-filesystem",
                         map, output);
@@ -257,6 +255,15 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
                 report.setMessage(output.toString() + NL + msg);
                 return 1;
             }
+        } catch (SSHCommandExecutionException ec )  {
+            String msg = Strings.get("create.instance.ssh.failed", instance, ec.getSSHSettings(), ec.getMessage(), nodeHost, ec.getCommandRun());
+            logger.severe(msg);
+            msg = Strings.get("create.instance.remote.failed",
+                        instance, nodeHost);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return 1;
+        }
         return 0;
     }
 

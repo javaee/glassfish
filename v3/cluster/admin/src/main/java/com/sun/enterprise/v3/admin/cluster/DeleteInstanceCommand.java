@@ -196,6 +196,7 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
          }
 
          // Run the command remotely (over SSH)
+         try {
          int status = rch.runCommand(noderef, "_delete-instance-filesystem",
                          map, output);
          if (output.length() > 0) {
@@ -203,6 +204,15 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
          }
          if (status != 0){
              throw new IOException(output.toString());
+         }
+         }catch (SSHCommandExecutionException ec)  {
+            String msg = Strings.get("delete.instance.ssh.failed", instanceName, ec.getSSHSettings(), ec.getMessage(), instanceHost, ec.getCommandRun());
+            logger.severe(msg);
+            msg = Strings.get("delete.instance.remote.failed",
+                        instanceName, instanceHost);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            throw new IOException();
          }
      }
 

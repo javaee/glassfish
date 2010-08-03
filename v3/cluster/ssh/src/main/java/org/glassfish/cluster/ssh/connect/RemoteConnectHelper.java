@@ -39,21 +39,25 @@ package org.glassfish.cluster.ssh.connect;
 import java.io.OutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.SSHCommandExecutionException;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.net.NetUtils;
+import com.sun.enterprise.util.StringUtils;
 
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import java.io.ByteArrayOutputStream;
@@ -69,6 +73,15 @@ public class RemoteConnectHelper  {
     private String dasHost = null;
 
     private int dasPort = -1;
+    
+    static int SSHAuthenticationFailed =1;
+    static int SSHInterrupt= 2;
+    static int SSHAsadminCommandFailed = 3;
+    int commandStatus;
+
+    String fullCommand=null;
+    SSHLauncher sshL=null;
+
 
     public RemoteConnectHelper(Habitat habitat, Node[] nodes, Logger logger, String dasHost, int dasPort) {
         this.logger = logger;
@@ -104,7 +117,7 @@ public class RemoteConnectHelper  {
                 return false;
                         
         }   else {
-            logger.warning("invalid node ref "+ nodeRef);
+            logger.warning("Invalid node ref "+ nodeRef);
             return false;
 
         }
@@ -114,24 +127,24 @@ public class RemoteConnectHelper  {
     // need to get the command options that were specified too
 
     public int runCommand(String noderef, String cmd, final ParameterMap parameters,
-            StringBuilder outputString ) {
+            StringBuilder outputString )throws SSHCommandExecutionException {
 
         //get the node ref and see if ssh connection is setup if so use it
         try{
 
             Node node = nodeMap.get(noderef);
             if (node == null){
-                logger.severe("remote.connect.noSuchNodeRef"+ noderef);
+                logger.severe("Could not find node "+ noderef);
                 return 1;
             }
             String nodeHome = node.getInstallDir();
             if( nodeHome == null) {  // what can we assume here?
-                logger.severe("remote.connect.noNodeHome"+noderef);
+                logger.severe("Invalid installdir "+noderef);
                 return 1;
             }
             SshConnector connector = node.getSshConnector();
             if ( connector != null)  {
-                SSHLauncher sshL=habitat.getComponent(SSHLauncher.class);
+                sshL=habitat.getComponent(SSHLauncher.class);
                 sshL.init(node, logger);
 
                 // create command and params
@@ -163,27 +176,50 @@ public class RemoteConnectHelper  {
 
                     command = command + " "+ key + " " +value;
                 }
-                String fullCommand = prefix + command + " " +  instanceName;
+                fullCommand = prefix + command + " " +  instanceName;
 
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
                 //XXX:  Need to figure out what the status codes are returned and what they mean.
-                int status = sshL.runCommand(fullCommand, outStream);
+                commandStatus = sshL.runCommand(fullCommand, outStream);
                 String results = outStream.toString();
                 outputString.append(results);
-                if (!results.trim().endsWith("successfully."))
-                    return 1;                
+                return commandStatus;
+//                if (!results.trim().endsWith("successfully."))
+//                    return 1;                
             } 
 
         }catch (IOException ex) {
-            logger.severe("remote.connect.ioexception"+ cmd);
-            return 1;
+            String m1 = " Command execution failed. " +ex.getMessage();
+            String m2 = "";
+            Throwable e2 = ex.getCause();
+            if(e2 != null) {
+                m2 = e2.getMessage();
+            }
+            logger.severe("Command execution failed for "+ cmd);
+            SSHCommandExecutionException cee = new SSHCommandExecutionException(StringUtils.cat(":",
+                                            m1));
+            cee.setSSHSettings(sshL.toString());
+            cee.setCommandRun(fullCommand);
+            throw cee;
+            
         } catch (java.lang.InterruptedException ei){
-            logger.severe("remote.connect.interrupt"+ cmd);
-            return 1;
+            ei.printStackTrace();
+            String m1 = ei.getMessage();
+            String m2 = "";
+            Throwable e2 = ei.getCause();
+            if(e2 != null) {
+                m2 = e2.getMessage();
+            }
+            logger.severe("Command interrupted "+ cmd);
+            SSHCommandExecutionException cee = new SSHCommandExecutionException(StringUtils.cat(":",
+                                             m1, m2));
+            cee.setSSHSettings(sshL.toString());
+            cee.setCommandRun(fullCommand);
+            throw cee;
         }
 
-        return 0;
+        return commandStatus;
     }
 }
 

@@ -110,6 +110,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     private AdminCommandContext ctx;
     private String noderef;
     private String nodedir;
+    private String nodeHost;
     private Server instance;
 
     private static final String NL = System.getProperty("line.separator");
@@ -145,6 +146,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             Node n = nodes.getNode(noderef);
             if (n != null) {
                 nodedir = n.getNodeDir();
+                nodeHost = n.getNodeHost();
             } else {
                 msg = Strings.get("missingNode", noderef);
                 logger.severe(msg);
@@ -203,6 +205,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             if (nodedir != null) {
                 map.set("--nodedir", nodedir);
             }
+            try {
             int status = rch.runCommand(noderef, "start-local-instance",
                      map, output);
             if (output.length() > 0) {
@@ -215,6 +218,15 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(output + NL + msg);
              }
+            } catch (SSHCommandExecutionException ec) {
+                String msg = Strings.get("start.ssh.instance.failed", instanceName, ec.getSSHSettings(), ec.getMessage(), nodeHost, ec.getCommandRun());
+                logger.severe(msg);
+                ActionReport report = ctx.getActionReport();
+                msg = Strings.get("start.remote.instance.failed", instanceName);
+                logger.warning(msg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+            }
         } else {
             ActionReport report = ctx.getActionReport();
             String msg = Strings.get("start.remote.instance.failed", instanceName);
