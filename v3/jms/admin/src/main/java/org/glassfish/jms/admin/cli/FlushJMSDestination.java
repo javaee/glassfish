@@ -75,11 +75,12 @@ import org.glassfish.api.admin.ServerEnvironment;
 /**
  * Flush JMS Destination
  *
+ * 
  */
 @Service(name="flush-jmsdest")
 @Scoped(PerLookup.class)
 @I18n("flush.jms.dest")
-@org.glassfish.api.admin.Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@org.glassfish.api.admin.Cluster({RuntimeType.DAS})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 
 public class FlushJMSDestination extends JMSDestination implements AdminCommand {
