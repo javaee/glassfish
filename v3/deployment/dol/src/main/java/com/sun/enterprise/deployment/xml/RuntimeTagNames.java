@@ -339,6 +339,9 @@ public interface RuntimeTagNames extends TagNames {
     public static final String URL_REWRITING_ENABLED = "url-rewriting-enabled";
     public static final String PERSISTENT_STORE_DIR = "persistent-store-dir";
     public static final String SAVE_SESSIONS_ENABLED = "save-sessions-enabled";
+    // servlet-descriptor
+    public static final String SERVLET_DESCRIPTOR = "servlet-descriptor";
+    public static final String RUN_AS_PRINCIPAL_NAME = "run-as-principal-name";
 
     // jsp-descriptor
     public static final String JSP_DESCRIPTOR = "jsp-descriptor";

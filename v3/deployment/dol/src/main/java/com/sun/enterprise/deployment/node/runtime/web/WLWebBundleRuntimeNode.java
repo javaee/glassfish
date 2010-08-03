@@ -83,6 +83,8 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
      * Initialize the child handlers
      */
     protected void Init() {
+        registerElementHandler(new XMLElement(RuntimeTagNames.SERVLET_DESCRIPTOR),
+                WLServletDescriptorNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.CONTAINER_DESCRIPTOR),
                 WLContainerDescriptorNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.SESSION_DESCRIPTOR),
@@ -159,6 +161,10 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
 
         // context-root?
         appendTextChild(root, RuntimeTagNames.CONTEXT_ROOT, bundleDescriptor.getContextRoot());
+
+        // servlet-descriptor
+        WLServletDescriptorNode servletDescriptorNode = new WLServletDescriptorNode();
+        servletDescriptorNode.writeDescriptor(root, bundleDescriptor);
 
         // container-descriptor
         WLContainerDescriptorNode containerDescriptorNode = new WLContainerDescriptorNode();
