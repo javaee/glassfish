@@ -65,6 +65,7 @@ import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.deployment.archivist.DescriptorArchivist;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.config.serverbeans.DasConfig;
+import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.Properties;
@@ -191,6 +192,8 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
             }
         }
 
+        addModuleConfig(dc, application);
+
         return application;
 
     }
@@ -254,6 +257,34 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
 
             // copy the additional webservice elements etc
             applicationArchivist.copyExtraElements(archive, archive2);
+        }
+    }
+
+    private void addModuleConfig(DeploymentContext dc, 
+        Application application) {
+        DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
+        if (!params.origin.isDeploy()) {
+            return;
+        }
+        
+        try {
+            com.sun.enterprise.config.serverbeans.Application app_w = dc.getTransientAppMetaData(com.sun.enterprise.config.serverbeans.Application.APPLICATION, com.sun.enterprise.config.serverbeans.Application.class);
+            if (app_w != null) {
+                if (application.isVirtual()) {
+                    Module modConfig = app_w.createChild(Module.class);
+                    app_w.getModule().add(modConfig);
+                    modConfig.setName(application.getRegistrationName());
+                } else {
+                    for (ModuleDescriptor moduleDesc : 
+                        application.getModules()) {
+                        Module modConfig = app_w.createChild(Module.class);
+                        app_w.getModule().add(modConfig);
+                        modConfig.setName(moduleDesc.getArchiveUri());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Logger.getAnonymousLogger().log(Level.WARNING, "failed to add the module config", e);
         }
     }
 }

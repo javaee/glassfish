@@ -156,7 +156,6 @@ public class ApplicationLifecycle implements Deployment {
 
     protected Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ApplicationLifecycle.class);      
-    final private static String APPLICATION_ELEMENT_NAME = "application";
     
     protected <T extends Container, U extends ApplicationContainer> Deployer<T, U> getDeployer(EngineInfo<T, U> engineInfo) {
         return engineInfo.getDeployer();
@@ -857,7 +856,7 @@ public class ApplicationLifecycle implements Deployment {
             Application app = newBean.createProxy();
             Application app_w = t.enroll(app);
             setInitialAppAttributes(app_w, deployParams, appProps);
-            context.addTransientAppMetaData(APPLICATION_ELEMENT_NAME, app_w);
+            context.addTransientAppMetaData(Application.APPLICATION, app_w);
         } catch(TransactionFailure e) {
             t.rollback();
             throw e;
@@ -887,7 +886,7 @@ public class ApplicationLifecycle implements Deployment {
             try {
                 if (!appRefOnly) {
                     Application app_w = context.getTransientAppMetaData(
-                        APPLICATION_ELEMENT_NAME, Application.class);
+                        Application.APPLICATION, Application.class);
                     // adding the application element
                     setRestAppAttributes(app_w, appProps);
                     Applications apps_w = t.enroll(applications);

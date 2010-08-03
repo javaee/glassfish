@@ -76,6 +76,7 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
     public static final String APPCLIENT_SNIFFER_TYPE = "appclient";
     public static final String JPA_SNIFFER_TYPE = "jpa";
     public static final String WEBSERVICE_SNIFFER_TYPE = "webservices";
+    public static final String APPLICATION = "application";
 
     /**
      * Gets the value of the contextRoot property.

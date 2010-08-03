@@ -359,9 +359,6 @@ public class ModuleInfo {
      * @param module the module being persisted
      */
     public void save(Module module) throws TransactionFailure, PropertyVetoException {
-
-        module.setName(name);
-
         // write out the module properties only for composite app
         if (Boolean.valueOf(moduleProps.getProperty(
             ServerTags.IS_COMPOSITE))) {

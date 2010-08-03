@@ -380,10 +380,8 @@ public class ApplicationInfo extends ModuleInfo {
         }
 
         for (ModuleInfo module : modules) {
-            Module modConfig = app.createChild(Module.class);
-            app.getModule().add(modConfig);
+            Module modConfig = app.getModule(module.getName());
             module.save(modConfig);
-
         }        
     }
 
