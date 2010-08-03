@@ -313,7 +313,7 @@ public interface RuntimeTagNames extends TagNames {
     public final static String JAVA_WEB_START_ACCESS = "java-web-start-access";
     public final static String ELIGIBLE = "eligible";
     public final static String VENDOR = "vendor";
-    public final static String JNLP_DOC = "jnlp-document";
+    public final static String JNLP_DOC = "jnlp-doc";
     // also uses CONTEXT_ROOT defined above in the application-related section
 
 
