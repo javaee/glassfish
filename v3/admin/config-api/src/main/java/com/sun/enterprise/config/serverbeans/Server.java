@@ -431,6 +431,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         String clusterName;
         @Param(name = "node", optional = true)
         String node = null;
+        @Param(name = "checkports", optional = true, defaultValue = "true")
+        boolean checkPorts = true;
         @Inject
         Domain domain;
         @Inject
@@ -589,12 +591,14 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             }
 
             this.addClusterRefs(ourCluster, instance);
-            PortManager pm = new PortManager(ourCluster, ourConfig, domain, instance, logger);
-            String message = pm.process(); // might throw
+            if (checkPorts) {
+                PortManager pm = new PortManager(ourCluster, ourConfig, domain, instance, logger);
+                String message = pm.process(); // might throw
 
-            if(message != null) {
-                ActionReport report = context.getActionReport();
-                report.setMessage(message);
+                if (message != null) {
+                    ActionReport report = context.getActionReport();
+                    report.setMessage(message);
+                }
             }
         }
 
