@@ -48,19 +48,14 @@
         <!beforeCreate
             getRequestValue(key="filterValue" value=>$page{filterValue});
             gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
-            //gf.callRestAndExtractDataProps( endpoint="#{sessionScope.REST_URL}/applications/application/list-components.json" , method="GET"  propsMap="#{requestScope.propsMap}");
-
             gf.restRequest( endpoint="#{sessionScope.REST_URL}/applications/application/list-components.json" , method="GET"  result="#{requestScope.result}");
-
             gf.getDeployedAppsInfo(appPropsMap="#{requestScope.result.data.properties}" filterValue="#{pageSession.filterValue}", filters=>$attribute{filters} result=>$attribute{listOfRows} );
-
             setPageSessionAttribute(key="tableTitle" value="$resource{i18n.deployTable.applications}");
             setPageSessionAttribute(key="editLink" value="/common/applications/applicationEdit.jsf");
             setPageSessionAttribute(key="listPageLink" value="/common/applications/applications.jsf");
             setPageSessionAttribute(key="targetLink" value="/common/applications/targetListing.jsf");
 
-            setPageSessionAttribute(key="hasContextRoot" value="#{true}" );
-            setPageSessionAttribute(key="nextPageLink" value="#{request.contextPath}/common/applications/upload.jsf?cancelPage=#{listPageLink}");
+            setPageSessionAttribute(key="nextPageLink" value="/common/applications/upload.jsf?cancelPage=#{listPageLink}");
             setPageSessionAttribute(key="isLifecycle" value="#{false}");
             setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmUndeploy}");
             

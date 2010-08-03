@@ -40,8 +40,8 @@
     <!beforeCreate
         setSessionAttribute(key="appGeneralTabs" value="general");
         getRequestValue(key="appName" value="#{pageSession.appName}");
+        getRequestValue(key="listPageLink" value="#{pageSession.listPageLink}"  default="/common/applications/applications.jsf");
         urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
-
         setPageSessionAttribute(key="selfUrl" value="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}");
         setPageSessionAttribute(key="appRefUrl" value="#{sessionScope.REST_URL}/servers/server/server/application-ref/#{pageSession.encodedAppName}");
         gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
@@ -119,12 +119,12 @@
                     }
                 }
                 prepareSuccessfulMsg();
-                gf.redirect(page="#{pageSession.editPage}?appName=#{pageSession.encodedAppName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{pageSession.editPage}?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
           />
           </sun:button>
           <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
             <!command
-                gf.redirect(page="#{request.contextPath}/applications/applications.jsf");
+                gf.redirect(page="#{request.contextPath}#{pageSession.listPageLink}");
             />
         </sun:button>
     </sun:panelGroup>

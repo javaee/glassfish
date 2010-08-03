@@ -41,6 +41,7 @@
     <!beforeCreate
         setSessionAttribute(key="appGeneralTabs" value="general");
         getRequestValue(key="appName" value="#{pageSession.appName}");
+        getRequestValue(key="listPageLink" value="#{pageSession.listPageLink}");
         //test the app still exists.
         proxyExist(objectNameStr="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}" exist="#{requestScope.exist}")
         if (! #{requestScope.exist}){
@@ -53,7 +54,7 @@
         if (! #{requestScope.dPage}){
             mapGet(Map="#{requestScope.editMap}"  Key="other"  Value="#{requestScope.dPage}")
         }
-        gf.redirect(page="#{request.contextPath}/#{requestScope.dPage}?appName=#{pageSession.encodedAppName}")
+        gf.redirect(page="#{request.contextPath}/#{requestScope.dPage}?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}")
      />
     </event>
 </define>

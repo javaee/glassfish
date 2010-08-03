@@ -40,8 +40,9 @@
     <!beforeCreate
         setPageSessionAttribute(key="displayVS" value="#{true}");
         setPageSessionAttribute(key="chooseType" value="#{true}");
-        setPageSessionAttribute(key="listPageLink" value="common/applications/applications.jsf");
-        getRequestValue(key="cancelPage" default="#{listPageLink}" value="#{pageSession.cancelPage}");
+        getRequestValue(key="listPageLink" value="#{pageSession.listPageLink}", default="/common/applications/applications.jsf");
+        getRequestValue(key="cancelPage" default="#{pageSession.listPageLink}" value="#{pageSession.cancelPage}" );
+
         setPageSessionAttribute(key="enabled" value="#{true}");
         createMap(result="#{pageSession.deployMap}")
         gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");

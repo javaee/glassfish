@@ -36,7 +36,6 @@
 <!-- applications/deployTable.inc -->
 
 
-
 <sun:table id="deployTable" title="$resource{i18n.deployTable.applications}" sortPanelToggleButton="#{false}"
        deselectMultipleButton="$boolean{true}"
         deselectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
@@ -62,11 +61,11 @@
     </sun:tableColumn>    
         
     <sun:tableColumn headerText="$resource{i18n.deployTable.colName}" sort="name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.name}" url="#{editLink}?appName=#{td.value.name}" />
+        <sun:hyperlink id="link" text="#{td.value.name}" url="#{editLink}?appName=#{td.value.name}&listPageLink=#{pageSession.listPageLink}" />
     </sun:tableColumn>
 
     <sun:tableColumn rendered="#{!pageSession.onlyDASExist}" headerText="$resource{i18n.deployTable.colStatus}" sort="enabled" rowHeader="$boolean{true}" id="col2">
-        <sun:hyperlink rendered="#{!pageSession.onlyDASExist}" id="targetLink" text="#{td.value.enableURL}" url="#{targetLink}?appName=#{td.value.name}" />
+        <sun:hyperlink rendered="#{!pageSession.onlyDASExist}" id="targetLink" text="#{td.value.enableURL}" url="#{targetLink}?appName=#{td.value.name}&listPageLink=#{pageSession.listPageLink}" />
     </sun:tableColumn>
 
     <sun:tableColumn  rendered="#{pageSession.onlyDASExist}" headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col22">
@@ -114,11 +113,11 @@
 
         "&#160;|&#160;
 
-        <sun:hyperlink id="restartLink" text="$resource{i18n.deployTable.reload}">
+        <sun:hyperlink id="reloadLink" text="$resource{i18n.deployTable.reload}">
             <!command
                 prepareSuccessfulMsg();
                 gf.reloadApplication(appName="#{td.value.name}");
-                gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{request.contextPath}/#{pageSession.listPageLink}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />
         </sun:hyperlink>
         

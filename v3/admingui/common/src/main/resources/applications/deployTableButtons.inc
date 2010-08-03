@@ -42,8 +42,9 @@
         />
         <sun:button id="deployButton" text="$resource{i18n.button.Deploy}" primary="#{true}">
                 <!command
-                    println("======================= redirect to #{pageSession.nextPageLink}") 
-		    gf.redirect(page="#{pageSession.nextPageLink}") />
+
+                    println("xxxxxxxxxxxxxxxxxxxxxxxx #{pageSession.nextPageLink}&listPageLink=#{pageSession.listPageLink}")
+		    gf.redirect(page="#{pageSession.nextPageLink}&listPageLink=#{pageSession.listPageLink}") />
         </sun:button>
         <sun:button id="button1" text="$resource{i18n.button.Undeploy}" disabled="#{true}" primary="#{false}"
                 onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
@@ -86,7 +87,7 @@
             <!command
                 setAttribute(key="click" value="$this{component}");
                 setAttribute(key="filterValue" value="#{click.selected}");
-                gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf?serverName=#{serverName}&filterValue=${filterValue}" );
+                gf.redirect(page="#{request.contextPath}/#{pageSession.listPageLink}?filterValue=${filterValue}" );
             />
         </sun:dropDown>
 

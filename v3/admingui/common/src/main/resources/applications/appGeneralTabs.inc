@@ -39,22 +39,21 @@
     <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.General} Tab" >
         <!command
             setSessionAttribute(key="appGeneralTabs" value="general");
-            gf.redirect(page="#{request.contextPath}/common/applications/applicationEdit.jsf?appName=#{pageSession.encodedAppName}");
+            gf.redirect(page="#{request.contextPath}/common/applications/applicationEdit.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}");
         />       
     </sun:tab>
     
     <sun:tab id="descriptorTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}" toolTip="$resource{i18n.common.DescriptorTab} Tab">
         <!command
             setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
-            gf.redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{pageSession.encodedAppName}");
+            gf.redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}");
         />
     </sun:tab>
 
      <sun:tab id="targetTab" rendered="#{!pageSession.onlyDASExist}" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}" toolTip="$resource{i18n.common.TargetTab} Tab">
         <!command
             setSessionAttribute(key="appGeneralTabs" value="targetTab");
-println("#{request.contextPath}/common/applications/targetListing.jsf?appName=#{pageSession.encodedAppName}");
-            gf.redirect(page="#{request.contextPath}/common/applications/targetListing.jsf?appName=#{pageSession.encodedAppName}");
+            gf.redirect(page="#{request.contextPath}/common/applications/targetListing.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}");
         />
     </sun:tab>
 </sun:tabSet>

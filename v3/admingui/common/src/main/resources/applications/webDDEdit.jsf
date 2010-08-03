@@ -41,6 +41,7 @@
             setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
             getRequestValue(key="appName" value="#{pageSession.appName}");
             urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
+            getRequestValue(key="listPageLink" value="#{pageSession.listPageLink}"  default="/common/applications/applications.jsf");
             getDeploymentDescriptorList(appName="#{pageSession.appName}"  descriptors="#{requestScope.descriptors}");
         />
     </event>

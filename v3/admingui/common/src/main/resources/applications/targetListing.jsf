@@ -49,6 +49,7 @@
             setSessionAttribute(key="appGeneralTabs" value="targetTab");
             getRequestValue(key="appName" value="#{pageSession.appName}");
             urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
+            getRequestValue(key="listPageLink" value="#{pageSession.listPageLink}"  default="/common/applications/applications.jsf");
             gf.getTargetListInfo(appName="#{pageSession.appName}" result=>$attribute{listOfRows} );
         />
     </event>
@@ -80,7 +81,7 @@
                         setAttribute(key="name" value="#{name}");
                         setAttribute(key="targetPage" value="#{targetPage}");
                         setAttribute(key="targetPageHelp" value="#{targetPageHelp}");
-                        gf.redirect(page="#{request.contextPath}/common/applications/manageTargets.jsf?appName=#{pageSession.encodedAppName}");
+                        gf.redirect(page="#{request.contextPath}/common/applications/manageTargets.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}");
                 />
             </sun:button>
 
@@ -108,7 +109,7 @@
                     if( ${actionValue}=lb-disable){
                         gf.changeTargetStatus(selectedRows="${selectedRows}"  Enabled="#{false}" forLB="$boolean{true}")
                     }
-                    gf.redirect(page="#{request.contextPath}/common/applications/targetListing.jsf?appName=#{pageSession.encodedAppName}");
+                    gf.redirect(page="#{request.contextPath}/common/applications/targetListing.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}");
                 />
             </sun:dropDown>
          </sun:panelGroup>
