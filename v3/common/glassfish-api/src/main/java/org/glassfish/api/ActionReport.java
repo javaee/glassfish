@@ -92,7 +92,10 @@ public abstract class ActionReport {
      * This is more of a convenience to the caller.
      */
     public final void failure(Logger logger, String message, Throwable e) {
-        logger.log(Level.SEVERE, message ,e);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, message,e );
+        }
+        logger.log(Level.SEVERE, message);
         if (e!=null) {
             setMessage(message + " : "+ e.toString());
         } else {

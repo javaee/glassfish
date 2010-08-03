@@ -43,6 +43,7 @@ import com.sun.enterprise.deployment.web.AppListenerDescriptor;
 import com.sun.enterprise.deployment.web.ServletFilter;
 import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -86,16 +87,17 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
 
     /**
      * This scanner will scan the archiveFile for annotation processing.
-     * @param archiveFile
-     * @param webBundleDesc
-     * @param classLoader
+     * @param readableArchive the archive to process
+     * @param webBundleDesc existing bundle descriptor to add to
+     * @param classLoader classloader to load archive classes with.
      */
     @Override
     public void process(ReadableArchive readableArchive, WebBundleDescriptor webBundleDesc,
-            ClassLoader classLoader) throws IOException {
+            ClassLoader classLoader, Parser parser) throws IOException {
 
         this.archiveFile =  new File(readableArchive.getURI()); 
         this.classLoader = classLoader;
+        this.classParser = parser;
 
         if (AnnotationUtils.getLogger().isLoggable(Level.FINE)) {
             AnnotationUtils.getLogger().fine("archiveFile is " + archiveFile);
@@ -110,6 +112,7 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
 
         if (isScanOtherLibraries()) {
             addLibraryJars(webBundleDesc, readableArchive);
+            calculateResults();
             return;
         }
 
@@ -136,6 +139,7 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
             }
             scanXmlDefinedClassesIfNecessary(webBundleDesc);
         }
+        calculateResults();
     }
 
     // This is not mandated by the spec. It is for WSIT.

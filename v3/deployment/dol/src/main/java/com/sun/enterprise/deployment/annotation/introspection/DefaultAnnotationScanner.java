@@ -76,4 +76,9 @@ public class DefaultAnnotationScanner implements AnnotationScanner,
     public void postConstruct() {
         annotations = factory.getAnnotations();
     }
+
+    @Override
+    public Set<String> getAnnotations() {
+        return AbstractAnnotationScanner.constantPoolToFQCN(annotations);
+    }
 }

@@ -205,7 +205,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
         final InjectionResolver<Param> delegate = injector;
         return new InjectionResolver<Param>(Param.class) {
             @Override
-            public <V> V getValue(Object component, AnnotatedElement annotated, Class<V> type) throws ComponentException {
+            public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement annotated, Class<V> type) throws ComponentException {
                 if (type.isAssignableFrom(List.class)) {
                     final List<ConfigBeanProxy> values;
                     try {
@@ -236,7 +236,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                         logger.severe(msg);
                         throw new ComponentException(msg, e);
                     }
-                    Object value = delegate.getValue(component, annotated, type);
+                    Object value = delegate.getValue(component, null, annotated, type);
                     if (value==null) {
                         if (logger.isLoggable(level)) {
                             logger.log(level, "Value of " + annotated.toString() + " is null");
@@ -306,10 +306,8 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                                     return annotated;
                                 }
 
-
-
                                 @Override
-                                public <V> V getValue(Object component, AnnotatedElement annotated, Class<V> type) throws ComponentException {
+                                public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement annotated, Class<V> type) throws ComponentException {
                                     String name = annotated.getAnnotation(Attribute.class).value();
                                     if (name==null || name.length()==0) {
 
@@ -339,7 +337,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                     }
                     return null;
                 }
-                return delegate.getValue(component, annotated, type);
+                return delegate.getValue(component, null, annotated, type);
             }
 
             @Override

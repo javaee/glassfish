@@ -37,6 +37,10 @@
 
 package com.sun.enterprise.v3.server;
 
+import org.glassfish.hk2.classmodel.reflect.AnnotationModel;
+import org.glassfish.hk2.classmodel.reflect.AnnotationType;
+import org.glassfish.hk2.classmodel.reflect.Type;
+import org.glassfish.hk2.classmodel.reflect.Types;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.*;
@@ -48,6 +52,7 @@ import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.internal.api.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
@@ -180,25 +185,13 @@ public class SnifferManagerImpl implements SnifferManager {
      * @return possibly empty collection of sniffers that handle the passed
      * archive.
      */
-    public Collection<Sniffer> getCompositeSniffers(DeploymentContext context) {
+    public Collection<CompositeSniffer> getCompositeSniffers(DeploymentContext context) {
         // it is important to keep an ordered sequence here to keep sniffers
         // in their natural order.
-        List<Sniffer> appSniffers = new ArrayList<Sniffer>();
 
-        // scan for registered annotations and retrieve applicable sniffers
-        SnifferAnnotationScanner snifferAnnotationScanner = 
-            new SnifferAnnotationScanner();
-
-        for (CompositeSniffer sniffer : getCompositeSniffers()) {
-            snifferAnnotationScanner.register(sniffer, 
-                sniffer.getAnnotationTypes());        
-        }
-
-        // we only scan archive when there are annotations registered
-        if (!snifferAnnotationScanner.getRegisteredAnnotations().isEmpty()) {
-            snifferAnnotationScanner.scanArchive(context.getSource());      
-            appSniffers.addAll(snifferAnnotationScanner.getApplicableSniffers());
-        }
+        List<CompositeSniffer> appSniffers =
+                getApplicableSniffers(getCompositeSniffers(),
+                        context.getModuleMetaData(Types.class));
 
         // call handles method of the sniffers
         for (CompositeSniffer sniffer : getCompositeSniffers()) {
@@ -210,7 +203,23 @@ public class SnifferManagerImpl implements SnifferManager {
         return appSniffers;
     }
 
-    public void validateSniffers(Collection<Sniffer> snifferCol, DeploymentContext context) {
+    public <T extends Sniffer> List<T> getApplicableSniffers(Collection<T> sniffers, Types types) {
+        List<T> result = new ArrayList<T>();
+        for (T sniffer : sniffers) {
+            for (Class<? extends Annotation> annotationType : sniffer.getAnnotationTypes())  {
+                Type type = types.getBy(annotationType.getName());
+                if (type instanceof AnnotationType) {
+                    if (!((AnnotationType) type).allAnnotatedTypes().isEmpty()) {
+                        result.add(sniffer);
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public void validateSniffers(Collection<? extends Sniffer> snifferCol, DeploymentContext context) {
         for (Sniffer sniffer : snifferCol) {
             String[] incompatTypes = sniffer.getIncompatibleSnifferTypes();
             if (incompatTypes==null)

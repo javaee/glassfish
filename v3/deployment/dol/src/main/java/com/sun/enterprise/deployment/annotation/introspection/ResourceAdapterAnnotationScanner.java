@@ -81,4 +81,9 @@ public class ResourceAdapterAnnotationScanner implements AnnotationScanner {
         annotations.add("Ljavax/resource/spi/ConnectionDefinitions;");
         annotations.add("Ljavax/resource/spi/SecurityPermission;");
     }
+
+    @Override
+    public Set<String> getAnnotations() {
+        return AbstractAnnotationScanner.constantPoolToFQCN(annotations);
+    }
 }

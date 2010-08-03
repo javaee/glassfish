@@ -36,6 +36,7 @@
 
 package org.glassfish.web.embed.impl;
 
+import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.embedded.web.WebBuilder;
@@ -68,7 +69,8 @@ public class EmbeddedWebArchivist extends WebArchivist {
             final Set<Class> elements = new HashSet<Class>();
 
             @Override
-            public void process(ReadableArchive archiveFile, Object bundleDesc, ClassLoader classLoader) throws IOException {
+            public void process(ReadableArchive archiveFile, Object bundleDesc, ClassLoader classLoader, Parser parser)
+                    throws IOException {
                 // in embedded mode, we don't scan archive, we just process all classes.
                 Enumeration<String> entries = archiveFile.entries();
                 while (entries.hasMoreElements()) {

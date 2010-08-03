@@ -36,9 +36,11 @@
  */
 package org.glassfish.config.support;
 
+import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.universal.Duration;
 import com.sun.enterprise.universal.NanoDuration;
 import com.sun.enterprise.util.EarlyLogger;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
@@ -86,8 +88,11 @@ public abstract class DomainXml implements Populator {
     @Inject
     ServerEnvironmentImpl env;
 
+    final static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(DomainXml.class);    
+
     @Override
-    public void run(ConfigParser parser) {
+    public void run(ConfigParser parser) throws BootException {
         EarlyLogger.add(Level.FINE, "Startup class : " + this.getClass().getName());
 
         habitat.addComponent("parent-class-loader",
@@ -97,8 +102,7 @@ public abstract class DomainXml implements Populator {
             parseDomainXml(parser, getDomainXml(env), env.getInstanceName());
         }
         catch (IOException e) {
-            // TODO: better exception handling scheme
-            throw new RuntimeException("Failed to parse domain.xml", e);
+            throw new BootException(localStrings.getLocalString("ConfigParsingFailed","Failed to parse domain.xml"), e);
         }
 
         // run the upgrades...

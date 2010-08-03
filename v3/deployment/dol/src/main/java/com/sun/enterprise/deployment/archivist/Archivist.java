@@ -59,6 +59,7 @@ import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.InstalledLibrariesResolver;
+import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.ComponentException;
@@ -145,6 +146,8 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     
     protected T descriptor;
 
+    private Map<Class<?>, Object> extraData=new HashMap<Class<?>, Object>();
+
     @Inject
     Habitat habitat;
 
@@ -176,6 +179,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         validationLevel = other.validationLevel;
         classLoader = other.classLoader;
         annotationErrorHandler = other.annotationErrorHandler;
+        extraData.putAll(other.extraData);
     }
 
     /**
@@ -194,6 +198,22 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      */
     public T getDescriptor() {
         return descriptor;
+    }
+
+    /**
+     * Returns any data that could have been calculated as part of
+     * the descriptor loading.
+     *
+     * @param dataType the type of the extra data
+     * @return the extra data or null if there are not an instance of
+     * type dataType registered.
+     */
+    public <U> U getExtraData(Class<U> dataType) {
+        return dataType.cast(extraData.get(dataType));
+    }
+
+    public synchronized <U> void setExtraData(Class<U> dataType, U instance) {
+        extraData.put(dataType, instance);
     }
 
 
@@ -539,7 +559,9 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             return null;
         }
 
-        scanner.process(archive, bundleDesc, classLoader);
+        Parser parser = getExtraData(Parser.class);
+
+        scanner.process(archive, bundleDesc, classLoader, parser);
 
         if (!scanner.getElements().isEmpty()) {
             if (bundleDesc.isDDWithNoAnnotationAllowed()) {

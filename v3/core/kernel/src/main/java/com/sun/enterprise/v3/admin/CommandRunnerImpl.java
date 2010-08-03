@@ -71,11 +71,7 @@ import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.InjectionManager;
-import org.jvnet.hk2.component.UnsatisfiedDependencyException;
-import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.*;
 import com.sun.hk2.component.InjectionResolver;
 
 import com.sun.enterprise.universal.GFBase64Decoder;
@@ -339,7 +335,6 @@ public class CommandRunnerImpl implements CommandRunner {
      *
      * @param model model of the command (used for logging and reporting)
      * @param command the command service to execute
-     * @param injector injector capable of populating the command parameters
      * @param context the AdminCommandcontext that has the payload and report
      */
     private ActionReport doCommand(
@@ -1224,8 +1219,7 @@ public class CommandRunnerImpl implements CommandRunner {
         }
 
         @Override
-        public <V> V getValue(Object component, AnnotatedElement target,
-                                        Class<V> type) throws ComponentException {
+        public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement target, Class<V> type) throws ComponentException {
 
             // look for the name in the list of parameters passed.
             if (target instanceof Field) {

@@ -37,6 +37,8 @@ package com.sun.enterprise.deployment.annotation.introspection;
 
 import org.jvnet.hk2.annotations.Contract;
 
+import java.util.Set;
+
 /**
  * This interface allows custom annotation scanner to be created.
  *
@@ -53,4 +55,12 @@ public interface AnnotationScanner {
      * @return true if it is an annotation reference
      */
     public boolean isAnnotation(String value);
+
+    /**
+     * Returns a list of FQCN of annotations we are interested in.
+     *
+     * @return a list of fully qualified class name list of annotations.
+     */
+    public Set<String> getAnnotations();
+
 }

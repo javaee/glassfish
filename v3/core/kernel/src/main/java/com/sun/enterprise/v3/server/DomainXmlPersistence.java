@@ -74,7 +74,7 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
     final XMLOutputFactory xmlFactory = XMLOutputFactory.newInstance();
 
     final static LocalStringManagerImpl localStrings =
-            new LocalStringManagerImpl(ParamTokenizer.class);    
+            new LocalStringManagerImpl(DomainXmlPersistence.class);    
 
 
     private ManagedFile getConfigFile() throws IOException {

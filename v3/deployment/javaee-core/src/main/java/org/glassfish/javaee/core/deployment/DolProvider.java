@@ -37,6 +37,8 @@
 
 package org.glassfish.javaee.core.deployment;
 
+import org.glassfish.hk2.classmodel.reflect.Parser;
+import org.glassfish.hk2.classmodel.reflect.Types;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -135,6 +137,9 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
         ApplicationHolder holder = dc.getModuleMetaData(ApplicationHolder.class);
         File deploymentPlan = params.deploymentplan;
         handleDeploymentPlan(deploymentPlan, archivist, sourceArchive, holder);
+        
+        archivist.setExtraData(Types.class, dc.getModuleMetaData(Types.class));
+        archivist.setExtraData(Parser.class, dc.getModuleMetaData(Parser.class));
 
         long start = System.currentTimeMillis();
         Application application=null;

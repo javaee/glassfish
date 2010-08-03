@@ -63,6 +63,7 @@
         </developer>
     </developers>
     <build>
+    	<sourceDirectory>src/main/java</sourceDirectory>
         <resources>
             <resource>
                 <directory>src/main/java/org/glassfish/apf</directory>

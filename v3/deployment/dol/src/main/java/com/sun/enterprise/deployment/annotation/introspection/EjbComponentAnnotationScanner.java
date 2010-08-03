@@ -84,4 +84,10 @@ public class EjbComponentAnnotationScanner implements AnnotationScanner {
         annotations.add("Ljavax/ejb/MessageDriven;");
         annotations.add("Ljavax/ejb/Singleton;");
     }
+
+    @Override
+    public Set<String> getAnnotations() {
+
+        return AbstractAnnotationScanner.constantPoolToFQCN(annotations);
+    }
 }

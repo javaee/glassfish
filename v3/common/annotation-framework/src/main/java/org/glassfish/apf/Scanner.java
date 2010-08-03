@@ -36,6 +36,7 @@
 
 package org.glassfish.apf;
 
+import org.glassfish.hk2.classmodel.reflect.Types;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.util.Set;
@@ -80,5 +81,11 @@ public interface Scanner<T> {
      * @param componentImpl class of the component.
      */
     public ComponentInfo getComponentInfo(Class componentImpl);
+
+    /**
+     * Return the types information for this module
+     * @return types the archive resulting types
+     */
+    public Types getTypes();
     
 }

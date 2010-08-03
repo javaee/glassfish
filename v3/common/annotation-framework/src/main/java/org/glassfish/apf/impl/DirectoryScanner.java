@@ -47,6 +47,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import org.glassfish.apf.Scanner;
+import org.glassfish.hk2.classmodel.reflect.Parser;
+import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+import org.glassfish.hk2.classmodel.reflect.Types;
 
 /**
  * Implementation of the Scanner interface for a directory
@@ -70,6 +73,7 @@ public class DirectoryScanner extends JavaEEScanner implements Scanner {
     
     private void init(File directory) throws java.io.IOException {
         init(directory, directory);
+        initTypes(directory);
     } 
     
     private void init(File top, File directory) throws java.io.IOException {

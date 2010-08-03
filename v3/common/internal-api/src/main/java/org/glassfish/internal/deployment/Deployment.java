@@ -204,7 +204,7 @@ public interface Deployment {
             DeploymentContext context) throws Exception;
 
     public List<EngineInfo> setupContainerInfos(final ArchiveHandler handler,
-            Collection<Sniffer> sniffers, DeploymentContext context)
+            Collection<? extends Sniffer> sniffers, DeploymentContext context)
              throws Exception;
 
     public boolean isRegistered(String appName);

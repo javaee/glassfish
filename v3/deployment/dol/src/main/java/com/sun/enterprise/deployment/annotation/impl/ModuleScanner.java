@@ -50,6 +50,7 @@ import java.util.zip.ZipException;
 import org.glassfish.apf.Scanner;
 import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.apf.impl.JavaEEScanner;
+import org.glassfish.hk2.classmodel.reflect.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.deployment.common.DeploymentUtils;
@@ -90,6 +91,10 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
     protected File archiveFile = null;
     protected ClassLoader classLoader = null;
     protected ClassFile classFile = null;
+    protected Parser classParser = null;
+
+    private Set<URI> scannedURI = new HashSet<URI>();
+
     private boolean processAllClasses = Boolean.getBoolean("com.sun.enterprise.deployment.annotation.processAllClasses");
 
     
@@ -98,11 +103,20 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
     protected Logger logger = LogDomains.getLogger(DeploymentUtils.class, 
         LogDomains.DPL_LOGGER);
 
-    public void process(ReadableArchive archiveFile, 
-            T bundleDesc, ClassLoader classLoader) throws IOException {
-        File file = new File(archiveFile.getURI()); 
+    public void process(ReadableArchive archiveFile,
+            T bundleDesc, ClassLoader classLoader, Parser parser) throws IOException {
+        File file = new File(archiveFile.getURI());
+        if (parser!=null) {
+            classParser = parser;
+        } else {
+            ParsingContext.Builder builder = new ParsingContext.Builder();
+            builder.logger(logger);
+            ParsingContext pc = builder.build();
+            classParser = new Parser(pc);
+        }
         process(file, bundleDesc, classLoader);
         completeProcess(bundleDesc, archiveFile);
+        calculateResults();
     }
 
     /**
@@ -118,6 +132,60 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
      */
     protected void completeProcess(T bundleDescr, ReadableArchive archive) throws IOException {
         addLibraryJars(bundleDescr, archive);
+    }
+
+    protected void calculateResults() {
+        try {
+            classParser.awaitTermination();
+        } catch (InterruptedException e) {
+            logger.log(Level.SEVERE, "Annotation scanning interrupted", e);
+            return;
+        }
+        Level logLevel = (System.getProperty("glassfish.deployment.dump.scanning")!=null?Level.INFO:Level.FINE);
+        boolean shouldLog = logger.isLoggable(logLevel);
+        ParsingContext context = classParser.getContext();
+        for (String annotation: defaultScanner.getAnnotations()) {
+            Type type = context.getTypes().getBy(annotation);
+
+            // we never found anyone using that type
+            if (type==null) continue;
+
+            // is it an annotation
+            if (type instanceof AnnotationType) {
+                AnnotationType at = (AnnotationType) type;
+                for (AnnotatedElement ae : at.allAnnotatedTypes()) {
+                    // if it is a member (field, method), let's retrieve the declaring type
+                    // otherwise, use the annotated type directly.
+                    Type t = (ae instanceof Member?((Member) ae).getDeclaringType():(Type) ae);
+                    if (t.wasDefinedIn(scannedURI)) {
+                        if (shouldLog) {
+                            logger.log(logLevel, "Adding " + t.getName()
+                                    + " since " + ae.getName() + " is annotated with " + at.getName());
+                        }
+                        entries.add(t.getName());
+                    }
+                }
+
+            } else
+            // or is it an interface ?
+            if (type instanceof InterfaceModel) {
+                InterfaceModel im = (InterfaceModel) type;
+                for (ClassModel cm : im.allImplementations()) {
+                    if (shouldLog) {
+                        logger.log(logLevel, "Adding " + cm.getName()
+                                + " since it is implementing " + im.getName());
+                    }
+                    entries.add(cm.getName());
+                }
+            } else {
+                logger.log(Level.SEVERE, "Inconsistent type definition, " + annotation +
+                        " is neither an annotation nor an interface");
+            }
+        }
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Done with results");
+        }
+
     }
 
     /**
@@ -142,9 +210,6 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
      * @param jarFile
      */
     protected void addScanJar(File jarFile) throws IOException {
-        JarFile jf = null;
-
-
         try {
             /*
              * An app might refer to a non-existent JAR in its Class-Path.  Java
@@ -153,33 +218,26 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
             if ( ! jarFile.exists()) {
                 return;
             }
-            jf = new JarFile(jarFile);
-            Enumeration<JarEntry> entriesEnum = jf.entries();
-            while(entriesEnum.hasMoreElements()) {
-                JarEntry je = entriesEnum.nextElement();
-                if (je.getName().endsWith(".class")) {
-                    if (processAllClasses) {
+            scannedURI.add(jarFile.toURI());
+            if (processAllClasses) {
+                JarFile jf=null;
+                try {
+                    jf = new JarFile(jarFile);
+                Enumeration<JarEntry> entriesEnum = jf.entries();
+                while(entriesEnum.hasMoreElements()) {
+                    JarEntry je = entriesEnum.nextElement();
+                    if (je.getName().endsWith(".class")) {
                         addEntry(je);
-                    } else {
-                        // check if it contains top level annotations...
-                        ReadableByteChannel channel = Channels.newChannel(jf.getInputStream(je));
-                        if (channel!=null) {
-                            if (classFile.containsAnnotation(channel, je.getSize())) {
-                                addEntry(je);
-                            }
-
-                            channel.close();
-                        }
                     }
                 }
+                } finally {
+                    if (jf!=null) jf.close();
+                }
+            } else {
+                classParser.parse(jarFile, null);
             }
         } catch (ZipException ze) {
             logger.log(Level.WARNING, ze.getMessage() +  ": file path: " + jarFile.getPath());
-        }
-        finally {
-            if (jf != null) {
-                jf.close();
-            }
         }
     }
     
@@ -188,6 +246,7 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
      * @param jarURI
      */
     protected void addScanURI(final URI jarURI) {
+        scannedURI.add(jarURI);
         JarInputStream jis = null;
         try {
             final InputStream jarInputStream = jarURI.toURL().openStream();
@@ -256,31 +315,22 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
      * param directory
      */
     protected void addScanDirectory(File directory) throws IOException {
-        initScanDirectory(directory, directory);
+        scannedURI.add(directory.toURI());
+        if (processAllClasses) {
+            initScanDirectory(directory, directory);
+        } else {
+            classParser.parse(directory, null);
+        }
     } 
     
     private void initScanDirectory(File top, File directory) throws IOException {
-   
+
         File[] files = directory.listFiles();
         for (File file : files) {
             if (file.isFile()) {
                 String fileName = file.getPath();
                 if (fileName.endsWith(".class")) {
-                    if (processAllClasses) {
-                        addEntry(top, file);
-                    } else {
-                        FileInputStream fis = null;
-                        try {
-                            fis = new FileInputStream(file);
-                            if (classFile.containsAnnotation(fis.getChannel(), file.length())) {
-                                addEntry(top, file);
-                            }
-                        } finally {
-                            if (fis != null) {
-                                fis.close();
-                            }
-                        }
-                    }
+                    addEntry(top, file);
                 }
             } else {
                 initScanDirectory(top, file);
@@ -348,5 +398,10 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
                 logger.log(Level.WARNING, ex.getMessage());
             }
         }       
+    }
+
+    @Override
+    public Types getTypes() {
+        return classParser.getContext().getTypes();
     }
 }

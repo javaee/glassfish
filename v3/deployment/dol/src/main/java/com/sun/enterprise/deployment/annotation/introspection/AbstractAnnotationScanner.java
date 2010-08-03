@@ -80,4 +80,20 @@ public abstract class AbstractAnnotationScanner implements AnnotationScanner {
         }
         return annotations.contains(value);
     }
+
+    @Override
+    public Set<String> getAnnotations() {
+        return constantPoolToFQCN(annotations);
+    }
+
+    public static Set<String> constantPoolToFQCN(Set<String> annotations) {
+        // for now I transform ConstantPoolInfo type in FQCN
+        Set<String> fqcns = new HashSet<String>();
+        for (String annotation : annotations) {
+            String fqcn = annotation.substring(1, annotation.length()-1).replaceAll("/",".");
+            fqcns.add(fqcn);
+        }
+        return fqcns;
+    }
 }
+

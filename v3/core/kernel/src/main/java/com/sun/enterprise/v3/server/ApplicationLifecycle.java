@@ -37,6 +37,8 @@
 package com.sun.enterprise.v3.server;
 
 import org.glassfish.deployment.common.ApplicationConfigInfo;
+import org.glassfish.hk2.classmodel.reflect.Parser;
+import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import org.jvnet.hk2.config.types.Property;
@@ -271,6 +273,15 @@ public class ApplicationLifecycle implements Deployment {
             ClassLoaderHierarchy clh = habitat.getByContract(ClassLoaderHierarchy.class);
             context.createDeploymentClassLoader(clh, handler);
 
+            // scan the jar and store the result in the deployment context.
+            ReadableArchiveScannerAdapter scannerAdapter = new ReadableArchiveScannerAdapter(context.getSource());
+            ParsingContext parsingContext = new ParsingContext.Builder().logger(context.getLogger()).build();
+            Parser parser = new Parser(parsingContext);
+            parser.parse(scannerAdapter, null);
+            parser.awaitTermination();
+            context.addModuleMetaData(parsingContext.getTypes());
+            context.addModuleMetaData(parser);
+
             final ClassLoader cloader = context.getClassLoader();
             final ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
@@ -378,6 +389,7 @@ public class ApplicationLifecycle implements Deployment {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             report.failure(logger, "Exception while deploying the app", e);
             tracker.actOn(logger);
             return null;
@@ -432,7 +444,7 @@ public class ApplicationLifecycle implements Deployment {
 
     // set up containers and prepare the sorted ModuleInfos
     public List<EngineInfo> setupContainerInfos(final ArchiveHandler handler,
-            Collection<Sniffer> sniffers, DeploymentContext context)
+            Collection<? extends Sniffer> sniffers, DeploymentContext context)
              throws Exception {
 
         final ActionReport report = context.getActionReport();

@@ -58,6 +58,7 @@ import org.junit.Test;
  * @author bnevins
  */
 @SuppressWarnings({"StaticNonFinalField"})
+@Ignore
 public class MiniXmlParserTest {
     private static File hasProfiler;
 

@@ -41,6 +41,8 @@ import java.net.URISyntaxException;
 import java.util.logging.Logger;
 import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.hk2.classmodel.reflect.Parser;
+import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
@@ -72,12 +74,21 @@ public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor>
     private static final Class[] managedBeanAnnotations = new Class[] {javax.annotation.ManagedBean.class}; 
 
     @Override
-    public void process(ReadableArchive archive, ApplicationClientDescriptor bundleDesc, ClassLoader classLoader) throws IOException {
+    public void process(ReadableArchive archive, ApplicationClientDescriptor bundleDesc, ClassLoader classLoader, Parser parser) throws IOException {
         /*
          * This essentially duplicates
          */
+        if (parser!=null) {
+            classParser = parser;
+        } else {
+            ParsingContext.Builder builder = new ParsingContext.Builder();
+            builder.logger(logger);
+            ParsingContext pc = builder.build();
+            classParser = new Parser(pc);
+        }
         doProcess(archive, bundleDesc, classLoader);
         completeProcess(bundleDesc, archive);
+        calculateResults();
     }
 
     public void process(File archiveFile, ApplicationClientDescriptor bundleDesc, ClassLoader classLoader) throws IOException {

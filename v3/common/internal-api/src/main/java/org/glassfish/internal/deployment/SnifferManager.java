@@ -111,5 +111,5 @@ public interface SnifferManager {
      * @return possibly empty collection of sniffers that handle the passed
      * archive.
      */
-    public Collection<Sniffer> getCompositeSniffers(DeploymentContext context);    
+    public Collection<CompositeSniffer> getCompositeSniffers(DeploymentContext context);    
 }

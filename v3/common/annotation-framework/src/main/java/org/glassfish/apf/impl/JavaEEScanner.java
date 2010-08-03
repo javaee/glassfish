@@ -46,14 +46,40 @@
 package org.glassfish.apf.impl;
 
 import org.glassfish.apf.ComponentInfo;
+import org.glassfish.hk2.classmodel.reflect.Parser;
+import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+import org.glassfish.hk2.classmodel.reflect.Types;
+
+import java.io.File;
+import java.io.IOException;
+
 /**
  * Super class for all JavaEE scanners
  *
  * @author Jerome Dochez
  */
 public abstract class JavaEEScanner {
+
+    Types types;
     
     public ComponentInfo getComponentInfo(Class componentImpl){
         return new ComponentDefinition(componentImpl);
     }
+
+    protected void initTypes(File file) throws IOException {
+        ParsingContext context = new ParsingContext.Builder().build();
+        Parser cp = new Parser(context);
+        cp.parse(file, null);
+        try {
+            cp.awaitTermination();
+        } catch (InterruptedException e) {
+            throw new IOException(e);
+        }
+        types = cp.getContext().getTypes();
+    }
+
+    public Types getTypes() {
+        return types;
+    }
+
 }

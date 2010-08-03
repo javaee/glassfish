@@ -46,6 +46,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.CommandModel;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.jvnet.hk2.component.Inhabitant;
 
 
 /**
@@ -83,8 +84,7 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
     }
 
     @Override
-    public Object getValue(Object component, AnnotatedElement target,
-				Class type) throws ComponentException {
+    public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement target, Class<V> type) throws ComponentException {
 	// look for the name in the list of parameters passed.
 	Param param = target.getAnnotation(Param.class);
 	String paramName = CommandModel.getParamName(param, target);
@@ -107,7 +107,7 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
                 }
 		// let's also copy this value to the cmd with a real name
 		parameters.set(paramName, value);
-		return convertListToObject(target, type, value);
+		return (V) convertListToObject(target, type, value);
 	    }
 	}
 	String paramValueStr = getParamValueString(parameters, param, target);
@@ -123,10 +123,10 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
         }
 	checkAgainstAcceptableValues(target, paramValueStr);
 	if (paramValueStr != null) {
-	    return convertStringToObject(target, type, paramValueStr);
+	    return (V) convertStringToObject(target, type, paramValueStr);
 	}
 	// return default value
-	return getParamField(component, target);
+	return (V) getParamField(component, target);
     }
 
     /**

@@ -77,6 +77,7 @@ public class JarScanner extends JavaEEScanner implements Scanner<Object> {
                 jf.close();
             }
         }
+        initTypes(jarFile);
     }    
     
     public ClassLoader getClassLoader() {
@@ -115,5 +116,6 @@ public class JarScanner extends JavaEEScanner implements Scanner<Object> {
         return elements;
     }
     
-    
+
+
 }
