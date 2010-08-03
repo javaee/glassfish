@@ -222,7 +222,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
                 String msg = Strings.get("start.ssh.instance.failed", instanceName, ec.getSSHSettings(), ec.getMessage(), nodeHost, ec.getCommandRun());
                 logger.severe(msg);
                 ActionReport report = ctx.getActionReport();
-                msg = Strings.get("start.remote.instance.failed", instanceName);
+                msg = Strings.get("start.remote.instance.failed", instanceName, nodeHost, ec.getCommandRun());
                 logger.warning(msg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(msg);

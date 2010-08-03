@@ -259,7 +259,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             String msg = Strings.get("create.instance.ssh.failed", instance, ec.getSSHSettings(), ec.getMessage(), nodeHost, ec.getCommandRun());
             logger.severe(msg);
             msg = Strings.get("create.instance.remote.failed",
-                        instance, nodeHost);
+                        instance, nodeHost, ec.getCommandRun());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             return 1;
