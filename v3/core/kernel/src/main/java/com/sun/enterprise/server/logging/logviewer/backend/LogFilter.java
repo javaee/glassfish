@@ -37,19 +37,27 @@
 package com.sun.enterprise.server.logging.logviewer.backend;
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.logging.LogDomains;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.cluster.ssh.launcher.SSHLauncher;
+import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * <p/>
@@ -58,7 +66,7 @@ import java.util.*;
  * class static method.
  *
  * @AUTHOR: Hemanth Puttaswamy and Ken Paulsen
- * @AUTHOR: Carla Mott
+ * @AUTHOR: Carla Mott, Naman Mehta
  */
 @Service
 public class LogFilter {
@@ -73,14 +81,25 @@ public class LogFilter {
     @Inject
     Domain domain;
 
+    @Inject
+    CommandRunner commandRunner;
 
-     public static AttributeList getLogRecordsUsingQueryStaticMethod(
+    @Inject
+    ServerEnvironment env;
+
+    @Inject
+    private Habitat habitat;
+
+    private static final Logger logger =
+            LogDomains.getLogger(LogFilter.class, LogDomains.CORE_LOGGER);
+
+    public static AttributeList getLogRecordsUsingQueryStaticMethod(
             String logFileName, Long fromRecord, Boolean next, Boolean forward,
             Integer requestedCount, Date fromDate, Date toDate,
             String logLevel, Boolean onlyLevel, List listOfModules,
             Properties nameValueMap, String anySearch) {
-        return null;         
-     }
+        return null;
+    }
 
 
     /**
@@ -118,6 +137,12 @@ public class LogFilter {
             Integer requestedCount, Date fromDate, Date toDate,
             String logLevel, Boolean onlyLevel, List listOfModules,
             Properties nameValueMap, String anySearch) {
+
+
+        /*      Testing code for instance setup
+        return getLogRecordsUsingQuery(logFileName, fromRecord, next, forward, requestedCount,
+        fromDate, toDate, logLevel, onlyLevel, listOfModules, nameValueMap, anySearch, "in2");
+        */
 
         LogFile logFile = null;
         if ((logFileName != null)
@@ -175,8 +200,7 @@ public class LogFilter {
 
         Server targetServer = domain.getServerNamed(instanceName);
 
-        File tempLogDir = null;
-        File tempLogFile = null;
+        File instanceLogFile = null;
 
         if (targetServer.isDas()) {
             return getLogRecordsUsingQuery(
@@ -185,24 +209,30 @@ public class LogFilter {
                     logLevel, onlyLevel, listOfModules,
                     nameValueMap, anySearch);
         } else {
-
+            // for Instance it's going through this loop. This will use ssh utility to get file from instance machine(remote machine) and
+            // store in temp directory which is used to get LogFile object.
+            // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
+            
             try {
+                SSHLauncher sshL = habitat.getComponent(SSHLauncher.class);
+                String sNode = targetServer.getNode();
+                Nodes nodes = domain.getNodes();
+                Node node = nodes.getNode(sNode);
+                sshL.init(node, logger);
 
-                if (!targetServer.isRunning()) {
-                    return null;
-                }
+                SFTPClient sftpClient = sshL.getSFTPClient();
 
-                tempLogDir = File.createTempFile(targetServer.getName(), "log");
-                tempLogDir.delete();
-                tempLogDir.mkdirs();
+                File tempFile = File.createTempFile("instance", "log");
+                tempFile.delete();
+                tempFile.mkdirs();
 
-                tempLogFile = new File(tempLogDir, targetServer.getName() + ".log");
+                instanceLogFile = new File(tempFile.getAbsolutePath() + File.separator + instanceName + ".log");
 
-                URL url = new URL("http://" + targetServer.getHost() + ":" + targetServer.getAdminPort() + "/management/domain/view-log");
-                URLConnection connection = url.openConnection();
-                InputStream stream = connection.getInputStream();
-                BufferedInputStream in = new BufferedInputStream(stream);
-                FileOutputStream file = new FileOutputStream(tempLogFile.getAbsolutePath());
+                InputStream inputStream = sftpClient.read(node.getInstallDir() + File.separator + "nodeagents" + File.separator
+                        + sNode + File.separator + instanceName + File.separator + "logs" + File.separator + "server.log");
+
+                BufferedInputStream in = new BufferedInputStream(inputStream);
+                FileOutputStream file = new FileOutputStream(instanceLogFile);
                 BufferedOutputStream out = new BufferedOutputStream(file);
                 int i;
                 while ((i = in.read()) != -1) {
@@ -211,14 +241,15 @@ public class LogFilter {
                 out.flush();
             }
             catch (IOException ex) {
-                System.err.println("Exception in getLogRecordsUsingQuery:" + ex);
+                System.err.println("Exception in getting log file from instances:" + ex);
+                // FIXME: Handle this correctly...
                 throw new RuntimeException(ex);
             }
         }
 
 
         LogFile logFile = null;
-        logFile = getLogFile(tempLogFile.getAbsolutePath());
+        logFile = getLogFile(instanceLogFile.getAbsolutePath());
         boolean forwd = (forward == null) ? true : forward.booleanValue();
         boolean nxt = (next == null) ? true : next.booleanValue();
         long reqCount = (requestedCount == null) ?
@@ -238,7 +269,6 @@ public class LogFilter {
         } else {
             startingRecord = fromRecord.longValue();
             if (startingRecord < -1) {
-
                 throw new IllegalArgumentException(
                         "fromRecord must be greater than 0!");
             }
@@ -259,7 +289,7 @@ public class LogFilter {
         }
     }
 
-
+    
     /**
      * Internal method that will be called from getLogRecordsUsingQuery()
      */
