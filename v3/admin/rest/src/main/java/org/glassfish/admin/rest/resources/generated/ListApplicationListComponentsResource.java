@@ -34,14 +34,17 @@
  * holder.
  */
 package org.glassfish.admin.rest.resources.generated;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import org.glassfish.admin.rest.resources.*;
+import org.glassfish.admin.rest.resources.custom.*;
 public class ListApplicationListComponentsResource extends org.glassfish.admin.rest.resources.TemplateCommandGetResource  {
 
    public ListApplicationListComponentsResource() {
        super(
-          "ApplicationListComponentsResource",
+          "ListApplicationListComponentsResource",
           "list-components",
           "GET",
-          true);
+          false);
     }
-
 }

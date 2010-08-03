@@ -171,40 +171,10 @@ return new String[][] {{"get-connection-definition-properties-and-defaults", "GE
 		resource.setParentAndTagName(getEntity() , "work-security-map");
 		return resource;
 	}
-	@Path("admin-object-resource/")
-	public ListAdminObjectResourceResource getListAdminObjectResourceResource() {
-		ListAdminObjectResourceResource resource = resourceContext.getResource(ListAdminObjectResourceResource.class);
-		resource.setParentAndTagName(getEntity() , "admin-object-resource");
-		return resource;
-	}
-	@Path("persistence-manager-factory-resource/")
-	public ListPersistenceManagerFactoryResourceResource getListPersistenceManagerFactoryResourceResource() {
-		ListPersistenceManagerFactoryResourceResource resource = resourceContext.getResource(ListPersistenceManagerFactoryResourceResource.class);
-		resource.setParentAndTagName(getEntity() , "persistence-manager-factory-resource");
-		return resource;
-	}
 	@Path("custom-resource/")
 	public ListCustomResourceResource getListCustomResourceResource() {
 		ListCustomResourceResource resource = resourceContext.getResource(ListCustomResourceResource.class);
 		resource.setParentAndTagName(getEntity() , "custom-resource");
-		return resource;
-	}
-	@Path("jdbc-resource/")
-	public ListJdbcResourceResource getListJdbcResourceResource() {
-		ListJdbcResourceResource resource = resourceContext.getResource(ListJdbcResourceResource.class);
-		resource.setParentAndTagName(getEntity() , "jdbc-resource");
-		return resource;
-	}
-	@Path("jdbc-connection-pool/")
-	public ListJdbcConnectionPoolResource getListJdbcConnectionPoolResource() {
-		ListJdbcConnectionPoolResource resource = resourceContext.getResource(ListJdbcConnectionPoolResource.class);
-		resource.setParentAndTagName(getEntity() , "jdbc-connection-pool");
-		return resource;
-	}
-	@Path("mail-resource/")
-	public ListMailResourceResource getListMailResourceResource() {
-		ListMailResourceResource resource = resourceContext.getResource(ListMailResourceResource.class);
-		resource.setParentAndTagName(getEntity() , "mail-resource");
 		return resource;
 	}
 	@Path("external-jndi-resource/")
@@ -213,10 +183,34 @@ return new String[][] {{"get-connection-definition-properties-and-defaults", "GE
 		resource.setParentAndTagName(getEntity() , "external-jndi-resource");
 		return resource;
 	}
-	@Path("connector-connection-pool/")
-	public ListConnectorConnectionPoolResource getListConnectorConnectionPoolResource() {
-		ListConnectorConnectionPoolResource resource = resourceContext.getResource(ListConnectorConnectionPoolResource.class);
-		resource.setParentAndTagName(getEntity() , "connector-connection-pool");
+	@Path("connector-resource/")
+	public ListConnectorResourceResource getListConnectorResourceResource() {
+		ListConnectorResourceResource resource = resourceContext.getResource(ListConnectorResourceResource.class);
+		resource.setParentAndTagName(getEntity() , "connector-resource");
+		return resource;
+	}
+	@Path("admin-object-resource/")
+	public ListAdminObjectResourceResource getListAdminObjectResourceResource() {
+		ListAdminObjectResourceResource resource = resourceContext.getResource(ListAdminObjectResourceResource.class);
+		resource.setParentAndTagName(getEntity() , "admin-object-resource");
+		return resource;
+	}
+	@Path("mail-resource/")
+	public ListMailResourceResource getListMailResourceResource() {
+		ListMailResourceResource resource = resourceContext.getResource(ListMailResourceResource.class);
+		resource.setParentAndTagName(getEntity() , "mail-resource");
+		return resource;
+	}
+	@Path("jdbc-resource/")
+	public ListJdbcResourceResource getListJdbcResourceResource() {
+		ListJdbcResourceResource resource = resourceContext.getResource(ListJdbcResourceResource.class);
+		resource.setParentAndTagName(getEntity() , "jdbc-resource");
+		return resource;
+	}
+	@Path("persistence-manager-factory-resource/")
+	public ListPersistenceManagerFactoryResourceResource getListPersistenceManagerFactoryResourceResource() {
+		ListPersistenceManagerFactoryResourceResource resource = resourceContext.getResource(ListPersistenceManagerFactoryResourceResource.class);
+		resource.setParentAndTagName(getEntity() , "persistence-manager-factory-resource");
 		return resource;
 	}
 	@Path("resource-adapter-config/")
@@ -225,10 +219,16 @@ return new String[][] {{"get-connection-definition-properties-and-defaults", "GE
 		resource.setParentAndTagName(getEntity() , "resource-adapter-config");
 		return resource;
 	}
-	@Path("connector-resource/")
-	public ListConnectorResourceResource getListConnectorResourceResource() {
-		ListConnectorResourceResource resource = resourceContext.getResource(ListConnectorResourceResource.class);
-		resource.setParentAndTagName(getEntity() , "connector-resource");
+	@Path("jdbc-connection-pool/")
+	public ListJdbcConnectionPoolResource getListJdbcConnectionPoolResource() {
+		ListJdbcConnectionPoolResource resource = resourceContext.getResource(ListJdbcConnectionPoolResource.class);
+		resource.setParentAndTagName(getEntity() , "jdbc-connection-pool");
+		return resource;
+	}
+	@Path("connector-connection-pool/")
+	public ListConnectorConnectionPoolResource getListConnectorConnectionPoolResource() {
+		ListConnectorConnectionPoolResource resource = resourceContext.getResource(ListConnectorConnectionPoolResource.class);
+		resource.setParentAndTagName(getEntity() , "connector-connection-pool");
 		return resource;
 	}
 }

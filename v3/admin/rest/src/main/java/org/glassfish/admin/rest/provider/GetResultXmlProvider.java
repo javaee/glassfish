@@ -42,6 +42,7 @@ import org.jvnet.hk2.config.Dom;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
+import java.util.Map;
 import java.util.Set;
 
 import static org.glassfish.admin.rest.Util.eleminateHypen;
@@ -64,7 +65,7 @@ public class GetResultXmlProvider extends BaseProvider<GetResult> {
     @Override
     protected String getContent(GetResult proxy) {
         String result;
-        String indent = Constants.INDENT;
+        String indent = Constants.INDENT; 
 
         result = "<";
         result = result + KEY_ENTITY;
@@ -85,7 +86,7 @@ public class GetResultXmlProvider extends BaseProvider<GetResult> {
         if ((proxy.getDom().getElementNames().size() > 0) || ("applications".equals(getName(uriInfo.getPath(), '/')))) {
             result = result + "\n\n" + indent;
             result = result + getStartXmlElement(KEY_CHILD_RESOURCES);
-            result = result + getResourcesLinks(proxy.getDom(), indent + Constants.INDENT);
+            result = result + getResourcesLinks(proxy, indent + Constants.INDENT);
             result = result + "\n" + indent;
             result = result + getEndXmlElement(KEY_CHILD_RESOURCES);
         }
@@ -102,36 +103,26 @@ public class GetResultXmlProvider extends BaseProvider<GetResult> {
         return result;
     }
 
-    private String getAttributes(Dom proxy) {
+    private String getAttributes(Dom dom) {
         StringBuilder result = new StringBuilder();
-        Set<String> attributeNames = proxy.model.getAttributeNames();
+        Set<String> attributeNames = dom.model.getAttributeNames();
         for (String attributeName : attributeNames) {
             result.append(eleminateHypen(attributeName))
                     .append("=")
-                    .append(quote(proxy.attribute(attributeName)))
+                    .append(quote(dom.attribute(attributeName)))
                     .append(" ");
         }
 
         return result.toString().trim();
     }
 
-    protected String getResourcesLinks(Dom proxy, String indent) {
+    protected String getResourcesLinks(GetResult getResult, String indent) {
         StringBuilder result = new StringBuilder();
-        Set<String> elementNames = proxy.getElementNames();
-
-        //expose ../applications/application resource to enable deployment
-        //when no applications deployed on server
-        if (elementNames.isEmpty()) {
-            if ("applications".equals(getName(uriInfo.getPath(), '/'))) {
-                elementNames.add("application");
-            }
-        }
-
-        for (String elementName : elementNames) { //for each element
+        for (Map.Entry<String, String> link : getResourceLinks(getResult.getDom()).entrySet()) {
             result.append("\n")
                     .append(indent)
                     .append(getStartXmlElement(KEY_CHILD_RESOURCE))
-                    .append(getElementLink(uriInfo, elementName))
+                    .append(link.getValue())
                     .append(getEndXmlElement(KEY_CHILD_RESOURCE));
         }
 

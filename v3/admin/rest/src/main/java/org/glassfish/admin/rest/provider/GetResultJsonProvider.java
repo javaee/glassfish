@@ -42,8 +42,12 @@ import org.glassfish.admin.rest.results.GetResult;
 import org.jvnet.hk2.config.Dom;
 
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,11 +60,11 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
  *
  * @author Rajeshwar Patil
  * @author Ludovic Champenois ludo@dev.java.net
+ * @author Jason Lee
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 public class GetResultJsonProvider extends BaseProvider<GetResult> {
-
     public GetResultJsonProvider() {
         super(GetResult.class, MediaType.APPLICATION_JSON_TYPE);
     }
@@ -71,13 +75,18 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
         try {
             obj.put(KEY_ENTITY, getAttributes(proxy.getDom()));
             obj.put(KEY_METHODS, getJsonForMethodMetaData(proxy.getMetaData()));
-            obj.put(KEY_CHILD_RESOURCES, getResourcesLinks(proxy.getDom()));
+            obj.put(KEY_CHILD_RESOURCES, getResourcesLinks(proxy));
             obj.put(KEY_COMMANDS, getCommandLinks(proxy.getCommandResourcesPaths()));
-        } catch (JSONException ex) {
-            Logger.getLogger(GetResultJsonProvider.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        return obj.toString();
+            int indent = getFormattingIndentLevel();
+            if (indent > -1) {
+                return obj.toString(indent);
+            } else {
+                return obj.toString();
+            }
+        } catch (JSONException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private JSONObject getAttributes(Dom proxy) throws JSONException {
@@ -89,20 +98,10 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
         return entity;
     }
 
-    private JSONArray getResourcesLinks(Dom proxy) throws JSONException {
+    private JSONArray getResourcesLinks(GetResult getResult) throws JSONException {
         JSONArray array = new JSONArray();
-        Set<String> elementNames = proxy.getElementNames();
-
-        //expose ../applications/application resource to enable deployment
-        //when no applications deployed on server
-        if (elementNames.isEmpty()) {
-            if("applications".equals(getName(uriInfo.getPath(), '/'))) {
-                elementNames.add("application");
-            }
-        }
-
-        for (String elementName : elementNames) {
-            array.put(getElementLink(uriInfo, elementName));
+        for (Map.Entry<String, String> link : getResourceLinks(getResult.getDom()).entrySet()) {
+            array.put(link.getValue());
         }
         return array;
     }

@@ -36,7 +36,10 @@
 package org.glassfish.admin.rest.results;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+
 import org.glassfish.admin.rest.provider.MethodMetaData;
 
 /**
@@ -51,7 +54,7 @@ public class OptionsResult extends Result {
      * Default Constructor
      */
     public OptionsResult() {
-        __metaData = new HashMap<String, MethodMetaData>();
+        this(null);
     }
 
 
@@ -91,5 +94,5 @@ public class OptionsResult extends Result {
         return __metaData.keySet();
     }
 
-    HashMap<String, MethodMetaData> __metaData;
+    Map<String, MethodMetaData> __metaData;
 }

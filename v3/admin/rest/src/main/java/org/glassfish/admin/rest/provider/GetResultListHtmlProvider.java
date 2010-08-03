@@ -36,18 +36,20 @@
 package org.glassfish.admin.rest.provider;
 
 import org.glassfish.admin.rest.results.GetResultList;
+import org.glassfish.admin.rest.utils.DomConfigurator;
 import org.jvnet.hk2.config.Dom;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.glassfish.admin.rest.Util.*;
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
- *
  * @author Rajeshwar Patil
  * @author Ludovic Champenois ludo@dev.java.net
  */
@@ -62,8 +64,8 @@ public class GetResultListHtmlProvider extends BaseProvider<GetResultList> {
     @Override
     protected String getContent(GetResultList proxy) {
         String result = getHtmlHeader();
-         final String typeKey = upperCaseFirstLetter((decode(getName(uriInfo.getPath(), '/'))));
-         result = result + "<h1>" + typeKey + "</h1>";
+        final String typeKey = upperCaseFirstLetter((decode(getName(uriInfo.getPath(), '/'))));
+        result = result + "<h1>" + typeKey + "</h1>";
 
         String postCommand = getHtmlRespresentationsForCommand(proxy.getMetaData().getMethodMetaData("POST"), "POST", "Create", uriInfo);
         result = getHtmlForComponent(postCommand, "Create " + typeKey, result);
@@ -80,16 +82,13 @@ public class GetResultListHtmlProvider extends BaseProvider<GetResultList> {
 
     private String getResourcesLinks(List<Dom> proxyList) {
         StringBuilder result = new StringBuilder("<div>");
-        for (Dom proxy: proxyList) { //for each element
-            try {
-                    result.append("<a href=\"")
-                            .append(getElementLink(uriInfo, proxy.getKey()))
-                            .append("\">")
-                            .append(proxy.getKey())
-                            .append("</a><br>");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+        Collections.sort(proxyList, new DomConfigurator());
+        for (Map.Entry<String, String> link : getResourceLinks(proxyList).entrySet()) {
+            result.append("<a href=\"")
+                    .append(link.getValue())
+                    .append("\">")
+                    .append(link.getKey())
+                    .append("</a><br>");
         }
 
         result.append("</div><br/>");
@@ -101,10 +100,10 @@ public class GetResultListHtmlProvider extends BaseProvider<GetResultList> {
         for (String[] commandResourcePath : commandResourcesPaths) {
             try {
                 result.append("<a href=\"")
-                            .append(getElementLink(uriInfo, commandResourcePath[0]))
-                            .append("\">")
-                            .append(commandResourcePath[0])
-                            .append("</a><br/>");
+                        .append(getElementLink(uriInfo, commandResourcePath[0]))
+                        .append("\">")
+                        .append(commandResourcePath[0])
+                        .append("</a><br/>");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

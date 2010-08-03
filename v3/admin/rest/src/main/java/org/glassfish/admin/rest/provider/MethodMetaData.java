@@ -35,8 +35,9 @@
  */
 package org.glassfish.admin.rest.provider;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Meta-data store for resource method. Holds meta-data for message
@@ -47,8 +48,8 @@ import java.util.Set;
 public class MethodMetaData {
 
     public MethodMetaData() {
-        __parameterMetaData = new HashMap<String, ParameterMetaData>();
-        __queryParamMetaData = new HashMap<String, ParameterMetaData>();
+        __parameterMetaData = new TreeMap<String, ParameterMetaData>();
+        __queryParamMetaData = new TreeMap<String, ParameterMetaData>();
     }
 
 
@@ -119,8 +120,8 @@ public class MethodMetaData {
     }
 
 
-    HashMap<String, ParameterMetaData> __parameterMetaData;
-    HashMap<String, ParameterMetaData> __queryParamMetaData;
+    Map<String, ParameterMetaData> __parameterMetaData;
+    Map<String, ParameterMetaData> __queryParamMetaData;
     String __description;
     boolean __isFileUploadOperation = false;
 }

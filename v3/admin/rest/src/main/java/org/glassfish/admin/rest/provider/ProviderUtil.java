@@ -150,7 +150,7 @@ public class ProviderUtil {
         return sb.toString();
     }
 
-    static protected final String getElementLink(UriInfo uriInfo, String elementName) {
+    static public final String getElementLink(UriInfo uriInfo, String elementName) {
         try {
             elementName = URLEncoder.encode(elementName, "UTF-8");
         } catch (UnsupportedEncodingException ex) {

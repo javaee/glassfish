@@ -40,6 +40,10 @@ import org.glassfish.admin.rest.resources.*;
 import org.glassfish.admin.rest.resources.custom.*;
 public class ProfilerResource extends TemplateResource  {
 
+@Override
+public String getDeleteCommand() {
+	return "delete-profiler";
+}
 	@Path("property/")
 	public PropertiesBagResource getPropertiesBagResource() {
 		PropertiesBagResource resource = resourceContext.getResource(PropertiesBagResource.class);

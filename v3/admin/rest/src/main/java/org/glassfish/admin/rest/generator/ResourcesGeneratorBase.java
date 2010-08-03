@@ -412,6 +412,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         put("ExternalJndiResource", "delete-jndi-resource");
         put("JaccProvider", "delete-jacc-provider");
         put("NetworkListener", "delete-network-listener");
+        put("Profiler", "delete-profiler");
         put("Property", "GENERIC-DELETE");
         put("Protocol", "delete-protocol");
         put("ProtocolFilter", "delete-protocol-filter");

@@ -35,28 +35,34 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.glassfish.admin.rest.Util;
+import org.glassfish.admin.rest.utils.DomConfigurator;
+import org.glassfish.admin.rest.utils.ConfigModelComparator;
+import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.Dom;
+
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.*;
 
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
- *
- * @author jasonlee
+ * @author Jason Lee
  */
 @Provider
 public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     @Context
     protected UriInfo uriInfo;
+    @Context
+    protected HttpHeaders requestHeaders;
+
 
     protected Class desiredType;
     protected MediaType supportedMediaType;
@@ -81,11 +87,26 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
 
     @Override
     public void writeTo(T proxy, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+                        MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
         entityStream.write(getContent(proxy).getBytes());
     }
 
     protected abstract String getContent(T proxy);
+
+    protected int getFormattingIndentLevel() {
+        List header = requestHeaders.getRequestHeader("__format");
+        int indent = -1;
+        if ((header != null) && (header.size() > 0)) {
+            try {
+                indent = Integer.parseInt((String) header.get(0));
+            } catch (Exception e) {
+                indent = 4;
+            }
+
+        }
+
+        return indent;
+    }
 
 
     protected String getXmlCommandLinks(String[][] commandResourcesPaths, String indent) {
@@ -98,5 +119,54 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
                     .append(getEndXmlElement(KEY_COMMAND));
         }
         return result.toString();
+    }
+
+    protected Map<String, String> getResourceLinks(Dom dom) {
+        Map<String, String> links = new TreeMap<String, String>();
+        Set<String> elementNames = dom.model.getElementNames();
+
+        //expose ../applications/application resource to enable deployment
+        //when no applications deployed on server
+        if (elementNames.isEmpty()) {
+            if("applications".equals(Util.getName(uriInfo.getPath(), '/'))) {
+                elementNames.add("application");
+            }
+        }
+        for (String elementName : elementNames) { //for each element
+            if (elementName.equals("*")) {
+                ConfigModel.Node node = (ConfigModel.Node) dom.model.getElement(elementName);
+                ConfigModel childModel = node.getModel();
+                try {
+                    Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
+                    List<ConfigModel> lcm = dom.document.getAllModelsImplementing(subType);
+                    Collections.sort(lcm, new ConfigModelComparator());
+                    if (lcm != null) {
+                        for (ConfigModel cmodel : lcm) {
+                            links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()));
+                        }
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                links.put(elementName, ProviderUtil.getElementLink(uriInfo, elementName));
+            }
+        }
+
+        return links;
+    }
+
+    protected Map<String, String> getResourceLinks(List<Dom> proxyList) {
+        Map<String, String> links = new TreeMap<String, String>();
+        Collections.sort(proxyList, new DomConfigurator());
+        for (Dom proxy : proxyList) { //for each element
+            try {
+                links.put(proxy.getKey(), getElementLink(uriInfo, proxy.getKey()));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return links;
     }
 }

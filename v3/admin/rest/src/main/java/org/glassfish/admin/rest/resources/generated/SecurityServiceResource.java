@@ -40,6 +40,17 @@ import org.glassfish.admin.rest.resources.*;
 import org.glassfish.admin.rest.resources.custom.*;
 public class SecurityServiceResource extends TemplateResource  {
 
+@Path("list-supported-cipher-suites/")
+public SecurityServiceListSupportedCipherSuitesResource getSecurityServiceListSupportedCipherSuitesResource() {
+SecurityServiceListSupportedCipherSuitesResource resource = resourceContext.getResource(SecurityServiceListSupportedCipherSuitesResource.class);
+return resource;
+}
+
+@Override
+public String[][] getCommandResourcesPaths() {
+return new String[][] {{"list-supported-cipher-suites", "GET", "list-supported-cipher-suites"} };
+}
+
 	@Path("auth-realm/")
 	public ListAuthRealmResource getListAuthRealmResource() {
 		ListAuthRealmResource resource = resourceContext.getResource(ListAuthRealmResource.class);

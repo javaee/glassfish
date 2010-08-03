@@ -50,8 +50,7 @@ public class GetResultList extends Result {
     /**
      * Constructor
      */
-    public GetResultList(List<Dom> domList, String postCommand,
-            String[][] commandResourcesPaths,  OptionsResult metaData) {
+    public GetResultList(List<Dom> domList, String postCommand, String[][] commandResourcesPaths,  OptionsResult metaData) {
         __domList = domList;
         __postCommand = postCommand;
         __commandResourcesPaths = commandResourcesPaths;

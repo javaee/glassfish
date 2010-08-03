@@ -129,7 +129,7 @@
         <trycatch>
             <try>
                 <antcall target="start-server"/>
-                <artifact:mvn pom="pom.xml" fork="true" mavenHome="${maven.dir}" failonerror="false" resultproperty="test.result">
+                <artifact:mvn pom="pom.xml" fork="true" mavenHome="${maven.dir}" failonerror="false" resultproperty="test.links">
                     <arg value="-Dadmin.port=${env.ADMIN_PORT}"/>
                     <arg value="-Dinstance.port=${env.INSTANCE_PORT}"/>
                     <arg value="-Prest-devtest"/>
@@ -143,7 +143,7 @@
         <fail message="The test run failed.  Please see the console output for details.">
            <condition>
              <not>
-                <equals arg1="${test.result}" arg2="0"/>
+                <equals arg1="${test.links}" arg2="0"/>
              </not>
            </condition>
          </fail>

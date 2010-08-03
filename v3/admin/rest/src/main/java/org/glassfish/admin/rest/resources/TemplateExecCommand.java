@@ -37,35 +37,30 @@
 package org.glassfish.admin.rest.resources;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.admin.rest.CliFailureException;
+import org.glassfish.admin.rest.ResourceUtil;
+import org.glassfish.admin.rest.RestService;
+import org.glassfish.admin.rest.provider.MethodMetaData;
+import org.glassfish.admin.rest.results.ActionReportResult;
+import org.glassfish.admin.rest.results.OptionsResult;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ParameterMap;
+
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import org.glassfish.admin.rest.CliFailureException;
-import org.glassfish.admin.rest.ResourceUtil;
-import org.glassfish.admin.rest.RestService;
-import org.glassfish.admin.rest.results.ActionReportResult;
-import org.glassfish.admin.rest.provider.MethodMetaData;
-import org.glassfish.admin.rest.results.OptionsResult;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.ParameterMap;
 
 /**
- *
  * @author ludo
  */
 public class TemplateExecCommand {
-   public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateExecCommand.class);
+    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateExecCommand.class);
     @Context
     protected HttpHeaders requestHeaders;
     @Context
@@ -82,8 +77,9 @@ public class TemplateExecCommand {
      *
      */
     protected int parameterType;
-    public TemplateExecCommand(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName, 
-             boolean isLinkedToParent) {
+
+    public TemplateExecCommand(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName,
+                               boolean isLinkedToParent) {
         this.resourceName = resourceName;
         this.commandName = commandName;
         this.commandMethod = commandMethod;
@@ -92,17 +88,18 @@ public class TemplateExecCommand {
         this.isLinkedToParent = isLinkedToParent;
 
     }
+
     @OPTIONS
     @Produces({
-        MediaType.APPLICATION_JSON,
-        "text/html;qs=2",
-        MediaType.APPLICATION_XML})
+            MediaType.APPLICATION_JSON,
+            "text/html;qs=2",
+            MediaType.APPLICATION_XML})
     public OptionsResult options() {
         OptionsResult optionsResult = new OptionsResult(resourceName);
         try {
             //command method metadata
             MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(
-                    commandName, getCommandParams(), parameterType , RestService.getHabitat(), RestService.logger);
+                    commandName, getCommandParams(), parameterType, RestService.getHabitat(), RestService.logger);
             optionsResult.putMethodMetaData(commandMethod, methodMetaData);
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
@@ -120,11 +117,10 @@ public class TemplateExecCommand {
         if (exitCode != ActionReport.ExitCode.FAILURE) {
             results.setStatusCode(200); /*200 - ok*/
         } else {
-	    Throwable ex = actionReport.getFailureCause();
-	    ex = (ex == null) ?
-		new CliFailureException(actionReport.getMessage()) :
-		new CliFailureException(actionReport.getMessage(), ex);
-            throw (RuntimeException) ex;
+            Throwable ex = actionReport.getFailureCause();
+            throw (ex == null) ?
+                    new CliFailureException(actionReport.getMessage()) :
+                    new CliFailureException(actionReport.getMessage(), ex);
         }
 
         return results;
@@ -134,9 +130,11 @@ public class TemplateExecCommand {
      *
      * 
      */
+
     protected HashMap<String, String> getCommandParams() {
         return null;
     }
+
     protected void processCommandParams(ParameterMap data) {
         HashMap<String, String> commandParams = getCommandParams();
         if (commandParams != null) {

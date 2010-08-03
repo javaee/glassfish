@@ -43,6 +43,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import java.util.List;
+import java.util.Map;
 
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
@@ -104,12 +105,12 @@ public class GetResultListXmlProvider extends BaseProvider<GetResultList> {
 
     private String getResourcesLinks(List<Dom> proxyList, String indent) {
         StringBuilder result = new StringBuilder();
-        for (Dom proxy: proxyList) { //for each element
+        for (Map.Entry<String, String> link : getResourceLinks(proxyList).entrySet()) {
             try {
                     result.append("\n")
                             .append(indent)
                             .append(getStartXmlElement(KEY_CHILD_RESOURCE))
-                            .append(getElementLink(uriInfo, proxy.getKey()))
+                            .append(link.getValue())
                             .append(getEndXmlElement(KEY_CHILD_RESOURCE));
             } catch (Exception e) {
                 throw new RuntimeException(e);

@@ -66,10 +66,9 @@ ListApplicationListComponentsResource resource = resourceContext.getResource(Lis
 return resource;
 }
 
-
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][] {{"get-context-root", "GET", "_get-context-root"} , {"list-sub-components", "GET", "list-sub-components"}, {"list-components", "GET", "list-components"} };
+return new String[][] {{"get-context-root", "GET", "_get-context-root"} , {"list-sub-components", "GET", "list-sub-components"} , {"list-components", "GET", "list-components"} };
 }
 
 @Override

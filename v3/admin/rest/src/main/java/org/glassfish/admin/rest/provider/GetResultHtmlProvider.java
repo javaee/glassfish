@@ -35,24 +35,26 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
 import org.glassfish.admin.rest.results.GetResult;
 import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.Dom;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.provider.ProviderUtil.getElementLink;
 
 /**
  *
  * @author Rajeshwar Patil
  * @author Ludovic Champenois ludo@dev.java.net
-
+ * @author Jason Lee
  */
 @Provider
 @Produces(MediaType.TEXT_HTML)
@@ -75,7 +77,7 @@ public class GetResultHtmlProvider extends BaseProvider<GetResult> {
                 proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", "Delete", uriInfo);
         result = ProviderUtil.getHtmlForComponent(deleteCommand, "Delete " + typeKey, result);
 
-        String childResourceLinks = getResourcesLinks(proxy.getDom());
+        String childResourceLinks = getResourcesLinks(proxy);
         result = ProviderUtil.getHtmlForComponent(childResourceLinks, "Child Resources", result);
 
         String commandLinks = getCommandLinks(proxy.getCommandResourcesPaths());
@@ -85,46 +87,18 @@ public class GetResultHtmlProvider extends BaseProvider<GetResult> {
         return result;
     }
 
-    private String getResourcesLinks(Dom proxy) {
-        StringBuilder result = new StringBuilder("<div>");
-        Set<String> elementNames = proxy.model.getElementNames();
+    private String getResourcesLinks(GetResult getResult) {
+        StringBuilder links = new StringBuilder("<div>");
+        for (Map.Entry<String, String> link : getResourceLinks(getResult.getDom()).entrySet()) {
+            links.append("<a href=\"")
+                .append(link.getValue())
+                .append("\">")
+                .append(link.getKey())
+                .append("</a><br>");
 
-        //expose ../applications/application resource to enable deployment
-        //when no applications deployed on server
-        if (elementNames.isEmpty()) {
-            if("applications".equals(getName(uriInfo.getPath(), '/'))) {
-                elementNames.add("application");
-            }
-        }
-        for (String elementName : elementNames) { //for each element
-            if (elementName.equals("*")) {
-                ConfigModel.Node node = (ConfigModel.Node) proxy.model.getElement(elementName);
-                ConfigModel childModel = node.getModel();
-                try {
-                    Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); 
-                    List<ConfigModel> lcm = proxy.document.getAllModelsImplementing(subType);
-                    if (lcm != null) {
-                        for (ConfigModel cmodel : lcm) {
-                            result.append("<a href=\"")
-                                    .append(ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()))
-                                    .append("\">")
-                                    .append(cmodel.getTagName())
-                                    .append("</a><br>");
-                        }
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                result.append("<a href=\"")
-                    .append(ProviderUtil.getElementLink(uriInfo, elementName))
-                    .append("\">")
-                    .append(elementName)
-                    .append("</a><br>");
-            }
         }
 
-        return result.append("</div><br>").toString();
+        return links.append("</div><br>").toString();
     }
 
     private String getCommandLinks(String[][] commandResourcesPaths) {

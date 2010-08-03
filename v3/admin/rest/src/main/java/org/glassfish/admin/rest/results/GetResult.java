@@ -36,13 +36,15 @@
 package org.glassfish.admin.rest.results;
 
 import org.jvnet.hk2.config.Dom;
-import org.jvnet.hk2.config.ConfigBean;
+
+import static org.glassfish.admin.rest.Util.getName;
 
 /**
  * Response information object. Returned on call to GET method on singleton
  * resource. Information used by provider to generate the appropriate output.
  *
  * @author Rajeshwar Patil
+ * @author Jason Lee
  */
 public class GetResult extends Result {
 

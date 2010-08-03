@@ -45,6 +45,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -86,9 +87,8 @@ public class GetResultListJsonProvider extends BaseProvider<GetResultList> {
     private JSONArray getResourcesLinks(List<Dom> proxyList) {
         JSONArray array = new JSONArray();
         String elementName;
-        for (Dom proxy: proxyList) {
-            elementName = proxy.getKey();
-             array.put(getElementLink(uriInfo, elementName));
+        for (Map.Entry<String, String> link : getResourceLinks(proxyList).entrySet()) {
+             array.put(link.getValue());
         }
         return array;
     }

@@ -137,6 +137,7 @@ public class CommandResourceMetaData {
             {"Protocol", "create-protocol-finder", "POST", "create-protocol-finder", "Create", "protocol=$parent"},
             {"Protocol", "delete-protocol-finder", "DELETE", "delete-protocol-finder", "Delete", "protocol=$parent"},
             {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"},
+            {"SecurityService", "list-supported-cipher-suites", "GET", "list-supported-cipher-suites", "List Supported Cipher Suites"},
             {"Server", "delete-instance", "DELETE", "delete-instance", "Delete Instance", "id=$parent"},
             {"Server", "start-instance", "POST", "start-instance", "Start Instance", "id=$parent"},
             {"Server", "stop-instance", "POST", "stop-instance", "Stop Instance", "id=$parent"},
