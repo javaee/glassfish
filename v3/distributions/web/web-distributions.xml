@@ -59,7 +59,83 @@ own identifying information: Portions Copyright [yyyy]
     <ant antfile="../distributions.xml" target="install-package">
         <property name="package.name" value="glassfish-scripting"/>
         <property name="image.dir" value="${image.dir}"/>
-    </ant>	
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-common"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="shoal"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-cluster"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-ha"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-javahelp"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-upgrade"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-registration"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="jersey"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-management"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-jca"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-jpa"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-jta"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-corba-base"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-jts"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-ejb-lite"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-jsf"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-web"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-jcdi"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-jdbc"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
     <ant antfile="../distributions.xml" target="install-package">
         <property name="package.name" value="glassfish-gui"/>
         <property name="image.dir" value="${image.dir}"/>
