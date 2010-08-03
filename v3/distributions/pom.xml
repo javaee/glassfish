@@ -77,8 +77,6 @@
 
     <modules>
 	<module>nucleus</module>
-	<module>scripting</module>
-	<module>web-nb</module>
 	<module>web</module>
 	<module>glassfish</module>
 <!-- disable appclient distribution build since we're not using it yet -->

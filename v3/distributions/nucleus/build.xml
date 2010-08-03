@@ -21,7 +21,7 @@ own identifying information: Portions Copyright [yyyy]
 -->
 <project name="glassfish nucleus distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
-    <property name="source.distribution.name" value="GlassFish v3 Nucleus Preview"/>
+    <property name="source.distribution.name" value="GlassFish Nucleus"/>
     <target name="init">
         <condition property="windows">
             <os family="windows" />

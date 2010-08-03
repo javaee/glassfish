@@ -53,22 +53,8 @@ own identifying information: Portions Copyright [yyyy]
     </antcall>
 </target>
 
-<target name="create-scripting-distributions" depends="create-nucleus-distributions"> 
-    <ant antfile="../scripting/scripting-distributions.xml"/>
-    <antcall target="create-distributions"> 
-         <param name="image.name" value="scripting"/>
-    </antcall>
-</target>
-
-<target name="create-web-nb-distributions" depends="create-scripting-distributions"> 
-    <ant antfile="../web-nb/web-nb-distributions.xml"/>
-    <antcall target="create-distributions"> 
-         <param name="image.name" value="web-nb"/>
-    </antcall>
-</target>
-
-<target name="create-web-distributions" depends="create-web-nb-distributions"> 
-    <ant antfile="../web/prelude-distributions.xml"/>
+<target name="create-web-distributions" depends="create-nucleus-distributions"> 
+    <ant antfile="../web/web-distributions.xml"/>
     <mkdir dir="${image.root}"/>
     <mkdir dir="${installer.image.dir}"/>
     <antcall target="create-distributions"> 
@@ -185,14 +171,14 @@ own identifying information: Portions Copyright [yyyy]
     <echo message="title: ${title}"/>
     <echo message="description: ${description}"/>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
-        <arg line="set-property title 'GlassFish v3'"/>
+        <arg line="set-property title 'GlassFish 3'"/>
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="set-property image-tou-url 'https://glassfish-repo.dev.java.net/terms.html'"/>
     </exec>
 
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
-        <arg line="set-property description 'GlassFish v3 is the first Java EE 6 compatible application server, has a modular, lightweight, extensible architecture built on OSGi, and improves developer productivity by retaining HTTP session state on application redeployment.'"/>
+        <arg line="set-property description 'GlassFish 3 is the first Java EE 6 compatible application server, has a modular, lightweight, extensible architecture built on OSGi, and improves developer productivity by retaining HTTP session state on application redeployment.'"/>
     </exec>
    
 </target>
@@ -272,7 +258,6 @@ own identifying information: Portions Copyright [yyyy]
             <include name="cli-optional.jar"/>
             <include name="server-mgmt.jar"/>
             <include name="security.jar"/>
-            <include name="backup.jar"/>
         </fileset>
     </delete>
 </target>
