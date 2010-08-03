@@ -372,7 +372,7 @@ public final class AccessLogValve
     /**
      * Instant when the log daily rotation was last checked.
      */
-    private long rotationLastChecked = 0L;
+    private volatile long rotationLastChecked = 0L;
 
 
     /**
