@@ -79,8 +79,7 @@ public class PersistenceUnitLoader {
      */
     private JPAJava2DBProcessor processor;
 
-    // TODO change logger name from DPL_LOGGER to persistence logger
-    private static Logger logger = LogDomains.getLogger(PersistenceUnitLoader.class, LogDomains.DPL_LOGGER);
+    private static Logger logger = LogDomains.getLogger(PersistenceUnitLoader.class, LogDomains.PERSISTENCE_LOGGER);
 
     private static final StringManager localStrings = StringManager.getManager(PersistenceUnitLoader.class);    
 

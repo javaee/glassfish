@@ -125,7 +125,7 @@ public class JPAJava2DBProcessor {
     private static final String TOPLINK_DROP_JDBC_DDL_FILE       = "toplink.drop-ddl-jdbc-file-name"; // NOI18N
     private static final String ECLIPSELINK_DROP_JDBC_DDL_FILE   = "eclipselink.drop-ddl-jdbc-file-name"; // NOI18N
 
-    private static Logger logger = LogDomains.getLogger(JPAJava2DBProcessor.class, LogDomains.DPL_LOGGER);
+    private static Logger logger = LogDomains.getLogger(JPAJava2DBProcessor.class, LogDomains.PERSISTENCE_LOGGER);
 
     /**
      * Holds name of provider specific properties.

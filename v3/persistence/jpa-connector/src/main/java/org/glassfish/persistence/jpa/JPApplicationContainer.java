@@ -58,8 +58,7 @@ public class JPApplicationContainer implements ApplicationContainer {
      */
     List<EntityManagerFactory> emfs;
 
-    // TODO change logger name from DPL_LOGGER to persistence logger
-    private static Logger logger = LogDomains.getLogger(PersistenceUnitLoader.class, LogDomains.DPL_LOGGER);
+    private static Logger logger = LogDomains.getLogger(PersistenceUnitLoader.class, LogDomains.PERSISTENCE_LOGGER);
 
     public JPApplicationContainer(List<EntityManagerFactory> emfs) {
         this.emfs = emfs;
