@@ -36,37 +36,47 @@
 
 package org.glassfish.ejb.startup;
 
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.security.PolicyLoader;
-import com.sun.enterprise.security.SecurityUtil;
-import com.sun.enterprise.security.util.IASSecurityException;
-import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-import com.sun.logging.LogDomains;
-import org.glassfish.internal.api.ServerContext;
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.MetaData;
-import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.deployment.common.DeploymentException;
-import org.glassfish.javaee.core.deployment.JavaEEDeployer;
-import org.glassfish.ejb.spi.CMPDeployer;
-import org.glassfish.ejb.spi.CMPService;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import com.sun.ejb.codegen.StaticRmiStubGenerator;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-
 import java.util.*;
 import java.util.logging.Level;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.security.PolicyLoader;
+import com.sun.enterprise.security.SecurityUtil;
+import com.sun.enterprise.security.util.IASSecurityException;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.ejb.codegen.StaticRmiStubGenerator;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
+import com.sun.logging.LogDomains;
+
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.Events;
+import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.ejb.spi.CMPDeployer;
+import org.glassfish.ejb.spi.CMPService;
+import org.glassfish.javaee.core.deployment.JavaEEDeployer;
+import org.glassfish.internal.api.ServerContext;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.server.ServerEnvironmentImpl;
+
 import org.glassfish.api.invocation.RegisteredComponentInvocationHandler;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.security.application.EjbSecurityProbeProvider;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
+
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * Ejb module deployer.
@@ -74,7 +84,8 @@ import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
  */
 @Service
 public class EjbDeployer
-    extends JavaEEDeployer<EjbContainerStarter, EjbApplication> {
+        extends JavaEEDeployer<EjbContainerStarter, EjbApplication> 
+        implements PostConstruct, EventListener {
 
     @Inject
     protected ServerContext sc;
@@ -93,6 +104,9 @@ public class EjbDeployer
 
     @Inject
     private ComponentEnvManager compEnvManager;
+
+    @Inject
+    private Events events;
     
     private Object lock = new Object();
     private volatile CMPDeployer cmpDeployer = null;
@@ -117,6 +131,10 @@ public class EjbDeployer
 
     }
 
+    @Override
+    public void postConstruct() {
+        events.register(this);
+    }
 
     protected String getModuleType () {
         return "ejb";
@@ -343,6 +361,70 @@ public class EjbDeployer
         cmpDeployer.deploy(dc);   
 
 
+    }
+
+    @Override
+    public void event(Event event) {
+        if (event.is(Deployment.APPLICATION_PREPARED) && (env.isDas() || env.isEmbedded())) {
+            ExtendedDeploymentContext context = (ExtendedDeploymentContext)event.hook();
+            OpsParams opsparams = context.getCommandParameters(OpsParams.class);
+
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log( Level.FINE, "EjbDeployer in APPLICATION_PREPARED for " + context.getSourceDir());
+                _logger.log( Level.FINE, "EjbDeployer in origin " + opsparams.origin);
+            }
+
+            if (!opsparams.origin.isDeploy()) {
+                return;
+            }
+
+            DeployCommandParameters dcp = context.getCommandParameters(DeployCommandParameters.class);
+
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log( Level.FINE, "EjbDeployer in target " + dcp.target);
+            }
+
+            Map<String, ExtendedDeploymentContext> deploymentContexts = context.getModuleDeploymentContexts();
+
+            for (DeploymentContext dc : deploymentContexts.values()) {
+                EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
+
+                if (checkEjbBundleForTimers(ejbBundle, dcp.target)) {
+                    return;
+                }
+            }
+
+            EjbBundleDescriptor ejbBundle = context.getModuleMetaData(EjbBundleDescriptor.class);
+            if (ejbBundle != null) {
+                checkEjbBundleForTimers(ejbBundle, dcp.target);
+            }
+
+        }
+    }
+
+    private boolean checkEjbBundleForTimers(EjbBundleDescriptor ejbBundle, String target) {
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log( Level.FINE, "EjbDeployer.checkEjbBundleForTimers in BUNDLE: " + ejbBundle.getName());
+        }
+
+        boolean found = false;
+        for (EjbDescriptor ejbDescriptor : ejbBundle.getEjbs()) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log( Level.FINE, "EjbDeployer.checkEjbBundleForTimers in EJB: " + ejbDescriptor.getName());
+            }
+
+            if (ejbDescriptor.isTimedObject()) {
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            //Start EJB Timer Service if it will be used
+            EjbContainerUtilImpl.getInstance().initEJBTimerService(target);
+        }
+
+        return found;
     }
 
     private long getNextEjbAppUniqueId() {

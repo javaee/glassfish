@@ -240,9 +240,15 @@ public class EjbContainerUtilImpl
 
     public  EJBTimerService getEJBTimerService() {
         if (!_ejbTimerServiceVerified) {
-            deployEJBTimerService();
+            deployEJBTimerService(null);
         }
         return _ejbTimerService;
+    }
+
+    public  void initEJBTimerService(String target) {
+        if (!_ejbTimerServiceVerified) {
+            deployEJBTimerService(target);
+        }
     }
 
     public  void registerContainer(BaseContainer container) {
@@ -428,7 +434,7 @@ public class EjbContainerUtilImpl
         Object activeTxCache;
     }
     
-    private void deployEJBTimerService() {
+    private void deployEJBTimerService(String target) {
         synchronized (lock) {
             Deployment deployment = habitat.getByContract(Deployment.class);
             boolean isRegistered = deployment.isRegistered(EjbContainerUtil.TIMER_SERVICE_APP_NAME);
@@ -461,11 +467,14 @@ public class EjbContainerUtilImpl
                         File rootScratchDir = env.getApplicationStubPath();
                         File appScratchDir = new File(rootScratchDir, appName);
                         String resourceName = getTimerResource();
-                        //if (env.isDas() && (appScratchDir.createNewFile() && !isUpgrade(resourceName))) {
-                        if (appScratchDir.createNewFile() && !isUpgrade(resourceName)) {
+                        if ((env.isDas() || env.isEmbedded()) && (appScratchDir.createNewFile() && !isUpgrade(resourceName))) {
                             params.origin = OpsParams.Origin.deploy;
+                            if (target != null) {
+                                params.target = target;
+                            }
                         } else {
                             params.origin = OpsParams.Origin.load;
+                            params.target = env.getInstanceName();
                         }
 
                         ExtendedDeploymentContext dc = deployment.getBuilder(
