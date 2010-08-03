@@ -240,6 +240,6 @@ public class SimpleReporterAdapter implements Serializable {
     }
 
     public static String checkNA(final String value) {
-        return value == null || value.trim().length() == 0 ? ReporterConstants.NA : value.trim();
+        return value == null ? ReporterConstants.NA : value.trim();
     }
 }

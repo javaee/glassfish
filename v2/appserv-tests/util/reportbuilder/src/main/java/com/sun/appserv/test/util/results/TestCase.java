@@ -102,8 +102,6 @@ public class TestCase {
         }
         if (!description.equals(ReporterConstants.NA)) {
             buffer.append("<description><![CDATA[" + description.trim() + "]]></description>\n");
-        } else {
-            buffer.append("<description></description>\n");
         }
         if (!statusDescription.equals(ReporterConstants.NA)) {
             buffer.append("<status value=\"" + status.trim() + "\"><![CDATA[" + statusDescription.trim() + "]]></status>\n");
