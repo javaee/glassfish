@@ -39,11 +39,13 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.GenericCrudCommand;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -72,6 +74,9 @@ public final class CopyConfigCommand extends CopyConfig {
 
     @Inject
     ServerEnvironment env;
+
+    @Inject
+    ServerEnvironmentImpl envImpl;
 
 
     final private static LocalStringManagerImpl localStrings =
@@ -159,6 +164,12 @@ public final class CopyConfigCommand extends CopyConfig {
                         configName);
                 new File(configConfigDir, "docroot").mkdirs();
                 new File(configConfigDir, "lib/ext").mkdirs();
+
+                String rootFolder = envImpl.getProps().get(com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+                String templateDir = rootFolder + File.separator + "lib" + File.separator + "templates";
+                File src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+                File dest = new File(configConfigDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+                FileUtils.copy(src, dest);
             }
             catch(Exception e) {
                 logger.warning(localStrings.getLocalString(

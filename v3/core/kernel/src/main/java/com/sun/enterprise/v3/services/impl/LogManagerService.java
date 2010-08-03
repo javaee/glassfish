@@ -147,7 +147,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                 file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
 
                 if (!file.exists()) {
-                    loggingConfig.copyLoggingPropertiesFile(env.getConfigDirPath(), dirForLogging);
+                    loggingConfig.copyLoggingPropertiesFile(dirForLogging);
                     file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
                 }
             } else if (targetServer.isInstance()) {
@@ -157,7 +157,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                 file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
 
                 if (!file.exists()) {
-                    loggingConfig.copyLoggingPropertiesFile(env.getConfigDirPath(), dirForLogging);
+                    loggingConfig.copyLoggingPropertiesFile(dirForLogging);
                     file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
                 }
             } else {

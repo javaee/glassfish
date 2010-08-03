@@ -97,4 +97,8 @@ public interface LoggingConfig {
 
     void removeLoggingProperties(Set<String> properties) throws IOException;
 
+    /* creates zip file for server.log for given target */
+
+    void createZipForLog(String target) throws IOException;
+
 }

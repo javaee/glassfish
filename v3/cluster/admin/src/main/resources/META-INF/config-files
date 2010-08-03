@@ -9,7 +9,6 @@ default-web.xml
 domain-passwords
 keyfile
 keystore.jks
-logging.properties
 login.conf
 server.policy
 sun-acc.xml

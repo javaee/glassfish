@@ -45,10 +45,13 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Implementation of Logging Commands
@@ -117,9 +120,15 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
     /*
       Copy logging.properties files if missing for given target.
       */
-    public boolean copyLoggingPropertiesFile(File srcDir, File targetDir) throws IOException {
+
+    public boolean copyLoggingPropertiesFile(File targetDir) throws IOException {
+
         Logger.getAnonymousLogger().log(Level.WARNING, "Logging.properties file not found, creating new file using DAS logging.properties");
-        File src = new File(srcDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+
+        String rootFolder = env.getProps().get(com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+        String templateDir = rootFolder + File.separator + "lib" + File.separator + "templates";
+        File src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+
         File dest = new File(targetDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
         try {
             FileUtils.copy(src, dest);
@@ -134,6 +143,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
     /*
       Load the properties  for given target.
       */
+
     private boolean openPropFile(String target) throws IOException {
         try {
             props = new Properties();
@@ -143,7 +153,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
             file = new File(dirForLogging, loggingPropertiesName);
 
             if (!file.exists()) {
-                copyLoggingPropertiesFile(loggingConfigDir, dirForLogging);
+                copyLoggingPropertiesFile(dirForLogging);
                 file = new File(dirForLogging, loggingPropertiesName);
             }
             fis = new java.io.FileInputStream(file);
@@ -362,6 +372,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
     /* Return a Map of all the properties and corresponding values in the logging.properties file.
       * @throws  IOException
       */
+
     public Map<String, String> getLoggingProperties() throws IOException {
         Map<String, String> m = new HashMap<String, String>();
         try {
@@ -421,6 +432,48 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
         } catch (IOException ex) {
             throw ex;
         }
+    }
+
+    public void createZipForLog(String target) throws IOException {
+        // need to implement this in MS5
+    }
+
+    private void createZip(String fileName[]) throws IOException {
+        // Create a buffer for reading the files
+
+        final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+        String currentTime = sdf.format(cal.getTime());
+
+
+        byte[] buf = new byte[1024];
+
+        // Create the ZIP file
+        String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
+        String target = instanceRoot + File.separator + "log_" + currentTime + ".zip";
+        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(target));
+
+        // Compress the files
+        for (int i = 0; i < fileName.length; i++) {
+            FileInputStream in = new FileInputStream(fileName[i]);
+
+            // Add ZIP entry to output stream.
+            out.putNextEntry(new ZipEntry(fileName[i]));
+
+            // Transfer bytes from the file to the ZIP file
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+
+            // Complete the entry
+            out.closeEntry();
+            in.close();
+        }
+        // Complete the ZIP file
+        out.close();
     }
 
 }
