@@ -98,6 +98,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
     private RemoteInstanceCommandHelper helper;
     private ActionReport report;
     private String errorMessage = null;
+    private Server instance;
 
     public void execute(AdminCommandContext context) {
         report = context.getActionReport();
@@ -109,14 +110,15 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
             errorMessage = Strings.get("stop.instance.notDas",
                     env.getRuntimeType().toString());
 
+        if(errorMessage == null) {
+            errorMessage = pollForDeath();
+        }
+
         if (errorMessage != null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(errorMessage);
         }
         else {
-            // todo -- verify it really stopped
-            // waiting for IT for Vijay to get done -- API for status
-            // we are GUARANTEED that instanceName is set...
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             report.setMessage(Strings.get("stop.instance.success",
                     instanceName));
@@ -138,7 +140,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         if (!StringUtils.ok(instanceName))
             return Strings.get("stop.instance.noInstanceName", cmdName);
 
-        final Server instance = helper.getServer(instanceName);
+        instance = helper.getServer(instanceName);
 
         if (instance == null)
             return Strings.get("stop.instance.noSuchInstance", instanceName);
@@ -167,5 +169,23 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         }
 
         return null;
+    }
+
+    // return null means A-OK
+    private String pollForDeath() {
+        int counter = 0;  // 120 seconds
+
+        while (++counter < 240) {
+            if (!instance.isRunning())
+                return null;
+
+            try {
+                Thread.sleep(500);
+            }
+            catch (Exception e) {
+                // ignore
+            }
+        }
+        return Strings.get("stop.instance.timeout", instanceName);
     }
 }
