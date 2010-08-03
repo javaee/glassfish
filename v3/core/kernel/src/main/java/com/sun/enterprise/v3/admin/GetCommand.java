@@ -38,11 +38,14 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import java.util.*;
 
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
@@ -74,8 +77,9 @@ import org.glassfish.external.statistics.impl.StatisticImpl;
  * Time: 12:17:26 AM
  */
 @Service(name="get")
-@Cluster(RuntimeType.DAS)
 @Scoped(PerLookup.class)
+@Cluster({RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     
     @Inject
@@ -84,6 +88,9 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     //How to define short option name?
     @Param(optional=true, defaultValue="false", shortName="m")
     Boolean monitor;
+
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    String target;
 
     @Param(primary = true)
     String pattern;
