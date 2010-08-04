@@ -62,21 +62,6 @@ public class ServerConfigLookup {
     protected static final Logger _logger = LogDomains.getLogger(
             ServerConfigLookup.class, LogDomains.WEB_LOGGER);
 
-    /**
-     * The property name in domain.xml to obtain
-     * the EE builder path - this property is not expected
-     * now to change and if it ever did, then the directory
-     * and package structure for the builder classes would
-     * have to change also
-     */  
-    private static final String EE_BUILDER_PATH_PROPERTY_NAME =
-        "ee-builder-path";      
-  
-    /**
-     * The default path to the EE persistence strategy builders 
-     */ 
-    private static final String DEFAULT_EE_BUILDER_PATH =
-        "com.sun.enterprise.ee.web.initialization";
 
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config configBean;
@@ -165,22 +150,13 @@ public class ServerConfigLookup {
         return sessionConfigBean.getSessionProperties();
     }
 
-    /**
-     * Get the EE_BUILDER_PATH from server.xml.
-     * this defaults to EE_BUILDER_PATH but can be modified
-     * this is the fully qualified path to the EE builders
-     */
-    public String getEEBuilderPathFromConfig() {
-        return getWebContainerAvailabilityPropertyString(
-            EE_BUILDER_PATH_PROPERTY_NAME, DEFAULT_EE_BUILDER_PATH);
-    }     
 
     /**
      * Get the availability-service element from domain.xml.
      * return null if not found
      */
     protected AvailabilityService getAvailabilityService() {
-        return this .availabilityService;
+        return this.availabilityService;
     }
 
     /**
@@ -217,7 +193,7 @@ public class ServerConfigLookup {
      * element from domain.xml whose name matches propName
      * return null if not found
      * @param propName
-     */     
+     */
     protected String getWebContainerAvailabilityPropertyString(
                 String propName) {
         return getWebContainerAvailabilityPropertyString(propName, null);

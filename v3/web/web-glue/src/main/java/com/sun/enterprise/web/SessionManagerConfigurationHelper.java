@@ -50,6 +50,7 @@ import java.util.logging.Logger;
 
 /**
  * @author  lwhite
+ * @author Rajiv Mordani
  */
 public class SessionManagerConfigurationHelper {
 
@@ -90,7 +91,6 @@ public class SessionManagerConfigurationHelper {
 
         //XXX Need to look at whether the app is distributable.
         
-/*
         boolean isAppDistributable = false;
         if (_wbd != null) {
             isAppDistributable = _wbd.isDistributable();
@@ -100,8 +100,6 @@ public class SessionManagerConfigurationHelper {
                            + "): " + isAppDistributable);    
         }
 
-        System.out.println("SessionConfigurationHelper: distributable = " + isAppDistributable);
-*/
 
         PersistenceType persistence = PersistenceType.MEMORY;
         String persistenceFrequency = null;
@@ -196,7 +194,6 @@ public class SessionManagerConfigurationHelper {
 
         // If app is not distributable and non-memory option
         // is attempted, log error and set back to "memory"
-/*
         if (!isAppDistributable && persistence != PersistenceType.MEMORY) {
             String wmName = getApplicationId(_ctx);
             if (_logger.isLoggable(Level.FINEST)) {
@@ -204,7 +201,9 @@ public class SessionManagerConfigurationHelper {
                                isSystemApp(wmName));
             }
 
-            System.out.println("SessionConfigurationHelper: Is AppDistributable " + isAppDistributable);
+            if (_logger.isLoggable(Level.FINEST)) {
+                _logger.finest("SessionConfigurationHelper: Is AppDistributable " + isAppDistributable);
+            }
             // Suppress log error msg for default-web-module
             // log message only if availabilityenabled = true is attempted
             if (isAvailabilityEnabled &&
@@ -222,7 +221,6 @@ public class SessionManagerConfigurationHelper {
             scope = null;            
         }
         
-*/
         // If availability-enabled is false, reset to "memory"
         if (!isAvailabilityEnabled && (persistence != PersistenceType.FILE &&
                 persistence != PersistenceType.COOKIE &&
@@ -244,6 +242,9 @@ public class SessionManagerConfigurationHelper {
         _persistence = persistence;
         _persistenceFrequency = frequency;
         _persistenceScope = scope;
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("SessionManager _persistenceType " + _persistence.getType());
+        }
     }
     
     /**
