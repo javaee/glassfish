@@ -54,6 +54,7 @@ public class Client extends AdminBaseDevTest {
     public static final String DEF_RESOURCE = "jdbc/__default";
     public static final String XA_RESOURCE = "jdbc/xa";
     public static final String TXID = "0000000000000001_00";
+    public static final String TXID_MONITOR = "server.transaction-service.activeids-current";
 
     private static SimpleReporterAdapter stat =
         new SimpleReporterAdapter("appserv-tests");
@@ -110,7 +111,26 @@ public class Client extends AdminBaseDevTest {
         System.out.println("Executing rollback CLI");
         try {
             asadmin("freeze-transaction-service", "--target", INSTANCE1_NAME);
-            asadmin("rollback-transaction", "--target", INSTANCE1_NAME, "--transaction_id", TXID); //--transaction_id 0000000000000001_00
+            AsadminReturn result = asadminWithOutput("get", "--target", INSTANCE1_NAME, "-m", TXID_MONITOR);
+            System.out.println("" + result.out);
+            String[] parts = result.out.split("\n");
+            String line = null;
+            for (int i = 0; i++ < (parts.length - 1); ) {
+                if (parts[i].startsWith("Transaction Id")) {
+                    line = parts[i + 1];
+                    break;
+                }
+            }
+            if (line != null) {
+                parts = line.split(" ");
+                result = asadminWithOutput("rollback-transaction", "--target", INSTANCE1_NAME, "--transaction_id", parts[0]);
+                System.out.println("" + result.out);
+                if (!result.returnValue) {
+                    System.out.println("RESULT.err: " + result.err);
+                }
+            } else {
+                System.out.println("Transaction Id not found");
+            }
             asadmin("unfreeze-transaction-service", "--target", INSTANCE1_NAME);
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,7 +149,7 @@ public class Client extends AdminBaseDevTest {
                     .append(File.separator).append("tx").toString();
             AsadminReturn result = asadminWithOutput("recover-transactions", "--target", INSTANCE2_NAME, 
                     "--transactionlogdir", txLog, INSTANCE1_NAME); 
-            System.out.println("RESULT.out: " + result.out);
+            System.out.println("" + result.out);
             if (!result.returnValue) {
                 System.out.println("RESULT.err: " + result.err);
             }

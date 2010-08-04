@@ -26,5 +26,4 @@ This test, when run with 'all' target performs the following steps:
   - stopDomain
 
 Notes: 
-- run-rollback currently relies on being called after instance restart (to have guaranteed tx id)
 - run-recover fails until issue 12896 is fixed
