@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.management.JMException;
 import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -56,7 +57,7 @@ import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.results.StringListResult;
 import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.external.amx.AMXGlassfish;
+//import org.glassfish.external.amx.AMXGlassfish;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.Dom;
 
@@ -89,7 +90,7 @@ public class GlassFishDomainResource extends TemplateResource {
         try {
             Habitat habitat = RestService.getHabitat();
             MBeanServer mBeanServer = habitat.getComponent(MBeanServer.class);
-            JMXServiceURL[] urls = (JMXServiceURL[]) mBeanServer.getAttribute(AMXGlassfish.DEFAULT.getBootAMXMBeanObjectName(), "JMXServiceURLs");
+            JMXServiceURL[] urls = (JMXServiceURL[]) mBeanServer.getAttribute(/*AMXGlassfish.DEFAULT.*/getBootAMXMBeanObjectName(), "JMXServiceURLs");
             List<String> jmxUrls = new ArrayList();
             for (JMXServiceURL url : urls) {
                 jmxUrls.add(url.getURLPath());
@@ -99,6 +100,16 @@ public class GlassFishDomainResource extends TemplateResource {
             throw new RuntimeException(e);
         }
     }
+
+    private ObjectName getBootAMXMBeanObjectName() {
+        try {
+            return new ObjectName("amx-support:type=boot-amx");
+        } catch (final Exception e) {
+            throw new RuntimeException("bad ObjectName", e);
+        }
+    }
+
+
 
     @POST
     @Path("set/")

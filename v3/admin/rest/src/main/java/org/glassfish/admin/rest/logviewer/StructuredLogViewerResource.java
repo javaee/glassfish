@@ -49,6 +49,7 @@ import com.sun.enterprise.server.logging.logviewer.backend.LogFilter;
 import java.io.Serializable;
 import javax.management.Attribute;
 import org.glassfish.admin.rest.RestService;
+import org.glassfish.internal.api.LogManager;
 
 /**
  * REST resource to get Log records
@@ -121,6 +122,11 @@ public class StructuredLogViewerResource {
             String instanceName,
             String type) throws IOException {
 
+        if (RestService.getHabitat().getComponent(LogManager.class) == null) {
+            //the logger service is not install, so we cannot rely on it.
+            //return an error
+            throw new IOException("The GlassFish LogManager Service is not avaiable. Not installed?");
+        }
 
         Properties nameValueMap = new Properties();
 
