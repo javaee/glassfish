@@ -44,7 +44,6 @@ import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
@@ -93,13 +92,6 @@ public class LogFilter {
     private static final Logger logger =
             LogDomains.getLogger(LogFilter.class, LogDomains.CORE_LOGGER);
 
-    public static AttributeList getLogRecordsUsingQueryStaticMethod(
-            String logFileName, Long fromRecord, Boolean next, Boolean forward,
-            Integer requestedCount, Date fromDate, Date toDate,
-            String logLevel, Boolean onlyLevel, List listOfModules,
-            Properties nameValueMap, String anySearch) {
-        return null;
-    }
 
 
     /**

@@ -48,6 +48,7 @@ import javax.ws.rs.core.MediaType;
 import com.sun.enterprise.server.logging.logviewer.backend.LogFilter;
 import java.io.Serializable;
 import javax.management.Attribute;
+import org.glassfish.admin.rest.RestService;
 
 /**
  * REST resource to get Log records
@@ -68,7 +69,9 @@ public class StructuredLogViewerResource {
             @QueryParam("fromTime") @DefaultValue("-1") long fromTime,
             @QueryParam("toTime") @DefaultValue("-1") long toTime,
             @QueryParam("logLevel") @DefaultValue("INFO") String logLevel,
-            @QueryParam("anySearch") @DefaultValue("") String anySearch) throws IOException {
+            @QueryParam("anySearch") @DefaultValue("") String anySearch,
+            @QueryParam("listOfModules") List<String> listOfModules, //default value is empty for List
+            @QueryParam("instanceName") @DefaultValue("") String instanceName) throws IOException {
 
         return getWithType(
                 logFileName,
@@ -77,7 +80,7 @@ public class StructuredLogViewerResource {
                 maximumNumberOfResults,
                 fromTime,
                 toTime,
-                logLevel, onlyLevel, anySearch, "json");
+                logLevel, onlyLevel, anySearch, listOfModules, instanceName, "json");
 
     }
 
@@ -92,7 +95,9 @@ public class StructuredLogViewerResource {
             @QueryParam("fromTime") @DefaultValue("-1") long fromTime,
             @QueryParam("toTime") @DefaultValue("-1") long toTime,
             @QueryParam("logLevel") @DefaultValue("INFO") String logLevel,
-            @QueryParam("anySearch") @DefaultValue("") String anySearch) throws IOException {
+            @QueryParam("anySearch") @DefaultValue("") String anySearch,
+            @QueryParam("listOfModules") List<String> listOfModules, //default value is empty for List,
+            @QueryParam("instanceName") @DefaultValue("") String instanceName) throws IOException {
 
         return getWithType(
                 logFileName,
@@ -101,7 +106,7 @@ public class StructuredLogViewerResource {
                 maximumNumberOfResults,
                 fromTime,
                 toTime,
-                logLevel,onlyLevel,anySearch, "xml");
+                logLevel, onlyLevel, anySearch, listOfModules, instanceName, "xml");
 
     }
 
@@ -112,25 +117,37 @@ public class StructuredLogViewerResource {
             int maximumNumberOfResults,
             long fromTime,
             long toTime,
-            String logLevel, boolean onlyLevel, String anySearch, String type) throws IOException {
+            String logLevel, boolean onlyLevel, String anySearch, List<String> listOfModules,
+            String instanceName,
+            String type) throws IOException {
 
 
-        Properties props = new Properties();
-        final List<String> moduleList = null;
+        Properties nameValueMap = new Properties();
 
         boolean sortAscending = true;
         if (!searchForward) {
             sortAscending = false;
         }
-
-        final AttributeList result = LogFilter.getLogRecordsUsingQueryStaticMethod(logFileName,
-                startIndex,
-                searchForward, sortAscending,
-                maximumNumberOfResults,
-                fromTime == -1 ? null : new Date(fromTime),
-                toTime == -1 ? null : new Date(toTime),
-                logLevel, onlyLevel, moduleList, props,anySearch);
-        return convertQueryResult(result, type);
+        LogFilter logFilter = RestService.getHabitat().getComponent(LogFilter.class);
+        if (instanceName.equals("")) {
+            final AttributeList result = logFilter.getLogRecordsUsingQuery(logFileName,
+                    startIndex,
+                    searchForward, sortAscending,
+                    maximumNumberOfResults,
+                    fromTime == -1 ? null : new Date(fromTime),
+                    toTime == -1 ? null : new Date(toTime),
+                    logLevel, onlyLevel, listOfModules, nameValueMap, anySearch);
+            return convertQueryResult(result, type);
+        } else {
+            final AttributeList result = logFilter.getLogRecordsUsingQuery(logFileName,
+                    startIndex,
+                    searchForward, sortAscending,
+                    maximumNumberOfResults,
+                    fromTime == -1 ? null : new Date(fromTime),
+                    toTime == -1 ? null : new Date(toTime),
+                    logLevel, onlyLevel, listOfModules, nameValueMap, anySearch, instanceName);
+            return convertQueryResult(result, type);
+        }
 
     }
 
