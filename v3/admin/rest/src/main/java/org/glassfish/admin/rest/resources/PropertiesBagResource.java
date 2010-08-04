@@ -57,7 +57,6 @@ import javax.ws.rs.core.UriInfo;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
-import org.glassfish.admin.rest.resources.generated.PropertyResource;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.GetResultList;
 import org.glassfish.admin.rest.results.OptionsResult;
@@ -85,6 +84,12 @@ public class PropertiesBagResource {
     protected String tagName;
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(PropertiesBagResource.class);
 
+    static public class PropertyResource extends TemplateResource {
+        @Override
+        public String getDeleteCommand() {
+            return "GENERIC-DELETE";
+        }
+    }
     @Path("{Name}/")
     public PropertyResource getProperty(@PathParam("Name") String id) {
         PropertyResource resource = resourceContext.getResource(PropertyResource.class);

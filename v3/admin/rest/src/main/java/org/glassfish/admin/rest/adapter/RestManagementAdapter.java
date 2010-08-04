@@ -38,13 +38,11 @@ package org.glassfish.admin.rest.adapter;
 import com.sun.enterprise.config.serverbeans.Domain;
 import java.util.HashSet;
 import java.util.Set;
-//import org.glassfish.admin.rest.resources.ActionReportResource;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.generator.ASMResourcesGenerator;
 import org.glassfish.admin.rest.generator.ResourcesGenerator;
-import org.glassfish.admin.rest.generator.TextResourcesGenerator;
 import org.glassfish.admin.rest.resources.GeneratorResource;
 
 import org.jvnet.hk2.annotations.Service;
@@ -68,16 +66,16 @@ public class RestManagementAdapter extends RestAdapter {
     @Override
     protected Set<Class<?>> getResourcesConfig(boolean useASM) {
 
-         Class domainResourceClass =org.glassfish.admin.rest.resources.generated.DomainResource.class;
+         Class domainResourceClass =null;//org.glassfish.admin.rest.resources.generated.DomainResource.class;
 
-        if (useASM) { //Generate the ASM classes and use the top level one for the DomainResource
+     //   if (useASM) { //Generate the ASM classes and use the top level one for the DomainResource
             generateASM();
             try {
                 domainResourceClass = Class.forName("org.glassfish.admin.rest.resources.generatedASM.DomainResource");
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(RestManagementAdapter.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+     //   }
 
         final Set<Class<?>> r = new HashSet<Class<?>>();
 
