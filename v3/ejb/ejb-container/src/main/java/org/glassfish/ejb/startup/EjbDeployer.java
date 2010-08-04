@@ -277,7 +277,7 @@ public class EjbDeployer
         // But CMP drop tables should be handled here.
 
         OpsParams params = dc.getCommandParameters(OpsParams.class);
-        if ( (params.origin.isUndeploy() || params.origin.isDeploy()) && (env.isDas() || env.isEmbedded())) {
+        if ( (params.origin.isUndeploy() || params.origin.isDeploy()) && isDas()) {
 
             // If CMP beans are present, cmpDeployer should've been initialized in unload()
             if (cmpDeployer != null) {
@@ -329,7 +329,8 @@ public class EjbDeployer
             throws DeploymentException {
 
         OpsParams params = dc.getCommandParameters(OpsParams.class);
-        if (!(params.origin.isDeploy() && (env.isDas() || env.isEmbedded())) ) { //Generate artifacts only when being deployed on DAS
+        if (!(params.origin.isDeploy() && isDas())) {
+            //Generate artifacts only when being deployed on DAS
             return;
         }
         
@@ -365,7 +366,7 @@ public class EjbDeployer
 
     @Override
     public void event(Event event) {
-        if (event.is(Deployment.APPLICATION_PREPARED) && (env.isDas() || env.isEmbedded())) {
+        if (event.is(Deployment.APPLICATION_PREPARED) && isDas()) {
             ExtendedDeploymentContext context = (ExtendedDeploymentContext)event.hook();
             OpsParams opsparams = context.getCommandParameters(OpsParams.class);
 
@@ -461,4 +462,10 @@ public class EjbDeployer
         }
     }
     
+   /**
+    * Embedded is a single-instance like DAS
+    */
+    private boolean isDas() {
+        return env.isDas() || env.isEmbedded();
+    }
 }
