@@ -147,6 +147,7 @@ public interface RuntimeTagNames extends TagNames {
     
     // SECURITY related
     public static final String SECURITY_ROLE_MAPPING = "security-role-mapping";
+    public static final String WL_SECURITY_ROLE_ASSIGNMENT = "security-role-assignment";
     public static final String ROLE_NAME = "role-name";
     public static final String PRINCIPAL_NAME = "principal-name";
     public static final String GROUP_NAME = "group-name";

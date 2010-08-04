@@ -111,6 +111,7 @@ public class RuntimeDescriptorFactory {
         //common
         register(new XMLElement(RuntimeTagNames.PRINCIPAL_NAME), PrincipalNameDescriptor.class);
         register(new XMLElement(RuntimeTagNames.SECURITY_ROLE_MAPPING), SecurityRoleMapping.class);
+        register(new XMLElement(RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT), SecurityRoleMapping.class);
         register(new XMLElement(RuntimeTagNames.VALVE), Valve.class);
     }
 
