@@ -48,6 +48,7 @@ import com.sun.enterprise.config.serverbeans.LbConfig;
 import com.sun.enterprise.config.serverbeans.ClusterRef;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Ref;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerRef;
 
 import java.util.List;
@@ -117,9 +118,35 @@ public class LoadbalancerReaderImpl implements LoadbalancerReader {
         ClusterReader[] cls = new ClusterReader[_clusters.size()];
         Iterator<String> iter = _clusters.iterator();
         int i = 0;
+        boolean isFirstServer = false;
         while (iter.hasNext()) {
-            Cluster cluster = _domain.getClusterNamed(iter.next());
-            cls[i++] = new ClusterReaderImpl(_domain, _appRegistry, cluster);
+            String name = iter.next();
+            boolean isServer = _domain.isServer(name);
+            if (i == 0) {
+                isFirstServer = isServer;
+            } else {
+                //Mix of standalone instances and clusters is not allowed
+                if (isFirstServer^isServer) {
+                    String msg = LbLogUtil.getStringManager().getString("MixofServerAndClusterNotSupported");
+                    throw new LbReaderException(msg);
+                }
+            }
+            if (isServer) {
+                Server server = _domain.getServerNamed(name);
+                //An instance within cluster is not allowed
+                if(server.getCluster() != null){
+                    String msg = LbLogUtil.getStringManager().getString("ServerPartofClusterNotSupported", name);
+                    throw new LbReaderException(msg);
+                }
+                cls[i++] = new StandAloneClusterReaderImpl(_domain, _appRegistry, server);
+            } else {
+                Cluster cluster = _domain.getClusterNamed(name);
+                if(cluster == null){
+                    String msg = LbLogUtil.getStringManager().getString("ClusterorInstanceNotFound", name);
+                    throw new LbReaderException(msg);
+                }
+                cls[i++] = new ClusterReaderImpl(_domain, _appRegistry, cluster);
+            }
         }
         return cls;
     }

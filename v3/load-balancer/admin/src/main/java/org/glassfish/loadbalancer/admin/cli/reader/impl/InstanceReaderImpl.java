@@ -56,6 +56,7 @@ import java.net.InetAddress;
 import java.util.Iterator;
 import org.glassfish.config.support.PropertyResolver;
 import org.glassfish.loadbalancer.admin.cli.LbLogUtil;
+import org.glassfish.loadbalancer.admin.cli.reader.api.LoadbalancerReader;
 
 /**
  * Provides instance information relavant to Load balancer tier.
@@ -67,10 +68,15 @@ public class InstanceReaderImpl implements InstanceReader {
     /**
      * Constructor
      */
-    public InstanceReaderImpl(Domain domain, ServerRef s) {
+    public InstanceReaderImpl(Domain domain, ServerRef ref) {
         _domain = domain;
-        _serverRef = s;
-        _server = domain.getServerNamed(s.getRef());
+        _serverRef = ref;
+        _server = domain.getServerNamed(ref.getRef());
+    }
+
+    public InstanceReaderImpl(Domain domain, Server server) {
+        _domain = domain;
+        _server = server;
     }
 
     /**
@@ -80,7 +86,7 @@ public class InstanceReaderImpl implements InstanceReader {
      */
     @Override
     public String getName() throws LbReaderException {
-        return _serverRef.getRef();
+        return _server.getName();
     }
 
     /**
@@ -90,7 +96,10 @@ public class InstanceReaderImpl implements InstanceReader {
      */
     @Override
     public boolean getLbEnabled() throws LbReaderException {
-        return Boolean.valueOf(_serverRef.getLbEnabled()).booleanValue();
+        if(_serverRef != null){
+            return Boolean.valueOf(_serverRef.getLbEnabled()).booleanValue();
+        }
+        return LoadbalancerReader.LBENABLED_VALUE;
     }
 
     /**
@@ -101,7 +110,10 @@ public class InstanceReaderImpl implements InstanceReader {
      */
     @Override
     public String getDisableTimeoutInMinutes() throws LbReaderException {
-        return _serverRef.getDisableTimeoutInMinutes();
+        if(_serverRef != null) {
+            return _serverRef.getDisableTimeoutInMinutes();
+        }
+        return LoadbalancerReader.DISABLE_TIMEOUT_IN_MINUTES_VALUE;
     }
 
     /**

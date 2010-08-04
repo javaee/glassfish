@@ -116,6 +116,13 @@ public class PropertyReaderImpl implements PropertyReader {
                     LoadbalancerReader.REQ_MONITOR_DATA_VALUE);
         }
 
+        if (properties.getProperty(
+                LoadbalancerReader.PREFERRED_FAILOVER_INSTANCE) == null) {
+            properties.setProperty(
+                    LoadbalancerReader.PREFERRED_FAILOVER_INSTANCE,
+                    LoadbalancerReader.PREFERRED_FAILOVER_INSTANCE_VALUE);
+        }
+
         int i = 0;
         int propSize = properties.size();
         PropertyReaderImpl[] props = new PropertyReaderImpl[propSize];

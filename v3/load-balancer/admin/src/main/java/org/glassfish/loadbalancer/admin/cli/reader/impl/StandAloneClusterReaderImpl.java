@@ -70,23 +70,37 @@ public class StandAloneClusterReaderImpl implements ClusterReader {
         _server = domain.getServerNamed(_serverRef.getRef());
     }
 
+    public StandAloneClusterReaderImpl(Domain domain, ApplicationRegistry appRegistry, Server server)
+            throws LbReaderException {
+        _domain = domain;
+        _appRegistry = appRegistry;
+        _server = server;
+    }
+
     @Override
     public String getName() {
-        return _serverRef.getRef();
+        return _server.getName();
     }
 
     @Override
     public InstanceReader[] getInstances() throws LbReaderException {
         InstanceReader[] readers = new InstanceReader[1];
-        readers[0] = new InstanceReaderImpl(_domain, _serverRef);
+        if(_serverRef != null){
+            readers[0] = new InstanceReaderImpl(_domain, _serverRef);
+        } else {
+            readers[0] = new InstanceReaderImpl(_domain, _server);
+        }
         return readers;
     }
 
     @Override
     public HealthCheckerReader getHealthChecker() throws LbReaderException {
-        HealthChecker bean = _serverRef.getHealthChecker();
+        HealthChecker bean = null;
+        if(_serverRef != null){
+            bean = _serverRef.getHealthChecker();
+        }
         if (bean == null) {
-            return null;
+            return HealthCheckerReaderImpl.getDefaultHealthChecker();
         } else {
             HealthCheckerReader reader = new HealthCheckerReaderImpl(bean);
             return reader;

@@ -108,15 +108,18 @@ public class ExportHttpLbConfig implements AdminCommand {
     public void process() throws Exception {
         File f = new File(fileName);
         LoadbalancerReader lbr = null;
-        if (lbName != null) {
+        if (lbName != null && lbConfigName == null && target == null) {
             LoadBalancer lb = LbConfigHelper.getLoadBalancer(domain, lbName);
             lbr = LbConfigHelper.getLbReader(domain, appRegistry, lb.getLbConfigName());
-        } else if (lbConfigName != null) {
+        } else if (lbConfigName != null && lbName == null && target == null) {
             lbr = LbConfigHelper.getLbReader(domain, appRegistry, lbConfigName);
-        } else {
+        } else if (target != null && lbName == null && lbConfigName == null){
             Set<String> clusters = new HashSet<String>();
             clusters.addAll(target);
             lbr = new LoadbalancerReaderImpl(domain, appRegistry, clusters, properties);
+        } else {
+            String msg = LbLogUtil.getStringManager().getString("ExportHttpLbConfigInvalidArgs");
+            throw new Exception(msg);
         }
 
         FileOutputStream fo = null;
