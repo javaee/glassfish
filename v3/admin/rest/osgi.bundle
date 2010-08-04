@@ -10,5 +10,10 @@ DynamicImport-Package: \
                         com.sun.ws.rs.ext, \
                         javax.ws.rs, \
                         javax.ws.rs.core, \
-                        javax.ws.rs.ext
+                        javax.ws.rs.ext, \
+                        com.sun.enterprise.server.logging.logviewer.backend, \
+                        org.glassfish.external.statistics, \
+                        org.glassfish.external.statistics.impl, \
+                        org.glassfish.flashlight, \
+                        org.glassfish.flashlight.datatree \
 
