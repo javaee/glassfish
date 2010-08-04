@@ -56,6 +56,7 @@ import org.glassfish.admin.amx.intf.config.Property;
 import org.glassfish.admin.amx.intf.config.ProviderConfig;
 import org.glassfish.admin.amx.intf.config.SecurityService;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.RestResponse;
 import org.glassfish.admingui.common.util.V3AMX;
 
 
@@ -285,6 +286,7 @@ public class SecurityHandler {
     @Handler(id="saveUser",
 	input={
 	    @HandlerInput(name="Realm", type=String.class, required=true),
+            @HandlerInput(name="configName", type=String.class, required=true),
 	    @HandlerInput(name="UserId", type=String.class, required=true),
 	    @HandlerInput(name="GroupList", type=String.class, required=true),
 	    @HandlerInput(name="Password", type=String.class, required=true),
@@ -292,8 +294,8 @@ public class SecurityHandler {
     public static void saveUser(HandlerContext handlerCtx) {
         try {
             String realmName = (String) handlerCtx.getInputValue("Realm");
+            String configName = (String) handlerCtx.getInputValue("configName");
             String grouplist = (String)handlerCtx.getInputValue("GroupList");
-            String[] groups = GuiUtil.stringToArray(grouplist, ",");
             String password = (String)handlerCtx.getInputValue("Password");
             String userid = (String)handlerCtx.getInputValue("UserId");
             Boolean createNew = (Boolean)handlerCtx.getInputValue("CreateNew");
@@ -301,11 +303,36 @@ public class SecurityHandler {
             if (password == null) {
                 password = "";
             }
-            if ((createNew != null) && (createNew == Boolean.TRUE)) {
-                V3AMX.getInstance().getRealmsMgr().addUser(realmName, userid, password, groups);
-            } else {
-                V3AMX.getInstance().getRealmsMgr().updateUser(realmName, userid, userid, password, groups);
+            HashMap attrs = new HashMap<String, Object>();
+            if ((createNew == null)) {
+                String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
+                                                            "/security-service/auth-realm/" + realmName + "/delete-user";
+                attrs.put("username", userid);
+                RestResponse response = RestApiHandlers.delete(endpoint, attrs);
+                if (!response.isSuccess()) {
+                    GuiUtil.getLogger().severe("Remove user failed.  parent=" + endpoint + "; attrs =" + attrs);
+                    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
+                }
+                createNew = Boolean.TRUE;
             }
+            if ((createNew != null) && (createNew == Boolean.TRUE)) {
+                String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
+                                                                "/security-service/auth-realm/" + realmName + "/create-user";
+                attrs = new HashMap<String, Object>();
+                attrs.put("username", userid);
+                attrs.put("authrealmname", realmName);
+                attrs.put("userpassword", password);
+                List<String> grpList = GuiUtil.parseStringList(grouplist, ",");
+                if (grpList == null) {
+                    grpList = new ArrayList<String>(0);
+                }
+                attrs.put("groups", grpList);
+                RestResponse response = RestApiHandlers.post(endpoint, attrs);
+                if (!response.isSuccess()) {
+                    GuiUtil.getLogger().severe("Add user failed.  parent=" + endpoint + "; attrs =" + attrs);
+                    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
+                }
+            } 
         } catch(Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -322,6 +349,7 @@ public class SecurityHandler {
     @Handler(id="getUserInfo",
     input={
         @HandlerInput(name="Realm", type=String.class, required=true),
+        @HandlerInput(name="configName", type=String.class, required=true),
         @HandlerInput(name="User", type=String.class, required=true)},
     output={
         @HandlerOutput(name="GroupList",     type=String.class)})
@@ -330,7 +358,8 @@ public class SecurityHandler {
 
         String realmName = (String) handlerCtx.getInputValue("Realm");
         String userName = (String) handlerCtx.getInputValue("User");
-        handlerCtx.setOutputValue("GroupList", getGroupNames(realmName,userName)  );
+        String configName = (String) handlerCtx.getInputValue("configName");
+        handlerCtx.setOutputValue("GroupList", getGroupNames(realmName, userName, configName, handlerCtx)  );
     }
 
    /**
@@ -339,21 +368,28 @@ public class SecurityHandler {
      */
     @Handler(id="getFileUsers",
         input={
-            @HandlerInput(name="Realm", type=String.class, required=true)},
+            @HandlerInput(name="Realm", type=String.class, required=true),
+            @HandlerInput(name="configName", type=String.class, required=true)},
         output={
             @HandlerOutput(name="result", type=java.util.List.class)}
      )
      public static void getFileUsers(HandlerContext handlerCtx){
         String realmName = (String) handlerCtx.getInputValue("Realm");
+        String configName = (String) handlerCtx.getInputValue("configName");
         List result = new ArrayList();
         try{
-            String[] userNames = V3AMX.getInstance().getRealmsMgr().getUserNames(realmName);
-            if(userNames != null) {
+            String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
+                                                                "/security-service/auth-realm/" + realmName + "/list-users.json";
+            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx);
+            responseMap = (Map<String, Object>) responseMap.get("data");
+            List<HashMap> children = (List<HashMap>) responseMap.get("children");
+            if(children != null) {
                 Map<String, Object> map = null;
-                for (int i=0; i< userNames.length; i++) {
+                for (HashMap child : children) {
                     map = new HashMap<String, Object>();
-                    map.put("users", userNames[i]);
-                    map.put("groups", getGroupNames( realmName, userNames[i]));
+                    String name = (String) child.get("message");
+                    map.put("users", name);
+                    map.put("groups", getGroupNames( realmName, name, configName, handlerCtx));
                     map.put("selected", false);
                     result.add(map);
                 }
@@ -372,6 +408,7 @@ public class SecurityHandler {
     @Handler(id="removeUser",
         input={
             @HandlerInput(name="Realm", type=String.class, required=true),
+            @HandlerInput(name="configName", type=String.class, required=true),
             @HandlerInput(name="selectedRows", type=List.class, required=true)},
         output={
             @HandlerOutput(name="result", type=java.util.List.class)}
@@ -380,18 +417,30 @@ public class SecurityHandler {
 
         String error = null;
         String realmName = (String) handlerCtx.getInputValue("Realm");
+        String configName = (String) handlerCtx.getInputValue("configName");
         try{
             List obj = (List) handlerCtx.getInputValue("selectedRows");
             List<Map> selectedRows = (List) obj;
             for(Map oneRow : selectedRows){
                 String user = (String)oneRow.get("users");
-                AMXProxy amx = V3AMX.getInstance().getConfig("server-config").getAdminService().getJmxConnector().get("system");
-                String authRealm = (String) amx.attributesMap().get("AuthRealmName");
+                String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName + "/admin-service/jmx-connector/system.json";
+                Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx);
+                Map<String, Object> valueMap = (Map<String, Object>) responseMap.get("data");
+                valueMap = (Map<String, Object>) valueMap.get("entity");
+                String authRealm = (String) valueMap.get("authRealmName");
                 if (realmName.equals(authRealm) && user.equals(GuiUtil.getSessionValue("userName"))){
                     error = GuiUtil.getMessage(COMMON_BUNDLE, "msg.error.cannotDeleteCurrent");
                     continue;
                 }else{
-                    V3AMX.getInstance().getRealmsMgr().removeUser(realmName, user);
+                    HashMap attrs = new HashMap<String, Object>();
+                    endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
+                                                                "/security-service/auth-realm/" + realmName + "/delete-user";
+                    attrs.put("name", user);
+                    RestResponse response = RestApiHandlers.delete(endpoint, attrs);
+                    if (!response.isSuccess()) {
+                        GuiUtil.getLogger().severe("Remove user failed.  parent=" + endpoint + "; attrs =" + attrs);
+                        error = GuiUtil.getMessage("msg.error.checkLog");
+                    }
                 }
             }
             if (error != null){
@@ -465,9 +514,15 @@ public class SecurityHandler {
         }
     }
 
-    private static String getGroupNames(String realmName, String userName){
+    private static String getGroupNames(String realmName, String userName, String configName, HandlerContext handlerCtx){
         try{
-            return GuiUtil.arrayToString(V3AMX.getInstance().getRealmsMgr().getGroupNames(realmName, userName), ",");
+            String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
+                                                                "/security-service/auth-realm/" + realmName + "/list-group-names?userName=" + userName;
+            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx);
+            List<HashMap> children = (List<HashMap>)((Map<String, Object>) responseMap.get("data")).get("entry");
+            HashMap values = (HashMap)((ArrayList)((HashMap)children.get(3)).get("list")).get(0);
+            String name  = (String) ((HashMap)((List<HashMap>)((HashMap)((ArrayList) values.get("map")).get(0)).get("entry")).get(0)).get("value");
+            return name;
         }catch(Exception ex){
             ex.printStackTrace();
             return "";

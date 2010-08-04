@@ -46,8 +46,8 @@
         getRequestValue(key="name" value="#{pageSession.Name}");
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
-        getProxyAttribute( objectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=system"
-                attrName="AuthRealmName" value="#{pageSession.authRealm}" )
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/admin-service/jmx-connector/system.json", method="get", result="#{requestScope.result}");
+        setPageSessionAttribute(key="AuthRealmName" value="#{requestScope.result.entity['authRealmName']");
         if ("#{pageSession.Name}=#{pageSession.authRealm}"){
             setPageSessionAttribute(key="isAdminRealm", value="true")
             setPageSessionAttribute(key="groupList", value="asadmin")
@@ -72,6 +72,7 @@
                            <!command
                                 saveUser(
                                     Realm="#{pageSession.Name}"
+                                    configName="#{pageSession.configName}"
                                     UserId="#{pageSession.userId}"
                                     GroupList="#{pageSession.groupList}"
                                     Password="#{password}"

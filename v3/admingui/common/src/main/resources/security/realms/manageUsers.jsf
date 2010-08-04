@@ -46,9 +46,9 @@
     getRequestValue(key="name" value=>$page{Name});
     urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
     urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
-    getFileUsers(Realm="#{Name}" result=>$attribute{listOfRows} );
-    getProxyAttribute( objectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=system"
-                attrName="AuthRealmName" value="#{pageSession.authRealm}" )
+    getFileUsers(Realm="#{Name}", configName="#{pageSession.configName}", result=>$attribute{listOfRows} );
+    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/admin-service/jmx-connector/system.json", method="get", result="#{requestScope.result}");
+    setPageSessionAttribute(key="AuthRealmName" value="#{requestScope.result.entity['authRealmName']");
     if ("#{pageSession.Name}=#{pageSession.authRealm}"){
             setPageSessionAttribute(key="tableTitle", value="$resource{i18nc.manageAdminUsers.TableTitle}")
             setPageSessionAttribute(key="helpKey", value="$resource{help_common.manageAdminUsers}" )
@@ -113,7 +113,7 @@
                         <!command
                         getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                         getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                        removeUser(Realm="#{pageSession.Name}", selectedRows="${selectedRows}");
+                        removeUser(Realm="#{pageSession.Name}", configName="#{pageSession.configName}", selectedRows="${selectedRows}");
                         gf.redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                         />
                     </sun:button>
