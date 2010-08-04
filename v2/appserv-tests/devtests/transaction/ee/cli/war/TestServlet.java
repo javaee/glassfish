@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.annotation.WebServlet;
 import javax.naming.*;
 
-@WebServlet(urlPatterns="/TestTwoResourcesServlet", loadOnStartup=1)
-public class TestTwoResourcesServlet extends HttpServlet {
+@WebServlet(urlPatterns="/TestServlet", loadOnStartup=1)
+public class TestServlet extends HttpServlet {
 
     @EJB private MyBean bean;
 
@@ -29,13 +29,14 @@ public class TestTwoResourcesServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 	resp.setContentType("text/html");
 
+        String type = req.getQueryString();
         out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet TestTwoResourcesServlet</title>");
+            out.println("<title>Servlet TestServlet</title>");
             out.println("</head>");
             out.println("<body>");
         try {
-	    out.println("" + bean.testtwo(req.getLocalPort()));
+	    out.println("" + ((type == null)? bean.testone(req.getLocalPort()) : bean.testtwo(req.getLocalPort())));
         }catch(Throwable e){
             out.println("got exception");
             out.println(e);

@@ -141,11 +141,11 @@ public class Client extends AdminBaseDevTest {
     }
 
     public void insert_in_one_resource(String appname, String port) {
-        execute(appname, port, "TestOneResourceServlet", "true");
+        execute(appname, port, "TestServlet", "true");
     }
 
     public void insert_xa_data(String appname, String port) {
-        execute(appname, port, "TestTwoResourcesServlet", "true");
+        execute(appname, port, "TestServlet?2", "true");
     }
 
     public void verify_default(String appname, String port, String operation) {
