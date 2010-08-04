@@ -94,15 +94,15 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
                     Strings.get("ConfigClusterConflict"));
         }
 
+        setDasDefaultsOnly = true; //Issue 12847 - Call super.validate to setDasDefaults only
+        super.validate();          //so _validate-node uses das host from das.properties. No dirs created.
         if (node != null) {
-            //Has to be before super.validate(), so if node is bogus CommandException should be
-            //thrown and command fail. The bogus node directory should not get created in super.validate().
             validateNode(node, getInstallRootPath(), getInstanceHostName(true));
         }
 
         pbh = new PortBaseHelper(portBase, checkPorts);
         pbh.verifyPortBase();
-
+        setDasDefaultsOnly = false;
         super.validate();  // instanceName is validated and set in super.validate(), directories created
         INSTANCE_DOTTED_NAME = "servers.server." + instanceName;
         RENDEZVOUS_DOTTED_NAME = INSTANCE_DOTTED_NAME + ".property." + RENDEZVOUS_PROPERTY_NAME;
@@ -383,5 +383,32 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             newStr = newsb.toString();
         }
         return newStr;
+    }
+
+    @Override
+    protected boolean mkdirs(File f) {
+        if (setDasDefaultsOnly) {
+            return true;
+        } else {
+            return f.mkdirs();
+        }
+    }
+
+    @Override
+    protected boolean isDirectory(File f) {
+        if (setDasDefaultsOnly) {
+            return true;
+        } else {
+            return f.isDirectory();
+        }
+    }
+
+    @Override
+    protected boolean setServerDirs() {
+        if (setDasDefaultsOnly) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

@@ -107,11 +107,25 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 // -----------------------------------------------------------------------
 
     /** 
-     * override this method if your class does NOT want to create directories
+     * Override this method if your class does NOT want to create directories
      * @param f the directory to create
      */
     protected boolean mkdirs(File f) {
         return f.mkdirs();
+    }
+    /**
+     * Override this method if your class does NOT want CommandException thrown
+     * if directory does not exist.
+     * @param f directory to check
+     */
+    protected boolean isDirectory(File f) {
+        return f.isDirectory();
+    }
+    /**
+     * Override this method if your class does NOT want to set ServerDirs
+     */
+    protected boolean setServerDirs() {
+        return true;
     }
     
     protected void initInstance() throws CommandException {
@@ -125,7 +139,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         nodeDirRoot = new File(nodeDirRootPath);
         mkdirs(nodeDirRoot);
 
-        if(!nodeDirRoot.isDirectory()) {
+        if(!isDirectory(nodeDirRoot)) {
             throw new CommandException(
                     Strings.get("Instance.badNodeDir", nodeDirRoot));
         }
@@ -148,7 +162,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             instanceName = instanceDir.getName();
         }
 
-        if(!instanceDir.isDirectory()) {
+        if(!isDirectory(instanceDir)) {
             throw new CommandException(
                     Strings.get("Instance.badInstanceDir", instanceDir));
         }
@@ -156,9 +170,11 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         instanceDir = SmartFile.sanitize(instanceDir);
 
         try {
-            instanceDirs = new InstanceDirs(instanceDir);
-            setServerDirs(instanceDirs.getServerDirs());
-            //setServerDirs(instanceDirs.getServerDirs(), checkForSpecialFiles());
+            if (setServerDirs()) {
+                instanceDirs = new InstanceDirs(instanceDir);
+                setServerDirs(instanceDirs.getServerDirs());
+                //setServerDirs(instanceDirs.getServerDirs(), checkForSpecialFiles());
+            }
         }
         catch (IOException e) {
             throw new CommandException(e);
@@ -339,18 +355,18 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 
         File[] files = parent.listFiles(new FileFilter() {
             public boolean accept(File f) {
-                return f.isDirectory();
+                return isDirectory(f);
             }
         });
 
         // ERROR:  more than one node dir child
-        if(files.length > 1) {
+        if(files != null && files.length > 1) {
             throw new CommandException(
                     Strings.get("tooManyNodes", parent));
         }
 
         // the usual case -- one node dir child
-        if(files.length == 1)
+        if(files != null && files.length == 1)
             return files[0];
 
         /*
@@ -368,7 +384,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             }
             File f = new File(parent, hostname);
 
-            if(!f.mkdirs() || !f.isDirectory()) // for instance there is a regular file with that name
+            if(!mkdirs(f) || !isDirectory(f)) // for instance there is a regular file with that name
                 throw new CommandException(Strings.get("cantCreateNodeDirChild", f));
 
             return f;
@@ -383,7 +399,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 
         File[] files = parent.listFiles(new FileFilter() {
             public boolean accept(File f) {
-                return f.isDirectory();
+                return isDirectory(f);
             }
         });
 

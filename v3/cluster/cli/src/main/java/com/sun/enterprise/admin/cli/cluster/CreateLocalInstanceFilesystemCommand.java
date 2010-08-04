@@ -100,6 +100,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     private Properties dasProperties;
     //private File nodeagentPropsFile;
     private File loggingPropsFile;
+    protected boolean setDasDefaultsOnly = false;
 
     /**
      */
@@ -125,17 +126,21 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         dasPropsFile = new File(agentConfigDir, "das.properties");
         //nodeagentPropsFile = new File(agentConfigDir, "nodeagent.properties");
 
-        applicationsDir = new File(instanceDir, "applications");
-        configDir = new File(instanceDir, "config");
-        generatedDir = new File(instanceDir, "generated");
-        libDir = new File(instanceDir, "lib");
-        docrootDir = new File(instanceDir, "docroot");
-        loggingPropsFile = new File(configDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+        if (!setDasDefaultsOnly) {
+            applicationsDir = new File(instanceDir, "applications");
+            configDir = new File(instanceDir, "config");
+            generatedDir = new File(instanceDir, "generated");
+            libDir = new File(instanceDir, "lib");
+            docrootDir = new File(instanceDir, "docroot");
+            loggingPropsFile = new File(configDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+        }
 
         if (dasPropsFile.isFile()) {
             setDasDefaults(dasPropsFile);
-            logger.printMessage(Strings.get("Instance.existingDasPropertiesWarning",
+            if (!setDasDefaultsOnly) {
+                logger.printMessage(Strings.get("Instance.existingDasPropertiesWarning",
                     programOpts.getHost(), "" + programOpts.getPort(), node));
+            }
         }
 
         DASHost = programOpts.getHost();
