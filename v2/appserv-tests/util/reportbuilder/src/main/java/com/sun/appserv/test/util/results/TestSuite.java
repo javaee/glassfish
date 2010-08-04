@@ -100,6 +100,7 @@ public class TestSuite {
         StringBuilder buffer = new StringBuilder();
         buffer.append("<testsuite>\n");
         if (!name.equals(ReporterConstants.NA)) {
+            buffer.append("<id>" + name.trim() + "</id>\n");
             buffer.append("<name>" + name.trim() + "</name>\n");
         }
         if (!description.equals(ReporterConstants.NA)) {
