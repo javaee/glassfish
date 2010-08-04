@@ -64,44 +64,39 @@
     }
  }
 
- function checkClassname(){
+function checkClassname() {
     var opt = getSelectedValueFromForm(document.forms['form1'], 'classnameOption');
-    if (opt == 'predefine'){ 
-        type = getSelectElement('#{classnameDropdownId}').value; 
-        rtype = type.match('FileRealm');  
-        if (rtype != null){  
-            return (checkRequired('form1:fileSection:jaax:jaax', '#{reqMsg}')  && 
-                    checkRequired('form1:fileSection:keyFile:keyFile',  '#{reqMsg}')  ) 
-        }  
-        rtype = type.match('LDAPRealm');  
-        if (rtype != null){  
-            return ( checkRequired(id="form1:ldapSection:jaax:jaax" , '#{reqMsg}') &&   
-                checkRequired(id="form1:ldapSection:directory:directory" , '#{reqMsg}')  &&  
-                checkRequired(id="form1:ldapSection:baseDn:baseDn" , '#{reqMsg}'))   
-        }  
-        rtype = type.match('SolarisRealm');  
-        if (rtype != null){  
-            return checkRequired(id="form1:solarisSection:jaax:jaax" , '#{reqMsg}') ; 
-        }  
-        rtype = type.match('JDBCRealm');  
-        if (rtype != null){  
-            return  checkRequired(id="form1:jdbcSection:jaax:jaax" , '#{reqMsg}' ) &&  
-                checkRequired(id="form1:jdbcSection:jndi:jndi" , '#{reqMsg}' )  && 
-                checkRequired(id="form1:jdbcSection:userTable:userTable" , '#{reqMsg}' )  && 
-                checkRequired(id="form1:jdbcSection:userName:userName", '#{reqMsg}' )  && 
-                checkRequired(id="form1:jdbcSection:pswd:pswd" , '#{reqMsg}' )  &&  
-                checkRequired(id="form1:jdbcSection:groupTable:groupTable" , '#{reqMsg}' )  &&  
-                checkRequired(id="form1:jdbcSection:groupName:groupName" , '#{reqMsg}' );  
-        }  
-        return showAlert('$resource{i18n.msg.JS.realm.needClassName}');
-    }  
-    if(opt == 'input' ){ 
-	cla = getTextElement('#{classnameTextId}').value;  
-	if(checkForSelectedValue('#{classnameTextId}')){   
-	    return true;   
-	}else{   
-	    return showAlert('$resource{i18n.msg.JS.realm.needClassName}');   
-	}   
+    if (opt == 'predefine') {
+	type = getSelectElement('#{classnameDropdownId}').value;
+	if (type.match('FileRealm') != null) {
+	    return (checkRequired('form1:fileSection:jaax:jaax', '#{reqMsg}')  &&
+		    checkRequired('form1:fileSection:keyFile:keyFile',  '#{reqMsg}')  )
+	} else if (type.match('LDAPRealm') != null) {
+	    return ( checkRequired(id="form1:ldapSection:jaax:jaax" , '#{reqMsg}') &&
+		checkRequired(id="form1:ldapSection:directory:directory" , '#{reqMsg}')  &&
+		checkRequired(id="form1:ldapSection:baseDn:baseDn" , '#{reqMsg}'))
+	} else if (type.match('SolarisRealm') != null) {
+	    return checkRequired(id="form1:solarisSection:jaax:jaax" , '#{reqMsg}') ;
+	} else if (type.match('JDBCRealm') != null) {
+	    return  checkRequired(id="form1:jdbcSection:jaax:jaax" , '#{reqMsg}' ) &&
+		checkRequired(id="form1:jdbcSection:jndi:jndi" , '#{reqMsg}' )  &&
+		checkRequired(id="form1:jdbcSection:userTable:userTable" , '#{reqMsg}' )  &&
+		checkRequired(id="form1:jdbcSection:userName:userName", '#{reqMsg}' )  &&
+		checkRequired(id="form1:jdbcSection:pswd:pswd" , '#{reqMsg}' )  &&
+		checkRequired(id="form1:jdbcSection:groupTable:groupTable" , '#{reqMsg}' )  &&
+		checkRequired(id="form1:jdbcSection:groupName:groupName" , '#{reqMsg}' );
+	} else if (type == '') {
+	    return showAlert('$resource{i18n.msg.JS.realm.needClassName}');
+	}
+	// No special options to check for this type... continue
+	return true;
+    } else if (opt == 'input' ) {
+	cla = getTextElement('#{classnameTextId}').value;
+	if (checkForSelectedValue('#{classnameTextId}')) {
+	    return true;
+	} else {
+	    return showAlert('$resource{i18n.msg.JS.realm.needClassName}');
+	}
     }
 }
 
