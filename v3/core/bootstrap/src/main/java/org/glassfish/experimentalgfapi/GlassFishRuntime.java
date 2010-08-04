@@ -45,7 +45,7 @@ import static org.glassfish.experimentalgfapi.Constants.Platform;
 
 /**
  * This is the entry point API to bootstrap GlassFish. We don't call it a ServerRuntime or Server,
- * because, we this can be used to boostrap just an App Client Container environment  as well.
+ * because, we this can be used to boostrap just an App Client Container environment.
  * A GlassFishRuntime represents just the runtime environment, i.e., no active services yet. e.g.,
  * there won't be any web container started just by creating a GlassFishRuntime object. For that, one
  * has to call {@link GlassFish#start}.
@@ -92,17 +92,6 @@ public abstract class GlassFishRuntime {
 
     public abstract GlassFish newGlassFish(Properties properties) throws Exception;
 
-    /**
-     * Internal interface. Not for public use.
-     */
-    public interface RuntimeBuilder {
-        GlassFishRuntime build(Properties properties) throws Exception;
-
-        boolean handles(Platform platform);
-
-        void destroy() throws Exception;
-    }
-
     private static Constants.Platform whichPlatform(Properties properties) {
         return Platform.valueOf(properties.getProperty(PLATFORM_PROPERTY_KEY));
     }
@@ -123,6 +112,19 @@ public abstract class GlassFishRuntime {
             }
         }
         throw new RuntimeException("No runtime builder for platform: " + platform);
+    }
+
+    /**
+     * Internal interface. Not for public use.
+     * This is an SPI for GlassFishRuntime. Different implementations exist to provide different runtime
+     * enviornment such as Felix/Equinox based or non-OSGi based runtime.
+     */
+    public interface RuntimeBuilder {
+        GlassFishRuntime build(Properties properties) throws Exception;
+
+        boolean handles(Platform platform);
+
+        void destroy() throws Exception;
     }
 
 }
