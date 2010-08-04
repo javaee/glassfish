@@ -64,14 +64,14 @@
     <pathconvert refid="class.path" property="test"/>
 
     <target name="debug-windows" depends="instance, cluster"/>
-    <target name="cli" depends="ports, instance, cluster, configs, sync, domain, backup, tokens,validation,node, load-balancer"/>
+    <target name="cli" depends="ports, instance, cluster, configs, sync, domain, backup, tokens,validation,node, load-balancer, misc-commands"/>
 
-    <target name="cluster">
+    <target name="cluster" depends="init">
         <java classname="admin.ClusterTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
-    <target name="instance">
+    <target name="instance" depends="init">
         <java classname="admin.InstanceTest"  fork="true" classpath="${test}">
             <jvmarg value="-Xdebug"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1323"/>
@@ -79,54 +79,60 @@
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
-    <target name="ports" depends="build">
+    <target name="ports" depends="init">
         <java classname="admin.PortTests"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
-    <target name="validation">
+    <target name="validation" depends="init">
         <java classname="admin.ValidationTests"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
-    <target name="configs">
+    <target name="configs" depends="init">
         <java classname="admin.ConfigTests"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
-    <target name="sync">
+    <target name="sync" depends="init">
         <java classname="admin.SyncTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
-    <target name="domain">
+    <target name="domain" depends="init">
          <java classname="admin.DomainTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
-    <target name="backup">
+    <target name="backup" depends="init">
         <antcall target="cleanAS"/>
         <java classname="admin.BackupCommandsTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
-    <target name="tokens">
+    <target name="tokens" depends="init">
          <java classname="admin.TokenTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
-    <target name="node">
+    <target name="node" depends="init">
         <java classname="admin.NodeTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
-    <target name="load-balancer">
+    <target name="load-balancer" depends="init">
         <java classname="admin.LBCommandsTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
 
-    <target name="sshnode">
+    <target name="misc-commands" depends="init">
+        <java classname="admin.MiscCommandsTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>
+    </target>
+
+    <target name="sshnode" depends="init">
         <java classname="admin.SSHNodeTest"  fork="true" classpath="${test}">
             <jvmarg value="-Dssh.host=${ssh.host}"/>
             <jvmarg value="-Dssh.installdir=${ssh.installdir}"/>
@@ -145,14 +151,14 @@
         <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
     </target>
 
-    <target name="connector-resource">
+    <target name="connector-resource" depends="init">
         <java classname="admin.ConnectorResourceTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
         </java>
     </target>
 
-    <target name="jdbc-resource">
+    <target name="jdbc-resource" depends="init">
         <java classname="admin.JdbcResourceTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
@@ -160,28 +166,28 @@
     </target>
 
 
-    <target name="admin-object-resource">
+    <target name="admin-object-resource" depends="init">
         <java classname="admin.AdminObjectTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
         </java>
     </target>
 
-    <target name="custom-resource">
+    <target name="custom-resource" depends="init">
            <java classname="admin.CustomResourceTest"  fork="true" classpath="${test}">
                <jvmarg value="${javaprops}"/>
                <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
            </java>
     </target>
 
-    <target name="jndi-resource">
+    <target name="jndi-resource" depends="init">
            <java classname="admin.ExternalJndiResourceTest"  fork="true" classpath="${test}">
                <jvmarg value="${javaprops}"/>
                <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
            </java>
     </target>
 
-    <target name="mail-resource">
+    <target name="mail-resource" depends="init">
            <java classname="admin.JavaMailResourceTest"  fork="true" classpath="${test}">
                <jvmarg value="${javaprops}"/>
                <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
