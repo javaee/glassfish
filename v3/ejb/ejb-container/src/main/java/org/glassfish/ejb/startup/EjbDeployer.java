@@ -395,9 +395,7 @@ public class EjbDeployer
             }
 
             EjbBundleDescriptor ejbBundle = context.getModuleMetaData(EjbBundleDescriptor.class);
-            if (ejbBundle != null) {
-                checkEjbBundleForTimers(ejbBundle, dcp.target);
-            }
+            checkEjbBundleForTimers(ejbBundle, dcp.target);
 
         }
     }
@@ -408,20 +406,22 @@ public class EjbDeployer
         }
 
         boolean found = false;
-        for (EjbDescriptor ejbDescriptor : ejbBundle.getEjbs()) {
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.log( Level.FINE, "EjbDeployer.checkEjbBundleForTimers in EJB: " + ejbDescriptor.getName());
+        if (ejbBundle != null) {
+            for (EjbDescriptor ejbDescriptor : ejbBundle.getEjbs()) {
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log( Level.FINE, "EjbDeployer.checkEjbBundleForTimers in EJB: " + ejbDescriptor.getName());
+                }
+
+                if (ejbDescriptor.isTimedObject()) {
+                    found = true;
+                    break;
+                }
             }
 
-            if (ejbDescriptor.isTimedObject()) {
-                found = true;
-                break;
+            if (found) {
+                //Start EJB Timer Service if it will be used
+                EjbContainerUtilImpl.getInstance().initEJBTimerService(target);
             }
-        }
-
-        if (found) {
-            //Start EJB Timer Service if it will be used
-            EjbContainerUtilImpl.getInstance().initEJBTimerService(target);
         }
 
         return found;
