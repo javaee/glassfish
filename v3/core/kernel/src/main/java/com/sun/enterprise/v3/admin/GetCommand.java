@@ -79,7 +79,7 @@ import org.glassfish.external.statistics.impl.StatisticImpl;
 @Service(name="get")
 @Scoped(PerLookup.class)
 @Cluster({RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG, CommandTarget.CLUSTERED_INSTANCE})
 public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     
     @Inject
