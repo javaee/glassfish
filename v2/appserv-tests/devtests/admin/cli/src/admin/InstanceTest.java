@@ -104,6 +104,7 @@ public class InstanceTest extends AdminBaseDevTest {
         testRendezvous();
         testUpgrade();
         testNode();
+        testPortBase();
         deleteDirectory(nodeDir);
         stopDomain();
         stat.printSummary();
@@ -391,6 +392,35 @@ public class InstanceTest extends AdminBaseDevTest {
         //clean up
         report("delete-node-config-n1", asadmin("delete-node-config", node ));
         deleteDirectory(new File(nodedir));
+    }
+
+    private void testPortBase() {
+        String instance = "portbaseinstance";
+        report("create-local-instance-portbase-junk1", !asadmin("create-local-instance", "--portbase", "junk" ,instance));
+        report("create-local-instance-portbase-junk2", !asadmin("create-local-instance", "--portbase", "99999999999" ,instance));
+        report("create-local-instance-portbase-junk3", !asadmin("create-local-instance", "--portbase", "-11111111" ,instance));
+        report("create-local-instance-portbase-junk4", !asadmin("create-local-instance", "--portbase", "4800" ,instance));
+        report("create-local-instance-portbase-success", asadmin("create-local-instance", "--portbase", "3300", "--checkports", "false" ,instance));
+        AsadminReturn ret = asadminWithOutput("get", "servers.server."+instance+".system-property.*");
+        boolean success = ret.outAndErr.indexOf("servers.server."+instance+".system-property.HTTP_LISTENER_PORT.value=3380") >= 0;
+        report("check-portbase-http-listener-port", success);
+        success = ret.outAndErr.indexOf("servers.server."+instance+".system-property.HTTP_SSL_LISTENER_PORT.value=3381") >= 0;
+        report("check-portbase-http-ssl-listener-port", success);
+        success = ret.outAndErr.indexOf("servers.server."+instance+".system-property.IIOP_SSL_LISTENER_PORT.value=3338") >= 0;
+        report("check-portbase-iiop-ssl-listener-port", success);
+        success = ret.outAndErr.indexOf("servers.server."+instance+".system-property.JMS_PROVIDER_PORT.value=3376") >= 0;
+        report("check-portbase-jms-provider-port", success);
+        success = ret.outAndErr.indexOf("servers.server."+instance+".system-property.JMX_SYSTEM_CONNECTOR_PORT.value=3386") >= 0;
+        report("check-portbase-jmx-system-connector-port", success);
+        success = ret.outAndErr.indexOf("servers.server."+instance+".system-property.IIOP_LISTENER_PORT.value=3337") >= 0;
+        report("check-portbase-iiop-listener-port", success);
+        success = ret.outAndErr.indexOf("servers.server."+instance+".system-property.IIOP_SSL_MUTUALAUTH_PORT.value=3339") >= 0;
+        report("check-portbase-iiop-ssl-mutualauth-port", success);
+        success = ret.outAndErr.indexOf("servers.server."+instance+".system-property.ASADMIN_LISTENER_PORT.value=3348") >= 0;
+        report("check-portbase-asadmin-listener-port", success);
+
+        //clean up
+        report("delete-local-instance-portbase", asadmin("delete-local-instance", instance ));
     }
 
     private boolean checkInstanceDir(String name) {
