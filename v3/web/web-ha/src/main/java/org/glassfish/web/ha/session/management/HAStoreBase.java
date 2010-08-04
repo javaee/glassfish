@@ -61,6 +61,7 @@ import com.sun.enterprise.web.ServerConfigLookup;
 /**
  *
  * @author Larry White
+ * @author Rajiv Mordani
  */
 public abstract class HAStoreBase extends StoreBase {
 

@@ -39,7 +39,8 @@ package org.glassfish.web.ha.session.management;
 
 /**
  * @author Mahesh Kannan
- *         Date: Jun 17, 2009
+ * @author Rajiv Mordani
+ * 
  */
 public class SimpleMetadataFactory {
 

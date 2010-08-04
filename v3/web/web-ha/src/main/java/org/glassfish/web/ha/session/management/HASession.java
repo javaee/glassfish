@@ -47,6 +47,7 @@ import org.apache.catalina.Session;
 /**
  *
  * @author  lwhite
+ * @author Rajiv Mordani
  */
 public interface HASession extends Session {
     

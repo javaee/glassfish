@@ -149,14 +149,7 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
             }
     }
    
-    /** insure that the store has a live cached connection */
-    protected void insureValidConnection() throws java.io.IOException {
-        /* FIXME
-        HAStore store = (HAStore) getStore();
-        store.getConnectionValidated(false);
-         */
-    }
-    
+
     //START OF 6364900
     public void postRequestDispatcherProcess(ServletRequest request, ServletResponse response) {
         Context context = (Context)this.getContainer();
