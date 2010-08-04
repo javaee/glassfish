@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
@@ -58,6 +59,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.lang.reflect.Proxy;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.jvnet.hk2.config.types.Property;
@@ -114,6 +116,44 @@ public interface SshAuth  extends ConfigBeanProxy, Injectable {
     @Param(name="sshkeyfile", optional=true)
     void setKeyfile(String value) throws PropertyVetoException;
 
-    
+    /**
+     * SSH Password
+     *
+     * @return SSH Password which may be a password alias of the form
+     *         ${ALIAS=aliasname}
+     */
+
+    @Attribute
+    String getPassword();
+
+    /**
+     * Sets the value of the name property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    @Param(name="sshpassword", optional=true)
+    void setPassword(String value) throws PropertyVetoException;
+
+    /**
+     * SSH Keyfile passphrase
+     *
+     * @return SSH keyfile encryption passphrase which may be a password alias
+     * of the form ${ALIAS=aliasname}
+     */
+
+    @Attribute
+    String getKeyPassphrase();
+
+    /**
+     * Sets the value of the name property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    @Param(name="sshkeypassphrase", optional=true)
+    void setKeyPassphrase(String value) throws PropertyVetoException;
 
 }

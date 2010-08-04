@@ -81,10 +81,10 @@ public class UpdateNodeSshCommand implements AdminCommand  {
     @Param(name = "installdir", optional=true)
     private String installdir;
 
-    @Param(name="nodedir", optional=true)
+    @Param(name = "nodedir", optional=true)
     private String nodedir;
 
-    @Param(name="sshport", optional=true)
+    @Param(name = "sshport", optional=true)
     private String sshport;
 
     @Param(name = "sshuser", optional = true)
@@ -93,7 +93,13 @@ public class UpdateNodeSshCommand implements AdminCommand  {
     @Param(name = "sshkeyfile", optional = true)
     private String sshkeyfile;
 
-    @Param(name = "force", optional = true, defaultValue = "false")
+    @Param(name = "sshpassword", optional = true, password=true)
+    private String sshpassword;
+
+    @Param(name = "sshkeypassphrase", optional = true, password=true)
+    private String sshkeypassphrase;
+
+    @Param(name =  "force", optional = true, defaultValue = "false")
     private boolean force;
 
     private static final String NL = System.getProperty("line.separator");
@@ -123,12 +129,14 @@ public class UpdateNodeSshCommand implements AdminCommand  {
         // the user passed on the command line.
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
-        map.add("installdir", installdir);
-        map.add("nodehost", nodehost);
-        map.add("nodedir", nodedir);
-        map.add("sshport", sshport);
-        map.add("sshuser", sshuser);
-        map.add("sshkeyfile", sshkeyfile);
+        map.add(NodeUtils.PARAM_INSTALLDIR, installdir);
+        map.add(NodeUtils.PARAM_NODEHOST, nodehost);
+        map.add(NodeUtils.PARAM_NODEDIR, nodedir);
+        map.add(NodeUtils.PARAM_SSHPORT, sshport);
+        map.add(NodeUtils.PARAM_SSHUSER, sshuser);
+        map.add(NodeUtils.PARAM_SSHKEYFILE, sshkeyfile);
+        map.add(NodeUtils.PARAM_SSHPASSWORD, sshpassword);
+        map.add(NodeUtils.PARAM_SSHKEYPASSPHRASE, sshkeypassphrase);
 
         // Now init any parameters that weren't passed into the command
         // using the values from the config
@@ -143,17 +151,18 @@ public class UpdateNodeSshCommand implements AdminCommand  {
         // in the config so we have all the settings needed to validate what
         // the node will look like after we update it.
         ParameterMap validateMap = new ParameterMap();
-        validateMap.add("DEFAULT", name);
-        validateMap.add("installdir", installdir);
-        validateMap.add("nodehost", nodehost);
-        validateMap.add("nodedir", nodedir);
-        validateMap.add("sshport", sshport);
-        validateMap.add("sshuser", sshuser);
-        validateMap.add("sshkeyfile", sshkeyfile);
+        validateMap.add(NodeUtils.PARAM_INSTALLDIR, installdir);
+        validateMap.add(NodeUtils.PARAM_NODEHOST, nodehost);
+        validateMap.add(NodeUtils.PARAM_NODEDIR, nodedir);
+        validateMap.add(NodeUtils.PARAM_SSHPORT, sshport);
+        validateMap.add(NodeUtils.PARAM_SSHUSER, sshuser);
+        validateMap.add(NodeUtils.PARAM_SSHKEYFILE, sshkeyfile);
+        validateMap.add(NodeUtils.PARAM_SSHPASSWORD, sshpassword);
+        validateMap.add(NodeUtils.PARAM_SSHKEYPASSPHRASE, sshkeypassphrase);
 
         // Validate the settings
         try {
-            NodeUtils nodeUtils = new NodeUtils(logger);
+            NodeUtils nodeUtils = new NodeUtils(habitat, logger);
             nodeUtils.validate(validateMap, sshL);
         } catch (CommandValidationException e) {
             String m1 = Strings.get("node.ssh.invalid.params");
@@ -222,6 +231,14 @@ public class UpdateNodeSshCommand implements AdminCommand  {
 
         if (sshkeyfile == null) {
             sshkeyfile = ssha.getKeyfile();
+        }
+
+        if (sshpassword == null) {
+            sshpassword = ssha.getPassword();
+        }
+
+        if (sshkeypassphrase == null) {
+            sshkeypassphrase = ssha.getPassword();
         }
     }
 

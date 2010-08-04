@@ -173,6 +173,12 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
         @Param (name="sshkeyfile", optional=true)
         String sshkeyfile;
 
+        @Param (name="sshpassword", optional=true)
+        String sshpassword;
+
+        @Param (name="sshkeypassphrase", optional=true)
+        String sshkeypassphrase;
+
         @Inject
         Habitat habitat;
 
@@ -212,12 +218,17 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
             if (sshHost != null)
                 sshC.setSshHost(sshHost);
 
-            if (sshuser != null || sshkeyfile != null) {
+            if (sshuser != null || sshkeyfile != null || sshpassword != null ||
+                sshkeypassphrase != null) {
                 SshAuth sshA = sshC.createChild(SshAuth.class);
                 if (sshuser != null)
                     sshA.setUserName(sshuser);
                 if (sshkeyfile != null)
                     sshA.setKeyfile(sshkeyfile);
+                if (sshpassword != null)
+                    sshA.setPassword(sshpassword);
+                if (sshkeypassphrase != null)
+                    sshA.setKeyPassphrase(sshkeypassphrase);
                 sshC.setSshAuth(sshA);
             }
             instance.setSshConnector(sshC);

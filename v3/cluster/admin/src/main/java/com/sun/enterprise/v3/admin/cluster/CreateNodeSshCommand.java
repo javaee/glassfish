@@ -87,6 +87,12 @@ public class CreateNodeSshCommand implements AdminCommand  {
     @Param(name = "sshkeyfile", optional = true)
     private String sshkeyfile;
 
+    @Param(name = "sshpassword", optional = true, password=true)
+    private String sshpassword;
+
+    @Param(name = "sshkeypassphrase", optional = true, password=true)
+    private String sshkeypassphrase;
+
     @Param(name = "force", optional = true, defaultValue = "false")
     private boolean force;
 
@@ -106,15 +112,17 @@ public class CreateNodeSshCommand implements AdminCommand  {
 
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
-        map.add("installdir", installdir);
-        map.add("nodehost", nodehost);
-        map.add("nodedir", nodedir);
-        map.add("sshport", sshport);
-        map.add("sshuser", sshuser);
-        map.add("sshkeyfile", sshkeyfile);
+        map.add(NodeUtils.PARAM_INSTALLDIR, installdir);
+        map.add(NodeUtils.PARAM_NODEHOST, nodehost);
+        map.add(NodeUtils.PARAM_NODEDIR, nodedir);
+        map.add(NodeUtils.PARAM_SSHPORT, sshport);
+        map.add(NodeUtils.PARAM_SSHUSER, sshuser);
+        map.add(NodeUtils.PARAM_SSHKEYFILE, sshkeyfile);
+        map.add(NodeUtils.PARAM_SSHPASSWORD, sshpassword);
+        map.add(NodeUtils.PARAM_SSHKEYPASSPHRASE, sshkeypassphrase);
 
         try {
-            NodeUtils nodeUtils = new NodeUtils(logger);
+            NodeUtils nodeUtils = new NodeUtils(habitat, logger);
             nodeUtils.validate(map, sshL);
         } catch (CommandValidationException e) {
             String m1 = Strings.get("node.ssh.invalid.params");

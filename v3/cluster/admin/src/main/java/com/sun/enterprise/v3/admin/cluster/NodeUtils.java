@@ -36,6 +36,9 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
+import org.jvnet.hk2.component.Habitat;
+import org.glassfish.internal.api.MasterPassword;
+import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.net.NetUtils;
 import org.glassfish.api.admin.*;
@@ -61,13 +64,25 @@ public class NodeUtils {
     static final String NODE_DEFAULT_INSTALLDIR =
                                                 "${com.sun.aas.installRoot}";
 
+    // Command line option parameter names
+    static final String PARAM_NODEHOST = "nodehost";
+    static final String PARAM_INSTALLDIR = "installdir";
+    static final String PARAM_NODEDIR = "nodedir";
+    static final String PARAM_SSHPORT = "sshport";
+    static final String PARAM_SSHUSER = "sshuser";
+    static final String PARAM_SSHKEYFILE = "sshkeyfile";
+    static final String PARAM_SSHPASSWORD = "sshpassword";
+    static final String PARAM_SSHKEYPASSPHRASE = "sshkeypassphrase";
+
     private static final String NL = System.getProperty("line.separator");
 
     private TokenResolver resolver = null;
     private Logger logger = null;
+    private Habitat habitat = null;
 
-    NodeUtils(Logger logger) {
+    NodeUtils(Habitat habitat, Logger logger) {
         this.logger = logger;
+        this.habitat = habitat;
 
         // Create a resolver that can replace system properties in strings
         Map<String, String> systemPropsMap =
@@ -86,7 +101,7 @@ public class NodeUtils {
     void validate(ParameterMap map, SSHLauncher sshL) throws
             CommandValidationException {
 
-        String sshkeyfile = map.getOne("sshkeyfile");
+        String sshkeyfile = map.getOne(PARAM_SSHKEYFILE);
         if (StringUtils.ok(sshkeyfile)) {
             // User specified a key file. Make sure we get use it
             File kfile = new File(resolver.resolve(sshkeyfile));
@@ -107,25 +122,36 @@ public class NodeUtils {
             }
         }
 
+        validatePassword(map.getOne(PARAM_SSHPASSWORD));
+        validatePassword(map.getOne(PARAM_SSHKEYPASSPHRASE));
+
         if (sshL != null) {
             validateSSHConnection(map, sshL);
+        }
+    }
+
+    private void validatePassword(String p) throws CommandValidationException {
+        if (StringUtils.ok(p)) {
+            String expandedPassword = expandPasswordAlias(p);
+            if (expandedPassword == null) {
+                throw new CommandValidationException(
+                        Strings.get("no.such.password.alias", p));
+            }
         }
     }
 
     private void validateSSHConnection(ParameterMap map, SSHLauncher sshL) throws
             CommandValidationException {
 
-        String nodehost = map.getOne("nodehost");
 
-        String installdir = map.getOne("installdir");
-
-        String nodedir = map.getOne("nodedir");
-
-        String sshport = map.getOne("sshport");
-
-        String sshuser = map.getOne("sshuser");
-
-        String sshkeyfile = map.getOne("sshkeyfile");
+        String nodehost = map.getOne(PARAM_NODEHOST);
+        String installdir = map.getOne(PARAM_INSTALLDIR);
+        String nodedir = map.getOne(PARAM_NODEDIR);
+        String sshport = map.getOne(PARAM_SSHPORT);
+        String sshuser = map.getOne(PARAM_SSHUSER);
+        String sshkeyfile = map.getOne(PARAM_SSHKEYFILE);
+        String sshpassword = map.getOne(PARAM_SSHPASSWORD);
+        String sshkeypassphrase = map.getOne(PARAM_SSHKEYPASSPHRASE);
 
         // We use the resolver to expand any system properties
         if (! NetUtils.isPortStringValid(resolver.resolve(sshport))) {
@@ -162,4 +188,56 @@ public class NodeUtils {
             }
         }
     }
+
+       /**
+    * Expand a password alias
+    *
+    * @param alias     String that represents either a password alias, or
+    *                  a password. If the string is of the form ${ALIAS=alias}
+    *                  then it is assumed to be a passowrd alias and the
+    *                  password for the alias is returned. If the string
+    *                  is not of this form then it is assumed to already be
+    *                  the password and the input string is returned.
+    * @param logger    Logger
+    * @return          Password for alias key if it was of the form
+    *                  ${ALIAS=aliasname}
+    *
+    *                  null if the alias key was of the form ${ALIAS=aliasname}
+    *                  but no alias by that name was found
+    *
+    *                  The alias string that was passed in if it was not
+    *                  of the form ${ALIAS=aliasname}
+    */
+    public String expandPasswordAlias(String alias) {
+            final String ALIAS_PREFIX = "${ALIAS=";
+            final String ALIAS_SUFFIX = "}";
+
+            if (alias == null) {
+                return null;
+            }
+
+            int head = alias.indexOf(ALIAS_PREFIX);
+            int tail = alias.lastIndexOf(ALIAS_SUFFIX);
+
+            if (head == -1 || tail == -1) {
+                return alias;
+            }
+
+            // Skip over prefix
+            head += ALIAS_PREFIX.length();
+
+            String aliasName = alias.substring(head, tail);
+
+            MasterPassword masterPasswordHelper =
+                    habitat.getByContract(MasterPassword.class);
+
+            try {
+                PasswordAdapter pa = masterPasswordHelper.getMasterPasswordAdapter();
+                String p = pa.getPasswordForAlias(aliasName);
+                return p;
+            } catch (Exception e) {
+                logger.warning(StringUtils.cat(": ", aliasName, e.getMessage()));
+                return null;
+            }
+        }
 }
