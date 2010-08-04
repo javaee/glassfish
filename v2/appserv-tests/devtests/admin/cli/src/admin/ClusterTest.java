@@ -95,7 +95,6 @@ public class ClusterTest extends AdminBaseDevTest {
         //evaluate using xpath that there are 3 elements in the domain.xml
 
         o = evalXPath(xpathExpr, XPathConstants.NUMBER);
-        System.out.println("No of cluster elements in cluster: " + o);
         if(o instanceof Double) {
             report("evaluation-xpath-create-cluster", o.equals(new Double(3.0 + startingNumberOfClusters)));
         }
@@ -130,17 +129,9 @@ public class ClusterTest extends AdminBaseDevTest {
         report(testName+"list-cl" , !isClusterRunning(cname));
         for (int i = 0 ; i<3; i ++) {
             report(testName +"start-li"+i , asadmin("start-local-instance",iname+i));
-
-
         }
         AsadminReturn ret = asadminWithOutput("list-instances","--verbose");
-        System.out.println("list-instances --verbose returned:");
-        System.out.println(ret.out);
-
         AsadminReturn lc = asadminWithOutput("list-clusters");
-        System.out.println("list-clusters for 12249 returned:");
-        System.out.println(lc.out);
-
         report(testName+"list-cl1" , isClusterRunning(cname));
         report(testName +"stop-one" , asadmin("stop-local-instance",iname+1));
         report(testName+"list-cl2" , isClusterPartiallyRunning(cname));
@@ -257,7 +248,6 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "DAS-deploy", asadmin("deploy", dasapp.getAbsolutePath()));
         report(tn + "DAS-getapp1", matchString("So what is your lucky number?", getURL(dasurl + "war/servletonly")));
         String x = getURL(dasurl + "war/servletonly");
-        System.out.println("output from DAS:" + x);
 
         // deploy an application to the cluster
         File webapp = new File("resources", "helloworld.war");
@@ -265,7 +255,6 @@ public class ClusterTest extends AdminBaseDevTest {
 
         report(tn + "CLUSTER-getapp1", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
         String s1 = getURL(i2url + "helloworld/hi.jsp");
-        System.out.println("output from instance 2:" + s1);
         report(tn + "CLUSTER-getapp2", matchString("Hello", s1));
 
         report(tn + "CLUSTER-undeploy", asadmin("undeploy", "--target", cname, "helloworld"));
@@ -357,7 +346,7 @@ public class ClusterTest extends AdminBaseDevTest {
      * Test for dynamic-reconfig-enabled flag
      */
     private void testDynamicReconfigEnabledFlag() {
-        final String tn = "end-to-end-";
+        final String tn = "dref-";
 
         final String cname = "dec1";
         final String dasurl = "http://localhost:8080/";
@@ -385,7 +374,6 @@ public class ClusterTest extends AdminBaseDevTest {
         // start the instances
         report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
         report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
-        report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
 
         // check that the instances are there
         report(tn + "list-instances", asadmin("list-instances"));
@@ -406,31 +394,31 @@ public class ClusterTest extends AdminBaseDevTest {
         // restart the instance 1 and ensure that app is on instance1 only
         report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
         report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
-        report(tn + "CLUSTER-getapp1-dynrecfg-disabled-afterrestart", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
-        report(tn + "CLUSTER-getapp2-dynrecfg-disabled-beforerestart", !matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp1-dr-disabled-afterrestart", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dr-disabled-beforerestart", !matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
 
         // restart the instance 2 and ensure that app is on both instances
         report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
         report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
-        report(tn + "CLUSTER-getapp1-dynrecfg-disabled-afterrestart", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
-        report(tn + "CLUSTER-getapp2-dynrecfg-disabled-afterrestart", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp1-dr-disabled-afterrestart", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dr-disabled-afterrestart", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
 
 	//Undeploy the app; ensure that the app is still available
         report(tn + "CLUSTER-undeploy", asadmin("undeploy", "--target", cname, "helloworld"));
-        report(tn + "CLUSTER-getapp1-dynrecfg-disabled-beforerestart", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
-        report(tn + "CLUSTER-getapp2-dynrecfg-disabled-beforerestart", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp1-dr-disabled-beforerestart", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dr-disabled-beforerestart", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
 
         // restart the instance 1 and ensure that app is gone on instance1 only
         report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
         report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
-        report(tn + "CLUSTER-getapp1-dynrecfg-disabled-afterrestart", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
-        report(tn + "CLUSTER-getapp2-dynrecfg-disabled-beforerestart", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp1-dr-disabled-afterrestart", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dr-disabled-beforerestart", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
 
         // restart the instance 2 and ensure that app is gone on both instances
         report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
         report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
-        report(tn + "CLUSTER-getapp1=dynrecfg-disabled-afterrestart", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
-        report(tn + "CLUSTER-getapp2=dynrecfg-disabled-afterrestart", !matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp1-dr-disabled-afterrestart", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dr-disabled-afterrestart", !matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
 
 	// Set dynamic reconfig enabled flag for c1 to true
 	report(tn + "set-dyn-recfg-flag", asadmin("set", "configs.config."+cname+"-config.dynamic-reconfiguration-enabled=true"));
@@ -439,13 +427,13 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "CLUSTER-deploy", asadmin("deploy", "--target", cname, webapp.getAbsolutePath()));
 
 	// Ensure that the app is available in the instances
-        report(tn + "CLUSTER-getapp1-dynrecfg-enabled", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
-        report(tn + "CLUSTER-getapp2-dynrecfg-enabled", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp1-dr-enabled", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dr-enabled", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
 
 	//Undeploy the app; ensure that the app is not available
         report(tn + "CLUSTER-undeploy", asadmin("undeploy", "--target", cname, "helloworld"));
-        report(tn + "CLUSTER-getapp1-dynrecfg-enabled", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
-        report(tn + "CLUSTER-getapp2-dynrecfg-enabled", !matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp1-dr-enabled", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
+        report(tn + "CLUSTER-getapp2-dr-enabled", !matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
 
         // Cleanup
         report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
@@ -561,9 +549,6 @@ public class ClusterTest extends AdminBaseDevTest {
                 && s.indexOf("cl2") < 0
                 && s.indexOf("cl3") < 0
                 && s.indexOf("cl4") < 0;
-
-        System.out.println("list-clusters returned:");
-        System.out.println(s);
 
 		if(!success) {
         	System.out.println("IT 12153 is apparently not fixed!!  \nLet's try a restart and call list-clusters again...");
