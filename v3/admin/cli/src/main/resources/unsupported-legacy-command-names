@@ -42,7 +42,6 @@ configure-ha-persistence R
 migrate-timers R
 create-repository-zip R (unsupported in v2 as well)
 apply-repository-zip R (unsupported in v2 as well)
-get-health R
 get-hadb-info R
 set-hadb-info R
 is-hadb-installed R

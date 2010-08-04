@@ -182,4 +182,11 @@ public interface GMSAdapter {
     // only to be called by GMSAdapterService
     boolean initialize(String clusterName);
     void complete();
+
+    /**
+     * Returns an object that contains the current health of
+     * each instance. 
+     */
+    HealthHistory getHealthHistory();
+    
 }

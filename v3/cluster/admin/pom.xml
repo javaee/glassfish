@@ -132,6 +132,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.cluster</groupId>
+            <artifactId>gms-bootstrap</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.tests</groupId>
             <artifactId>utils</artifactId>
             <version>${project.version}</version>

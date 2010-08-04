@@ -49,21 +49,17 @@ import java.util.*;
 import static com.sun.enterprise.ee.cms.core.ServiceProviderConfigurationKeys.*;
 
 import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.Properties;
-import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.FileNotFoundException;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.gms.bootstrap.GMSAdapter;
+import org.glassfish.gms.bootstrap.HealthHistory;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -134,6 +130,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     @Inject
     Clusters clusters;
 
+    private HealthHistory hHistory;
+
     @Override
     public void postConstruct() {
         logger.setLevel(Level.CONFIG);
@@ -177,6 +175,9 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                         break;
                     }
                 }
+
+                // only want to do this in the case of the DAS
+                initializeHealthHistory(cluster);
             } else {
                 cluster = server.getCluster();
                 assert (clusterName.equals(cluster.getName()));
@@ -207,6 +208,16 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         initializationComplete.compareAndSet(true, false);
         gms = null;
         GMSFactory.removeGMSModule(clusterName);
+    }
+
+    @Override
+    public HealthHistory getHealthHistory() {
+        checkInitialized();
+        return hHistory;
+    }
+
+    private void initializeHealthHistory(Cluster cluster) {
+        hHistory = new HealthHistory(cluster.getInstances());
     }
 
     private void readGMSConfigProps(Properties configProps) {
@@ -510,6 +521,17 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         return Startup.Lifecycle.SERVER;
     }
 
+    private void checkInitialized() {
+        if( ! initialized.get() || ! initializationComplete.get())  {
+            throw new IllegalStateException("GMSAdapter not properly initialized.");
+        }
+    }
+    @Override
+    public GroupManagementService getModule() {
+        checkInitialized();
+        return gms;
+    }
+
     public GroupManagementService getGMS(String groupName) {
         //return the gms instance for that group
         try {
@@ -525,6 +547,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "gmsservice.processNotification", signal.getClass().getName());
         }
+        hHistory.updateHealth(signal);
         if (this.aliveAndReadyLoggingEnabled) {
             if (signal instanceof JoinedAndReadyNotificationSignal ||
                 signal instanceof FailureNotificationSignal ||
@@ -547,20 +570,13 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 AliveAndReadyView current = gms.getGroupHandle().getCurrentAliveAndReadyCoreView();
                 AliveAndReadyView previous = gms.getGroupHandle().getPreviousAliveAndReadyCoreView();
                 logger.info("AliveAndReady for signal: " + signal.getClass().getSimpleName() + signalSubevent +
-                            " for member: " + signal.getMemberToken() + " of group: " + signal.getGroupName() + 
+                            " for member: " + signal.getMemberToken() + " of group: " + signal.getGroupName() +
                             " current:[" +  current + "] previous:[" + previous + "]");
             }
         }
     }
 
     // each of the getModule(s) methods are temporary. see class-level comment.
-    @Override
-    public GroupManagementService getModule() {
-        if( ! initialized.get() || ! initializationComplete.get())  {
-            throw new IllegalStateException("GMSAdapter not properly initialized.");
-        }
-        return gms;
-    }
 
     /**
      * Registers a JoinNotification Listener.
