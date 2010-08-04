@@ -48,6 +48,8 @@ import com.sun.jts.jtsxa.Utility;
 import com.sun.jts.codegen.otsidl.JCoordinator;
 import com.sun.jts.codegen.otsidl.JCoordinatorHelper;
 import com.sun.jts.CosTransactions.GlobalTID;
+import com.sun.jts.CosTransactions.ControlImpl;
+import com.sun.jts.CosTransactions.CurrentTransaction;
 import org.omg.CosTransactions.Coordinator;
 
 import java.util.logging.Logger;
@@ -160,10 +162,8 @@ public class FailureInducer {
             return;
         }
 
-        Coordinator coord = Utility.getCoordinator(Utility.getControl());
-        JCoordinator jcoord = JCoordinatorHelper.narrow(coord);
-        if (jcoord != null) {
-            GlobalTID gtid = new GlobalTID(jcoord.getGlobalTID());
+        GlobalTID gtid = getGlobalTID();
+        if (gtid != null) {
             crashList.put(gtid, crashPoint);
         }
     }
@@ -183,10 +183,8 @@ public class FailureInducer {
             return;
         }
 
-        Coordinator coord = Utility.getCoordinator(Utility.getControl());
-        JCoordinator jcoord = JCoordinatorHelper.narrow(coord);
-        if (jcoord != null) {
-            GlobalTID gtid = new GlobalTID(jcoord.getGlobalTID());
+        GlobalTID gtid = getGlobalTID();
+        if (gtid != null) {
             waitList.put(gtid, waitPoint);
             waitTime.put(gtid, new Integer(waitDuration));
         }
@@ -286,5 +284,20 @@ public class FailureInducer {
         } else {
             return MessageFormat.format(msg, inserts);
         }
+    }
+
+    private static GlobalTID getGlobalTID() {
+        GlobalTID gtid = null;
+        Coordinator coord = Utility.getCoordinator(Utility.getControl());
+        JCoordinator jcoord = JCoordinatorHelper.narrow(coord);
+        if (jcoord != null) {
+            gtid = new GlobalTID(jcoord.getGlobalTID());
+        } else {
+            ControlImpl control = CurrentTransaction.getCurrent();
+            if (control != null) {
+                gtid = control.getGlobalTID();
+            }
+        }
+        return gtid;
     }
 }

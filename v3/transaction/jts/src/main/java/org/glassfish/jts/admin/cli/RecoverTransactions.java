@@ -78,6 +78,7 @@ public class RecoverTransactions extends RecoverTransactionsBase implements Admi
 
         String error = validate(destinationServer, true);
         if (error != null) {
+            _logger.log(Level.WARNING, localStrings.getString("recover.transactions.failed") + " " + error);
             report.setMessage(error);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
@@ -110,6 +111,7 @@ public class RecoverTransactions extends RecoverTransactionsBase implements Admi
             // Exit code is set by _recover-transactions-internal
 
         } catch (Exception e) {
+            _logger.log(Level.WARNING, localStrings.getString("recover.transactions.failed"), e);
             report.setMessage(localStrings.getString("recover.transactions.failed"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);

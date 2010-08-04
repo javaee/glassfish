@@ -157,7 +157,7 @@ public class RecoveryManager {
     private static Hashtable inCompleteTxMap = new Hashtable();
 
     // This will start TransactionRecovery service as soon as all resources are available.
-    private static TransactionRecovery txRecovery;
+    private static TransactionRecovery txRecovery = new TransactionRecoverySimple();
 
     
     
@@ -926,6 +926,11 @@ public class RecoveryManager {
         /*  This method has been newly added - Ram Jeyaraman */
 
         Enumeration xaResources = RecoveryManager.uniqueRMSet;
+        if (xaResources == null) {
+            // TODO - check that automatic recovery works in a clustered instance
+            return;
+        }
+
         String manualRecovery =
             Configuration.getPropertyValue(Configuration.MANUAL_RECOVERY);
 
@@ -1699,6 +1704,24 @@ public class RecoveryManager {
         }
     }
     */
+
+   /**
+    * A no-op class
+    */
+   static class TransactionRecoverySimple implements TransactionRecovery{
+        public void start() {
+        }
+        /**
+         * Raise the fence so that no other instance can
+         * start the recovery at the same time.
+         */
+        public void raiseFence() {}
+        /**
+         * Lower the fence
+         */
+        public void lowerFence() {}
+
+    }
 }
 
 /**
@@ -1771,4 +1794,6 @@ class ResyncThread extends Thread  {
         if(RecoveryManager.getTransactionRecovery() != null)
             RecoveryManager.getTransactionRecovery().lowerFence();
     }
+
+
 }
