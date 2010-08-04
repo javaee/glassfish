@@ -110,6 +110,7 @@ public class ClusterTest extends AdminBaseDevTest {
         testEndToEndDemo();
         testListClusters();
 	testDynamicReconfigEnabledFlag();
+	testGetSetListCommands();
         cleanup();
         stopDomain();
         stat.printSummary();
@@ -384,6 +385,7 @@ public class ClusterTest extends AdminBaseDevTest {
         // start the instances
         report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
         report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
+        report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
 
         // check that the instances are there
         report(tn + "list-instances", asadmin("list-instances"));
@@ -450,6 +452,94 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
         report(tn + "delete-local-instance1", asadmin("delete-local-instance", i1name));
         report(tn + "delete-local-instance2", asadmin("delete-local-instance", i2name));
+        report(tn + "delete-cluster", asadmin("delete-cluster", cname));
+    }
+
+    /*
+     * Test for get, set, list commands
+     */
+    private void testGetSetListCommands() {
+        final String tn = "getsetlist-";
+
+        final String cname = "gslc1";
+        final String dasurl = "http://localhost:8080/";
+        final String i1url = "http://localhost:18080/";
+        final String i1name = "gslin1";
+        final String i2url = "http://localhost:28080/";
+        final String i2name = "gslin2";
+        final String i3url = "http://localhost:38080/";
+        final String i3name = "gslin3";
+        final String dasmurl = "http://localhost:4848/management/domain/";
+
+        // create a cluster and two instances
+        report(tn + "create-cluster", asadmin("create-cluster", cname));
+        report(tn + "create-local-instance1", asadmin("create-local-instance",
+                "--cluster", cname, "--systemproperties",
+                "HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:" +
+                "IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:" +
+                "JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848", i1name));
+        report(tn + "create-local-instance2", asadmin("create-local-instance",
+                "--cluster", cname, "--systemproperties",
+                "HTTP_LISTENER_PORT=28080:HTTP_SSL_LISTENER_PORT=28181:IIOP_SSL_LISTENER_PORT=23800:" +
+                "IIOP_LISTENER_PORT=23700:JMX_SYSTEM_CONNECTOR_PORT=27676:IIOP_SSL_MUTUALAUTH_PORT=23801:" +
+                "JMS_PROVIDER_PORT=28686:ASADMIN_LISTENER_PORT=24848", i2name));
+        report(tn + "create-local-instance3", asadmin("create-local-instance",
+                "--systemproperties",
+                "HTTP_LISTENER_PORT=38080:HTTP_SSL_LISTENER_PORT=38181:IIOP_SSL_LISTENER_PORT=33800:" +
+                "IIOP_LISTENER_PORT=33700:JMX_SYSTEM_CONNECTOR_PORT=37676:IIOP_SSL_MUTUALAUTH_PORT=33801:" +
+                "JMS_PROVIDER_PORT=38686:ASADMIN_LISTENER_PORT=34848", i3name));
+
+        // start the instances
+        report(tn + "start-cluster", asadmin("start-cluster", cname));
+        report(tn + "start-local-instance3", asadmin("start-local-instance", i3name));
+
+        // check that the instances are there
+        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
+        report(tn + "getindex2", matchString("GlassFish Enterprise Server", getURL(i2url)));
+        report(tn + "getindex3", matchString("GlassFish Enterprise Server", getURL(i3url)));
+
+	// check if list lists all configs created
+        AsadminReturn ret = asadminWithOutput("list", "configs.config");
+        boolean success = ret.outAndErr.indexOf("configs.config."+cname+"-config") >= 0;
+        report("list-cluster-config", success);
+        success = ret.outAndErr.indexOf("configs.config."+i3name+"-config") >= 0;
+        report("list-instance-config", success);
+        success = ret.outAndErr.indexOf("configs.config."+i2name+"-config") < 0;
+        report("list-instance-config-error-test", success);
+
+	// Check is get/set gets replicated
+        ret = asadminWithOutput("get", "clusters.cluster."+cname);
+        success = ret.outAndErr.indexOf("clusters.cluster."+cname+".gms-enabled=true") >= 0;
+        report("get-cluster-gms-attr", success);
+
+        ret = asadminWithOutput("set", "clusters.cluster."+cname+".gms-enabled=false");
+        ret = asadminWithOutput("get", "clusters.cluster."+cname+".gms-enabled");
+        success = ret.outAndErr.indexOf("clusters.cluster."+cname+".gms-enabled=false") >= 0;
+        report("get-cluster-gms-attr-after-reset", success);
+
+        ret = asadminWithOutput("get", "--target", cname, "clusters.cluster."+cname+".gms-enabled");
+        success = ret.outAndErr.indexOf("clusters.cluster."+cname+".gms-enabled=false") >= 0;
+        report("get-target-gms-attr-after-reset1", success);
+
+        ret = asadminWithOutput("get", "--target", i1name, "clusters.cluster."+cname+".gms-enabled");
+        success = ret.outAndErr.indexOf("clusters.cluster."+cname+".gms-enabled=false") >= 0;
+        report("get-target-gms-attr-after-reset2", success);
+
+        ret = asadminWithOutput("get", "--target", i2name, "clusters.cluster."+cname+".gms-enabled");
+        success = ret.outAndErr.indexOf("clusters.cluster."+cname+".gms-enabled=false") >= 0;
+        report("get-target-gms-attr-after-reset3", success);
+
+        ret = asadminWithOutput("get", "--target", i3name, "clusters.cluster."+cname+".gms-enabled");
+        success = ret.outAndErr.indexOf("clusters.cluster."+cname+".gms-enabled=false") < 0;
+        report("get-target-gms-attr-after-reset4", success);
+
+        // Cleanup
+        report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
+        report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
+        report(tn + "stop-local-instance3", asadmin("stop-local-instance", i3name));
+        report(tn + "delete-local-instance1", asadmin("delete-local-instance", i1name));
+        report(tn + "delete-local-instance2", asadmin("delete-local-instance", i2name));
+        report(tn + "delete-local-instance3", asadmin("delete-local-instance", i3name));
         report(tn + "delete-cluster", asadmin("delete-cluster", cname));
     }
 
