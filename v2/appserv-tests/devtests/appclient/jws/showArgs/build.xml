@@ -255,6 +255,7 @@
             <param name="expectedFragment" value="${expectedFragment}"/>
             <param name="testName" value="${testName}"/>
         </antcall>
+        <delete file="${clientOutputFile}"/>
     </target>
 
     
