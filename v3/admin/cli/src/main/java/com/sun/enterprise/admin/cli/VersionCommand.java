@@ -48,7 +48,8 @@ import org.glassfish.branding.GlassFishBranding;
 /**
  * A local version command.
  * Prints the version of the server, if running. Prints the version from locally
- * available Version class if server is not running or if the version could not
+ * available Version class if server is not running, if the --local flag is passed
+ * or if the version could not
  * be obtained from a server for some reason. The idea is to get the version
  * of server software, the server process need not be running. This command
  * does not return the version of local server installation if its
@@ -64,11 +65,28 @@ public class VersionCommand extends CLICommand {
     @Param(optional = true)
     private boolean verbose;
 
+    @Param(optional = true)
+    private boolean local;
+
+    @Param(optional = true)
+    private boolean terse;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(VersionCommand.class);
 
     @Override
+    protected void validate() throws CommandException {
+        if (terse && verbose) {
+            throw new CommandValidationException(strings.get("version.optionerror1"));
+        }
+    }
+
+    @Override
     protected int executeCommand() throws CommandException {
+        if (local) {
+            invokeLocal();
+            return 0;
+        }
         try {
             RemoteCommand cmd = new RemoteCommand("version", programOpts, env);
             String version;
@@ -77,7 +95,7 @@ public class VersionCommand extends CLICommand {
             else
                 version = cmd.executeAndReturnOutput("version");
             version = version.trim();   // get rid of gratuitous newlines
-            logger.printMessage(strings.get("version.remote", version));
+            logger.printMessage(terse ? version : strings.get("version.remote", version));
         } catch (Exception e) {
             // suppress all output and infer that the server is not running
             printRemoteException(e);
@@ -94,8 +112,9 @@ public class VersionCommand extends CLICommand {
         version.setBranding(br);
         version.postConstruct();
 
-        logger.printMessage(
-            strings.get("version.local", Version.getFullVersion()));
+        String fv = Version.getFullVersion();
+
+        logger.printMessage(terse ? fv : strings.get("version.local", fv));
         if (verbose)
             logger.printMessage(strings.get("version.local.java",
 				    System.getProperty("java.version")));
