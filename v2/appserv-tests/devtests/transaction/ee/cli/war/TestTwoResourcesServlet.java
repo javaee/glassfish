@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.annotation.WebServlet;
 import javax.naming.*;
 
-@WebServlet(urlPatterns="/TestServlet", loadOnStartup=1)
-public class TestServlet extends HttpServlet {
+@WebServlet(urlPatterns="/TestTwoResourcesServlet", loadOnStartup=1)
+public class TestTwoResourcesServlet extends HttpServlet {
 
     @EJB private MyBean bean;
 
@@ -31,11 +31,11 @@ public class TestServlet extends HttpServlet {
 
         out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet TestServlet</title>");
+            out.println("<title>Servlet TestTwoResourcesServlet</title>");
             out.println("</head>");
             out.println("<body>");
         try {
-	    out.println("" + bean.test(req.getLocalPort()));
+	    out.println("" + bean.testtwo(req.getLocalPort()));
         }catch(Throwable e){
             out.println("got exception");
             out.println(e);

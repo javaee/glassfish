@@ -37,6 +37,7 @@
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "./../../../../config/run.xml">
 <!ENTITY reporting SYSTEM "./../../../../config/report.xml">
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
@@ -46,6 +47,7 @@
 
     &commonSetup;
     &commonBuild;
+    &commonRun;
     &testproperties;
     &reporting;
 
@@ -53,16 +55,63 @@
 
     <target name="setup" depends="init-common">
       <antcall target="clean-results"/>
-
       <antcall target="start-database"/>
-      <!-- It takes time to start database -->
-      <sleep seconds="2"/>
+      <ant target="startDomain"/>
+      <antcall target="setup-database"/>
+      <antcall target="setup-cluster"/>
+    </target>
+
+    <target name="setup-database" depends="init-common">
+      <antcall target="deploy-jdbc-common">
+            <param name="jdbc.conpool.name" value="jdbc-xa-pool"/>
+            <param name="db.class" value="org.apache.derby.jdbc.ClientXADataSource"/>
+            <param name="jdbc.resource.type" value="javax.sql.XADataSource"/>
+            <param name="jdbc.resource.name" value="jdbc/xa"/>
+        </antcall>
+       <antcall target="asadmin-common">
+          <param name="admin.command" value="set"/>
+          <param name="operand.props"
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-xa-pool.property.connectionAttributes=;create=true"/>
+       </antcall>
+       <antcall target="asadmin-common">
+          <param name="admin.command" value="set"/>
+          <param name="operand.props"
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.DerbyPool.is-connection-validation-required=true"/>
+       </antcall>
+       <antcall target="asadmin-common">
+          <param name="admin.command" value="set"/>
+          <param name="operand.props"
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.DerbyPool.connection-validation-method=table"/>
+       </antcall>
+       <antcall target="asadmin-common">
+          <param name="admin.command" value="set"/>
+          <param name="operand.props"
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.DerbyPool.validation-table-name=sys.systables"/>
+       </antcall>
+       <antcall target="asadmin-common">
+          <param name="admin.command" value="set"/>
+          <param name="operand.props"
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-xa-pool.is-connection-validation-required=true"/>
+       </antcall>
+       <antcall target="asadmin-common">
+          <param name="admin.command" value="set"/>
+          <param name="operand.props"
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-xa-pool.validation-table-name=sys.systables"/>
+       </antcall>
+       <antcall target="asadmin-common">
+          <param name="admin.command" value="set"/>
+          <param name="operand.props"
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-xa-pool.connection-validation-method=table"/>
+       </antcall>
 
       <antcall target="execute-ejb-sql-common">
         <param name="sql.file" value="sql/create.sql"/>
       </antcall>
 
-      <antcall target="setup-cluster"/>
+      <antcall target="execute-sql-common">
+        <param name="sql.file" value="sql/create.sql"/>
+        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+      </antcall>
     </target>
 
     <target name="setup-cluster" depends="init-common">
@@ -77,11 +126,29 @@
     </target>
 
     <target name="unsetup" depends="init-common">
-      <antcall target="execute-ejb-sql-common">
-        <param name="sql.file" value="sql/drop.sql"/>
-      </antcall>
+        <antcall target="unsetup-cluster"/>
+        <antcall target="unsetup-database"/>
+        <antcall target="stop-database"/>
+        <ant target="stopDomain"/>
+    </target>
 
-      <antcall target="unsetup-cluster"/>
+    <target name="unsetup-database" depends="init-common">
+        <antcall target="execute-ejb-sql-common">
+            <param name="sql.file" value="sql/drop.sql"/>
+        </antcall>
+
+        <antcall target="execute-sql-common">
+           <param name="sql.file" value="sql/drop.sql"/>
+           <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+         </antcall>
+
+        <antcall target="delete-jdbc-resource-common">
+            <param name="jdbc.resource.name" value="jdbc/xa"/>
+        </antcall>
+
+        <antcall target="delete-jdbc-connpool-common">
+            <param name="jdbc.conpool.name" value="jdbc-xa-pool"/>
+        </antcall>
     </target>
 
     <target name="unsetup-cluster" depends="init-common">
@@ -93,7 +160,6 @@
            <arg line="clean"/>
            <arg line="${appname}-web"/>
         </java>
-        <antcall target="stop-database"/>
     </target>
 
     <target name="start-database" depends="init-common">
@@ -138,17 +204,25 @@
     </target>
 
     <target name="run" depends="init-common">
-        <antcall target="test-rollback"/>
+        <antcall target="run-rollback"/>
+        <antcall target="reset-tables"/>
+        <antcall target="run-recover"/>
     </target>
 
-    <target name="test-rollback" depends="init-common">
+    <target name="run-rollback" depends="init-common">
+        <antcall target="execute-ejb-sql-common">
+          <param name="sql.file" value="sql/delete.sql"/>
+        </antcall>
+
         <parallel>
-           <antcall target="runtest">
+           <antcall target="insert-data">
                <param name="port" value="28080"/>
+               <param name="operation" value="insert_in_one_resource"/>
            </antcall>
 
-           <antcall target="runtest">
+           <antcall target="insert-data">
                <param name="port" value="28081"/>
+               <param name="operation" value="insert_in_one_resource"/>
            </antcall>
 
            <antcall target="rollback"/>
@@ -160,20 +234,56 @@
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
-           <arg line="verify"/>
+           <arg line="verify_default"/>
            <arg line="${appname}-web"/>
            <arg line="28080"/>
            <arg line="rollback"/>
         </java>
     </target>
 
-    <target name="runtest">
+    <target name="run-recover" depends="init-common">
+        <parallel>
+           <antcall target="insert-data">
+               <param name="port" value="28080"/>
+               <param name="operation" value="insert_xa_data"/>
+           </antcall>
+
+           <antcall target="kill-instance"/>
+        </parallel>
+
+        <antcall target="recover-transactions"/>
+
+        <echo message="Verifying results"/>
+        <java  fork="on"
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
+              classname="${se.client}">
+           <arg line="verify_xa"/>
+           <arg line="${appname}-web"/>
+           <arg line="28081"/>
+           <arg line="recover"/>
+        </java>
+
+        <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="start-local-instance"/>
+          <arg line="in1"/>
+        </exec>
+    </target>
+
+    <target name="kill-instance">
+      <sleep seconds="20"/>
+      <exec executable="./kill_instance.sh" failonerror="true">
+        <arg line="in1"/>
+      </exec>
+    </target>
+
+    <target name="insert-data">
         <echo message="Executing test on port ${port}"/>
         <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
-           <arg line="test"/>
+           <arg line="${operation}"/>
            <arg line="${appname}-web"/>
            <arg line="${port}"/>
         </java>
@@ -187,6 +297,18 @@
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
            <arg line="rollback"/>
+        </java>
+    </target>
+
+    <target name="recover-transactions">
+        <sleep seconds="15"/>
+        <echo message="Recover XA transaction"/>
+        <java  fork="on"
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
+              classname="${se.client}">
+           <arg line="recover"/>
+           <arg line="${env.S1AS_HOME}"/>
         </java>
     </target>
 
@@ -205,6 +327,16 @@
 
     <target name="usage">
         <antcall target="usage-common"/>
+    </target>
+
+    <target name="reset-tables" depends="init-common">
+        <antcall target="execute-ejb-sql-common">
+          <param name="sql.file" value="sql/delete.sql"/>
+        </antcall>
+        <antcall target="execute-sql-common">
+          <param name="sql.file" value="sql/delete.sql"/>
+          <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+        </antcall>
     </target>
 
 </project>

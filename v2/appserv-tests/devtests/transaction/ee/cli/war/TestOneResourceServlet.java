@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.annotation.WebServlet;
 import javax.naming.*;
 
-@WebServlet(urlPatterns="/VerifyServlet", loadOnStartup=1)
-public class VerifyServlet extends HttpServlet {
+@WebServlet(urlPatterns="/TestOneResourceServlet", loadOnStartup=1)
+public class TestOneResourceServlet extends HttpServlet {
 
     @EJB private MyBean bean;
 
@@ -29,14 +29,13 @@ public class VerifyServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 	resp.setContentType("text/html");
 
-        String type = req.getQueryString();
         out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet VerifyServlet</title>");
+            out.println("<title>Servlet TestOneResourceServlet</title>");
             out.println("</head>");
             out.println("<body>");
         try {
-	    out.println("RESULT:" + ((type == null)? bean.verifydefault() : bean.verifyxa()));
+	    out.println("" + bean.testone(req.getLocalPort()));
         }catch(Throwable e){
             out.println("got exception");
             out.println(e);
