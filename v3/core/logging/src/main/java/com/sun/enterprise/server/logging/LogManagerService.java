@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.services.impl;
+package com.sun.enterprise.server.logging;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.common.util.logging.LoggingOutputStream;
@@ -49,7 +49,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.FileMonitoring;
-import org.glassfish.internal.api.Init;
+import org.glassfish.internal.api.*;
 import org.glassfish.internal.config.UnprocessedConfigListener;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
@@ -65,6 +65,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.logging.*;
+import java.util.logging.LogManager;
 
 /**
  * Reinitialzie the log manager using our logging.properties file.
@@ -76,7 +77,7 @@ import java.util.logging.*;
 
 @Service
 @Scoped(Singleton.class)
-public class LogManagerService implements Init, PostConstruct, PreDestroy {
+public class LogManagerService implements Init, PostConstruct, PreDestroy, org.glassfish.internal.api.LogManager {
 
     @Inject
     ServerEnvironmentImpl env;
@@ -358,11 +359,6 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         }
     }
 
-    /**
-     * Adds a new handler to the root logger
-     *
-     * @param handler handler to be iadded.
-     */
     public void addHandler(Handler handler) {
         Logger rootLogger = Logger.global.getParent();
         if (rootLogger != null) {

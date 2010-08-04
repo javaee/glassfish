@@ -39,7 +39,6 @@ package com.sun.enterprise.server.logging;
 import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.v3.common.BooleanLatch;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.logging.Task;

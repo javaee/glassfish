@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin.commands;
+package com.sun.enterprise.server.logging.commands;
 
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.Domain;

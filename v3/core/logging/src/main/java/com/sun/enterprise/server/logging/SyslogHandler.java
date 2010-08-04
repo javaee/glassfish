@@ -47,7 +47,6 @@ import org.jvnet.hk2.component.Singleton;
 
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.config.support.TranslatedConfigView;
-import com.sun.enterprise.v3.common.BooleanLatch;
 
 import java.util.logging.*;
 import java.text.SimpleDateFormat;

@@ -41,8 +41,7 @@ package com.sun.enterprise.web.logger;
  * log-file when enabled
  */
 
-import com.sun.enterprise.server.logging.UniformLogFormatter;
-import com.sun.enterprise.v3.services.impl.LogManagerService;
+import org.glassfish.internal.api.LogManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -50,6 +49,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -60,7 +60,10 @@ public class FileLoggerHandler extends Handler implements PostConstruct {
     
 
     @Inject(optional=true)
-    LogManagerService logManager=null;
+    LogManager logManager=null;
+
+    @Inject(optional=true)
+    Formatter logFormatter;
 
     private String webLogger = "javax.enterprise.system.container.web.com.sun.enterprise.web";
     private String catalinaLogger = "org.apache.catalina";
@@ -71,7 +74,7 @@ public class FileLoggerHandler extends Handler implements PostConstruct {
     
     public void postConstruct() {
         setLevel(Level.OFF);
-        this.setFormatter(new UniformLogFormatter());
+        if (logFormatter != null) this.setFormatter(logFormatter);
     }
     
     

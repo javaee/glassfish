@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,50 +32,27 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- *
  */
 
-package com.sun.enterprise.v3.admin.commands;
 
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.server.logging.GFFileHandler;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
-import org.glassfish.api.admin.RuntimeType;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+package org.glassfish.internal.api;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+import java.util.logging.Handler;
 
 /**
- * @author cmott
  */
-@Cluster({RuntimeType.INSTANCE})
-@Service(name = "rotate-log")
-@Scoped(PerLookup.class)
-@I18n("rotate.log")
-public class RotateLog implements AdminCommand {
+public interface LogManager {
+    Map<String, String> getLoggingProperties() throws IOException;
 
-    @Inject
-    GFFileHandler gf;
+    File getLoggingFile() throws IOException;
 
-    @Inject
-    Domain domain;
-
-    @Param(optional = true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
-
-    public void execute(AdminCommandContext context) {
-
-        final ActionReport report = context.getActionReport();
-        
-        gf.rotate();
-
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-    }
+    /**
+     * Adds a new handler to the root logger
+     *
+     * @param handler handler to be iadded.
+     */
+    void addHandler(Handler handler);
 }

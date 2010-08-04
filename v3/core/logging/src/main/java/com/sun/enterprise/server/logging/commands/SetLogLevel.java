@@ -35,7 +35,7 @@
  *
  */
 
-package com.sun.enterprise.v3.admin.commands;
+package com.sun.enterprise.server.logging.commands;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -55,44 +55,77 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+
 
 /**
  * Created by IntelliJ IDEA.
  * User: cmott, naman mehta
- * Date: Aug 26, 2009
- * Time: 5:32:17 PM
+ * Date: Jul 8, 2009
+ * Time: 11:48:20 AM
  * To change this template use File | Settings | File Templates.
  */
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
-@Service(name = "list-logger-levels")
-@Scoped(PerLookup.class)
-@I18n("list.logger.levls")
-public class ListLoggerLevels implements AdminCommand {
 
-    @Inject
-    LoggingConfigImpl loggingConfig;
+/*
+* Set Logger Level Command
+*
+* Updates one or more loggers' level
+*
+* Usage: set-log-level [-?|--help=false]
+* (logger_name=logging_value)[:logger_name=logging_value]*
+*
+*/
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@Service(name = "set-log-level")
+@Scoped(PerLookup.class)
+@I18n("set.log.level")
+public class SetLogLevel implements AdminCommand {
+
+    @Param(name = "name_value", primary = true, separator = ':')
+    Properties properties;
 
     @Param(optional = true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
     @Inject
+    LoggingConfigImpl loggingConfig;
+
+    @Inject
     Domain domain;
 
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListLoggerLevels.class);
+    String[] validLevels = {"SEVERE", "WARNING", "INFO", "FINE", "FINER", "FINEST"};
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(SetLogLevel.class);
+
 
     public void execute(AdminCommandContext context) {
+
 
         final ActionReport report = context.getActionReport();
         boolean isCluster = false;
         boolean isDas = false;
         boolean isInstance = false;
 
+        Map<String, String> m = new HashMap<String, String>();
         try {
-            HashMap<String, String> props = null;
+            for (final Object key : properties.keySet()) {
+                final String logger_name = (String) key;
+                final String level = (String) properties.get(logger_name);
+                // that is is a valid level
+                boolean vlvl = false;
+                for (String s : validLevels) {
+                    if (s.equals(level)) {
+                        m.put(logger_name + ".level", level);
+                        vlvl = true;
+                        break;
+                    }
+                }
+                if (!vlvl) {
+                    report.setMessage(localStrings.getLocalString("set.log.level.invalid",
+                            "Invalid logger level found {0}.  Valid levels are: SEVERE, WARNING, INFO, FINE, FINER, FINEST", level));
+                }
+            }
 
             Server targetServer = domain.getServerNamed(target);
 
@@ -108,48 +141,76 @@ public class ListLoggerLevels implements AdminCommand {
             }
 
             if (isCluster || isInstance) {
-                props = (HashMap) loggingConfig.getLoggingProperties(target);
+                loggingConfig.updateLoggingProperties(m, target);
             } else if (isDas) {
-                props = (HashMap) loggingConfig.getLoggingProperties();
+                loggingConfig.updateLoggingProperties(m);
             } else {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 String clusterName = "";
                 String msg = localStrings.getLocalString("invalid.target.sys.props",
                         "Invalid target: {0}. Valid default target is a server named ''server'' (default) or cluster name.", target);
+
                 if (targetServer != null && targetServer.isInstance()) {
                     clusterName = targetServer.getCluster().getName();
                     msg = localStrings.getLocalString("invalid.target.sys.props",
                             "Instance {0} is part of the Cluster so valid target value is '" + clusterName + "'.", target);
                 }
+
                 report.setMessage(msg);
                 return;
             }
 
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
-            ArrayList keys = new ArrayList();
-            keys.addAll(props.keySet());
-            Collections.sort(keys);
-            Iterator it2 = keys.iterator();
-            while (it2.hasNext()) {
-                String name = (String) it2.next();
-                if (name.endsWith(".level") && !name.equals(".level")) {
-                    final ActionReport.MessagePart part = report.getTopMessagePart()
-                            .addChild();
-                    String n = name.substring(0, name.lastIndexOf(".level"));
-                    part.setMessage(n + ": " + (String) props.get(name));
-                    report.getTopMessagePart().addProperty(n, (String) props.get(name)); //Needed for REST xml and JSON output
-                }
-            }
-
-
-        } catch (IOException ex) {
-            report.setMessage("Unable to get the logger names");
+        } catch (IOException e) {
+            report.setMessage("Could not set logger levels ");
+            report.setMessage(localStrings.getLocalString("set.log.level.failed",
+                    "Could not set logger levels."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(ex);
-            return;
         }
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-
-
     }
+
+    /**
+     * Find the rightmost unescaped occurrence of specified character in target
+     * string.
+     * <p/>
+     * XXX Doesn't correctly interpret escaped backslash characters, e.g. foo\\.bar
+     *
+     * @param target string to search
+     * @param ch     a character
+     * @return index index of last unescaped occurrence of specified character
+     *         or -1 if there are no unescaped occurrences of this character.
+     */
+    private static int trueLastIndexOf(String target, char ch) {
+        int i = target.lastIndexOf(ch);
+        while (i > 0) {
+            if (target.charAt(i - 1) == '\\') {
+                i = target.lastIndexOf(ch, i - 1);
+            } else {
+                break;
+            }
+        }
+        return i;
+    }
+
+    /**
+     * Indicate in the action report that the command failed.
+     */
+    private static void fail(AdminCommandContext context, String msg,
+                             Exception ex) {
+        context.getActionReport().setActionExitCode(
+                ActionReport.ExitCode.FAILURE);
+        if (ex != null)
+            context.getActionReport().setFailureCause(ex);
+        context.getActionReport().setMessage(msg);
+    }
+
+    /**
+     * Indicate in the action report that the command failed.
+     */
+    private static void fail(AdminCommandContext context, String msg) {
+        fail(context, msg, null);
+    }
+
+
 }

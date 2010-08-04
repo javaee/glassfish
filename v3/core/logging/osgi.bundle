@@ -1,0 +1,4 @@
+# logviewer.backend is used by REST implementation. We should be able to remove that when we move
+# REST logging code to this module.
+# logging and diagnostics are used by amx!
+-exportcontents: com.sun.enterprise.server.logging.logviewer.backend, com.sun.enterprise.server.logging.diagnostics, com.sun.enterprise.server.logging

@@ -1,13 +1,9 @@
 -exportcontents: \
-                        com.sun.enterprise.server.logging; \
-                        com.sun.enterprise.server.logging.logviewer.backend; \
-                        com.sun.enterprise.server.logging.diagnostics; \
                         com.sun.enterprise.v3.admin; \
                         com.sun.enterprise.v3.admin.adapter; \
                         com.sun.enterprise.v3.admin.commands; \
                         com.sun.enterprise.v3.bootstrap; \
                         com.sun.enterprise.v3.common; \
-                        com.sun.enterprise.v3.logging; \
                         com.sun.enterprise.v3.server; \
                         com.sun.enterprise.v3.services.impl; \
                         org.glassfish.kernel.embedded; \
@@ -19,3 +15,8 @@ DynamicImport-Package: org.glassfish.flashlight.provider, \
 		       org.glassfish.branding, \
                        org.objectweb.asm;password=GlassFish, \
                        org.objectweb.asm.commons;password=GlassFish
+
+# Only in non-OSGi embedded mode, kernel depends on logging package, so
+# optionally depend on that pkg. This way, when GF is embedded in 
+# OSGi environment, logging bundle need not be installed.
+Import-Package: com.sun.enterprise.server.logging.*; resolution:=optional, *

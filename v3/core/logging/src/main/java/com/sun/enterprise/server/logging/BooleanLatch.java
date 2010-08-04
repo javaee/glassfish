@@ -1,8 +1,7 @@
 /*
- *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2006-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,50 +34,25 @@
  * holder.
  */
 
-package org.glassfish.kernel.embedded;
+package com.sun.enterprise.server.logging;
 
-import com.sun.hk2.component.InhabitantsParserDecorator;
-import com.sun.hk2.component.InhabitantsParser;
-import com.sun.enterprise.server.logging.LogManagerService;
-import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
-import com.sun.enterprise.v3.admin.AdminAdapter;
-import com.sun.enterprise.v3.admin.PublicAdminAdapter;
-import com.sun.enterprise.v3.admin.PrivateAdminAdapter;
-import com.sun.enterprise.v3.server.GFDomainXml;
-import com.sun.enterprise.v3.server.DomainXmlPersistence;
-import org.kohsuke.MetaInfServices;
-
-import java.net.URLClassLoader;
-import java.net.URL;
+import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 
 /**
- * Kernel's decoration for embedded environment.
+ * Acts like a CountDownLatch except that it only requires a single signal to fire.
+ * Because a latch is non-exclusive, it uses the shared acquire and release methods.
  *
  * @author Jerome Dochez
  */
-@MetaInfServices
-public class EmbeddedInhabitantsParser implements InhabitantsParserDecorator {
+public class BooleanLatch extends AbstractQueuedSynchronizer {
+        public boolean isSignalled() { return getState() != 0; }
 
-    public String getName() {
-        return "Embedded";
-    }
-
-    public void decorate(InhabitantsParser parser) {
-
-        // we don't want to reconfigure the loggers.
-
-        parser.drop(AdminConsoleAdapter.class);
-
-        String enableCLI = System.getenv("GF_EMBEDDED_ENABLE_CLI");
-        if (enableCLI == null || !enableCLI.equalsIgnoreCase("true")) {
-            parser.drop(PublicAdminAdapter.class);
-            parser.drop(LogManagerService.class);
-            parser.drop(PrivateAdminAdapter.class);
+        public int tryAcquireShared(int ignore) {
+            return isSignalled()? 1 : -1;
         }
-        parser.replace(GFDomainXml.class, EmbeddedDomainXml.class);
-        
-        parser.replace(DomainXmlPersistence.class, EmbeddedDomainPersistence.class);
 
+        public boolean tryReleaseShared(int ignore) {
+            setState(1);
+            return true;
+        }
     }
-}
-

@@ -39,6 +39,10 @@ package com.sun.enterprise.server.logging;
 
 import org.glassfish.api.branding.Branding;
 import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -67,6 +71,9 @@ import java.util.logging.Formatter;
  *         4. If there is a Map as the last element, need to scan the message to
  *         distinguish key values with the message argument.
  */
+@Service()
+@ContractProvided(Formatter.class)
+@Scoped(PerLookup.class)
 public class UniformLogFormatter extends Formatter {
     // loggerResourceBundleTable caches references to all the ResourceBundle
     // and can be searched using the LoggerName as the key 

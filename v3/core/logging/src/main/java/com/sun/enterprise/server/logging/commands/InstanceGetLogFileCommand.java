@@ -35,7 +35,7 @@
  */
 
 
-package com.sun.enterprise.v3.admin.commands;
+package com.sun.enterprise.server.logging.commands;
 
 import com.sun.enterprise.server.logging.GFFileHandler;
 import com.sun.enterprise.util.LocalStringManagerImpl;

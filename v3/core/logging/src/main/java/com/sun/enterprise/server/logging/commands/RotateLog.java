@@ -1,8 +1,7 @@
 /*
- *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,52 +32,50 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ *
  */
 
-package org.glassfish.kernel.embedded;
+package com.sun.enterprise.server.logging.commands;
 
-import com.sun.hk2.component.InhabitantsParserDecorator;
-import com.sun.hk2.component.InhabitantsParser;
-import com.sun.enterprise.server.logging.LogManagerService;
-import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
-import com.sun.enterprise.v3.admin.AdminAdapter;
-import com.sun.enterprise.v3.admin.PublicAdminAdapter;
-import com.sun.enterprise.v3.admin.PrivateAdminAdapter;
-import com.sun.enterprise.v3.server.GFDomainXml;
-import com.sun.enterprise.v3.server.DomainXmlPersistence;
-import org.kohsuke.MetaInfServices;
-
-import java.net.URLClassLoader;
-import java.net.URL;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.server.logging.GFFileHandler;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
- * Kernel's decoration for embedded environment.
- *
- * @author Jerome Dochez
+ * @author cmott
  */
-@MetaInfServices
-public class EmbeddedInhabitantsParser implements InhabitantsParserDecorator {
+@Cluster({RuntimeType.INSTANCE})
+@Service(name = "rotate-log")
+@Scoped(PerLookup.class)
+@I18n("rotate.log")
+public class RotateLog implements AdminCommand {
 
-    public String getName() {
-        return "Embedded";
-    }
+    @Inject
+    GFFileHandler gf;
 
-    public void decorate(InhabitantsParser parser) {
+    @Inject
+    Domain domain;
 
-        // we don't want to reconfigure the loggers.
+    @Param(optional = true)
+    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
-        parser.drop(AdminConsoleAdapter.class);
+    public void execute(AdminCommandContext context) {
 
-        String enableCLI = System.getenv("GF_EMBEDDED_ENABLE_CLI");
-        if (enableCLI == null || !enableCLI.equalsIgnoreCase("true")) {
-            parser.drop(PublicAdminAdapter.class);
-            parser.drop(LogManagerService.class);
-            parser.drop(PrivateAdminAdapter.class);
-        }
-        parser.replace(GFDomainXml.class, EmbeddedDomainXml.class);
+        final ActionReport report = context.getActionReport();
         
-        parser.replace(DomainXmlPersistence.class, EmbeddedDomainPersistence.class);
+        gf.rotate();
 
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }
-
