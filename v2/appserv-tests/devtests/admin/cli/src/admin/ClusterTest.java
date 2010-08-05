@@ -56,7 +56,6 @@ public class ClusterTest extends AdminBaseDevTest {
 
     public void runTests() {
         startDomain();
-
         String xpathExpr = "count" + "(" + "/domain/clusters/cluster" + ")";
         double startingNumberOfClusters = 0.0;
         Object o = evalXPath(xpathExpr, XPathConstants.NUMBER);
@@ -505,21 +504,40 @@ public class ClusterTest extends AdminBaseDevTest {
         success = ret.outAndErr.indexOf("clusters.cluster."+cname+".gms-enabled=false") >= 0;
         report("get-cluster-gms-attr-after-reset", success);
 
-        ret = asadminWithOutput("get", "--target", cname, "clusters.cluster."+cname+".gms-enabled");
+        ret = asadminWithOutput("get", "clusters.cluster."+cname+".gms-enabled");
         success = ret.outAndErr.indexOf("clusters.cluster."+cname+".gms-enabled=false") >= 0;
         report("get-target-gms-attr-after-reset1", success);
 
-        ret = asadminWithOutput("get", "--target", i1name, "clusters.cluster."+cname+".gms-enabled");
-        success = ret.outAndErr.indexOf("clusters.cluster."+cname+".gms-enabled=false") >= 0;
-        report("get-target-gms-attr-after-reset2", success);
+	// Test fix for 12880 : short path names in get/set
+        File webapp = new File("resources", "helloworld.war");
+        report(tn + "in3-deploy", asadmin("deploy", "--target", i3name, webapp.getAbsolutePath()));
+        ret = asadminWithOutput("get", i3name+".application-ref.*");
+        success = ret.outAndErr.indexOf(i3name+".application-ref.helloworld.enabled=true") >= 0;
+        report("get-enable-attr-before-reset", success);
+        ret = asadminWithOutput("set", i3name+".application-ref.helloworld.enabled=false");
+        ret = asadminWithOutput("get", i3name+".application-ref.*");
+        success = ret.outAndErr.indexOf(i3name+".application-ref.helloworld.enabled=false") >= 0;
+        report("get-enable-attr-after-reset1", success);
+        ret = asadminWithOutput("set", i3name+".application-ref.helloworld.enabled=true");
+        ret = asadminWithOutput("get", "servers.server."+i3name+".application-ref.*");
+        success = ret.outAndErr.indexOf("servers.server."+i3name+".application-ref.helloworld.enabled=true") >= 0;
+        report("get-enable-attr-before-reset2", success);
+        report(tn + "in3-undeploy", asadmin("undeploy", "--target", i3name, "helloworld"));
 
-        ret = asadminWithOutput("get", "--target", i2name, "clusters.cluster."+cname+".gms-enabled");
-        success = ret.outAndErr.indexOf("clusters.cluster."+cname+".gms-enabled=false") >= 0;
-        report("get-target-gms-attr-after-reset3", success);
-
-        ret = asadminWithOutput("get", "--target", i3name, "clusters.cluster."+cname+".gms-enabled");
-        success = ret.outAndErr.indexOf("clusters.cluster."+cname+".gms-enabled=false") < 0;
-        report("get-target-gms-attr-after-reset4", success);
+	// Test Get, Set, List for monitoring option
+        ret = asadminWithOutput("list", "-m", i3name+".*");
+        success = ret.outAndErr.indexOf(i3name+".server.jvm") < 0;
+        report("list-without-enabling-monitoring", success);
+        ret = asadminWithOutput("set", i3name+"-config.monitoring-service.module-monitoring-levels.jvm=HIGH");
+        ret = asadminWithOutput("list", "-m", i3name+".*");
+        success = ret.outAndErr.indexOf(i3name+".server.jvm") >= 0;
+        report("list-after-enabling-monitoring", success);
+        ret = asadminWithOutput("list", "-m", i2name+".*");
+        success = ret.outAndErr.indexOf(i2name+".server.jvm") < 0;
+        report("list-without-enabling-monitoring-in2", success);
+        ret = asadminWithOutput("get", i3name+"-config.monitoring-service.module-monitoring-levels.jvm");
+        success = ret.outAndErr.indexOf(i3name+"-config.monitoring-service.module-monitoring-levels.jvm=HIGH") >= 0;
+        report("get-after-enabling-monitoring-without-m", success);
 
         // Cleanup
         report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
