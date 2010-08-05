@@ -53,7 +53,7 @@ public class NoOpBackingStoreFactory
     };
 
     @Override
-    public <K extends Serializable, V extends Storeable> BackingStore<K, V> createBackingStore(
+    public <K extends Serializable, V extends Serializable> BackingStore<K, V> createBackingStore(
             BackingStoreConfiguration<K, V> conf)
                 throws BackingStoreException {
         NoOpBackingStore<K, V> store =  new NoOpBackingStore<K, V>();

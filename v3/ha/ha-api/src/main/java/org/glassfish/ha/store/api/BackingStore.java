@@ -63,7 +63,7 @@ import java.util.Collections;
  * @author Mahesh.Kannan@Sun.Com
  * @author Larry.White@Sun.Com
  */
-public abstract class BackingStore<K extends Serializable, V extends Serializable> { //FIXME: After shoal integration make it V extends Storeable
+public abstract class BackingStore<K extends Serializable, V extends Serializable> {
 
     BackingStoreConfiguration<K, V> conf;
 
@@ -119,13 +119,32 @@ public abstract class BackingStore<K extends Serializable, V extends Serializabl
      */
     public abstract void remove(K key) throws BackingStoreException;
 
+    //TODO: REMOVE after shoal integration
     public abstract void updateTimestamp(K key, long time) throws BackingStoreException;
+
+    /**
+     * Recomended way is to just do a save(k, v)
+     * @param key
+     * @param version
+     * @param accessTime
+     * @param maxIdleTime
+     * @throws BackingStoreException
+     */
+    public void updateTimestamp(K key, Long version, Long accessTime, Long maxIdleTime)
+            throws BackingStoreException {
+
+    }
 
     /**
      * Remove expired entries
      */
+    //FIXME: Remove after shoal integration
     public abstract int removeExpired(long idleForMillis)
              throws BackingStoreException;
+    public int removeExpired()
+             throws BackingStoreException {
+        return 0;
+    }
 
     /**
      * Remove instances that meet the criteria.

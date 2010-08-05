@@ -51,7 +51,7 @@ import java.util.logging.*;
  *
  * @author Mahesh Kannan
  */
-public class FileBackingStore<K extends Serializable, V extends Storeable>
+public class FileBackingStore<K extends Serializable, V extends Serializable>
         extends BackingStore<K, V> {
 
     protected Logger logger =

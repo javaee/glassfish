@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,59 +34,44 @@
  * holder.
  */
 
-package org.glassfish.ha.store.adapter.file;
+package org.shoal.ha.store;
 
 import org.glassfish.ha.store.api.*;
-import org.jvnet.hk2.annotations.Service;
 
 import java.io.Serializable;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Properties;
 
 /**
  * @author Mahesh Kannan
  */
-@Service(name = "file")
-public class FileBackingStoreFactory
-        implements BackingStoreFactory {
+public class ReplicatedBackingStoreFactory
+    implements BackingStoreFactory {
 
-    private static ThreadLocal<FileStoreTransaction> _current = new ThreadLocal<FileStoreTransaction>();
+    private Properties props;
 
-    private String instanceName;
-
-    private String groupName;
-
-    private static ConcurrentHashMap<String, FileBackingStore> _stores
-            = new ConcurrentHashMap<String, FileBackingStore>();
-
-
-    static FileBackingStore getFileBackingStore(String storeName) {
-        return _stores.get(storeName);
+    public ReplicatedBackingStoreFactory()  {
     }
 
-    static void removemapping(String storeName) {
-        _stores.remove(storeName);
+    public ReplicatedBackingStoreFactory(Properties p)  {
+        this.props=p;
     }
 
     @Override
-    public <K extends Serializable, V extends Serializable> BackingStore<K, V> createBackingStore(
-            BackingStoreConfiguration<K, V> conf)
-                throws BackingStoreException {
-        FileBackingStore<K, V> fs = new FileBackingStore<K, V>();
-        fs.initialize(conf);
+    public <K extends Serializable, V extends Serializable> BackingStore<K, V> createBackingStore(BackingStoreConfiguration<K, V> conf)
+            throws BackingStoreException {
 
-        _stores.put(conf.getStoreName(), fs);
-        return fs;
+        ReplicatedBackingStore<K, V> bStore = new ReplicatedBackingStore<K, V>();
+        bStore.initialize(conf);
+        System.out.println("ReplicatedBackingStoreFactory:: CREATED an instance of: " + bStore.getClass().getName());
+        return bStore;
     }
 
     @Override
     public BackingStoreTransaction createBackingStoreTransaction() {
-        FileStoreTransaction tx = new FileStoreTransaction();
-        _current.set(tx);
-        return tx;
-    }
-
-    //package
-    static final FileStoreTransaction getCurrent() {
-        return _current.get();
+        return new BackingStoreTransaction() {
+            @Override
+            public void commit() throws BackingStoreException {    
+            }
+        };
     }
 }

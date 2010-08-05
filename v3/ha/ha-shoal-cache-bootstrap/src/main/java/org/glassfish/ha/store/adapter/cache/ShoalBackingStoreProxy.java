@@ -71,7 +71,7 @@ public class ShoalBackingStoreProxy
     }
 
     @Override
-    public <K extends Serializable, V extends Storeable> BackingStore<K, V> createBackingStore(BackingStoreConfiguration<K, V> conf) throws BackingStoreException {
+    public <K extends Serializable, V extends Serializable> BackingStore<K, V> createBackingStore(BackingStoreConfiguration<K, V> conf) throws BackingStoreException {
         try {
             BackingStoreFactory storeFactory = habitat.getComponent(BackingStoreFactory.class, "shoal-backing-store");
             return storeFactory.createBackingStore(conf);

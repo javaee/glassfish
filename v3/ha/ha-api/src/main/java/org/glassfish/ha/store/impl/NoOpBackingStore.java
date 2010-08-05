@@ -47,7 +47,7 @@ import java.util.Properties;
 /**
  * @author Mahesh Kannan
  */
-public class NoOpBackingStore<K extends Serializable, V extends Storeable>
+public class NoOpBackingStore<K extends Serializable, V extends Serializable>
     extends BackingStore<K, V> {
 
     NoOpBackingStore() {
@@ -82,7 +82,7 @@ public class NoOpBackingStore<K extends Serializable, V extends Storeable>
     public void updateTimestamp(K key, long time) throws BackingStoreException {
 
     }
-    public void updateTimestamp(K key, long version, long accessTime, long maxIdleTime) throws BackingStoreException {
+    public void updateTimestamp(K key, Long version, Long accessTime, Long maxIdleTime) throws BackingStoreException {
 
     }
 

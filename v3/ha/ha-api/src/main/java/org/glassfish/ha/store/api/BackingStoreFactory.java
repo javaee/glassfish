@@ -76,7 +76,7 @@ public interface BackingStoreFactory {
      * @throws BackingStoreException
      *             If the store could not be created
      */
-    public <K extends Serializable, V extends Storeable> BackingStore<K, V> createBackingStore(BackingStoreConfiguration<K, V> conf)
+    public <K extends Serializable, V extends Serializable> BackingStore<K, V> createBackingStore(BackingStoreConfiguration<K, V> conf)
             throws BackingStoreException;
 
     /**
