@@ -2307,12 +2307,16 @@ public class WebappClassLoader
                     break;
                 pos += n;
             }
-            binaryStream.close();
         } catch (Exception e) {
             String msg = rb.getString("webappClassLoader.readClassError");
             msg = MessageFormat.format(msg, name);
             logger.log(Level.WARNING, msg, e);
             return;
+        } finally {
+            try {
+                binaryStream.close();
+            } catch(IOException e) {
+            }
         }
 
         // START OF IASRI 4709374
