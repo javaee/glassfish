@@ -36,6 +36,15 @@
 
 package com.sun.enterprise.v3.server;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
@@ -116,7 +125,8 @@ import org.glassfish.deployment.common.VersioningDeploymentUtil;
 @Service
 @Scoped(Singleton.class)
 public class ApplicationLifecycle implements Deployment {
-        
+
+    private static final String[] UPLOADED_GENERATED_DIRS = new String [] {"policy", "xml", "ejb", "jsp"};
 
     @Inject
     protected SnifferManagerImpl snifferManager;
@@ -1496,18 +1506,7 @@ public class ApplicationLifecycle implements Deployment {
         final ParameterMapExtractor extractor = new ParameterMapExtractor(params);
         paramMap = extractor.extract(excludedParams);
 
-        // set the generated dir params
-        final File genPolicyDir = dc.getScratchDir("policy");
-        /*
-         * The generated policy directory is not always created, so check it
-         * before adding it to the parameters.
-         */
-        if (genPolicyDir.isDirectory()) {
-            paramMap.set("generatedpolicydir", dc.getScratchDir("policy").getAbsolutePath());
-        }
-        paramMap.set("generatedxmldir", dc.getScratchDir("xml").getAbsolutePath());
-        paramMap.set("generatedejbdir", dc.getScratchDir("ejb").getAbsolutePath());
-        paramMap.set("generatedjspdir", dc.getScratchDir("jsp").getAbsolutePath());
+        prepareGeneratedContent(dc, paramMap);
 
         // set the path and plan params
 
@@ -1526,8 +1525,10 @@ public class ApplicationLifecycle implements Deployment {
         }
 
         // always upload the archives to the instance side
-        // but not directories.
-        paramMap.set("upload", Boolean.toString( ! archiveFile.isDirectory()));
+        // but not directories.  Note that we prepare a zip file containing
+        // the generated directories and pass that as a single parameter so it
+        // will be uploaded even though a deployment directory is not.
+        paramMap.set("upload", "true");
 
         // pass the params we restored from the previous deployment in case of
         // redeployment
@@ -1542,6 +1543,76 @@ public class ApplicationLifecycle implements Deployment {
         paramMap.set("appprops", extractor.propertiesValue(appProps, ':'));
 
         return paramMap;
+    }
+
+    private void prepareGeneratedContent(final DeploymentContext dc,
+            final ParameterMap paramMap) throws IOException {
+
+        /*
+         * Create a single ZIP file containing the various generated
+         * directories for this app.
+         */
+        final File generatedContentZip = createGeneratedContentZip();
+        final ZipOutputStream zipOS = new ZipOutputStream(
+                new BufferedOutputStream(new FileOutputStream(generatedContentZip)));
+
+        /*
+         * We want the ZIP file to contain xml/(appname), ejb/(appname), etc.
+         * directories, even if those directories don't contain anything.
+         * Then the instance deploy command can expand the uploaded zip file
+         * based at the instance's generated/ directory and the files - including
+         * empty directories if appropriate - will be stored in the right places.
+         */
+        final File baseDir = dc.getScratchDir("xml").getParentFile().getParentFile();
+
+        for (String scratchType : UPLOADED_GENERATED_DIRS) {
+            addScratchContentIfPresent(dc, baseDir, zipOS, scratchType);
+        }
+
+        zipOS.close();
+        
+        // set the generated content param
+        paramMap.set("generatedcontent", generatedContentZip.getAbsolutePath());
+    }
+
+    private File createGeneratedContentZip() throws IOException {
+        final File tempFile = File.createTempFile("gendContent", ".zip");
+        tempFile.deleteOnExit();
+        return tempFile;
+    }
+
+    private void addScratchContentIfPresent(final DeploymentContext dc,
+            final File baseDir,
+            final ZipOutputStream zipOS,
+            final String scratchDirName) throws IOException {
+        final File genDir = dc.getScratchDir(scratchDirName);
+        if (genDir.isDirectory()) {
+            addFileToZip(zipOS, baseDir, genDir);
+        }
+    }
+
+    private void addFileToZip(final ZipOutputStream zipOS, final File baseDir, final File f) throws IOException {
+        final String entryName = baseDir.toURI().relativize(f.toURI()).getPath();
+        final ZipEntry entry = new ZipEntry(entryName);
+        zipOS.putNextEntry(entry);
+        if ( ! f.isDirectory()) {
+            final byte[] buffer = new byte[1024];
+            final InputStream is = new BufferedInputStream(new FileInputStream(f));
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                zipOS.write(buffer, 0, bytesRead);
+            }
+            is.close();
+            zipOS.closeEntry();
+        } else {
+            /*
+             * A directory entry has no content itself.
+             */
+            zipOS.closeEntry();
+            for (File subFile : f.listFiles()) {
+                addFileToZip(zipOS, baseDir, subFile);
+            }
+        }
     }
 
     public void validateDeploymentTarget(String target, String name, 

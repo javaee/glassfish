@@ -652,10 +652,11 @@ public class RemoteAdminCommand {
             String filename) throws IOException {
         File f = SmartFile.sanitize(new File(filename));
         logger.finer("FILE PARAM: " + optionName + " = " + f);
+        final boolean uploadThisFile = doUpload && ! f.isDirectory();
         // attach the file to the payload - include the option name in the
         // relative URI to avoid possible conflicts with same-named files
         // in different directories
-        if (doUpload)
+        if (uploadThisFile)
             outboundPayload.attachFile(FILE_PAYLOAD_MIME_TYPE,
                 URI.create(optionName + "/" + f.getName() + (f.isDirectory() ? "/" : "")),
                 optionName,
@@ -665,7 +666,7 @@ public class RemoteAdminCommand {
         if (f != null) {
             // if we are about to upload it -- give just the name
             // o/w give the full path
-            String pathToPass = (doUpload ? f.getName() : f.getPath());
+            String pathToPass = (uploadThisFile ? f.getName() : f.getPath());
             addStringOption(uriString, optionName, pathToPass);
         }
         return uriString;

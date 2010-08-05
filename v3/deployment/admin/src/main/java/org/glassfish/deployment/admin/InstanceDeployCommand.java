@@ -37,19 +37,19 @@ package org.glassfish.deployment.admin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
+import java.net.URI;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -57,7 +57,6 @@ import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.SnifferManager;
 import org.jvnet.hk2.annotations.Service;
-import org.glassfish.api.ActionReport.ExitCode;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
@@ -69,6 +68,9 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 
 /**
@@ -146,14 +148,7 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
 
             deploymentContext.getAppProps().putAll(appprops);
 
-            // move/copy the generated directories to the expected location
-            renameOrCopyFileParam(generatedejbdir, deploymentContext.getScratchDir("ejb"), logger);
-            renameOrCopyFileParam(generatedjspdir, deploymentContext.getScratchDir("jsp"), logger);
-            renameOrCopyFileParam(generatedxmldir, deploymentContext.getScratchDir("xml"), logger);
-            if (generatedpolicydir != null) {
-                renameOrCopyFileParam(generatedpolicydir, deploymentContext.getScratchDir("policy"), logger);
-            }
-
+            processGeneratedContent(generatedcontent, deploymentContext, logger);
              
             Transaction t = null;
             Application application = applications.getApplication(name);
@@ -215,27 +210,29 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
 
     }
 
-    private File renameOrCopyFileParam(
-            final File fileParam,
-            final File newLocation,
+    private void processGeneratedContent(
+            final File generatedContentParam,
+            final ExtendedDeploymentContext deploymentContext,
             final Logger logger) throws IOException {
-        if (fileParam == null) {
-            return null;
+        if (generatedContentParam == null) {
+            return;
         }
-        File result = null;
-        newLocation.mkdirs();
-        final boolean renameResult = FileUtils.renameFile(fileParam, newLocation);
-        /*
-         * If the rename failed then it could be because the new location is
-         * on a different device, for example.  In that case, try copying
-         * the file.
-         */
-        if (renameResult) {
-            result = newLocation;
-        } else {
-            FileUtils.copyTree(fileParam, newLocation);
-            result = newLocation;
+
+        final File baseDir = deploymentContext.getScratchDir("xml").getParentFile().getParentFile();
+        baseDir.mkdirs();
+
+        final URI baseURI = baseDir.toURI();
+        final ZipFile zipFile = new ZipFile(generatedContentParam);
+        for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements();) {
+            final ZipEntry zipEntry = entries.nextElement();
+            final URI outputFileURI = baseURI.resolve(zipEntry.getName());
+            final File outputFile = new File(outputFileURI);
+            if (zipEntry.isDirectory()) {
+                outputFile.mkdirs();
+            } else {
+                final FileOutputStream os = new FileOutputStream(outputFile);
+                FileUtils.copy(zipFile.getInputStream(zipEntry), os, zipEntry.getSize());
+            }
         }
-        return result;
     }
 }
