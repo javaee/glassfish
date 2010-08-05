@@ -561,7 +561,12 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
              * Should not fail, but we need to make sure it doesn't
              * affect GMS just in case.
              */
-            hHistory.updateHealth(signal);
+            if (hHistory != null) {
+                hHistory.updateHealth(signal);
+            } else if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE,
+                    "HealthHistory is null in processNotification");
+            }
         } catch (Throwable t) {
             // todo: fix logging
             logger.log(Level.WARNING, "hHistory.updateHealth(signal)", t);
