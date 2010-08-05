@@ -315,7 +315,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
         String firstElementOfName = targetName.substring(0, targetName.indexOf('.'));
         Integer targetElementLocation = targetLevel.get(firstElementOfName);
         if(targetElementLocation == null)
-            return true;
+            targetElementLocation = 1;
         List<Server> replicationInstances = null;
         if(targetElementLocation == 0) {
             if("resources".equals(firstElementOfName)) {

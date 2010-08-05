@@ -36,16 +36,16 @@
 
 package com.sun.enterprise.v3.admin;
 
-import org.glassfish.api.admin.Cluster;
-import org.glassfish.api.admin.RuntimeType;
+import com.sun.enterprise.admin.util.ClusterOperationUtil;
+import com.sun.enterprise.config.serverbeans.Server;
+import org.glassfish.api.admin.*;
+import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.Dom;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 
@@ -66,12 +66,20 @@ import com.sun.enterprise.config.serverbeans.Domain;
  * Time: 1:27:53 AM
  */
 @Service(name="list")
-@Cluster(RuntimeType.DAS)
 @Scoped(PerLookup.class)
 public class ListCommand extends V2DottedNameSupport implements AdminCommand {
 
     @Inject
     Domain domain;
+
+    @Inject
+    ServerEnvironment serverEnv;
+
+    @Inject
+    Target targetService;
+
+    @Inject
+    Habitat habitat;
 
     //How to define short option name?
     @Param(name="MoniTor", optional=true, defaultValue="false", shortName="m", alias="Mon")
@@ -96,7 +104,7 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
         }
 
         if (monitor) {
-            listMonitorElements(report);
+            listMonitorElements(report, context);
             return;
         }
         
@@ -127,7 +135,7 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
         }
     }
     
-    private void listMonitorElements(ActionReport report) {
+    private void listMonitorElements(ActionReport report, AdminCommandContext ctxt) {
         if ((pattern == null) || (pattern.equals(""))) {
             report.setActionExitCode(ExitCode.FAILURE);
             report.setMessage("match pattern is invalid or null");
@@ -141,7 +149,17 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
         }
 
         //Grab the monitoring tree root from habitat and get the attributes using pattern
-        org.glassfish.flashlight.datatree.TreeNode tn = mrdr.get("server");
+        String targetName;
+        if(pattern.indexOf(".") == -1) {
+            targetName = pattern;
+        } else {
+            targetName = pattern.substring(0, pattern.indexOf("."));
+        }
+        if(!serverEnv.getInstanceName().equals(targetName)) {
+            callInstance(report, ctxt, targetName);
+            return;
+        }
+        org.glassfish.flashlight.datatree.TreeNode tn = mrdr.get(targetName);
         if (tn == null) {
             //No monitoring data, so nothing to list
             report.setActionExitCode(ExitCode.SUCCESS);
@@ -157,5 +175,19 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
             }
         }
         report.setActionExitCode(ExitCode.SUCCESS);
-    }                                       
+    }
+
+    public void callInstance(ActionReport report, AdminCommandContext context, String targetName) {
+        try {
+            ParameterMap paramMap = new ParameterMap();
+            paramMap.set("MoniTor", "true");
+            paramMap.set("DEFAULT", pattern);
+            List<Server> targetList = targetService.getInstances(targetName);
+            ClusterOperationUtil.replicateCommand("list", FailurePolicy.Error, FailurePolicy.Warn, targetList, 
+                    context, paramMap, habitat);
+        } catch(Exception ex) {
+            report.setActionExitCode(ExitCode.FAILURE);
+            report.setMessage("Failure while trying get details from instance " + targetName);
+        }
+    }
 }

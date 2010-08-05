@@ -47,6 +47,8 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.external.probe.provider.StatsProviderInfo;
 import org.jvnet.hk2.component.*;
@@ -120,6 +122,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     Events events;
     @Inject
     ClassLoaderHierarchy classloader;
+    @Inject
+    ServerEnvironment serverEnv;
 
     @Inject(optional=true)
     MonitoringService monitoringService = null;
@@ -198,7 +202,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         //We need to do the cleanup for preventing errors from server starting in Embedded mode
         ProbeRegistry.cleanup();
         if (spmd != null) {
-            spmd = new StatsProviderManagerDelegateImpl(pcm, probeRegistry, mrdr, domain, monitoringService);
+            spmd = new StatsProviderManagerDelegateImpl(pcm, probeRegistry, mrdr, domain, serverEnv.getInstanceName(),
+                    monitoringService);
             StatsProviderManager.setStatsProviderManagerDelegate(spmd);
         }
     }
@@ -218,7 +223,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
             return;
 
         //Set the StatsProviderManagerDelegate, so we can start processing the StatsProviders
-        spmd = new StatsProviderManagerDelegateImpl(pcm, probeRegistry, mrdr, domain, monitoringService);
+        spmd = new StatsProviderManagerDelegateImpl(pcm, probeRegistry, mrdr, domain, serverEnv.getInstanceName(),
+                monitoringService);
         StatsProviderManager.setStatsProviderManagerDelegate(spmd);
         if (logger.isLoggable(Level.FINE))
             logger.fine(" StatsProviderManagerDelegate is assigned");

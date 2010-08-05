@@ -99,6 +99,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private final MonitoringRuntimeDataRegistry mrdr;
     private final ProbeRegistry probeRegistry;
     private final Domain domain;
+    private final String instanceName;
 
     private final TreeNode serverNode;
     private static final ObjectName MONITORING_ROOT = AMXGlassfish.DEFAULT.monitoringRoot();
@@ -117,10 +118,11 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     boolean ddebug = false;
 
     StatsProviderManagerDelegateImpl(ProbeClientMediator pcm, ProbeRegistry probeRegistry,
-            MonitoringRuntimeDataRegistry mrdr, Domain domain, MonitoringService monitoringService) {
+            MonitoringRuntimeDataRegistry mrdr, Domain domain, String iName, MonitoringService monitoringService) {
         this.pcm = pcm;
         this.mrdr = mrdr;
         this.domain = domain;
+        this.instanceName = iName;
         this.monitoringService = monitoringService;
         this.probeRegistry = probeRegistry;
         //serverNode is special, construct that first if doesn't exist
@@ -205,7 +207,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             // get the Parent node and delete all children nodes (only that we know of)
             String parentNodePath = spre.getParentTreeNodePath();
             List<String> childNodeNames = spre.getChildTreeNodeNames();
-            TreeNode rootNode = mrdr.get("server");
+            TreeNode rootNode = mrdr.get(instanceName);
             if ((rootNode != null) && (parentNodePath != null)) {
                 // This has to return one node
                 List<TreeNode> nodeList = rootNode.getNodes(parentNodePath, false, true);
@@ -448,7 +450,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         //Enable/Disable the child TreeNodes
         String parentNodePath = spre.getParentTreeNodePath();
         List<String> childNodeNames = spre.getChildTreeNodeNames();
-        TreeNode rootNode = mrdr.get("server");
+        TreeNode rootNode = mrdr.get(instanceName);
         if (rootNode != null) {
             // This has to return one node
             List<TreeNode> nodeList = rootNode.getNodes(parentNodePath, false, true);
@@ -525,7 +527,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     }
 
     private void resetChildNodeStatistics(String parentNodePath, List<String> childNodeNames, String statsProviderName) {
-        TreeNode rootNode = mrdr.get("server");
+        TreeNode rootNode = mrdr.get(instanceName);
         if (rootNode != null) {
             List<TreeNode> nodeList = rootNode.getNodes(parentNodePath, false, true);
             if (nodeList.size() > 0) {
@@ -737,14 +739,14 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         else {
             String subTreePath = pp.getPath();
             // skip the "server", to avoid duplicate server node
-            if (subTreePath.startsWith("server"))
+            if (subTreePath.startsWith(instanceName))
                 subTreePath = subTreePath.substring(subTreePath.indexOf("/") + 1 , subTreePath.length());
             return createSubTree(serverNode, subTreePath);
         }
     }
 
     private TreeNode constructServerPP() {
-        TreeNode srvrNode = mrdr.get("server");
+        TreeNode srvrNode = mrdr.get(instanceName);
         if (srvrNode != null) {
             return srvrNode;
         }
@@ -752,14 +754,14 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         Server srvr = null;
         List<Server> ls = domain.getServers().getServer();
         for (Server sr : ls) {
-            if ("server".equals(sr.getName())) {
+            if (instanceName.equals(sr.getName())) {
                 srvr = sr;
                 break;
             }
         }
-        srvrNode = TreeNodeFactory.createTreeNode("server", null, "server");
+        srvrNode = TreeNodeFactory.createTreeNode(instanceName, null, instanceName);
         srvrNode.setEnabled(false);
-        mrdr.add("server", srvrNode);
+        mrdr.add(instanceName, srvrNode);
         return srvrNode;
     }
 
