@@ -36,9 +36,10 @@
 
 package org.glassfish.ejb.admin.cli;
 
-import com.sun.enterprise.config.serverbeans.Servers;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import java.util.List;
 
 import org.glassfish.ejb.api.DistributedEJBTimerService;
 import org.glassfish.api.ActionReport;
@@ -46,6 +47,11 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -55,55 +61,53 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name="list-timers")
 @Scoped(PerLookup.class)
 @I18n("list.timers")
-
+@Cluster(value={RuntimeType.DAS})
+@TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class ListTimers implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ListTimers.class);
 
-    @Param(primary=true, optional=true)
+    @Param(primary=true, optional=true,
+    defaultValue=SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
 
     @Inject
     DistributedEJBTimerService timerService;
 
     @Inject
-    Servers servers;
+    Target targetUtil;
 
     /**
      * Executes the command
      *
      * @param context information
      */
+    @Override
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-
-        //TODO Required to be modified when cluster is supported.
-        if (target != null && !target.equals(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)) {
-            report.setMessage(localStrings.getLocalString("list.timers" +
-                    ".invalid.target", "Invalid target specified as Operand"));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-        }
-
-        try {
-            String[] timerList = timerService.listTimers
-                    (new String[]{servers.getServer().get(0).getName()});
-
-            for (String timer : timerList) {
-                final ActionReport.MessagePart part =
-                        report.getTopMessagePart().addChild();
-                part.setMessage(timer);
+        String[] serverIds = null;
+        if(targetUtil.isCluster(target)) {
+            List<Server> serversInCluster = targetUtil.getInstances(target);
+            serverIds = new String[serversInCluster.size()];
+            for(int i = 0; i < serverIds.length; i++) {
+                serverIds[i] = serversInCluster.get(i).getName();
             }
-
+        } else {
+            serverIds = new String[] {target};
+        }
+        try {
+            String[] timerCounts = timerService.listTimers(serverIds);
+            for (int i = 0; i < serverIds.length; i++) {
+                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                part.setMessage(serverIds[i] + ": " + timerCounts[i]);
+            }
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-
         } catch (Exception e) {
-            report.setMessage(localStrings.getLocalString("list.timers" +
-                    ".failed", "List Timers command failed"));
+            report.setMessage(localStrings.getLocalString("list.timers.failed",
+                    "List Timers command failed"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
-
     }
-
 }
