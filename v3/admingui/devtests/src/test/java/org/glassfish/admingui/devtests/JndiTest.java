@@ -56,14 +56,14 @@ public class JndiTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:jndi:customResources:customResources_link", TRIGGER_CUSTOM_RESOURCES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_CUSTOM_RESOURCE);
 
-        selenium.type("form1:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
-        selenium.select("form1:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
-        int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton");
+        selenium.type("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
+        selenium.select("form:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
+        int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
-        clickAndWait("form1:propertyContentPage:topButtons:newButton", TRIGGER_CUSTOM_RESOURCES);
+        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_CUSTOM_RESOURCES);
 
         assertTrue(selenium.isTextPresent(resourceName));
 
@@ -93,29 +93,29 @@ public class JndiTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:jndi:externalResources:externalResources_link", TRIGGER_EXTERNAL_RESOURCES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_EXTERNAL_RESOURCE);
 
-        selenium.type("form1:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
-        selenium.select("form1:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
-        selenium.type("form1:propertySheet:propertSectionTextField:jndiLookupProp:jndiLookup", resourceName);
-        selenium.type("form1:propertySheet:propertSectionTextField:descProp:desc", description);
-        int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton");
+        selenium.type("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
+        selenium.select("form:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
+        selenium.type("form:propertySheet:propertSectionTextField:jndiLookupProp:jndiLookup", resourceName);
+        selenium.type("form:propertySheet:propertSectionTextField:descProp:desc", description);
+        int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
-        clickAndWait("form1:propertyContentPage:topButtons:newButton", TRIGGER_EXTERNAL_RESOURCES);
+        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_EXTERNAL_RESOURCES);
 
         testDisableButton(resourceName,
                 "propertyForm:resourcesTable",
                 "propertyForm:resourcesTable:topActionsGroup1:button3",
-                "form1:propertySheet:propertSectionTextField:statusProp:enabled",
-                "form1:propertyContentPage:topButtons:cancelButton",
+                "form:propertySheet:propertSectionTextField:statusProp:enabled",
+                "form:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_EXTERNAL_RESOURCES,
                 TRIGGER_EDIT_EXTERNAL_RESOURCE);
         testEnableButton(resourceName,
                 "propertyForm:resourcesTable",
                 "propertyForm:resourcesTable:topActionsGroup1:button2",
-                "form1:propertySheet:propertSectionTextField:statusProp:enabled",
-                "form1:propertyContentPage:topButtons:cancelButton",
+                "form:propertySheet:propertSectionTextField:statusProp:enabled",
+                "form:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_EXTERNAL_RESOURCES,
                 TRIGGER_EDIT_EXTERNAL_RESOURCE);
 

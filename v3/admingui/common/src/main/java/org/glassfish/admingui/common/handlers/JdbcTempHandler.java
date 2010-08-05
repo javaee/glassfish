@@ -292,7 +292,7 @@ public class JdbcTempHandler {
         List<String> jdbcClassNames = new ArrayList<String>();
         try {
             Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null);
-            jdbcClassNames = RestUtilHandlers.getListFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("result"));
+            jdbcClassNames = RestUtilHandlers.getListFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("children"), "message");
         } catch (Exception ex) {
             GuiUtil.getLogger().severe("Error in getJdbcDriverClassNames ; \nendpoint = " + endpoint + "attrs=" + attrs + "method=GET");
             //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
@@ -306,7 +306,7 @@ public class JdbcTempHandler {
         List<String> vendorList = new ArrayList<String> ();
         try {
             Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null);
-            vendorList = RestUtilHandlers.getListFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("result"));
+            vendorList = RestUtilHandlers.getListFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("children"), "message");
         } catch (Exception ex) {
             GuiUtil.getLogger().severe("Error in getDatabaseVendorNames ; \nendpoint = " + endpoint + "attrs=null method=GET");
             //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
@@ -323,7 +323,7 @@ public class JdbcTempHandler {
         Map<String, String> connDefProps = new HashMap<String, String>();
         try {
             Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null);
-            connDefProps = RestUtilHandlers.getMapFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("result"));
+            connDefProps = RestUtilHandlers.getMapFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("children"), "message");
         } catch (Exception ex) {
             GuiUtil.getLogger().severe("Error in getJdbcDriverClassNames ; \nendpoint = " + endpoint + "attrs=" + attrs + "method=GET");
             //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.

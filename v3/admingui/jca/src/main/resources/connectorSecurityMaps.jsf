@@ -49,7 +49,7 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
         setPageSessionAttribute(key="childType" value="security-map");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.tmpRows}");
-        getResourceRealStatus(rows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}")
+        gf.getResourceRealStatus(rows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}")
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njca.msg.JS.confirmDeleteSM}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jca/connectorSecurityMapNew.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jca/connectorSecurityMaps.jsf?name=#{pageSession.encodedName}");

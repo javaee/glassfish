@@ -55,7 +55,7 @@ public class ResourceHandlers {
      * Get the resource-ref of this resource and do a logical And with this Enabled attribute
      * to get the real status
      */
-    @Handler(id = "getResourceRealStatus",
+    @Handler(id = "gf.getResourceRealStatus",
         input = {
             @HandlerInput(name = "endpoint", type = String.class),
             @HandlerInput(name = "rows", type = java.util.List.class, required = true)},

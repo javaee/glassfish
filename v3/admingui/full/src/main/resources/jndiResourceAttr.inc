@@ -52,7 +52,7 @@
             </sun:textField>
         </sun:property> 
 
-        <sun:property id="cp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}" helpText="$resource{i18njmail.jndiResource.resTypeHelp}<br /><br />">                           
+        <sun:property id="cp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}" helpText="$resource{i18njmail.jndiResource.resTypeHelp}<br /><br />">
                 <sun:radioButton id="optA"  name="classnameOption" selected="$pageSession{classnameOption}" selectedValue="predefine"
                     onClick="enableClassnameFields('predefine'); updateFactoryClassOnClick();"
                 />

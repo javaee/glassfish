@@ -100,7 +100,8 @@ public class RestUtilHandlers {
      */
     @Handler(id = "gf.getMessageProps",
         input = {
-            @HandlerInput(name = "messageListProps", type = List.class, required = true)
+            @HandlerInput(name = "messageListProps", type = List.class, required = true),
+            @HandlerInput(name = "id", type = String.class)
         },
         output = {
             @HandlerOutput(name = "keyList", type = List.class),
@@ -110,17 +111,32 @@ public class RestUtilHandlers {
     public static void getMessageProps(HandlerContext handlerCtx) {
         //If restRequest() change to output json,  this needs to be changed.
         List<Map<String, String>> props = (List<Map<String, String>>) handlerCtx.getInputValue("messageListProps");
-        processProps(props, handlerCtx);
+        String id = (String) handlerCtx.getInputValue("id");
+        if (id == null)
+            processProps(props, handlerCtx);
+        else
+            processProps(props, handlerCtx, id);
     }
 
 
-    private static void processProps(List<Map<String, String>>props, HandlerContext handlerCtx){
+    public static void processProps(List<Map<String, String>>props, HandlerContext handlerCtx, String... ids){
         List keyList = new ArrayList();
         Map propsMap = new HashMap();
+        String id = "name";
+        if (ids != null) {
+            id = ids.length > 0 ? ids[0] : "name";
+        }
         try{
             for(Map<String, String> oneProp : props){
-                keyList.add(oneProp.get("name"));
-                propsMap.put(oneProp.get("name"), oneProp.get("value"));
+                keyList.add(oneProp.get(id));
+                //Issue 12141 : map is returning in the form of name=val.
+                //Once fixed, this condition will be removed.
+                if (oneProp.get(id).contains("=")) {
+                    String key = oneProp.get(id);
+                    propsMap.put(key.substring(0, key.indexOf("=")), key.substring(key.indexOf("=") + 1));
+                } else {
+                    propsMap.put(oneProp.get(id), oneProp.get("value"));
+                }
             }
          }catch(Exception ex){
              //log error ?
@@ -130,22 +146,37 @@ public class RestUtilHandlers {
         handlerCtx.setOutputValue("listEmpty",  keyList.isEmpty());
      }
 
-     public static List<String> getListFromMapKey(List<Map<String, String>> props) {
+     public static List<String> getListFromMapKey(List<Map<String, String>> props, String... ids) {
         List<String> keyList = new ArrayList<String>();
+        String id = "name";
+        if (ids != null) {
+            id = ids.length > 0 ? ids[0] : "name";
+        }
         if (props != null) {
             for (Map<String, String> oneProp : props) {
-                keyList.add(oneProp.get("name"));
+                keyList.add(oneProp.get(id));
             }
         }
         return keyList;
     }
 
-    public static Map<String, String> getMapFromMapKey(List<Map<String, String>> props) {
+    public static Map<String, String> getMapFromMapKey(List<Map<String, String>> props, String... ids) {
         Map<String, String> propsMap = new HashMap<String, String>();
+        String id = "name";
+        if (ids != null) {
+            id = ids.length > 0 ? ids[0] : "name";
+        }
+
         if (props != null) {
             for (Map<String, String> oneProp : props) {
-                String key = oneProp.get("name");
-                propsMap.put(key.substring(0, key.indexOf("=")), key.substring(key.indexOf("=") + 1));
+                //Issue 12141 : map is returning in the form of name=val.
+                //Once fixed, this condition will be removed.
+                if (oneProp.get(id).contains("=")) {
+                    String key = oneProp.get(id);
+                    propsMap.put(key.substring(0, key.indexOf("=")), key.substring(key.indexOf("=") + 1));
+                } else {
+                    propsMap.put(oneProp.get(id), oneProp.get("value"));
+                }
             }
         }
         return propsMap;

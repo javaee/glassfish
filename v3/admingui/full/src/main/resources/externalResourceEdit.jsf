@@ -61,17 +61,24 @@
     setPageSessionAttribute(key="showJndiLookup" value="#{true}");
     //REST - TO DO
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+
+    gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-built-in-custom-resources.json"
+                   method="GET"
+                   result="#{requestScope.result}");
+    gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
+                       id="message"
+                       propsMap="#{pageSession.propsMap}");
     if(#{resChosen}) {
-            getFactoryClass(resType="$attribute{resChosen}", result="#{pageSession.factoryClass}");
-            mapPut(map="#{pageSession.valueMap}" key="jndiName" value="#{jndiName}")   
-            mapPut(map="#{pageSession.valueMap}" key="description" value="#{desc}") 
-            mapPut(map="#{pageSession.valueMap}" key="enabled" value="#{status}") 
-            mapPut(map="#{pageSession.valueMap}" key="factoryClass" value="#{pageSession.factoryClass}") 
-            mapPut(map="#{pageSession.valueMap}" key="resType" value="#{resChosen}") 
-            mapPut(map="#{pageSession.valueMap}" key="jndiLookupName" value="#{jndiLookup}") 
+            setPageSessionAttribute(key="factoryClass", value="#{pageSession.propsMap['$attribute{resChosen}']");
+            mapPut(map="#{pageSession.valueMap}" key="jndiName" value="#{jndiName}")
+            mapPut(map="#{pageSession.valueMap}" key="description" value="#{desc}")
+            mapPut(map="#{pageSession.valueMap}" key="enabled" value="#{status}")
+            mapPut(map="#{pageSession.valueMap}" key="factoryClass" value="#{pageSession.factoryClass}")
+            mapPut(map="#{pageSession.valueMap}" key="resType" value="#{resChosen}")
+            mapPut(map="#{pageSession.valueMap}" key="jndiLookupName" value="#{jndiLookup}")
             setAttribute(key="tableList" value="#{newList}");
     }
-    getJndiResourceAttrForEdit(resType="#{pageSession.valueMap['resType']}", result="#{pageSession.builtInEntries}", classnameOption=>$page{classnameOption}, attrMap="#{pageSession.attrMap}", factoryMap="#{pageSession.factoryMap}");
+    gf.getJndiResourceAttrForEdit(resources="#{pageSession.propsMap}" resType="#{pageSession.valueMap['resType']}", result="#{pageSession.builtInEntries}", classnameOption=>$page{classnameOption}, attrMap="#{pageSession.attrMap}", factoryMap="#{pageSession.factoryMap}");
     setPageSessionAttribute(key="myOption" value="#{classnameOption}");
     //set the following for including buttons.inc
     setPageSessionAttribute(key="edit" value="#{true}" );
@@ -103,8 +110,8 @@
     
     <sun:hidden id="helpKey" value="$resource{help_jmail.customResourceEdit}" />
 </sun:form>
-#include "/full/jndijs.inc"        
+#include "/full/jndijs.inc"
             "<br/>
-#include "/common/shared/changeButtonsJS.inc" 
+#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
