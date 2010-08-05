@@ -406,7 +406,7 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
         generatedClassName =  generatedClassName + className;
 
         byte[] byteContent = getByteClass();
-        debug(generatedClassName,byteContent);
+      //  debug(generatedClassName,byteContent);
         ProtectionDomain pd = similarClass.getProtectionDomain();
 
         java.lang.reflect.Method jm = null;
