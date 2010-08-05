@@ -48,6 +48,7 @@ import com.sun.enterprise.deployment.node.ApplicationNode;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.runtime.ApplicationParameter;
 import com.sun.enterprise.deployment.runtime.WLModuleDescriptor;
+import com.sun.enterprise.deployment.runtime.common.WLSecurityRoleAssignment;
 import com.sun.enterprise.deployment.types.*;
 import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -189,6 +190,7 @@ public class Application extends BundleDescriptor
     private String libraryDirectory;
 
     private List<SecurityRoleMapping> roleMaps = new ArrayList<SecurityRoleMapping>();
+    private List<WLSecurityRoleAssignment> wlRoleAssignments = new ArrayList<WLSecurityRoleAssignment>();
 
     private boolean loadedFromApplicationXml = true;
 
@@ -1855,6 +1857,14 @@ public class Application extends BundleDescriptor
 
     public List<SecurityRoleMapping> getSecurityRoleMappings() {
         return roleMaps;
+    }
+
+    public List<WLSecurityRoleAssignment> getWlRoleAssignments() {
+        return wlRoleAssignments;
+    }
+
+    public void addWLRoleAssignments(WLSecurityRoleAssignment wlRoleAssignment) {
+        wlRoleAssignments.add(wlRoleAssignment);
     }
 
     /**
