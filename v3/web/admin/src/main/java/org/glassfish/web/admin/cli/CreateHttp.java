@@ -35,10 +35,14 @@
  */
 package org.glassfish.web.admin.cli;
 
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.Target;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.grizzly.config.dom.FileCache;
@@ -48,7 +52,6 @@ import com.sun.grizzly.config.dom.Protocols;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.*;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
@@ -67,7 +70,7 @@ import org.jvnet.hk2.config.TransactionFailure;
  *
  * domain.xml element example
  *
- * <http max-connections="250" default-virtual-server="server" server-name=""> <file-cache enabled="false" /> </http>
+ * &lt;http max-connections=&quot;250&quot; default-virtual-server=&quot;server&quot; server-name=&quot;&quot;&gt; &lt;file-cache enabled=&quot;false&quot; /&gt; &lt;/http&gt;
  *
  * @author Justin Lee
  */
@@ -105,8 +108,9 @@ public class CreateHttp implements AdminCommand {
     Domain domain;
 
     /**
-     * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
-     * the values the parameter values
+     * Executes the command with the command parameters passed as Properties
+     * where the keys are the parameter names and the values the parameter
+     * values.
      *
      * @param context information
      */
@@ -157,9 +161,10 @@ public class CreateHttp implements AdminCommand {
                 }
             }, protocol);
         } catch (TransactionFailure e) {
-            report.setMessage(localStrings.getLocalString("create.http.fail",
-                "Failed to create http for {0}: " + (e.getMessage() == null ? "No reason given." : e.getMessage()),
-                protocolName));
+            report.setMessage(localStrings.getLocalString("create.http.redirect.fail",
+                "Failed to create http-redirect for {0}: {1}",
+                protocolName,
+                (e.getMessage() == null ? "No reason given." : e.getMessage())));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

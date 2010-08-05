@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,19 +33,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package org.glassfish.web.admin.cli;
 
-import java.util.List;
-
-import org.glassfish.internal.api.Target;
-import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.HttpRedirect;
 import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.config.dom.Protocols;
 import org.glassfish.api.ActionReport;
@@ -53,10 +48,12 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
+import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -66,83 +63,99 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
-/**
- * Delete Protocol command
- */
-@Service(name = "delete-http")
-@Scoped(PerLookup.class)
-@I18n("delete.http")
 
-@org.glassfish.api.admin.Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+/**
+ * <p>
+ * Command to create <code>http-redirect</code> element as a child of the
+ * <code>protocol</code> element.
+ * </p>
+ *
+ * <p>
+ * domain.xml example:
+ * </p>
+ * <pre>
+ *     &lt;http-redirect port=&quot;8181&quot; secure=&quot;true&quot; /&gt;
+ * </pre>
+ *
+ * @since 3.1
+ */
+@Service(name="create-http-redirect")
+@Scoped(PerLookup.class)
+@I18n("create.http.redirect")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
-public class DeleteHttp implements AdminCommand {
+public class CreateHttpRedirect implements AdminCommand {
+
     final private static LocalStringManagerImpl localStrings =
-        new LocalStringManagerImpl(DeleteHttp.class);
+        new LocalStringManagerImpl(CreateHttp.class);
+
     @Param(name = "protocolname", primary = true)
     String protocolName;
+
+    @Param(name="redirect-port", optional=true)
+    String port;
+
+    @Param(name="secure-redirect", optional=true)
+    String secure;
+
     @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
-    Protocol protocolToBeRemoved = null;
+
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
-    @Inject
-    Domain domain;
+
     @Inject
     Habitat habitat;
 
-    /**
-     * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
-     * the values the parameter values
-     *
-     * @param context information
-     */
+    @Inject
+    Domain domain;
+
+    // ----------------------------------------------- Methods from AdminCommand
+
+
+    @Override
     public void execute(AdminCommandContext context) {
         Target targetUtil = habitat.getComponent(Target.class);
         Config newConfig = targetUtil.getConfig(target);
         if (newConfig!=null) {
             config = newConfig;
         }
-        ActionReport report = context.getActionReport();
-        NetworkConfig networkConfig = config.getNetworkConfig();
-        Protocols protocols = networkConfig.getProtocols();
-        try {
-            for (Protocol protocol : protocols.getProtocol()) {
-                if (protocolName.equalsIgnoreCase(protocol.getName())) {
-                    protocolToBeRemoved = protocol;
-                }
+        final ActionReport report = context.getActionReport();
+        // check for duplicates
+        Protocols protocols = config.getNetworkConfig().getProtocols();
+        Protocol protocol = null;
+        for (Protocol p : protocols.getProtocol()) {
+            if(protocolName.equals(p.getName())) {
+                protocol = p;
             }
-            if (protocolToBeRemoved == null) {
-                report.setMessage(localStrings.getLocalString(
-                    "delete.http.notexists", "{0} http-redirect doesn't exist",
-                    protocolName));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
-            // check if the protocol whose http-redirect to be deleted is being used by
-            // any network listener, then do not delete it.
-            List<NetworkListener> nwlsnrList =
-                protocolToBeRemoved.findNetworkListeners();
-            for (NetworkListener nwlsnr : nwlsnrList) {
-                if (protocolToBeRemoved.getName().equals(nwlsnr.getProtocol())) {
-                    report.setMessage(localStrings.getLocalString(
-                        "delete.protocol.beingused",
-                        "{0} protocol is being used in the network listener {1}",
-                        protocolName, nwlsnr.getName()));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
-                }
-            }
-            ConfigSupport.apply(new SingleConfigCode<Protocol>() {
-                public Object run(Protocol param) {
-                    param.setHttp(null);
-                    return null;
-                }
-            }, protocolToBeRemoved);
+        }
+        if (protocol == null) {
+            report.setMessage(localStrings.getLocalString("create.http.redirect.fail.protocolnotfound",
+                "The specified protocol {0} is not yet configured. Please create one", protocolName));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+        if (protocol.getHttpRedirect() != null) {
+            report.setMessage(localStrings.getLocalString("create.http.redirect.fail.duplicate",
+                "An http-redirect element for {0} already exists. Cannot add duplicate http-redirect", protocolName));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
 
+        try {
+            ConfigSupport.apply(new SingleConfigCode<Protocol>() {
+                public Object run(Protocol param) throws TransactionFailure {
+                    HttpRedirect httpRedirect = param.createChild(HttpRedirect.class);
+                    httpRedirect.setPort(port);
+                    httpRedirect.setSecure(secure);
+                    param.setHttpRedirect(httpRedirect);
+                    return httpRedirect;
+                }
+            }, protocol);
         } catch (TransactionFailure e) {
-            report.setMessage(localStrings.getLocalString(
-                "delete.http.redirect.fail", "Deletion of http-redirect {0} failed",
-                protocolName) + "  " + e.getLocalizedMessage());
+            report.setMessage(localStrings.getLocalString("create.http.fail",
+                "Failed to create http-redirect for {0}: " + (e.getMessage() == null ? "No reason given." : e.getMessage()),
+                protocolName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;
