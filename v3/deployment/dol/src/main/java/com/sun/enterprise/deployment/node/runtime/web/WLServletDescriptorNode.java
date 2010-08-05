@@ -76,9 +76,9 @@ public class WLServletDescriptorNode extends RuntimeDescriptorNode {
         }
     }
 
-    public Node writeDescriptor(Node parent, String nodeName, WebComponentDescriptor descriptor) {        
+    public Node writeDescriptor(Element root, WebComponentDescriptor descriptor) {        
         if (descriptor != null && descriptor.getRunAsIdentity() != null) {
-            Node servletNode =  appendChild(parent, nodeName);
+            Node servletNode =  appendChild(root, RuntimeTagNames.SERVLET_DESCRIPTOR);
             appendTextChild(servletNode, RuntimeTagNames.SERVLET_NAME, descriptor.getCanonicalName());
 
             appendTextChild(servletNode, RuntimeTagNames.RUN_AS_PRINCIPAL_NAME, 

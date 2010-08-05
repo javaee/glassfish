@@ -37,6 +37,7 @@
 package com.sun.enterprise.deployment.node.runtime.web;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
 import com.sun.enterprise.deployment.node.XMLElement;
@@ -159,17 +160,6 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         Element root = appendChildNS(parent, getXMLRootTag().getQName(),
                     TagNames.WL_WEB_APP_NAMESPACE);
 
-        // context-root?
-        appendTextChild(root, RuntimeTagNames.CONTEXT_ROOT, bundleDescriptor.getContextRoot());
-
-        // servlet-descriptor
-        WLServletDescriptorNode servletDescriptorNode = new WLServletDescriptorNode();
-        servletDescriptorNode.writeDescriptor(root, bundleDescriptor);
-
-        // container-descriptor
-        WLContainerDescriptorNode containerDescriptorNode = new WLContainerDescriptorNode();
-        containerDescriptorNode.writeDescriptor(root, bundleDescriptor);
-
         // session-descriptor
         WLSessionDescriptorNode sessionDescriptorNode = new WLSessionDescriptorNode();
         sessionDescriptorNode.writeDescriptor(root, bundleDescriptor);
@@ -177,6 +167,19 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         // jsp-descriptor
         WLJspDescriptorNode jspDescriptorNode = new WLJspDescriptorNode();
         jspDescriptorNode.writeDescriptor(root, bundleDescriptor);
+
+        // container-descriptor
+        WLContainerDescriptorNode containerDescriptorNode = new WLContainerDescriptorNode();
+        containerDescriptorNode.writeDescriptor(root, bundleDescriptor);
+
+        // context-root?
+        appendTextChild(root, RuntimeTagNames.CONTEXT_ROOT, bundleDescriptor.getContextRoot());
+
+        // servlet-descriptor*
+        for (WebComponentDescriptor webCompDesc : bundleDescriptor.getServletDescriptors()) {
+            WLServletDescriptorNode servletDescriptorNode = new WLServletDescriptorNode();
+            servletDescriptorNode.writeDescriptor(root, webCompDesc);
+        }
 
         return root;
     }
