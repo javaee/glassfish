@@ -37,6 +37,7 @@
 <!DOCTYPE project [
         <!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
         <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+        <!ENTITY eeCommonBuild SYSTEM "./../../../config/ee-common.xml">
         <!ENTITY run SYSTEM "./../../../config/run.xml">
         <!ENTITY testproperties SYSTEM "./build.properties">
         ]>
@@ -45,6 +46,7 @@
 
     &commonSetup;
     &commonBuild;
+    &eeCommonBuild;
     &testproperties;
     &run;
 
@@ -67,8 +69,40 @@
                includes="**/*.java"/>
     </target>
 
-    <target name="all" depends="init-common, build">
+    <target name="all" depends="init-common,build,create-cluster,create-local-instance,restart,run,stop-local-instance,delete-local-instance,delete-cluster"/>
+
+    <target name="run" depends="init-common">
         <run-test classname="org.glassfish.devtests.web.asadmindeletestarget.WebTest" classpath="${test}"/>
+    </target>
+
+    <target name="restart" depends="init-common">
+      <antcall target="restart-server-instance-common"/>
+      <antcall target="start-local-instance"/>
+      <sleep seconds="5"/>
+    </target>
+
+    <target name="create-cluster" depends="init-common">
+        <antcall target="create-cluster-common"/>
+    </target>
+
+    <target name="create-local-instance" depends="init-common">
+        <antcall target="create-local-instance-common"/>
+    </target>
+
+    <target name="delete-local-instance" depends="init-common">
+        <antcall target="delete-local-instance-common"/>
+    </target>
+
+    <target name="start-local-instance" depends="init-common">
+        <antcall target="start-local-instance-common"/>
+    </target>
+
+    <target name="stop-local-instance" depends="init-common">
+        <antcall target="stop-local-instance-common"/>
+    </target>
+
+    <target name="delete-cluster" depends="init-common">
+        <antcall target="delete-cluster-common"/>
     </target>
 
     <target name="usage">

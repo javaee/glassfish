@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,20 +61,13 @@ public class WebTest extends BaseDevTest {
     }
 
     public void run() {
-        final String port = "" + (Integer.valueOf(antProp("http.alternate.port")));
-
-        report("create-cluster", asadmin("create-cluster", "c1"));
-        report("create-local-instance", asadmin("create-local-instance", "--cluster", "c1", "in1"));
-        report("create-local-instance", asadmin("create-local-instance", "--cluster", "c1", "in2"));
-        report("start-local-instance", asadmin("start-local-instance", "in1"));
-        report("start-local-instance", asadmin("start-local-instance", "in2"));
-
+        final String port = "" + (Integer.valueOf(antProp("http.port")) + 20);
         report("create-threadpool", asadmin("create-threadpool", "--target", "c1", name));
         report("create-transport", asadmin("create-transport", "--target", "c1", name));
         report("create-protocol", asadmin("create-protocol", "--target", "c1", name));
         report("create-http", asadmin("create-http", "--target", "c1", "--default-virtual-server", "server", name));
         report("create-network-listener", asadmin("create-network-listener",
-            "--target", "c1", 
+            "--target", "c1",
             "--listenerport", port,
             "--protocol", name,
             "--threadpool", name,
@@ -87,13 +80,6 @@ public class WebTest extends BaseDevTest {
         report("delete-unreferenced-protocol", asadmin("delete-protocol", "--target", "c1", name));
         report("delete-unreferenced-threadpool", asadmin("delete-threadpool", "--target", "c1", name));
         report("delete-unreferenced-transport", asadmin("delete-transport", "--target", "c1", name));
-
-        report("stop-local-instance", asadmin("stop-local-instance", "in1"));
-        report("stop-local-instance", asadmin("stop-local-instance", "in2"));
-        report("delete-local-instance", asadmin("delete-local-instance", "in1"));
-        report("delete-local-instance", asadmin("delete-local-instance", "in2"));
-        report("delete-cluster", asadmin("delete-cluster", "c1"));
-
         stat.printSummary();
     }
 }
