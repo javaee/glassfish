@@ -96,6 +96,9 @@ public class CreateNodeSshCommand implements AdminCommand  {
     @Param(name = "force", optional = true, defaultValue = "false")
     private boolean force;
 
+    @Param(name = "type", optional = true, defaultValue = "CONFIG")
+    private String type;
+
     private static final String NL = System.getProperty("line.separator");
 
     private Logger logger = null;
@@ -120,6 +123,7 @@ public class CreateNodeSshCommand implements AdminCommand  {
         map.add(NodeUtils.PARAM_SSHKEYFILE, sshkeyfile);
         map.add(NodeUtils.PARAM_SSHPASSWORD, sshpassword);
         map.add(NodeUtils.PARAM_SSHKEYPASSPHRASE, sshkeypassphrase);
+        map.add(NodeUtils.PARAM_TYPE,"SSH");
 
         try {
             NodeUtils nodeUtils = new NodeUtils(habitat, logger);

@@ -73,6 +73,7 @@ public class NodeUtils {
     static final String PARAM_SSHKEYFILE = "sshkeyfile";
     static final String PARAM_SSHPASSWORD = "sshpassword";
     static final String PARAM_SSHKEYPASSPHRASE = "sshkeypassphrase";
+    static final String PARAM_TYPE = "type";
 
     private static final String NL = System.getProperty("line.separator");
 

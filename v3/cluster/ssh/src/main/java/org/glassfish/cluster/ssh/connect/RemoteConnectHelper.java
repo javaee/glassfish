@@ -74,9 +74,6 @@ public class RemoteConnectHelper  {
 
     private int dasPort = -1;
     
-    static int SSHAuthenticationFailed =1;
-    static int SSHInterrupt= 2;
-    static int SSHAsadminCommandFailed = 3;
     int commandStatus;
 
     String fullCommand=null;
@@ -110,8 +107,8 @@ public class RemoteConnectHelper  {
 
         Node node = nodeMap.get(nodeRef);
         if (node != null){
-            SshConnector sshC = node.getSshConnector();
-            if ( sshC != null)
+            String t = node.getType();
+            if (t.equals("SSH"))
                 return true;
             else
                 return false;
@@ -180,13 +177,10 @@ public class RemoteConnectHelper  {
 
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
-                //XXX:  Need to figure out what the status codes are returned and what they mean.
                 commandStatus = sshL.runCommand(fullCommand, outStream);
                 String results = outStream.toString();
                 outputString.append(results);
-                return commandStatus;
-//                if (!results.trim().endsWith("successfully."))
-//                    return 1;                
+                return commandStatus;              
             } 
 
         }catch (IOException ex) {

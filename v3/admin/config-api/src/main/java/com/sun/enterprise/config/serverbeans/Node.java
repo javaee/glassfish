@@ -144,6 +144,19 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
     @Param(name="installdir", optional=true)
     void setInstallDir(String value) throws PropertyVetoException;
 
+    @Attribute
+    String getType();
+
+    /**
+     * Sets the value of type of this node.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    @Param(name="type", defaultValue="CONFIG")
+    void setType(String value) throws PropertyVetoException;
+
     @Element
     SshConnector getSshConnector();
 
@@ -160,6 +173,9 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
 
         @Param(name="installdir", optional=true)
         String installdir=null;
+
+        @Param(name="type", optional=true)
+        String type="CONFIG";
 
         @Param(name="sshport",optional=true)
         String sshPort="-1";
@@ -210,6 +226,8 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
                 instance.setInstallDir(installdir);
             if (nodehost != null)
                 instance.setNodeHost(nodehost);
+            //only create-node-ssh and update-node-ssh should be changing the type to SSH
+            instance.setType(type);
             
             SshConnector sshC = instance.createChild(SshConnector.class);
             if (sshPort != "-1" )

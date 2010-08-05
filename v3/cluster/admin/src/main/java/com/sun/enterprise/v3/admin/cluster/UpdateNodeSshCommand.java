@@ -99,6 +99,9 @@ public class UpdateNodeSshCommand implements AdminCommand  {
     @Param(name = "sshkeypassphrase", optional = true, password=true)
     private String sshkeypassphrase;
 
+    @Param(name = "type", optional=true)
+    private String type;
+
     @Param(name =  "force", optional = true, defaultValue = "false")
     private boolean force;
 
@@ -137,6 +140,7 @@ public class UpdateNodeSshCommand implements AdminCommand  {
         map.add(NodeUtils.PARAM_SSHKEYFILE, sshkeyfile);
         map.add(NodeUtils.PARAM_SSHPASSWORD, sshpassword);
         map.add(NodeUtils.PARAM_SSHKEYPASSPHRASE, sshkeypassphrase);
+        map.add(NodeUtils.PARAM_TYPE, "SSH");
 
         // Now init any parameters that weren't passed into the command
         // using the values from the config

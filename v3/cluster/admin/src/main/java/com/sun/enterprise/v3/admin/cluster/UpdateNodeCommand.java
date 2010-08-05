@@ -95,6 +95,15 @@ public class UpdateNodeCommand implements AdminCommand {
     @Param(name="sshkeyfile", optional=true)
     String sshkeyfile;
 
+    @Param(name = "sshpassword", optional = true, password=true)
+     String sshpassword;
+
+    @Param(name = "sshkeypassphrase", optional = true, password=true)
+     String sshkeypassphrase;
+
+    @Param(name = "type", optional=true, defaultValue="CONFIG")
+     String type;
+
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
@@ -138,6 +147,7 @@ public class UpdateNodeCommand implements AdminCommand {
                         writeableNode.setNodeHost(nodehost);
                     if (installdir != null)
                         writeableNode.setInstallDir(installdir);
+                    writeableNode.setType(type);
                     if (sshport != null || sshnodehost != null ||sshuser != null || sshkeyfile != null){
                         SshConnector sshC = writeableNode.getSshConnector();
                         if (sshC == null)  {
@@ -150,7 +160,7 @@ public class UpdateNodeCommand implements AdminCommand {
                         if(sshnodehost != null)
                             sshC.setSshHost(sshnodehost);
 
-                        if (sshuser != null || sshkeyfile != null ) {
+                        if (sshuser != null || sshkeyfile != null || sshpassword != null || sshkeypassphrase != null ) {
                             SshAuth sshA = sshC.getSshAuth();
                             if (sshA == null) {
                                sshA = sshC.createChild(SshAuth.class);
@@ -161,6 +171,10 @@ public class UpdateNodeCommand implements AdminCommand {
                                 sshA.setUserName(sshuser);
                             if (sshkeyfile != null)
                                 sshA.setKeyfile(sshkeyfile);
+                            if(sshpassword != null)
+                                sshA.setPassword(sshpassword);
+                            if(sshkeypassphrase != null)
+                                sshA.setKeyPassPhrase(sshkepassphrase);
                             sshC.setSshAuth(sshA);
                         }
                         writeableNode.setSshConnector(sshC);
