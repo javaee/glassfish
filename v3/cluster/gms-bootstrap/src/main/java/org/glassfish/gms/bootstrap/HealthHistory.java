@@ -37,6 +37,7 @@ package org.glassfish.gms.bootstrap;
 
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.ee.cms.core.*;
+import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
 import java.util.*;
@@ -53,14 +54,31 @@ import java.util.logging.Logger;
  */
 public final class HealthHistory {
 
-    final static Logger logger = LogDomains.getLogger(
+    private final static Logger logger = LogDomains.getLogger(
         HealthHistory.class, LogDomains.CORE_LOGGER);
 
-    /**
-     * NOT_RUNNING means there is no time information associated
-     */
-    public static enum STATE { NOT_RUNNING,
-        RUNNING, REJOINED, FAILURE, SHUTDOWN };
+    private static final StringManager strings =
+        StringManager.getManager(HealthHistory.class);
+
+    // NOT_RUNNING means there is no time information associated
+    public static enum STATE {
+        NOT_RUNNING (strings.getString("state.not_running")),
+        RUNNING     (strings.getString("state.running")),
+        REJOINED    (strings.getString("state.rejoined")),
+        FAILURE     (strings.getString("state.failure")),
+        SHUTDOWN    (strings.getString("state.shutdown"));
+
+        private final String stringVal;
+
+        STATE(String stringVal) {
+            this.stringVal = stringVal;
+        }
+
+        @Override
+        public String toString() {
+            return stringVal;
+        }
+    };
 
     /**
      * Used when no time information is known, for instance at

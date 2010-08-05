@@ -217,7 +217,16 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     }
 
     private void initializeHealthHistory(Cluster cluster) {
-        hHistory = new HealthHistory(cluster.getInstances());
+        try {
+            /*
+             * Should not fail, but we need to make sure it doesn't
+             * affect GMS just in case.
+             */
+            hHistory = new HealthHistory(cluster.getInstances());
+        } catch (Throwable t) {
+            // todo: fix logging
+            logger.log(Level.WARNING, "new HealthHistory(List)", t);
+        }
     }
 
     private void readGMSConfigProps(Properties configProps) {
@@ -547,7 +556,16 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "gmsservice.processNotification", signal.getClass().getName());
         }
-        hHistory.updateHealth(signal);
+        try {
+            /*
+             * Should not fail, but we need to make sure it doesn't
+             * affect GMS just in case.
+             */
+            hHistory.updateHealth(signal);
+        } catch (Throwable t) {
+            // todo: fix logging
+            logger.log(Level.WARNING, "hHistory.updateHealth(signal)", t);
+        }
         if (this.aliveAndReadyLoggingEnabled) {
             if (signal instanceof JoinedAndReadyNotificationSignal ||
                 signal instanceof FailureNotificationSignal ||
