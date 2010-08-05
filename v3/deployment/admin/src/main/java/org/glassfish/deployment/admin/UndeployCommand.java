@@ -144,15 +144,27 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
             matchedVersions = versioningService.getMatchedVersions(name, 
                 target);
         } catch (VersioningDeploymentException e) {
-            report.failure(logger, e.getMessage());
+            if (env.isDas()) {
+                report.failure(logger, e.getMessage());
+            } else {
+                // we should let undeployment go through 
+                // on instance side for partial deployment case
+                logger.fine(e.getMessage());
+            }
             return;
         }
 
         // if matched list is empty and no VersioningException thrown,
         // this is an unversioned behavior and the given application is not registered
         if(matchedVersions.isEmpty()){
-            report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name, target));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            if (env.isDas()) {
+                report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name, target));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            } else {
+                // we should let undeployment go through 
+                // on instance side for partial deployment case
+                logger.fine(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name, target));
+            }
             return;
         }
 
