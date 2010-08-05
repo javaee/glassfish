@@ -385,7 +385,7 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
                             narrow(poa.servant_to_reference(this));
                 //thisRef = (com.sun.jts.jtsxa.OTSResource)this;
             } catch (Exception exc) {
-				_logger.log(Level.SEVERE,"jts.create_xaresource_object_error");
+				_logger.log(Level.SEVERE,"jts.create_xaresource_object_error", exc);
 				String msg = LogFormatter.getLocalizedMessage(_logger,
 							"jts.create_xaresource_object_error");
 				throw  new org.omg.CORBA.INTERNAL(msg);
