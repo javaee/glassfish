@@ -139,8 +139,12 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
                 try {
                     Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
                     List<ConfigModel> lcm = dom.document.getAllModelsImplementing(subType);
-                    Collections.sort(lcm, new ConfigModelComparator());
+                    if (lcm == null) { //https://glassfish.dev.java.net/issues/show_bug.cgi?id=12654
+                        lcm = new ArrayList<ConfigModel>();
+                        lcm.add(childModel);
+                    }
                     if (lcm != null) {
+                        Collections.sort(lcm, new ConfigModelComparator());
                         for (ConfigModel cmodel : lcm) {
                             links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()));
                         }

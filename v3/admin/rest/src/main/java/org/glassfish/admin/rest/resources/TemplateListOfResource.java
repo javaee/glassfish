@@ -328,6 +328,10 @@ public abstract class TemplateListOfResource {
                     ConfigModel childModel = prop2.getModel();
                     Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); ///  a shoulf be the typename
                     List<ConfigModel> lcm = parent.document.getAllModelsImplementing(subType);
+                    if (lcm == null) {
+                        lcm = new ArrayList<ConfigModel>();
+                        lcm.add(childModel);
+                    }
                     if (lcm != null) {
                         for (ConfigModel cmodel : lcm) {
                             if (cmodel.getTagName().equals(tagName)) {
