@@ -54,6 +54,7 @@ import java.util.Locale;
  * @see javax.servlet.http.HttpServletResponse
  */
 public class CachingResponseWrapper extends HttpServletResponseWrapper {
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
     int statusCode = HttpCacheEntry.VALUE_NOT_SET;
 
@@ -80,10 +81,11 @@ public class CachingResponseWrapper extends HttpServletResponseWrapper {
 
     /**
      * Error flag. True if the response runs into an error.
-     * treat the response to be in the error state if the servlet
+     * Should not treat the response to be in the error state if the servlet
      * doesn't get the OutpuStream or the Writer.
      */
-    boolean error = true;
+    // IT 12891
+    boolean error = false;
 
     /**
      * OutputStream and PrintWriter objects for this response.
@@ -125,7 +127,6 @@ public class CachingResponseWrapper extends HttpServletResponseWrapper {
             cosw = createCachingOutputStreamWrapper();
         }
 
-        error = false;
         return (ServletOutputStream)cosw;
     }  
       
@@ -151,7 +152,6 @@ public class CachingResponseWrapper extends HttpServletResponseWrapper {
 
         writer = new PrintWriter(osw);
 
-        error = false;
         return (writer);
 	}
     
@@ -376,7 +376,10 @@ public class CachingResponseWrapper extends HttpServletResponseWrapper {
             writer.flush();
         }
 
-        entry.bytes = cosw.getBytes();
+
+        // IT 12891
+        entry.bytes = ((cosw != null)? cosw.getBytes() : EMPTY_BYTE_ARRAY);
+
         return entry;
     }
     

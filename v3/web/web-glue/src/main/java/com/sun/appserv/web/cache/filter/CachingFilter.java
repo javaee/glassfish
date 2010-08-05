@@ -192,65 +192,69 @@ public class CachingFilter implements Filter, CacheManagerListener {
                 // call the target servlet
 
                 HttpCacheEntry oldEntry;
+                CachingResponseWrapper wrapper = null;
+                boolean needNotify = true;
 
-                // setup the response wrapper (and the output stream)
-                CachingResponseWrapper wrapper =
-                                new CachingResponseWrapper(response);
-
-                // call the target resource
                 try {
+                    // setup the response wrapper (and the output stream)
+                    wrapper = new CachingResponseWrapper(response);
+
+                    // call the target resource
                     chain.doFilter(srequest, (ServletResponse)wrapper);
-                } catch (ServletException se) {
-                    wrapper.clear();
-                    throw se;
-                } catch (IOException ioe) {
-                    wrapper.clear();
-                    throw ioe;
-                }
 
-                // see if the there weren't any errors
-                if (!wrapper.isError()) {
-                    // create/refresh the cached response entry
+                    // see if the there weren't any errors
+                    if (!wrapper.isError()) {
+                        // create/refresh the cached response entry
 
-                    // compute the timeout
-                    int timeout = helper.getTimeout(request);
+                        // compute the timeout
+                        int timeout = helper.getTimeout(request);
 
-                    // previous entry gets replaced
-                    entry = wrapper.cacheResponse();
+                        // previous entry gets replaced
+                        entry = wrapper.cacheResponse();
 
-                    if (timeout == CacheHelper.TIMEOUT_VALUE_NOT_SET) {
-                        // extracts this from the Expires: date header
-                        Long lval = wrapper.getExpiresDateHeader();
+                        if (timeout == CacheHelper.TIMEOUT_VALUE_NOT_SET) {
+                            // extracts this from the Expires: date header
+                            Long lval = wrapper.getExpiresDateHeader();
 
-                        if (lval == null) {
-                            timeout = manager.getDefaultTimeout();
-                            entry.computeExpireTime(timeout);
+                            if (lval == null) {
+                                timeout = manager.getDefaultTimeout();
+                                entry.computeExpireTime(timeout);
+                            } else {
+                                long expireTime = lval.longValue();
+
+                                // set the time this entry would expires
+                                entry.setExpireTime(expireTime);
+                            }
                         } else {
-                            long expireTime = lval.longValue();
-
-                            // set the time this entry would expires
-                            entry.setExpireTime(expireTime);
+                            entry.computeExpireTime(timeout);
                         }
+
+                        oldEntry = (HttpCacheEntry)cache.put(key, entry,
+                                                             entry.getSize());
+                        cache.notifyRefresh(index);
+                        needNotify = false;
+
+                        // transmit the response body content
+                        writeBody(entry, response);
                     } else {
-                        entry.computeExpireTime(timeout);
+                        /** either there was an error or response from this
+                         *  resource is not cacheable anymore; so, remove the
+                         *  old entry from the cache.
+                         */
+                        oldEntry = (HttpCacheEntry)cache.remove(key);
+                    }
+                } finally {
+                    // IT 12891
+                    if (needNotify) {
+                        cache.notifyRefresh(index);
                     }
 
-                    oldEntry = (HttpCacheEntry)cache.put(key, entry,
-                                                         entry.getSize());
-                    cache.notifyRefresh(index);
-
-                    // transmit the response body content
-                    writeBody(entry, response);
-                } else {
-                    /** either there was an error or response from this
-                     *  resource is not cacheable anymore; so, remove the
-                     *  old entry from the cache.
-                     */
-                    oldEntry = (HttpCacheEntry)cache.remove(key);
+                    // clear the wrapper (XXX: cache these??)
+                    if (wrapper != null) {
+                        wrapper.clear();
+                    }
                 }
 
-                // clear the wrapper (XXX: cache these??)
-                wrapper.clear();
             }
 
             /** clear the old entry?
