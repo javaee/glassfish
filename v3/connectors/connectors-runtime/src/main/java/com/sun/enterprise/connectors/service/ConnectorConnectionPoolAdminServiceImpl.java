@@ -1488,12 +1488,6 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * @throws com.sun.appserv.connectors.internal.api.ConnectorRuntimeException
      */
     public boolean flushConnectionPool(String poolName) throws ConnectorRuntimeException {
-        if (PoolType.POOLING_DISABLED.equals(getPoolType(poolName))) {
-            //throw RuntimeException
-            String i18nMsg = localStrings.getString("flush_when_pooling_disabled", poolName);
-            _logger.log(Level.SEVERE, "flush_when_pooling_disabled", poolName);
-            throw new ConnectorRuntimeException(i18nMsg);
-        }
         PoolManager poolMgr = _runtime.getPoolManager();
         try {
             return poolMgr.flushConnectionPool( poolName );

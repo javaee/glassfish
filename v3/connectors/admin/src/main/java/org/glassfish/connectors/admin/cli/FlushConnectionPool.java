@@ -37,6 +37,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -47,11 +48,10 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+
+import java.util.logging.Level;
 
 @Service(name = "flush-connection-pool")
 @Scoped(PerLookup.class)
@@ -79,6 +79,25 @@ public class FlushConnectionPool implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
 
+        }
+
+        boolean poolingEnabled = false;
+        ResourcePool pool =
+                (ResourcePool)resources.getResourceByName(ResourcePool.class, poolName);
+        if(pool instanceof ConnectorConnectionPool){
+            ConnectorConnectionPool ccp = (ConnectorConnectionPool)pool;
+            poolingEnabled = Boolean.valueOf(ccp.getPooling());
+        }else{
+            JdbcConnectionPool ccp = (JdbcConnectionPool)pool;
+            poolingEnabled = Boolean.valueOf(ccp.getPooling());
+        }
+
+        if(!poolingEnabled){
+            String i18nMsg = localStrings.getLocalString("flush.connection.pool.pooling.disabled",
+                    "Attempt to Flush Connection Pool failed because Pooling is disabled for pool : {0}", poolName);
+            report.setMessage(i18nMsg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         }
 
         try {
