@@ -31,10 +31,10 @@
             <fileset dir="." includes="*.jsp"/>
         </war>
         <jar destfile="${deployplan.jar}">
-            <fileset dir="${basedir}" includes="sun-web.xml"/>
+            <fileset dir="${basedir}" includes="glassfish-web.xml"/>
         </jar>
         <war destfile="${all.war}" webxml="web.xml">
-            <webinf dir="." includes="sun-web.xml"/>
+            <webinf dir="." includes="glassfish-web.xml"/>
             <fileset dir="." includes="*.jsp"/>
         </war>
     </target>

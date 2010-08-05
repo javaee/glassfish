@@ -32,7 +32,7 @@
             <classes dir="${build}"/>
         </war>
         <jar destfile="${deployplan.jar}">
-            <fileset dir="${basedir}" includes="sun-web.xml"/>
+            <fileset dir="${basedir}" includes="glassfish-web.xml,sun-web.xml"/>
         </jar>
         
         <!-- 
@@ -41,7 +41,7 @@
              module simply because it has a Main-Class setting.
         -->
         <war destfile="${all.war}" webxml="web.xml" manifest="META-INF/MANIFEST.MF">
-            <webinf dir="." includes="sun-web.xml"/>
+            <webinf dir="." includes="glassfish-web.xml, sun-web.xml"/>
             <classes dir="${build}"/>
         </war>
     </target>

@@ -39,7 +39,7 @@
             <classes dir="${build}" excludes="justclient/**,justbean/JustSessionBean.class"/>
         </war>
         <war destfile="${all.war}" webxml="web.xml">
-            <webinf file="sun-web.xml"/>
+            <webinf file="glassfish-web.xml"/>
             <classes dir="${build}" excludes="justclient/**,justbean/JustSessionBean.class,**.war"/>
         </war>
 
@@ -48,7 +48,7 @@
             <fileset dir="${build}" excludes="justclient/**,justweb/**,**.war"/>
         </jar>
         <jar destfile="${all.jar}">
-            <metainf dir="${basedir}" includes="ejb-jar.xml,sun-ejb-jar.xml"/>
+            <metainf dir="${basedir}" includes="ejb-jar.xml,glassfish-ejb-jar.xml"/>
             <fileset dir="${build}" excludes="justclient/**,justweb/**,**.war,**.jar"/>
         </jar>
 
@@ -56,13 +56,13 @@
             <fileset dir="${build}" includes="**-portable.war,**-portable.jar"/>
         </ear>
         <ear destfile="${all.ear}" appxml="application.xml">
-            <metainf file="sun-application.xml"/>
+            <metainf file="glassfish-application.xml"/>
             <fileset dir="${build}" includes="${testName}.jar,${testName}.war"/>
         </ear>
 
-        <copy file="sun-web.xml" tofile="${portable.war}.sun-web.xml"/>
-        <copy file="sun-ejb-jar.xml" tofile="${portable.jar}.sun-ejb-jar.xml"/>
-        <copy file="sun-application.xml" tofile="${build}/sun-application.xml"/>
+        <copy file="glassfish-web.xml" tofile="${portable.war}.glassfish-web.xml"/>
+        <copy file="glassfish-ejb-jar.xml" tofile="${portable.jar}.glassfish-ejb-jar.xml"/>
+        <copy file="glassfish-application.xml" tofile="${build}/glassfish-application.xml"/>
         <jar destfile="${deployplan.jar}"
              basedir="${build}" includes="**.xml"/>
     </target>

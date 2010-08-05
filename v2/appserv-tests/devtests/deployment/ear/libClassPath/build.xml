@@ -46,7 +46,7 @@
 
         <ear destfile="${all.ear}" basedir="${archivedir}"
             appxml="descriptor/application.xml" includes="**/*.jar, *.war">
-            <metainf file="descriptor/sun-application.xml"/>
+            <metainf file="descriptor/glassfish-application.xml"/>
         </ear>
     </target>
 
