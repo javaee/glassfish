@@ -421,6 +421,7 @@
         <ant dir="weldJsfLoginPage" target="all"/>
         <ant dir="weldJsfServerAuthModuleRedirect" target="all"/>
         <ant dir="oneSessionCookieHeader" target="all"/>
+        <ant dir="cachingHang" target="all"/>
     </target>
 
     <target name="security" depends="init-report">
