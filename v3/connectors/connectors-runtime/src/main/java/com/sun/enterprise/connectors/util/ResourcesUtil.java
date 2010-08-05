@@ -199,12 +199,16 @@ public class ResourcesUtil {
             try {
                 dsClass = ClassLoadingUtility.loadClass(pool.getDatasourceClassname());
             } catch (ClassNotFoundException cnfe) {
+                Object params[] = new Object[]{dsRAName};
+                _logger.log(Level.WARNING, "using.default.ds", params);
                 return dsRAName;
             }
         } else if(pool.getDriverClassname() != null) {
             try {
                 dsClass = ClassLoadingUtility.loadClass(pool.getDriverClassname());
             } catch (ClassNotFoundException cnfe) {
+                Object params[] = new Object[]{dsRAName};
+                _logger.log(Level.WARNING, "using.default.ds", params);
                 return dsRAName;
             }            
         }
@@ -230,7 +234,9 @@ public class ResourcesUtil {
                 return ConnectorConstants.JDBCDRIVER_RA_NAME;
             }
         }
-        
+
+        Object params[] = new Object[]{dsRAName};
+        _logger.log(Level.WARNING, "using.default.ds", params);
         //default to __ds
         return dsRAName;
     }

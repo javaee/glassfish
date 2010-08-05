@@ -36,6 +36,8 @@
  */
 package com.sun.enterprise.connectors.util;
 
+import com.sun.enterprise.connectors.ConnectorRuntime;
+
 public class ClassLoadingUtility {
 
     /**
@@ -62,6 +64,11 @@ public class ClassLoadingUtility {
      * @see getClassLoader()
      */
     public static Class loadClass(String className) throws ClassNotFoundException {
-        return getClassLoader().loadClass(className);
+        try{
+            return getClassLoader().loadClass(className);
+        }catch(Exception e){
+            //try loading the class using common classloader (connector classloader's parent chain has common classloader)
+            return ConnectorRuntime.getRuntime().getConnectorClassLoader().loadClass(className);
+        }
     }
 }
