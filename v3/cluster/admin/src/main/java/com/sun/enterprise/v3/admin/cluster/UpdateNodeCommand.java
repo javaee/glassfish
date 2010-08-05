@@ -174,7 +174,7 @@ public class UpdateNodeCommand implements AdminCommand {
                             if(sshpassword != null)
                                 sshA.setPassword(sshpassword);
                             if(sshkeypassphrase != null)
-                                sshA.setKeyPassPhrase(sshkepassphrase);
+                                sshA.setKeyPassphrase(sshkeypassphrase);
                             sshC.setSshAuth(sshA);
                         }
                         writeableNode.setSshConnector(sshC);

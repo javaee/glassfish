@@ -181,6 +181,8 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             int status =createInstanceRemote();
 
         } else {
+            msg= Strings.get("create.instance.remote.notssh",node, node, instance, humanVersionOfCommand);
+            logger.warning(msg);
             msg = Strings.get("create.instance.remote.failed",
                     instance, nodeHost, humanVersionOfCommand );
             logger.warning(msg);
