@@ -38,6 +38,7 @@ package org.glassfish.common.util.admin;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -115,18 +116,36 @@ public class ParameterMapExtractor {
 
     private void extract(final Object target,
             final Collection<String> parameterNamesToExclude,
-            final ParameterMap paramMap) throws IllegalArgumentException, IllegalAccessException {
-        for (Field f : target.getClass().getFields()) {
+            final ParameterMap paramMap) 
+            throws IllegalArgumentException, IllegalAccessException {
+        for (final Field f : target.getClass().getDeclaredFields()) {
             final Param param = f.getAnnotation(Param.class);
             if (param != null &&
                     ! parameterNamesToExclude.contains(f.getName())) {
-                final Object fieldValue = f.get(target);
+                Object fieldValue = null;
+                if(System.getSecurityManager() == null) {
+                    f.setAccessible(true);
+                    fieldValue = f.get(target);
+                } else {
+                    try {
+                        fieldValue = java.security.AccessController.doPrivileged(
+                                new java.security.PrivilegedExceptionAction() {
+
+                            public java.lang.Object run() throws Exception {
+                                f.setAccessible(true);
+                                return f.get(target);
+                            }
+                        });
+                    } catch (PrivilegedActionException ex) {
+                        throw new IllegalAccessException(ex.toString());
+                    }
+                }
                 if (fieldValue != null) {
                     final String paramName = CommandModel.getParamName(param, f);
                     if (param.multiple()) {
-                        paramMap.set(paramName, multipleValue(param, f.get(target)));
+                        paramMap.set(paramName, multipleValue(param, fieldValue));
                     } else {
-                        paramMap.set(paramName, singleValue(param, f.get(target)));
+                        paramMap.set(paramName, singleValue(param, fieldValue));
                     }
                 }
             }
