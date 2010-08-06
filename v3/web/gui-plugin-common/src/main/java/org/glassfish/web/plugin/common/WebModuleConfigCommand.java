@@ -70,7 +70,7 @@ public abstract class WebModuleConfigCommand implements AdminCommand {
     @Inject
     private Applications apps;
 
-    final protected LocalStringManagerImpl localStrings =
+    static final protected LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(WebModuleConfigCommand.class);
 
     protected WebModuleConfig webModuleConfig(final ActionReport report) {

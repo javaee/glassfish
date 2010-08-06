@@ -71,7 +71,7 @@ public class ThreadPool  {
 
     private static Logger log = Logger.getLogger(ThreadPool.class.getName());
 
-    private static StringManager sm =
+    private static final StringManager sm =
         StringManager.getManager("org.apache.tomcat.util.threads.res");
 
     private static boolean logfull=true;

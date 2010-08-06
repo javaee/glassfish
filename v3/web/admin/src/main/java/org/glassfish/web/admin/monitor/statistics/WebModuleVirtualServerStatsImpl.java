@@ -86,7 +86,7 @@ public class WebModuleVirtualServerStatsImpl implements MonitorContract {
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;
 
-    private final LocalStringManagerImpl localStrings = 
+    private static final LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(WebModuleVirtualServerStatsImpl.class);
 
     private final String name = "webmodule";

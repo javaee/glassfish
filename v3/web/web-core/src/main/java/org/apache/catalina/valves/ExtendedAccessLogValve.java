@@ -210,7 +210,7 @@ public final class ExtendedAccessLogValve
     /**
      * The string manager for this package.
      */
-    private StringManager sm =
+    private static final StringManager sm =
         StringManager.getManager(Constants.Package);
 
 

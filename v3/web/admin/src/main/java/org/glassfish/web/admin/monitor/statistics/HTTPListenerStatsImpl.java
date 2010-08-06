@@ -73,7 +73,7 @@ public class HTTPListenerStatsImpl implements MonitorContract {
     @Inject
     private Logger logger;
 
-    private final LocalStringManagerImpl localStrings = 
+    private static final LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(HTTPListenerStatsImpl.class);
 
     private final String name = "httplistener";

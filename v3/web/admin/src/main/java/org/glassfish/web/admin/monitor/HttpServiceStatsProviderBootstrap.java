@@ -72,7 +72,7 @@ public class HttpServiceStatsProviderBootstrap implements PostConstruct {
 
     private static final Logger logger = LogDomains.getLogger(
         HttpServiceStatsProviderBootstrap.class, LogDomains.WEB_LOGGER);
-    private final LocalStringManagerImpl localStrings =
+    private static final LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(HttpServiceStatsProviderBootstrap.class);
     
     public void postConstruct() {

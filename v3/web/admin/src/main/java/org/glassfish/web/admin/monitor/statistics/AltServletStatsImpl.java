@@ -59,7 +59,7 @@ public class AltServletStatsImpl implements MonitorContract {
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;
 
-    private final LocalStringManagerImpl localStrings = 
+    private static final LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(AltServletStatsImpl.class);
 
     private final String name = "servlet";
