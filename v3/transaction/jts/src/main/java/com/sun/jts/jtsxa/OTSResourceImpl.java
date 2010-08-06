@@ -375,6 +375,10 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
     public OTSResource getCORBAObjReference() {
 
         if (thisRef == null) {
+            if (Configuration.getORB() == null) {
+                return this;
+            }
+
             if (poa == null) {
                 poa = Configuration.getPOA("transient"/*#Frozen*/);
             }
