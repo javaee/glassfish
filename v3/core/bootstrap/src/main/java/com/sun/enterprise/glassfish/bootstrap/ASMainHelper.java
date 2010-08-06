@@ -339,36 +339,6 @@ class ASMainHelper {
         return null;
     }
 
-    static URI findInstallRootURI(Properties properties) throws URISyntaxException {
-        URI installRootURI = null;
-        String installRootURIString = Util.getPropertyOrSystemProperty(properties, Constants.INSTALL_ROOT_URI_PROP_NAME);
-        if (installRootURIString != null) {
-            installRootURI = URI.create(installRootURIString);
-        } else {
-            // try to deteremine from the jar file path
-            URI loadedFrom = Util.whichJar(ASMainHelper.class);
-
-            // Now we have two possibilities:
-            // a. the jar could be uber jar, or
-            // b. the jar is part of modules
-            String scheme = loadedFrom.getScheme();
-            if ("file".equalsIgnoreCase(scheme)) {
-                File bootstrapFile = new File(loadedFrom);
-                if (bootstrapFile.getName().equals("glassfish.jar")) {
-                    installRootURI = bootstrapFile.getParentFile().getParentFile().toURI();
-                }
-            } else {
-                // create a new JarFile type URL and return it
-                installRootURI = new URI("jar:" + loadedFrom + "!/");
-            }
-        }
-        if (installRootURI == null) {
-            throw new IllegalStateException("install root could not be determined. " +
-                    "Set explicitly using com.sun.aas.installRootURI property.");
-        }
-        return installRootURI;
-    }
-
     /* package */
 
     static File findInstallRoot() {

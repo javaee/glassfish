@@ -70,7 +70,7 @@ public class GlassFishMain {
         // Set the system property if downstream code wants to know about it
         System.setProperty(Constants.PLATFORM_PROPERTY_KEY, platform); // TODO(Sahoo): Why is this a system property?
 
-        File installRoot = new File(ASMainHelper.findInstallRootURI(argsAsProps));
+        File installRoot = ASMainHelper.findInstallRoot();
 
         // domainDir can be passed as argument, so pass the agrgs as well.
         File instanceRoot = ASMainHelper.findInstanceRoot(installRoot, argsAsProps);
