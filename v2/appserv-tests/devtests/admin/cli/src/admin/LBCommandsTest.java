@@ -37,6 +37,7 @@ package admin;
 
 import java.io.*;
 import java.net.*;
+import java.security.MessageDigest;
 
 /*
  * Dev test for load balancer administration commands.
@@ -76,6 +77,8 @@ public class LBCommandsTest extends AdminBaseDevTest {
     public void run() {
         asadmin("start-domain");
         createInstances();
+        
+        File loadbalancerXml = new File("resources", "loadbalancer.xml");
 
         int i = 1;
         //create,list LB config
@@ -163,6 +166,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
         // deploy an application to the cluster
         File webapp = new File("resources", "helloworld.war");
         asadmin("deploy", "--target", CLUSTER, webapp.getAbsolutePath());
+        asadmin("create-application-ref", "--target", CLUSTER2, "helloworld");
         asadmin("create-application-ref", "--target", STANDALONE_INSTANCE1, "helloworld");
         asadmin("create-application-ref", "--target", STANDALONE_INSTANCE2, "helloworld");
 
@@ -245,6 +249,64 @@ public class LBCommandsTest extends AdminBaseDevTest {
         //delete the load balancer
         runTest(i++ + ".delete-http-lb", asadmin("delete-http-lb", LB_NAME));
 
+        //create lb and a config
+        asadmin("create-http-lb", DEVICEHOST_OPTION, LOCALHOST,
+                DEVICEPORT_OPTION, "9000", TARGET_OPTION, CLUSTER, LB_NAME);
+
+        //export-httplb-config tests
+        deleteXML(loadbalancerXml);
+        asadmin("export-http-lb-config",LB_NAME_OPTION, LB_NAME,
+                loadbalancerXml.getAbsolutePath());
+        runTest(i++ + ".export-http-lb-config", validateXML(loadbalancerXml,
+                CHECKSUM1));
+
+        deleteXML(loadbalancerXml);
+        asadmin("export-http-lb-config", CONFIG_OPTION, LB1_CONFIG,
+                loadbalancerXml.getAbsolutePath());
+        runTest(i++ + ".export-http-lb-config", validateXML(loadbalancerXml,
+                CHECKSUM1));
+
+        deleteXML(loadbalancerXml);
+        asadmin("export-http-lb-config", TARGETS_OPTION, CLUSTER + ","
+                + CLUSTER2, loadbalancerXml.getAbsolutePath());
+        runTest(i++ + ".export-http-lb-config", validateXML(loadbalancerXml,
+                CHECKSUM2));
+
+        deleteXML(loadbalancerXml);
+        asadmin("export-http-lb-config", TARGETS_OPTION, CLUSTER + ","
+                + CLUSTER2, PROPERTY_OPTION,
+                "response-timeout-in-seconds=30:https-routing=true",
+                loadbalancerXml.getAbsolutePath());
+        runTest(i++ + ".export-http-lb-config", validateXML(loadbalancerXml,
+                CHECKSUM3));
+
+        deleteXML(loadbalancerXml);
+        asadmin("export-http-lb-config", TARGETS_OPTION, STANDALONE_INSTANCE1
+                + "," + STANDALONE_INSTANCE2, loadbalancerXml.getAbsolutePath());
+        runTest(i++ + ".export-http-lb-config", validateXML(loadbalancerXml,
+                CHECKSUM4));
+
+        deleteXML(loadbalancerXml);
+        
+        //export-http-lb-config negative tests
+        runTest(i++ + ".export-http-lb-config", !asadmin("export-http-lb-config",
+                loadbalancerXml.getAbsolutePath()));
+        runTest(i++ + ".export-http-lb-config", !asadmin("export-http-lb-config",
+                CONFIG_OPTION, "junk-lb-config", loadbalancerXml.getAbsolutePath()));
+        runTest(i++ + ".export-http-lb-config", !asadmin("export-http-lb-config",
+                LB_NAME_OPTION, "junk-lb-name", loadbalancerXml.getAbsolutePath()));
+        runTest(i++ + ".export-http-lb-config", !asadmin("export-http-lb-config",
+                TARGETS_OPTION, CLUSTER + "," + STANDALONE_INSTANCE1,
+                loadbalancerXml.getAbsolutePath()));
+        runTest(i++ + ".export-http-lb-config", !asadmin("export-http-lb-config",
+                CONFIG_OPTION, LB1_CONFIG, LB_NAME_OPTION, LB_NAME,
+                loadbalancerXml.getAbsolutePath()));
+
+        deleteXML(loadbalancerXml);
+
+        //delete-lb
+        asadmin("delete-http-lb", LB_NAME);
+
         //undeploy the app
         asadmin("undeploy", "--target", "domain", "helloworld");
 
@@ -255,17 +317,29 @@ public class LBCommandsTest extends AdminBaseDevTest {
 
 
     private void createInstances() {
+        asadmin("create-node-ssh", NODE_HOST_OPTION, LB_NODE_HOST1, FORCE_OPTION,
+                TRUE, LB_NODE1);
+        asadmin("create-node-ssh", NODE_HOST_OPTION, LB_NODE_HOST2, FORCE_OPTION,
+                TRUE, LB_NODE2);
+
         asadmin("create-cluster", CLUSTER);
 
         asadmin("create-instance", CLUSTER_OPTION, CLUSTER, NODE_OPTION,
-                LOCALHOST, INSTANCE1);
+                LB_NODE1, INSTANCE1);
         asadmin("create-instance", CLUSTER_OPTION, CLUSTER, NODE_OPTION,
-                LOCALHOST, INSTANCE2);
+                LB_NODE2, INSTANCE2);
         asadmin("create-instance", CLUSTER_OPTION, CLUSTER, NODE_OPTION,
-                LOCALHOST, INSTANCE3);
+                LB_NODE1, INSTANCE3);
+        
+        asadmin("create-cluster", CLUSTER2);
 
-        asadmin("create-instance", NODE_OPTION, LOCALHOST, STANDALONE_INSTANCE1);
-        asadmin("create-instance", NODE_OPTION, LOCALHOST, STANDALONE_INSTANCE2);
+        asadmin("create-instance", CLUSTER_OPTION, CLUSTER2, NODE_OPTION,
+                LB_NODE1, INSTANCE4);
+        asadmin("create-instance", CLUSTER_OPTION, CLUSTER2, NODE_OPTION,
+                LB_NODE2, INSTANCE5);
+
+        asadmin("create-instance", NODE_OPTION, LB_NODE1, STANDALONE_INSTANCE1);
+        asadmin("create-instance", NODE_OPTION, LB_NODE2, STANDALONE_INSTANCE2);
     }
 
     private void deleteInstances() {
@@ -277,6 +351,14 @@ public class LBCommandsTest extends AdminBaseDevTest {
         asadmin("delete-instance", INSTANCE1);
 
         asadmin("delete-cluster", CLUSTER);
+
+        asadmin("delete-instance", INSTANCE5);
+        asadmin("delete-instance", INSTANCE4);
+
+        asadmin("delete-cluster", CLUSTER2);
+
+        asadmin("delete-node-ssh", LB_NODE1);
+        asadmin("delete-node-ssh", LB_NODE2);
     }
 
     private void runTest(String tName, boolean status) {
@@ -286,6 +368,49 @@ public class LBCommandsTest extends AdminBaseDevTest {
         }
         report(tName, status);
     }
+
+    private boolean validateXML(File loadbalancerXml, String checkSum) {
+        try {
+            String lbXmlCheckSum = getMD5Checksum(loadbalancerXml);
+            System.out.println("lbXmlCheckSum : " + lbXmlCheckSum);
+            if(checkSum.equals(lbXmlCheckSum)){
+                return true;
+            }
+        } catch (Exception ex) {
+            System.out.println("Unable to get checksum : " + ex.getMessage());
+        }
+        return false;
+    }
+
+    public static byte[] createChecksum(File file) throws Exception {
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        MessageDigest complete = MessageDigest.getInstance("MD5");
+        String line = null;
+        while((line = reader.readLine()) != null) {
+            if(line.contains("This file was generated on:")){
+                continue;
+            }
+            complete.update(line.getBytes());
+        }
+        reader.close();
+        return complete.digest();
+    }
+
+    public static String getMD5Checksum(File file) throws Exception {
+        byte[] b = createChecksum(file);
+        String result = "";
+        for (int i = 0; i < b.length; i++) {
+            result +=
+                    Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
+        }
+        return result;
+    }
+
+    private void deleteXML(File loadbalancerXml) {
+        if(loadbalancerXml.exists()){
+            loadbalancerXml.delete();
+        }
+    }
     
     private final String host;
     private final File glassFishHome;
@@ -293,11 +418,20 @@ public class LBCommandsTest extends AdminBaseDevTest {
     private static final String INSTANCE1 = "cl1-ins1";
     private static final String INSTANCE2 = "cl1-ins2";
     private static final String INSTANCE3 = "cl1-ins3";
+    private static final String CLUSTER2 = "cl2";
+    private static final String INSTANCE4 = "cl2-ins1";
+    private static final String INSTANCE5 = "cl2-ins2";
     private static final String STANDALONE_INSTANCE1 = "ins1";
     private static final String STANDALONE_INSTANCE2 = "ins2";
     private static final String LB_CONFIG = "lb-config1";
     private static final String LOCALHOST="localhost";
     private static final String LB_NAME="lb1";
+    private static final String LB1_CONFIG = "lb1_LB_CONFIG";
+    private static final String LB_NODE_HOST1 = "dummy-lb-host1";
+    private static final String LB_NODE_HOST2 = "dummy-lb-host2";
+    private static final String LB_NODE1 = "lb-node1";
+    private static final String LB_NODE2 = "lb-node2";
+    private static final String TRUE = "true";
     private static final String CONFIG_OPTION="--config";
     private static final String TIMEOUT_OPTION="--timeout";
     private static final String INTERVAL_OPTION="--interval";
@@ -306,4 +440,15 @@ public class LBCommandsTest extends AdminBaseDevTest {
     private static final String DEVICEHOST_OPTION="--devicehost";
     private static final String DEVICEPORT_OPTION="--deviceport";
     private static final String NODE_OPTION="--node";
+    private static final String PROPERTY_OPTION="--property";
+    private static final String NODE_HOST_OPTION="--nodehost";
+    private static final String FORCE_OPTION="--force";
+    private static final String LB_NAME_OPTION="--lbname";
+    private static final String TARGETS_OPTION="--targets";
+    private static final String TARGET_OPTION="--target";
+
+    private static final String CHECKSUM1 = "b6f78293559fac1b27a9c97723e870b0";
+    private static final String CHECKSUM2 = "34711b07ae91258280209534cf1bd7d3";
+    private static final String CHECKSUM3 = "2a5458856cc726a415846213a67bf167";
+    private static final String CHECKSUM4 = "3d114f4f3a9c434e57e86ef82b5daa31";
 }
