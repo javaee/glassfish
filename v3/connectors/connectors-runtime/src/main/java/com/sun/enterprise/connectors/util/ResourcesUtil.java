@@ -199,7 +199,7 @@ public class ResourcesUtil {
             try {
                 dsClass = ClassLoadingUtility.loadClass(pool.getDatasourceClassname());
             } catch (ClassNotFoundException cnfe) {
-                Object params[] = new Object[]{dsRAName};
+                Object params[] = new Object[]{dsRAName, pool.getName()};
                 _logger.log(Level.WARNING, "using.default.ds", params);
                 return dsRAName;
             }
@@ -207,7 +207,7 @@ public class ResourcesUtil {
             try {
                 dsClass = ClassLoadingUtility.loadClass(pool.getDriverClassname());
             } catch (ClassNotFoundException cnfe) {
-                Object params[] = new Object[]{dsRAName};
+                Object params[] = new Object[]{dsRAName, pool.getName()};
                 _logger.log(Level.WARNING, "using.default.ds", params);
                 return dsRAName;
             }            
@@ -235,7 +235,14 @@ public class ResourcesUtil {
             }
         }
 
-        Object params[] = new Object[]{dsRAName};
+        //check if its DS
+        if ("javax.sql.DataSource".equals(pool.getResType())) {
+            if (javax.sql.DataSource.class.isAssignableFrom(dsClass)) {
+                return dsRAName;
+            }
+        }
+
+        Object params[] = new Object[]{dsRAName, pool.getName()};
         _logger.log(Level.WARNING, "using.default.ds", params);
         //default to __ds
         return dsRAName;

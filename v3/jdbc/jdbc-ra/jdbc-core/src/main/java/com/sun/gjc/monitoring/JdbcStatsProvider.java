@@ -39,12 +39,16 @@ package com.sun.gjc.monitoring;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.StringStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.external.statistics.impl.StatisticImpl;
+import org.glassfish.external.statistics.impl.StringStatisticImpl;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
+import com.sun.gjc.util.SQLTrace;
+import com.sun.gjc.util.SQLTraceCache;
 
 /**
  * Provides the monitoring data for JDBC RA module
@@ -56,6 +60,10 @@ import org.glassfish.gmbal.ManagedAttribute;
 @Description("JDBC RA Statistics")
 public class JdbcStatsProvider {
 
+    private StringStatisticImpl freqUsedSqlQueries = new StringStatisticImpl(
+            "FreqUsedSqlQueries", "List",
+            "Most frequently used sql queries");
+
     private CountStatisticImpl numStatementCacheHit = new CountStatisticImpl(
             "NumStatementCacheHit", StatisticImpl.UNIT_COUNT,
             "The total number of Statement Cache hits.");
@@ -65,9 +73,14 @@ public class JdbcStatsProvider {
             "The total number of Statement Cache misses.");
 
     private String poolName;
+    private SQLTraceCache sqlTraceCache;
 
-    public JdbcStatsProvider(String poolName) {
+    public JdbcStatsProvider(String poolName, int sqlTraceCacheSize,
+            long timeToKeepQueries) {
         this.poolName = poolName;
+        if(sqlTraceCacheSize > 0) { 
+            this.sqlTraceCache = new SQLTraceCache(poolName, sqlTraceCacheSize, timeToKeepQueries);
+        }
     }
 
     /**
@@ -94,6 +107,30 @@ public class JdbcStatsProvider {
         }
     }
 
+    /**
+     * Whenever a sql statement that is traced is to be cache for monitoring
+     * purpose, the SQLTrace object is created for the specified sql and
+     * updated in the SQLTraceCache. This is used to update the
+     * frequently used sql queries.
+     *
+     * @param poolName
+     * @param sql
+     */
+    @ProbeListener(JdbcRAConstants.SQL_TRACING_DOTTED_NAME + JdbcRAConstants.CACHE_SQL_QUERY)
+    public void cacheSqlQueryEvent(@ProbeParam("poolName") String poolName,
+            @ProbeParam("sql") String sql) {
+
+        if ((poolName != null) && (poolName.equals(this.poolName))) {
+            if(sqlTraceCache != null) {
+                if (sql != null) {
+                    SQLTrace cacheObj = new SQLTrace(sql, 1,
+                            System.currentTimeMillis());
+                    sqlTraceCache.checkAndUpdateCache(cacheObj);
+                }
+            }
+        }
+    }
+
     @ManagedAttribute(id="numstatementcachehit")
     public CountStatistic getNumStatementCacheHit() {
         return numStatementCacheHit;
@@ -102,5 +139,23 @@ public class JdbcStatsProvider {
     @ManagedAttribute(id="numstatementcachemiss")
     public CountStatistic getNumStatementCacheMiss() {
         return numStatementCacheMiss;
+    }
+
+    @ManagedAttribute(id="frequsedsqlqueries")
+    public StringStatistic getfreqUsedSqlQueries() {
+        if(sqlTraceCache != null) {
+            //This is to ensure that only the queries in the last "time-to-keep-
+            //queries-in-minutes" is returned back.
+            freqUsedSqlQueries.setCurrent(sqlTraceCache.getTopQueries());
+        }
+        return freqUsedSqlQueries;
+    }
+
+    /**
+     * Get the SQLTraceCache associated with this stats provider.
+     * @return SQLTraceCache
+     */
+    public SQLTraceCache getSqlTraceCache() {
+        return sqlTraceCache;
     }
 }

@@ -36,6 +36,10 @@
 
 package com.sun.gjc.monitoring;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Interface that contains all the constants used in the jdbc-ra module.
  *
@@ -54,6 +58,11 @@ public interface JdbcRAConstants {
     public static final String STATEMENT_CACHE_MISS = "statementCacheMissEvent";
 
     /**
+     * Represents caching of sql query event.
+     */
+    public static final String CACHE_SQL_QUERY = "cacheSqlQueryEvent";
+
+    /**
      * Represents module provider name.
      */
     public static final String GLASSFISH = "glassfish";
@@ -69,8 +78,39 @@ public interface JdbcRAConstants {
     public static final String STATEMENT_CACHE_PROBE = "statementcache";
 
     /**
+     * Represents probe provider name for sql tracing.
+     */
+    public static final String SQL_TRACING_PROBE = "sqltracing";
+
+    /**
      * Dotted name used in monitoring for Statement caching.
      */
     public static final String STATEMENT_CACHE_DOTTED_NAME = GLASSFISH + ":" +
             JDBCRA + ":" + STATEMENT_CACHE_PROBE + ":";
+
+    /**
+     * Dotted name used in monitoring for Sql Tracing.
+     */
+    public static final String SQL_TRACING_DOTTED_NAME = GLASSFISH + ":" +
+            JDBCRA + ":" + SQL_TRACING_PROBE + ":";
+
+    /**
+     * Represents top queries to report.
+     */
+    public static final String REPORT_QUERIES = "reportQueriesEvent";
+
+    /**
+     * List of valid method names that can be used for sql trace monitoring.
+     */
+    public static final List<String> validSqlTracingMethodNames =
+            Collections.unmodifiableList(
+            Arrays.asList(
+                "nativeSQL",
+                "prepareCall",
+                "prepareStatement",
+                "addBatch",
+                "execute",
+                "executeQuery",
+                "executeUpdate"
+            ));
 }

@@ -413,7 +413,18 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                     
                     propList.add(new ConnectorConfigProperty ("StatementCacheType",
                             rp.getValue(), "StatementCacheType", "java.lang.String"));
-                } 
+
+                } else if ("NUMBER-OF-TOP-QUERIES-TO-REPORT".equals(name.toUpperCase())) {
+
+                    propList.add(new ConnectorConfigProperty ("NumberOfTopQueriesToReport",
+                            rp.getValue(), "NumberOfTopQueriesToReport", "java.lang.String"));
+
+                } else if ("TIME-TO-KEEP-QUERIES-IN-MINUTES".equals(name.toUpperCase())) {
+
+                    propList.add(new ConnectorConfigProperty ("TimeToKeepQueriesInMinutes",
+                            rp.getValue(), "TimeToKeepQueriesInMinutes", "java.lang.String"));
+
+                }
                 else if (mcfConPropKeys.containsKey(name.toUpperCase())) {
 
                     propList.add(new ConnectorConfigProperty (

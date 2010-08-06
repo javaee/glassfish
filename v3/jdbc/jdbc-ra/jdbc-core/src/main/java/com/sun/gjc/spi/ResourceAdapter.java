@@ -36,11 +36,16 @@
 
 package com.sun.gjc.spi;
 
+import com.sun.logging.LogDomains;
+import java.util.Timer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.resource.NotSupportedException;
 import javax.resource.spi.ActivationSpec;
 import javax.resource.spi.AuthenticationMechanism;
 import javax.resource.spi.BootstrapContext;
 import javax.resource.spi.Connector;
+import javax.resource.spi.UnavailableException;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.transaction.xa.XAResource;
 
@@ -62,6 +67,9 @@ import javax.transaction.xa.XAResource;
     }
 )
 public class ResourceAdapter implements javax.resource.spi.ResourceAdapter {
+    private BootstrapContext bootstrapContext;
+    private Timer timer;
+    private static Logger _logger = LogDomains.getLogger(ResourceAdapter.class, LogDomains.RSR_LOGGER);
 
     /**
      * Empty method implementation for endpointActivation
@@ -104,14 +112,31 @@ public class ResourceAdapter implements javax.resource.spi.ResourceAdapter {
      * @param ctx <code>BootstrapContext</code>
      */
     public void start(BootstrapContext ctx) {
-
+        this.bootstrapContext = ctx;
     }
 
     /**
      * Empty implementation of stop method
      */
     public void stop() {
-
+        _logger.finest("Cancelling the timer");
+        if(timer != null) {
+            timer.purge();
+            timer.cancel();
+        }
     }
 
+    public Timer getTimer() {
+        if(bootstrapContext != null) {
+            if (timer == null) {
+                _logger.finest("Creating the timer");
+                try {
+                    timer = bootstrapContext.createTimer();
+                } catch (UnavailableException ex) {
+                    _logger.log(Level.SEVERE, "jdbc-ra.timer_creation_exception", ex.getMessage());
+                }
+            }
+        }
+        return timer;
+    }
 }

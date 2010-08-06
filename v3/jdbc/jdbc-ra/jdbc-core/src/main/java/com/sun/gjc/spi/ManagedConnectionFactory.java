@@ -57,9 +57,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Timer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.resource.spi.ConfigProperty;
+import javax.resource.spi.ResourceAdapterAssociation;
 import org.glassfish.api.jdbc.ConnectionValidation;
 import org.glassfish.api.jdbc.SQLTraceListener;
 import org.glassfish.api.monitoring.ContainerMonitoring;
@@ -77,7 +79,7 @@ import org.glassfish.external.probe.provider.StatsProviderManager;
 
 public abstract class ManagedConnectionFactory implements javax.resource.spi.ManagedConnectionFactory,
         javax.resource.spi.ValidatingManagedConnectionFactory, 
-        MCFLifecycleListener,
+        MCFLifecycleListener, ResourceAdapterAssociation,
         java.io.Serializable {
 
     protected DataSourceSpec spec = new DataSourceSpec();
@@ -538,7 +540,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         String delimiter = ",";
         
         if(sqlTraceListeners != null && !sqlTraceListeners.equals("null")) {
-            sqlTraceDelegator = new SQLTraceDelegator();
+            sqlTraceDelegator = new SQLTraceDelegator(getPoolName());
             StringTokenizer st = new StringTokenizer(sqlTraceListeners, delimiter);
             while (st.hasMoreTokens()) {
                 String sqlTraceListener = st.nextToken().trim();            
@@ -1009,15 +1011,31 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         spec.setDetail(DataSourceSpec.STATEMENTCACHETYPE, statementCacheType);
     }
 
+    public String getNumberOfTopQueriesToReport() {
+        return spec.getDetail(DataSourceSpec.NUMBEROFTOPQUERIESTOREPORT);
+    }
+
+    public void setNumberOfTopQueriesToReport(String numTopQueriesToReport) {
+        spec.setDetail(DataSourceSpec.NUMBEROFTOPQUERIESTOREPORT, numTopQueriesToReport);
+    }
+
+    public String getTimeToKeepQueriesInMinutes() {
+        return spec.getDetail(DataSourceSpec.TIMETOKEEPQUERIESINMINUTES);
+    }
+
+    public void setTimeToKeepQueriesInMinutes(String timeToKeepQueries) {
+        spec.setDetail(DataSourceSpec.TIMETOKEEPQUERIESINMINUTES, timeToKeepQueries);
+    }
+    
     public String getInitSql() {
-        return spec.getDetail(DataSourceSpec.INTISQL);
+        return spec.getDetail(DataSourceSpec.INITSQL);
     }
 
     public void setInitSql(String initSql) {
         //TODO remove case where "null" is checked. Might be a CLI/GUI bug.
         if(initSql != null && !initSql.equalsIgnoreCase("null") && 
                 !initSql.equals("")) {
-            spec.setDetail(DataSourceSpec.INTISQL, initSql);
+            spec.setDetail(DataSourceSpec.INITSQL, initSql);
         }
     }
     
@@ -1281,14 +1299,45 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     @Override
     public void mcfCreated() {
         String poolName = getPoolName();
+        String sqlTraceListeners = getSqlTraceListeners();
+
+        //Default values used in case sql tracing is OFF
+        int sqlTraceCacheSize = 0;
+        long timeToKeepQueries = 0;
+        if(sqlTraceListeners != null && !sqlTraceListeners.equals("null")) {
+            if(getNumberOfTopQueriesToReport() != null && !getNumberOfTopQueriesToReport().equals("null")) {
+                //Some value is set for this property
+                sqlTraceCacheSize = Integer.parseInt(getNumberOfTopQueriesToReport());
+            } else {
+                //No property by this name. default to 10 queries
+                sqlTraceCacheSize = 10;
+            }
+            if(getTimeToKeepQueriesInMinutes() != null && !getTimeToKeepQueriesInMinutes().equals("null")) {
+                //Time-To-Keep-Queries property has been set
+                timeToKeepQueries = Integer.parseInt(getTimeToKeepQueriesInMinutes());
+            } else {
+                //Default to 5 minutes after which cache is pruned.
+                timeToKeepQueries = 5;
+                //Time to keep queries is set to 5 minutes because the timer
+                //task will keep running till mcf is destroyed even if
+                //monitoring is turned OFF.
+            }
+        }
         _logger.finest("MCF Created");
-        if (statementCacheSize > 0) {
-            jdbcStatsProvider = new JdbcStatsProvider(poolName);
+        if (statementCacheSize > 0 ||
+                (sqlTraceListeners != null && !sqlTraceListeners.equals("null"))) {
+            jdbcStatsProvider = new JdbcStatsProvider(poolName, sqlTraceCacheSize,
+                    timeToKeepQueries);
             //get the poolname and use it to initialize the stats provider n register
             StatsProviderManager.register(
                     ContainerMonitoring.JDBC_CONNECTION_POOL,
                     PluginPoint.SERVER,
                     "resources/" + poolName, jdbcStatsProvider);
+            if(jdbcStatsProvider.getSqlTraceCache() != null) {
+                _logger.finest("Scheduling timer task for sql trace caching");
+                Timer timer = ((com.sun.gjc.spi.ResourceAdapter) ra).getTimer();
+                jdbcStatsProvider.getSqlTraceCache().scheduleTimerTask(timer);
+            }
             _logger.finest("Registered JDBCRA Stats Provider");
         }
     }
@@ -1297,6 +1346,10 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     public void mcfDestroyed() {
         _logger.finest("MCF Destroyed");
         if(jdbcStatsProvider != null) {
+            if(jdbcStatsProvider.getSqlTraceCache() != null) {
+                _logger.finest("Canceling timer task for sql trace caching");
+                jdbcStatsProvider.getSqlTraceCache().cancelTimerTask();
+            }
             StatsProviderManager.unregister(jdbcStatsProvider);
             jdbcStatsProvider = null;
             _logger.finest("Unregistered JDBCRA Stats Provider");

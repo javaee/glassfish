@@ -36,12 +36,12 @@
 
 package com.sun.gjc.util;
 
+import com.sun.gjc.monitoring.JdbcRAConstants;
+import com.sun.gjc.monitoring.SQLTraceProbeProvider;
 import java.util.ArrayList;
 import java.util.List;
 import org.glassfish.api.jdbc.SQLTraceListener;
 import org.glassfish.api.jdbc.SQLTraceRecord;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
 
 /**
  * Implementation of SQLTraceListener to listen to events related to a 
@@ -54,20 +54,21 @@ import org.jvnet.hk2.component.Singleton;
 public class SQLTraceDelegator implements SQLTraceListener {
     
     //List of listeners 
-    //protected static List<SQLTraceListener> sqlTraceListenersList;
     protected List<SQLTraceListener> sqlTraceListenersList;
-    //private static SQLTraceDelegator __sqlTraceRegistry = 
-      //      new SQLTraceDelegator();
+    private String poolName;
+    private SQLTraceProbeProvider probeProvider = null;
 
-    /*public static SQLTraceDelegator getRegistry() {
-        if(__sqlTraceRegistry == null) {
-            throw new RuntimeException("SQLTraceRegistry not initialized");
-        }
-        return __sqlTraceRegistry;        
-    }*/
-    
+    public SQLTraceProbeProvider getProbeProvider() {
+        return probeProvider;
+    }
+
     public SQLTraceDelegator() {
+        
+    }
 
+    public SQLTraceDelegator(String poolName) {
+        this.poolName = poolName;
+        probeProvider = new SQLTraceProbeProvider();
     }
 
     /**
@@ -89,5 +90,39 @@ public class SQLTraceDelegator implements SQLTraceListener {
                listener.sqlTrace(record);
            }
        }
-   }
+
+        if (record != null) {
+            record.setPoolName(poolName);
+            String methodName = record.getMethodName();
+            //Check if the method name is one in which sql query is used
+            if (isMethodValidForCaching(methodName)) {
+                Object[] params = record.getParams();
+                if (params != null && params.length > 0) {
+                    String sqlQuery = null;
+                    for (Object param : params) {
+                        if(param instanceof String) {
+                            sqlQuery = param.toString();
+                        }
+                        break;
+                    }
+                    if (sqlQuery != null) {
+                        probeProvider.cacheSqlQueryEvent(poolName, sqlQuery);
+                    }
+                }
+            }
+        }
+    }
+
+   /**
+    * Check if the method name from the sql trace record can be used to 
+    * retrieve a sql string for caching purpose. Most of the method names do not
+    * contain a sql string and hence are unusable for caching the sql strings.
+    * These method names are filtered in this method.
+    * 
+    * @param methodName
+    * @return true if method name can be used to get a sql string for caching.
+    */
+    private boolean isMethodValidForCaching(String methodName) {
+        return JdbcRAConstants.validSqlTracingMethodNames.contains(methodName);
+    }
 }
