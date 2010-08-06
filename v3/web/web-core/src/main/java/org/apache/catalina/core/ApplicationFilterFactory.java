@@ -66,7 +66,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Factory for the creation and caching of Filters and creationg 
+ * Factory for the creation and caching of Filters and creation
  * of Filter Chains.
  *
  * @author Greg Murray
@@ -86,7 +86,7 @@ public final class ApplicationFilterFactory {
 
 
     /*
-     * Prevent instanciation outside of the getInstanceMethod().
+     * Prevent instantiation outside of the getInstanceMethod().
      */
     private ApplicationFilterFactory() {
     }
@@ -96,7 +96,7 @@ public final class ApplicationFilterFactory {
 
 
     /**
-     * Return the fqctory instance.
+     * Return the factory instance.
      */
     public static ApplicationFilterFactory getInstance() {
         return factory;

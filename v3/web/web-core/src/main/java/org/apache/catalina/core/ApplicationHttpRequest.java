@@ -171,7 +171,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
     protected String contextPath = null;
 
     /**
-     * If this request is cross context, since this changes session accesss
+     * If this request is cross context, since this changes session access
      * behavior.
      */
     protected boolean crossContext = false;

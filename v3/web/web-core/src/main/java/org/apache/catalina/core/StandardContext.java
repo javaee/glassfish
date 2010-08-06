@@ -1456,7 +1456,7 @@ public class StandardContext
      * Set the original document root for this Context, which can be an
      * absolute pathname, a relative pathname, or a URL.
      *
-     * @param docBase The orginal document root
+     * @param docBase The original document root
      */
     public void setOriginalDocBase(String docBase) {
         this.originalDocBase = docBase;
