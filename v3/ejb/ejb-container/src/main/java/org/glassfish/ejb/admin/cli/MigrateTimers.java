@@ -40,7 +40,9 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.logging.LogDomains;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.glassfish.ejb.api.DistributedEJBTimerService;
 import org.glassfish.api.ActionReport;
@@ -48,13 +50,17 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ClusterExecutor;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.common.util.admin.ParameterMapExtractor;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 @Service(name = "migrate-timers")
@@ -66,10 +72,16 @@ public class MigrateTimers implements AdminCommand {
 
     static StringManager localStrings = StringManager.getManager(MigrateTimers.class);
 
-    @Param(name = "target", optional = true, alias="destination")
-    String destination;
+    private static final Logger logger =
+        LogDomains.getLogger(MigrateTimers.class, LogDomains.EJB_LOGGER);
 
-    @Param(name = "migrate_from_server_name", primary = true, optional = false)
+    @Param(name = "target", optional = true, alias="destination",
+        defaultValue=SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    String target;
+
+    private boolean needRedirect;
+
+    @Param(name = "fromServer", primary = true, optional = false)
     String fromServer;
 
     @Inject
@@ -80,6 +92,9 @@ public class MigrateTimers implements AdminCommand {
 
     @Inject
     Target targetUtil;
+
+    @Inject
+    private Habitat habitat;
 
     /**
      * Executes the command
@@ -95,9 +110,22 @@ public class MigrateTimers implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
+
         try {
+            if (needRedirect) {
+                needRedirect = false;
+                ParameterMapExtractor mapExtractor = new ParameterMapExtractor(this);
+                ParameterMap params = mapExtractor.extract();
+                ClusterExecutor executor = habitat.getComponent(ClusterExecutor.class, "GlassFishClusterExecutor");
+                logger.info(localStrings.getString("migrate.timers.redirect",
+                        target, params.toCommaSeparatedString()));
+                executor.execute("migrate-timers", this, context, params);
+                return;
+            }
+            
             int totalTimersMigrated = timerService.migrateTimers(fromServer);
-            report.setMessage(localStrings.getString("migrate.timers.count", totalTimersMigrated));
+            report.setMessage(localStrings.getString("migrate.timers.count", 
+                    totalTimersMigrated, fromServer, target));
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (Exception e) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -120,25 +148,30 @@ public class MigrateTimers implements AdminCommand {
         
         //if destinationServer is not set, or set to DAS, pick a running instance
         //in the same cluster as fromServer
-        if(destination == null ||
-                destination.equals(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)) {
+        if(target.equals(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)) {
             List<Server> instances = fromServerCluster.getInstances();
             for(Server instance : instances) {
                 if(instance.isRunning()) {
-                    destination = instance.getName();
+                    target = instance.getName();
+                    needRedirect = true;
                 }
+            }
+            //if destination is still DAS, that means no running server is available
+            if(target.equals(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)) {
+                return localStrings.getString("migrate.timers.noRunningInstanceToChoose",
+                        target);
             }
         } else {
             //verify fromServer and destinationServer are in the same cluster, and
             //verify destination is a clustered instance.
-            Cluster destinationServerCluster = targetUtil.getClusterForInstance(destination);
+            Cluster destinationServerCluster = targetUtil.getClusterForInstance(target);
             if (!fromServerCluster.getName().equals(destinationServerCluster.getName())) {
                 return localStrings.getString(
-                        "migrate.timers.fromServerAndTargetNotInSameCluster", fromServer, destination);
+                        "migrate.timers.fromServerAndTargetNotInSameCluster", fromServer, target);
             }
             //verify destinationServer is running
-            if (!isServerRunning(destination)) {
-                return localStrings.getString("migrate.timers.destinationServerIsNotAlive", destination);
+            if (!isServerRunning(target)) {
+                return localStrings.getString("migrate.timers.destinationServerIsNotAlive", target);
             }
         }
         
