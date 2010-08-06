@@ -104,7 +104,7 @@ public class MapperListener
     /**
      * The string manager for this package.
      */
-    private StringManager sm =
+    private static final StringManager sm =
         StringManager.getManager(Constants.Package);
 
     // It should be null - and fail if not set
