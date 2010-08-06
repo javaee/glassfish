@@ -112,7 +112,7 @@ public class Client extends AdminBaseDevTest {
         try {
             asadmin("freeze-transaction-service", "--target", INSTANCE1_NAME);
             AsadminReturn result = asadminWithOutput("get", "--target", INSTANCE1_NAME, "-m", TXID_MONITOR);
-            System.out.println("" + result.out);
+            System.out.println("Executed command: " + result.out);
             String[] parts = result.out.split("\n");
             String line = null;
             for (int i = 0; i++ < (parts.length - 1); ) {
@@ -124,9 +124,9 @@ public class Client extends AdminBaseDevTest {
             if (line != null) {
                 parts = line.split(" ");
                 result = asadminWithOutput("rollback-transaction", "--target", INSTANCE1_NAME, "--transaction_id", parts[0]);
-                System.out.println("" + result.out);
+                System.out.println("Executed command: " + result.out);
                 if (!result.returnValue) {
-                    System.out.println("RESULT.err: " + result.err);
+                    System.out.println("CLI FAILED: " + result.err);
                 }
             } else {
                 System.out.println("Transaction Id not found");
@@ -149,9 +149,9 @@ public class Client extends AdminBaseDevTest {
                     .append(File.separator).append("tx").toString();
             AsadminReturn result = asadminWithOutput("recover-transactions", "--target", INSTANCE2_NAME, 
                     "--transactionlogdir", txLog, INSTANCE1_NAME); 
-            System.out.println("" + result.out);
+            System.out.println("Executed command: " + result.out);
             if (!result.returnValue) {
-                System.out.println("RESULT.err: " + result.err);
+                System.out.println("CLI FAILED: " + result.err);
             }
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.log-service.module-log-levels.resourceadapter=INFO");
         } catch (Exception e) {
