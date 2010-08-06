@@ -25,5 +25,3 @@ This test, when run with 'all' target performs the following steps:
   - stop-database
   - stopDomain
 
-Notes: 
-- run-recover fails until issue 12896 is fixed
