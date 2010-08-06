@@ -552,7 +552,7 @@ public final class AccessLogValve
 
     /**
      * Return whether the attribute name to look for when
-     * performing conditional loggging. If null, every
+     * performing conditional logging. If null, every
      * request is logged.
      */
     public String getCondition() {
@@ -711,7 +711,7 @@ public final class AccessLogValve
                 char ch = pattern.charAt(i);
                 if (replace) {
                     /* For code that processes {, the behavior will be ... if I
-                     * do not enounter a closing } - then I ignore the {
+                     * do not encounter a closing } - then I ignore the {
                      */
                     if ('{' == ch){
                         StringBuilder name = new StringBuilder();

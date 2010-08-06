@@ -1228,7 +1228,7 @@ public interface Context extends Container {
     // END RIMOD 4642650
        /**
      * Get the server.xml <context> attribute's xmlNamespaceAware.
-     * @return true if namespace awarenes is enabled.
+     * @return true if namespace awareness is enabled.
      *
      */
     boolean getXmlNamespaceAware();
@@ -1280,7 +1280,7 @@ public interface Context extends Container {
 
     /**
      * Get the server.xml <host> attribute's xmlNamespaceAware.
-     * @return true if namespace awarenes is enabled.
+     * @return true if namespace awareness is enabled.
      */
     boolean getTldNamespaceAware();
 

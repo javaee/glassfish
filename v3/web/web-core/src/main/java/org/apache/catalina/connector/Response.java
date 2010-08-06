@@ -886,7 +886,7 @@ public class Response
      * of the request. This method must be called prior to reading
      * request parameters or reading input using getReader().
      *
-     * @param charset String containing the name of the chararacter encoding.
+     * @param charset String containing the name of the character encoding.
      */
     public void setCharacterEncoding(String charset) {
 

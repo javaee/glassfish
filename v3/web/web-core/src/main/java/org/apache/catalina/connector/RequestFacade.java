@@ -447,7 +447,7 @@ public class RequestFacade
 
         /*
          * Clone the returned array only if there is a security manager
-         * in place, so that performance won't suffer in the nonsecure case
+         * in place, so that performance won't suffer in the non-secure case
          */
         if (SecurityUtil.isPackageProtectionEnabled()){
             ret = (String[]) AccessController.doPrivileged(
@@ -670,7 +670,7 @@ public class RequestFacade
 
         /*
          * Clone the returned array only if there is a security manager
-         * in place, so that performance won't suffer in the nonsecure case
+         * in place, so that performance won't suffer in the non-secure case
          */
         if (SecurityUtil.isPackageProtectionEnabled()){
             ret = (Cookie[])AccessController.doPrivileged(

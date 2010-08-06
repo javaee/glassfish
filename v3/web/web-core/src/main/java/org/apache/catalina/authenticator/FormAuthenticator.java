@@ -333,7 +333,7 @@ public class FormAuthenticator
 
     /**
      * Does this request match the saved one (so that it must be the redirect
-     * we signalled after successful authentication?
+     * we signaled after successful authentication?
      *
      * @param request The request to be verified
      */

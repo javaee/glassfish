@@ -75,7 +75,7 @@ import java.util.HashMap;
 public class SchemaResolver implements EntityResolver {
 
     /**
-     * The disgester instance for which this class is the entity resolver.
+     * The digester instance for which this class is the entity resolver.
      */
     protected Digester digester;
 
@@ -108,7 +108,7 @@ public class SchemaResolver implements EntityResolver {
 
     /**
      * Create a new <code>EntityResolver</code> that will redirect
-     * all remote dtds and schema to a locat destination.
+     * all remote dtds and schema to a local destination.
      * @param digester schemaLocation the XML Schema used to validate xml instance.
      */
     public SchemaResolver(Digester digester) {

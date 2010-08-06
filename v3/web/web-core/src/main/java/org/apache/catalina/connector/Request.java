@@ -213,7 +213,7 @@ public class Request
      */
     protected HashMap attributes = new HashMap();
     /**
-     * The preferred Locales assocaited with this Request.
+     * The preferred Locales associated with this Request.
      */
     protected ArrayList locales = new ArrayList();
     /**
@@ -849,7 +849,7 @@ public class Request
     /**
      * Set the URI converter.
      * 
-     * @param URIConverter the new URI connverter
+     * @param URIConverter the new URI converter
      */
     protected void setURIConverter(B2CConverter URIConverter) {
         this.URIConverter = URIConverter;
@@ -1614,7 +1614,7 @@ public class Request
                 listener.attributeRemoved(event);
             } catch (Throwable t) {
                 log(sm.getString("coyoteRequest.attributeEvent"), t);
-                // Error valve will pick this execption up and display it to user
+                // Error valve will pick this exception up and display it to user
                 attributes.put(RequestDispatcher.ERROR_EXCEPTION, t);
             }
         }
@@ -1694,7 +1694,7 @@ public class Request
                 }
             } catch (Throwable t) {
                 log(sm.getString("coyoteRequest.attributeEvent"), t);
-                // Error valve will pick this execption up and display it to user
+                // Error valve will pick this exception up and display it to user
                 attributes.put(RequestDispatcher.ERROR_EXCEPTION, t);
             }
         }
@@ -2277,7 +2277,7 @@ public class Request
     }
 
     /**
-     * Set the set of cookies recieved with this Request.
+     * Set the set of cookies received with this Request.
      */
     public void setCookies(Cookie[] cookies) {
 
@@ -2693,7 +2693,7 @@ public class Request
             return (false);
         }
 
-        // Identify the Realm we will use for checking role assignmenets
+        // Identify the Realm we will use for checking role assignments
         if (context == null) {
             return (false);
         }

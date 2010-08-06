@@ -70,7 +70,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * <p>Implmentation of <b>Realm</b> that authenticates users via the <em>Java
+ * <p>Implementation of <b>Realm</b> that authenticates users via the <em>Java
  * Authentication and Authorization Service</em> (JAAS).  JAAS support requires
  * either JDK 1.4 (which includes it as part of the standard platform) or
  * JDK 1.3 (with the plug-in <code>jaas.jar</code> file).</p>
@@ -111,7 +111,7 @@ import java.util.logging.Logger;
  *     <code>Subject.getPrincipals()</code>, it will identify the first
  *     <code>Principal</code> that matches the "user classes" list as the
  *     <code>Principal</code> for this user.</li>
- * <li>As this Realm iterates over the <code>Princpals</code> returned by
+ * <li>As this Realm iterates over the <code>Principals</code> returned by
  *     <code>Subject.getPrincipals()</code>, it will accumulate the set of
  *     all <code>Principals</code> matching the "role classes" list as
  *     identifying the security roles for this user.</li>

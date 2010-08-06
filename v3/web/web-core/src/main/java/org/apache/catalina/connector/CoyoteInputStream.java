@@ -277,7 +277,7 @@ public class CoyoteInputStream
     /** 
      * Close the stream
      * Since we re-cycle, we can't allow the call to super.close()
-     * which would permantely disable us.
+     * which would permanently disable us.
      */
     public void close() throws IOException {
         // Disallow operation if the object has gone out of scope

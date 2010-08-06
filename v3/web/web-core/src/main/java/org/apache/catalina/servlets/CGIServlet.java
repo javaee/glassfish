@@ -211,7 +211,7 @@ import org.glassfish.web.util.HtmlEntityEncoder;
  * </p>
  * <p>
  *
- * <b>Metavariable Values</b>: According to the CGI specificion,
+ * <b>Metavariable Values</b>: According to the CGI specification,
  * implementations may choose to represent both null or missing values in an
  * implementation-specific manner, but must define that manner.  This
  * implementation chooses to always define all required metavariables, but
@@ -224,7 +224,7 @@ import org.glassfish.web.util.HtmlEntityEncoder;
  *
  * <b>NPH --  Non-parsed-header implementation</b>:  This implementation does
  * not support the CGI NPH concept, whereby server ensures that the data
- * supplied to the script are preceisely as supplied by the client and
+ * supplied to the script are precisely as supplied by the client and
  * unaltered by the server.
  * </p>
  * <p>
@@ -985,7 +985,7 @@ public final class CGIServlet extends HttpServlet {
 
         /**
          * Constructs the CGI environment to be supplied to the invoked CGI
-         * script; relies heavliy on Servlet API methods and findCGI
+         * script; relies heavily on Servlet API methods and findCGI
          *
          * @param    req request associated with the CGI
          *           invokation
@@ -1471,7 +1471,7 @@ public final class CGIServlet extends HttpServlet {
      * <p>
      *
      * The CGI environment and settings are derived from the information
-     * passed to the constuctor.
+     * passed to the constructor.
      *
      * </p>
      * <p>
@@ -1521,7 +1521,7 @@ public final class CGIServlet extends HttpServlet {
          * @param  env      Hashtable with the desired script environment
          * @param  wd       File with the script's desired working directory
          * @param  params   ArrayList with the script's query command line
-         *                  paramters as strings
+         *                  parameters as strings
          */
         protected CGIRunner(String command, Hashtable<String, String> env,
                             File wd, ArrayList<String> params) {
