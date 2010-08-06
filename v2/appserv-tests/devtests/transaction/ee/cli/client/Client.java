@@ -111,7 +111,7 @@ public class Client extends AdminBaseDevTest {
         System.out.println("Executing rollback CLI");
         try {
             asadmin("freeze-transaction-service", "--target", INSTANCE1_NAME);
-            AsadminReturn result = asadminWithOutput("get", "--target", INSTANCE1_NAME, "-m", TXID_MONITOR);
+            AsadminReturn result = asadminWithOutput("get", "-m", INSTANCE1_NAME + "." + TXID_MONITOR);
             System.out.println("Executed command: " + result.out);
             String[] parts = result.out.split("\n");
             String line = null;
