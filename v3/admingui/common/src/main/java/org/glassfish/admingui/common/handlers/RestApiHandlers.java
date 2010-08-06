@@ -228,59 +228,58 @@ public class RestApiHandlers {
      *
      */
     private static Map<String, Object> parseResponse(RestResponse response, HandlerContext handlerCtx, String endpoint, Map attrs) {
-	// Parse the response
+        // Parse the response
         if (response != null) {
-	    try {
+            try {
                 int status = response.getResponseCode();
                 if ((status != 200) && (status != 201)) {
                     GuiUtil.getLogger().severe(
-                        "RestResponse.getResponse() failed.  endpoint = '"
-                        + endpoint + "'; attrs = '" + attrs + "'; RestResponse: "
-                        + response);
+                            "RestResponse.getResponse() failed.  endpoint = '"
+                                    + endpoint + "'; attrs = '" + attrs + "'; RestResponse: "
+                                    + response);
                     // If this is called from jsf, stop processing/show error.
-                    if (handlerCtx != null){
-			Object msgs = response.getResponse().get("messages");
-			if (msgs == null) {
-			    GuiUtil.handleError(handlerCtx, "REST Request '"
-				+ endpoint + "' failed with response code '"
-				+ status + "'." );
-			} else if (msgs instanceof List) {
-			    StringBuilder builder = new StringBuilder("");
-			    for (Object obj : ((List<Object>) msgs)) {
-				if ((obj instanceof Map) && ((Map<String, Object>) obj).containsKey("message")) {
-				    obj = ((Map<String, Object>) obj).get("message");
-				}
-				builder.append(obj.toString());
-			    }
-			    GuiUtil.handleError(handlerCtx, builder.toString());
-			} else if (msgs instanceof Map) {
-			    GuiUtil.handleError(handlerCtx,
-				((Map<String, Object>) msgs).get("message").toString());
-			} else {
-			    throw new RuntimeException("Unexpected message type.");
-			}
+                    if (handlerCtx != null) {
+                        Object msgs = response.getResponse().get("messages");
+                        if (msgs == null) {
+                            GuiUtil.handleError(handlerCtx, "REST Request '"
+                                    + endpoint + "' failed with response code '"
+                                    + status + "'.");
+                        } else if (msgs instanceof List) {
+                            StringBuilder builder = new StringBuilder("");
+                            for (Object obj : ((List<Object>) msgs)) {
+                                if ((obj instanceof Map) && ((Map<String, Object>) obj).containsKey("message")) {
+                                    obj = ((Map<String, Object>) obj).get("message");
+                                }
+                                builder.append(obj.toString());
+                            }
+                            GuiUtil.handleError(handlerCtx, builder.toString());
+                        } else if (msgs instanceof Map) {
+                            GuiUtil.handleError(handlerCtx,
+                                    ((Map<String, Object>) msgs).get("message").toString());
+                        } else {
+                            throw new RuntimeException("Unexpected message type.");
+                        }
                     }
                 }
-		return response.getResponse();
-	    } catch (Exception ex) {
-		GuiUtil.getLogger().severe(
-		    "RestResponse.getResponse() failed.  endpoint = '"
-		    + endpoint + "'; attrs = '" + attrs + "'; RestResponse: "
-		    + response);
-                if (handlerCtx != null){
+                return response.getResponse();
+            } catch (Exception ex) {
+                GuiUtil.getLogger().severe(
+                        "RestResponse.getResponse() failed.  endpoint = '"
+                                + endpoint + "'; attrs = '" + attrs + "'; RestResponse: "
+                                + response);
+                if (handlerCtx != null) {
                     //If this is called from the jsf as handler, we want to stop processing and show error
                     //instead of dumping the exception on screen.
                     // GuiUtil.getMessage("error.checkServerLog")
-		    GuiUtil.handleException(handlerCtx, ex);
+                    GuiUtil.handleException(handlerCtx, ex);
                 } else {
                     //if this is called by other java handler, we tell the called handle the exception.
                     throw new RuntimeException(ex);
                 }
-	    }
+            }
         }
         return null;
     }
-
 
 
     /**
@@ -686,10 +685,17 @@ public class RestApiHandlers {
     public static List<String> getChildrenNames(String endpoint, String id) throws Exception {
         List<String> childElements = new ArrayList<String>();
         try {
-            String foo = RestApiHandlers.get(endpoint).getResponseBody();
-            List<String> childUrls = getChildResourceList(foo);
-            for (String childUrl : childUrls) {                
-                childElements.add(childUrl.substring(childUrl.lastIndexOf("/")+1));
+            if (!endpoint.endsWith(".json")) {
+                endpoint += ".json";
+            }
+            Map responseMap = restRequest(endpoint, new HashMap<String, Object>(), "get", null);
+            Map data = (Map) responseMap.get("data");
+            Map extraProperties = (Map)data.get("extraProperties");
+            if (extraProperties != null) {
+                Map<String, String> childResources = (Map<String, String>)extraProperties.get("childResources");
+                if (childResources != null) {
+                    childElements.addAll(childResources.keySet());
+                }
             }
         } catch (Exception e) {
             throw e;
