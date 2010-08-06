@@ -268,7 +268,11 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
         }
 
         private void parseServiceDescriptors(ModuleMetadata result) {
+            /*
+             * No need for this optimisation, becasuse it fails when jar does not
+             * have directory entries.
             if (b.getEntry(SERVICE_LOCATION) == null) return;
+             */
             Enumeration<String> entries;
             entries = b.getEntryPaths(SERVICE_LOCATION);
             if (entries != null) {
