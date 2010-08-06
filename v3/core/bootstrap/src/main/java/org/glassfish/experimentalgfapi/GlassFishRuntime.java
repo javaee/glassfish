@@ -40,9 +40,6 @@ package org.glassfish.experimentalgfapi;
 import java.util.Properties;
 import java.util.ServiceLoader;
 
-import static org.glassfish.experimentalgfapi.Constants.PLATFORM_PROPERTY_KEY;
-import static org.glassfish.experimentalgfapi.Constants.Platform;
-
 /**
  * This is the entry point API to bootstrap GlassFish. We don't call it a ServerRuntime or Server,
  * because, we this can be used to boostrap just an App Client Container environment.
@@ -72,8 +69,7 @@ public abstract class GlassFishRuntime {
      */
     public synchronized static GlassFishRuntime bootstrap(Properties properties, ClassLoader cl) throws Exception {
         if (me != null) return me;
-        Constants.Platform platform = whichPlatform(properties);
-        runtimeBuilder = getRuntimeBuilder(platform, cl != null ? cl : GlassFishRuntime.class.getClassLoader());
+        runtimeBuilder = getRuntimeBuilder(properties, cl != null ? cl : GlassFishRuntime.class.getClassLoader());
         me = runtimeBuilder.build(properties);
         return me;
     }
@@ -92,11 +88,7 @@ public abstract class GlassFishRuntime {
 
     public abstract GlassFish newGlassFish(Properties properties) throws Exception;
 
-    private static Constants.Platform whichPlatform(Properties properties) {
-        return Platform.valueOf(properties.getProperty(PLATFORM_PROPERTY_KEY));
-    }
-
-    private static RuntimeBuilder getRuntimeBuilder(Platform platform, ClassLoader cl) {
+    private static RuntimeBuilder getRuntimeBuilder(Properties properties, ClassLoader cl) {
 //        StringBuilder sb = new StringBuilder("Launcher Class Loader = " + cl);
 //        if (cl instanceof URLClassLoader) {
 //            sb.append("has following Class Path: ");
@@ -107,11 +99,11 @@ public abstract class GlassFishRuntime {
 //        System.out.println(sb);
         ServiceLoader<RuntimeBuilder> runtimeBuilders = ServiceLoader.load(RuntimeBuilder.class, cl);
         for (RuntimeBuilder builder : runtimeBuilders) {
-            if (builder.handles(platform)) {
+            if (builder.handles(properties)) {
                 return builder;
             }
         }
-        throw new RuntimeException("No runtime builder for platform: " + platform);
+        throw new RuntimeException("No runtime builder for this configuration: " + properties);
     }
 
     /**
@@ -122,7 +114,7 @@ public abstract class GlassFishRuntime {
     public interface RuntimeBuilder {
         GlassFishRuntime build(Properties properties) throws Exception;
 
-        boolean handles(Platform platform);
+        boolean handles(Properties properties);
 
         void destroy() throws Exception;
     }

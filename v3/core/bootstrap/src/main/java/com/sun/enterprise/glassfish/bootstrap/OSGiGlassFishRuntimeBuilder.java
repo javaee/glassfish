@@ -37,15 +37,11 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import org.glassfish.experimentalgfapi.GlassFishRuntime;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleReference;
+import org.glassfish.experimentalgfapi.*;
+import org.glassfish.experimentalgfapi.Constants;
 import org.osgi.framework.launch.Framework;
-import org.osgi.framework.launch.FrameworkFactory;
-import org.osgi.util.tracker.ServiceTracker;
 
 import java.util.Properties;
-import java.util.ServiceLoader;
 
 /**
  * This class is responsible for
@@ -66,9 +62,8 @@ import java.util.ServiceLoader;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuilder {
+public final class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuilder {
     private Framework framework;
-    private Properties properties;
 
     /**
      * Default constructor needed for meta-inf/service lookup to work
@@ -76,12 +71,15 @@ public class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuil
     public OSGiGlassFishRuntimeBuilder() {}
 
     public GlassFishRuntime build(Properties properties) throws Exception {
-        this.properties = properties;
-        launchOSGiFrameWork();
-        return getRuntime();
+        final OSGiFrameworkLauncher fwLauncher = new OSGiFrameworkLauncher(properties);
+        this.framework = fwLauncher.launchOSGiFrameWork();
+        debug("Initialized " + framework);
+        return fwLauncher.getService(GlassFishRuntime.class);
     }
 
-    public boolean handles(org.glassfish.experimentalgfapi.Constants.Platform platform) {
+    public boolean handles(Properties properties) {
+        Constants.Platform platform =
+                Constants.Platform.valueOf(properties.getProperty(Constants.PLATFORM_PROPERTY_KEY));
         // TODO(Sahoo): Add support for generic OSGi platform
         switch (platform) {
             case Felix:
@@ -95,45 +93,6 @@ public class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuil
     public void destroy() throws Exception {
         framework.stop();
         framework.waitForStop(0);
-    }
-
-    private GlassFishRuntime getRuntime() throws Exception {
-        final BundleContext context = framework.getBundleContext();
-        ServiceTracker tracker = new ServiceTracker(context, GlassFishRuntime.class.getName(), null);
-        tracker.open(true);
-        return GlassFishRuntime.class.cast(tracker.waitForService(0));
-    }
-
-    protected void launchOSGiFrameWork() throws Exception {
-        if (!isOSGiEnv()) {
-            // Start an OSGi framework
-            ServiceLoader<FrameworkFactory> frameworkFactories = ServiceLoader.load(FrameworkFactory.class,
-
-                    getClass().getClassLoader());
-            for (FrameworkFactory ff : frameworkFactories) {
-                framework = ff.newFramework(properties);
-            }
-            if (framework == null) {
-                throw new RuntimeException("No OSGi framework in classpath");
-            } else {
-                framework.init();
-                debug("Initialized + " + framework);
-            }
-
-            // Call auto-processor - this is where our provisioning bundle is installed and started.
-            AutoProcessor.process(properties, framework.getBundleContext());
-            framework.start();
-        }
-    }
-
-    /**
-     * Determine if we we are operating in OSGi env. We do this by checking what class loader is used to
-     * this class.
-     *
-     * @return false if we are already called in the context of OSGi framework, else true.
-     */
-    private boolean isOSGiEnv() {
-        return (getClass().getClassLoader() instanceof BundleReference);
     }
 
     private static void debug(String s) {
