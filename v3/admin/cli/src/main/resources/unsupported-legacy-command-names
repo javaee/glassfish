@@ -39,7 +39,6 @@ remove-ha-cluster R
 create-ha-store R
 clear-ha-store R
 configure-ha-persistence R
-migrate-timers R
 create-repository-zip R (unsupported in v2 as well)
 apply-repository-zip R (unsupported in v2 as well)
 get-hadb-info R

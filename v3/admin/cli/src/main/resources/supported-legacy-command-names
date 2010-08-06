@@ -103,6 +103,7 @@ recover-transactions R
 jms-ping R
 list-jndi-entries R
 list-timers R
+migrate-timers R
 change-master-password R
 create-password-alias R
 delete-password-alias R
