@@ -91,9 +91,13 @@ public class ListProtocolFinders implements AdminCommand {
         }
         final ActionReport report = context.getActionReport();
         Protocol protocol = config.getNetworkConfig().getProtocols().findProtocol(protocolName);
-        final PortUnification pu = protocol.getPortUnification();
-        for (ProtocolFinder finder : pu.getProtocolFinder()) {
-            report.getTopMessagePart().addChild().setMessage(finder.getName());
+        if (protocol!=null) {
+            final PortUnification pu = protocol.getPortUnification();
+            if (pu!=null) {
+                for (ProtocolFinder finder : pu.getProtocolFinder()) {
+                    report.getTopMessagePart().addChild().setMessage(finder.getName());
+                }
+            }
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }

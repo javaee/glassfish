@@ -90,9 +90,13 @@ public class ListProtocolFilters implements AdminCommand {
         }
         final ActionReport report = context.getActionReport();
         Protocol protocol = config.getNetworkConfig().getProtocols().findProtocol(protocolName);
-        final ProtocolChain chain = protocol.getProtocolChainInstanceHandler().getProtocolChain();
-        for (ProtocolFilter filter : chain.getProtocolFilter()) {
-            report.getTopMessagePart().addChild().setMessage(filter.getName());
+        if (protocol!=null) {
+            final ProtocolChain chain = protocol.getProtocolChainInstanceHandler().getProtocolChain();
+            if (chain!=null) {
+                for (ProtocolFilter filter : chain.getProtocolFilter()) {
+                    report.getTopMessagePart().addChild().setMessage(filter.getName());
+                }
+            }
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
