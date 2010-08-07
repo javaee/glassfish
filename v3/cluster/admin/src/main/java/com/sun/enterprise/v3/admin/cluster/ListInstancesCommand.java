@@ -212,6 +212,7 @@ public class ListInstancesCommand implements AdminCommand {
             
             sb.append(name).append(display);
             top.addProperty(name, value);
+            if (ii.isRunning()) top.addProperty(name + ".uptime", "" + ii.getUptime());
         }
 
         if (verbose)

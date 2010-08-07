@@ -41,6 +41,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.ParameterMap;
+import com.sun.enterprise.universal.Duration;
 
 /**
  * Used to format instance state info in a standard way.
@@ -65,8 +66,9 @@ public final class InstanceInfo {
         port = port0;
         host = host0;
         logger = logger0;
-        state = pingInstance();
         timeoutInMsec = timeout0;
+        uptime = pingInstance();
+        state = uptime == -1 ? NOT_RUNNING : formatTime(uptime);
 
         if (!StringUtils.ok(cluster0))
             cluster = null;
@@ -85,7 +87,7 @@ public final class InstanceInfo {
                 + ", host: " + getHost()
                 + ", port: " + getPort()
                 + cl
-                + ", state: " + state;
+                + ", uptime: " + uptime;
     }
 
     public final String getDisplayCluster() {
@@ -106,6 +108,10 @@ public final class InstanceInfo {
 
     public final String getName() {
         return name;
+    }
+
+    public final long getUptime() {
+        return uptime;
     }
 
     public final String getState() {
@@ -197,27 +203,24 @@ public final class InstanceInfo {
     }
 
     // TODO what about security????
-    private String pingInstance() {
+    private long pingInstance() {
         // there could be more than one instance with the same admin port
         // let's get a positive ID!
 
-        if (i9())
-            return getUptime();
-        else
-            return NOT_RUNNING;
-    }
+        if (!i9()) return -1;
 
-    private String getUptime() {
         try {
             RemoteAdminCommand rac = new RemoteAdminCommand("uptime", host, port, false, "admin", null, logger);
             rac.setConnectTimeout(timeoutInMsec);
             ParameterMap map = new ParameterMap();
             map.set("type", "terse");
+            map.set("milliseconds", "true");
             running = true;
-            return rac.executeCommand(map).trim();
+            String uptimeStr = rac.executeCommand(map).trim();
+            return Long.parseLong(uptimeStr);
         }
         catch (CommandException ex) {
-            return NOT_RUNNING;
+            return -1;
         }
     }
 
@@ -240,6 +243,10 @@ public final class InstanceInfo {
         return false;
     }
 
+    private String formatTime(long uptime) {
+        return Strings.get("instanceinfo.uptime", new Duration(uptime));
+    }
+
     private static String prepareFormatString() {
         // Probably not worth the effort but what the heck...
 
@@ -248,6 +255,7 @@ public final class InstanceInfo {
     private final String host;
     private final int port;
     private final String name;
+    private final long uptime;
     private final String state;
     private final String cluster;
     private final Logger logger;
@@ -260,4 +268,5 @@ public final class InstanceInfo {
     private static final String STATE = Strings.get("ListInstances.state");
     private static final String CLUSTER = Strings.get("ListInstances.cluster");
     private static final String NO_CLUSTER = "---";
+
 }
