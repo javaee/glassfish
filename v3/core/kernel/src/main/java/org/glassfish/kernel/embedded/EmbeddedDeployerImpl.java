@@ -36,7 +36,6 @@
 
 package org.glassfish.kernel.embedded;
 
-import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -46,10 +45,8 @@ import org.jvnet.hk2.config.SingleConfigCode;
 import org.glassfish.api.embedded.*;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.*;
-import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -64,13 +61,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.beans.PropertyVetoException;
 
-import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
-import com.sun.enterprise.v3.admin.CommandRunnerImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;

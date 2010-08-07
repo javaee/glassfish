@@ -44,6 +44,7 @@ import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.EventTypes;
+import org.glassfish.hk2.classmodel.reflect.Types;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.EngineInfo;
 import org.glassfish.internal.data.ModuleInfo;
@@ -229,4 +230,15 @@ public interface Deployment {
 
     public void enable(String target, Application app, ApplicationRef appRef,
         ActionReport report, Logger logger) throws Exception;
+
+    /**
+     * Scans the source of the deployment operation for all types
+     * and store the result in the deployment context.
+     * Subsequent calls will return the cached copy from the context
+     *
+     * @param context deployment context
+     * @return the types information from the deployment artifacts
+     * @throws IOException if the scanning fails due to an I/O exception
+     */
+    public Types getDeployableTypes(DeploymentContext context) throws IOException;
 }

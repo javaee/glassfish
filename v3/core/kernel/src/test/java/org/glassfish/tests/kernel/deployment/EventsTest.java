@@ -197,7 +197,8 @@ public class EventsTest extends ConfigApiTest {
 
     @Test
     public void undeployTest() throws Exception {
-        
+
+        try {
         final List<EventTypes> myTestEvents = getSingletonModuleSuccessfullUndeploymentEvents();
         Events events = habitat.getByContract(Events.class);
         EventListener listener = new EventListener() {
@@ -216,6 +217,9 @@ public class EventsTest extends ConfigApiTest {
         Assert.assertEquals(report.getActionExitCode(), ActionReport.ExitCode.SUCCESS);
         for (EventTypes et : myTestEvents) {
             System.out.println("An expected event of type " + et.type() + " was not received");
+        }
+        } catch(Throwable t) {
+            t.printStackTrace();
         }
 
     }

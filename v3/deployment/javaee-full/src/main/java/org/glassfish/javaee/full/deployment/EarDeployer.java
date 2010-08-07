@@ -468,8 +468,7 @@ public class EarDeployer implements Deployer {
     private Collection<Sniffer> getSniffersForModule(
         DeploymentContext bundleContext, 
         ModuleDescriptor md, Application application) {
-        ReadableArchive source = bundleContext.getSource();
-        Collection<Sniffer> sniffers = snifferManager.getSniffers(source, bundleContext.getClassLoader());
+        Collection<Sniffer> sniffers = snifferManager.getSniffers(bundleContext);
         String type = getTypeFromModuleType(md.getModuleType());
         Sniffer mainSniffer = null;
         for (Sniffer sniffer : sniffers) {

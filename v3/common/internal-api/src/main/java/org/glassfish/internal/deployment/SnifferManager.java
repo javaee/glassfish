@@ -38,7 +38,6 @@ package org.glassfish.internal.deployment;
 
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.CompositeSniffer;
-import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -84,18 +83,17 @@ public interface SnifferManager {
      * If no sniffer recognize the passed archive, an empty collection is
      * returned.
      *
-     * @param archive source archive abstraction
-     * @param cloader is a class loader capable of loading classes and resources
-     * from the passed archive.
+     * @param context the deployment context
      * @return possibly empty collection of sniffers that handle the passed
      * archive.
      */
-    public Collection<Sniffer> getSniffers(ReadableArchive archive, ClassLoader cloader);
+    public Collection<Sniffer> getSniffers(DeploymentContext context);
 
     /**
      * Return whether a sniffer supports to be isolated during deployment per use request.
      *
-     * @return true if a snifer can by specified by the user when deploying
+     * @param sniffer the sniffer to test
+     * @return true if a sniffer can by specified by the user when deploying
      *
      */
     public boolean canBeIsolated(Sniffer sniffer);

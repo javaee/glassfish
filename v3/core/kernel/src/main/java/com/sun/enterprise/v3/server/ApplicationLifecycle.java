@@ -45,9 +45,11 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
-import org.glassfish.deployment.common.ApplicationConfigInfo;
+
+import org.glassfish.deployment.common.*;
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+import org.glassfish.hk2.classmodel.reflect.Types;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import org.jvnet.hk2.config.types.Property;
@@ -56,27 +58,22 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.Utility;
 import org.glassfish.common.util.admin.ParameterMapExtractor;
 import java.util.StringTokenizer;
-import org.glassfish.deployment.common.DeploymentContextImpl;
+
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.logging.LogDomains;
-import com.sun.hk2.component.*;
 import org.glassfish.api.*;
 import org.glassfish.api.event.*;
 import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.CompositeHandler;
-import org.glassfish.deployment.common.DeploymentProperties;
-import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.data.*;
 import org.glassfish.internal.api.*;
 import org.glassfish.internal.deployment.Deployment;
@@ -90,7 +87,6 @@ import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Transaction;
@@ -106,19 +102,9 @@ import java.util.logging.Logger;
 import java.net.URI;
 import java.net.URLClassLoader;
 import java.lang.instrument.ClassFileTransformer;
-import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
-import org.glassfish.deployment.common.VersioningDeploymentUtil;
 
 /**
- * Application Loader is providing utitily methods to load applications
- *
- *
- * <p>
- * Having admin commands extend from this is also not a very good idea
- * in terms of allowing re-wiring in different environments.
- *
- * <p>
- * For now I'm just making this class reusable on its own.
+ * Application Loader is providing useful methods to load applications
  *
  * @author Jerome Dochez
  */
@@ -190,7 +176,7 @@ public class ApplicationLifecycle implements Deployment {
             }
         }
 
-        // re-order the list so the ConnectorHandler gets picked up last 
+        // re-order the list so the ConnectorHandler gets picked up last
         // before the default
         // this will avoid un-necessary annotation scanning in some cases
         LinkedList<ArchiveHandler> handlerList = new LinkedList<ArchiveHandler>();
@@ -282,14 +268,7 @@ public class ApplicationLifecycle implements Deployment {
             ClassLoaderHierarchy clh = habitat.getByContract(ClassLoaderHierarchy.class);
             context.createDeploymentClassLoader(clh, handler);
 
-            // scan the jar and store the result in the deployment context.
-            ReadableArchiveScannerAdapter scannerAdapter = new ReadableArchiveScannerAdapter(context.getSource());
-            ParsingContext parsingContext = new ParsingContext.Builder().logger(context.getLogger()).build();
-            Parser parser = new Parser(parsingContext);
-            parser.parse(scannerAdapter, null);
-            parser.awaitTermination();
-            context.addModuleMetaData(parsingContext.getTypes());
-            context.addModuleMetaData(parser);
+            getDeployableTypes(context);
 
             final ClassLoader cloader = context.getClassLoader();
             final ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
@@ -411,6 +390,32 @@ public class ApplicationLifecycle implements Deployment {
         }
     }
 
+    @Override
+    public Types getDeployableTypes(DeploymentContext context) throws IOException {
+
+        synchronized(context) {
+            Types types = context.getModuleMetaData(Types.class);
+            if (types!=null) {
+                return types;
+            } else {
+
+                try {
+                    // scan the jar and store the result in the deployment context.
+                    ReadableArchiveScannerAdapter scannerAdapter = new ReadableArchiveScannerAdapter(context.getSource());
+                    ParsingContext parsingContext = new ParsingContext.Builder().logger(context.getLogger()).build();
+                    Parser parser = new Parser(parsingContext);
+                    parser.parse(scannerAdapter, null);
+                    parser.awaitTermination();
+                    context.addModuleMetaData(parsingContext.getTypes());
+                    context.addModuleMetaData(parser);
+                    return parsingContext.getTypes();
+                } catch(InterruptedException e) {
+                    throw new IOException(e);
+                }
+            }
+        }
+    }
+    
     /**
      * Suspends this application.
      *
@@ -458,12 +463,11 @@ public class ApplicationLifecycle implements Deployment {
 
         final ActionReport report = context.getActionReport();
         if (sniffers==null) {
-            ReadableArchive source=context.getSource();
             if (handler instanceof CompositeHandler) {
                 context.getAppProps().setProperty(ServerTags.IS_COMPOSITE, "true");
                 sniffers = snifferManager.getCompositeSniffers(context);
             } else {
-                sniffers = snifferManager.getSniffers(source, context.getClassLoader());
+                sniffers = snifferManager.getSniffers(context);
             }
 
         }

@@ -416,8 +416,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
      * prevents any confusion that could result if the developer modified the
      * archive file - changing its lastModified value - before redeploying it.
      *
-     * @param uniqueSubdirUnderApplications
      * @param deploymentContext
+     * @param logger logger
      * @throws IOException
      */
     private void moveAppFilesToPermanentLocation(

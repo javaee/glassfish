@@ -37,23 +37,21 @@
 
 package com.sun.enterprise.v3.server;
 
-import org.glassfish.hk2.classmodel.reflect.AnnotationModel;
-import org.glassfish.hk2.classmodel.reflect.AnnotationType;
-import org.glassfish.hk2.classmodel.reflect.Type;
-import org.glassfish.hk2.classmodel.reflect.Types;
+import org.glassfish.hk2.classmodel.reflect.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.*;
-import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.CompositeSniffer;
 import org.glassfish.internal.deployment.SnifferManager;
-import org.glassfish.internal.api.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
+import java.net.URISyntaxException;
 import java.util.*;
+import java.net.URI;
 
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
 
@@ -126,41 +124,27 @@ public class SnifferManagerImpl implements SnifferManager {
      * If no sniffer recognize the passed archive, an empty collection is
      * returned.
      *
-     * @param archive source archive abstraction
-     * @param cloader is a class loader capable of loading classes and resources
-     * from the passed archive.
+     * @param context the deployment context
      * @return possibly empty collection of sniffers that handle the passed
      * archive.
      */
-    public Collection<Sniffer> getSniffers(ReadableArchive archive, ClassLoader cloader) {
+    public Collection<Sniffer> getSniffers(DeploymentContext context) {
 
         // it is important to keep an ordered sequence here to keep sniffers
         // in their natural order.
-        List<Sniffer> appSniffers = new ArrayList<Sniffer>();
+        List<Sniffer> nonCompositeSniffers = new ArrayList<Sniffer>();
+        for (Sniffer sniffer : getSniffers()) {
+            if (!(sniffer instanceof CompositeSniffer))
+                nonCompositeSniffers.add(sniffer);
+        }
 
         // scan for registered annotations and retrieve applicable sniffers
-        SnifferAnnotationScanner snifferAnnotationScanner = 
-            new SnifferAnnotationScanner();
-
-        for (Sniffer sniffer : getSniffers()) {
-            if (!(sniffer instanceof CompositeSniffer)) {
-                snifferAnnotationScanner.register(sniffer, 
-                    sniffer.getAnnotationTypes());        
-            }
-        }
-
-        // we only scan archive when there are annotations registered
-        if (!snifferAnnotationScanner.getRegisteredAnnotations().isEmpty()) {
-            snifferAnnotationScanner.scanArchive(archive);      
-            appSniffers.addAll(snifferAnnotationScanner.getApplicableSniffers());
-        }
- 
-
+        List<Sniffer> appSniffers = this.getApplicableSniffers(context, nonCompositeSniffers,  true);
+        
         // call handles method of the sniffers
-        for (Sniffer sniffer : getSniffers()) {
-            if (!(sniffer instanceof CompositeSniffer) && 
-                !appSniffers.contains(sniffer) && 
-                sniffer.handles(archive, cloader )) {
+        for (Sniffer sniffer : nonCompositeSniffers) {
+            if ( !appSniffers.contains(sniffer) &&
+                sniffer.handles(context.getSource(), context.getClassLoader() )) {
                 appSniffers.add(sniffer);
             }
         }
@@ -190,8 +174,7 @@ public class SnifferManagerImpl implements SnifferManager {
         // in their natural order.
 
         List<CompositeSniffer> appSniffers =
-                getApplicableSniffers(getCompositeSniffers(),
-                        context.getModuleMetaData(Types.class));
+                getApplicableSniffers(context, getCompositeSniffers(), false);
 
         // call handles method of the sniffers
         for (CompositeSniffer sniffer : getCompositeSniffers()) {
@@ -203,15 +186,43 @@ public class SnifferManagerImpl implements SnifferManager {
         return appSniffers;
     }
 
-    public <T extends Sniffer> List<T> getApplicableSniffers(Collection<T> sniffers, Types types) {
+    public <T extends Sniffer> List<T> getApplicableSniffers(DeploymentContext context, Collection<T> sniffers, boolean checkPath) {
+        if (sniffers==null || sniffers.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Types types = context.getModuleMetaData(Types.class);
+        List<URI> uris = new ArrayList<URI>();
+        uris.add(context.getSource().getURI());
+        try {
+            File f = new File(context.getSource().getURI());
+            if (f.exists() && f.isDirectory()) {
+                // we automatically add web-inf/classes to acceptable loading uri to handle
+                // specificities of war files. Potentially we could check that f ends with "WAR" 
+                uris.add(new URI(context.getSource().getURI().toString()+"WEB-INF/classes/"));
+            }
+        } catch (URISyntaxException e) {
+            // ignore.
+        }
+
         List<T> result = new ArrayList<T>();
         for (T sniffer : sniffers) {
-            for (Class<? extends Annotation> annotationType : sniffer.getAnnotationTypes())  {
+            Class<? extends Annotation>[] annotations = sniffer.getAnnotationTypes();
+            if (annotations==null) continue;
+            for (Class<? extends Annotation> annotationType : annotations)  {
                 Type type = types.getBy(annotationType.getName());
                 if (type instanceof AnnotationType) {
-                    if (!((AnnotationType) type).allAnnotatedTypes().isEmpty()) {
-                        result.add(sniffer);
-                        break;
+                    Collection<AnnotatedElement> elements = ((AnnotationType) type).allAnnotatedTypes();
+                    for (AnnotatedElement element : elements) {
+                        if (checkPath) {
+                            Type t = (element instanceof Member?((Member) element).getDeclaringType():(Type) element);
+                            if (t.wasDefinedIn(uris)) {
+                                result.add(sniffer);
+                                break;
+                            }
+                        } else {
+                            result.add(sniffer);
+                            break;
+                        }
                     }
                 }
             }
@@ -231,8 +242,8 @@ public class SnifferManagerImpl implements SnifferManager {
                             localStrings.getLocalString(
                             "invalidarchivepackaging",
                             "Invalid archive packaging {2}",
-                            new Object[] {sniffer.getModuleType(), type,
-                            context.getSourceDir().getPath()}));
+                            sniffer.getModuleType(), type,
+                            context.getSourceDir().getPath()));
                     }
                 }
             }
