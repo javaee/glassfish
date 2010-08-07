@@ -153,7 +153,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         String msg;
         // What we tell humans to run if we fail. Local version
         String humanVersionOfCommand = "asadmin " + " create-local-instance " +
-                    " --node " + node + " " + instance;
+                    "--host "+ dasHost + " --node " + node + " " + instance;
 
 //        if (node == null || !rch.isRemoteConnectRequired(node)) {
         if (rch.isLocalhost(nodes.getNode(node))) {
@@ -181,10 +181,10 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             int status =createInstanceRemote();
 
         } else {
-            msg= Strings.get("create.instance.remote.notssh",node, node, instance, humanVersionOfCommand);
+            msg= Strings.get("create.instance.remote.failed", instance, node, nodeHost, humanVersionOfCommand);
             logger.warning(msg);
             msg = Strings.get("create.instance.remote.failed",
-                    instance, nodeHost, humanVersionOfCommand );
+                    instance, node, nodeHost, humanVersionOfCommand );
             logger.warning(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
@@ -260,8 +260,8 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         } catch (SSHCommandExecutionException ec )  {
             String msg = Strings.get("create.instance.ssh.failed", instance, ec.getSSHSettings(), ec.getMessage(), nodeHost, ec.getCommandRun());
             logger.severe(msg);
-            msg = Strings.get("create.instance.remote.failed",
-                        instance, nodeHost, ec.getCommandRun());
+            msg = Strings.get("create.instance.ssh.failed",
+                        instance, ec.getSSHSettings(), ec.getMessage(), nodeHost, ec.getCommandRun());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             return 1;

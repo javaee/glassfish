@@ -229,7 +229,8 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             }
         } else {
             ActionReport report = ctx.getActionReport();
-            String msg = Strings.get("start.remote.instance.failed", instanceName);
+            String humanVersionOfCommand = "asadmin start-local-instance --host "+dasHost+ " --node "+noderef +" " + instanceName;
+            String msg = Strings.get("start.instance.failed", instanceName, noderef, nodeHost, humanVersionOfCommand);
             logger.warning(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);            
