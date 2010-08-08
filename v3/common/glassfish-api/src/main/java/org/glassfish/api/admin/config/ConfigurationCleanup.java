@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009-10 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,22 +35,21 @@
  *
  */
 
-package org.glassfish.internal.api;
+package org.glassfish.api.admin.config;
 
-import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * Such service implementations are invoked when the domain directory
- * is upgraded following a upgrade event.
- *
- * At the time of execution, the configuration file (domain.xml) has
- * been upgraded but the deployed applications have not been redeployed
- * yet.
+ * Contract called on startup right after the configuration has been read
+ * (and potentially upgraded) but before the startup services.
+ * 
+ * This hook is particularly useful to clean up configuration from left
+ * over config elements that may have not been synchronized correctly due
+ * to various sync optimizations.
  *
  * @author Jerome Dochez
  */
 @Contract
-public interface DomainUpgrade {
-    // tag interface, implementations should rely on postConstruct
-    // for behaviour.
+public class ConfigurationCleanup {
+    // this is a tag interface, rely on postConstruct to do real work.
 }

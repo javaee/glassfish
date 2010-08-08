@@ -41,6 +41,7 @@ import com.sun.enterprise.universal.Duration;
 import com.sun.enterprise.universal.NanoDuration;
 import com.sun.enterprise.util.EarlyLogger;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.api.admin.config.ConfigurationCleanup;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
@@ -109,6 +110,19 @@ public abstract class DomainXml implements Populator {
         if ("upgrade".equals(context.getPlatformMainServiceName())) {
             upgrade();
         }
+
+        // run the cleanup.
+        for (Inhabitant<? extends ConfigurationCleanup> cc : habitat.getInhabitants(ConfigurationCleanup.class)) {
+            try {
+                cc.get(); // run the upgrade
+                EarlyLogger.add(Level.FINE, "Successful cleaned domain.xml with " + cc.getClass());
+            }
+            catch (Exception e) {
+                EarlyLogger.add(Level.FINE, e.toString() + e);
+                EarlyLogger.add(Level.SEVERE, cc.getClass() + " cleaning domain.xml failed " + e);
+            }
+        }
+
 
         decorate();
     }
