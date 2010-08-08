@@ -50,6 +50,8 @@ import com.sun.enterprise.security.auth.realm.IASRealm;
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.util.Utility;
 import java.nio.charset.Charset;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.api.SharedSecureRandom;
 import org.jvnet.hk2.annotations.Service;
 
@@ -102,6 +104,7 @@ public final class FileRealm extends IASRealm
     // Contains cache of keyfile data
     private final Hashtable<String,FileRealmUser> userTable = new Hashtable<String, FileRealmUser>();  // user=>FileRealmUser
     private final Hashtable<String,Integer> groupSizeMap = new Hashtable<String, Integer>(); // maps of groups with value cardinality of group
+    private static final String instanceRoot = getInstanceRoot();
 
     //private boolean constructed = false;
     
@@ -803,11 +806,11 @@ public final class FileRealm extends IASRealm
 
         //Adding this feature of creating the empty keyfile
         // to satisfy some admin requirements.
-        //allow the file creation only if it is inside glassfish domain-config
+        //allow the file creation only if it is inside glassfish instanceRoot
         File filePath = new File(file);
         if ((file != null) && !filePath.exists()) {
             try {
-                if (file.indexOf("domains") > 0 && file.indexOf("config") > 0) {
+                if ((instanceRoot != null) && (file.startsWith(instanceRoot))) {
                     filePath.createNewFile();
                 }
             } catch (IOException ex) {
@@ -1050,6 +1053,9 @@ public final class FileRealm extends IASRealm
         System.exit(1);
     }
 
-
-
+    private static String getInstanceRoot() {
+         ServerEnvironment se = (Globals.getDefaultHabitat() != null)?Globals.getDefaultHabitat().getComponent(ServerEnvironment.class):null;
+         File fileInstanceRoot = (se == null)?null:se.getInstanceRoot();
+         return (fileInstanceRoot != null)?fileInstanceRoot.getAbsolutePath():null;
+    }
 }
