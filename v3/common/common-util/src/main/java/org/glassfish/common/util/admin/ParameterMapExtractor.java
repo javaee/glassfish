@@ -122,7 +122,7 @@ public class ParameterMapExtractor {
                     ! parameterNamesToExclude.contains(f.getName())) {
                 final Object fieldValue = f.get(target);
                 if (fieldValue != null) {
-                    final String paramName = CommandModel.getParamName(param, f);
+                    final String paramName = param.primary() ? "DEFAULT" :  CommandModel.getParamName(param, f);
                     if (param.multiple()) {
                         paramMap.set(paramName, multipleValue(param, f.get(target)));
                     } else {
