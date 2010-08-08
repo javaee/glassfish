@@ -79,8 +79,10 @@ public final class Duration {
             s = strings.get("hours", numHours, numMinutes, numSeconds);
         else if(numMinutes > 0)
             s = strings.get("minutes", numMinutes, numSeconds);
+        else if(numSeconds > 0)
+            s = strings.get("seconds", numSeconds);
         else
-            s = strings.get("milliseconds", numMilliSeconds + numSeconds * MSEC_PER_SECOND);
+            s = strings.get("milliseconds", numMilliSeconds);
         
         return s;
     }
