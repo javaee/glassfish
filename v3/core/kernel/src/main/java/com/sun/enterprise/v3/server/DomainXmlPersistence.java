@@ -77,16 +77,16 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
             new LocalStringManagerImpl(DomainXmlPersistence.class);    
 
 
-    private ManagedFile getConfigFile() throws IOException {
+    private ManagedFile getPidFile() throws IOException {
         File location=null;
         try {
             // I am locking indefinitely with a 2 seconds timeOut.
-            location = getDestination();
+            location = new File(env.getConfigDirPath(), "pid");
             return new ManagedFile(location, 2000, -1);
         } catch (IOException e) {
             logger.log(Level.SEVERE,
                     localStrings.getLocalString("InvalidLocation",
-                            "Cannot obtain configuration location {0}, configuration changes will not be persisted",
+                            "Cannot obtain pid file location {0}, configuration changes will not be persisted",
                             location), e);
             throw e;
         }
@@ -94,12 +94,12 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
 
     @Override
     public Lock accessRead() throws IOException, TimeoutException {
-        return getConfigFile().accessRead();
+        return getPidFile().accessRead();
     }
 
     @Override
     public Lock accessWrite() throws IOException, TimeoutException {
-        return getConfigFile().accessWrite();        
+        return getPidFile().accessWrite();
     }
 
     public synchronized void save(DomDocument doc) throws IOException {
@@ -109,9 +109,9 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
                     "domain.xml cannot be persisted, null destination"));
             return;
         }
-        //Lock writeLock=null;
+        Lock writeLock=null;
         try {
-            /**
+
             try {
                 writeLock = accessWrite();
             } catch (TimeoutException e) {
@@ -120,7 +120,7 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
                 return;
 
             }
-			**/
+
             // get a temporary file
             File f = File.createTempFile("domain", ".xml", destination.getParentFile());
             if (f == null) {
@@ -188,11 +188,11 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
         } catch(IOException e) {
             logger.log(Level.SEVERE, localStrings.getLocalString("ioexception",
                     "IOException while saving the configuration, changes not persisted"), e);
-        } /**finally {
+        } finally {
             if (writeLock!=null) {
                 writeLock.unlock();
             }
-        }*/
+        }
         saved(destination);
     }
 
