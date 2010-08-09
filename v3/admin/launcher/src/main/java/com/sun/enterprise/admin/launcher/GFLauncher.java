@@ -166,7 +166,6 @@ public abstract class GFLauncher {
         // if no <network-config> element, we need to upgrade this domain
         needsUpgrade = !parser.hasNetworkConfig();
         setupCalledByClients = true;
-        checkOsgiPort();
     }
 
     /**
@@ -728,15 +727,6 @@ public abstract class GFLauncher {
             GFLauncherLogger.setConsoleLevel(Level.INFO);
         else
             GFLauncherLogger.setConsoleLevel(Level.WARNING);
-    }
-
-    private void checkOsgiPort() {
-       int port = jvmOptions.getOsgiPort();
-
-        // note: if I just send in port as an int then the JDK will put a comma
-        // after the thousands which looks dumb, e.g.  6666 vs. 6,666
-         if(port > 0 && port < 65536 && !NetUtils.isPortFree(port))
-            GFLauncherLogger.severe("badOsgiPort", "" + port);
     }
 
     private List<String> commandLine = new ArrayList<String>();
