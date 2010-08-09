@@ -95,86 +95,25 @@ public class TimerBeanContainer
             TimerLocal timerLocal = (TimerLocal) createEJBLocalBusinessObjectImpl(timerLocalIntf).
                     getClientObject(timerLocalIntf);
 
+            // TODO: call ejbContainerUtil.getTimerResource();
             String timerResourceJndiName = EjbContainerUtil.TIMER_RESOURCE_JNDI;
-// XXX It's NOT possible to replace the datasource in PU XXX
-// XXX We would need to move this logic to PU creation XXXX
-/** XXX
-            // Do "health check" on access to persistent timer info.
-            EjbBundleDescriptor bundle = 
-                ejbDescriptor.getEjbBundleDescriptor();
 
-            // Get timer data source name set in timer service system app's
-            // sun-ejb-jar.xml
-            ResourceReferenceDescriptor cmpResource = 
-                bundle.getCMPResourceReference();
-
-
-            // Get the timer data source name from the domain.xml
-            EjbContainer ejbc = ejbContainerUtil.getEjbContainer();
-            EjbTimerService ejbt = ejbc.getEjbTimerService();
-            // EjbTimerService is an optional element
-            String ejbtDatasource = (ejbt != null) ?
-                ejbt.getTimerDatasource() : null;
-
-            // Override the timer datasource with the one from domain.xml 
-            // if necessary.  
-            if( (ejbtDatasource != null) && 
-                (!ejbtDatasource.equals(timerResourceJndiName)) ) {
-
-                timerResourceJndiName = ejbtDatasource;               
-                 
-                // overwrite datasource jndi name in descriptor
-                cmpResource.setJndiName(cmpResourceJndiName);
-            }
-
-            // Make sure cmp resource is available in the namespace.
-            Context context = new InitialContext();
-            context.lookup(timerResourceJndiName);
-            
-            // Make an invocation on timer bean to ensure that app is 
-            // initialized properly.  Second param determines whether 
-            // exhaustive database checks are performed.  These are time 
-            // consuming so they will be disabled by default.  
-// XXX This was a duplicate check as the lookup is just been done before
-// The datasource is looked up by PU creation and we don't plan to test the connection
-            boolean checkStatus = timerLocal.checkStatus(timerResourceJndiName, false);
-
-            if( checkStatus ) {
-** XXX **/
-
-                //descriptor object representing this application or module
-                Application application = ejbDescriptor.getApplication();
+            //descriptor object representing this application or module
+            Application application = ejbDescriptor.getApplication();
         
-                //registration name of the applicaton
-                String appID = application.getRegistrationName();
+            //registration name of the applicaton
+            String appID = application.getRegistrationName();
 
-                // Create EJB Timer service. 
-                ejbTimerService = 
-                    new EJBTimerService(appID, timerLocal);
+            // Create EJB Timer service. 
+            ejbTimerService = new EJBTimerService(appID, timerLocal);
+            ejbContainerUtil.setEJBTimerService(ejbTimerService);
 
-                ejbContainerUtil.setEJBTimerService(ejbTimerService);
+            _logger.log(Level.INFO, "ejb.timer_service_started",
+                        new Object[] { timerResourceJndiName } );
 
-                _logger.log(Level.INFO, "ejb.timer_service_started",
-                            new Object[] { timerResourceJndiName } );
-
-/** XXX
-            } else {
-                // error logged by timer bean.
-            }
-** XXX **/
-        
             _logger.log(Level.INFO, "==> Restoring Timers ... " );
             ejbTimerService.restoreEJBTimers();
             _logger.log(Level.INFO, "<== ... Timers Restored.");
-
-/** XXX
-        } catch (NamingException nnfe) {
-
-            // This is most likely caused by the timer datasource not being
-            // configured for this server instance.
-            _logger.log(Level.WARNING, "ejb.timer_service_init_error", 
-                        logParams);
-** XXX **/
 
         } catch (Exception ex) {
             _logger.log(Level.WARNING, "ejb.timer_service_init_error",

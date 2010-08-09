@@ -105,6 +105,7 @@ public class EJBTimerService
     private long nextTimerIdCounter_ = 0;
     private String serverName_;
     private String domainName_;
+    private boolean isDas;
 
     // @@@ Double-check that the individual server id, domain name, 
     // and cluster name cannot contain the TIMER_ID_SEP 
@@ -177,6 +178,7 @@ public class EJBTimerService
         ServerEnvironmentImpl env = ejbContainerUtil.getServerEnvironment();
         domainName_ = env.getDomainName();
         serverName_ = env.getInstanceName();
+        isDas = env.isDas() || env.isEmbedded();
 
         initProperties();
     }
@@ -1202,7 +1204,7 @@ public class EJBTimerService
             List<ScheduledTimerDescriptor>> schedules,
             boolean deploy) {
 
-            return recoverAndCreateSchedules(containerId, schedules, ownerIdOfThisServer_, deploy);
+            return recoverAndCreateSchedules(containerId, schedules, ownerIdOfThisServer_, (deploy && isDas));
     }
 
     /**
@@ -1220,7 +1222,7 @@ public class EJBTimerService
      * and the value is the Method to be executed by the container when the timer with
      * this PK times out.
      */
-    Map<TimerPrimaryKey, Method> recoverAndCreateSchedules(
+    public Map<TimerPrimaryKey, Method> recoverAndCreateSchedules(
             long containerId, Map<Method, 
             List<ScheduledTimerDescriptor>> schedules,
             String server_name, boolean deploy) {
@@ -1230,33 +1232,37 @@ public class EJBTimerService
         TransactionManager tm = ejbContainerUtil.getTransactionManager();
         try {
                               
+            boolean startTimers = ownerIdOfThisServer_.equals(server_name);
+System.err.println("==> IN BC startTimers? " + startTimers);
+System.err.println("==> IN BC deploy? " + deploy);
             tm.begin();
 
-            Set<TimerState> timers = _restoreTimers(
-                (Set<TimerState>)timerLocal_.findActiveTimersOwnedByThisServerByContainer(containerId));
+            if (startTimers) {
+                Set<TimerState> timers = _restoreTimers(
+                        (Set<TimerState>)timerLocal_.findActiveTimersOwnedByThisServerByContainer(containerId));
 
-            if (timers.size() > 0) {
-                logger.log(Level.FINE, "Found " + timers.size() + 
-                        " persistent timers for containerId: " + containerId);
-            }
+                if (timers.size() > 0) {
+                    logger.log(Level.FINE, "Found " + timers.size() + 
+                            " persistent timers for containerId: " + containerId);
+                }
 
-            for (TimerState timer : timers) {
-                TimerSchedule ts = timer.getTimerSchedule();
-                if (ts != null && ts.isAutomatic()) {
-                    for (Method m : schedules.keySet()) {
-                        if (m.getName().equals(ts.getTimerMethodName()) &&
-                                m.getParameterTypes().length == ts.getMethodParamCount()) {
-                            result.put(new TimerPrimaryKey(timer.getTimerId()), m);
-                            if( logger.isLoggable(Level.FINE) ) {
-                                logger.log(Level.FINE, "@@@ FOUND existing schedule: " + 
-                                        ts.getScheduleAsString() + " FOR method: " + m);
+                for (TimerState timer : timers) {
+                    TimerSchedule ts = timer.getTimerSchedule();
+                    if (ts != null && ts.isAutomatic()) {
+                        for (Method m : schedules.keySet()) {
+                            if (m.getName().equals(ts.getTimerMethodName()) &&
+                                    m.getParameterTypes().length == ts.getMethodParamCount()) {
+                                result.put(new TimerPrimaryKey(timer.getTimerId()), m);
+                                if( logger.isLoggable(Level.FINE) ) {
+                                    logger.log(Level.FINE, "@@@ FOUND existing schedule: " + 
+                                            ts.getScheduleAsString() + " FOR method: " + m);
+                                }
                             }
                         }
                     }
                 }
             }
 
-            boolean startTimers = ownerIdOfThisServer_.equals(server_name);
             for (Method m : schedules.keySet()) {
                 for (ScheduledTimerDescriptor sch : schedules.get(m)) {
                     boolean persistent = sch.getPersistent();
@@ -1275,7 +1281,10 @@ public class EJBTimerService
                         tc.setInfo(info);
                     }
                     tc.setPersistent(persistent);
-                    result.put(createTimer(containerId, ts, tc, server_name), m);
+                    TimerPrimaryKey tpk = createTimer(containerId, ts, tc, server_name);
+                    if (startTimers) {
+                        result.put(tpk, m);
+                    }
                     if( logger.isLoggable(Level.FINE) ) {
                         logger.log(Level.FINE, "@@@ CREATED new schedule: " + 
                                     ts.getScheduleAsString() + " FOR method: " + m);

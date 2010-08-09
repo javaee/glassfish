@@ -36,6 +36,7 @@
 
 package org.glassfish.ejb.startup;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.concurrent.atomic.AtomicLong;
@@ -46,14 +47,20 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.ScheduledTimerDescriptor;
 import com.sun.enterprise.security.PolicyLoader;
 import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.util.IASSecurityException;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.ejb.codegen.StaticRmiStubGenerator;
+import com.sun.ejb.containers.EjbContainerUtil;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
+import com.sun.ejb.containers.EJBTimerService;
 import com.sun.logging.LogDomains;
 
+import org.glassfish.api.admin.config.ReferenceContainer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.OpsParams;
@@ -189,7 +196,6 @@ public class EjbDeployer
     @Override
     public EjbApplication load(EjbContainerStarter containerStarter, DeploymentContext dc) {
         super.load(containerStarter, dc);
-
 
         //Register the EjbSecurityComponentInvocationHandler
 
@@ -385,28 +391,40 @@ public class EjbDeployer
                 _logger.log( Level.FINE, "EjbDeployer in target " + dcp.target);
             }
 
-            Map<String, ExtendedDeploymentContext> deploymentContexts = context.getModuleDeploymentContexts();
-
-            for (DeploymentContext dc : deploymentContexts.values()) {
-                EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
-
-                if (checkEjbBundleForTimers(ejbBundle, dcp.target)) {
-                    return;
-                }
+            if (env.getInstanceName().equals(dcp.target)) {
+System.err.println("===> DEPLOYING on " + env.getInstanceName() + " ... skipping event");
+                // Timers will be created by the BaseContainer
+                return;
             }
 
-            EjbBundleDescriptor ejbBundle = context.getModuleMetaData(EjbBundleDescriptor.class);
-            checkEjbBundleForTimers(ejbBundle, dcp.target);
+/**
+            if (EjbContainerUtil.TIMER_SERVICE_APP_NAME.equals(dcp.name)) {
+                EjbApplication app = load(null, context);
+                app.start(context);
+            } else {
+**/
 
+                Map<String, ExtendedDeploymentContext> deploymentContexts = context.getModuleDeploymentContexts();
+
+                for (DeploymentContext dc : deploymentContexts.values()) {
+                    EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
+
+                    checkEjbBundleForTimers(ejbBundle, dcp.target);
+                }
+    
+                EjbBundleDescriptor ejbBundle = context.getModuleMetaData(EjbBundleDescriptor.class);
+                checkEjbBundleForTimers(ejbBundle, dcp.target);
+/**
+            }
+**/
         }
     }
 
-    private boolean checkEjbBundleForTimers(EjbBundleDescriptor ejbBundle, String target) {
+    private void checkEjbBundleForTimers(EjbBundleDescriptor ejbBundle, String target) {
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log( Level.FINE, "EjbDeployer.checkEjbBundleForTimers in BUNDLE: " + ejbBundle.getName());
         }
 
-        boolean found = false;
         if (ejbBundle != null) {
             for (EjbDescriptor ejbDescriptor : ejbBundle.getEjbs()) {
                 if (_logger.isLoggable(Level.FINE)) {
@@ -414,18 +432,63 @@ public class EjbDeployer
                 }
 
                 if (ejbDescriptor.isTimedObject()) {
-                    found = true;
-                    break;
+                    createAutomaticPersistentTimersForEJB(ejbDescriptor, target);
                 }
-            }
-
-            if (found) {
-                //Start EJB Timer Service if it will be used
-                EjbContainerUtilImpl.getInstance().initEJBTimerService(target);
             }
         }
 
-        return found;
+    }
+
+
+    /** Start EJB Timer Service and create automatic timers for this EJB in this target
+     */
+    private void createAutomaticPersistentTimersForEJB(EjbDescriptor ejbDescriptor, String target) {
+        //Start EJB Timer Service if needed
+        EJBTimerService timerService = EjbContainerUtilImpl.getInstance().getEJBTimerService(target);
+System.err.println("==> BEAN ID? " + ejbDescriptor.getUniqueId());
+System.err.println("==> TS? " + timerService);
+        if( timerService != null ) {
+            String owner = getOwnerId(target);
+            Map<Method, List<ScheduledTimerDescriptor>> schedules = 
+                    new HashMap<Method, List<ScheduledTimerDescriptor>>();
+            for (ScheduledTimerDescriptor schd : ejbDescriptor.getScheduledTimerDescriptors()) {
+                Method method = schd.getTimeoutMethod().getMethod(ejbDescriptor);
+                if (method != null && schd.getPersistent()) {
+                    if( _logger.isLoggable(Level.FINE) ) {
+                        _logger.log(Level.FINE, "... processing " + method );
+                    }
+
+                    List<ScheduledTimerDescriptor> list = schedules.get(method);
+                    if (list == null) {
+                        list = new ArrayList<ScheduledTimerDescriptor>();
+                        schedules.put(method, list);
+                    }
+                    list.add(schd);
+                }
+            }
+
+            //TODO pass in only schedules to create.
+            timerService.recoverAndCreateSchedules(ejbDescriptor.getUniqueId(), schedules, owner, true);
+System.err.println("<== BEAN ID? " + ejbDescriptor.getUniqueId());
+        }  
+    }
+
+    private String getOwnerId(String target) {
+        // If target is a cluster, replace it with the instance
+        ReferenceContainer ref = domain.getReferenceContainerNamed(target);
+
+        if(ref != null && ref.isCluster()) {
+            Cluster cluster = (Cluster) ref; // guaranteed safe cast!!
+            List<Server>  instances = cluster.getInstances();
+            for (Server s : instances) {
+                if (s.isRunning()) {
+                    return s.getName();
+                }
+            }
+        }
+
+
+        return target;
     }
 
     private long getNextEjbAppUniqueId() {

@@ -239,16 +239,14 @@ public class EjbContainerUtilImpl
     }
 
     public  EJBTimerService getEJBTimerService() {
-        if (!_ejbTimerServiceVerified) {
-            deployEJBTimerService(null);
-        }
-        return _ejbTimerService;
+        return getEJBTimerService(null);
     }
 
-    public  void initEJBTimerService(String target) {
+    public  EJBTimerService getEJBTimerService(String target) {
         if (!_ejbTimerServiceVerified) {
             deployEJBTimerService(target);
         }
+        return _ejbTimerService;
     }
 
     public  void registerContainer(BaseContainer container) {
