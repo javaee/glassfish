@@ -94,6 +94,11 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
 
             //set gms-multicast-port the value of heartbeat-port
             cluster.setGmsMulticastPort(cluster.getHeartbeatPort());
+
+            //gms-bind-interface is an attribute of cluster in 3.1
+            cluster.setGmsBindInterfaceAddress(String.format(
+                "${GMS-BIND-INTERFACE-ADDRESS-%s}",
+                cluster.getName()));
            return cluster;
         }
     }
