@@ -153,6 +153,9 @@ public class ApplicationLifecycle implements Deployment {
     protected Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ApplicationLifecycle.class);      
     
+    private static final String SYSTEM_ADMIN = "system-admin";
+    private static final String SYSTEM_ALL = "system-all";
+
     protected <T extends Container, U extends ApplicationContainer> Deployer<T, U> getDeployer(EngineInfo<T, U> engineInfo) {
         return engineInfo.getDeployer();
     }
@@ -357,10 +360,7 @@ public class ApplicationLifecycle implements Deployment {
                 // now were falling back into the mainstream loading/starting sequence, at this
                 // time the containers are set up, all the modules have been prepared in their
                 // associated engines and the application info is created and registered
-                 // if enable attribute is set to true
-                 // and the target is the default server instance of current VM
-                 // we load and start the application
-                if (commandParams.enabled && domain.isCurrentInstanceMatchingTarget(commandParams.target, appName, server.getName(), context.getTransientAppMetaData("previousTargets", List.class))) {
+                if (loadOnCurrentInstance(context)) {
                     appInfo.setLibraries(commandParams.libraries());
                     try {
                         appInfo.load(context, tracker);
@@ -1796,5 +1796,27 @@ public class ApplicationLifecycle implements Deployment {
             }
         }
     }
-}
 
+    private boolean loadOnCurrentInstance(DeploymentContext context) {
+        final DeployCommandParameters commandParams = context.getCommandParameters(DeployCommandParameters.class);
+        final Properties appProps = context.getAppProps();
+        if (commandParams.enabled) {
+            // if the current instance match with the target
+            if (domain.isCurrentInstanceMatchingTarget(commandParams.target, commandParams.name(), server.getName(), context.getTransientAppMetaData("previousTargets", List.class))) {
+                return true;
+            }
+            if (server.isDas()) {
+                String objectType = 
+                    appProps.getProperty(ServerTags.OBJECT_TYPE);
+                if (objectType != null) {
+                    // if it's a system application needs to be loaded on DAS
+                    if (objectType.equals(SYSTEM_ADMIN) || 
+                        objectType.equals(SYSTEM_ALL)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+}
