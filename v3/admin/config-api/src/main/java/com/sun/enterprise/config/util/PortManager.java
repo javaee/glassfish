@@ -126,16 +126,22 @@ public final class PortManager {
             Set<Map.Entry<String, Integer>> entries = reassigned.entrySet();
             List<SystemProperty> sps = newServer.getSystemProperty();
 
+            // We want to display EVERY port assignment -- no matter if it overrides or
+            // not.  Tricky to get the display string just right.
+            // if there are reassignments -- we overwrite the ones in finalPorts.
+            // if not -- finalPorts contains all the stock ones
+            // in any case ALL port assignments should be displayed.
+            Map<String, Integer> finalPorts = newServerPorts.getMap();
+
             if (entries.size() > 0) {
                 for (Map.Entry<String, Integer> entry : entries) {
                     String name = entry.getKey();
                     int port = entry.getValue();
                     changeSystemProperty(sps, name, "" + port); // do not want commas in the int!
+                    finalPorts.put(name, port);
                 }
-                return generateAssignedPortMessage(reassigned);
             }
-            else
-                return generateAssignedPortMessage(newServerPorts.getMap());
+            return generateAssignedPortMessage(finalPorts);
         }
         catch (Exception e) {
             throw new TransactionFailure(e.toString(), e);
