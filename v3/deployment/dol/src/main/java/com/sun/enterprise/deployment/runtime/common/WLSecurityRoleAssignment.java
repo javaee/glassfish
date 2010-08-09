@@ -55,6 +55,16 @@ public class WLSecurityRoleAssignment extends RuntimeDescriptor {
 
     private String roleName = null; //mandatory element
     private List<String> principals = new ArrayList<String>();
+    private boolean externallyDefined = false;
+
+    public boolean isExternallyDefined() {
+        return externallyDefined;
+    }
+
+    public void setExternallyDefined() {
+        throw new UnsupportedOperationException("externally-defined flag not supported");
+    }
+
 
     public String getRoleName() {
         return roleName;

@@ -151,6 +151,7 @@ public interface RuntimeTagNames extends TagNames {
     public static final String ROLE_NAME = "role-name";
     public static final String PRINCIPAL_NAME = "principal-name";
     public static final String GROUP_NAME = "group-name";
+    public static final String EXTERNALLY_DEFINED = "externally-defined";
     
     // common
     public static final String EJB_REF = "ejb-ref";

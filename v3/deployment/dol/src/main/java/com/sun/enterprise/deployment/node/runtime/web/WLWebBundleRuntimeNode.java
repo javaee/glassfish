@@ -39,8 +39,12 @@ package com.sun.enterprise.deployment.node.runtime.web;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.Role;
+import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
 import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.node.runtime.common.WLSecurityRoleAssignmentNode;
+import com.sun.enterprise.deployment.runtime.common.WLSecurityRoleAssignment;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.TagNames;
 import org.w3c.dom.Element;
@@ -49,6 +53,7 @@ import org.w3c.dom.Node;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import org.glassfish.security.common.PrincipalImpl;
 
 
 /**
@@ -92,6 +97,8 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
                 WLSessionDescriptorNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.JSP_DESCRIPTOR),
                 WLJspDescriptorNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT),
+                WLSecurityRoleAssignmentNode.class);
     }
     
     /**
@@ -149,6 +156,24 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         }
     }
 
+    public void addDescriptor(Object newDescriptor) {
+        if (newDescriptor instanceof WLSecurityRoleAssignment) {
+            WLSecurityRoleAssignment roleMap = (WLSecurityRoleAssignment) newDescriptor;
+            descriptor.getApplication().addWLRoleAssignments(roleMap);
+            if (descriptor!=null) {
+                Role role = new Role(roleMap.getRoleName());
+                SecurityRoleMapper rm = descriptor.getApplication().getRoleMapper();
+                if (rm != null) {
+                    List<String> principals = roleMap.getPrincipalNames();
+                    for (int i = 0; i < principals.size(); i++) {
+                        rm.assignRole(new PrincipalImpl(principals.get(i)),
+                            role, descriptor);
+                    }
+                }
+            }
+        } else super.addDescriptor(newDescriptor);
+    }
+
     /**
      * write the descriptor class to a DOM tree and return it
      *
@@ -179,6 +204,13 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         for (WebComponentDescriptor webCompDesc : bundleDescriptor.getServletDescriptors()) {
             WLServletDescriptorNode servletDescriptorNode = new WLServletDescriptorNode();
             servletDescriptorNode.writeDescriptor(root, webCompDesc);
+        }
+
+        //security-role-assignment*
+        List<WLSecurityRoleAssignment> wlRoleAssignments = bundleDescriptor.getApplication().getWlRoleAssignments();
+        for (int i = 0; i < wlRoleAssignments.size(); i++) {
+            WLSecurityRoleAssignmentNode sran = new WLSecurityRoleAssignmentNode();
+            sran.writeDescriptor(root, RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT, wlRoleAssignments.get(i));
         }
 
         return root;

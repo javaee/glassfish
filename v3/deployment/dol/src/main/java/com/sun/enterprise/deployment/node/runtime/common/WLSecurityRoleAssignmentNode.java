@@ -66,6 +66,8 @@ public class WLSecurityRoleAssignmentNode extends RuntimeDescriptorNode {
             sra.setRoleName(value);
         } else if (RuntimeTagNames.PRINCIPAL_NAME.equals(element.getQName())) {
             sra.addPrincipalName(value);
+        } else if (RuntimeTagNames.EXTERNALLY_DEFINED.equals(element.getQName())) {
+            sra.setExternallyDefined();
         } else {
             super.setElementValue(element, value);
         }
@@ -84,6 +86,11 @@ public class WLSecurityRoleAssignmentNode extends RuntimeDescriptorNode {
 
         //role-name
         appendTextChild(roleMapping, RuntimeTagNames.ROLE_NAME, descriptor.getRoleName());
+
+        //externally-defined
+        if (descriptor.isExternallyDefined()){
+            appendChild(roleMapping, RuntimeTagNames.EXTERNALLY_DEFINED);
+        }
 
         //principal-name+
         List<String> principals = descriptor.getPrincipalNames();

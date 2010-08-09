@@ -44,11 +44,8 @@ import com.sun.enterprise.deployment.runtime.ApplicationParameter;
 import com.sun.enterprise.deployment.runtime.WLModuleDescriptor;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
 import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.runtime.common.SecurityRoleMappingNode;
 import com.sun.enterprise.deployment.node.runtime.common.WLSecurityRoleAssignmentNode;
 import com.sun.enterprise.deployment.node.web.InitParamNode;
-import com.sun.enterprise.deployment.runtime.common.PrincipalNameDescriptor;
-import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.runtime.common.WLSecurityRoleAssignment;
 import com.sun.enterprise.deployment.xml.TagNames;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
@@ -102,7 +99,7 @@ public class WLApplicationRuntimeNode extends RuntimeBundleNode<Application> {
         registerElementHandler(new XMLElement(
                 RuntimeTagNames.MODULE), WLModuleNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT),
-                               WLSecurityRoleAssignmentNode.class);
+                WLSecurityRoleAssignmentNode.class);
     }
 
     /**
