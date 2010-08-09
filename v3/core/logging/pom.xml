@@ -69,6 +69,7 @@
         <groupId>org.glassfish.cluster</groupId>
         <artifactId>cluster-ssh</artifactId>
         <version>${project.version}</version>
+		<optional>true</optional>
       </dependency>
       <dependency>
         <groupId>org.glassfish.common</groupId>

@@ -37,25 +37,22 @@
 package com.sun.enterprise.server.logging.logviewer.backend;
 
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Node;
-import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.cluster.ssh.launcher.SSHLauncher;
-import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
-import java.io.*;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -68,6 +65,7 @@ import java.util.logging.Logger;
  * @AUTHOR: Carla Mott, Naman Mehta
  */
 @Service
+
 public class LogFilter {
 
     // This is the name of the Results Attribute that we send out to the
@@ -91,7 +89,6 @@ public class LogFilter {
 
     private static final Logger logger =
             LogDomains.getLogger(LogFilter.class, LogDomains.CORE_LOGGER);
-
 
 
     /**
@@ -177,8 +174,7 @@ public class LogFilter {
                     reqCount, fromDate, toDate, logLevel,
                     onlyLevel.booleanValue(), listOfModules, nameValueMap, anySearch);
         } catch (Exception ex) {
-            System.err.println("Exception in fetchRecordsUsingQuery:" + ex);
-            // FIXME: Handle this correctly...
+            logger.log(Level.WARNING, "logging.backend.error.fetchrecord", ex);
             throw new RuntimeException(ex);
         }
     }
@@ -204,39 +200,9 @@ public class LogFilter {
             // for Instance it's going through this loop. This will use ssh utility to get file from instance machine(remote machine) and
             // store in temp directory which is used to get LogFile object.
             // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
-            
-            try {
-                SSHLauncher sshL = habitat.getComponent(SSHLauncher.class);
-                String sNode = targetServer.getNode();
-                Nodes nodes = domain.getNodes();
-                Node node = nodes.getNode(sNode);
-                sshL.init(node, logger);
 
-                SFTPClient sftpClient = sshL.getSFTPClient();
-
-                File tempFile = File.createTempFile("instance", "log");
-                tempFile.delete();
-                tempFile.mkdirs();
-
-                instanceLogFile = new File(tempFile.getAbsolutePath() + File.separator + instanceName + ".log");
-
-                InputStream inputStream = sftpClient.read(node.getInstallDir() + File.separator + "nodeagents" + File.separator
-                        + sNode + File.separator + instanceName + File.separator + "logs" + File.separator + "server.log");
-
-                BufferedInputStream in = new BufferedInputStream(inputStream);
-                FileOutputStream file = new FileOutputStream(instanceLogFile);
-                BufferedOutputStream out = new BufferedOutputStream(file);
-                int i;
-                while ((i = in.read()) != -1) {
-                    out.write(i);
-                }
-                out.flush();
-            }
-            catch (IOException ex) {
-                System.err.println("Exception in getting log file from instances:" + ex);
-                // FIXME: Handle this correctly...
-                throw new RuntimeException(ex);
-            }
+            instanceLogFile = new LogFilterForInstance().getInstanceLogFile(habitat, targetServer,
+                    domain, logger, instanceName);
         }
 
 
@@ -275,13 +241,12 @@ public class LogFilter {
                     reqCount, fromDate, toDate, logLevel,
                     onlyLevel.booleanValue(), listOfModules, nameValueMap, anySearch);
         } catch (Exception ex) {
-            System.err.println("Exception in fetchRecordsUsingQuer:" + ex);
-            // FIXME: Handle this correctly...
+            logger.log(Level.WARNING, "logging.backend.error.fetchrecord", ex);
             throw new RuntimeException(ex);
         }
     }
 
-    
+
     /**
      * Internal method that will be called from getLogRecordsUsingQuery()
      */
@@ -477,8 +442,7 @@ public class LogFilter {
                         SystemPropertyConstants.INSTANCE_ROOT_PROPERTY);
 
             } catch (Exception e) {
-                System.err.println("Exception " + e +
-                        "thrown in Logviewer backend");
+                logger.log(Level.WARNING, "logging.backend.error", e);
             }
             if (parent != null) {
                 // Just use the parent directory from the other server.log
