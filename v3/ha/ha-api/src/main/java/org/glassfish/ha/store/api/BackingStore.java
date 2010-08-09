@@ -130,9 +130,9 @@ public abstract class BackingStore<K extends Serializable, V extends Serializabl
      * @param maxIdleTime
      * @throws BackingStoreException
      */
-    public void updateTimestamp(K key, Long version, Long accessTime, Long maxIdleTime)
+    public String updateTimestamp(K key, Long version, Long accessTime, Long maxIdleTime)
             throws BackingStoreException {
-
+        return "";
     }
 
     /**

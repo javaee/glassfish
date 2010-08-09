@@ -72,6 +72,11 @@
           modules to be included in this bundle
         -->       
 
+          <dependency>
+              <groupId>org.glassfish.ha</groupId>
+              <artifactId>ha-shoal-cache-bootstrap</artifactId>
+              <version>${project.version}</version>
+          </dependency>
 <!--
           <dependency>
               <groupId>org.glassfish.ha</groupId>

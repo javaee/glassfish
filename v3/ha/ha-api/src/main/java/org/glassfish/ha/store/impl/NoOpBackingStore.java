@@ -50,6 +50,8 @@ import java.util.Properties;
 public class NoOpBackingStore<K extends Serializable, V extends Serializable>
     extends BackingStore<K, V> {
 
+    private String myName;
+
     NoOpBackingStore() {
 
     }
@@ -58,6 +60,8 @@ public class NoOpBackingStore<K extends Serializable, V extends Serializable>
     protected void initialize(BackingStoreConfiguration<K, V> conf)
         throws BackingStoreException {
         super.initialize(conf);
+
+        myName = conf == null ? null : conf.getInstanceName();
     }
 
     @Override
@@ -82,8 +86,10 @@ public class NoOpBackingStore<K extends Serializable, V extends Serializable>
     public void updateTimestamp(K key, long time) throws BackingStoreException {
 
     }
-    public void updateTimestamp(K key, Long version, Long accessTime, Long maxIdleTime) throws BackingStoreException {
 
+    @Override
+    public String updateTimestamp(K key, Long version, Long accessTime, Long maxIdleTime) throws BackingStoreException {
+        return myName;
     }
 
     @Override
