@@ -685,24 +685,16 @@ public class RestApiHandlers {
     public static List<String> getChildrenNames(String endpoint, String id) throws Exception {
         List<String> childElements = new ArrayList<String>();
         try {
-            if (!endpoint.endsWith(".json")) {
-                endpoint += ".json";
-            }
-            Map responseMap = restRequest(endpoint, new HashMap<String, Object>(), "get", null);
-            Map data = (Map) responseMap.get("data");
-            Map extraProperties = (Map)data.get("extraProperties");
-            if (extraProperties != null) {
-                Map<String, String> childResources = (Map<String, String>)extraProperties.get("childResources");
-                if (childResources != null) {
-                    childElements.addAll(childResources.keySet());
-                }
-            }
+            String foo = RestApiHandlers.get(endpoint).getResponseBody();
+            List<String> childUrls = getChildResourceList(foo);
+            for (String childUrl : childUrls) {    
+                childElements.add(childUrl.substring(childUrl.lastIndexOf("/")+1));
+            }   
         } catch (Exception e) {
             throw e;
-        }
+        }   
         return childElements;
     }
-
     //******************************************************************************************************************
     // Jersey client methods
     //******************************************************************************************************************
