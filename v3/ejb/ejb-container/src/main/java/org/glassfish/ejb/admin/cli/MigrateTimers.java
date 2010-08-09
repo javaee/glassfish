@@ -35,12 +35,14 @@
  */
 package org.glassfish.ejb.admin.cli;
 
+import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -50,7 +52,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ClusterExecutor;
+import org.glassfish.api.admin.FailurePolicy;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.common.util.admin.ParameterMapExtractor;
@@ -77,12 +79,12 @@ public class MigrateTimers implements AdminCommand {
 
     @Param(name = "target", optional = true, alias="destination",
         defaultValue=SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    String target;
+    public String target;
 
     private boolean needRedirect;
 
     @Param(name = "fromServer", primary = true, optional = false)
-    String fromServer;
+    public String fromServer;
 
     @Inject
     DistributedEJBTimerService timerService;
@@ -116,10 +118,13 @@ public class MigrateTimers implements AdminCommand {
                 needRedirect = false;
                 ParameterMapExtractor mapExtractor = new ParameterMapExtractor(this);
                 ParameterMap params = mapExtractor.extract();
-                ClusterExecutor executor = habitat.getComponent(ClusterExecutor.class, "GlassFishClusterExecutor");
                 logger.info(localStrings.getString("migrate.timers.redirect",
                         target, params.toCommaSeparatedString()));
-                executor.execute("migrate-timers", this, context, params);
+
+                ClusterOperationUtil.replicateCommand("migrate-timers", 
+                        FailurePolicy.Error, FailurePolicy.Error, 
+                        Arrays.asList(new String[]{target}),
+                        context, params, habitat);
                 return;
             }
             
