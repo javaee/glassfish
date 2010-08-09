@@ -36,9 +36,7 @@
 
 package org.glassfish.admin.amx.impl.j2ee.loader;
 
-import javax.management.JMException;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
+import com.sun.enterprise.config.serverbeans.Server;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.config.AMXConfigConstants;
 import org.glassfish.admin.amx.core.Util;
@@ -53,114 +51,120 @@ import org.glassfish.admin.amx.intf.config.Domain;
 import org.glassfish.admin.amx.j2ee.J2EEDomain;
 import org.glassfish.admin.amx.j2ee.J2EETypes;
 import org.glassfish.admin.amx.util.FeatureAvailability;
+import org.glassfish.internal.data.ApplicationRegistry;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.glassfish.internal.data.ApplicationRegistry;
+import org.jvnet.hk2.component.Habitat;
+
+import javax.management.JMException;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 
 /**
-    Startup service that loads support for AMX config MBeans.  How this is to be
-    triggered is not yet clear.
+ * Startup service that loads support for AMX config MBeans.  How this is to be
+ * triggered is not yet clear.
  */
 @Service
 public final class AMXJ2EEStartupService
-    implements  org.jvnet.hk2.component.PostConstruct,
-                org.jvnet.hk2.component.PreDestroy,
-                AMXJ2EEStartupServiceMBean
-{
-    private static void debug( final String s ) { System.out.println(s); }
-    
+        implements org.jvnet.hk2.component.PostConstruct,
+        org.jvnet.hk2.component.PreDestroy,
+        AMXJ2EEStartupServiceMBean {
+    private static void debug(final String s) {
+        System.out.println(s);
+    }
+
     @Inject
     private MBeanServer mMBeanServer;
-    
+
     @Inject
     InjectedValues mCore;
-    public InjectedValues getCore() { return mCore; }
+
+    public InjectedValues getCore() {
+        return mCore;
+    }
+
+    @Inject
+    Habitat mHabitat;
 
     @Inject
     private ApplicationRegistry mAppsRegistry;
-    public ApplicationRegistry getApplicationRegistry() { return mAppsRegistry; }
 
-    
-    public AMXJ2EEStartupService()
-    {
+    public ApplicationRegistry getApplicationRegistry() {
+        return mAppsRegistry;
+    }
+
+
+    public AMXJ2EEStartupService() {
         //debug( "AMXStartupService.AMXStartupService()" );
     }
-    
-    public void postConstruct()
-    {
-        try
-        {
-        /*
-           final StandardMBean mbean = new StandardMBean(this, AMXJ2EEStartupServiceMBean.class);
-           mMBeanServer.registerMBean( mbean, OBJECT_NAME );
-           */
-           mMBeanServer.registerMBean( this, OBJECT_NAME );
+
+    public void postConstruct() {
+        try {
+            /*
+            final StandardMBean mbean = new StandardMBean(this, AMXJ2EEStartupServiceMBean.class);
+            mMBeanServer.registerMBean( mbean, OBJECT_NAME );
+            */
+            mMBeanServer.registerMBean(this, OBJECT_NAME);
         }
-        catch( JMException e )
-        {
+        catch (JMException e) {
             throw new Error(e);
         }
-       //debug( "AMXJ2EEStartupService.postConstruct(): registered: " + OBJECT_NAME);
+        //debug( "AMXJ2EEStartupService.postConstruct(): registered: " + OBJECT_NAME);
     }
 
     public void preDestroy() {
         //ImplUtil.getLogger().info( "AMXConfigStartupService.preDestroy(): stopping AMX" );
         unloadAMXMBeans();
     }
-    
-    private DomainRoot getDomainRootProxy()
-    {
-        return ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy();
+
+    private DomainRoot getDomainRootProxy() {
+        return ProxyFactory.getInstance(mMBeanServer).getDomainRootProxy();
     }
-    
-        public ObjectName
-    getJ2EEDomain()
-    {
+
+    public ObjectName
+    getJ2EEDomain() {
         return getDomainRootProxy().child(J2EETypes.J2EE_DOMAIN).extra().objectName();
     }
-    
-        private J2EEDomain
-    getJ2EEDomainProxy()
-    {
-        return ProxyFactory.getInstance( mMBeanServer ).getProxy(getJ2EEDomain(), J2EEDomain.class);
+
+    private J2EEDomain
+    getJ2EEDomainProxy() {
+        return ProxyFactory.getInstance(mMBeanServer).getProxy(getJ2EEDomain(), J2EEDomain.class);
     }
-    
-        public synchronized ObjectName
-    loadAMXMBeans()
-    {
-        FeatureAvailability.getInstance().waitForFeature( FeatureAvailability.AMX_CORE_READY_FEATURE, "" + this );
-        FeatureAvailability.getInstance().waitForFeature( AMXConfigConstants.AMX_CONFIG_READY_FEATURE, "" + this );
-        
-        final DomainRoot domainRootProxy = ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy(false);
+
+    public synchronized ObjectName
+    loadAMXMBeans() {
+        FeatureAvailability.getInstance().waitForFeature(FeatureAvailability.AMX_CORE_READY_FEATURE, "" + this);
+        FeatureAvailability.getInstance().waitForFeature(AMXConfigConstants.AMX_CONFIG_READY_FEATURE, "" + this);
+
+        final DomainRoot domainRootProxy = ProxyFactory.getInstance(mMBeanServer).getDomainRootProxy(false);
         final ObjectName domainRoot = domainRootProxy.objectName();
         final ObjectNameBuilder objectNames = new ObjectNameBuilder(mMBeanServer, domainRoot);
         final String domainName = Util.getNameProp(domainRoot);
 
         final Metadata metadata = new MetadataImpl();
-        metadata.add( Metadata.CORRESPONDING_CONFIG, domainRootProxy.child(Domain.class).objectName());
-        
+        metadata.add(Metadata.CORRESPONDING_CONFIG, domainRootProxy.child(Domain.class).objectName());
+
+        String serverName = mHabitat.getComponent(Server.class).getName();
+
         final J2EEDomainImpl impl = new J2EEDomainImpl(domainRoot, metadata);
-        ObjectName objectName = objectNames.buildChildObjectName( J2EEDomain.class );
-        try
-        {
-            objectName = mMBeanServer.registerMBean( impl, objectName ).getObjectName();
+        impl.setServerName(serverName);
+        ObjectName objectName = objectNames.buildChildObjectName(J2EEDomain.class);
+        try {
+            objectName = mMBeanServer.registerMBean(impl, objectName).getObjectName();
         }
-        catch( JMException e )
-        {
+        catch (JMException e) {
             throw new Error(e);
         }
 
-        ImplUtil.getLogger().info( "J2EEDomain registered at " + objectName );
+        ImplUtil.getLogger().info("J2EEDomain registered at " + objectName);
         return objectName;
     }
-    
-    public synchronized void unloadAMXMBeans()
-    {
+
+    public synchronized void unloadAMXMBeans() {
         final J2EEDomain j2eeDomain = getJ2EEDomainProxy();
-        if ( j2eeDomain!= null )
-        {
-            ImplUtil.unregisterAMXMBeans( j2eeDomain );
+        if (j2eeDomain != null) {
+            ImplUtil.unregisterAMXMBeans(j2eeDomain);
         }
     }
 }
