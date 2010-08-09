@@ -233,7 +233,7 @@
              <ejb-timer-service />
          </ejb-container>
          <mdb-container />
-         <jms-service type="EMBEDDED" default-jms-host="default_JMS_host" addresslist-behavior="priority" >
+         <jms-service type="LOCAL" default-jms-host="default_JMS_host" addresslist-behavior="priority" >
              <jms-host name="default_JMS_host" host="localhost" port="${JMS_PROVIDER_PORT}" admin-user-name="%%%JMS_PROVIDER_USERID%%%" admin-password="%%%JMS_PROVIDER_PASSWORD%%%"/>
          </jms-service>
          <log-service log-rotation-limit-in-bytes="2000000" file="${com.sun.aas.instanceRoot}/logs/server.log">
