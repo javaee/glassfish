@@ -518,6 +518,7 @@
 
     <target name="clustering" depends="init-report">
         <ant dir="networkListenerTarget" target="all"/>
+        <ant dir="asadminDeletesTarget" target="all"/>
     </target>
 
     <target name="init-report" unless="report.inited">

@@ -50,12 +50,11 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="build,create-cluster,create-local-instance,start-local-instance,restart,create-virtual-server,create-network-listener,deploy,restart,run,undeploy,delete-network-listener,delete-virtual-server,stop-local-instance,delete-local-instance,delete-cluster"/>
+    <target name="all" depends="build,create-cluster,create-local-instance,restart,create-virtual-server,create-network-listener,deploy,run,undeploy,delete-network-listener,delete-virtual-server,stop-local-instance,delete-local-instance,delete-cluster"/>
 
     <target name="restart" depends="init-common">
-      <antcall target="stop-local-instance"/>
-      <antcall target="start-local-instance"/>
       <antcall target="restart-server-instance-common"/>
+      <antcall target="start-local-instance"/>
       <sleep seconds="5"/>
     </target>
 
@@ -180,7 +179,6 @@
     </target>
 
     <target name="run" depends="init-common">
-        <antcall target="restart"/>
         <java classname="WebTest">
           <arg value="${http.host}"/>
           <arg value="${http.alternate.port}"/>
