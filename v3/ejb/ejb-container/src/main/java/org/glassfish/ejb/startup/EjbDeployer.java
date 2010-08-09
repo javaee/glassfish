@@ -392,7 +392,7 @@ public class EjbDeployer
             }
 
             if (env.getInstanceName().equals(dcp.target)) {
-System.err.println("===> DEPLOYING on " + env.getInstanceName() + " ... skipping event");
+//System.err.println("===> DEPLOYING on " + env.getInstanceName() + " ... skipping event");
                 // Timers will be created by the BaseContainer
                 return;
             }
@@ -445,8 +445,8 @@ System.err.println("===> DEPLOYING on " + env.getInstanceName() + " ... skipping
     private void createAutomaticPersistentTimersForEJB(EjbDescriptor ejbDescriptor, String target) {
         //Start EJB Timer Service if needed
         EJBTimerService timerService = EjbContainerUtilImpl.getInstance().getEJBTimerService(target);
-System.err.println("==> BEAN ID? " + ejbDescriptor.getUniqueId());
-System.err.println("==> TS? " + timerService);
+//System.err.println("==> BEAN ID? " + ejbDescriptor.getUniqueId());
+//System.err.println("==> TS? " + timerService);
         if( timerService != null ) {
             String owner = getOwnerId(target);
             Map<Method, List<ScheduledTimerDescriptor>> schedules = 
@@ -469,7 +469,7 @@ System.err.println("==> TS? " + timerService);
 
             //TODO pass in only schedules to create.
             timerService.recoverAndCreateSchedules(ejbDescriptor.getUniqueId(), schedules, owner, true);
-System.err.println("<== BEAN ID? " + ejbDescriptor.getUniqueId());
+//System.err.println("<== BEAN ID? " + ejbDescriptor.getUniqueId());
         }  
     }
 

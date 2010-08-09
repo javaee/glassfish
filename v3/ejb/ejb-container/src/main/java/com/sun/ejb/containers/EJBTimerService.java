@@ -1233,8 +1233,6 @@ public class EJBTimerService
         try {
                               
             boolean startTimers = ownerIdOfThisServer_.equals(server_name);
-System.err.println("==> IN BC startTimers? " + startTimers);
-System.err.println("==> IN BC deploy? " + deploy);
             tm.begin();
 
             if (startTimers) {
