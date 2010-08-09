@@ -530,11 +530,12 @@ public final class Utility {
             throw e;
         }
 
-        byte[] result = (byte[])byteBuffer.array().clone();
+        byte[] result = new byte[byteBuffer.remaining()];
+        byteBuffer.get(result);
         clear(byteBuffer);
         clear(charBuffer);
 
-        return result;
+        return result.clone();
     }
 
     private static void clear(ByteBuffer byteBuffer) {
