@@ -86,10 +86,10 @@
                     convertArrayToCommaString(array="#{pageSession.selectedThreadPools}"  commaString="#{requestScope.tmp}");
                     mapPut(map="#{pageSession.valueMap}" key="useThreadPoolIds" value="$attribute{tmp}");
                     //convertArrayToCommaString(array="#{pageSession.selectedThreadPools}"  commaString="#{pageSession.valueMap['useThreadPoolIds']}")
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                    gf.createEntity(endpoint="#{pageSession.selfUrl}" attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}");
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}"  attrs="#{pageSession.valueMap2}"
+                    gf.createEntity(endpoint="#{pageSession.selfUrl2}" attrs="#{pageSession.valueMap2}"
                             skipAttrs="#{pageSession.skipAttrsList2}"
                             convertToFalse="#{pageSession.convertToFalseList2}")
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
