@@ -205,6 +205,8 @@ public class ListComponentsCommandTest {
         public void setLibraries(String value) throws PropertyVetoException{}
         public String getAvailabilityEnabled(){ return "";}
         public void setAvailabilityEnabled(String value) throws PropertyVetoException{}
+        public String getAsyncReplication() { return "";}
+        public void setAsyncReplication (String value) throws PropertyVetoException {}
         public String getDirectoryDeployed(){ return "";}
         public void setDirectoryDeployed(String value) throws PropertyVetoException{}
         public String getDescription(){ return "";}

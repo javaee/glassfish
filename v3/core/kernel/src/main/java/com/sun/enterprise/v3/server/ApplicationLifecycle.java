@@ -153,9 +153,6 @@ public class ApplicationLifecycle implements Deployment {
     protected Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ApplicationLifecycle.class);      
     
-    private static final String SYSTEM_ADMIN = "system-admin";
-    private static final String SYSTEM_ALL = "system-all";
-
     protected <T extends Container, U extends ApplicationContainer> Deployer<T, U> getDeployer(EngineInfo<T, U> engineInfo) {
         return engineInfo.getDeployer();
     }
@@ -993,6 +990,7 @@ public class ApplicationLifecycle implements Deployment {
             // always set the enable attribute of application to true
             app.setEnabled(String.valueOf(true));
             app.setAvailabilityEnabled(deployParams.availabilityenabled.toString());
+            app.setAsyncReplication(deployParams.asyncreplication.toString());
         } else {
             // this is not a regular javaee module 
             app.setEnabled(deployParams.enabled.toString());
@@ -1810,8 +1808,8 @@ public class ApplicationLifecycle implements Deployment {
                     appProps.getProperty(ServerTags.OBJECT_TYPE);
                 if (objectType != null) {
                     // if it's a system application needs to be loaded on DAS
-                    if (objectType.equals(SYSTEM_ADMIN) || 
-                        objectType.equals(SYSTEM_ALL)) {
+                    if (objectType.equals(DeploymentProperties.SYSTEM_ADMIN) || 
+                        objectType.equals(DeploymentProperties.SYSTEM_ALL)) {
                         return true;
                     }
                 }

@@ -526,6 +526,8 @@ public class DeploymentProperties extends Properties {
     public static final String DD_PATH =  "dd-path";
     public static final String DD_CONTENT = "dd-content";
 
+    public static final String SYSTEM_ADMIN = "system-admin";
+    public static final String SYSTEM_ALL = "system-all";
     
     // internal use - from .reload support
     public static final String KEEP_REPOSITORY_DIRECTORY = "keepreposdir";

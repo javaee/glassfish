@@ -92,7 +92,11 @@ public interface Application
     @see #getAvailabilityEnabled
      */
     public void setAvailabilityEnabled(String enabled);
-    
+
+    public String getAsyncReplication();
+
+    public void setAsyncReplication(String value);
+
     public Map<String,Module> getModule();
     
     public Map<String,Engine> getEngine();

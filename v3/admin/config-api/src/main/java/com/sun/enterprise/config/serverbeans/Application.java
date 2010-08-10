@@ -182,6 +182,23 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
     void setAvailabilityEnabled(String value) throws PropertyVetoException;
 
     /**
+     * Gets the value of the asyncReplication property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute(defaultValue="true", dataType=Boolean.class)
+    String getAsyncReplication();
+
+    /**
+     * Sets the value of the asyncReplication property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setAsyncReplication(String value) throws PropertyVetoException;
+
+    /**
      * Gets the value of the directoryDeployed property.
      *
      * @return possible object is
@@ -346,6 +363,7 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
             deploymentParams.contextroot = app.getContextRoot();
             deploymentParams.libraries = app.getLibraries();
             deploymentParams.availabilityenabled = Boolean.parseBoolean(app.getAvailabilityEnabled());
+            deploymentParams.asyncreplication = Boolean.parseBoolean(app.getAsyncReplication());
             if (appRef != null) {
                 deploymentParams.virtualservers = appRef.getVirtualServers();
             }

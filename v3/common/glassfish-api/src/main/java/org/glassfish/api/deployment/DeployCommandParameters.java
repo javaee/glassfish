@@ -98,6 +98,9 @@ public class DeployCommandParameters extends OpsParams {
     @Param(optional=true, defaultValue="false")
     public Boolean availabilityenabled = false;
 
+    @Param(optional=true, defaultValue="true")
+    public Boolean asyncreplication = true;
+
     @Param(optional=true)
     public String target = "server";
 

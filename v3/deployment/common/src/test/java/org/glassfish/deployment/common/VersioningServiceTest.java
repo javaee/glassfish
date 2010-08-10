@@ -581,6 +581,16 @@ public class VersioningServiceTest {
         }
 
         @Override
+        public String getAsyncReplication() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setAsyncReplication (String value) throws PropertyVetoException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
         public String getDirectoryDeployed() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
