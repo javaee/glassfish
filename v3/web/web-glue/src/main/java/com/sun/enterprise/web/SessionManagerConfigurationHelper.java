@@ -115,7 +115,7 @@ public class SessionManagerConfigurationHelper {
             // These are the global defaults if nothing is
             // set at domain.xml or sun-web.xml
             persistence = PersistenceType.REPLICATED;
-            persistenceFrequency = "time-based";
+            persistenceFrequency = "web-method";
             persistenceScope = "session";
         }
         

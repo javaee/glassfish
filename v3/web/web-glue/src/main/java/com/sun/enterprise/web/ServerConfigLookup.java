@@ -312,8 +312,7 @@ public class ServerConfigLookup {
             _logger.finest("webModuleAvailability = " + webModuleAvailability);
         }
         return globalAvailability && webContainerAvailability && webModuleAvailability;
-           //  XXX webModuleAvailability not reflected correctly as yet   && webModuleAvailability;
-    }    
+    }
 
     /**
      * Get the persistenceType from domain.xml.
