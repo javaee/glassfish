@@ -167,6 +167,15 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             report.setMessage(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         }
+
+        if (report.getActionExitCode() == ActionReport.ExitCode.SUCCESS) {
+            // Make sure instance is really up
+            String s = pollForLife();
+            if (s != null) {
+                report.setMessage(s);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            }
+        }
     }
 
     @Override
@@ -194,6 +203,8 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
         String dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
         RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodeList, logger, dasHost, dasPort);
 
+        String humanVersionOfCommand = "asadmin start-local-instance --node "+noderef +" " + instanceName;
+
         if (rch.isLocalhost(nodes.getNode(noderef))) {
             startInstance();
         } else  if (rch.isRemoteConnectRequired(noderef)) {  // check if needs a remote connection
@@ -213,13 +224,15 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             }
             if (status != 0){
                 ActionReport report = ctx.getActionReport();
-                String msg = Strings.get("start.remote.instance.failed", instanceName);
+                String msg = Strings.get("start.remote.instance.failed",
+                        instanceName, nodeHost, humanVersionOfCommand);
                 logger.warning(msg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(output + NL + msg);
              }
             } catch (SSHCommandExecutionException ec) {
-                String msg = Strings.get("start.ssh.instance.failed", instanceName, ec.getSSHSettings(), ec.getMessage(), nodeHost, ec.getCommandRun());
+                String msg = Strings.get("start.ssh.instance.failed",
+                        instanceName, ec.getSSHSettings(), ec.getMessage(), nodeHost, ec.getCommandRun());
                 logger.severe(msg);
                 ActionReport report = ctx.getActionReport();
                 msg = Strings.get("start.remote.instance.failed", instanceName, nodeHost, ec.getCommandRun());
@@ -229,12 +242,29 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             }
         } else {
             ActionReport report = ctx.getActionReport();
-            String humanVersionOfCommand = "asadmin start-local-instance --host "+dasHost+ " --node "+noderef +" " + instanceName;
             String msg = Strings.get("start.instance.failed",
                     instanceName, noderef, nodeHost, humanVersionOfCommand);
             logger.warning(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);            
         }
+    }
+
+    // return null means A-OK
+    private String pollForLife() {
+        int counter = 0;  // 120 seconds
+
+        while (++counter < 240) {
+            if (instance.isRunning())
+                return null;
+
+            try {
+                Thread.sleep(500);
+            }
+            catch (Exception e) {
+                // ignore
+            }
+        }
+        return Strings.get("start.instance.timeout", instanceName);
     }
 }

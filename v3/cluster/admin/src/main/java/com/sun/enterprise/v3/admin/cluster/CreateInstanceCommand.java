@@ -169,7 +169,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
                  int status = lac.execute();
             }   catch (ProcessManagerException ex)  {
                 msg = Strings.get("create.instance.remote.failed",
-                        instance, nodeHost, humanVersionOfCommand );
+                        instance, node, nodeHost, humanVersionOfCommand );
                 logger.warning(msg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(msg);
@@ -181,9 +181,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             int status =createInstanceRemote();
 
         } else {
-            msg= Strings.get("create.instance.remote.failed", instance, node, nodeHost, humanVersionOfCommand);
+            msg= Strings.get("create.instance.remote.notssh", instance, node, nodeHost, humanVersionOfCommand);
             logger.warning(msg);
-            msg = Strings.get("create.instance.remote.failed",
+            msg = Strings.get("create.instance.remote.notssh",
                     instance, node, nodeHost, humanVersionOfCommand );
             logger.warning(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -251,7 +251,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             }
             if (status != 0){
                 String msg = Strings.get("create.instance.remote.failed",
-                        instance, nodeHost, humanVersionOfCommand);
+                        instance, node, nodeHost, humanVersionOfCommand);
                 logger.warning(msg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(output.toString() + NL + msg);
