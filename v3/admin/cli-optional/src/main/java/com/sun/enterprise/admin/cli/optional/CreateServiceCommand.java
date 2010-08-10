@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli.optional;
 
 import java.io.*;
@@ -61,28 +60,20 @@ public final class CreateServiceCommand extends CLICommand {
 
     private static final String VALID_TYPES = "das|node-agent";
     private static final String DAS_TYPE = "das";
-
     @Param(name = "name", optional = true)
-    private String  serviceName;
-
+    private String serviceName;
     @Param(name = "serviceproperties", optional = true)
     private String serviceProperties;
-
     @Param(name = "dry-run", optional = true, defaultValue = "false")
     private boolean dry_run;
-
     @Param(name = "force", optional = true, defaultValue = "false")
     private boolean force;
-
     @Param(name = "domaindir", optional = true)
-    private File    domainDirParent;
-
+    private File domainDirParent;
     @Param(name = "domain_name", primary = true, optional = true)
     private String domainName;
-
-    private File    domainDir;  // the directory of the domain itself
-    private File    asadminScript;
-
+    private File domainDir;  // the directory of the domain itself
+    private File asadminScript;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateServiceCommand.class);
 
@@ -90,7 +81,7 @@ public final class CreateServiceCommand extends CLICommand {
      */
     @Override
     protected void validate()
-            throws CommandException, CommandValidationException  {
+            throws CommandException, CommandValidationException {
         try {
             super.validate();
 
@@ -99,13 +90,13 @@ public final class CreateServiceCommand extends CLICommand {
             validateName();
             validateAsadmin();
         }
-        catch(CommandValidationException e) {
+        catch (CommandValidationException e) {
             throw e;
         }
-        catch(CommandException e) {
+        catch (CommandException e) {
             throw e;
         }
-        catch(Exception e) {
+        catch (Exception e) {
             // plenty of RuntimeException possibilities!
             throw new CommandValidationException(e.getMessage(), e);
         }
@@ -127,16 +118,16 @@ public final class CreateServiceCommand extends CLICommand {
             service.setName(serviceName);
             service.setDryRun(dry_run);
             service.setLocation(domainDir.getPath());
-            service.setType(type.equals("das") ?
-                            AppserverServiceType.Domain :
-                            AppserverServiceType.NodeAgent);
+            service.setType(type.equals("das")
+                    ? AppserverServiceType.Domain
+                    : AppserverServiceType.NodeAgent);
             service.setFQSN();
             service.setOSUser();
             service.setAsadminPath(asadminScript.getPath());
 
             if (programOpts.getPasswordFile() != null)
                 service.setPasswordFilePath(SmartFile.sanitize(
-                    new File(programOpts.getPasswordFile()).getPath()));
+                        new File(programOpts.getPasswordFile()).getPath()));
 
             service.setServiceProperties(serviceProperties);
             service.isConfigValid();
@@ -152,7 +143,8 @@ public final class CreateServiceCommand extends CLICommand {
             logger.printMessage(tellUserAboutHelp);
             service.writeReadmeFile(help);
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // We only want to wrap the string -- not the Exception.
             // Otherwise the message that is printed out to the user will be like this:
             // java.lang.IllegalArgumentException: The passwordfile blah blah blah
@@ -161,8 +153,8 @@ public final class CreateServiceCommand extends CLICommand {
             // IT 8882
 
             String msg = e.getMessage();
-            
-            if(StringUtils.ok(msg))
+
+            if (StringUtils.ok(msg))
                 throw new CommandValidationException(msg);
             else
                 throw new CommandValidationException(e);
@@ -170,7 +162,7 @@ public final class CreateServiceCommand extends CLICommand {
         return 0;
     }
 
-    private void validateDomainDir() throws CommandValidationException{
+    private void validateDomainDir() throws CommandValidationException {
         if (domainDirParent == null)
             domainDirParent = getDefaultDomainDirParent();
         else
@@ -179,8 +171,8 @@ public final class CreateServiceCommand extends CLICommand {
         // either the default or the given is set.  Make sure it is valid...
         if (!domainDirParent.isDirectory()) {
             throw new CommandValidationException(
-                strings.get("create.service.BadDomainDirParent",
-                            domainDirParent));
+                    strings.get("create.service.BadDomainDirParent",
+                    domainDirParent));
         }
 
         if (!ok(domainName)) {
@@ -191,17 +183,17 @@ public final class CreateServiceCommand extends CLICommand {
 
         if (!domainDir.isDirectory())
             throw new CommandValidationException(
-                strings.get("create.service.BadDomainDir", domainDir));
+                    strings.get("create.service.BadDomainDir", domainDir));
     }
 
     private File getDefaultDomainDirParent() {
         String ir =
-            System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+                System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
 
         if (!ok(ir))
             throw new RuntimeException(
-                "Internal Error: System Property not set: " +
-                    SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+                    "Internal Error: System Property not set: "
+                    + SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
 
         return SmartFile.sanitize(new File(new File(ir), "domains"));
     }
@@ -210,6 +202,7 @@ public final class CreateServiceCommand extends CLICommand {
         // look for subdirs in the parent dir -- there must be one and only one
 
         File[] files = domainDirParent.listFiles(new FileFilter() {
+
             public boolean accept(File f) {
                 return f != null && f.isDirectory();
             }
@@ -217,48 +210,47 @@ public final class CreateServiceCommand extends CLICommand {
 
         if (files == null || files.length == 0) {
             throw new RuntimeException(
-                strings.get("create.service.noDomainDirs", domainDirParent));
+                    strings.get("create.service.noDomainDirs", domainDirParent));
         }
 
         if (files.length > 1) {
             throw new RuntimeException(
-                strings.get("create.service.tooManyDomainDirs",
-                            domainDirParent));
+                    strings.get("create.service.tooManyDomainDirs",
+                    domainDirParent));
         }
 
         return files[0].getName();
     }
 
-/*
+    /*
     private void setupDomainRootDir() throws GFLauncherException {
-        // if they set domainrootdir -- it takes precedence
-        if (domainRootDir != null) {
-            domainParentDir = domainRootDir.getParentFile();
-            domainName = domainRootDir.getName();
-            return;
-        }
-
-        // if they set domainParentDir -- use it.  o/w use the default dir
-        if (domainParentDir == null) {
-            domainParentDir = new File(installDir, DEFAULT_DOMAIN_PARENT_DIR);
-        }
-
-        // if they specified domain name -- use it.  o/w use the one and only
-        // dir in the domain parent dir
-
-        if (domainName == null) {
-            domainName = getTheOneAndOnlyDomain();
-        }
-
-        domainRootDir = new File(domainParentDir, domainName);
+    // if they set domainrootdir -- it takes precedence
+    if (domainRootDir != null) {
+    domainParentDir = domainRootDir.getParentFile();
+    domainName = domainRootDir.getName();
+    return;
     }
- */
 
+    // if they set domainParentDir -- use it.  o/w use the default dir
+    if (domainParentDir == null) {
+    domainParentDir = new File(installDir, DEFAULT_DOMAIN_PARENT_DIR);
+    }
+
+    // if they specified domain name -- use it.  o/w use the one and only
+    // dir in the domain parent dir
+
+    if (domainName == null) {
+    domainName = getTheOneAndOnlyDomain();
+    }
+
+    domainRootDir = new File(domainParentDir, domainName);
+    }
+     */
     private void validateName() {
-       if (!ok(serviceName))
-           serviceName = domainDir.getName();
+        if (!ok(serviceName))
+            serviceName = domainDir.getName();
 
-       logger.printDebugMessage("service name = " + serviceName);
+        logger.printDebugMessage("service name = " + serviceName);
     }
 
     private void validateAsadmin() throws CommandValidationException {
@@ -266,14 +258,14 @@ public final class CreateServiceCommand extends CLICommand {
 
         if (!ok(s))
             throw new CommandValidationException(
-                strings.get("internal.error",
-                            "Can't get Asadmin script location"));
+                    strings.get("internal.error",
+                    "Can't get Asadmin script location"));
 
         asadminScript = SmartFile.sanitize(new File(s));
 
         if (!asadminScript.isFile()) {
             throw new CommandValidationException(
-                strings.get("create.service.noAsadminScript", asadminScript));
+                    strings.get("create.service.noAsadminScript", asadminScript));
         }
     }
 }
