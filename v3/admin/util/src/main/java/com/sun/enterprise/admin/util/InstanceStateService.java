@@ -168,7 +168,7 @@ public class InstanceStateService implements Startup, PostConstruct {
             updateXML = true;
             ret = newState;
         } else {
-            if(currState.equals(InstanceState.StateType.RESTART_REQUIRED)) {
+            if(!force && currState.equals(InstanceState.StateType.RESTART_REQUIRED)) {
                 // If current state is RESTART_REQUIRED, no updates to state is allowed because
                 // only an instance restart can move this instance out of RESTART_REQD state
                 updateXML = false;
