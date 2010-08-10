@@ -50,11 +50,12 @@
         getRequestValue(key="cancelTo" value="#{pageSession.cancelTo}" default="protocols.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/#{pageSession.cancelTo}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/protocolEdit.jsf?name=#{pageSession.encodedName}&cancelTo=#{pageSession.cancelTo}&configName=#{pageSession.configName}");
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.Name}");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[server-config]/network-config,type=protocols");
         setPageSessionAttribute(key="childType" value="protocol");
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="convertToFalseList" value={"SecurityEnabled"});
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.Name}");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="convertToFalseList" value={"securityEnabled"});
         setSessionAttribute(key="protocolTabs" value="protocolGeneral");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );

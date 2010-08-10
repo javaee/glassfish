@@ -53,7 +53,31 @@
     <!command
         getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
         getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-        deleteProtocol(selectedRows="${selectedRows}");
+        foreach (var="row" list="${selectedRows}") {
+            setPageSessionAttribute(key="protocolName" value="#{row['Name']}");
+            setPageSessionAttribute(key="protocolUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol/#{pageSession.protocolName}");
+            setPageSessionAttribute(key="protocolHttpUrl", value="#{pageSession.protocolUrl}/http");
+            setPageSessionAttribute(key="networkListenerUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners/network-listener");
+            setPageSessionAttribute(key="virtualServerUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server");
+            gf.getChildrenNamesList(endpoint="#{pageSession.networkListenerUrl}", id="name", result="#{pageSession.networkListeners}");
+            gf.checkIfEndPointExist(endpoint="#{pageSession.protocolHttpUrl}", exists="#{pageSession.protocolHttpExist}");
+            foreach (var="listener" list="#{pageSession.networkListeners}") {
+                gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{listener}.json",
+                               method="get",
+                               result="#{pageSession.networkListAttrs}");
+                if ("#{pageSession.networkListAttrs.data.entity['protocol']}=#{pageSession.protocolName}"){
+                    if (#{pageSession.protocolHttpExist}) {
+                        gf.restRequest(endpoint="#{pageSession.protocolHttpUrl}.json", method="get", result="#{pageSession.protocolAttrHttp}");
+                        setPageSessionAttribute(key="vsName" value="#{pageSession.protocolAttrHttp.data.entity['defaultVirtualServer']}");
+                        gf.restRequest(endpoint="#{pageSession.virtualServerUrl}/#{vsName}.json", method="get", result="#{pageSession.vsAttrs}");
+                        changeNetworkListenersInVS(vsAttrs="#{pageSession.vsAttrs.data.entity}", listenerName="#{pageSession.networkListAttrs.data.entity['name']}", addFlag="{#false}", result="#{pageSession.vsAttrModified}");
+                        gf.restRequest(endpoint="#{pageSession.virtualServerUrl}/#{vsName}", attrs="#{pageSession.vsAttrModified}", method="post");
+                    }
+                    gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{listener}", method="delete");
+                }
+            }
+            gf.restRequest(endpoint="#{pageSession.protocolUrl}", method="delete");
+        }
         gf.redirect(page="#{pageSession.listLink}");
     />
     </sun:button>
@@ -65,8 +89,23 @@
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols");
         setPageSessionAttribute(key="childType" value="protocol");
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.tmpRows}");
-        addNetworkListenerInfo(protocolListOfRows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}");
+        setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols");
+        setPageSessionAttribute(key="rest-api" value="true");
+        setPageSessionAttribute(key="networkListenerUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners/network-listener");
+        gf.getChildrenNamesList(endpoint="#{pageSession.networkListenerUrl}", id="name", result="#{pageSession.networkListeners}");
+        gf.getChildList(parentEndpoint="#{pageSession.selfUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
+        foreach (var="protocol" list="#{requestScope.listOfRows}") {
+            createList(size="0" result="#{pageSession.listenerList}");
+            foreach (var="listener" list="#{pageSession.networkListeners}") {
+                gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{listener}.json",
+                               method="get",
+                               result="#{pageSession.networkListAttrs}");
+                if ("#{pageSession.networkListAttrs.data.entity['protocol']}=#{protocol['Name']}"){
+                    listAdd(value="#{pageSession.networkListAttrs.data.entity['name']}" list="#{pageSession.listenerList}");
+                }
+            }
+            mapPut(map="#{protocol}" key="listenerList"  value="#{pageSession.listenerList}");
+        }
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteProtocol}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/protocolNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/protocols.jsf?configName=#{configName}");

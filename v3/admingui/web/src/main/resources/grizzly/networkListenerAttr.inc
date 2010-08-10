@@ -68,8 +68,8 @@
         <sun:staticText text="$resource{i18n_web.http.defVirtualServerLabel}" style="margin-left: 12pt" />
         <sun:dropDown id="vs" selected="#{pageSession.valueMap['DefaultVirtualServer']}" labels="$pageSession{vsList}"  values="$pageSession{vsList}" style="margin-left: 4pt" >
         <!beforeCreate
-            getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
-            mapPut(map="#{pageSession.valueMap}" key="DefaultVirtualServer"  value="server")
+            gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server" result="#{pageSession.vsList}");
+            mapPut(map="#{pageSession.valueMap}" key="defaultVirtualServer"  value="server")
         />
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{newVsId});
@@ -84,7 +84,7 @@
         <sun:staticText text="$resource{i18n_web.grizzly.networkListener.useExistingProtocol}" />
         <sun:dropDown id="protocoldw" selected="#{pageSession.valueMap['existingProtocolName']}"  disabled="true" style="margin-left: 4pt" labels="$pageSession{protocolListLabel}" >
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols" type="protocol" result="#{pageSession.protocolListLabel}");
+                gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol" result="#{pageSession.protocolListLabel}");
             />
             <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{PdropDownId});
@@ -125,7 +125,7 @@
         <sun:property id="threadpool"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.threadPool}" helpText="$resource{i18n_web.grizzly.networkListener.threadPoolHelp}">
             <sun:dropDown id="threadpool" selected="#{pageSession.valueMap['ThreadPool']}" labels="$pageSession{threadPoolList}"  values="$pageSession{threadPoolList}" >
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=thread-pools" type="thread-pool" result="#{pageSession.threadPoolList}");
+                gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/thread-pools/thread-pool" result="#{pageSession.threadPoolList}");
             />
            </sun:dropDown>
         </sun:property>
@@ -133,7 +133,7 @@
         <sun:property id="transport"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.transport}" helpText="$resource{i18n_web.grizzly.networkListener.transportHelp}">
             <sun:dropDown id="transport" selected="#{pageSession.valueMap['Transport']}" labels="$pageSession{transportList}"  values="$pageSession{transportList}"  >
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=transports" type="transport" result="#{pageSession.transportList}");
+                gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/transports/transport" result="#{pageSession.transportList}");
             />
            </sun:dropDown>
         </sun:property>
@@ -144,8 +144,8 @@
                 labels="$pageSession{protocolListLabel}"  values="$pageSession{protocolListValue}"
                 onChange="javascript: disableProtocolNameField();" >
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols" type="protocol" result="#{pageSession.protocolListLabel}");
-                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols" type="protocol" result="#{pageSession.protocolListValue}");
+                gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol" result="#{pageSession.protocolListLabel}");
+                gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol" result="#{pageSession.protocolListValue}");
                 listAdd(list="#{pageSession.protocolListLabel}" value="$resource{i18n_web.grizzly.createNewProtocol}" index="0")
                 listAdd(list="#{pageSession.protocolListValue}" value="__create__" index="0")
             />

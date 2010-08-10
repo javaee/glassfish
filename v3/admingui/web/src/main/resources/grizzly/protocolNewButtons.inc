@@ -40,21 +40,22 @@
         <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
-                createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+
+                gf.createEntity(endpoint="#{pageSession.selfUrl}"
                         attrs="#{pageSession.valueMap}"
-                        convertToFalse={"SecurityEnabled"},
-                        result="#{pageSession.newProxy}" );
+                        convertToFalse={"securityEnabled"},
+                        result => $attribute{newProxy});
 
-                createProxy(parentObjectNameStr="#{pageSession.newProxy}" childType="#{pageSession.childType2}"
+                gf.createEntity(endpoint="${newProxy}/#{pageSession.valueMap['Name']}/#{pageSession.childType2}"
                         attrs="#{pageSession.httpMap}"
-                        onlyUseAttrs={"EnableCometSupport", "DefaultVirtualServer", "ServerName", "RedirectPort"}
-                        convertToFalse={"UploadTimeutEnabled", "CometSupportEnabled", "DnsLookupEnabled", "RcmSupportEnabled", "TraceEnabled", "AuthPassThroughEnabled", "ChunkingEnabled", "XpoweredBy"},
-                        result="#{pageSession.newHttp}");
+                        onlyUseAttrs={"enableCometSupport", "defaultVirtualServer", "serverName", "redirectPort"}
+                        convertToFalse={"uploadTimeoutEnabled", "cometSupportEnabled", "dnsLookupEnabled", "rcmSupportEnabled", "traceEnabled", "authPassThroughEnabled", "chunkingEnabled", "xpoweredBy"},
+                        result => $attribute{newHttp});
 
-                createProxy(parentObjectNameStr="#{pageSession.newHttp}" childType="#{pageSession.childType3}"
+                gf.createEntity(endpoint="${newHttp}/#{pageSession.childType3}"
                         attrs="#{pageSession.fileMap}"
                         convertToFalse={"Enabled"},
-                         );
+                );
 
                 gf.redirect(page="#{parentPage}?configName=#{configName}")
             />

@@ -51,26 +51,28 @@
         urlencode(value="#{pageSession.listenerName}" encoding="UTF-8" result="#{pageSession.encodedListenerName}");
 
         setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/web/grizzly/#{pageSession.cancelTo}")
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols/protocol[#{pageSession.Name}],type=http");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.Name}");
         setPageSessionAttribute(key="childType" value="http");
-        proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
-        getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
-        if (#{requestScope.exist}){
-            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.httpMap}");
-            setPageSessionAttribute(key="previousVSName" value="#{pageSession.httpMap['DefaultVirtualServer']}" );
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol/#{pageSession.Name}");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}" exists="#{requestScope.exist}");
+        setPageSessionAttribute(key="httpEndPointExist" value="#{requestScope.exist}");
+        gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server" result="#{pageSession.vsList}");
+        if (#{pageSession.httpEndPointExist}){
+            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.httpMap}");
+            setPageSessionAttribute(key="previousVSName" value="#{pageSession.httpMap['defaultVirtualServer']}" );
             setPageSessionAttribute(key="edit" value="#{true}" );
         }
-        if (! #{requestScope.exist}){
+        if (! #{pageSession.httpEndPointExist}){
             setPageSessionAttribute(key="edit" value="#{false}" )
-            getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.httpMap}")
-            mapPut(map="#{pageSession.httpMap}" key="DefaultVirtualServer"  value="server")
+            gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.httpMap}");
+            mapPut(map="#{pageSession.httpMap}" key="defaultVirtualServer"  value="server")
             setPageSessionAttribute(key="previousVSName" value="" );
         }
 
         setPageSessionAttribute(key="valueMap" value="#{pageSession.httpMap}");
         setPageSessionAttribute(key="convertToFalseList" 
-            value={"UploadTimeutEnabled", "CometSupportEnabled", "DnsLookupEnabled", "RcmSupportEnabled", "TraceEnabled", "AuthPassThroughEnabled", "ChunkingEnabled", "XpoweredBy" });
+            value={"uploadTimeoutEnabled", "cometSupportEnabled", "dnsLookupEnabled", "rcmSupportEnabled", "traceEnabled", "authPassThroughEnabled", "chunkingEnabled", "xpoweredBy" });
 
         //set the following for including buttons.inc
         
@@ -79,8 +81,7 @@
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
 
-        setPageSessionAttribute(key="additionalSaveHandler" value="updateNetworkListenerInVS");
-        setPageSessionAttribute(key="additionalSaveHandlerArgs" value="previousVSName:%23{pageSession.previousVSName},protocolName:%23{pageSession.protocolName}");
+        setPageSessionAttribute(key="additionalSaveHandler" value="changeNetworkListenersInVS");
     />
     </event>
             <sun:form id="propertyForm">
@@ -91,8 +92,8 @@
 
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.httpPageTitle}" helpText="$resource{i18n_web.grizzly.httpPageTitleHelp}">
-#include "/common/shared/editPageButtons.inc"
-                    </sun:title>
+#include "/web/grizzly/httpSaveButtons.inc"
+                </sun:title>
     <sun:propertySheet id="propertySheet">
 #include "/web/grizzly/httpAttr.inc"
     </sun:propertySheet>

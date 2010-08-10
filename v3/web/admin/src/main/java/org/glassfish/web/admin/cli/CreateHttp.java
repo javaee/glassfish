@@ -90,7 +90,7 @@ public class CreateHttp implements AdminCommand {
     String timeoutSeconds;
     @Param(name = "max-connection", defaultValue = "256", optional = true)
     String maxConnections;
-    @Param(name = "default-virtual-server")
+    @Param(name = "default-virtual-server", alias="DefaultVirtualServer")
     String defaultVirtualServer;
     @Param(name = "dns-lookup-enabled", defaultValue = "false", optional = true)
     Boolean dnsLookupEnabled = false;

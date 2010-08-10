@@ -49,21 +49,25 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/protocols.jsf");
 
 
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols");
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols");
         setPageSessionAttribute(key="childType" value="protocol");
-        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
+        
+        gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
 
-        getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
-        setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=admin-listener");
+        gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server" result="#{pageSession.vsList}");
         setPageSessionAttribute(key="childType2" value="http");
-        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType2}"  valueMap="#{pageSession.httpMap}")
+        setPageSessionAttribute(key="parentUrl2", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol/admin-listener");
+        setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl2}/#{pageSession.childType2}");
+        gf.getDefaultValues(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.httpMap}");
         mapPut(map="#{pageSession.httpMap}" key="DefaultVirtualServer"  value="server")
         setPageSessionAttribute(key="httpSectionTitle" value="$resource{i18n_web.grizzly.protocolNew.httpSectionTitle}");
 
         setPageSessionAttribute(key="fileCacheSectionTitle" value="$resource{i18n_web.grizzly.protocolNew.fileCacheSectionTitle}");
-        setPageSessionAttribute(key="parentObjectNameStr3", value="amx:pp=/domain/configs/config[server-config]/network-config/protocols/protocol[admin-listener],type=http");
         setPageSessionAttribute(key="childType3" value="file-cache");
-        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr3}" childType="#{pageSession.childType3}"  valueMap="#{pageSession.fileMap}")
+        setPageSessionAttribute(key="parentUrl3", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol/admin-listener/http");
+        setPageSessionAttribute(key="selfUrl3", value="#{pageSession.parentUrl3}/#{pageSession.childType3}");
+        gf.getDefaultValues(endpoint="#{pageSession.selfUrl3}", valueMap="#{pageSession.fileMap}");
         />
     </event>
             <sun:form id="propertyForm">
