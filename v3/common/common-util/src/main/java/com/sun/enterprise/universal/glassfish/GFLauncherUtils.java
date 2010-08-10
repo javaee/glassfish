@@ -64,20 +64,6 @@ public class GFLauncherUtils {
         return f != null && f.isDirectory();
     }
 
-    /*
-    public static File absolutize(File f) {
-        if (f == null) {
-            return null;
-        }
-
-        try {
-            return f.getCanonicalFile();
-        }
-        catch (Exception e) {
-            return f.getAbsoluteFile();
-        }
-    }
-*/
     public static synchronized File getInstallDir() {
         // if it is already set as a System Property -- skip the huge block below
         setInstallDirFromSystemProp();
