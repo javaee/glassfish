@@ -97,6 +97,7 @@ class ZipPayloadImpl extends PayloadImpl {
                 part.copy(zos);
                 zos.closeEntry();
             }
+            zos.close();
         }
 
         private Outbound() {
