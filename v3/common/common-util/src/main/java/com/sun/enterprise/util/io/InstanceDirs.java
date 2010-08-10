@@ -33,9 +33,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.util.io;
 
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import java.io.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -58,6 +60,7 @@ import java.io.IOException;
  * Created: April 19, 2010
  */
 public final class InstanceDirs {
+
     /**
      * This constructor is used when the instance dir is known
      *
@@ -67,9 +70,142 @@ public final class InstanceDirs {
     public InstanceDirs(File theInstanceDir) throws IOException {
         dirs = new ServerDirs(theInstanceDir);
 
-        if(dirs.getServerGrandParentDir() == null) {
+        if (dirs.getServerGrandParentDir() == null) {
             throw new IOException(ServerDirs.strings.get("InstanceDirs.noGrandParent", dirs.getServerDir()));
         }
+    }
+
+    /**
+     * This constructor handles 0, 1, 2 or 3 null args.
+     * It is smart enough to figure out many defaults.
+     * @param nodeDirParent E.g. install-dir/nodeagents
+     * @param nodeDir E.g. install-dir/nodeagents/localhost
+     * @param instanceName E.g. i1
+     */
+    public InstanceDirs(String nodeDirParentPath, String nodeDirName, String instanceName) throws IOException {
+        if (!StringUtils.ok(nodeDirParentPath))
+            nodeDirParentPath = getNodeDirRootDefault();
+
+        File nodeDirParent = new File(nodeDirParentPath);
+
+        if (!nodeDirParent.isDirectory()) {
+            dirs = null;
+            throw new IOException(Strings.get("InstanceDirs.noNodeParent"));
+        }
+
+        File nodeDir;
+
+        if (StringUtils.ok(nodeDirName))
+            nodeDir = new File(nodeDirParent, nodeDirName);
+        else
+            nodeDir = getTheOneAndOnlyNode(nodeDirParent);
+
+        if (!nodeDir.isDirectory()) {
+            dirs = null;
+            throw new IOException(Strings.get("InstanceDirs.badNodeDir", nodeDir));
+        }
+
+        File instanceDir;
+
+        if (StringUtils.ok(instanceName))
+            instanceDir = new File(nodeDir, instanceName);
+        else
+            instanceDir = getTheOneAndOnlyInstance(nodeDir);
+
+        if (!instanceDir.isDirectory()) {
+            dirs = null;
+            throw new IOException(Strings.get("InstanceDirs.badInstanceDir", instanceDir));
+        }
+
+        // whew!!!
+
+        dirs = new ServerDirs(instanceDir);
+    }
+
+    private File getTheOneAndOnlyNode(File parent) throws IOException {
+        // look for subdirs in the parent dir -- there must be one and only one
+
+        File[] files = parent.listFiles(new FileFilter() {
+
+            public boolean accept(File f) {
+                return f != null && f.isDirectory();
+            }
+        });
+
+        // ERROR:  No node dirs
+        if (files != null && files.length < 1) {
+            throw new IOException(
+                    Strings.get("InstanceDirs.noNodes", parent));
+        }
+        // ERROR:  more than one node dir child
+        if (files != null && files.length > 1) {
+            throw new IOException(
+                    Strings.get("InstanceDirs.tooManyNodes", parent, files.length));
+        }
+
+        // the usual case -- one node dir child
+        return files[0];
+    }
+
+    private File getTheOneAndOnlyInstance(File nodeDir) throws IOException {
+        // look for subdirs in the parent dir -- there must be one and only one
+
+        File[] files = nodeDir.listFiles(new FileFilter() {
+
+            public boolean accept(File f) {
+                return f != null && f.isDirectory() && !"agent".equals(f.getName());
+            }
+        });
+
+        // ERROR:  No instance dirs
+        if (files != null && files.length < 1) {
+            throw new IOException(
+                    Strings.get("InstanceDirs.noInstances", nodeDir));
+        }
+        // ERROR:  more than one instance dir
+        if (files != null && files.length > 1) {
+            throw new IOException(
+                    Strings.get("InstanceDirs.tooManyInstances", files.length, nodeDir));
+        }
+
+        // the usual case -- one instance dir
+        return files[0];
+    }
+
+    /**
+     * Return the default value for nodeDirRoot, first checking if com.sun.aas.agentRoot
+     * was specified in asenv.conf and returning this value. If not specified,
+     * then the default value is the {GlassFish_Install_Root}/nodeagents.
+     * nodeDirRoot is the parent directory of the node(s).
+     *
+     * @return String default nodeDirRoot - parent directory of node(s)
+     * @throws CommandException if the GlassFish install root is not found
+     */
+    private String getNodeDirRootDefault() throws IOException {
+        String nodeDirDefault = System.getProperty(
+                SystemPropertyConstants.AGENT_ROOT_PROPERTY);
+
+        if (StringUtils.ok(nodeDirDefault))
+            return nodeDirDefault;
+
+        String installRootPath = getInstallRootPath();
+        return installRootPath + "/" + "nodeagents";
+    }
+
+    /**
+     * Gets the GlassFish installation root (using property com.sun.aas.installRoot),
+     *
+     * @return path of GlassFish install root
+     * @throws CommandException if the GlassFish install root is not found
+     */
+    protected String getInstallRootPath() throws IOException {
+        String installRootPath = System.getProperty(
+                SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+
+        if (!StringUtils.ok(installRootPath))
+            throw new IOException("noInstallDirPath");
+
+        return installRootPath;
     }
 
     /**
@@ -105,7 +241,6 @@ public final class InstanceDirs {
     public final File getDasPropertiesFile() {
         return dirs.getDasPropertiesFile();
     }
-
     ///////////////////////////////////////////////////////////////////////////
     ///////////           All Private Below           /////////////////////////
     ///////////////////////////////////////////////////////////////////////////
