@@ -52,6 +52,13 @@
         />
     </sun:tab>
 
+    <sun:tab id="resources" immediate="$boolean{true}" text="$resource{i18nc.resources}" >
+        <!command
+            setSessionAttribute(key="standaloneInstanceTabs" value="resources");
+            gf.redirect(page="#{request.contextPath}/cluster/standalone/standaloneInstanceResources.jsf?instanceName=#{pageSession.encodedInstanceName}");
+        />
+    </sun:tab>
+
     <sun:tab id="standaloneProp" immediate="$boolean{true}" text="$resource{i18nc.PropertiesTab}">
         <!command
             setSessionAttribute(key="standaloneInstanceTabs" value="configProps");

@@ -50,6 +50,7 @@ import org.xml.sax.SAXException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
 import org.glassfish.admingui.common.util.MiscUtil;
@@ -688,7 +689,8 @@ public class RestApiHandlers {
             String foo = RestApiHandlers.get(endpoint).getResponseBody();
             List<String> childUrls = getChildResourceList(foo);
             for (String childUrl : childUrls) {    
-                childElements.add(childUrl.substring(childUrl.lastIndexOf("/")+1));
+                String element = childUrl.substring(childUrl.lastIndexOf("/")+1); 
+                childElements.add(URLDecoder.decode(element, "UTF-8"));
             }   
         } catch (Exception e) {
             throw e;

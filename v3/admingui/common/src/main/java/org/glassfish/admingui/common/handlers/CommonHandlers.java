@@ -216,7 +216,7 @@ public class CommonHandlers {
         @HandlerOutput(name="map", type=java.util.Map.class)})
     public static void createAttributeMap(HandlerContext handlerCtx) {
         List<String> keys = (List<String>) handlerCtx.getInputValue("keys");
-        List<String> values = (List) handlerCtx.getInputValue("values");
+        List values = (List) handlerCtx.getInputValue("values");
         Map<String, Object> map = new HashMap<String, Object>();
         if (keys != null && values != null) {
             for (int i = 0; i < keys.size(); i++) {
