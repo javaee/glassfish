@@ -647,7 +647,6 @@ public class ClusterTest extends AdminBaseDevTest {
         success = ret.outAndErr.indexOf(i3name+" running") >= 0;
         report(tn+"test-in3-state-after-restart", success);
 
-/*
 	// Test that instance restart, clears restart-required flag
         report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
         report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
@@ -655,12 +654,11 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
 	// Test instance states
         ret = asadminWithOutput("list-instances");
-System.out.println("VIJ : " + ret.outAndErr);
         success = ret.outAndErr.indexOf(i1name+" running") >= 0;
         report(tn+"test-in1-running", success);
         success = ret.outAndErr.indexOf(i2name+" running") >= 0;
         report(tn+"test-in2-running", success);
-*/
+
         // Cleanup
 	report(tn + "set-dyn-recfg-flag", asadmin("set", "configs.config."+cname+"-config.dynamic-reconfiguration-enabled=true"));
         asadmin("delete-jdbc-connection-pool", "testPool");
