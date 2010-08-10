@@ -107,8 +107,9 @@ public class ClusterTest extends AdminBaseDevTest {
         testClusterWithObsoleteOptions();
         testEndToEndDemo();
         testListClusters();
-	testDynamicReconfigEnabledFlag();
-	testGetSetListCommands();
+        testDynamicReconfigEnabledFlag();
+        testGetSetListCommands();
+        testRestartRequired();
         cleanup();
         stopDomain();
         stat.printSummary();
@@ -540,6 +541,130 @@ public class ClusterTest extends AdminBaseDevTest {
         report("get-after-enabling-monitoring-without-m", success);
 
         // Cleanup
+        report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
+        report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
+        report(tn + "stop-local-instance3", asadmin("stop-local-instance", i3name));
+        report(tn + "delete-local-instance1", asadmin("delete-local-instance", i1name));
+        report(tn + "delete-local-instance2", asadmin("delete-local-instance", i2name));
+        report(tn + "delete-local-instance3", asadmin("delete-local-instance", i3name));
+        report(tn + "delete-cluster", asadmin("delete-cluster", cname));
+    }
+
+    /*
+     * Test for restart required
+     */
+    private void testRestartRequired() {
+        final String tn = "resreq-";
+
+        final String cname = "resreqcluster";
+        final String i1name = "resreq1";
+        final String i2name = "resreq2";
+        final String i3name = "resreq3";
+
+        // create a cluster and two instances
+        report(tn + "create-cluster", asadmin("create-cluster", cname));
+        report(tn + "create-local-instance1", asadmin("create-local-instance",
+                "--cluster", cname, i1name));
+        report(tn + "create-local-instance2", asadmin("create-local-instance",
+                "--cluster", cname, i2name));
+        report(tn + "create-local-instance2", asadmin("create-local-instance",
+                i3name));
+
+        // start the instances
+        report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
+        report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
+        report(tn + "start-local-instance2", asadmin("start-local-instance", i3name));
+
+        // check that the instances are there
+        AsadminReturn ret = asadminWithOutput("list-instances");
+        boolean success = ret.outAndErr.indexOf(i1name+" running") >= 0;
+        report(tn+"test-in1-running", success);
+        success = ret.outAndErr.indexOf(i2name+" running") >= 0;
+        report(tn+"test-in2-running", success);
+        success = ret.outAndErr.indexOf(i3name+" running") >= 0;
+        report(tn+"test-in3-running", success);
+
+	// Set dynamic reconfig enabled flag for c1 to false
+	report(tn + "set-dyn-recfg-flag", asadmin("set", "configs.config."+cname+"-config.dynamic-reconfiguration-enabled=false"));
+
+	// Execute command
+	ret = asadminWithOutput("create-jdbc-connection-pool",
+		"--datasourceclassname",
+		"org.apache.derby.jdbc.ClientDataSource","--restype",
+		"javax.sql.XADataSource","--target", cname, "testPool");
+        success = ret.outAndErr.indexOf("WARNING") >= 0;
+        report(tn+"test-dyn-recfg-disabled", success);
+
+	// Test instance states
+        ret = asadminWithOutput("list-instances", i1name);
+        success = ret.outAndErr.indexOf("[PENDING CONFIG CHANGES ARE : create-jdbc-connection-pool testPool") >= 0;
+        report(tn+"test-in1-requires-restart", success);
+        ret = asadminWithOutput("list-instances", i2name);
+        success = ret.outAndErr.indexOf("[PENDING CONFIG CHANGES ARE : create-jdbc-connection-pool testPool") >= 0;
+        report(tn+"test-in2-requires-restart", success);
+        ret = asadminWithOutput("list-instances", i3name);
+        success = ret.outAndErr.indexOf(i3name+" running") >= 0;
+        report(tn+"test-in3-does-not-require-restart", success);
+
+	// Test failed command being appended
+	// Execute command
+	ret = asadminWithOutput("create-jdbc-connection-pool",
+		"--datasourceclassname",
+		"org.apache.derby.jdbc.ClientDataSource","--restype",
+		"javax.sql.XADataSource","--target", cname, "testPool2");
+        success = ret.outAndErr.indexOf("WARNING") >= 0;
+        report(tn+"test-dyn-recfg-disabled", success);
+
+	// Test instance states
+        ret = asadminWithOutput("list-instances", i1name);
+        success = ret.outAndErr.indexOf("[PENDING CONFIG CHANGES ARE : create-jdbc-connection-pool testPool") >= 0;
+        report(tn+"test-in1-has-1st-failed-cmd", success);
+        success = ret.outAndErr.indexOf("create-jdbc-connection-pool testPool2") >= 0;
+        report(tn+"test-in1-has-2nd-failed-cmd", success);
+        ret = asadminWithOutput("list-instances", i2name);
+        success = ret.outAndErr.indexOf("[PENDING CONFIG CHANGES ARE : create-jdbc-connection-pool testPool") >= 0;
+        report(tn+"test-in2-has-1st-failed-cmd", success);
+        success = ret.outAndErr.indexOf("create-jdbc-connection-pool testPool2") >= 0;
+        report(tn+"test-in2-has-2nd-failed-cmd", success);
+        ret = asadminWithOutput("list-instances", i3name);
+        success = ret.outAndErr.indexOf(i3name+" running") >= 0;
+        report(tn+"test-in3-does-not-require-restart", success);
+
+	// Test that restart-required persisted across DAS restarts
+	asadminWithOutput("restart-domain");
+	// Test instance states
+        ret = asadminWithOutput("list-instances", i1name);
+        success = ret.outAndErr.indexOf("[PENDING CONFIG CHANGES ARE : create-jdbc-connection-pool testPool") >= 0;
+        report(tn+"test-in1-state-after-restart", success);
+        success = ret.outAndErr.indexOf("create-jdbc-connection-pool testPool2") >= 0;
+        report(tn+"test-in1-state-after-restart", success);
+        ret = asadminWithOutput("list-instances", i2name);
+        success = ret.outAndErr.indexOf("[PENDING CONFIG CHANGES ARE : create-jdbc-connection-pool testPool") >= 0;
+        report(tn+"test-in2-state-after-restart", success);
+        success = ret.outAndErr.indexOf("create-jdbc-connection-pool testPool2") >= 0;
+        report(tn+"test-in2-state-after-restart", success);
+        ret = asadminWithOutput("list-instances", i3name);
+        success = ret.outAndErr.indexOf(i3name+" running") >= 0;
+        report(tn+"test-in3-state-after-restart", success);
+
+/*
+	// Test that instance restart, clears restart-required flag
+        report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
+        report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
+        report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
+        report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
+	// Test instance states
+        ret = asadminWithOutput("list-instances");
+System.out.println("VIJ : " + ret.outAndErr);
+        success = ret.outAndErr.indexOf(i1name+" running") >= 0;
+        report(tn+"test-in1-running", success);
+        success = ret.outAndErr.indexOf(i2name+" running") >= 0;
+        report(tn+"test-in2-running", success);
+*/
+        // Cleanup
+	report(tn + "set-dyn-recfg-flag", asadmin("set", "configs.config."+cname+"-config.dynamic-reconfiguration-enabled=true"));
+        asadmin("delete-jdbc-connection-pool", "testPool");
+        asadmin("delete-jdbc-connection-pool", "testPool2");
         report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
         report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
         report(tn + "stop-local-instance3", asadmin("stop-local-instance", i3name));
