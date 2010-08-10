@@ -582,13 +582,15 @@ public class EJBTimerService
                     if( (lastExpiration == null) &&
                         now.after(initialExpiration) ) {
                         
-                        // This timer didn't even expire one time.
-                        logger.log(Level.INFO, 
+                        if (!timerState.isExpired()) {
+                            // This timer didn't even expire one time.
+                            logger.log(Level.INFO, 
                                    "Rescheduling missed expiration for " +
                                    "periodic timer " +
                                    timerState + ". Timer expirations should " +
                                    " have been delivered starting at " +
                                    initialExpiration);
+                        }
 
                         // keep expiration time at initialExpiration.  That
                         // will force an ejbTimeout almost immediately. After
@@ -1109,16 +1111,9 @@ public class EJBTimerService
 
         TimerPrimaryKey timerId = new TimerPrimaryKey(getNextTimerId());
 
-        boolean expired = false;
         if (schedule != null) {
             Calendar next = schedule.getNextTimeout();
             if( !schedule.isValid(next) ) {
-                logger.log(Level.INFO, "Schedule: " +
-                                      schedule.getScheduleAsString() + 
-                                      " already expired");
-                // schedule-based timer will never expire.
-                // we'll create it now, and remove soon or on server restart
-                expired = true; 
                 initialExpiration = new Date();
             } else {
                 initialExpiration = next.getTime();
@@ -1137,14 +1132,10 @@ public class EJBTimerService
 
         RuntimeTimerState timerState = 
             new RuntimeTimerState(timerId, initialExpiration, 
-                                  intervalDuration, container, 
+                                  intervalDuration, containerId, container, 
                                   timedObjectPrimaryKey,
                                   schedule, timerConfig.getInfo(),
                                   timerConfig.isPersistent());
-
-        if (expired) {
-            timerState.expired();
-        }
 
         synchronized(timerState) {
             // Add timer entry before calling TimerBean.create, since 

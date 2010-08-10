@@ -43,19 +43,33 @@ import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.EjbTimerService;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import org.glassfish.internal.api.ServerContext;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.v3.server.ExecutorServiceFactory;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import com.sun.ejb.base.sfsb.util.EJBServerConfigLookup;
+
 import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.api.ActionReport;
+import org.glassfish.deployment.common.DeploymentProperties;
+import org.glassfish.ejb.spi.CMPDeployer;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+import org.glassfish.internal.api.ServerContext;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.persistence.common.Java2DBProcessorHelper;
+import org.glassfish.persistence.common.DatabaseConstants;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.glassfish.flashlight.provider.ProbeProviderFactory;
+
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -65,24 +79,16 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
-import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
-import org.glassfish.ejb.spi.CMPDeployer;
-import org.glassfish.api.ActionReport;
-import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.persistence.common.Java2DBProcessorHelper;
-import org.glassfish.persistence.common.DatabaseConstants;
-import org.glassfish.flashlight.provider.ProbeProviderFactory;
 
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.Synchronization;
+
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
@@ -478,6 +484,9 @@ public class EjbContainerUtilImpl
                         ExtendedDeploymentContext dc = deployment.getBuilder(
                                 _logger, params, report).source(app).build();
                         dc.addTransientAppMetaData(DatabaseConstants.JTA_DATASOURCE_JNDI_NAME_OVERRIDE, resourceName);
+                        Properties appProps = dc.getAppProps();
+                        appProps.setProperty(ServerTags.OBJECT_TYPE, DeploymentProperties.SYSTEM_ALL);
+
                         deployment.deploy(dc);
 
                         if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {

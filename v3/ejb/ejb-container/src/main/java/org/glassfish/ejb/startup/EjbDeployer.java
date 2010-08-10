@@ -197,6 +197,9 @@ public class EjbDeployer
     public EjbApplication load(EjbContainerStarter containerStarter, DeploymentContext dc) {
         super.load(containerStarter, dc);
 
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log( Level.FINE, "EjbDeployer Loading app from: " + dc.getSourceDir());
+        }
         //Register the EjbSecurityComponentInvocationHandler
 
         RegisteredComponentInvocationHandler handler = habitat.getComponent(RegisteredComponentInvocationHandler.class,"ejbSecurityCIH");
@@ -388,44 +391,36 @@ public class EjbDeployer
             DeployCommandParameters dcp = context.getCommandParameters(DeployCommandParameters.class);
 
             if (_logger.isLoggable(Level.FINE)) {
-                _logger.log( Level.FINE, "EjbDeployer in target " + dcp.target);
+                _logger.log( Level.FINE, "EjbDeployer in INSTANCE: " + env.getInstanceName() + " for TARGET: " + dcp.target);
             }
 
             if (env.getInstanceName().equals(dcp.target)) {
-//System.err.println("===> DEPLOYING on " + env.getInstanceName() + " ... skipping event");
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log( Level.FINE, "EjbDeployer ... skipping event");
+                }
                 // Timers will be created by the BaseContainer
                 return;
             }
 
-/**
-            if (EjbContainerUtil.TIMER_SERVICE_APP_NAME.equals(dcp.name)) {
-                EjbApplication app = load(null, context);
-                app.start(context);
-            } else {
-**/
+            Map<String, ExtendedDeploymentContext> deploymentContexts = context.getModuleDeploymentContexts();
 
-                Map<String, ExtendedDeploymentContext> deploymentContexts = context.getModuleDeploymentContexts();
-
-                for (DeploymentContext dc : deploymentContexts.values()) {
-                    EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
-
-                    checkEjbBundleForTimers(ejbBundle, dcp.target);
-                }
-    
-                EjbBundleDescriptor ejbBundle = context.getModuleMetaData(EjbBundleDescriptor.class);
-                checkEjbBundleForTimers(ejbBundle, dcp.target);
-/**
+            for (DeploymentContext dc : deploymentContexts.values()) {
+                EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
+                checkEjbBundleForTimers(ejbBundle, dcp.target, dc.getClassLoader());
             }
-**/
+    
+            EjbBundleDescriptor ejbBundle = context.getModuleMetaData(EjbBundleDescriptor.class);
+            checkEjbBundleForTimers(ejbBundle, dcp.target, context.getClassLoader());
         }
     }
 
-    private void checkEjbBundleForTimers(EjbBundleDescriptor ejbBundle, String target) {
+    private void checkEjbBundleForTimers(EjbBundleDescriptor ejbBundle, String target, ClassLoader cl) {
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log( Level.FINE, "EjbDeployer.checkEjbBundleForTimers in BUNDLE: " + ejbBundle.getName());
         }
 
         if (ejbBundle != null) {
+            ejbBundle.setClassLoader(cl);
             for (EjbDescriptor ejbDescriptor : ejbBundle.getEjbs()) {
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.log( Level.FINE, "EjbDeployer.checkEjbBundleForTimers in EJB: " + ejbDescriptor.getName());
@@ -443,33 +438,45 @@ public class EjbDeployer
     /** Start EJB Timer Service and create automatic timers for this EJB in this target
      */
     private void createAutomaticPersistentTimersForEJB(EjbDescriptor ejbDescriptor, String target) {
-        //Start EJB Timer Service if needed
-        EJBTimerService timerService = EjbContainerUtilImpl.getInstance().getEJBTimerService(target);
-//System.err.println("==> BEAN ID? " + ejbDescriptor.getUniqueId());
-//System.err.println("==> TS? " + timerService);
-        if( timerService != null ) {
-            String owner = getOwnerId(target);
-            Map<Method, List<ScheduledTimerDescriptor>> schedules = 
-                    new HashMap<Method, List<ScheduledTimerDescriptor>>();
-            for (ScheduledTimerDescriptor schd : ejbDescriptor.getScheduledTimerDescriptors()) {
-                Method method = schd.getTimeoutMethod().getMethod(ejbDescriptor);
-                if (method != null && schd.getPersistent()) {
-                    if( _logger.isLoggable(Level.FINE) ) {
-                        _logger.log(Level.FINE, "... processing " + method );
-                    }
-
-                    List<ScheduledTimerDescriptor> list = schedules.get(method);
-                    if (list == null) {
-                        list = new ArrayList<ScheduledTimerDescriptor>();
-                        schedules.put(method, list);
-                    }
-                    list.add(schd);
-                }
+        try {
+            //Start EJB Timer Service if needed
+            EJBTimerService timerService = EjbContainerUtilImpl.getInstance().getEJBTimerService(target);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log( Level.FINE, "EjbDeployer BEAN ID? " + ejbDescriptor.getUniqueId());
+                _logger.log( Level.FINE, "EjbDeployer TimerService: " + timerService);
             }
 
-            //TODO pass in only schedules to create.
-            timerService.recoverAndCreateSchedules(ejbDescriptor.getUniqueId(), schedules, owner, true);
-//System.err.println("<== BEAN ID? " + ejbDescriptor.getUniqueId());
+            if( timerService != null ) {
+                String owner = getOwnerId(target);
+                Map<Method, List<ScheduledTimerDescriptor>> schedules = 
+                        new HashMap<Method, List<ScheduledTimerDescriptor>>();
+                for (ScheduledTimerDescriptor schd : ejbDescriptor.getScheduledTimerDescriptors()) {
+                    Method method = schd.getTimeoutMethod().getMethod(ejbDescriptor);
+                    if (method != null && schd.getPersistent()) {
+                        if( _logger.isLoggable(Level.FINE) ) {
+                            _logger.log(Level.FINE, "... processing " + method );
+                        }
+    
+                        List<ScheduledTimerDescriptor> list = schedules.get(method);
+                        if (list == null) {
+                            list = new ArrayList<ScheduledTimerDescriptor>();
+                            schedules.put(method, list);
+                        }
+                        list.add(schd);
+                    }
+                }
+
+                //TODO pass in only schedules to create.
+                timerService.recoverAndCreateSchedules(ejbDescriptor.getUniqueId(), schedules, owner, true);
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log( Level.FINE, "EjbDeployer Done With BEAN ID? " + ejbDescriptor.getUniqueId());
+                }  
+            } else {
+                throw new RuntimeException("EJB Timer Service is not available");
+            }  
+
+        } catch (Exception e) {
+            throw new DeploymentException("Failed to create automatic timers for " + ejbDescriptor.getName(), e);
         }  
     }
 

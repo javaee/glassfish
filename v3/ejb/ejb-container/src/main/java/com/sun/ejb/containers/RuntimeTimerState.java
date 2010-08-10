@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import java.util.Date;
+import java.util.Calendar;
 import java.io.Serializable;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
@@ -116,6 +117,18 @@ class RuntimeTimerState {
                       TimerSchedule schedule,
                       Serializable info,
                       boolean persistent) {
+        this(timerId, initialExpiration, intervalDuration, container.getContainerId(),
+                container, timedObjectPkey, schedule, info, persistent);
+    }
+
+    RuntimeTimerState(TimerPrimaryKey timerId,
+                      Date initialExpiration, long intervalDuration, 
+                      long containerId, 
+                      BaseContainer container, 
+                      Object timedObjectPkey,
+                      TimerSchedule schedule,
+                      Serializable info,
+                      boolean persistent) {
 
         state_       = CREATED;
         currentTask_ = null;
@@ -129,11 +142,23 @@ class RuntimeTimerState {
         container_         = container;
         schedule_          = schedule;
 
-        containerId_       = container.getContainerId();        
+        containerId_       = containerId;
 
         if( logger.isLoggable(Level.FINE) ) {
             logger.log(Level.FINE, "RuntimeTimerState " + timerId_ + 
                        " created");
+        }
+
+        if (schedule != null) {
+            Calendar next = schedule.getNextTimeout();
+            if( !schedule.isValid(next) ) {
+                logger.log(Level.INFO, "Schedule: " +
+                                      schedule.getScheduleAsString() +
+                                      " already expired");
+                // schedule-based timer will never expire.
+                // we'll create it now, and remove soon or on server restart
+                expired();
+            }
         }
     }
 
