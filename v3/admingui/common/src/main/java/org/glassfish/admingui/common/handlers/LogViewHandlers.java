@@ -301,7 +301,7 @@ public class LogViewHandlers {
                 results =  logging.queryServerLog(
                         archivedLogFile,
                         fromRecord,
-                        direction,
+                        after,
                         numberToDisplay,
                         (fromDate == null) ? null : ((Date)fromDate).getTime(),
                         (toDate == null) ? null : ((Date)toDate).getTime(),
