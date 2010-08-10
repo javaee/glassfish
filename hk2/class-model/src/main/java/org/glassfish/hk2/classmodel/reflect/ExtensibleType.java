@@ -35,6 +35,8 @@
  */
 package org.glassfish.hk2.classmodel.reflect;
 
+import java.util.Collection;
+
 /**
  * An extensible type is a type that can be subclassed like an interface
  * or a class.
@@ -56,4 +58,20 @@ public interface ExtensibleType<T extends ExtensibleType> extends Type {
      * @return the parent type instance or null
      */
     public T getParent();
+
+    /**
+     * Returns the child subtypes of this type. A child subtype is a
+     * type which parent is this type.
+     *
+     * @return the immediate subtypes
+     */
+    public Collection<T> subTypes();
+
+    /**
+     * Returns all the children subtypes (including grand children) of
+     * this type. 
+     *
+     * @return all the children
+     */
+    public Collection<T> allSubTypes();
 }

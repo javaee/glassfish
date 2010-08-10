@@ -39,10 +39,7 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 import org.glassfish.hk2.classmodel.reflect.*;
 
 import java.net.URI;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Implementation of an interface model
@@ -54,10 +51,19 @@ public class InterfaceModelImpl extends ExtensibleTypeImpl<InterfaceModel> imple
     }
 
     @Override
-    public Collection<ClassModel> allImplementations() {
+    public Collection<ClassModel> implementations() {
         return Collections.unmodifiableCollection(sink.getImplementations());
     }
 
+    @Override
+    public Collection<ClassModel> allImplementations() {
+        Collection<ClassModel> result = new HashSet<ClassModel>();
+        result.addAll(sink.getImplementations());
+        for (ClassModel cm : sink.getImplementations()) {
+            result.addAll(cm.allSubTypes());
+        }
+        return Collections.unmodifiableCollection(result);
+    }
 
     @Override
     protected void print(StringBuffer sb) {

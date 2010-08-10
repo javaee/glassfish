@@ -62,6 +62,28 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
     }
 
     @Override
+    public Set<T> subTypes() {
+        Set<T> subTypes = new HashSet<T>();
+        for (Type t : sink.getSubTypeRefs()) {
+            subTypes.add((T) t);
+        }
+        return subTypes;
+    }
+
+    @Override
+    public Collection<T> allSubTypes() {
+        Set<T> allTypes = subTypes();
+        for (T child : subTypes()) {
+            allTypes.addAll(child.allSubTypes());
+        }
+        return allTypes;
+    }
+
+    /**
+     * prints a meaningful string
+     * @param sb the string buffer to write to.
+     */
+    @Override
     protected void print(StringBuffer sb) {
         super.print(sb);
         sb.append(", parent=").append(parent==null?"null":parent.getName());
