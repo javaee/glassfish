@@ -53,7 +53,7 @@
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                         if (#{pageSession['rest-api']}) {
-                                setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['Id']}");
+                                setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['id']}");
                             }
                         setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                     }
