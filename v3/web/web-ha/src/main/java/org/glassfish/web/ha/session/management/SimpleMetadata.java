@@ -179,7 +179,9 @@ public class SimpleMetadata  implements Storeable {
                 oos.write(state);
             }
         } finally {
-            try { oos.flush(); oos.close(); } catch (Exception ex) {}
+            try { oos.flush();
+                oos.close();
+            } catch (Exception ex) {}
         }
     }
 
@@ -199,7 +201,8 @@ public class SimpleMetadata  implements Storeable {
                 }
             }
         } finally {
-            try { ois.close(); } catch (Exception ex) {}
+            try { ois.close();
+            } catch (Exception ex) {}
         }
     }
 }

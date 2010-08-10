@@ -206,12 +206,12 @@ public abstract class BaseHASession extends StandardSession
     }
 
     public void save() {
-//        ReplicationManagerBase manager = (ReplicationManagerBase) getManager();
-//        if (manager != null) {
-//            manager.doValveSave(this);
-//        }
+        ReplicationManagerBase manager = (ReplicationManagerBase) getManager();
+        if (manager != null) {
+            manager.doValveSave(this);
+        }
     }
-    
+
     public void sync() {
         
         HttpSessionBindingEvent event = null;

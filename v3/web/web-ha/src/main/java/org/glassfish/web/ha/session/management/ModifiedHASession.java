@@ -34,63 +34,63 @@
  * holder.
  */
 
-/*
- * FullHASession.java
- *
- * Created on October 3, 2002, 3:15 PM
- */
-
 package org.glassfish.web.ha.session.management;
 
-import java.io.Serializable;
-
 import org.apache.catalina.Manager;
+
+import javax.servlet.http.HttpSession;
+import java.io.Serializable;
 
 /**
  *
  * @author  lwhite
- * @author  Rajiv Mordani
+ * @author Rajiv Mordani
  */
-public class FullHASession extends BaseHASession implements  Serializable {
-    
-    /**
-     * Creates a new instance of FullHASession
-     * @param manager 
-     */
-    public FullHASession(Manager manager) {
+public class ModifiedHASession extends BaseHASession 
+    implements HttpSession, HASession, Serializable {
+
+    private transient boolean _dirtyFlag = false;
+
+
+    /** Creates a new instance of ModifiedHASession */
+    public ModifiedHASession(Manager manager) {
         super(manager);
     }
-    
+
     /**
-     * always return true for isDirty()
-     * this type of session is always dirty
-     */
-    public boolean isDirty() {
-        return true;
+     * set the attribute name to the value value
+     * and update the dirty flag to true
+     * @param name
+     * @param value
+     */     
+    public void setAttribute(String name, Object value) { 
+        super.setAttribute(name, value);
+        this.setDirty(true);
     }
 
-    /** 
-     * this is deliberately a no-op
-     * store framework calls this method
-     * so it must be there but must not have
-     * any effect
-     * @param isDirty
-     */ 
-    public void setDirty(boolean isDirty) {
-    }
-    
+    /**
+     * remove the attribute name
+     * and update the dirty flag to true
+     * @param name
+     */     
     public void removeAttribute(String name) {
         super.removeAttribute(name);
-        setDirty(true);
+        this.setDirty(true);
     }
 
-    public void setAttribute(String name, Object value) {
-        super.setAttribute(name, value);
-        setDirty(true);
+    /**
+     * return isDirty
+     */     
+    public boolean isDirty() {
+        return _dirtyFlag;
+    }
+    
+    /**
+     * set isDirty
+     * @param isDirty
+     */      
+    public void setDirty(boolean isDirty) {
+        _dirtyFlag = isDirty;
     }
 
-    public Object getAttribute(String name) {
-        setDirty(true);
-        return super.getAttribute(name);
-    }                
 }

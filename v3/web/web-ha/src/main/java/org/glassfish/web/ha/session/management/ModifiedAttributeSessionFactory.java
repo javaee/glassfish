@@ -35,62 +35,33 @@
  */
 
 /*
- * FullHASession.java
+ * ModifiedAttributeSessionFactory.java
  *
- * Created on October 3, 2002, 3:15 PM
+ * Created on October 3, 2002, 3:59 PM
  */
 
 package org.glassfish.web.ha.session.management;
 
-import java.io.Serializable;
-
 import org.apache.catalina.Manager;
+import org.apache.catalina.Session;
 
 /**
  *
  * @author  lwhite
- * @author  Rajiv Mordani
+ * @author Rajiv Mordani
  */
-public class FullHASession extends BaseHASession implements  Serializable {
+public class ModifiedAttributeSessionFactory implements SessionFactory {
     
-    /**
-     * Creates a new instance of FullHASession
-     * @param manager 
-     */
-    public FullHASession(Manager manager) {
-        super(manager);
+    /** Creates a new instance of ModifiedAttributeSessionFactory */
+    public ModifiedAttributeSessionFactory() {
     }
     
-    /**
-     * always return true for isDirty()
-     * this type of session is always dirty
-     */
-    public boolean isDirty() {
-        return true;
-    }
-
     /** 
-     * this is deliberately a no-op
-     * store framework calls this method
-     * so it must be there but must not have
-     * any effect
-     * @param isDirty
-     */ 
-    public void setDirty(boolean isDirty) {
-    }
+     * create a new session 
+     * @param mgr
+     */        
+    public Session createSession(Manager mgr) {
+        return new ModifiedAttributeHASession(mgr);
+    }    
     
-    public void removeAttribute(String name) {
-        super.removeAttribute(name);
-        setDirty(true);
-    }
-
-    public void setAttribute(String name, Object value) {
-        super.setAttribute(name, value);
-        setDirty(true);
-    }
-
-    public Object getAttribute(String name) {
-        setDirty(true);
-        return super.getAttribute(name);
-    }                
 }

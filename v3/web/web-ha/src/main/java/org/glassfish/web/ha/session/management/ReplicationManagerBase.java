@@ -76,4 +76,6 @@ public abstract class ReplicationManagerBase extends PersistentManagerBase {
     public void doRemove(String id) {
         
     }
+
+    public abstract void doValveSave(Session session);
 }

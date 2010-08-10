@@ -52,4 +52,6 @@ public interface ReplicationAttributeNames {
 
     public static final String LAST_ACCESS_TIME = "lastAccessTime";
 
+    public static final String SESSION_ATTRIBUTES="sessionAttributes";
+
 }
