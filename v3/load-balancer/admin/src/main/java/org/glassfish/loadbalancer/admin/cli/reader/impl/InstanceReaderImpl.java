@@ -54,6 +54,7 @@ import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.config.dom.Protocols;
 import java.net.InetAddress;
 import java.util.Iterator;
+import org.glassfish.config.support.GlassFishConfigBean;
 import org.glassfish.config.support.PropertyResolver;
 import org.glassfish.loadbalancer.admin.cli.LbLogUtil;
 import org.glassfish.loadbalancer.admin.cli.reader.api.LoadbalancerReader;
@@ -146,7 +147,8 @@ public class InstanceReaderImpl implements InstanceReader {
         PropertyResolver resolver = new PropertyResolver(_domain, _server.getName());
         while (listenerIter.hasNext()) {
             NetworkListener listener = listenerIter.next();
-            String prot = listener.getProtocol();
+            NetworkListener rawListener = GlassFishConfigBean.getRawView(listener);
+            String prot = rawListener.getProtocol();
             Protocol protocol = protocols.findProtocol(prot);
 
             if (protocol.getName().equals(ADMIN_LISTENER)) {
@@ -162,11 +164,11 @@ public class InstanceReaderImpl implements InstanceReader {
             } else {
                 listenerStr.append(HTTP_PROTO);
             }
-            String hostName = getResolvedHostName(listener.getAddress());
+            String hostName = getResolvedHostName(rawListener.getAddress());
             listenerStr.append(hostName);
             listenerStr.append(':');
             // resolve the port name
-            String port = listener.getPort();
+            String port = rawListener.getPort();
 
             // If it is system variable, resolve it
             if ((port != null) && (port.length() > 1) && (port.charAt(0) == '$')
