@@ -45,16 +45,16 @@ import com.sun.logging.LogDomains;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.xml.rpc.spi.runtime.SystemHandlerDelegate;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
 import org.glassfish.ejb.spi.WSEjbEndpointRegistry;
 import org.glassfish.ejb.api.EjbEndpointFacade;
-import org.glassfish.api.container.RequestDispatcher;
 
 import javax.xml.ws.WebServiceException;
+import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -71,7 +71,8 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
     private Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
     private ResourceBundle rb = logger.getResourceBundle()   ;
-    
+
+    private org.glassfish.webservices.SecurityService  secServ;
 
     
     // Ejb service endpoint info.  
@@ -91,7 +92,11 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
     
 
     
-
+    public WebServiceEjbEndpointRegistry() {
+        if (Globals.getDefaultHabitat() != null) {
+            secServ = Globals.get(org.glassfish.webservices.SecurityService.class);
+        }
+    }
     
     public void registerEndpoint(WebServiceEndpoint webserviceEndpoint,
                                   EjbEndpointFacade ejbContainer,
@@ -121,7 +126,11 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
         // notify monitoring layers that a new endpoint is being created.
         WebServiceEngineImpl engine = WebServiceEngineImpl.getInstance();
         if (endpoint.getEndpoint().getWebService().getMappingFileUri()!=null) {
-            engine.createHandler((com.sun.xml.rpc.spi.runtime.SystemHandlerDelegate)null, endpoint.getEndpoint());
+             SystemHandlerDelegate securityHandlerDelegate = null;
+             if (secServ != null) {
+                securityHandlerDelegate = secServ.getSecurityHandler(endpoint.getEndpoint());
+             }
+             engine.createHandler(securityHandlerDelegate, endpoint.getEndpoint());
         } else {
             engine.createHandler(endpoint.getEndpoint());
             try {
