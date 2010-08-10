@@ -33,6 +33,9 @@
  only if the new code is made subject to such option by the copyright
  holder.
  
+-->
+
+<!--
  
     <!beforeCreate
        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")

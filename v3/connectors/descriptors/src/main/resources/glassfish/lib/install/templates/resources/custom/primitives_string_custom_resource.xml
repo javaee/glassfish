@@ -5,6 +5,9 @@
 <!--
     Copyright 2004-2009 Sun Microsystems, Inc.  All rights reserved.
     Use is subject to license terms.
+-->
+
+<!--
 
     Template file to create Primitive Types or String Object provider custom resources.
     By specifying the built-in "factory-class" as 

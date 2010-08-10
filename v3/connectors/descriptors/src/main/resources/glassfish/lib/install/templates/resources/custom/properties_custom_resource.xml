@@ -5,6 +5,9 @@
 <!--
     Copyright 2004-2009 Sun Microsystems, Inc.  All rights reserved.
     Use is subject to license terms.
+-->
+
+<!--
 
     Template file to create java.util.Properties Object provider custom resources.
 
