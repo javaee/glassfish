@@ -810,7 +810,7 @@ public final class FileRealm extends IASRealm
         File filePath = new File(file);
         if ((file != null) && !filePath.exists()) {
             try {
-                if ((instanceRoot != null) && (file.startsWith(instanceRoot))) {
+                if ((instanceRoot != null) && (filePath.getCanonicalPath().startsWith(instanceRoot))) {
                     filePath.createNewFile();
                 }
             } catch (IOException ex) {
@@ -1054,8 +1054,14 @@ public final class FileRealm extends IASRealm
     }
 
     private static String getInstanceRoot() {
+        try {
          ServerEnvironment se = (Globals.getDefaultHabitat() != null)?Globals.getDefaultHabitat().getComponent(ServerEnvironment.class):null;
          File fileInstanceRoot = (se == null)?null:se.getInstanceRoot();
-         return (fileInstanceRoot != null)?fileInstanceRoot.getAbsolutePath():null;
+         return (fileInstanceRoot != null)?fileInstanceRoot.getCanonicalPath():null;
+        }
+        catch(IOException e) {
+            _logger.log(Level.FINE, "io_exception while getting the instanceRoot");
+            return null;
+        }
     }
 }

@@ -56,6 +56,7 @@ import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.security.SecurityConfigListener;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -117,6 +118,8 @@ public class CreateAuthRealm implements AdminCommand {
     private Config config;
     @Inject
     private Domain domain;
+    @Inject
+    private SecurityConfigListener securityListener;
 
     /**
      * Executes the command with the command parameters passed as Properties

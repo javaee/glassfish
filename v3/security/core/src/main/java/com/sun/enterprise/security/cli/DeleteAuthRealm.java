@@ -53,6 +53,7 @@ import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.security.SecurityConfigListener;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -94,6 +95,8 @@ public class DeleteAuthRealm implements AdminCommand {
     private Config config;
     @Inject
     private Domain domain;
+    @Inject
+    private SecurityConfigListener securityListener;
 
     AuthRealm authRealm = null;
     

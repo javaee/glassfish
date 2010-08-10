@@ -55,6 +55,7 @@ import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -65,6 +66,7 @@ import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
+import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -115,6 +117,9 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
 
     @Inject
     private RealmsManager realmsManager;
+
+    @Inject
+    private ServerEnvironment se;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -213,16 +218,29 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
                         throws PropertyVetoException, TransactionFailure {
                     try {
                         realmsManager.createRealms(securityService);
+                        //If the (shared) keyfile is updated by an external process, load the users first
+                        refreshRealm(authRealmName);
                         final FileRealm fr = (FileRealm) realmsManager.getFromLoadedRealms(authRealmName);
                         CreateFileUser.handleAdminGroup(authRealmName, groups);
                         String[] groups1 = groups.toArray(new String[groups.size()]);
-                        fr.addUser(userName, password.toCharArray(), groups1);
+                        try {
+                            fr.addUser(userName, password.toCharArray(), groups1);
+                        }catch(BadRealmException br) {
+                            //Check if the server environment is  DAS. If is not  DAS (user creation was
+                            //successful on DAS), then the error is caused in the instances because of shared keyfile between
+                            // DAS and cluster instances - ignore the exception for instances.
+
+                            if(se != null && se.isDas()) {
+                                throw new BadRealmException(br);
+                            }
+                        }
                         if (Util.isEmbeddedServer()) {
                             fr.writeKeyFile(Util.writeConfigFileToTempDir(kf).getAbsolutePath());
                         } else {
                             fr.writeKeyFile(kf);
                         }
-                        refreshRealm(authRealmName);
+                        //Since this is done prior to adding the user, it is redundant here.
+                       //refreshRealm(authRealmName);
                         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                     } catch (Exception e) {
                         report.setMessage(
