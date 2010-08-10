@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.xml.bind.*;
 
+import com.sun.enterprise.admin.util.InstanceStateService;
 import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -87,7 +88,7 @@ public class SynchronizeFiles implements AdminCommand {
     private Servers servers;
 
     @Inject
-    InstanceState instanceState;
+    private InstanceStateService stateService;
 
     @Inject
     private ServerSynchronizer sync;
@@ -142,13 +143,10 @@ public class SynchronizeFiles implements AdminCommand {
                 return;
             }
 
-            // Initialize a instance status object in habitat for this instance
-            //TODO : Once GMS is integrated, this state should be STARTED
-            instanceState.setState(sr.instance,
-                                            InstanceState.StateType.RUNNING);
-
             sync.synchronize(server, sr, context.getOutboundPayload(), report,
                                 logger);
+            stateService.setState(server.getName(), InstanceState.StateType.NO_RESPONSE, true);
+            stateService.removeFailedCommandsForInstance(server.getName());
         } catch (Exception ex) {
             logger.fine("SynchronizeFiles: Exception processing request");
             logger.fine(ex.toString());

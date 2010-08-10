@@ -36,7 +36,10 @@
  */
 package org.glassfish.api.admin;
 
-import org.jvnet.hk2.annotations.Contract;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This holds the late status of the instance, the commands that are Queued up while the instance was starting
@@ -44,36 +47,88 @@ import org.jvnet.hk2.annotations.Contract;
  *
  * @author Vijay Ramachandran
  */
-@Contract
-public interface InstanceState {
+public class InstanceState {
     public enum StateType {
+        NO_RESPONSE {
+            public String getDescription() {
+                return "NO_RESPONSE";
+            }
+
+            public String getDisplayString() {
+                return " no response";
+            }
+        },
         NOT_RUNNING {
             public String getDescription() {
                 return "NOT_RUNNING";
+            }
+
+            public String getDisplayString() {
+                return " not running";
             }
         },
         STARTING {
             public String getDescription() {
                 return "STARTING";
             }
+
+            public String getDisplayString() {
+                return " starting";
+            }
         },
         RUNNING {
             public String getDescription() {
                 return "RUNNING";
+            }
+
+            public String getDisplayString() {
+                return " running";
             }
         },
         RESTART_REQUIRED{
             public String getDescription() {
                 return "REQUIRES_RESTART";
             }
+
+            public String getDisplayString() {
+                return " requires restart";
+            }
         };
 
         public String getDescription() {
             return null;
         }
+
+        public String getDisplayString() {
+            return "NONE";
+        }
     };
 
-    public StateType getState(String instanceName);
+    private StateType currentState;
+    private List<String> failedCommands;
 
-    public void setState(String instanceName, StateType state);
+    public InstanceState(StateType st) {
+        currentState = st;
+        failedCommands = new ArrayList<String>();
+    }
+
+    public StateType getState() {
+        return currentState;
+    };
+
+    public void setState(StateType state) {
+        currentState = state;
+    };
+
+    public List<String> getFailedCommands() {
+        return failedCommands;
+    }
+
+    public void addFailedCommands(String cmd) {
+        failedCommands.add(cmd);
+    }
+
+    public void removeFailedCommands() {
+        failedCommands.clear();
+    }
 }

@@ -47,12 +47,6 @@ class Constants {
     // these are all not localized because REST etc. depends on them.
     static final String NONE = "Nothing to list.";
 
-    static final String RUNNING_DISPLAY = " running";
-    static final String RUNNING = "RUNNING";
-
-    static final String NOT_RUNNING_DISPLAY = " not running";
-    static final String NOT_RUNNING = "NOT_RUNNING";
-
     static final String PARTIALLY_RUNNING_DISPLAY = " partially running";
     static final String PARTIALLY_RUNNING = "PARTIALLY_RUNNING";
 }

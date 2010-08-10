@@ -36,6 +36,7 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.admin.util.InstanceStateService;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.util.StringUtils;
@@ -47,11 +48,8 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.*;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.ReferenceContainer;
 import org.jvnet.hk2.component.*;
 import static com.sun.enterprise.v3.admin.cluster.Constants.*;
@@ -78,6 +76,8 @@ public class ListInstancesCommand implements AdminCommand {
     private ServerEnvironment env;
     @Inject
     private Servers allServers;
+    @Inject
+    InstanceStateService stateService;
     @Param(optional = true, defaultValue = "false")
     private boolean verbose;
     @Param(optional = true, defaultValue = "2000")
@@ -207,8 +207,14 @@ public class ListInstancesCommand implements AdminCommand {
                 sb.append(EOL);
             
             String name = ii.getName();
-            String display = ii.isRunning() ? RUNNING_DISPLAY : NOT_RUNNING_DISPLAY;
-            String value = ii.isRunning() ? RUNNING : NOT_RUNNING;
+            InstanceState.StateType state = (ii.isRunning()) ?
+                    (stateService.setState(name, InstanceState.StateType.RUNNING, false)) :
+                    (stateService.setState(name, InstanceState.StateType.NO_RESPONSE, false));
+            String display = state.getDisplayString();
+            if(state.equals(InstanceState.StateType.RESTART_REQUIRED)) {
+                display += ("[PENDING CONFIG CHANGES ARE : " + stateService.getFailedCommands(name) + "]");
+            }
+            String value = state.getDescription();
             
             sb.append(name).append(display);
             top.addProperty(name, value);

@@ -1,7 +1,6 @@
 package com.sun.enterprise.admin.util;
 
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.StringUtils;
 import java.io.File;
@@ -76,7 +75,7 @@ public class ClusterOperationUtil {
         // TODO : Use Executor service to spray the commands on all instances
 
         ActionReport.ExitCode returnValue = ActionReport.ExitCode.SUCCESS;
-        InstanceState instanceState = habitat.getComponent(InstanceState.class);
+        InstanceStateService instanceState = habitat.getComponent(InstanceStateService.class);
         try {
             validateIntermediateDownloadDir(intermediateDownloadDir);
             List<InstanceCommandExecutor> execList = getInstanceCommandList(commandName,
@@ -121,7 +120,9 @@ public class ClusterOperationUtil {
                     aReport.setActionExitCode(finalResult);
                     if(returnValue.equals(ActionReport.ExitCode.SUCCESS))
                         returnValue = finalResult;
-                    instanceState.setState(rac.getServer().getName(), InstanceState.StateType.RESTART_REQUIRED);
+                    instanceState.setState(rac.getServer().getName(), InstanceState.StateType.RESTART_REQUIRED, false);
+                    instanceState.addFailedCommandToInstance(rac.getServer().getName(),
+                                commandName+" "+parameters.getOne("DEFAULT"));
                 }
             }
         } catch (Exception ex) {
@@ -192,9 +193,11 @@ public class ClusterOperationUtil {
                     aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.dynrecfgdisabled",
                             "WARNING : The command was not replicated to all cluster instances because the" +
                                     " dynamic-reconfig-enabled flag is set to false for cluster {0}", t));
-                    InstanceState instanceState = habitat.getComponent(InstanceState.class);
-                    for(Server s : targetService.getInstances(t))
-                        instanceState.setState(s.getName(), InstanceState.StateType.RESTART_REQUIRED);
+                    InstanceStateService instanceState = habitat.getComponent(InstanceStateService.class);
+                    for(Server s : targetService.getInstances(t)) {
+                        instanceState.setState(s.getName(), InstanceState.StateType.RESTART_REQUIRED, false);
+                        instanceState.addFailedCommandToInstance(s.getName(), commandName+" "+parameters.getOne("DEFAULT"));
+                    }
                     result = ActionReport.ExitCode.WARNING;
                     continue;
                 }

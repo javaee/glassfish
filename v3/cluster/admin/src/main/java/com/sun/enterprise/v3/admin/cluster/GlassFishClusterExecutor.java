@@ -38,6 +38,7 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.admin.util.InstanceCommandExecutor;
+import com.sun.enterprise.admin.util.InstanceStateService;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.config.serverbeans.Cluster;
@@ -64,7 +65,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 /**
  * A ClusterExecutor is responsible for remotely executing commands.
@@ -83,7 +83,7 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
     private ExecutorService threadExecutor;
 
     @Inject
-    private InstanceState instanceState;
+    private InstanceStateService instanceState;
 
     @Inject
     private Target targetService;
@@ -94,11 +94,8 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
     private static final LocalStringManagerImpl strings =
                         new LocalStringManagerImpl(GlassFishClusterExecutor.class);
 
-    private RemoteInstanceCommandHelper helper;
-
     @Override
     public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(habitat);
     }
 
     /**
@@ -155,8 +152,11 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
                     aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.dynrecfgdisabled",
                             "WARNING : The command was not replicated to all cluster instances because the" +
                                     " dynamic-reconfig-enabled flag is set to false for cluster {0}", targetName));
-                    for(Server s : targetService.getInstances(targetName))
-                        instanceState.setState(s.getName(), InstanceState.StateType.RESTART_REQUIRED);
+                    for(Server s : targetService.getInstances(targetName)) {
+                        instanceState.setState(s.getName(), InstanceState.StateType.RESTART_REQUIRED, false);
+                        instanceState.addFailedCommandToInstance(s.getName(),
+                                commandName+" "+parameters.getOne("DEFAULT"));
+                    }
                     return ActionReport.ExitCode.WARNING;
                 }
             }

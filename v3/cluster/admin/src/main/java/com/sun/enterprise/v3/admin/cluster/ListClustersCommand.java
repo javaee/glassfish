@@ -35,12 +35,14 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.admin.util.InstanceStateService;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.cluster.InstanceInfo;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.InstanceState;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -71,6 +73,8 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
     private Habitat habitat;
     @Inject
     Domain domain;
+    @Inject
+    InstanceStateService stateService;
     private RemoteInstanceCommandHelper helper;
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
     private static final String NONE = "Nothing to list.";
@@ -122,7 +126,9 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
                             name, helper.getAdminPort(server), server.getHost(),
                             clusterName, logger, timeoutInMsec);
                     infos.add(ii);
-
+                    InstanceState.StateType state = (ii.isRunning()) ?
+                            (stateService.setState(name, InstanceState.StateType.RUNNING, false)) :
+                            (stateService.setState(name, InstanceState.StateType.NO_RESPONSE, false));
                     allInstancesRunning &= ii.isRunning();
                     if (ii.isRunning()) {
                         atleastOneInstanceRunning = true;
@@ -134,12 +140,12 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
             String value;
 
             if (servers.isEmpty() || !atleastOneInstanceRunning) {
-                display = NOT_RUNNING_DISPLAY;
-                value = NOT_RUNNING;
+                display = InstanceState.StateType.NOT_RUNNING.getDisplayString();
+                value = InstanceState.StateType.NOT_RUNNING.getDescription();
             }
             else if (allInstancesRunning) {
-                display = RUNNING_DISPLAY;
-                value = RUNNING;
+                display = InstanceState.StateType.RUNNING.getDisplayString();
+                value = InstanceState.StateType.RUNNING.getDescription();
             }
             else {
                 display = PARTIALLY_RUNNING_DISPLAY;

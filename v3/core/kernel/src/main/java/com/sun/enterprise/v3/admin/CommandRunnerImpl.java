@@ -37,6 +37,7 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
+import com.sun.enterprise.admin.util.InstanceStateService;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -111,6 +112,9 @@ public class CommandRunnerImpl implements CommandRunner {
 
     @Inject
     private ProcessEnvironment processEnv;
+
+    @Inject
+    private InstanceStateService state;
 
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
 
@@ -1127,6 +1131,14 @@ public class CommandRunnerImpl implements CommandRunner {
             if(command.getClass().isAssignableFrom(UndoableCommand.class)) {
                 UndoableCommand uCmd = (UndoableCommand) command;
                 uCmd.undo(context, parameters, ClusterOperationUtil.getCompletedInstances());
+            }
+        } else {
+            //TODO : Is there a better way of doing this ? Got to look into it
+            if("_register-instance".equals(model.getCommandName())) {
+                state.addServerToStateService(parameters.getOne("DEFAULT"));
+            }
+            if("_unregister-instance".equals(model.getCommandName())) {
+                state.removeInstanceFromStateService(parameters.getOne("DEFAULT"));                
             }
         }
     }
