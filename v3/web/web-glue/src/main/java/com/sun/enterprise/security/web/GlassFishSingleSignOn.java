@@ -389,19 +389,19 @@ public class GlassFishSingleSignOn
         if (entry != null) {
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine(" Found cached principal '"
-                            + entry.principal.getName()
-                            + "' with auth type '" + entry.authType
-                            + "' in realm '" + entry.realmName + "'");
+                            + entry.getPrincipal().getName()
+                            + "' with auth type '" + entry.getAuthType()
+                            + "' in realm '" + entry.getRealmName() + "'");
             }
             //S1AS8 6155481 END            
 
             // only use this SSO identity if it was set in the same realm
-            if (entry.realmName.equals(realmName)) {
+            if (entry.getRealmName().equals(realmName)) {
                 request.setNote(Constants.REQ_SSOID_NOTE, cookie.getValue());
-                ((HttpRequest) request).setAuthType(entry.authType);
-                ((HttpRequest) request).setUserPrincipal(entry.principal);
+                ((HttpRequest) request).setAuthType(entry.getAuthType());
+                ((HttpRequest) request).setUserPrincipal(entry.getPrincipal());
                 // Touch the SSO entry access time
-                entry.lastAccessTime = System.currentTimeMillis();
+                entry.setLastAccessTime(System.currentTimeMillis());
                 // update hit atomic counter
                 hitCount.incrementAndGet();
             } else {
@@ -609,8 +609,7 @@ public class GlassFishSingleSignOn
                 while (it.hasNext()) {
                     String key = (String) it.next();
                     SingleSignOnEntry sso = (SingleSignOnEntry) cache.get(key);
-                    if (sso.sessions.length == 0 &&
-                        sso.lastAccessTime < tooOld) {
+                    if (sso.isEmpty() && sso.getLastAccessTime() < tooOld) {
                         removals.add(key);
                     }
                 }

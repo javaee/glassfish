@@ -376,11 +376,11 @@ public class SingleSignOn
         if (entry != null) {
             if (debug >= 1)
                 log(" Found cached principal '" +
-                    entry.principal.getName() + "' with auth type '" +
-                    entry.authType + "'");
+                    entry.getPrincipal().getName() + "' with auth type '" +
+                    entry.getAuthType() + "'");
             request.setNote(Constants.REQ_SSOID_NOTE, cookie.getValue());
-            ((HttpRequest) request).setAuthType(entry.authType);
-            ((HttpRequest) request).setUserPrincipal(entry.principal);
+            ((HttpRequest) request).setAuthType(entry.getAuthType());
+            ((HttpRequest) request).setUserPrincipal(entry.getPrincipal());
         } else {
             if (debug >= 1)
                 log(" No cached principal found, erasing SSO cookie");

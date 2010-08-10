@@ -70,21 +70,21 @@ public class SingleSignOnEntry {
     private static final Logger log = Logger.getLogger(
         SingleSignOnEntry.class.getName());
 
-    public String id = null;
+    protected String id = null;
 
-    public String authType = null;
+    protected String authType = null;
 
-    public char[] password = null;
+    protected char[] password = null;
 
-    public Principal principal = null;
+    protected Principal principal = null;
 
-    public Session sessions[] = new Session[0];
+    protected Session sessions[] = new Session[0];
 
-    public String username = null;
+    protected String username = null;
 
-    public String realmName = null;
+    protected String realmName = null;
 
-    public long lastAccessTime;
+    protected long lastAccessTime;
 
     public SingleSignOnEntry(String id, Principal principal, String authType,
                              String username, char[] password,
@@ -97,13 +97,6 @@ public class SingleSignOnEntry {
         this.password = ((password != null) ? ((char[])password.clone()) : null);
         this.realmName = realmName;
         this.lastAccessTime = System.currentTimeMillis();
-    }
-
-    /**
-     * Gets the id of this SSO entry.
-     */
-    public String getId() {
-        return id;
     }
 
     /**
@@ -178,5 +171,61 @@ public class SingleSignOnEntry {
             }
             //6406580 END
         }
+    }
+
+    /**
+     * Gets the id of this SSO entry.
+     */
+    public String getId() {
+        return id;
+    }
+
+        /**
+     * Gets the name of the authentication type originally used to authenticate
+     * the user associated with the SSO.
+     *
+     * @return "BASIC", "CLIENT_CERT", "DIGEST", "FORM" or "NONE"
+     */
+    public String getAuthType() {
+        return authType;
+    }
+
+    /**
+     * Gets the password credential (if any) associated with the SSO.
+     *
+     * @return  the password credential associated with the SSO, or
+     *          <code>null</code> if the original authentication type
+     *          does not involve a password.
+     */
+    public char[] getPassword() {
+        return password;
+    }
+
+    /**
+     * Gets the <code>Principal</code> that has been authenticated by
+     * the SSO.
+     */
+    public Principal getPrincipal() {
+        return principal;
+    }
+
+    /**
+     * Gets the username provided by the user as part of the authentication
+     * process.
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    public String getRealmName() {
+        return realmName;
+    }
+
+    public long getLastAccessTime() {
+        return lastAccessTime;
+    }
+
+    public void setLastAccessTime(long lastAccessTime) {
+        this.lastAccessTime = lastAccessTime;
     }
 }
