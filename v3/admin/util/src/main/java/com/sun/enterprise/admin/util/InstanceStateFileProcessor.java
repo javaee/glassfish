@@ -228,10 +228,7 @@ public class InstanceStateFileProcessor {
             return;
         NodeList clist = instance.getChildNodes();
         for(int j=0; j<clist.getLength(); j++) {
-            Node x = clist.item(j);
-            if(x.getNodeName().equals("failed-command")) {
-                instance.removeChild(x);
-            }
+            instance.removeChild(clist.item(j));
         }
         writeDoc(new FileOutputStream(fileName));
     }
