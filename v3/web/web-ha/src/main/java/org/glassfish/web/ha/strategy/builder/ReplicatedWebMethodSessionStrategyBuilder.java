@@ -43,14 +43,14 @@ import com.sun.enterprise.web.BasePersistenceStrategyBuilder;
 import com.sun.enterprise.web.ServerConfigLookup;
 import org.apache.catalina.Context;
 import org.apache.catalina.core.StandardContext;
-import org.glassfish.web.ha.session.management.FullSessionFactory;
-import org.glassfish.web.ha.session.management.HASessionStoreValve;
-import org.glassfish.web.ha.session.management.ReplicationStore;
-import org.glassfish.web.ha.session.management.ReplicationWebEventPersistentManager;
+import org.glassfish.web.ha.session.management.*;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
+/**
+ * @author Rajiv Mordani
+ */
 
 @Service(name="replicated")
 public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceStrategyBuilder {
@@ -59,9 +59,9 @@ public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceSt
 
     @Inject
     JavaEEIOUtils ioUtils;
-    
+
     public ReplicatedWebMethodSessionStrategyBuilder() {
-        super();    
+        super();
     }
 
     public void initializePersistenceStrategy(
@@ -71,18 +71,30 @@ public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceSt
     {
 
         super.initializePersistenceStrategy(ctx, smBean, serverConfigLookup);
-        super.setPassedInPersistenceType("replicated");
+        //super.setPassedInPersistenceType("replicated");
+        if (this.getPersistenceScope().equals("session")) {
+            rwepMgr.setSessionFactory(new FullSessionFactory());
+            ReplicationStore store = new ReplicationStore(serverConfigLookup, ioUtils);
+            rwepMgr.setStore(store);
+        } else if (this.getPersistenceScope().equals("modified-session")) {
+            rwepMgr.setSessionFactory(new ModifiedSessionFactory());
+        } else if (this.getPersistenceScope().equals("modified-attribute")) {
+            rwepMgr.setSessionFactory(new ModifiedAttributeSessionFactory());
+            ReplicationAttributeStore store = new ReplicationAttributeStore(serverConfigLookup, ioUtils);
+            rwepMgr.setStore(store);
+        }
+
 
         rwepMgr.setSessionFactory(new FullSessionFactory());
 
-        ctx.getServletContext().getContextPath();
-        rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getServletContext().getContextPath());
 
-        ReplicationStore store = new ReplicationStore(serverConfigLookup, ioUtils);
-        
-        rwepMgr.setStore(store);
+//        rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getServletContext().getContextPath());
+        rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getPath());
+
+
+
         ctx.setManager(rwepMgr);
-        
+
         HASessionStoreValve haValve = new HASessionStoreValve();
         StandardContext stdCtx = (StandardContext) ctx;
         stdCtx.addValve((GlassFishValve)haValve);
