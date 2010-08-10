@@ -104,7 +104,7 @@ public interface ServerRef extends ConfigBeanProxy, Injectable, Ref  {
      * Gets the value of the lbEnabled property.
      *
      * Causes any and all load-balancers using this server to consider this
-     * server unavailable to them. Defaults to unavailable(false)
+     * server available to them. Defaults to available(true)
      *
      * @return possible object is
      *         {@link String }
