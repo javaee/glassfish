@@ -47,12 +47,14 @@ import java.net.URLConnection;
 
 import com.sun.appserv.test.BaseDevTest;
 import com.sun.grizzly.http.portunif.HttpProtocolFinder;
+import com.sun.grizzly.http.DefaultProtocolFilter;
+
 
 /*
  * Unit test for port unification
  */
 public class PortUnificationTest extends BaseDevTest {
-    private int port = Integer.valueOf(antProp("https.port"));
+    private int port = Integer.valueOf(antProp("http.port"));
     private String puName = "pu-protocol";
     private String httpName = "pu-http-protocol";
     private String dummyName = "pu-dummy-protocol";
@@ -76,26 +78,26 @@ public class PortUnificationTest extends BaseDevTest {
             report("create-pu-protocol", asadmin("create-protocol", "--target", "c1",
                 puName));
             createHttpElements();
-            createDummyProtocolElements();
+            //createDummyProtocolElements();
             report("set-listener", asadmin("set",
-                "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-2.protocol="
+                "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-1.protocol="
                     + puName));
-            report("enable-listener", asadmin("set",
-                "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true"));
+            //report("enable-listener", asadmin("set",
+            //    "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-1.enabled=true"));
             final String content = getContent(new URL("http://localhost:" + port).openConnection());
             report("http-read", content.contains("<h1>Your server is now running</h1>"));
-            report("dummy-read", "Dummy-Protocol-Response".equals(getDummyProtocolContent("localhost")));
+            //report("dummy-read", "Dummy-Protocol-Response".equals(getDummyProtocolContent("localhost")));
 
-            AsadminReturn aReturn = asadminWithOutput("list-protocol-filters", "--target", "c1", "pu-dummy-protocol");
-            report("list-protocol-filters", aReturn.out.contains("dummy-filter"));
+            AsadminReturn aReturn = asadminWithOutput("list-protocol-filters", "--target", "c1", httpName);
+            report("list-protocol-filters", aReturn.out.contains("http-filter"));
 
-            aReturn = asadminWithOutput("list-protocol-finders", "--target", "c1", "pu-protocol");
-            report("list-protocol-finders", aReturn.out.contains("http-finder") && aReturn.out.contains("dummy-finder"));
+            aReturn = asadminWithOutput("list-protocol-finders", "--target", "c1", puName);
+            report("list-protocol-finders", aReturn.out.contains("http-finder"));
 
-            report("disable-listener", asadmin("set",
-                "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"));
+            //report("disable-listener", asadmin("set",
+            //    "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"));
             report("reset-listener", asadmin("set",
-                "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-2.protocol=http-listener-2"));
+                "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-1.protocol=http-listener-1"));
             deletePUElements();
         } finally {
             stat.printSummary();
@@ -178,16 +180,25 @@ public class PortUnificationTest extends BaseDevTest {
             "--target-protocol", httpName,
             "--classname", HttpProtocolFinder.class.getName(),
             "http-finder"));
+        report("create-protocol-filter-http", asadmin("create-protocol-filter",
+            "--target", "c1",
+            "--protocol", httpName,
+            "--classname", DefaultProtocolFilter.class.getName(),
+            "http-filter"));
     }
 
     private void deletePUElements() {
-        report("delete-http-protocol", asadmin("delete-protocol", "--target", "c1",
-            httpName));
         report("delete-protocol-finder-http", asadmin("delete-protocol-finder",
             "--target", "c1",
             "--protocol", puName,
             "http-finder"));
-        report("delete-protocol-finder-dummy", asadmin("delete-protocol-finder",
+        report("delete-protocol-filter-http", asadmin("delete-protocol-filter",
+            "--target", "c1",
+            "--protocol", httpName,
+            "http-filter"));
+        report("delete-http-protocol", asadmin("delete-protocol", "--target", "c1",
+            httpName));
+        /*report("delete-protocol-finder-dummy", asadmin("delete-protocol-finder",
             "--target", "c1",
             "--protocol", puName,
             "dummy-finder"));
@@ -197,7 +208,7 @@ public class PortUnificationTest extends BaseDevTest {
             "dummy-filter"));
         report("delete-dummy-protocol", asadmin("delete-protocol",
             "--target", "c1",
-            dummyName));
+            dummyName));*/
         report("delete-pu-protocol", asadmin("delete-protocol",
             "--target", "c1",
             puName));

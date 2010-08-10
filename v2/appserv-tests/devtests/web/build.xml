@@ -517,8 +517,10 @@
     </target>
 
     <target name="clustering" depends="init-report">
-        <ant dir="networkListenerTarget" target="all"/>
         <ant dir="asadminDeletesTarget" target="all"/>
+        <ant dir="networkListenerTarget" target="all"/>
+        <ant dir="portUnificationTarget" target="all"/>
+        <ant dir="wrongTransportTarget" target="all"/>
     </target>
 
     <target name="init-report" unless="report.inited">

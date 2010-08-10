@@ -195,6 +195,7 @@
             ${assemble.dir}/${appname}-web.war from ${basedir}." level="verbose"/>
         <exec executable="${ASADMIN}" failonerror="false">
             <arg line="undeploy"/>
+            <arg line="${as.props}"/>
             <arg line="--target ${cluster.name}"/>
             <arg line="${appname}-web"/>
         </exec>
