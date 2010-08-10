@@ -258,10 +258,10 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
                 return 1;
             }
         } catch (SSHCommandExecutionException ec )  {
-            String msg = Strings.get("create.instance.ssh.failed", instance, ec.getSSHSettings(), ec.getMessage(), nodeHost, ec.getCommandRun());
+            String msg = Strings.get("create.instance.ssh.failed", instance, ec.getSSHSettings(), ec.getMessage(), nodeHost, humanVersionOfCommand);
             logger.severe(msg);
             msg = Strings.get("create.instance.ssh.failed",
-                        instance, ec.getSSHSettings(), ec.getMessage(), nodeHost, ec.getCommandRun());
+                        instance, ec.getSSHSettings(), ec.getMessage(), nodeHost, humanVersionOfCommand);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             return 1;

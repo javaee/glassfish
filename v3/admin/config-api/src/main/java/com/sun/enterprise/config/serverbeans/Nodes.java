@@ -73,7 +73,7 @@ public interface Nodes extends ConfigBeanProxy, Injectable {
             }
             )
             */
-    @Listing(value="list-nodes")
+//    @Listing(value="list-nodes")
     public List<Node> getNode();
     
 
