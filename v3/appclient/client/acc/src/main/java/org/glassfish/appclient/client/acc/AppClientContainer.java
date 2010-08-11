@@ -427,6 +427,56 @@ public class AppClientContainer {
         mainMethod.invoke(null, params);
         state = State.STARTED;
 
+        /*
+         * We need to clean up when the EDT ends or, if there is no EDT, right
+         * away.  In particular, JMS/MQ-related non-daemon threads might still
+         * be running due to open queueing connections.
+         */
+        cleanupWhenSafe();
+    }
+
+    private boolean isEDTRunning() {
+        Map<Thread,StackTraceElement[]> threads = java.security.AccessController.doPrivileged(
+                new java.security.PrivilegedAction<Map<Thread,StackTraceElement[]>>() {
+
+            @Override
+            public Map<Thread, StackTraceElement[]> run() {
+                return Thread.getAllStackTraces();
+            }
+        });
+
+        logger.fine("Checking for EDT thread...");
+        for (Map.Entry<Thread,StackTraceElement[]> entry : threads.entrySet()) {
+            logger.log(Level.FINE, "  {0}", entry.getKey().toString());
+            StackTraceElement[] frames = entry.getValue();
+            if (frames.length > 0) {
+                StackTraceElement last = frames[frames.length - 1];
+                if (last.getClassName().equals("java.awt.EventDispatchThread") &&
+                    last.getMethodName().equals("run")) {
+                    logger.log(Level.FINE, "Thread {0} seems to be the EDT", entry.getKey().toString());
+                    return true;
+                }
+            }
+            logger.fine("Did not recognize any thread as the EDT");
+        }
+        return false;
+    }
+
+    private void cleanupWhenSafe() {
+        if (isEDTRunning()) {
+            final AtomicReference<Thread> edt = new AtomicReference<Thread>();
+            try {
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    public void run() {
+                        edt.set(Thread.currentThread());
+                    }
+                });
+                edt.get().join();
+            } catch (Exception e) {
+
+            }
+        }
+        stop();
     }
 
     private void dumpLoaderURLs() {
@@ -547,7 +597,7 @@ public class AppClientContainer {
                 }
                 clientMainClass = Class.forName(clientMainClassName, true, loader);
                 if (logger.isLoggable(Level.FINE)) {
-                    logger.fine("Loaded client main class " + clientMainClassName);
+                    logger.log(Level.FINE, "Loaded client main class {0}", clientMainClassName);
                 }
             }
             ComponentInvocation ci = new ComponentInvocation(
