@@ -136,6 +136,8 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
 	     */
 	    String defaultFactory = java.security.Security.getProperty
 		(AuthConfigFactory.DEFAULT_FACTORY_SECURITY_PROPERTY);
+            _logger.fine("AuthConfigFactory obtained from java.security.Security.getProperty(\"authconfigprovider.factory\") :"
+                    + ((defaultFactory != null) ? defaultFactory : "NULL"));
 	    if (defaultFactory == null) {
 		java.security.Security.setProperty
 		    (AuthConfigFactory.DEFAULT_FACTORY_SECURITY_PROPERTY,
