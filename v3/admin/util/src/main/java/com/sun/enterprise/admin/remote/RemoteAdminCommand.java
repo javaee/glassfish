@@ -518,6 +518,7 @@ public class RemoteAdminCommand {
             urlConnection.setReadTimeout(readTimeout);
             if (connectTimeout >= 0)
                 urlConnection.setConnectTimeout(connectTimeout);
+            addSpecialHeaderIfServer(urlConnection);
             cmd.doCommand(urlConnection);
             logger.finer("doHttpCommand succeeds");
 
@@ -582,6 +583,13 @@ public class RemoteAdminCommand {
         }
     }
 
+    private void addSpecialHeaderIfServer(final URLConnection urlConnection) {
+        final String alias = System.getProperty("com.sun.enterprise.security.httpsOutboundKeyAlias");
+        if (alias != null) {
+            urlConnection.setRequestProperty("X-isServer", "true");
+        }
+    }
+    
     /**
      * Check that the connection was successful and handle any error responses,
      * turning them into exceptions.
