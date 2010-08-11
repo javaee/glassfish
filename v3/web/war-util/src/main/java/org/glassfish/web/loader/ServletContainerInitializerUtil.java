@@ -39,6 +39,7 @@ package org.glassfish.web.loader;
 import com.sun.logging.LogDomains;
 import org.apache.naming.Util;
 import org.glassfish.deployment.common.ClassDependencyBuilder;
+import org.glassfish.hk2.classmodel.reflect.*;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.annotation.HandlesTypes;
@@ -213,6 +214,7 @@ public class ServletContainerInitializerUtil {
     public  static Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> getInitializerList(
             Iterable<ServletContainerInitializer> initializers,
             Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
+            Types types,
             ClassLoader cl) {
 
         if (interestList == null) {
@@ -249,70 +251,75 @@ public class ServletContainerInitializerUtil {
              * the information for every class in this app
              *
              */
-            ClassDependencyBuilder classInfo = new ClassDependencyBuilder();
-            for(URL u : ((URLClassLoader)cl).getURLs()) {
-                String path = Util.urlDecode(u.getPath());
-                try {
-                    if(path.endsWith(".jar")) {
-                        JarFile jf = new JarFile(path);
-                        try {
-                            Enumeration<JarEntry> entries = jf.entries();
-                            while(entries.hasMoreElements()) {
-                                JarEntry anEntry = entries.nextElement();
-                                if(anEntry.isDirectory())
-                                    continue;
-                                if(!anEntry.getName().endsWith(".class"))
-                                    continue;
-                                InputStream jarInputStream = null;
-                                try {
-                                    jarInputStream = jf.getInputStream(anEntry);
-                                    int size = (int) anEntry.getSize();
-                                    byte[] classData = new byte[size];
-                                    for(int bytesRead = 0; bytesRead < size;) {
-                                        int r2 = jarInputStream.read(classData, bytesRead, size - bytesRead);
-                                        bytesRead += r2;
-                                    }
-                                    classInfo.loadClassData(classData);
-                                } catch (Throwable t) {
-                                    if (log.isLoggable(Level.FINE)) {
-                                        log.log(Level.FINE,
-                                            "servletContainerInitializerUtil.classLoadingError",
-                                            new Object[] {
-                                                anEntry.getName(),
-                                                t.toString()});
-                                    }
-                                    continue;
-                                } finally {
-                                    if(jarInputStream != null) {
-                                        jarInputStream.close();
+            if (types==null || Boolean.getBoolean("org.glassfish.web.parsing")) {
+                ClassDependencyBuilder classInfo = new ClassDependencyBuilder();
+                for(URL u : ((URLClassLoader)cl).getURLs()) {
+                    String path = Util.urlDecode(u.getPath());
+                    try {
+                        if(path.endsWith(".jar")) {
+                            JarFile jf = new JarFile(path);
+                            try {
+                                Enumeration<JarEntry> entries = jf.entries();
+                                while(entries.hasMoreElements()) {
+                                    JarEntry anEntry = entries.nextElement();
+                                    if(anEntry.isDirectory())
+                                        continue;
+                                    if(!anEntry.getName().endsWith(".class"))
+                                        continue;
+                                    InputStream jarInputStream = null;
+                                    try {
+                                        jarInputStream = jf.getInputStream(anEntry);
+                                        int size = (int) anEntry.getSize();
+                                        byte[] classData = new byte[size];
+                                        for(int bytesRead = 0; bytesRead < size;) {
+                                            int r2 = jarInputStream.read(classData, bytesRead, size - bytesRead);
+                                            bytesRead += r2;
+                                        }
+                                        classInfo.loadClassData(classData);
+                                    } catch (Throwable t) {
+                                        if (log.isLoggable(Level.FINE)) {
+                                            log.log(Level.FINE,
+                                                "servletContainerInitializerUtil.classLoadingError",
+                                                new Object[] {
+                                                    anEntry.getName(),
+                                                    t.toString()});
+                                        }
+                                        continue;
+                                    } finally {
+                                        if(jarInputStream != null) {
+                                            jarInputStream.close();
+                                        }
                                     }
                                 }
+                            } finally {
+                                jf.close();
                             }
-                        } finally {
-                            jf.close();
-                        }
-                    } else {
-                        File file = new File(path);
-                        if (file.exists()) {
-                            if (file.isDirectory()) {
-                                scanDirectory(file, classInfo);
-                            } else {
-                                log.log(Level.WARNING,
-                                    "servletContainerInitializerUtil.invalidUrlClassLoaderPath",
-                                    path);
+                        } else {
+                            File file = new File(path);
+                            if (file.exists()) {
+                                if (file.isDirectory()) {
+                                    scanDirectory(file, classInfo);
+                                } else {
+                                    log.log(Level.WARNING,
+                                        "servletContainerInitializerUtil.invalidUrlClassLoaderPath",
+                                        path);
+                                }
                             }
                         }
+                    } catch(IOException ioex) {
+                        String msg = rb.getString(
+                            "servletContainerInitializerUtil.ioError");
+                        msg = MessageFormat.format(msg,
+                            new Object[] { path });
+                        log.log(Level.SEVERE, msg, ioex);
+                        return null;
                     }
-                } catch(IOException ioex) {
-                    String msg = rb.getString(
-                        "servletContainerInitializerUtil.ioError");
-                    msg = MessageFormat.format(msg,
-                        new Object[] { path });
-                    log.log(Level.SEVERE, msg, ioex);
-                    return null;
                 }
+
+                initializerList = checkAgainstInterestList(classInfo, interestList, initializerList, cl);
+            } else {
+                initializerList = checkAgainstInterestList(types, interestList, initializerList, cl);
             }
-            initializerList = checkAgainstInterestList(classInfo, interestList, initializerList, cl);
         }
 
         /*
@@ -388,6 +395,75 @@ public class ServletContainerInitializerUtil {
         return;
     }
 
+    /**
+     * Given the interestList, checks in the Types metadata if a given class
+     * uses any of the annotations, subclasses any of the type; If so, builds
+     * the initializer list
+     *
+     */
+    private static Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> checkAgainstInterestList(
+                                Types classInfo,
+                                Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
+                                Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList,
+                                ClassLoader cl) {
+
+        if (classInfo==null) {
+            return initializerList;
+        }
+        for (Class c: interestList.keySet()) {
+            Type type = classInfo.getBy(c.getName());
+            if (type==null)
+                continue;
+
+            HashSet<Class<?>> resultSet = new HashSet<Class<?>>();
+            if (type instanceof AnnotationType) {
+                for (AnnotatedElement ae : ((AnnotationType) type).allAnnotatedTypes()) {
+                    try {
+                        resultSet.add(cl.loadClass(ae.getName()));
+                    } catch (Throwable t) {
+                        if (log.isLoggable(Level.WARNING)) {
+                            log.log(Level.WARNING,
+                                "servletContainerInitializerUtil.classLoadingError",
+                                new Object[] {ae.getName(), t.toString()});
+                        }
+                    }                    
+                }
+            } else {
+                Collection<ClassModel> classes;
+                if (type instanceof InterfaceModel) {
+                    classes = ((InterfaceModel) type).allImplementations();
+                } else {
+                    classes = ((ClassModel) type).allSubTypes();
+                }
+                for (ClassModel classModel : classes) {
+                    try {
+                        resultSet.add(cl.loadClass(classModel.getName()));
+                    } catch (Throwable t) {
+                        if (log.isLoggable(Level.WARNING)) {
+                            log.log(Level.WARNING,
+                                "servletContainerInitializerUtil.classLoadingError",
+                                new Object[] {classModel.getName(), t.toString()});
+                        }
+                    }
+                }
+            }
+            if(initializerList == null) {
+                initializerList = new HashMap<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>>();
+            }
+            ArrayList<Class<? extends ServletContainerInitializer>> containerInitializers = interestList.get(c);
+            for(Class<? extends ServletContainerInitializer> initializer : containerInitializers) {
+                HashSet<Class<?>> classSet = initializerList.get(initializer);
+                if(classSet == null) {
+                    classSet = new HashSet<Class<?>>();
+                }
+                classSet.addAll(resultSet);
+                initializerList.put(initializer, classSet);
+            }
+            
+        }
+
+        return initializerList;
+    }
     /**
      * Given the interestList, checks if a given class uses any of the
      * annotations; If so, builds the initializer list

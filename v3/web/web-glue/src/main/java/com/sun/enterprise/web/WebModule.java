@@ -65,6 +65,7 @@ import org.apache.jasper.servlet.JspServlet;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.embedded.web.Context;
 import org.glassfish.api.embedded.web.config.SecurityConfig;
+import org.glassfish.hk2.classmodel.reflect.Types;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
@@ -535,6 +536,15 @@ public class WebModule extends PwcWebModule implements Context {
         }
         webContainer.afterServletContextInitializedEvent(
             getWebBundleDescriptor());
+    }
+
+    @Override
+    protected Types getTypes() {
+        if (wmInfo.getDeploymentContext()!=null) {
+            return wmInfo.getDeploymentContext().getModuleMetaData(Types.class);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -2430,4 +2440,6 @@ class DynamicWebServletRegistrationImpl
                     ssElement, wbd, wcd);
         }
     }
+
+
 }

@@ -123,7 +123,6 @@ public abstract class DomainXml implements Populator {
             }
         }
 
-
         decorate();
     }
 
