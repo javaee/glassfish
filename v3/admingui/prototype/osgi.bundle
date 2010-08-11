@@ -1,1 +1,0 @@
--exportcontents: org.glassfish.admingui.restprototype; version=${project.osgi.version}
