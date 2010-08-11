@@ -38,7 +38,14 @@
 <sun:propertySheet id="propertySheet">
 <sun:propertySheetSection id="propertySheetSection">
     <!beforeCreate
-        getProxyAttribute(objectNameStr="amx:pp=/,type=runtime" attrName="SupportedCipherSuites" value="#{requestScope.supportedCiphers}")
+        getRequestValue(key="configName" value=>$page{configName}  default="server-config")
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/list-supported-cipher-suites.json"
+                       method="GET"
+                       result="#{requestScope.result}");
+        gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
+                           id="message"
+                           keyList="#{requestScope.modList}");
+        convertListToArray(list="#{requestScope.modList}" array="#{requestScope.supportedCiphers}");
         convertToDifferentCiphersGroup(ciphers="#{requestScope.supportedCiphers}"
                 CommonCiphersList="#{requestScope.availableCommon}"
                 EphemeralCiphersList="#{requestScope.availableEphemeral}"
