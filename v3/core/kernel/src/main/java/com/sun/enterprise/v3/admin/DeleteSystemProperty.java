@@ -45,6 +45,8 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
@@ -75,6 +77,7 @@ import java.util.Arrays;
  */
 @Service(name="delete-system-property")
 @Scoped(PerLookup.class)
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType(value={CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE,
 CommandTarget.CONFIG, CommandTarget.DAS, CommandTarget.DOMAIN, CommandTarget.STANDALONE_INSTANCE})
 @I18n("delete.system.property")

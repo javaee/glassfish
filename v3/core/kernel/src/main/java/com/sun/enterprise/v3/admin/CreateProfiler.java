@@ -39,15 +39,25 @@ import java.beans.PropertyVetoException;
 import java.util.Map;
 import java.util.Properties;
 
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
 import com.sun.enterprise.config.serverbeans.Profiler;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
+
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.internal.api.Target;
+
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -63,6 +73,8 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name="create-profiler")
 @Scoped(PerLookup.class)
 @I18n("create.profiler")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class CreateProfiler implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateProfiler.class);
@@ -82,11 +94,14 @@ public class CreateProfiler implements AdminCommand {
     @Param(name="property", optional=true, separator=':')
     Properties properties;
 
-    @Param(optional=true)
+    @Param(name="target", optional=true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
 
     @Inject
-    JavaConfig javaConfig;
+    Target targetService;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -97,6 +112,12 @@ public class CreateProfiler implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
+        Config targetConfig = targetService.getConfig(target);
+        if (targetConfig != null) {
+            config = targetConfig;
+        }
+
+        JavaConfig javaConfig = config.getJavaConfig();
         if (javaConfig.getProfiler() != null) {
             System.out.println("profiler exists. Please delete it first");
             report.setMessage(

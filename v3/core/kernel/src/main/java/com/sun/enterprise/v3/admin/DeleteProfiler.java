@@ -36,8 +36,16 @@
 
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.config.serverbeans.Config;
+
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.internal.api.Target;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -51,6 +59,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
 import com.sun.enterprise.config.serverbeans.Profiler;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 import java.beans.PropertyVetoException;
 
@@ -61,15 +70,20 @@ import java.beans.PropertyVetoException;
 @Service(name="delete-profiler")
 @Scoped(PerLookup.class)
 @I18n("delete.profiler")
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class DeleteProfiler implements AdminCommand {
 
    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteProfiler.class);
 
-    @Param(optional=true)
+    @Param(name="target", optional=true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
 
-   @Inject
-   JavaConfig javaConfig;
+    @Inject
+    Target targetService;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
    /**
     * Executes the command with the command parameters passed as Properties
@@ -79,8 +93,15 @@ public class DeleteProfiler implements AdminCommand {
     */
    public void execute(AdminCommandContext context) {
 
-       final ActionReport report = context.getActionReport();
-       try {
+        final ActionReport report = context.getActionReport();
+        Config targetConfig = targetService.getConfig(target);
+        if (targetConfig != null) {
+            config = targetConfig;
+        }
+
+        JavaConfig javaConfig = config.getJavaConfig();
+
+        try {
            ConfigSupport.apply(new SingleConfigCode<JavaConfig>() {
                public Object run(JavaConfig param) throws PropertyVetoException, TransactionFailure {
                    if (param.getProfiler() != null) {

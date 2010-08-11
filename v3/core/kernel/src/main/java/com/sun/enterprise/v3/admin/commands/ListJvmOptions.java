@@ -36,18 +36,29 @@
 
 package com.sun.enterprise.v3.admin.commands;
 
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.util.SystemPropertyConstants;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.internal.api.Target;
+
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -56,27 +67,39 @@ import org.jvnet.hk2.component.PerLookup;
 /**
  * Lists the JVM options configured in server's configuration.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
+ * @author Kin-man Chung
  * @since GlassFish V3
  */
 @Service(name="list-jvm-options")   //implements the cli command by this "name"
 @Scoped(PerLookup.class)            //should be provided "per lookup of this class", not singleton
 @I18n("list.jvm.options")
+@Cluster({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public final class ListJvmOptions implements AdminCommand {
 
-    @Param(name="target", optional=true)
+    @Param(name="target", optional=true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
 
     @Param(name="profiler", optional=true)
     Boolean profiler=false;
     
-    //Injection of the config beans is not going to work, because it
-    //depends what target is being sent on command line -- this is a temporary measure
-    @Inject JavaConfig jc;
+    @Inject
+    Target targetService;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
+
     private static final StringManager lsm = StringManager.getManager(ListJvmOptions.class); 
     private static final Logger logger     = Logger.getLogger(ListJvmOptions.class.getPackage().getName());
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         List<String> opts;
+        Config targetConfig = targetService.getConfig(target);
+        if (targetConfig != null) {
+            config = targetConfig;
+        }
+
+        JavaConfig jc = config.getJavaConfig();
         if (profiler) {
                 if (jc.getProfiler() == null) {
                     report.setMessage(lsm.getString("create.profiler.first"));

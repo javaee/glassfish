@@ -37,6 +37,8 @@ package com.sun.enterprise.v3.admin;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -74,6 +76,7 @@ import org.jvnet.hk2.config.types.Property;
  */
 @Service(name="create-system-properties")
 @Scoped(PerLookup.class)
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType(value={CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE,
 CommandTarget.CONFIG, CommandTarget.DAS, CommandTarget.DOMAIN, CommandTarget.STANDALONE_INSTANCE})
 @I18n("create.system.properties")

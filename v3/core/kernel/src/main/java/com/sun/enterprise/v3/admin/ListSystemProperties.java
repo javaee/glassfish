@@ -44,6 +44,8 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.List;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.api.I18n;
@@ -62,11 +64,12 @@ import org.jvnet.hk2.component.PerLookup;
  * 
  * Usage: lists-system-properties [--terse={true|false}][ --echo={true|false} ]
  * [ --interactive={true|false} ] [ --host  host] [--port port] [--secure| -s ] 
- * [ --user  admin_user] [--passwordfile filename] [--help] [target target_name]
+ * [ --user  admin_user] [--passwordfile filename] [--help] [target_name]
  * 
  */
 @Service(name="list-system-properties")
 @Scoped(PerLookup.class)
+@Cluster({RuntimeType.DAS})
 @TargetType(value={CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE,
 CommandTarget.CONFIG, CommandTarget.DAS, CommandTarget.DOMAIN, CommandTarget.STANDALONE_INSTANCE})
 @I18n("list.system.properties")
