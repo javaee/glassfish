@@ -387,6 +387,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
         MessageDigest complete = MessageDigest.getInstance("MD5");
         String line = null;
         while((line = reader.readLine()) != null) {
+            System.out.println(line);
             if(line.contains("This file was generated on:")){
                 continue;
             }
@@ -444,7 +445,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
     private static final String NODE_HOST_OPTION="--nodehost";
     private static final String FORCE_OPTION="--force";
     private static final String LB_NAME_OPTION="--lbname";
-    private static final String TARGETS_OPTION="--targets";
+    private static final String TARGETS_OPTION="--lbtargets";
     private static final String TARGET_OPTION="--target";
 
     private static final String CHECKSUM1 = "b6f78293559fac1b27a9c97723e870b0";
