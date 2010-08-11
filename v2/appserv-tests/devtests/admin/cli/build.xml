@@ -231,6 +231,6 @@
     </target>
 
     <target name="usage">
-        <echo>Usage: ant [-Dtesttorun=instance|cluster|...] [-Dnum_tests=n] [-Dverbose=true/false] all (Executes the admin tests)</echo>
+        <echo>Usage: ant [-Dteststorun=instance|cluster|...] [-Dnum_tests=n] [-Dverbose=true/false] all (Executes the admin tests)</echo>
     </target>
 </project>

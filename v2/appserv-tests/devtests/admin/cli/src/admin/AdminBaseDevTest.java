@@ -177,7 +177,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
             return ow.getBuffer().toString();
         }
         catch (IOException ex) {
-            printf("unable to fetch URL:" + urlstr);
+            printf("unable to fetch URL:" + urlstr + ", reason: " + ex.getMessage());
             return "";
         }
     }
