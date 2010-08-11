@@ -1,0 +1,5 @@
+Test
+- Use of Specializes 
+    - tests the problem with alternatives. When an alternative is enabled (either
+    via an alternative stereotype or explicitly) and a default bean with a qualifier exists
+    that there is no alternative for, the default bean is injected.  

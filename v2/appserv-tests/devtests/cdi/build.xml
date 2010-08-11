@@ -39,6 +39,7 @@
 <!ENTITY commonSetup SYSTEM "./../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "./../../config/common.xml">
 <!ENTITY commonRun SYSTEM "./../../config/run.xml">
+<!ENTITY reporting   SYSTEM "./report.xml">
 ]>
 
 <project name="cdi" default="usage" basedir=".">
@@ -46,6 +47,7 @@
     &commonSetup;
     &commonBuild;
     &commonRun;
+    &reporting;
     
     <property name="cdi-target" value="all"/>
 
@@ -182,7 +184,24 @@
 		<echo message="@@## Running all CDI developer tests##@@"/>
         <ant dir="smoke-tests" target="${cdi-target}"/>
         <ant dir="qualifiers" target="${cdi-target}"/>
+        <ant dir="alternatives" target="${cdi-target}"/>
+        <ant dir="ambiguous-deps" target="${cdi-target}"/>
+        <ant dir="events" target="${cdi-target}"/>
+        <ant dir="injection-point" target="${cdi-target}"/>
+        <ant dir="interceptors" target="${cdi-target}"/>
+        <ant dir="javaee-component-resources" target="${cdi-target}"/>
+        <ant dir="javaee-integration" target="${cdi-target}"/>
+        <ant dir="portable-extensions" target="${cdi-target}"/>
         <ant dir="producer-methods" target="${cdi-target}"/>
+        <ant dir="programmatic-lookup" target="${cdi-target}"/>
+        <ant dir="scopes" target="${cdi-target}"/>
+        <ant dir="specialization" target="${cdi-target}"/>
+        <ant dir="stereotypes" target="${cdi-target}"/>
+        <ant dir="unproxyable-deps" target="${cdi-target}"/>
+        <ant dir="unsatisfied-deps" target="${cdi-target}"/>
+
+        <!-- now generate report -->
+        <antcall target="report"/>
 
         <record name="cdi.output" action="stop" />
     </target>
@@ -201,7 +220,7 @@
 	</echo>
     </target>
 
-    <target name="report">
+    <target name="report-local">
       <exec executable="sh">
         <arg value="./resultCount.sh"/>
       </exec>

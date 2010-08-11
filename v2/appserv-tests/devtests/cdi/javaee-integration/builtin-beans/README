@@ -1,0 +1,7 @@
+Test
+- Java EE Integration 
+    - container provides the following built-in beans with the qualifier @Default
+        - UserTransaction
+        - Principal
+        - ValidatorFactory
+        - Validator

@@ -1,0 +1,4 @@
+Test that injection points annotated with @New qualifer
+- results in a new RequestScoped bean
+- is not equal to the actual request scoped bean
+- ensure that no more than valid # of instantiations of the request scoped bean happens

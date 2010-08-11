@@ -34,70 +34,83 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
-<!ENTITY run SYSTEM "./../../../config/run.xml">
-<!ENTITY testproperties SYSTEM "./build.properties">
-]>
 
-<project name="webcontainer_unittest" default="all" basedir=".">
+<project name="prodmeth-test" default="usage" basedir=".">
 
-    &commonSetup;
-    &commonBuild;
-    &testproperties;
-    &run;
+    <property name="prodmeth-target" value="all"/>
 
-    <target name="all" depends="build,deploy,run,undeploy"/>
-
-    <target name="clean" depends="init-common">
-        <antcall target="clean-common"/>
-        <delete>
-            <fileset dir="." includes="*.class"/>
-        </delete>
-    </target>
-       
-    <target name="compile" depends="clean">
-        <antcall target="compile-common">
-            <param name="src" value="servlet"/>
+    <target name="run-test">
+        <antcall target="prodmeth">
+        <param name="prodmeth-target" value="run-test"/>
         </antcall>
     </target>
 
-    <target name="build" depends="compile">
-        <property name="hasWebclient" value="yes"/> 
-        <antcall target="webclient-war-common">
-            <param name="hasWebclient" value="yes"/>
-            <param name="webclient.war.classes" value="**/*.class"/> 
+    <target name="all">
+        <antcall target="prodmeth">
+        <param name="prodmeth-target" value="all"/>
         </antcall>
-
-        <javac srcdir="." classpath="${env.APS_HOME}/lib/reportbuilder.jar"
-               includes="WebTest.java"/>
-
-    </target> 
-
-    <target name="build-publish-war" depends="build, publish-war-common" />
-    
-    <target name="deploy" depends="init-common">
-        <antcall target="deploy-war-common"/>
     </target>
-    
-    <target name="run" depends="init-common">
-        <java classname="WebTest">
-          <arg value="${http.host}"/>
-          <arg value="${http.port}"/>
-          <arg value="${contextroot}"/>
-          <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
-           <pathelement location="."/>
-         </classpath>
-        </java>
+
+    <target name="clean">
+        <antcall target="prodmeth">
+        <param name="prodmeth-target" value="clean"/>
+        </antcall>
     </target>
- 
-    <target name="undeploy" depends="init-common">
-        <antcall target="undeploy-war-common"/>
-    </target>   
+
+    <target name="build">
+        <antcall target="prodmeth">
+        <param name="prodmeth-target" value="build"/>
+        </antcall>
+    </target>
+
+    <target name="setup">
+        <antcall target="prodmeth">
+        <param name="prodmeth-target" value="setup"/>
+        </antcall>
+    </target>
+
+    <target name="deploy">
+        <antcall target="prodmeth">
+        <param name="prodmeth-target" value="deploy"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy">
+        <antcall target="prodmeth">
+        <param name="prodmeth-target" value="undeploy"/>
+        </antcall>
+    </target>
+
+    <target name="unsetup">
+        <antcall target="prodmeth">
+        <param name="prodmeth-target" value="unsetup"/>
+        </antcall>
+    </target>
+
+    <target name="run">
+        <antcall target="prodmeth">
+        <param name="prodmeth-target" value="run"/>
+        </antcall>
+    </target>
+
+    <target name="prodmeth">
+        <record name="prodmeth.output" action="start" />
+            <ant dir="producer-method-disposes" target="${prodmeth-target}"/>
+            <ant dir="producer-method-qualifiers" target="${prodmeth-target}"/>
+            <ant dir="producer-method-runtimepolymorphism" target="${prodmeth-target}"/>
+        <record name="prodmeth.output" action="stop" />
+    </target>
 
     <target name="usage">
-        <antcall target="usage-common"/>
+	<echo> Usage:
+		ant all (Executes all the prodmeth tests)
+		ant clean (cleans all the prodmeth tests)
+		ant build (builds all the prodmeth tests)
+		ant setup (sets up all resources for prodmeth tests)
+		ant deploy (deploys all the prodmeth apps)
+		ant run (Executes all the prodmeth tests)
+		ant undeploy (undeploys all the  prodmeth apps)
+		ant unsetup (unsets all resources for prodmeth tests)
+	</echo>
     </target>
 </project>

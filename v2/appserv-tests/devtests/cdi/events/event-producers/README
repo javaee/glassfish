@@ -1,0 +1,7 @@
+Test
+- Use of Events
+    - Simple observer methods that observer qualified and any events on a 
+    particular Event payload
+    - event producer to produce the appropriate event by specifying event 
+    qualifiers dynamically through the select() method
+    - events produced and observed with multiple event qualifiers
