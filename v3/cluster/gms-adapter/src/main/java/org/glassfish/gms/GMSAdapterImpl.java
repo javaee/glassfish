@@ -42,20 +42,11 @@ import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.impl.client.*;
 import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
 import com.sun.enterprise.ee.cms.spi.MemberStates;
-import com.sun.logging.LogDomains;
-
-import java.util.*;
-
-import static com.sun.enterprise.ee.cms.core.ServiceProviderConfigurationKeys.*;
-
 import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.gms.bootstrap.GMSAdapter;
@@ -66,8 +57,20 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import org.jvnet.hk2.config.types.Property;
-import org.glassfish.api.event.EventListener;
+
+import java.beans.PropertyChangeEvent;
+import java.util.List;
+import java.util.Properties;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Sheetal.Vartak@Sun.COM
@@ -222,7 +225,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
              * Should not fail, but we need to make sure it doesn't
              * affect GMS just in case.
              */
-            hHistory = new HealthHistory(cluster.getInstances());
+            hHistory = new HealthHistory(cluster);
+            Dom.unwrap(cluster).addListener(hHistory);
         } catch (Throwable t) {
             // todo: fix logging
             logger.log(Level.WARNING, "new HealthHistory(List)", t);
@@ -559,13 +563,13 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         try {
             /*
              * Should not fail, but we need to make sure it doesn't
-             * affect GMS just in case.
+             * affect GMS just in case. In the non-DAS case, hHistory
+             * will always be null so we skip it. In the DAS case,
+             * it shouldn't be null unless we've already seen an
+             * error logged during construction.
              */
             if (hHistory != null) {
                 hHistory.updateHealth(signal);
-            } else if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE,
-                    "HealthHistory is null in processNotification");
             }
         } catch (Throwable t) {
             // todo: fix logging
@@ -809,4 +813,5 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         removeFailureNotificationListener(callback);
         removeJoinNotificationListener(callback);
     }
+
 }

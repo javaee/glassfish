@@ -35,11 +35,16 @@
  */
 package org.glassfish.gms.bootstrap;
 
+import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.ServerRef;
 import com.sun.enterprise.ee.cms.core.*;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
+import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -52,7 +57,7 @@ import java.util.logging.Logger;
  * "weakly consistent" as the state could change at any time
  * (especially during cluster startup).
  */
-public final class HealthHistory {
+public final class HealthHistory implements ConfigListener {
 
     private final static Logger logger = LogDomains.getLogger(
         HealthHistory.class, LogDomains.CORE_LOGGER);
@@ -93,10 +98,10 @@ public final class HealthHistory {
      * list of instances. This is called from the GMS adapter
      * during initialization, before 
      */
-    public HealthHistory(List<Server> servers) {
+    public HealthHistory(Cluster cluster) {
         healthMap = new ConcurrentHashMap<String, InstanceHealth>(
-            servers.size());
-        for (Server server : servers) {
+            cluster.getInstances().size());
+        for (Server server : cluster.getInstances()) {
             if (logger.isLoggable(Level.FINE)) {
                 logger.log(Level.FINE, String.format(
                     "instance name in HealthHistory constructor %s",
@@ -198,12 +203,55 @@ public final class HealthHistory {
         InstanceHealth ih = new InstanceHealth(state, time);
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, String.format(
-                "bobbyb: updating health with %s : %s for signal %s",
+                "updating health with %s : %s for signal %s",
                 name, ih.toString(), signal.toString()));
         }
         if (healthMap.put(name, ih) == null) {
             logger.log(Level.INFO, "unknown.instance",
                 new Object [] {state, name});
+        }
+    }
+
+    @Override
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+        Object oldVal;
+        Object newVal;
+        for (PropertyChangeEvent event : events) {
+            oldVal = event.getOldValue();
+            newVal = event.getNewValue();
+            if (oldVal instanceof ServerRef && newVal == null) {
+                ServerRef instance = (ServerRef) oldVal;
+                deleteInstance(instance.getRef());
+            } else if (newVal instanceof ServerRef && oldVal == null) {
+                ServerRef instance = (ServerRef) newVal;
+                addInstance(instance.getRef());
+            }
+        }
+        return null;
+    }
+
+    private void deleteInstance(String name) {
+        logger.log(Level.INFO, "deleting.instance", name);
+        InstanceHealth oldHealth = healthMap.remove(name);
+        if (oldHealth == null) {
+            logger.log(Level.WARNING, "delete.key.not.present", name);
+        }
+    }
+
+    /*
+     * We only want to add the instance if it's not already
+     * in the map. It could exist already if some trick of time
+     * caused a GMS message to be received from the instance
+     * before the config changes were processed. We could use
+     * current time in the instance health object, but we should
+     * be consistent with startup behavior.
+     */
+    private void addInstance(String name) {
+        logger.log(Level.INFO, "adding.instance", name);
+        InstanceHealth oldHealth = healthMap.putIfAbsent(name,
+            new InstanceHealth(STATE.NOT_RUNNING, NOTIME));
+        if (oldHealth != null) {
+            logger.log(Level.INFO, "key.already.present", name);
         }
     }
 
@@ -234,4 +282,5 @@ public final class HealthHistory {
                 state, new Date(time).toString());
         }
     }
+
 }
