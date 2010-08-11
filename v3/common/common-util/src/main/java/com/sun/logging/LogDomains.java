@@ -43,6 +43,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
@@ -272,7 +273,7 @@ public class LogDomains {
 
     /**
      * persistence logger
-     *  */
+     */
     public static final String PERSISTENCE_LOGGER = DOMAIN_ROOT + "org.glassfish.persistence";
 
 
@@ -329,26 +330,13 @@ public class LogDomains {
             //first time through for this logger.  create it and find the resource bundle
             cLogger = new Logger(loggerName, null) {
 
-                /*
-
-                Commented this code to fix bug 12367
-                override this method to set the the thread id so all handlers get the same info
-
-
+                /* override this method to set the the thread id so all handlers get the same info*/
                 private final int offValue = Level.OFF.intValue();
 
-                public  void log (LogRecord record) {
-
-                  if(record.getThreadID()==(int)Thread.currentThread().getId()) {
-                      System.out.println("...Works Fine...");
-                  } else {
-                      System.out.println("...Thread ID..."+record.getThreadID());
-                      System.out.println("...New Thread ID..."+Thread.currentThread().getId());
-                  }
-
-                  record.setThreadID((int)Thread.currentThread().getId());
-                  super.log(record);
-                }*/
+                public void log(LogRecord record) {
+                    record.setThreadID((int) Thread.currentThread().getId());
+                    super.log(record);
+                }
 
 
                 /**
@@ -403,7 +391,9 @@ public class LogDomains {
                         //throw e;
                         return null;
                     }
-                };
+                }
+
+                ;
             };
 
             // let's make sure we are the only
@@ -421,9 +411,7 @@ public class LogDomains {
                 }
 
             }
-        }
-        ;
-
+        };
         return cLogger;
     }
 
