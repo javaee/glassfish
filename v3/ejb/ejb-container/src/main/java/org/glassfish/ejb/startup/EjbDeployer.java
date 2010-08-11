@@ -118,6 +118,8 @@ public class EjbDeployer
     private Object lock = new Object();
     private volatile CMPDeployer cmpDeployer = null;
 
+    private static Random random = new Random();
+
     // Property used to persist unique id across server restart.
     private static final String APP_UNIQUE_ID_PROP = "org.glassfish.ejb.container.application_unique_id";
 
@@ -487,9 +489,18 @@ public class EjbDeployer
         if(ref != null && ref.isCluster()) {
             Cluster cluster = (Cluster) ref; // guaranteed safe cast!!
             List<Server>  instances = cluster.getInstances();
-            for (Server s : instances) {
-                if (s.isRunning()) {
-                    return s.getName();
+
+            // Try a random instance in a cluster
+            int useInstance = random.nextInt(instances.size());
+            Server s0 = instances.get(useInstance);
+            if (s0.isRunning()) {
+                return s0.getName();
+            } else {
+                // Pick the first running instead
+                for (Server s : instances) {
+                    if (s.isRunning()) {
+                        return s.getName();
+                    }
                 }
             }
         }
