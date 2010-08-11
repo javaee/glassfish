@@ -38,11 +38,14 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Servers;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.Node;
 
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.cluster.NodeInfo;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
@@ -52,11 +55,11 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.*;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.ReferenceContainer;
 import org.jvnet.hk2.component.*;
 import java.util.logging.Logger;
 import java.util.List;
+import java.util.LinkedList;
 
 @Service(name = "list-nodes")
 @Scoped(PerLookup.class)
@@ -66,15 +69,15 @@ public class ListNodesCommand implements AdminCommand{
     @Inject
     private Domain domain;
     @Inject
-    private ServerEnvironment env;
+    Servers servers;
     @Inject
     private Nodes nodes;
+    
     @Param(optional = true, defaultValue = "false")
     private boolean verbose;
     @Param(optional = true)
     private boolean terse;
-
-    
+   
     private ActionReport report;
     private ActionReport.MessagePart top;
     private static final String EOL = "\n";
@@ -91,12 +94,15 @@ public class ListNodesCommand implements AdminCommand{
         StringBuilder sb = new StringBuilder();
         boolean firstNode = true;
         List<Node> nodeList=nodes.getNode();
+        List<NodeInfo>infos = new LinkedList<NodeInfo>();
         
         for (Node n : nodeList) {
 
             String name = n.getName();
             String type = n.getType();
             String host = n.getNodeHost();
+            String installDir = n.getInstallDir();
+
             if (host == null)
                 host = " ";
 
@@ -107,11 +113,32 @@ public class ListNodesCommand implements AdminCommand{
 
             if (terse)
                 sb.append(name);
-            else
+            else if (!verbose)
                 sb.append(name + "  "+ type + "  "+ host);
 
+            if (verbose){
+                List<Server> serverList=servers.getServer();
+                //check if node is referenced in an instance
+                String instanceList= new String();
+                if (serverList.size() > 0) {
+                    for (Server server: serverList){
+                        if (name.equals(server.getNode())){
+                            instanceList = instanceList.concat( " "+ server.getName() + ","); 
+                        }
+                    }
+                    logger.warning(instanceList);
+                }
+                NodeInfo ni = new NodeInfo( name,  host,  installDir,  type,  instanceList);
+                infos.add(ni);
+
+            }
+
         }
-        report.setMessage(sb.toString());
+        if (verbose)
+            report.setMessage(NodeInfo.format(infos));
+        else
+            report.setMessage(sb.toString());
+        
         report.setActionExitCode(ExitCode.SUCCESS);
 
     }
