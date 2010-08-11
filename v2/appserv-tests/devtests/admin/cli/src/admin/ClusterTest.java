@@ -110,6 +110,7 @@ public class ClusterTest extends AdminBaseDevTest {
         testDynamicReconfigEnabledFlag();
         testGetSetListCommands();
         testRestartRequired();
+        testInfraCLIs();
         cleanup();
         stopDomain();
         stat.printSummary();
@@ -675,6 +676,163 @@ public class ClusterTest extends AdminBaseDevTest {
 	report(tn + "set-dyn-recfg-flag", asadmin("set", "configs.config."+cname+"-config.dynamic-reconfiguration-enabled=true"));
         asadmin("delete-jdbc-connection-pool", "testPool");
         asadmin("delete-jdbc-connection-pool", "testPool2");
+        report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
+        report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
+        report(tn + "stop-local-instance3", asadmin("stop-local-instance", i3name));
+        report(tn + "delete-local-instance1", asadmin("delete-local-instance", i1name));
+        report(tn + "delete-local-instance2", asadmin("delete-local-instance", i2name));
+        report(tn + "delete-local-instance3", asadmin("delete-local-instance", i3name));
+        report(tn + "delete-cluster", asadmin("delete-cluster", cname));
+    }
+
+    /*
+     * Test for infra commands *system-properties, *profiler, *jvmoptions
+     */
+    private void testInfraCLIs() {
+        final String tn = "infracli-";
+
+        final String cname = "infrac1";
+        final String i1name = "infrai1";
+        final String i2name = "infrai2";
+        final String i3name = "infrai3";
+
+        // create a cluster and two instances
+        report(tn + "create-cluster", asadmin("create-cluster", cname));
+        report(tn + "create-local-instance1", asadmin("create-local-instance",
+                "--cluster", cname, i1name));
+        report(tn + "create-local-instance2", asadmin("create-local-instance",
+                "--cluster", cname, i2name));
+        report(tn + "create-local-instance2", asadmin("create-local-instance",
+                i3name));
+
+        // start the instances
+        report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
+        report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
+        report(tn + "start-local-instance2", asadmin("start-local-instance", i3name));
+
+	// create jvm-options command
+	report(tn+"create-jvm-option-das", asadmin("create-jvm-options", "-Ddas=server"));
+	report(tn+"create-jvm-option-cluster", asadmin("create-jvm-options",
+		"--target", cname, "-Dcl=in1in2"));
+	report(tn+"create-jvm-option-instance", asadmin("create-jvm-options",
+		"--target", i3name, "-Din3=in3"));
+
+	// Test list output
+        AsadminReturn ret = asadminWithOutput("list-jvm-options");
+        boolean success = ret.outAndErr.indexOf("-Ddas=server") >= 0;
+        report(tn+"test-das-has-das-jvm-option", success);
+        success = ret.outAndErr.indexOf("-Dcl=in1in2") < 0;
+        report(tn+"test-das-has-no-cl-jvm-option", success);
+        success = ret.outAndErr.indexOf("-Din3=in3") < 0;
+        report(tn+"test-das-has-no-in3-jvm-option", success);
+        ret = asadminWithOutput("list-jvm-options", "--target", cname);
+        success = ret.outAndErr.indexOf("-Ddas=server") < 0;
+        report(tn+"test-cluster-has-no-das-jvm-option", success);
+        success = ret.outAndErr.indexOf("-Dcl=in1in2") >= 0;
+        report(tn+"test-cluster-has-cl-jvm-option", success);
+        success = ret.outAndErr.indexOf("-Din3=in3") < 0;
+        report(tn+"test-cluster-has-no-in3-jvm-option", success);
+        ret = asadminWithOutput("list-jvm-options", "--target", i3name);
+        success = ret.outAndErr.indexOf("-Ddas=server") < 0;
+        report(tn+"test-instance-has-no-das-jvm-option", success);
+        success = ret.outAndErr.indexOf("-Dcl=in1in2") < 0;
+        report(tn+"test-instance-has-no-cl-jvm-option", success);
+        success = ret.outAndErr.indexOf("-Din3=in3") >= 0;
+        report(tn+"test-instance-has-in3-jvm-option", success);
+
+	// delete jvm-options command
+	report(tn+"delete-jvm-option-das", asadmin("delete-jvm-options", "-Ddas=server"));
+	report(tn+"delete-jvm-option-cluster", asadmin("delete-jvm-options",
+		"--target", cname, "-Dcl=in1in2"));
+	report(tn+"delete-jvm-option-instance", asadmin("delete-jvm-options",
+		"--target", i3name, "-Din3=in3"));
+
+	// Test list output
+        ret = asadminWithOutput("list-jvm-options");
+        success = ret.outAndErr.indexOf("-Ddas=server") < 0;
+        report(tn+"test-das-has-no-das-jvm-option", success);
+        success = ret.outAndErr.indexOf("-Dcl=in1in2") < 0;
+        report(tn+"test-das-has-no-cl-jvm-option", success);
+        success = ret.outAndErr.indexOf("-Din3=in3") < 0;
+        report(tn+"test-das-has-no-in3-jvm-option", success);
+        ret = asadminWithOutput("list-jvm-options", "--target", cname);
+        success = ret.outAndErr.indexOf("-Ddas=server") < 0;
+        report(tn+"test-cluster-has-no-das-jvm-option", success);
+        success = ret.outAndErr.indexOf("-Dcl=in1in2") < 0;
+        report(tn+"test-cluster-has-no-cl-jvm-option", success);
+        success = ret.outAndErr.indexOf("-Din3=in3") < 0;
+        report(tn+"test-cluster-has-no-in3-jvm-option", success);
+        ret = asadminWithOutput("list-jvm-options", "--target", i3name);
+        success = ret.outAndErr.indexOf("-Ddas=server") < 0;
+        report(tn+"test-instance-has-no-das-jvm-option", success);
+        success = ret.outAndErr.indexOf("-Dcl=in1in2") < 0;
+        report(tn+"test-instance-has-no-cl-jvm-option", success);
+        success = ret.outAndErr.indexOf("-Din3=in3") < 0;
+        report(tn+"test-instance-has-no-in3-jvm-option", success);
+
+	// Test create-jvm fails on clustered instances
+	report(tn+"create-jvm-option-clustered-instance", !asadmin("create-jvm-options", "--target", i2name, "-Dcl=in1in2"));
+
+	// create-system-properties command
+	report(tn+"create-system-properties-das", asadmin("create-system-properties", "das=server"));
+	report(tn+"create-system-properties-cluster", asadmin("create-system-properties", "--target", cname, "cl=in1in2"));
+	report(tn+"create-system-properties-instance", asadmin("create-system-properties", "--target", i3name, "in3=in3"));
+
+	// Test list output
+        ret = asadminWithOutput("list-system-properties");
+        success = ret.outAndErr.indexOf("das=server") >= 0;
+        report(tn+"test-das-has-das-system-properties", success);
+        success = ret.outAndErr.indexOf("cl=in1in2") < 0;
+        report(tn+"test-das-has-no-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("in3=in3") < 0;
+        report(tn+"test-das-has-no-in3-system-properties", success);
+        ret = asadminWithOutput("list-system-properties", cname);
+        success = ret.outAndErr.indexOf("das=server") < 0;
+        report(tn+"test-cluster-has-no-das-system-properties", success);
+        success = ret.outAndErr.indexOf("cl=in1in2") >= 0;
+        report(tn+"test-cluster-has-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("in3=in3") < 0;
+        report(tn+"test-cluster-has-no-in3-system-properties", success);
+        ret = asadminWithOutput("list-system-properties", i3name);
+        success = ret.outAndErr.indexOf("das=server") < 0;
+        report(tn+"test-instance-has-no-das-system-properties", success);
+        success = ret.outAndErr.indexOf("cl=in1in2") < 0;
+        report(tn+"test-instance-has-no-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("in3=in3") >= 0;
+        report(tn+"test-instance-has-in3-system-properties", success);
+
+	// delete system-properties command
+	report(tn+"delete-system-property-das", asadmin("delete-system-property", "das"));
+	report(tn+"delete-system-property-cluster", asadmin("delete-system-property", "--target", cname, "cl"));
+	report(tn+"delete-system-property-instance", asadmin("delete-system-property", "--target", i3name, "in3"));
+
+	// Test list output
+        ret = asadminWithOutput("list-system-properties");
+        success = ret.outAndErr.indexOf("das=server") < 0;
+        report(tn+"test-das-has-no-das-system-properties", success);
+        success = ret.outAndErr.indexOf("cl=in1in2") < 0;
+        report(tn+"test-das-has-no-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("in3=in3") < 0;
+        report(tn+"test-das-has-no-in3-system-properties", success);
+        ret = asadminWithOutput("list-system-properties", "--target", cname);
+        success = ret.outAndErr.indexOf("das=server") < 0;
+        report(tn+"test-cluster-has-no-das-system-properties", success);
+        success = ret.outAndErr.indexOf("cl=in1in2") < 0;
+        report(tn+"test-cluster-has-no-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("in3=in3") < 0;
+        report(tn+"test-cluster-has-no-in3-system-properties", success);
+        ret = asadminWithOutput("list-system-properties", "--target", i3name);
+        success = ret.outAndErr.indexOf("das=server") < 0;
+        report(tn+"test-instance-has-no-das-system-properties", success);
+        success = ret.outAndErr.indexOf("cl=in1in2") < 0;
+        report(tn+"test-instance-has-no-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("in3=in3") < 0;
+        report(tn+"test-instance-has-no-in3-system-properties", success);
+
+	// Test create-jvm fails on clustered instances
+	report(tn+"create-system-properties-clustered-instance", !asadmin("create-system-properties", "--target", i2name, "cl=in1in2"));
+
+        // Cleanup
         report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
         report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
         report(tn + "stop-local-instance3", asadmin("stop-local-instance", i3name));
