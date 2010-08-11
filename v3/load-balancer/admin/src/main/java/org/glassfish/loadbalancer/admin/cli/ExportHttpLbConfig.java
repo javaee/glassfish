@@ -72,7 +72,7 @@ import org.glassfish.loadbalancer.admin.cli.helper.LbConfigHelper;
 @I18n("export.http.lb.config")
 public class ExportHttpLbConfig implements AdminCommand {
 
-    @Param(name = "targets", separator = ',', optional = true)
+    @Param(name = "lbtargets", separator = ',', optional = true)
     List<String> target;
     @Param(name = "config", optional = true)
     String lbConfigName;
