@@ -453,6 +453,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         put("ListWorkSecurityMap", "create-connector-work-security-map");
         put("ProtocolFilter", "create-protocol-filter");
         put("ProtocolFinder", "create-protocol-finder");
+        put("ListSecurityMap", "create-connector-security-map");
     }};
 
     private static final String[][] configBeanCustomResources = {
