@@ -84,7 +84,6 @@
         <dependency>
             <groupId>org.glassfish.ha</groupId>
             <artifactId>ha-api</artifactId>
-            <version>${project.version}</version>
         </dependency>        
         <dependency>
             <groupId>org.glassfish.cluster</groupId>

@@ -64,7 +64,6 @@
     </developers>
     
     <modules>
-        <module>ha-api</module>
         <module>ha-file-store</module>
         <module>ha-shoal-cache-bootstrap</module>
         <module>ha-shoal-store</module>
