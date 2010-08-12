@@ -39,9 +39,6 @@ package org.glassfish.admin.rest;
 import java.util.HashMap;
 
 import org.glassfish.admin.rest.clientutils.MarshallingUtils;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Document;
 
 import java.util.List;
 import java.util.Map;
@@ -72,14 +69,14 @@ public class JvmOptionsTest extends RestTestBase {
             put(optionName, "someValue");
         }};
 
-        Map<String, String> payload = buildJvmOptionsPayload(newOptions);
-        ClientResponse response = post(URL_JVM_OPTIONS, payload);
+//        Map<String, String> payload = buildJvmOptionsPayload(newOptions);
+        ClientResponse response = post(URL_JVM_OPTIONS, newOptions);
         assertTrue(isSuccess(response));
         response = get(URL_JVM_OPTIONS);
         List<String> jvmOptions = getJvmOptions(response);
         assertTrue(jvmOptions.contains(optionName+"=someValue"));
 
-        response = delete(URL_JVM_OPTIONS, payload);
+        response = delete(URL_JVM_OPTIONS, newOptions);
         assertTrue(isSuccess(response));
         response = get(URL_JVM_OPTIONS);
         jvmOptions = getJvmOptions(response);

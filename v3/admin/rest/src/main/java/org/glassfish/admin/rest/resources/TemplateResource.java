@@ -57,8 +57,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.glassfish.admin.rest.ResourceUtil.buildMethodMetadataMap;
-import static org.glassfish.admin.rest.ResourceUtil.getResourceLinks;
 import static org.glassfish.admin.rest.Util.eleminateHypen;
 import static org.glassfish.admin.rest.Util.upperCaseFirstLetter;
 

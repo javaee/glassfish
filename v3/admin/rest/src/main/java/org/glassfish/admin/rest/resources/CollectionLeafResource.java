@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,7 +58,6 @@ import javax.ws.rs.WebApplicationException;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
-import org.glassfish.admin.rest.results.StringListResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
 
@@ -70,7 +69,6 @@ import org.glassfish.admin.rest.Util;
 import org.jvnet.hk2.config.Dom;
 
 import static org.glassfish.admin.rest.Util.decode;
-import static org.glassfish.admin.rest.Util.getName;
 import static org.glassfish.admin.rest.Util.upperCaseFirstLetter;
 
 
@@ -136,7 +134,8 @@ public abstract class CollectionLeafResource {
             return delete(data);
         }
 
-        return runCommand(getPostCommand(), data, "rest.resource.create.message",
+        String postCommand = getPostCommand();
+        return runCommand(postCommand, processData(data, postCommand), "rest.resource.create.message",
             "\"{0}\" created successfully.", "rest.resource.post.forbidden","POST on \"{0}\" is forbidden.");
     }
 
@@ -145,7 +144,8 @@ public abstract class CollectionLeafResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public ActionReportResult delete(HashMap<String, String> data) {
         ResourceUtil.addQueryString(uriInfo.getQueryParameters(), data);
-        return runCommand(getDeleteCommand(), data, "rest.resource.delete.message",
+        String deleteCommand = getDeleteCommand();
+        return runCommand(deleteCommand, processData(data, deleteCommand), "rest.resource.delete.message",
             "\"{0}\" deleted successfully.", "rest.resource.delete.forbidden", "DELETE on \"{0}\" is forbidden.");
     }
 
@@ -194,7 +194,7 @@ public abstract class CollectionLeafResource {
         return mmd;
     }
 
-    private void addDefaultParameter(HashMap<String, String> data) {
+    private void addDefaultParameter(Map<String, String> data) {
         int index = uriInfo.getAbsolutePath().getPath().lastIndexOf('/');
         String defaultParameterValue = uriInfo.getAbsolutePath().getPath().substring(index + 1);
         data.put("DEFAULT", defaultParameterValue);
@@ -212,9 +212,8 @@ public abstract class CollectionLeafResource {
         return Util.getResourceName(uriInfo);
     }
 
-    private ActionReportResult runCommand(String commandName, HashMap<String, String> data,
-        String successMsgKey, String successMsg, String operationForbiddenMsgKey,
-            String operationForbiddenMsg ) {
+    private ActionReportResult runCommand(String commandName, Map<String, String> data,
+        String successMsgKey, String successMsg, String operationForbiddenMsgKey, String operationForbiddenMsg ) {
         try {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
@@ -253,7 +252,7 @@ public abstract class CollectionLeafResource {
         }
     }
 
-    private String getErrorMessage(HashMap<String, String> data, ActionReport ar) {
+    private String getErrorMessage(Map<String, String> data, ActionReport ar) {
         String message = ar.getMessage();
 
         /*if (data.isEmpty()) {
@@ -265,5 +264,27 @@ public abstract class CollectionLeafResource {
             }
         }*/
         return message;
+    }
+
+    // Ugly, temporary hack
+    private Map<String, String> processData(Map<String, String> data, String command) {
+        Map<String, String> results = new HashMap<String, String>();
+        if ((command == null) || (!command.contains("jvm-options"))) {
+            return data;
+        } else {
+            StringBuilder options = new StringBuilder();
+            String sep = "";
+            for (Map.Entry<String, String> entry : data.entrySet()) {
+                options.append(sep)
+                        .append(entry.getKey())
+                        .append("=")
+                        .append(entry.getValue());
+                sep = ":";
+            }
+
+            results.put("id", options.toString());
+        }
+
+        return results;
     }
 }

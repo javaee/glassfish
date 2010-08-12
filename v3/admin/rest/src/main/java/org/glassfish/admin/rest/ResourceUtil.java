@@ -94,7 +94,7 @@ public class ResourceUtil {
      * object to create or delete). This method is used to rename primary
      * parameter name to DEFAULT irrespective of what user provides.
      */
-    public static void adjustParameters(HashMap<String, String> data) {
+    public static void adjustParameters(Map<String, String> data) {
         if (data != null) {
             if (!(data.containsKey("DEFAULT"))) {
                 boolean isRenamed = renameParameter(data, "name", "DEFAULT");
@@ -111,7 +111,7 @@ public class ResourceUtil {
      * object to create or delete). This method is used to rename primary
      * parameter name to DEFAULT irrespective of what user provides.
      */
-    public static void defineDefaultParameters(HashMap<String, String> data) {
+    public static void defineDefaultParameters(Map<String, String> data) {
         if (data != null) {
             if (!(data.containsKey("DEFAULT"))) {
                 renameParameter(data, "id", "DEFAULT");
@@ -155,8 +155,7 @@ public class ResourceUtil {
      * @param habitat     the habitat
      * @return ActionReport object with command execute status details.
      */
-    public static RestActionReporter runCommand(String commandName,
-                                          HashMap<String, String> parameters, Habitat habitat, String resultType) {
+    public static RestActionReporter runCommand(String commandName, Map<String, String> parameters, Habitat habitat, String resultType) {
         ParameterMap p = new ParameterMap();
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             p.set(entry.getKey(), entry.getValue());
@@ -508,7 +507,7 @@ public class ResourceUtil {
 
     //removes entries with empty value from the given Map
 
-    public static void purgeEmptyEntries(HashMap<String, String> data) {
+    public static void purgeEmptyEntries(Map<String, String> data) {
         Set<String> keys = data.keySet();
         Iterator<String> iterator = keys.iterator();
         String key;
@@ -585,7 +584,7 @@ public class ResourceUtil {
      *
      * @param data
      */
-    public static void addQueryString(MultivaluedMap<String, String> qs, HashMap<String, String> data) {
+    public static void addQueryString(MultivaluedMap<String, String> qs, Map<String, String> data) {
         for (Map.Entry<String, List<String>> entry : qs.entrySet()) {
             String key = entry.getKey();
             for (String value : entry.getValue()) {
@@ -636,7 +635,7 @@ public class ResourceUtil {
 
     //rename the given input parameter
 
-    private static boolean renameParameter(HashMap<String, String> data,
+    private static boolean renameParameter(Map<String, String> data,
                                            String parameterToRename, String newName) {
         if ((data.containsKey(parameterToRename))) {
             String value = data.get(parameterToRename);
