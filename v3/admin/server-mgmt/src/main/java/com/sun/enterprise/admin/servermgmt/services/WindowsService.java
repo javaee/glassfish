@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.admin.servermgmt.services;
 
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.process.ProcessManager;
 import com.sun.enterprise.universal.process.ProcessManagerException;
@@ -67,10 +66,12 @@ public class WindowsService extends ServiceAdapter{
         }
     }
 
+    @Override
     public boolean isConfigValid() {
         return true;
     }
 
+    @Override
     public void createService(Map<String, String> params) throws RuntimeException {
         try {
             init();
@@ -91,6 +92,7 @@ public class WindowsService extends ServiceAdapter{
         }
     }
 
+    @Override
     public String getSuccessMessage() {
         if(isDryRun())
             return Strings.get("dryrun");
@@ -99,6 +101,7 @@ public class WindowsService extends ServiceAdapter{
             serverName + " GlassFish Server", serverDir, targetXml, targetWin32Exe);
     }
 
+    @Override
     public void writeReadmeFile(String msg) {
         // TODO 1/19/2010 bnevins duplicated in SMFService
         File f = new File(getDomainDirectory(), "PlatformServices.log");
