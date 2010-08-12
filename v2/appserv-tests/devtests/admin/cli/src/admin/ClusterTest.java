@@ -493,6 +493,7 @@ public class ClusterTest extends AdminBaseDevTest {
         // start the instances
         report(tn + "start-cluster", asadmin("start-cluster", cname));
         report(tn + "start-local-instance3", asadmin("start-local-instance", i3name));
+        sleep(4); // Work-around for issue 12967
 
         // check that the instances are there
         report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
