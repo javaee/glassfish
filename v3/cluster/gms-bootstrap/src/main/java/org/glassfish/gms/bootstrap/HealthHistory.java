@@ -190,8 +190,10 @@ public final class HealthHistory implements ConfigListener {
             }
         } else if (signal instanceof FailureNotificationSignal) {
             state = STATE.FAILURE;
+            time = System.currentTimeMillis();
         } else if (signal instanceof PlannedShutdownSignal) {
             state = STATE.SHUTDOWN;
+            time = System.currentTimeMillis();
         } else {
             if (logger.isLoggable(Level.FINE)) {
                 logger.log(Level.FINE, String.format(
@@ -251,7 +253,7 @@ public final class HealthHistory implements ConfigListener {
         InstanceHealth oldHealth = healthMap.putIfAbsent(name,
             new InstanceHealth(STATE.NOT_RUNNING, NOTIME));
         if (oldHealth != null) {
-            logger.log(Level.INFO, "key.already.present", name);
+            logger.log(Level.WARNING, "key.already.present", name);
         }
     }
 
