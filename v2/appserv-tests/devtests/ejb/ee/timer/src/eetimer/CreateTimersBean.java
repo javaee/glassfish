@@ -47,7 +47,7 @@ import javax.ejb.TimerService;
 
 @Singleton
 public class CreateTimersBean implements TimedObject {
-    private static final Logger logger = Logger.getLogger("devtests.ejb.ee.timer");
+    private static final Logger logger = Logger.getLogger(CreateTimersBean.class.getName());
 
     @Resource
     private TimerService timerService;

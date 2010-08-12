@@ -58,7 +58,6 @@
     <target name="setup" depends="init-common">
       <antcall target="clean-results"/>
       <antcall target="start-database"/>
-      <antcall target="setup-database"/>
       <ant target="startDomain"/>
       <antcall target="setup-cluster"/>
       <antcall target="setup-timer-service"/>
@@ -67,9 +66,6 @@
     <target name="unsetup" depends="init-common">
         <antcall target="unsetup-timer-service"/>
         <antcall target="unsetup-cluster"/>
-        <!--
-        <antcall target="unsetup-database"/>
-        -->
         <antcall target="stop-database"/>
         <ant target="stopDomain"/>
     </target>
@@ -158,24 +154,9 @@
         </antcall>
     </target>
 
-    <target name="setup-database" depends="init-common">
-      <antcall target="execute-ejb-sql-common">
-            <param name="sql.file" value="drop.sql"/>
-      </antcall>
-      <antcall target="execute-ejb-sql-common">
-        <param name="sql.file" value="ejbtimer_derby.sql"/>
-      </antcall>
-    </target>
-
     <target name="delete-timers" depends="init-common">
         <antcall target="execute-ejb-sql-common">
             <param name="sql.file" value="delete.sql"/>
-        </antcall>
-    </target>
-
-    <target name="unsetup-database" depends="init-common">
-        <antcall target="execute-ejb-sql-common">
-            <param name="sql.file" value="drop.sql"/>
         </antcall>
     </target>
 
@@ -186,6 +167,9 @@
         <exec spawn="true" executable="${ASADMIN}" failonerror="false">
           <arg line="start-database"/>
         </exec>
+        <!-- execute.sql.common sometimes failed due to cannot-connect. So -->
+        <!-- wait for the db to be fully up -->
+        <sleep seconds="3"/>
     </target>
 
     <target name="stop-database" depends="init-common">
@@ -199,6 +183,7 @@
     </target>
 
     <target name="compile" depends="init-common">
+        <mkdir dir="${build.classes.dir}"/>
         <javac fork="true" includeAntRuntime="false" destdir="${build.classes.dir}" debug="true" 
                classpath="${build.classes.dir}:${env.S1AS_HOME}/lib/javaee.jar:${env.APS_HOME}/lib/reportbuilder.jar:${env.APS_HOME}/lib/reporter.jar"
                srcdir="${env.APS_HOME}/devtests/admin/cli/src" includes="**/AdminBaseDevTest.java">
@@ -211,30 +196,45 @@
     </target>
 
     <target name="package" depends="init-common">
+        <mkdir dir="${assemble.dir}"/>
         <jar destfile="${assemble.dir}/${ejb-jar-name}"
             basedir="${build.classes.dir}"
-            includes="**/StartupSingletonBean*.class, **/CreateTimersBean*.class" />
+            includes="eetimer/StartupSingletonBean*.class, eetimer/CreateTimersBean*.class" />
     </target>
 
     <target name="run" depends="init-common">
+        <antcall target="delete-timers"/>
         <antcall target="list-timers"/>
+        <antcall target="delete-timers"/>
+        <antcall target="migrate-timers"/>
     </target>
 
-    <target name="list-timers" depends="init-common">
-        <java 
+    <macrodef name="run-client">
+        <attribute name="main-class" default="NOT_SET"/>
+        <sequential>
+            <java
         classpath="${build.classes.dir}:${env.S1AS_HOME}/lib/javaee.jar:${env.APS_HOME}/lib/reportbuilder.jar:${env.APS_HOME}/lib/reporter.jar"
-        classname="eetimer.ListTimersTest" fork="true">
+        classname="@{main-class}" fork="true">
             <!--
             <jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009"/>
             -->
-            <jvmarg value="-Dverbose=${verbose}"/>
-            <jvmarg value="-Dejb-jar-path=${assemble.dir}/${ejb-jar-name}"/>
-            <jvmarg value="-Dejb-jar-name=${ejb-jar-name}"/>
-            <jvmarg value="-Dcluster-name=${cluster-name}"/>
-            <jvmarg value="-Dinstance-name-1=${instance-name-1}"/>
-            <jvmarg value="-Dinstance-name-2=${instance-name-2}"/>
-            <jvmarg value="-Dinstance-name-3=${instance-name-3}"/>
-        </java>
+                <jvmarg value="-Dverbose=${verbose}"/>
+                <jvmarg value="-Dejb-jar-path=${assemble.dir}/${ejb-jar-name}"/>
+                <jvmarg value="-Dejb-jar-name=${ejb-jar-name}"/>
+                <jvmarg value="-Dcluster-name=${cluster-name}"/>
+                <jvmarg value="-Dinstance-name-1=${instance-name-1}"/>
+                <jvmarg value="-Dinstance-name-2=${instance-name-2}"/>
+                <jvmarg value="-Dinstance-name-3=${instance-name-3}"/>
+            </java>
+        </sequential>
+    </macrodef>
+
+    <target name="list-timers" depends="init-common">
+        <run-client main-class="eetimer.ListTimersTest"/>
+    </target>
+
+    <target name="migrate-timers" depends="init-common">
+        <run-client main-class="eetimer.MigrateTimersTest"/>
     </target>
 
     <target name="clean" depends="init-common">

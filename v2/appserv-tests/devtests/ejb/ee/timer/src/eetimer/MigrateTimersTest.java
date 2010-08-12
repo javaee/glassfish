@@ -36,64 +36,60 @@
 package eetimer;
 
 import java.util.Map;
+import java.util.logging.Level;
 
-public class ListTimersTest extends TimerTestBase {
+public class MigrateTimersTest extends TimerTestBase {
 
     public static void main(String[] args) {
-        (new ListTimersTest()).runTests();
+        (new MigrateTimersTest()).runTests();
     }
 
     @Override
     protected String getTestDescription() {
-        return "devtests for list-timers";
+        return "devtests for migrate-timers";
     }
 
     public void runTests() {
         try {
             deployEjbCreateTimers(cluster_name);
-            listTimersCluster();
-            listTimers();
-            listTimersInstance3Empty();
+            migrateTimers();
+            migrateTimersWithTarget();
         } finally {
             undeployEjb(cluster_name);
-        }
-
-        try {
-            deployEjbCreateTimers(instance_name_3);
-            listTimersInstance3();
-        } finally {
-            undeployEjb(instance_name_3);
         }
         stat.printSummary();
     }
 
-    public void listTimers() {
-        String testName = "listTimers";
-        AsadminReturn output = asadminWithOutput("list-timers");
+    //--target not specified, default to "server", should pick a running instance
+    //from the same cluster
+    public void migrateTimers() {
+        String testName = "migrateTimers";
+        
+        //assuming no automatic migration when stopping a local instance.
+        asadmin("stop-local-instance", instance_name_1);
+        AsadminReturn output = asadminWithOutput("migrate-timers", instance_name_1);
+        logger.log(Level.INFO, "Finished migrate-timer: {0}", new Object[]{output.outAndErr});
+
+        output = asadminWithOutput("list-timers", cluster_name);
         Map<String, Integer> timerCounts = countInstanceTimers(output.out);
-        report(testName, timerCounts.get("server") == 0);
+        report(testName + instance_name_1 + "-0", timerCounts.get(instance_name_1) == 0);
+        report(testName + instance_name_2 + "-2", timerCounts.get(instance_name_2) == 2);
     }
 
-    //standalone instance
-    public void listTimersInstance3Empty() {
-        String testName = "listTimersInstance3Empty";
-        AsadminReturn output = asadminWithOutput("list-timers", instance_name_3);
-        Map<String, Integer> timerCounts = countInstanceTimers(output.out);
-        report(testName, timerCounts.get(instance_name_3) == 0);
-    }
+    public void migrateTimersWithTarget() {
+        String testName = "migrateTimersWithTarget";
 
-    public void listTimersInstance3() {
-        String testName = "listTimersInstance3";
-        AsadminReturn output = asadminWithOutput("list-timers", instance_name_3);
-        Map<String, Integer> timerCounts = countInstanceTimers(output.out);
-        report(testName, timerCounts.get(instance_name_3) == 1);
-    }
+        //assuming no automatic migration when stopping a local instance.
+        asadmin("stop-local-instance", instance_name_2);
+        asadmin("start-local-instance", instance_name_1);
+        AsadminReturn output = asadminWithOutput("migrate-timers", "--target", instance_name_1 ,instance_name_2);
+        logger.log(Level.INFO, "Finished migrate-timer: {0}", new Object[]{output.outAndErr});
 
-    public void listTimersCluster() {
-        String testName = "listTimersCluster";
-        AsadminReturn output = asadminWithOutput("list-timers", cluster_name);
+        output = asadminWithOutput("list-timers", cluster_name);
         Map<String, Integer> timerCounts = countInstanceTimers(output.out);
-        report(testName, timerCounts.get(instance_name_1) == 1);
-        report(testName, timerCounts.get(instance_name_2) == 1);
+
+        //3 timers in instance_1: 2 migrated from instance_2, 1 created after restart
+        report(testName + instance_name_1 + "-3", timerCounts.get(instance_name_1) == 3);
+        report(testName + instance_name_2 + "-0", timerCounts.get(instance_name_2) == 0);
     }
 }
