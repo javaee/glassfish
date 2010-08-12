@@ -33,51 +33,96 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admingui.devtests;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
+import com.thoughtworks.selenium.SeleniumException;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
 import java.math.BigInteger;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.SecureRandom;
 import java.util.Random;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.AfterClass;
 
 public class BaseSeleniumTestClass {
+
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
     public static final String MSG_NEW_VALUES_SAVED = "New values successfully saved.";
     public static final String TRIGGER_COMMON_TASKS = "Please Register";
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
     public static final String MSG_ERROR_OCCURED = "An error has occurred";
-
-
     protected static Selenium selenium;
-    protected static int TIMEOUT = 120;
+    protected static int TIMEOUT = 30;
+    private static String currentTestClass = "";
 
     @BeforeClass
     public static void setUp() throws Exception {
-        if (selenium == null) {
-            String browser = getParameter("browser", "firefox");
-            String port = getParameter("admin.port", "4848");
-            String seleniumPort = getParameter("selenium.port", "4444");
-            String baseUrl = "http://localhost:" + port;
+        String browser = getParameter("browser", "firefox");
+        String port = getParameter("admin.port", "4848");
+        String seleniumPort = getParameter("selenium.port", "4444");
+        String baseUrl = "http://localhost:" + port;
 
-            System.out.println("The GlassFish Admin console is at " + baseUrl +".  The Selenium server is listening on " + seleniumPort +
-                    " and will use " + browser + " as the test browser.");
+        if (selenium == null) {
+            System.out.println("The GlassFish Admin console is at " + baseUrl + ".  The Selenium server is listening on " + seleniumPort
+                    + " and will use " + browser + " as the test browser.");
 
             selenium = new DefaultSelenium("localhost", Integer.parseInt(seleniumPort), "*" + browser, baseUrl);
             selenium.start();
-            (new BaseSeleniumTestClass()).openAndWait("/common/index.jsf", TRIGGER_COMMON_TASKS); // Make sure the server has started and the user logged in
+            (new BaseSeleniumTestClass()).openAndWait("/common/index.jsf", TRIGGER_COMMON_TASKS, 360); // Make sure the server has started and the user logged in
+        }
+
+        URL rotateLogUrl = new URL(baseUrl + "/management/domain/rotate-log");
+        URLConnection conn = rotateLogUrl.openConnection();
+        conn.setDoOutput(true);
+        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+        wr.write("");
+        wr.flush();
+        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String line = rd.readLine();
+        while (line  != null) {
+            line = rd.readLine();
+        }
+        wr.close();
+        rd.close();
+    }
+
+    @AfterClass
+    public static void captureLog() {
+        try {
+            URL url = new URL("http://localhost:" + getParameter("admin.port", "4848") + "/management/domain/view-log");
+//            URLConnection urlC = url.openConnection();
+            InputStream is = url.openStream();
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("target/surefire-reports/" + currentTestClass + "-server.log")));
+            BufferedReader in = new BufferedReader(new InputStreamReader(is));
+            String line = in.readLine();
+            while (line != null) {
+                out.write(line+System.getProperty("line.separator"));
+                line = in.readLine();
+            }
+            in.close();
+            out.close();
+        } catch (Exception ex) {
+            Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
         }
     }
 
     @Before
     public void reset() {
+        currentTestClass = this.getClass().getName();
         clickAndWait("treeForm:tree:registration:registration_link", TRIGGER_REGISTRATION_PAGE);
     }
 
@@ -99,7 +144,7 @@ public class BaseSeleniumTestClass {
 
     protected <T> T selectRandomItem(T... items) {
         Random r = new Random();
-        
+
         return items[r.nextInt(items.length)];
     }
 
@@ -111,9 +156,13 @@ public class BaseSeleniumTestClass {
     }
 
     protected void openAndWait(String url, String triggerText) {
+        openAndWait(url, triggerText, TIMEOUT);
+    }
+
+    protected void openAndWait(String url, String triggerText, int timeout) {
         selenium.open(url);
         // wait for 2 minutes, as that should be enough time to insure that the admin console app has been deployed by the server
-        waitForPageLoad(triggerText, TIMEOUT);
+        waitForPageLoad(triggerText, timeout);
     }
 
     /**
@@ -130,10 +179,9 @@ public class BaseSeleniumTestClass {
         waitForPageLoad(triggerText, seconds);
     }
 
-    
     protected void clickAndWaitForElement(String clickId, String elementId) {
         selenium.click(clickId);
-        for (int second = 0; ; second++) {
+        for (int second = 0;; second++) {
             if (second >= 60) {
                 Assert.fail("timeout");
             }
@@ -153,7 +201,6 @@ public class BaseSeleniumTestClass {
         waitForButtonEnabled(id);
     }
 
-    
     // Argh!
     protected void sleep(int millis) {
         try {
@@ -179,7 +226,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected void waitForPageLoad(String triggerText, int timeout, boolean textShouldBeMissing) {
-        for (int second = 0; ; second++) {
+        for (int second = 0;; second++) {
             if (second >= timeout) {
                 Assert.fail("timeout");
             }
@@ -192,6 +239,11 @@ public class BaseSeleniumTestClass {
                     if (!selenium.isTextPresent(triggerText)) {
                         break;
                     }
+                }
+            } catch (SeleniumException se) {
+                String message = se.getMessage();
+                if (!"ERROR: Couldn't access document.body.  Is this HTML page fully loaded?".equals(se.getMessage())) {
+                    throw new RuntimeException(se);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -218,11 +270,11 @@ public class BaseSeleniumTestClass {
     }
 
     protected void deleteRow(String buttonId, String tableId, String triggerText, String selectColId, String valueColId) {
-        rowActionWithConfirm( buttonId,  tableId,  triggerText,  selectColId,  valueColId);
+        rowActionWithConfirm(buttonId, tableId, triggerText, selectColId, valueColId);
         waitForPageLoad(triggerText, true);
     }
 
-     protected void rowActionWithConfirm(String buttonId, String tableId, String triggerText) {
+    protected void rowActionWithConfirm(String buttonId, String tableId, String triggerText) {
         rowActionWithConfirm(buttonId, tableId, triggerText, "col0", "col1");
     }
 
@@ -234,7 +286,6 @@ public class BaseSeleniumTestClass {
             selenium.getConfirmation();
         }
     }
-
 
     /**
      * This method will scan the all ths links for the link with the given text.  We can't rely on a link's position
@@ -289,7 +340,7 @@ public class BaseSeleniumTestClass {
                 // Assume one row group for now and hope it doesn't bite us
                 String text = selenium.getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
                 if (text.equals(value)) {
-                    return tableId + ":rowGroup1:" + row +":" ;
+                    return tableId + ":rowGroup1:" + row + ":";
                 }
                 row++;
             }
@@ -298,7 +349,6 @@ public class BaseSeleniumTestClass {
             return "";
         }
     }
-
 
     protected int addTableRow(String tableId, String buttonId) {
         return addTableRow(tableId, buttonId, "Additional Properties");
@@ -311,11 +361,10 @@ public class BaseSeleniumTestClass {
     }
 
     protected void assertTableRowCount(String tableId, int count) {
-        assertEquals(count, getTableRowCount(tableId));
+        Assert.assertEquals(count, getTableRowCount(tableId));
     }
 
     // Look at all those params. Maybe this isn't such a hot idea.
-
     /**
      * @param resourceName
      * @param tableId
@@ -326,40 +375,40 @@ public class BaseSeleniumTestClass {
      * @param editTriggerText
      */
     protected void testEnableButton(String resourceName,
-                                    String tableId,
-                                    String enableButtonId,
-                                    String statusID,
-                                    String backToTableButtonId,
-                                    String tableTriggerText,
-                                    String editTriggerText) {
+            String tableId,
+            String enableButtonId,
+            String statusID,
+            String backToTableButtonId,
+            String tableTriggerText,
+            String editTriggerText) {
         testEnableDisableButton(resourceName, tableId, enableButtonId, statusID, backToTableButtonId, tableTriggerText, editTriggerText, "on");
     }
 
     protected void testDisableButton(String resourceName,
-                                     String tableId,
-                                     String disableButtonId,
-                                     String statusId,
-                                     String backToTableButtonId,
-                                     String tableTriggerText,
-                                     String editTriggerText) {
+            String tableId,
+            String disableButtonId,
+            String statusId,
+            String backToTableButtonId,
+            String tableTriggerText,
+            String editTriggerText) {
         testEnableDisableButton(resourceName, tableId, disableButtonId, statusId, backToTableButtonId, tableTriggerText, editTriggerText, "off");
     }
 
     private void testEnableDisableButton(String resourceName,
-                                         String tableId,
-                                         String enableButtonId,
-                                         String statusId,
-                                         String backToTableButtonId,
-                                         String tableTriggerText,
-                                         String editTriggerText,
-                                         String state) {
+            String tableId,
+            String enableButtonId,
+            String statusId,
+            String backToTableButtonId,
+            String tableTriggerText,
+            String editTriggerText,
+            String state) {
         selectTableRowByValue(tableId, resourceName);
         waitForButtonEnabled(enableButtonId);
         selenium.click(enableButtonId);
         waitForButtonDisabled(enableButtonId);
 
         clickAndWait(getLinkIdByLinkText(tableId, resourceName), editTriggerText);
-        assertEquals(state, selenium.getValue(statusId));
+        Assert.assertEquals(state, selenium.getValue(statusId));
         clickAndWait(backToTableButtonId, tableTriggerText);
     }
 

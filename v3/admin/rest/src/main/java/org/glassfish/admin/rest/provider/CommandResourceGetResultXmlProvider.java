@@ -57,7 +57,7 @@ public class CommandResourceGetResultXmlProvider extends BaseProvider<CommandRes
     }
 
     @Override
-    protected String getContent(CommandResourceGetResult proxy) {
+    public String getContent(CommandResourceGetResult proxy) {
         StringBuilder result = new StringBuilder();
         String indent = Constants.INDENT;
 

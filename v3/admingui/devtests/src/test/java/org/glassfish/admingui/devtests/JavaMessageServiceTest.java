@@ -80,11 +80,16 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
     public void testJmsHosts() {
         String hostText = "host"+generateRandomString();
         String host = "somemachine"+generateRandomNumber(1000);
+        String port = Integer.toString(generateRandomNumber(32768));
 
         clickAndWait("treeForm:tree:configurations:server-config:jmsConfiguration:jmsHosts:jmsHosts_link", TRIGGER_JMS_HOSTS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_JMS_HOST);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:JmsHostTextProp:JmsHostText", hostText);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:HostProp:Host", host);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:PortProp:Port", port);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:AdminUserProp:AdminUser", "admin");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", "admin");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", "admin");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", MSG_NEW_VALUES_SAVED);
         clickAndWait(this.getLinkIdByLinkText("propertyForm:configs", hostText), "Edit JMS Host");
         assertTrue(selenium.isTextPresent(hostText));

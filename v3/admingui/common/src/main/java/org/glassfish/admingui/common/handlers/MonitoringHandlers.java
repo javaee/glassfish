@@ -55,7 +55,6 @@ import java.util.Set;
 import java.util.Date;
 
 import java.util.ListIterator;
-import javax.management.Attribute;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 import org.glassfish.admingui.common.util.V3AMX;
@@ -65,8 +64,6 @@ import javax.management.openmbean.CompositeType;
 
 import org.glassfish.admin.amx.base.Query;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
 import org.glassfish.admingui.common.util.RestResponse;
 
 /**
@@ -87,7 +84,7 @@ public class MonitoringHandlers {
         List result = new ArrayList();
         try {
             String monitoringServiceEndPoint = endpoint + "/monitoring-service";
-            Map attrs = RestApiHandlers.getEntityAttrs(RestApiHandlers.get(monitoringServiceEndPoint).getResponseBody());
+            Map attrs = RestApiHandlers.getEntityAttrs(monitoringServiceEndPoint, "entitiy");
 
             ObjectName[] pnames = (ObjectName[]) attrs.get("ContainerMonitoring");
             if (pnames != null) {
@@ -112,7 +109,7 @@ public class MonitoringHandlers {
             }
 
             String monitoringLevelsEndPoint = endpoint + "/module-monitoring-levels";
-            attrs = RestApiHandlers.getEntityAttrs(RestApiHandlers.get(monitoringLevelsEndPoint).getResponseBody());
+            attrs = RestApiHandlers.getEntityAttrs(monitoringLevelsEndPoint, "entity");
             for (Object oneMonComp : attrs.keySet()) {
                 Map oneRow = new HashMap();
                 String name = null;
@@ -694,9 +691,9 @@ public class MonitoringHandlers {
         String appName = name;
         String fullName = name;
         try {
-            List<String> applications = RestApiHandlers.getChildrenNames(endpoint, "Name");
+            List<String> applications = RestApiHandlers.getChildList(endpoint);
             for (String oneApp : applications) {
-                List<String> modules = RestApiHandlers.getChildrenNames(endpoint + "/" + oneApp + "/module", "Name");
+                List<String> modules = RestApiHandlers.getChildList(endpoint + "/" + oneApp + "/module");
                 if (modules.contains(name)) {
                     appName = oneApp;
                     break;
@@ -918,7 +915,7 @@ public class MonitoringHandlers {
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         Boolean result = false;
         try {
-            List<String> poolNames = RestApiHandlers.getChildrenNames(endpoint, "Name");
+            List<String> poolNames = RestApiHandlers.getChildList(endpoint);
             if (poolNames.contains(poolName)) {
                 result = true;
             }
@@ -954,8 +951,8 @@ public class MonitoringHandlers {
         String firstConnector = null;
 
         try {
-            List<String> jdbcPools = RestApiHandlers.getChildrenNames(endpoint + "/jdbc-connection-pool", "Name");
-            List<String> connectorPools = RestApiHandlers.getChildrenNames(endpoint + "/connector-connection-pool", "Name");
+            List<String> jdbcPools = RestApiHandlers.getChildList(endpoint + "/jdbc-connection-pool");
+            List<String> connectorPools = RestApiHandlers.getChildList(endpoint + "/connector-connection-pool");
             for (String poolName : poolNames) {
                 if (jdbcPools.contains(poolName)) {
                     jdbcMonitorList.add(poolName);

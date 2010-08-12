@@ -77,8 +77,7 @@
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+"nodes");</script>
 <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
-     <sun:title id="propertyContentPage" title="$resource{i18ncs.nodes.PageTitle}"
-                 helpText="$resource{i18ncs.nodes.PageTitleHelp}" />
+     <sun:title id="propertyContentPage" title="$resource{i18ncs.nodes.PageTitle}" helpText="$resource{i18ncs.nodes.PageTitleHelp}" />
 	"<br /> <br />
 
 <sun:table id="nodesTable" title="#{tableTitle}"
@@ -108,20 +107,17 @@
     <sun:tableColumn headerText="$resource{i18n.common.name.header}" rowHeader="$boolean{true}" id="col1">
         <event>
             <!beforeEncode
-                setPageSessionAttribute(key="nodeName" value="#{td.value.Name}");
+                setPageSessionAttribute(key="nodeName" value="#{td.value.name}");
             />
         </event>
-        <sun:hyperlink id="link" text="#{td.value.Name}"
-                   url="#{pageSession.editLink}?nodeName=#{td.value.Name}" />
+        <sun:hyperlink id="link" text="#{td.value.name}" url="#{pageSession.editLink}?nodeName=#{td.value.name}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18ncs.node.nodeHostCol}"  rowHeader="$boolean{true}" id="col2">
-        <sun:staticText escape="true" id="nodeHostCol" value="#{td.value.NodeHost}" />
+        <sun:staticText escape="true" id="nodeHostCol" value="#{td.value.nodeHost}" />
     </sun:tableColumn>
 
-    <sun:tableColumn
-        headerText="$resource{i18ncs.clusters.instanceCol}"
-        rowHeader="$boolean{true}" id="col3">
+    <sun:tableColumn headerText="$resource{i18ncs.clusters.instanceCol}" rowHeader="$boolean{true}" id="col3">
          <event>
             <!beforeEncode
                 createMap(result="#{pageSession.statusAttrs}");
@@ -134,6 +130,7 @@
                 mapPut(map="#{pageSession.nodeInstanceMap}" key="#{pageSession.nodeName}" value="#{requestScope.instanceList}");
             />
          </event>
+            <if condition="#{requestScope.instanceList}">
             <foreach key="instance" list="#{requestScope.instanceList}">
                 <event>
                 <!beforeEncode
@@ -155,6 +152,7 @@
                 <staticText id="colStopped" value="#{requestScope.statusString}" />
                 "<br />
             </foreach>
+            </if>
     </sun:tableColumn>
 
     </sun:tableRowGroup>

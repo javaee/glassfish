@@ -36,7 +36,11 @@
 package org.glassfish.admin.rest;
 
 import com.sun.jersey.api.client.ClientResponse;
+import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import org.junit.Test;
+
+import java.util.Map;
+
 import static org.junit.Assert.*;
 
 /**
@@ -50,10 +54,12 @@ public class MetadataTest extends RestTestBase {
         ClientResponse response = options(URL_CONFIG);
         assertTrue(isSuccess(response));
         // Really dumb test.  Should be good enough for now
-        assertTrue(response.getEntity(String.class).contains("key=\"true\""));
+
+        Map extraProperties = MarshallingUtils.buildMapFromDocument(response.getEntity(String.class));
+        assertNotNull(extraProperties);
 
         // Another dumb test to make sure that "name" shows up on the HTML page
         response = client.resource(getAddress(URL_CONFIG)).get(ClientResponse.class);
-        assertTrue(response.getEntity(String.class).contains("name<sup>*</sup>"));
+        assertTrue(response.getEntity(String.class).contains("Extra Properties"));
     }
 }

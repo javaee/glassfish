@@ -35,7 +35,9 @@
  */
 package org.glassfish.admin.rest.results;
 
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
+import org.jvnet.hk2.config.ConfigBean;
 
 
 /**
@@ -45,20 +47,36 @@ import org.glassfish.api.ActionReport;
  * @author Ludovic Champenois
  */
 public class ActionReportResult extends Result {
+    private RestActionReporter __message;
+    private OptionsResult __metaData;
+    private ConfigBean __entity;
 
     /**
      * Constructor
      */
-    public ActionReportResult(String name, ActionReport r) {
+
+    public ActionReportResult(RestActionReporter r) {
+        this(null, r);
+    }
+
+    public ActionReportResult(RestActionReporter r,  OptionsResult metaData) {
+        this(null, r, metaData);
+    }
+
+    public ActionReportResult(RestActionReporter r, ConfigBean entity,  OptionsResult metaData) {
+        this(r, metaData);
+        __entity = entity;
+    }
+
+    public ActionReportResult(String name, RestActionReporter r) {
         this(name, r, new OptionsResult());    
     }
 
-    public ActionReportResult(String name, ActionReport r,  OptionsResult metaData) {
+    public ActionReportResult(String name, RestActionReporter r,  OptionsResult metaData) {
         __name = name;
         __message = r;
         __metaData = metaData;
     }
-
 
     /**
      * Returns the result string this object represents
@@ -75,7 +93,7 @@ public class ActionReportResult extends Result {
         return __metaData;
     }
 
-
-    ActionReport __message;
-    OptionsResult __metaData;
+    public ConfigBean getEntity() {
+        return __entity;
+    }
 }

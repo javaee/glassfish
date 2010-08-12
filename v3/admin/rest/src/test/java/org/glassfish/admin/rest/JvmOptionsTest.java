@@ -37,9 +37,13 @@
 package org.glassfish.admin.rest;
 
 import java.util.HashMap;
+
+import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Document;
+
+import java.util.List;
 import java.util.Map;
 import com.sun.jersey.api.client.ClientResponse;
 import org.junit.Test;
@@ -56,7 +60,8 @@ public class JvmOptionsTest extends RestTestBase {
     public void getJvmOptions() {
         ClientResponse response = get(URL_JVM_OPTIONS);
         assertTrue(isSuccess(response));
-        Map<String, String> jvmOptions = getJvmOptions(response);
+        Map<String, Object> responseMap = MarshallingUtils.buildMapFromDocument(response.getEntity(String.class));
+        List<String> jvmOptions = (List<String>)((Map)responseMap.get("extraProperties")).get("leafList");
         assertTrue(jvmOptions.size() > 0);
     }
 
@@ -71,12 +76,14 @@ public class JvmOptionsTest extends RestTestBase {
         ClientResponse response = post(URL_JVM_OPTIONS, payload);
         assertTrue(isSuccess(response));
         response = get(URL_JVM_OPTIONS);
-        assertTrue(getJvmOptions(response).containsKey(optionName));
+        List<String> jvmOptions = getJvmOptions(response);
+        assertTrue(jvmOptions.contains(optionName+"=someValue"));
 
         response = delete(URL_JVM_OPTIONS, payload);
         assertTrue(isSuccess(response));
         response = get(URL_JVM_OPTIONS);
-        assertFalse(getJvmOptions(response).containsKey(optionName));
+        jvmOptions = getJvmOptions(response);
+        assertFalse(jvmOptions.contains(optionName+"=someValue"));
     }
 
     protected Map<String, String> buildJvmOptionsPayload(Map<String, String> options) {
@@ -96,28 +103,10 @@ public class JvmOptionsTest extends RestTestBase {
         return payload;
     }
 
-    protected Map<String, String> getJvmOptions(ClientResponse response) {
-        Map<String, String> options = new HashMap<String, String>();
-        Document doc = this.getDocument(response.getEntity(String.class));
+    protected List<String> getJvmOptions(ClientResponse response) {
+        Map<String, Object> responseMap = MarshallingUtils.buildMapFromDocument(response.getEntity(String.class));
+        List<String> jvmOptions = (List<String>)((Map)responseMap.get("extraProperties")).get("leafList");
 
-        NodeList list = doc.getElementsByTagName("JvmOption");
-
-        for (int i = 0; i < list.getLength(); i++) {
-            Node node = list.item(i);
-            String text = node.getTextContent();
-            int equal = text.indexOf("=");
-            String key;
-            String value = "";
-            if (equal > -1) {
-                key = text.substring(0, equal);
-                value = text.substring(equal+1);
-            } else {
-                key = text;
-            }
-            options.put(key, value);
-        }
-
-
-        return options;
+        return jvmOptions;
     }
 }

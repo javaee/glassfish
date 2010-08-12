@@ -771,7 +771,7 @@ public class UtilHandlers {
             @HandlerOutput(name="result", type=String.class)})
     public static void encodeId(HandlerContext handlerCtx) {
         String id = ((String) handlerCtx.getInputValue("id"));
-	handlerCtx.setOutputValue("result", GuiUtil.genId(id));
+        handlerCtx.setOutputValue("result", GuiUtil.genId(id));
     }
 
 

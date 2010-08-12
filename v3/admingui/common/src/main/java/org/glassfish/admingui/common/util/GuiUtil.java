@@ -311,16 +311,16 @@ public class GuiUtil {
      *	@param	uid	A non-null String.
      */
     public static String genId(String uid) {
-	char [] chArr = uid.toCharArray();
-	int len = chArr.length;
-	int newIdx = 0;
-	for (int idx=0; idx<len; idx++) {
+        char[] chArr = uid.toCharArray();
+        int len = chArr.length;
+        int newIdx = 0;
+        for (int idx = 0; idx < len; idx++) {
             char test = chArr[idx];
-	    if (Character.isLetterOrDigit(test) || test=='_' || test=='-' ) {
-		chArr[newIdx++] = test;
-	    }
-	}
-	return new String(chArr, 0, newIdx);
+            if (Character.isLetterOrDigit(test) || test == '_' || test == '-') {
+                chArr[newIdx++] = test;
+            }
+        }
+        return new String(chArr, 0, newIdx);
     }
 
     public static ResourceBundle getBundle (String resourceName) {

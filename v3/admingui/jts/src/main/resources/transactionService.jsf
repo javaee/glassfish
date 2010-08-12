@@ -36,7 +36,7 @@
 
 <!initPage
     setResourceBundle(key="i18n_jts" bundle="org.glassfish.jts.admingui.Strings");
-	setResourceBundle(key="help_jts" bundle="org.glassfish.jts.admingui.Helplinks");
+    setResourceBundle(key="help_jts" bundle="org.glassfish.jts.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n_jts.ts.TransactionService}" >
 <!define name="content">
@@ -54,7 +54,7 @@
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
         
         //REST-TODO take care of getChildrenTable
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jts/transactionService.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="convertToFalseList" value={"automaticRecovery"});

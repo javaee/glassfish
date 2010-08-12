@@ -105,7 +105,7 @@ public class NetworkListenerTest extends RestTestBase {
             checkStatusForSuccess(response);
 
             response = get("/domain/configs/config/server-config/network-config/network-listeners/network-listener/http-listener-1/find-http-protocol");
-            assertTrue(response.getEntity(String.class).contains("entry key=\"protocol\" value=\"http-listener-2\""));
+            assertTrue(response.getEntity(String.class).contains("http-listener-2"));
         } finally {
             ClientResponse response = post("/domain/set", new HashMap<String, String>() {{
                 put("configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol", "http-listener-1");

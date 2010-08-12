@@ -53,7 +53,7 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", id="Id", result="#{requestScope.listOfRows}");
+        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", id="id", result="#{requestScope.listOfRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteVS}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/configuration/virtualServerNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/configuration/virtualServers.jsf?configName=#{configName}");
@@ -94,16 +94,16 @@
             </sun:tableColumn>
 
             <sun:tableColumn headerText="$resource{i18n.common.name.header}" sort="Name" rowHeader="$boolean{true}" id="col1">
-                <sun:hyperlink id="link" text="#{td.value.Name}"
-                    url="#{pageSession.editLink}&name=#{td.value.Name}" />
+                <sun:hyperlink id="link" text="#{td.value.name}"
+                    url="#{pageSession.editLink}&name=#{td.value.name}" />
             </sun:tableColumn>
 
                  <sun:tableColumn headerText="$resource{i18n_web.vs.StateTableColumn}" sort="State" rowHeader="$boolean{true}" id="col2">
-                <staticText id="stateCol"  value="#{td.value.State}" />
+                <staticText id="stateCol"  value="#{td.value.state}" />
             </sun:tableColumn>
 
             <sun:tableColumn headerText="$resource{i18n_web.vs.DefaultWebTableColumn}"  sort="DefaultWebModule" rowHeader="$boolean{true}" id="col3">
-                <staticText id="stateCol"  value="#{td.value.DefaultWebModule}" />
+                <staticText id="stateCol"  value="#{td.value.defaultWebModule}" />
             </sun:tableColumn>
         </sun:tableRowGroup>
         </sun:table>

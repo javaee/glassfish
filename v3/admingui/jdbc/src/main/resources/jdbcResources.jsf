@@ -1,8 +1,7 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -51,9 +50,8 @@
         setPageSessionAttribute(key="childType" value="jdbc-resource");
         //REST related
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
-        println("***** pageSession.parentUrl = #{pageSession.parentUrl}");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", id="JndiName", result="#{requestScope.tmpRows}");
+        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", id="jndiName", result="#{requestScope.tmpRows}");
         gf.getResourceRealStatus(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref" rows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}")
 
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njdbc.msg.JS.confirmDeleteJR}");

@@ -43,6 +43,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 
+import javax.ws.rs.core.MediaType;
+
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -61,7 +63,7 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
         param.put("name", propertyKey);
         param.put("value",propertyValue);
         ClientResponse response = client.resource(getAddress(URL_DOMAIN_PROPERTY))
-                .header("Content-Type", RESPONSE_TYPE)
+                .header("Content-Type", MediaType.APPLICATION_XML)
                 .accept(RESPONSE_TYPE)
                 .post(ClientResponse.class, MarshallingUtils.getXmlForProperties(param));
         assertTrue(isSuccess(response));
@@ -78,7 +80,7 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
         propertyValue = generateRandomString();
         param.put("value", propertyValue);
         response = client.resource(getAddress(URL_DOMAIN_PROPERTY))
-                .header("Content-Type", RESPONSE_TYPE)
+                .header("Content-Type", MediaType.APPLICATION_XML)
                 .accept(RESPONSE_TYPE)
                 .put(ClientResponse.class, MarshallingUtils.getXmlForProperties(param));
         assertTrue(isSuccess(response));
@@ -97,7 +99,7 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
         param.put("name", "administrative.domain.name");
         param.put("value", "domain1");
         response = client.resource(getAddress(URL_DOMAIN_PROPERTY))
-                .header("Content-Type", RESPONSE_TYPE)
+                .header("Content-Type", MediaType.APPLICATION_XML)
                 .accept(RESPONSE_TYPE)
                 .post(ClientResponse.class, MarshallingUtils.getXmlForProperties(param));
         assertTrue(isSuccess(response));

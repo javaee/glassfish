@@ -53,12 +53,10 @@
         getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
         getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
         foreach (var="row" list="${selectedRows}") {
-            setPageSessionAttribute(key="networkListenerName" value="#{row['Name']}");
+            setPageSessionAttribute(key="networkListenerName" value="#{row['name']}");
             setPageSessionAttribute(key="networkListenerUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners/network-listener");
-            gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{pageSession.networkListenerName}.json",
-                           method="get",
-                           result="#{pageSession.networkListAttrs}");
-            setPageSessionAttribute(key="protocolName" value="#{pageSession.networkListAttrs.data.entity['protocol']}");
+            gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{pageSession.networkListenerName}.json", method="get", result="#{pageSession.networkListAttrs}");
+            setPageSessionAttribute(key="protocolName" value="#{pageSession.networkListAttrs.data.extraProperties.entity['protocol']}");
             setPageSessionAttribute(key="protocolUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol/#{pageSession.protocolName}");
             setPageSessionAttribute(key="protocolHttpUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol/#{pageSession.protocolName}/http");
             setPageSessionAttribute(key="virtualServerUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server");
@@ -67,11 +65,9 @@
             gf.getChildrenNamesList(endpoint="#{pageSession.networkListenerUrl}", id="name", result="#{pageSession.networkListeners}");
             createList(size="0" result="#{pageSession.listenerList}");
             foreach (var="listener" list="#{pageSession.networkListeners}") {
-                gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{listener}.json",
-                               method="get",
-                               result="#{pageSession.networkListenerAttrs}");
-                if ("#{pageSession.networkListenerAttrs.data.entity['protocol']}=#{pageSession.protocolName}"){
-                    listAdd(value="#{pageSession.networkListAttrs.data.entity['name']}" list="#{pageSession.listenerList}");
+                gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{listener}.json", method="get", result="#{pageSession.networkListenerAttrs}");
+                if ("#{pageSession.networkListenerAttrs.data.extraProperties.entity['protocol']}=#{pageSession.protocolName}"){
+                    listAdd(value="#{pageSession.networkListAttrs.data.extraProperties.entity['name']}" list="#{pageSession.listenerList}");
                 }
                 setPageSessionAttribute(key="listSize" value="#{pageSession.listenerList.size()}");
                 setPageSessionAttribute(key="protocolExtn" value="$resource{i18n_web.grizzly.protocolExtension}");
@@ -84,9 +80,9 @@
             }
             if (#{pageSession.protocolHttpExist}) {
                 gf.restRequest(endpoint="#{pageSession.protocolHttpUrl}.json", method="get", result="#{pageSession.protocolAttrHttp}");
-                setPageSessionAttribute(key="vsName" value="#{pageSession.protocolAttrHttp.data.entity['defaultVirtualServer']}");
+                setPageSessionAttribute(key="vsName" value="#{pageSession.protocolAttrHttp.data.extraProperties.entity['defaultVirtualServer']}");
                 gf.restRequest(endpoint="#{pageSession.virtualServerUrl}/#{vsName}.json", method="get", result="#{pageSession.vsAttrs}");
-                changeNetworkListenersInVS(vsAttrs="#{pageSession.vsAttrs.data.entity}", listenerName="#{pageSession.networkListAttrs.data.entity['name']}", addFlag="{#false}", result="#{pageSession.vsAttrModified}");
+                changeNetworkListenersInVS(vsAttrs="#{pageSession.vsAttrs.data.extraProperties.entity}", listenerName="#{pageSession.networkListAttrs.data.extraProperties.entity['name']}", addFlag="{#false}", result="#{pageSession.vsAttrModified}");
                 gf.restRequest(endpoint="#{pageSession.virtualServerUrl}/#{vsName}", attrs="#{pageSession.vsAttrModified}", method="post");
             }
             gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{pageSession.networkListenerName}", method="delete");
@@ -107,7 +103,9 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
+
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
+
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteNL}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/networkListenerNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/networkListeners.jsf?configName=#{configName}");
@@ -148,24 +146,24 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.table.nameCol}"  sort="Name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.Name}"
-            url="#{pageSession.editLink}&name=#{td.value.Name}&cancelTo=networkListeners.jsf" />
+        <sun:hyperlink id="link" text="#{td.value.name}"
+            url="#{pageSession.editLink}&name=#{td.value.name}&cancelTo=networkListeners.jsf" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.table.portCol}"  sort="Port" rowHeader="$boolean{true}" id="col3">
-        <sun:staticText id="port" value="#{td.value.Port}" />
+        <sun:staticText id="port" value="#{td.value.port}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.table.protocolCol}"  sort="Protocol" rowHeader="$boolean{true}" id="pro">
-        <sun:hyperlink id="link" text="#{td.value.Protocol}" url="#{request.contextPath}/web/grizzly/protocolEdit.jsf?name=#{td.value.Protocol}&cancelTo=networkListeners.jsf" />
+        <sun:hyperlink id="link" text="#{td.value.protocol}" url="#{request.contextPath}/web/grizzly/protocolEdit.jsf?name=#{td.value.protocol}&cancelTo=networkListeners.jsf" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.table.threadPoolCol}" sort="ThreadPool" rowHeader="$boolean{true}" id="threadPool">
-        <sun:hyperlink id="link" text="#{td.value.ThreadPool}" url="#{request.contextPath}/web/configuration/threadPoolEdit.jsf?name=#{td.value.ThreadPool}&cancelTo=grizzly/networkListeners.jsf" />
+        <sun:hyperlink id="link" text="#{td.value.threadPool}" url="#{request.contextPath}/web/configuration/threadPoolEdit.jsf?name=#{td.value.threadPool}&cancelTo=grizzly/networkListeners.jsf" />
     </sun:tableColumn>
 
     <sun:tableColumn  headerText="$resource{i18n_web.grizzly.table.enabledCol}" sort="Enabled" rowHeader="$boolean{true}" id="col22">
-        <sun:staticText id="enCol" text="#{td.value.Enabled}" />
+        <sun:staticText id="enCol" text="#{td.value.enabled}" />
     </sun:tableColumn>
 
   </sun:tableRowGroup>

@@ -74,7 +74,7 @@ public class TreeNodeJsonProvider extends BaseProvider<List<TreeNode>> {
     }
 
     @Override
-    protected String getContent(List<TreeNode> proxy) {
+    public String getContent(List<TreeNode> proxy) {
         String result;
         String indent = Constants.INDENT;
         result ="{" ;

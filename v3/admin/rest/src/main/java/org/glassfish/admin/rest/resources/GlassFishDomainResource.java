@@ -56,6 +56,7 @@ import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.results.StringListResult;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.admin.ParameterMap;
 //import org.glassfish.external.amx.AMXGlassfish;
 import org.jvnet.hk2.component.Habitat;
@@ -86,16 +87,20 @@ public class GlassFishDomainResource extends TemplateResource {
     @Path("jmx-urls/")
     @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public StringListResult getJmxServiceUrl() {
+    public ActionReportResult getJmxServiceUrl() {
         try {
             Habitat habitat = RestService.getHabitat();
             MBeanServer mBeanServer = habitat.getComponent(MBeanServer.class);
-            JMXServiceURL[] urls = (JMXServiceURL[]) mBeanServer.getAttribute(/*AMXGlassfish.DEFAULT.*/getBootAMXMBeanObjectName(), "JMXServiceURLs");
+            JMXServiceURL[] urls = (JMXServiceURL[]) mBeanServer.getAttribute(getBootAMXMBeanObjectName(), "JMXServiceURLs");
             List<String> jmxUrls = new ArrayList();
             for (JMXServiceURL url : urls) {
                 jmxUrls.add(url.getURLPath());
             }
-            return new StringListResult("jmx-service-urls", jmxUrls, "", "", new OptionsResult());
+            RestActionReporter ar = new RestActionReporter();
+            ar.setActionDescription("Get JMX Service URLs");
+            ar.setSuccess();
+            ar.getExtraProperties().put("jmxServiceUrls", jmxUrls);
+            return new ActionReportResult(ar);
         } catch (final JMException e) {
             throw new RuntimeException(e);
         }

@@ -54,7 +54,6 @@ public class NodeTest extends BaseSeleniumTestClass {
     private final String TRIGGER_INSTANCES_PAGE = "Server Instances (";
     private final String TRIGGER_NEW_INSTANCE_PAGE = "Configuration:";
 
-
     @Test
     public void testCreateAndDeleteNode() {
         final String nodeName = "testNode" + generateRandomString();
@@ -81,7 +80,6 @@ public class NodeTest extends BaseSeleniumTestClass {
         deleteRow("propertyForm:nodesTable:topActionsGroup1:button1", "propertyForm:nodesTable", nodeName);
         assertFalse(selenium.isTextPresent(nodeName));
     }
-
 
     @Test
     public void testUpdateNode() {
@@ -128,7 +126,6 @@ public class NodeTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:nodeTreeNode:nodeTreeNode_link", TRIGGER_NODES_PAGE);
         deleteRow("propertyForm:nodesTable:topActionsGroup1:button1", "propertyForm:nodesTable", nodeName);
         assertFalse(selenium.isTextPresent(nodeName));
-
     }
 
     private void createNode(String nodeName){

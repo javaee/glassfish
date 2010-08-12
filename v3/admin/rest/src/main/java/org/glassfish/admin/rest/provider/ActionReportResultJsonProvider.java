@@ -64,7 +64,12 @@ public class ActionReportResultJsonProvider extends BaseProvider<ActionReportRes
         ActionReporter ar = (ActionReporter)proxy.getActionReport();
         try {
             JSONObject result = processReport(ar);
-            return result.toString(4);
+            int indent = getFormattingIndentLevel();
+            if (indent > -1) {
+                return result.toString(indent);
+            } else {
+                return result.toString();
+            }
         } catch (JSONException ex) {
             throw new RuntimeException(ex);
         }

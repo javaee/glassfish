@@ -574,7 +574,7 @@ public class ConnectorsHandlers {
         }
         
         Map valueMap = new HashMap();
-        valueMap.put("Name", rarName);
+        valueMap.put("name", rarName);
         handlerCtx.setOutputValue("valueMap", valueMap);
 
         Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getResourceAdapterConfigProps(rarName);

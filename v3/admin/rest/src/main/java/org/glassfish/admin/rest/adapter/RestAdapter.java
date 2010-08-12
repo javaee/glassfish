@@ -70,6 +70,7 @@ import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.HttpURLConnection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,6 +78,12 @@ import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.glassfish.admin.rest.CliFailureException;
+import org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider;
+import org.glassfish.admin.rest.provider.ActionReportResultJsonProvider;
+import org.glassfish.admin.rest.provider.ActionReportResultXmlProvider;
+import org.glassfish.admin.rest.provider.BaseProvider;
+import org.glassfish.admin.rest.results.ActionReportResult;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.ServerContext;
 
@@ -348,35 +355,44 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     protected abstract Set<Class<?>> getResourcesConfig(boolean useASM);
 
-
-    private ActionReport getClientActionReport(GrizzlyRequest req) {
-
-
-        ActionReport report=null;
+    private String getAcceptedMimeType(GrizzlyRequest req) {
+        String type = null;
         String requestURI = req.getRequestURI();
+        Set<String> acceptableTypes = new HashSet<String>() {{ add("html"); add("xml"); add("json"); }};
 
         // first we look at the command extension (ie list-applications.[json | html | mf]
         if (requestURI.indexOf('.')!=-1) {
-            String qualifier = requestURI.substring(requestURI.indexOf('.')+1);
-            report = habitat.getComponent(ActionReport.class, qualifier);
+            type = requestURI.substring(requestURI.indexOf('.')+1);
         } else {
             String userAgent = req.getHeader("User-Agent");
-            if (userAgent!=null)
-                report = habitat.getComponent(ActionReport.class, userAgent.substring(userAgent.indexOf('/')+1));
-            if (report==null) {
+            if (userAgent != null) {
                 String accept = req.getHeader("Accept");
                 if (accept != null) {
                     if (accept.indexOf("html") != -1) {//html is possible so get it...
-                        report = habitat.getComponent(ActionReport.class, "html");
+                        type = "html";
                     }
                     StringTokenizer st = new StringTokenizer(accept, ",");
-                    while (report==null && st.hasMoreElements()) {
-                        final String scheme=st.nextToken();
-                        report = habitat.getComponent(ActionReport.class, scheme.substring(scheme.indexOf('/')+1));
+                    while (st.hasMoreElements()) {
+                        String scheme=st.nextToken();
+                        scheme = scheme.substring(scheme.indexOf('/')+1);
+                        if (acceptableTypes.contains(scheme)) {
+                            type = scheme;
+                            break;
+                        }
                     }
                 }
             }
         }
+
+        return type;
+    }
+
+    private ActionReport getClientActionReport(GrizzlyRequest req) {
+        ActionReport report=null;
+        String requestURI = req.getRequestURI();
+        String acceptedMimeType = getAcceptedMimeType(req);
+        report = habitat.getComponent(ActionReport.class, acceptedMimeType);
+
         if (report==null) {
             // get the default one.
             report = habitat.getComponent(ActionReport.class, "html");
@@ -402,19 +418,30 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     private void reportError(GrizzlyRequest req, GrizzlyResponse res, int statusCode, String msg) {
         try {
-            ActionReport report = getClientActionReport(req);
+            // TODO: There's a lot of arm waving and flailing here.  I'd like this to be cleaner, but I don't
+            // have time at the moment.  jdlee 8/11/10
+            RestActionReporter report = new RestActionReporter(); //getClientActionReport(req);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
+            BaseProvider<ActionReportResult> provider;
+            String type = getAcceptedMimeType(req);
+            if ("xml".equals(type)) {
+                provider = new ActionReportResultXmlProvider();
+            } else if ("json".equals(type)) {
+                provider = new ActionReportResultJsonProvider();
+            } else {
+                provider = new ActionReportResultHtmlProvider();
+            }
+
             res.setStatus(statusCode);
             res.setContentType(report.getContentType());
-            report.writeReport(res.getOutputStream());
+            res.getOutputStream().write(provider.getContent(new ActionReportResult(report)).getBytes());
             res.getOutputStream().flush();
             res.finishResponse();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
 
     private com.sun.grizzly.tcp.Adapter adapter = null;
     private boolean isRegistered = false;

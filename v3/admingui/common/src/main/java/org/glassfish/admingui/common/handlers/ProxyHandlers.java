@@ -970,9 +970,9 @@ public class ProxyHandlers {
     }
     private static final String SNIFFER_EAR = "ear";
     //mbean Attribute Name
-    public static final String PROPERTY_NAME = "Name";
-    public static final String PROPERTY_VALUE = "Value";
-    public static final String PROPERTY_DESC = "Description";
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_VALUE = "value";
+    public static final String PROPERTY_DESC = "description";
 
     //TODO
     //Resources - can this obtained from AMX?

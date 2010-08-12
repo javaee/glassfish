@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -56,60 +56,60 @@
         </sun:tableColumn>
 
         <sun:tableColumn id="colName" headerText="$resource{i18njms.resourcesTable.colJndiName}" rendered="#{!isConnPage}" sort="Name" rowHeader="$boolean{true}">
-            <sun:hyperlink id="link" text="#{td.value.Name}" url="#{pageSession.editLink}?name=#{td.value.Name}" />
+            <sun:hyperlink id="link" text="#{td.value.name}" url="#{pageSession.editLink}?name=#{td.value.name}" />
         </sun:tableColumn>
 
         <sun:tableColumn id="colPoolName" headerText="$resource{i18njms.resourcesTable.colPoolName}" rendered="#{isConnPage}" sort="Name" rowHeader="$boolean{true}">
-            <sun:hyperlink id="link" text="#{td.value.Name}" url="#{pageSession.editLink}?name=#{td.value.Name}&jndiName=#{td.value.JndiName}" />
+            <sun:hyperlink id="link" text="#{td.value.name}" url="#{pageSession.editLink}?name=#{td.value.name}&jndiName=#{td.value.jndiName}" />
         </sun:tableColumn>
 
         <sun:tableColumn id="jndiName" headerText="$resource{i18njms.resourcesTable.colJndiName}" rendered="#{isConnPage}" sort="Name" rowHeader="$boolean{true}">
-            <sun:staticText id="jndi" text="#{td.value.JndiName}"  />
+            <sun:staticText id="jndi" text="#{td.value.jndiName}"  />
         </sun:tableColumn>
 
         <sun:tableColumn id="colEnabled1" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{isConnPage}" sort="Enabled" rowHeader="$boolean{true}">
             <staticText id="enabled" value="#{requestScope.connRes and requestScope.resourceRef}">
                 <!event type="beforeEncode">
                     if (#{pageSession['rest-api']}){
-                        urlencode(value="#{td.value.JndiName}" encoding="UTF-8" result="#{pageSession.encodedJndiName}");
+                        urlencode(value="#{td.value.jndiName}" encoding="UTF-8" result="#{pageSession.encodedJndiName}");
                         gf.getEntityAttrs(endpoint="#{pageSession.parentUrl}/connector-resource/#{pageSession.encodedJndiName}", valueMap="#{requestScope.connResMap}");
                         setAttribute(key="connRes" value="#{requestScope.connResMap['enabled']}");
                         gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{pageSession.encodedJndiName}", valueMap="#{requestScope.resourceRefMap}");
                         setAttribute(key="resourceRef" value="#{requestScope.resourceRefMap['enabled']}");
                     }
                     if (!#{pageSession['rest-api']}){
-                        getProxyAttribute(objectNameStr="amx:pp=/domain/resources,type=connector-resource,name=#{td.value.JndiName}", attrName="Enabled", value="#{requestScope.connRes}");
-                        getProxyAttribute(objectNameStr="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{td.value.JndiName}", attrName="Enabled", value="#{requestScope.resourceRef}");
+                        getProxyAttribute(objectNameStr="amx:pp=/domain/resources,type=connector-resource,name=#{td.value.jndiName}", attrName="Enabled", value="#{requestScope.connRes}");
+                        getProxyAttribute(objectNameStr="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{td.value.jndiName}", attrName="Enabled", value="#{requestScope.resourceRef}");
                     }
                 </event>
             </staticText>
         </sun:tableColumn>
 
         <sun:tableColumn id="colEnabled2" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{!isConnPage}" sort="Enabled" rowHeader="$boolean{true}">
-            <staticText id="enabled" value="#{td.value.Enabled and requestScope.resourceRef}">
+            <staticText id="enabled" value="#{td.value.enabled and requestScope.resourceRef}">
                 <!event type="beforeEncode">
                     if (#{pageSession['rest-api']}){
-                       urlencode(value="#{td.value.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+                       urlencode(value="#{td.value.name}" encoding="UTF-8" result="#{pageSession.encodedName}");
                        gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{pageSession.encodedName}", valueMap="#{requestScope.resourceRefMap}");
                        setAttribute(key="resourceRef" value="#{requestScope.resourceRefMap['enabled']}");
                     }
                     if (!#{pageSession['rest-api']}){
-                         getProxyAttribute(objectNameStr="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{td.value.Name}", attrName="Enabled", value="#{requestScope.resourceRef}");
+                         getProxyAttribute(objectNameStr="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{td.value.name}", attrName="Enabled", value="#{requestScope.resourceRef}");
                     }
                 </event>
             </staticText>
         </sun:tableColumn>
 
         <sun:tableColumn id="colConnDefName" headerText="$resource{i18njms.resourcesTable.colResType}" sort="ConnectionDefinitionName" rendered="#{isConnPage}" rowHeader="$boolean{true}">
-            <h:outputText id="connDefName" value="#{td.value.ConnectionDefinitionName}" />
+            <h:outputText id="connDefName" value="#{td.value.connectionDefinitionName}" />
         </sun:tableColumn>
 
         <sun:tableColumn id="colResType" headerText="$resource{i18njms.resourcesTable.colResType}" sort="ResType" rendered="#{!isConnPage}" rowHeader="$boolean{true}">
-            <h:outputText id="resType" value="#{td.value.ResType}"/>
+            <h:outputText id="resType" value="#{td.value.resType}"/>
         </sun:tableColumn>
 
         <sun:tableColumn id="colTypeDesc" headerText="$resource{i18njms.resourcesTable.colDesc}" sort="Description" rendered="#{!isConnPage}" rowHeader="$boolean{true}">
-            <h:outputText id="typeDesc" value="#{td.value.Description}" />
+            <h:outputText id="typeDesc" value="#{td.value.description}" />
         </sun:tableColumn>
 
     </sun:tableRowGroup>

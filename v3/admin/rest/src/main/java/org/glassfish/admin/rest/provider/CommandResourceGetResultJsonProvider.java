@@ -58,7 +58,7 @@ public class CommandResourceGetResultJsonProvider extends BaseProvider<CommandRe
     }
 
     @Override
-    protected String getContent(CommandResourceGetResult proxy) {
+    public String getContent(CommandResourceGetResult proxy) {
         JSONObject obj = new JSONObject();
 
         try {

@@ -63,7 +63,7 @@ public class GetResultXmlProvider extends BaseProvider<GetResult> {
     }
 
     @Override
-    protected String getContent(GetResult proxy) {
+    public String getContent(GetResult proxy) {
         String result;
         String indent = Constants.INDENT; 
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -67,7 +67,7 @@ public class OptionsResultJsonProvider extends BaseProvider<OptionsResult> {
 
     //get json representation for the given OptionsResult object
     @Override
-    protected String getContent(OptionsResult proxy) {
+    public String getContent(OptionsResult proxy) {
         JSONObject obj = new JSONObject();
         try {
             obj.put(proxy.getName(), getRespresenationForMethodMetaData(proxy));

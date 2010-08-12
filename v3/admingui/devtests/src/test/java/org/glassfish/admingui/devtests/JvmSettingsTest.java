@@ -37,9 +37,7 @@
 package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class JvmSettingsTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_JVM_GENERAL_SETTINGS = "JVM General Settings";

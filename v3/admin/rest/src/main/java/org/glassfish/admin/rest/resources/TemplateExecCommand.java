@@ -43,6 +43,7 @@ import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ParameterMap;
 
@@ -109,7 +110,7 @@ public class TemplateExecCommand {
     }
 
     protected ActionReportResult executeCommand(ParameterMap data) {
-        ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),
+        RestActionReporter actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),
                 ResourceUtil.getResultType(requestHeaders));
         ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
         ActionReportResult results = new ActionReportResult(commandName, actionReport, options());

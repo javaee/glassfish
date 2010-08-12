@@ -73,7 +73,7 @@ public class TreeNodeHtmlProvider extends BaseProvider<List<TreeNode>> {
     }
 
     @Override
-    protected String getContent(List<TreeNode> proxy) {
+    public String getContent(List<TreeNode> proxy) {
         String result = getHtmlHeader();
         result = result + "<h1>" + upperCaseFirstLetter((decode(getName(uriInfo.getPath(), '/')))) + "</h1>" + "<hr>";
 

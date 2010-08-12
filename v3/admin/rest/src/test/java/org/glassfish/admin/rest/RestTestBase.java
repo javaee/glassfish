@@ -62,7 +62,7 @@ import org.w3c.dom.NodeList;
 
 public class RestTestBase {
     protected static String baseUrl;
-    protected static final String RESPONSE_TYPE = MediaType.APPLICATION_XML;
+    protected static final String RESPONSE_TYPE = MediaType.APPLICATION_JSON;//APPLICATION_XML;
     protected static final String AUTH_USER_NAME = "dummyuser";
     protected static final String AUTH_PASSWORD = "dummypass";
 
@@ -158,30 +158,36 @@ public class RestTestBase {
     /**
      * This method will parse the provided XML document and return a map of the attributes and values on the root element
      *
-     * @param xml
+     * @param response
      * @return
      */
     protected Map<String, String> getEntityValues(ClientResponse response) {
         Map<String, String> map = new HashMap<String, String>();
 
         String xml = response.getEntity(String.class);
-        if ((xml != null) && !xml.isEmpty()) {
-            try {
-                Document doc = getDocument(xml);
-                Element root = doc.getDocumentElement();
-                NamedNodeMap nnm = root.getAttributes();
-
-                for (int i = 0; i < nnm.getLength(); i++) {
-                    Node attr = nnm.item(i);
-                    String name = attr.getNodeName();
-                    String value = attr.getNodeValue();
-                    map.put(name, value);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
+        Map responseMap = MarshallingUtils.buildMapFromDocument(xml);
+//        if ((xml != null) && !xml.isEmpty()) {
+//            try {
+//                Document doc = getDocument(xml);
+//                Element root = doc.getDocumentElement();
+//                NamedNodeMap nnm = root.getAttributes();
+//
+//                for (int i = 0; i < nnm.getLength(); i++) {
+//                    Node attr = nnm.item(i);
+//                    String name = attr.getNodeName();
+//                    String value = attr.getNodeValue();
+//                    map.put(name, value);
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//            }
+//        }
+        Object obj = responseMap.get("extraProperties");
+        if (obj != null) {
+            return (Map)((Map) obj).get("entity");
+        } else {
+            return map;
         }
-        return map;
     }
 
     protected List<String> getCommandResults(ClientResponse response) {

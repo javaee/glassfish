@@ -78,10 +78,10 @@
             />
         </sun:tableColumn>                    
         <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="name" rowHeader="$boolean{false}" id="col2">
-            <sun:textField columns="$int{30}" id="col1St" value="#{td.value.Name}" />
+            <sun:textField columns="$int{30}" id="col1St" value="#{td.value.name}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="value" rowHeader="$boolean{false}" id="col3">
-            <sun:textField columns="$int{55}" id="col1St" value="#{td.value.Value}" />
+            <sun:textField columns="$int{55}" id="col1St" value="#{td.value.value}" />
         </sun:tableColumn>
         "<br/>
     </sun:tableRowGroup>

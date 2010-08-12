@@ -38,18 +38,18 @@
 
 
         <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
-            <staticText id="col1Name" value="#{td.value.Name}" />
+            <staticText id="col1Name" value="#{td.value.name}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
-            <staticText  id="col2Value" value="#{td.value.Value}" />
+            <staticText  id="col2Value" value="#{td.value.value}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{web.monitoring.runTimesCol}" sort="Runtimes" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col4">
-            <staticText  id="col3Value" value="#{td.value.Runtimes}" />
+            <staticText  id="col3Value" value="#{td.value.runtimes}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{web.monitoring.ThresholdsCol}" sort="Thresholds" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col6">
-            <staticText  id="col6Value" value="#{td.value.Thresholds}" />
+            <staticText  id="col6Value" value="#{td.value.thresholds}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{web.monitoring.queueSizeCol}" sort="QueueSize" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col8">
-            <staticText  id="col8Value" value="#{td.value.QueueSize}" />
+            <staticText  id="col8Value" value="#{td.value.queueSize}" />
         </sun:tableColumn>
         

@@ -98,7 +98,7 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n.deployTable.colName}" sort="Name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.Name}" url="#{editLink}?appName=#{td.value.Name}" />
+        <sun:hyperlink id="link" text="#{td.value.name}" url="#{editLink}?appName=#{td.value.name}" />
     </sun:tableColumn>
 
     <sun:tableColumn  headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col2">

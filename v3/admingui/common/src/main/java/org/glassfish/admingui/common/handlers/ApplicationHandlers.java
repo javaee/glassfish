@@ -88,8 +88,9 @@ public class ApplicationHandlers {
         String filterValue = (String) handlerCtx.getInputValue("filterValue");
         Set filters = new TreeSet();
         filters.add("");
-        if (GuiUtil.isEmpty(filterValue))
+        if (GuiUtil.isEmpty(filterValue)) {
             filterValue = null;
+        }
         List result = new ArrayList();
 
         for(String oneAppName : appPropsMap.keySet()){
@@ -291,7 +292,7 @@ public class ApplicationHandlers {
         String endpoint = GuiUtil.getSessionValue("REST_URL")+"/configs/config/server-config/http-service/virtual-server";
         List vsList = new ArrayList();
         try{
-            vsList = RestApiHandlers.getChildrenNames(endpoint, "id");
+            vsList = new ArrayList(RestApiHandlers.getChildMap(endpoint).keySet());
             vsList.remove("__asadmin");
        }catch(Exception ex){
            //TODO: error handling.

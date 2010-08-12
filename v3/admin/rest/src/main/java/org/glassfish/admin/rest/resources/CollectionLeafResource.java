@@ -37,6 +37,8 @@ package org.glassfish.admin.rest.resources;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -54,8 +56,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.admin.rest.provider.MethodMetaData;
+import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.results.StringListResult;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -64,6 +68,10 @@ import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
 import org.jvnet.hk2.config.Dom;
+
+import static org.glassfish.admin.rest.Util.decode;
+import static org.glassfish.admin.rest.Util.getName;
+import static org.glassfish.admin.rest.Util.upperCaseFirstLetter;
 
 
 /**
@@ -82,18 +90,15 @@ public abstract class CollectionLeafResource {
     protected Dom parent;
     protected String tagName;
 
-    public final static LocalStringManagerImpl localStrings =
-        new LocalStringManagerImpl(CollectionLeafResource.class);
+    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CollectionLeafResource.class);
 
     /** Creates a new instance of xxxResource */
     public CollectionLeafResource() {
     }
 
-
     public void setEntity(List<String> p) {
         entity = p;
     }
-
 
     public List<String> getEntity() {
         return entity;
@@ -107,24 +112,20 @@ public abstract class CollectionLeafResource {
     }
 
     @GET
-    @Produces({"text/html;qs=2",
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public StringListResult get(@QueryParam("expandLevel")
+    @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+    public ActionReportResult get(@QueryParam("expandLevel")
             @DefaultValue("1") int expandLevel) {
         if (getEntity() == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        return new StringListResult(getName(), getEntity(), getPostCommand(),
-                getDeleteCommand(), options());
+        return buildActionReportResult();
     }
-
 
     @POST //create
     @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public Response create(HashMap<String, String> data) {
+    public ActionReportResult create(HashMap<String, String> data) {
         //hack-1 : support delete method for html
         //Currently, browsers do not support delete method. For html media,
         //delete operations can be supported through POST. Redirect html
@@ -136,55 +137,62 @@ public abstract class CollectionLeafResource {
         }
 
         return runCommand(getPostCommand(), data, "rest.resource.create.message",
-            "\"{0}\" created successfully.", "rest.resource.post.forbidden",
-                 "POST on \"{0}\" is forbidden.");
+            "\"{0}\" created successfully.", "rest.resource.post.forbidden","POST on \"{0}\" is forbidden.");
     }
-
 
     @DELETE //delete
     @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public Response delete(HashMap<String, String> data) {
+    public ActionReportResult delete(HashMap<String, String> data) {
         ResourceUtil.addQueryString(uriInfo.getQueryParameters(), data);
         return runCommand(getDeleteCommand(), data, "rest.resource.delete.message",
-            "\"{0}\" deleted successfully.", "rest.resource.delete.forbidden",
-                 "DELETE on \"{0}\" is forbidden.");
+            "\"{0}\" deleted successfully.", "rest.resource.delete.forbidden", "DELETE on \"{0}\" is forbidden.");
     }
-
 
     @OPTIONS
     @Produces({MediaType.APPLICATION_JSON, "text/html;qs=2", MediaType.APPLICATION_XML})
-    public OptionsResult options() {
-        OptionsResult optionsResult = new OptionsResult(Util.getResourceName(uriInfo));
-
-        try {
-            //GET meta data
-            optionsResult.putMethodMetaData("GET", new MethodMetaData());
-
-            //POST meta data
-            String postCommand = getPostCommand();
-            if (postCommand != null) {
-                MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(
-                    postCommand, RestService.getHabitat(), RestService.logger);
-                postMethodMetaData.setDescription("Create");
-                optionsResult.putMethodMetaData("POST", postMethodMetaData);
-            }
-
-            //DELETE meta data
-            String deleteCommand = getDeleteCommand();
-            if (deleteCommand != null) {
-                MethodMetaData deleteMethodMetaData = ResourceUtil.getMethodMetaData(
-                        deleteCommand, RestService.getHabitat(), RestService.logger);
-                deleteMethodMetaData.setDescription("Delete");
-                optionsResult.putMethodMetaData("DELETE", deleteMethodMetaData);
-            }
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-
-        return optionsResult;
+    public ActionReportResult options() {
+        return buildActionReportResult();
     }
 
+    protected ActionReportResult buildActionReportResult() {
+        RestActionReporter ar = new RestActionReporter();
+        final String typeKey = upperCaseFirstLetter((decode(getName())));
+        ar.setActionDescription(typeKey);
+        ar.getExtraProperties().put("leafList", getEntity());
+
+        OptionsResult optionsResult = new OptionsResult(Util.getResourceName(uriInfo));
+        Map<String, MethodMetaData> mmd = getMethodMetaData();
+        optionsResult.putMethodMetaData("GET", mmd.get("GET"));
+        optionsResult.putMethodMetaData("POST", mmd.get("POST"));
+
+        ResourceUtil.addMethodMetaData(ar, mmd);
+        return new ActionReportResult(ar, optionsResult);
+    }
+
+    protected Map<String, MethodMetaData> getMethodMetaData() {
+        Map<String, MethodMetaData> mmd = new TreeMap<String, MethodMetaData>();
+        //GET meta data
+        mmd.put("GET", new MethodMetaData());
+
+        //POST meta data
+        String postCommand = getPostCommand();
+        if (postCommand != null) {
+            MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(postCommand, RestService.getHabitat(), RestService.logger);
+            postMethodMetaData.setDescription("Create");
+            mmd.put("POST", postMethodMetaData);
+        }
+
+        //DELETE meta data
+        String deleteCommand = getDeleteCommand();
+        if (deleteCommand != null) {
+            MethodMetaData deleteMethodMetaData = ResourceUtil.getMethodMetaData(deleteCommand, RestService.getHabitat(), RestService.logger);
+            deleteMethodMetaData.setDescription("Delete");
+            mmd.put("DELETE", deleteMethodMetaData);
+        }
+
+        return mmd;
+    }
 
     private void addDefaultParameter(HashMap<String, String> data) {
         int index = uriInfo.getAbsolutePath().getPath().lastIndexOf('/');
@@ -192,31 +200,26 @@ public abstract class CollectionLeafResource {
         data.put("DEFAULT", defaultParameterValue);
     }
 
-
     protected String getPostCommand(){
         return null;
     }
-
 
     protected String getDeleteCommand() {
         return null;
     }
 
-
     protected String getName() {
         return Util.getResourceName(uriInfo);
     }
 
-
-    private Response runCommand(String commandName, HashMap<String, String> data,
+    private ActionReportResult runCommand(String commandName, HashMap<String, String> data,
         String successMsgKey, String successMsg, String operationForbiddenMsgKey,
             String operationForbiddenMsg ) {
         try {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
                         "Unable to parse the input entity. Please check the syntax.");
-                return ResourceUtil.getResponse(400, /*parsing error*/
-                        errorMessage, requestHeaders, uriInfo);
+                return ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo);
             }
 
             ResourceUtil.purgeEmptyEntries(data);
@@ -234,31 +237,24 @@ public abstract class CollectionLeafResource {
                     String successMessage =
                         localStrings.getLocalString(successMsgKey,
                             successMsg, new Object[] {attributeName});
-                    return ResourceUtil.getResponse(200, /*200 - success*/
-                         successMessage, requestHeaders, uriInfo);
+                    return ResourceUtil.getActionReportResult(200, successMessage, requestHeaders, uriInfo);
                 }
 
                 String errorMessage = getErrorMessage(data, actionReport);
-                return ResourceUtil.getResponse(400, /*400 - bad request*/
-                    errorMessage, requestHeaders, uriInfo);
+                return ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo);
             }
             String message =
                 localStrings.getLocalString(operationForbiddenMsgKey, 
                     operationForbiddenMsg, new Object[] {uriInfo.getAbsolutePath()});
-            return ResourceUtil.getResponse(403, /*403 - forbidden*/
-                 message, requestHeaders, uriInfo);
+            return ResourceUtil.getActionReportResult(403, message, requestHeaders, uriInfo);
 
         } catch (Exception e) {
-            throw new WebApplicationException(e,
-                Response.Status.INTERNAL_SERVER_ERROR);
+            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
-
     private String getErrorMessage(HashMap<String, String> data, ActionReport ar) {
-        String message;
-        //error info
-        message = ar.getMessage();
+        String message = ar.getMessage();
 
         /*if (data.isEmpty()) {
             try {

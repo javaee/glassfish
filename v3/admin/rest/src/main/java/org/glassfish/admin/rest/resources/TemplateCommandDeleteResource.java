@@ -79,6 +79,9 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand {
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML})
     public ActionReportResult processDelete(ParameterMap data) {
+        if (data == null) {
+            data = new ParameterMap();
+        }
         if (data.containsKey("error")) {
             String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
                     "Unable to parse the input entity. Please check the syntax.");
@@ -92,20 +95,20 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand {
         return executeCommand(data);
     }
 
-    //Handle POST request without any entity(input).
-    //Do not care what the Content-Type is.
-    @DELETE
-    @Produces({
-        "text/html;qs=2",
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML})
-    public ActionReportResult processDelete() {
-        try {
-            return processDelete(new ParameterMap());
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    //Handle POST request without any entity(input).
+//    //Do not care what the Content-Type is.
+//    @DELETE
+//    @Produces({
+//        "text/html;qs=2",
+//        MediaType.APPLICATION_JSON,
+//        MediaType.APPLICATION_XML})
+//    public ActionReportResult processDelete() {
+//        try {
+//            return processDelete(new ParameterMap());
+//        } catch (Exception e) {
+//            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 //hack-1 : support delete method for html
 //Currently, browsers do not support delete method. For html media,
 //delete operations can be supported through POST. Redirect html

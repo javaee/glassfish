@@ -41,6 +41,9 @@ import java.util.List;
 import java.util.Map;
 import com.sun.jersey.api.client.ClientResponse;
 import org.junit.Test;
+
+import javax.ws.rs.core.MediaType;
+
 import static org.junit.Assert.*;
 
 /**
@@ -71,7 +74,7 @@ public class PropertiesBagTest extends RestTestBase {
 
         try {
             ClientResponse response = client.resource(getAddress(URL_DOMAIN_PROPERTIES))
-                .header("Content-Type", RESPONSE_TYPE)
+                .header("Content-Type", MediaType.APPLICATION_XML)
                 .accept(RESPONSE_TYPE)
                 .post(ClientResponse.class, MarshallingUtils.getXmlForProperties(domainProps));
             checkStatusForSuccess(response);
@@ -107,7 +110,7 @@ public class PropertiesBagTest extends RestTestBase {
             put("value", "domain1");
         }};
         ClientResponse response = client.resource(getAddress(URL_DOMAIN_PROPERTIES))
-                .header("Content-Type", RESPONSE_TYPE)
+                .header("Content-Type", MediaType.APPLICATION_XML)
                 .accept(RESPONSE_TYPE)
                 .put(ClientResponse.class, MarshallingUtils.getXmlForProperties(domainProps));
         checkStatusForSuccess(response);

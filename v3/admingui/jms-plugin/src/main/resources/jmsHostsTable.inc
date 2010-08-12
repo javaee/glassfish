@@ -79,15 +79,15 @@
         </sun:tableColumn>
 
         <sun:tableColumn headerText="$resource{i18n.common.PropertyName}"  rowHeader="$boolean{true}" id="colName">
-            <sun:hyperlink id="link" text="#{td.value.Name}" url="#{editLink}?name=#{td.value.Name}&configName=#{configName}" />
+            <sun:hyperlink id="link" text="#{td.value.name}" url="#{editLink}?name=#{td.value.name}&configName=#{configName}" />
         </sun:tableColumn>
 
         <sun:tableColumn headerText="$resource{i18njms.resourcesTable.Host}" rowHeader="$boolean{true}" id="colHost">
-            <sun:staticText escape="true" id="hostCol" rendered="#{hasHost}" value="#{td.value.Host}" />
+            <sun:staticText escape="true" id="hostCol" rendered="#{hasHost}" value="#{td.value.host}" />
         </sun:tableColumn>
 
         <sun:tableColumn headerText="$resource{i18njms.edJmsHost.colPort}" rowHeader="$boolean{true}" id="colPort">
-            <sun:staticText escape="true" id="portCol" rendered="#{hasPort}" value="#{td.value.Port}" />
+            <sun:staticText escape="true" id="portCol" rendered="#{hasPort}" value="#{td.value.port}" />
         </sun:tableColumn>
     </sun:tableRowGroup>
 </sun:table>

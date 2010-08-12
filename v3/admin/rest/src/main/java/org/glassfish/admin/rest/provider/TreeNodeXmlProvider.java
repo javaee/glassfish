@@ -73,7 +73,7 @@ public class TreeNodeXmlProvider extends BaseProvider<List<TreeNode>> {
     }
 
     @Override
-    protected String getContent(List<TreeNode> proxy) {
+    public String getContent(List<TreeNode> proxy) {
         String result;
          result ="<" + KEY_ENTITY;
 

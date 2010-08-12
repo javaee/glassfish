@@ -38,6 +38,10 @@ package org.glassfish.admin.rest;
 
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
+import org.glassfish.admin.rest.provider.ProviderUtil;
+import org.glassfish.admin.rest.results.ActionReportResult;
+import org.glassfish.admin.rest.utils.ConfigModelComparator;
+import org.glassfish.admin.rest.utils.DomConfigurator;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -53,6 +57,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import static org.glassfish.admin.rest.Util.*;
+import static org.glassfish.admin.rest.provider.ProviderUtil.getElementLink;
 
 
 /**
@@ -62,6 +67,9 @@ import static org.glassfish.admin.rest.Util.*;
  * @author Rajeshwar Patil
  */
 public class ResourceUtil {
+    private final static String QUERY_PARAMETERS = "queryParameters";
+    private final static String MESSAGE_PARAMETERS = "messageParameters";
+
     //TODO this is copied from org.jvnet.hk2.config.Dom. If we are not able to encapsulate the conversion in Dom, need to make sure that the method convertName is refactored into smaller methods such that trimming of prefixes stops. We will need a promotion of HK2 for this.
     static final Pattern TOKENIZER;
 
@@ -111,7 +119,6 @@ public class ResourceUtil {
         }
     }
 
-
     /**
      * Returns the name of the command associated with
      * this resource,if any, for the given operation.
@@ -148,7 +155,7 @@ public class ResourceUtil {
      * @param habitat     the habitat
      * @return ActionReport object with command execute status details.
      */
-    public static ActionReport runCommand(String commandName,
+    public static RestActionReporter runCommand(String commandName,
                                           HashMap<String, String> parameters, Habitat habitat, String resultType) {
         ParameterMap p = new ParameterMap();
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
@@ -158,9 +165,9 @@ public class ResourceUtil {
         return runCommand(commandName, p, habitat, resultType);
     }
 
-    public static ActionReport runCommand(String commandName, ParameterMap parameters, Habitat habitat, String resultType) {
+    public static RestActionReporter runCommand(String commandName, ParameterMap parameters, Habitat habitat, String resultType) {
         CommandRunner cr = habitat.getComponent(CommandRunner.class);
-        ActionReport ar = new RestActionReporter();
+        RestActionReporter ar = new RestActionReporter();
 
         cr.getCommandInvocation(commandName, ar).parameters(parameters).execute();
         return ar;
@@ -529,6 +536,26 @@ public class ResourceUtil {
         return Response.status(status).entity(message).build();
     }
 
+    public static ActionReportResult getActionReportResult(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
+        if (isBrowser(requestHeaders)) {
+            message = getHtml(message, uriInfo, false);
+        }
+        RestActionReporter ar = new RestActionReporter();
+        ActionReportResult result = new ActionReportResult(ar);
+        if ((status >= 200) && (status <= 299)) {
+            ar.setSuccess();
+        } else {
+            ar.setFailure();
+            result.setErrorMessage(message);
+            result.setIsError(true);
+        }
+
+        ar.setMessage(message);
+        result.setStatusCode(status);
+
+        return result;
+    }
+
     /**
      * special case for the delete operation: we need to give back the URI of the parent
      * since the resource we are on is deleted
@@ -539,6 +566,7 @@ public class ResourceUtil {
      * @param uriInfo
      * @return
      */
+    // FIXME: This doesn't do what the javadoc says it should
     public static Response getDeleteResponse(int status, String message,
                                              HttpHeaders requestHeaders, UriInfo uriInfo) {
         if (isBrowser(requestHeaders)) {
@@ -740,12 +768,11 @@ public class ResourceUtil {
         }
         return convertedData;
     }
-    /* we try to prefer html by default for all browsers (safari, chrome, firefox.
+
+    /* we try to prefer html by default for all browsers (safari, chrome, firefox).
      * Same if the request is asking for "*"
      * among all the possible AcceptableMediaTypes
-     * 
      */
-
     public static String getResultType(HttpHeaders requestHeaders) {
         String result = "html";
         String firstOne = null;
@@ -768,4 +795,125 @@ public class ResourceUtil {
             return result;
         }
     }
+
+    public static Map buildMethodMetadataMap(MethodMetaData mmd, boolean isQuery) { // yuck
+        Map<String, Map> map = new TreeMap<String, Map>();
+        Set<String> params = isQuery ? mmd.queryParams() : mmd.parameters();
+        Iterator<String> iterator = params.iterator();
+        String param;
+        while (iterator.hasNext()) {
+            param = iterator.next();
+            ParameterMetaData parameterMetaData = isQuery ? mmd.getQueryParamMetaData(param) : mmd.getParameterMetaData(param);
+            map.put(param, processAttributes(parameterMetaData.attributes(), parameterMetaData));
+        }
+
+        return map;
+    }
+
+    public static Map<String, String> processAttributes(Set<String> attributes, ParameterMetaData parameterMetaData) {
+        Map <String, String> pmdm = new HashMap<String, String>();
+
+        Iterator<String> attriter = attributes.iterator();
+        String attributeName;
+        while (attriter.hasNext()) {
+           attributeName = attriter.next();
+           String attributeValue = parameterMetaData.getAttributeValue(attributeName);
+           pmdm.put(attributeName, attributeValue);
+        }
+
+        return pmdm;
+    }
+
+    public static Map<String, String> getResourceLinks(Dom dom, UriInfo uriInfo) {
+        Map<String, String> links = new TreeMap<String, String>();
+        Set<String> elementNames = dom.model.getElementNames();
+
+        //expose ../applications/application resource to enable deployment
+        //when no applications deployed on server
+        if (elementNames.isEmpty()) {
+            if("applications".equals(Util.getName(uriInfo.getPath(), '/'))) {
+                elementNames.add("application");
+            }
+        }
+        for (String elementName : elementNames) { //for each element
+            if (elementName.equals("*")) {
+                ConfigModel.Node node = (ConfigModel.Node) dom.model.getElement(elementName);
+                ConfigModel childModel = node.getModel();
+                try {
+                    Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
+                    List<ConfigModel> lcm = dom.document.getAllModelsImplementing(subType);
+                    Collections.sort(lcm, new ConfigModelComparator());
+                    if (lcm != null) {
+                        for (ConfigModel cmodel : lcm) {
+                            links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()));
+                        }
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                links.put(elementName, ProviderUtil.getElementLink(uriInfo, elementName));
+            }
+        }
+
+        return links;
+    }
+
+    public static Map<String, String> getResourceLinks(List<Dom> proxyList, UriInfo uriInfo) {
+        Map<String, String> links = new TreeMap<String, String>();
+        Collections.sort(proxyList, new DomConfigurator());
+        for (Dom proxy : proxyList) { //for each element
+            try {
+                links.put(proxy.getKey(), getElementLink(uriInfo, proxy.getKey()));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return links;
+    }
+
+    public static List<Map<String, String>> getCommandLinks(String[][] commandResourcesPaths) {
+        List<Map<String, String>> commands = new ArrayList<Map<String, String>>();
+        for (String[] array : commandResourcesPaths) {
+            Map<String, String> command = new HashMap<String, String>();
+            command.put("command", array[0]);
+            command.put("method", array[1]);
+            command.put("path", array[2]);
+            commands.add(command);
+        }
+
+        return commands;
+    }
+
+    public static void addMethodMetaData(ActionReport ar, Map<String, MethodMetaData> mmd) {
+        List<Map> methodMetaData = new ArrayList<Map>();
+
+        methodMetaData.add(new HashMap() {{ put("name", "GET"); }});
+
+        MethodMetaData postMetaData = mmd.get("POST");
+        Map<String, Object> postMetaDataMap = new HashMap<String, Object>();
+        if (postMetaData != null) {
+            postMetaDataMap.put("name", "POST");
+            if (postMetaData.sizeQueryParamMetaData() > 0) {
+                postMetaDataMap.put(QUERY_PARAMETERS, buildMethodMetadataMap(postMetaData, true));
+            }
+            if (postMetaData.sizeParameterMetaData() > 0) {
+                postMetaDataMap.put(MESSAGE_PARAMETERS, buildMethodMetadataMap(postMetaData, false));
+            }
+            methodMetaData.add(postMetaDataMap);
+        }
+
+        MethodMetaData deleteMetaData = mmd.get("DELETE");
+        if (deleteMetaData != null) {
+            Map<String, Object> deleteMetaDataMap = new HashMap<String, Object>();
+
+            deleteMetaDataMap.put("name", "DELETE");
+            deleteMetaDataMap.put(MESSAGE_PARAMETERS,  buildMethodMetadataMap(deleteMetaData, false));
+            methodMetaData.add(deleteMetaDataMap);
+        }
+
+        ar.getExtraProperties().put("methods", methodMetaData);
+    }
+
 }

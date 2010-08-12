@@ -1,8 +1,7 @@
-
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,13 +54,11 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import java.util.Set;
-import java.util.TreeSet;
 import javax.management.Attribute;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -74,13 +71,9 @@ import org.glassfish.deployment.client.DFDeploymentProperties;
 
 import javax.management.openmbean.TabularData;
 import org.glassfish.admin.amx.core.Util;
-import org.glassfish.admin.amx.intf.config.ApplicationRef;
 import org.glassfish.admin.amx.intf.config.Property;
-import org.glassfish.admin.amx.intf.config.VirtualServer;
 import org.glassfish.admin.amx.monitoring.ServerMon;
 import org.glassfish.admingui.common.util.DeployUtil;
-import org.glassfish.admingui.common.util.TargetUtil;
-import org.glassfish.admingui.common.handlers.RestApiHandlers;
 import org.glassfish.admingui.common.util.RestResponse;
 
 
@@ -513,20 +506,20 @@ public class WebAppHandlers {
    @Handler(id = "checkVsOfAppRef")
    public static void checkVsOfAppRef(HandlerContext handlerCtx) throws Exception{
        String configUrl = GuiUtil.getSessionValue("REST_URL") + "/configs/config/";
-       List configs = RestApiHandlers.getChildrenNames(configUrl,"Name");
+       List configs = RestApiHandlers.getChildList(configUrl);
        ArrayList vsList = new ArrayList();
        for (Object cfgName : configs) {
            String vsUrl = configUrl + cfgName + "/http-service/virtual-server";
-           List vsNames = RestApiHandlers.getChildrenNames(vsUrl,"Name");
+           List vsNames = RestApiHandlers.getChildList(vsUrl);
            for (Object str : vsNames) {
                if (!vsList.contains(str))
                    vsList.add(str);
            }
        }
-       List servers = RestApiHandlers.getChildrenNames(GuiUtil.getSessionValue("REST_URL") + "/servers/server","Name");
+       List servers = RestApiHandlers.getChildList(GuiUtil.getSessionValue("REST_URL") + "/servers/server");
        for (Object svrName : servers) {
            String serverEndpoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + svrName;
-           List appRefs = RestApiHandlers.getChildrenNames(serverEndpoint + "/application-ref","Name");
+           List appRefs = RestApiHandlers.getChildList(serverEndpoint + "/application-ref");
            for (Object appRef : appRefs) {
                String apprefEndpoint = serverEndpoint + "/application-ref/" + appRef;
                Map apprefAttrs = RestApiHandlers.getAttributesMap(apprefEndpoint);

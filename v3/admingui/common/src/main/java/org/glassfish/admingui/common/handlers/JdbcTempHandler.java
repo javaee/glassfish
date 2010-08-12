@@ -1,8 +1,7 @@
-
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,17 +57,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-import org.glassfish.admin.amx.intf.config.ConnectorConnectionPool;
-import org.glassfish.admin.amx.intf.config.ConnectorResource;
-import org.glassfish.admin.amx.intf.config.Resources;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.V3AMX;
 
 public class JdbcTempHandler {
 
@@ -80,12 +73,12 @@ public class JdbcTempHandler {
      *	<p> This handler gets the default values and resource type and puts them in session
      */
     @Handler(id = "setJDBCPoolWizard",
-        input = {
-            @HandlerInput(name = "fromStep2", type = Boolean.class),
-            @HandlerInput(name = "attrMap", type = Map.class)},
-        output = {
-            @HandlerOutput(name = "ResTypeList", type = java.util.List.class),
-            @HandlerOutput(name = "DBVendorList", type = java.util.List.class)
+    input = {
+        @HandlerInput(name = "fromStep2", type = Boolean.class),
+        @HandlerInput(name = "attrMap", type = Map.class)},
+    output = {
+        @HandlerOutput(name = "ResTypeList", type = java.util.List.class),
+        @HandlerOutput(name = "DBVendorList", type = java.util.List.class)
     })
     public static void setJDBCPoolWizard(HandlerContext handlerCtx) {
         //We need to use 2 maps for JDBC Connection Pool creation because there are extra info we need to keep track in
@@ -94,13 +87,13 @@ public class JdbcTempHandler {
         Boolean fromStep2 = (Boolean) handlerCtx.getInputValue("fromStep2");
         if ((fromStep2 != null) && fromStep2) {
             //wizardPool is already in session map
-            } else {
+        } else {
             Map attrMap = (Map) handlerCtx.getInputValue("attrMap");
             Map sessionMap = handlerCtx.getFacesContext().getExternalContext().getSessionMap();
             sessionMap.put("wizardMap", attrMap);
             sessionMap.put("wizardPoolExtra", new HashMap());
             //sessionMap.put("wizardPoolProperties", new HashMap());
-            }
+        }
         handlerCtx.setOutputValue("ResTypeList", resTypeList);
         handlerCtx.setOutputValue("DBVendorList", dbVendorList);
     }
@@ -117,7 +110,7 @@ public class JdbcTempHandler {
         String dbVendorBox = (String) extra.get("DBVendorBox");
         String dbVendorField = (String) extra.get("DBVendorField");
 
-        String dbVendor = (GuiUtil.isEmpty(dbVendorField))? dbVendorBox : dbVendorField;
+        String dbVendor = (GuiUtil.isEmpty(dbVendorField)) ? dbVendorBox : dbVendorField;
 
         extra.put("DBVendor", dbVendor);
         String previousResType = (String) extra.get("PreviousResType");
@@ -193,7 +186,7 @@ public class JdbcTempHandler {
         }
     }
 
-     /**
+    /**
      *	<p> updates the wizard map properties on step 2
      */
     @Handler(id = "gf.updateJdbcConnectionPoolPropertiesTable")
@@ -251,38 +244,7 @@ public class JdbcTempHandler {
 
     }
 
-     @Handler(id = "getJMSFactoriesTable",
-        output = {
-            @HandlerOutput(name = "result", type = java.util.List.class)})
-    public static void getJMSFactoriesTable(HandlerContext handlerCtx) {
-        final Resources resources = V3AMX.getInstance().getResources();
-
-        Map<String, ConnectorResource> conResources = resources.getConnectorResource();
-        List result = new ArrayList();
-
-        for(ConnectorResource cr : conResources.values()){
-            String poolName = cr.getPoolName();
-            if (GuiUtil.isEmpty(poolName)){
-                continue;   //this is a required attribute, shouldn't happen.
-            }
-            ConnectorConnectionPool ccPool = resources.getConnectorConnectionPool().get(poolName);
-            if (ccPool == null){
-                continue; //any resource should have a pool, so this shouldn't happen.
-            }
-            if (ccPool.getResourceAdapterName().equals("jmsra")){
-                Map oneRow = new HashMap();
-                oneRow.put("selected", false);
-                oneRow.put("Name", poolName);
-                oneRow.put("JndiName", cr.getName());
-                oneRow.put("ConnectionDefinitionName", ccPool.getConnectionDefinitionName());
-                oneRow.put("Description", GuiUtil.isEmpty(ccPool.getDescription())? "" : ccPool.getDescription());
-                result.add(oneRow);
-            }
-        }
-        handlerCtx.setOutputValue("result", result);
-     }
-
-     private static List getJdbcDriverClassNames(String dbVendor, String resType, boolean introspect) {
+    private static List getJdbcDriverClassNames(String dbVendor, String resType, boolean introspect) {
         String endpoint = (String) GuiUtil.getSessionValue("REST_URL");
         endpoint = endpoint + "/resources/get-jdbc-driver-class-names.json";
         Map<String, Object> attrs = new HashMap<String, Object>();
@@ -303,7 +265,7 @@ public class JdbcTempHandler {
     private static List getDatabaseVendorNames() {
         String endpoint = (String) GuiUtil.getSessionValue("REST_URL");
         endpoint = endpoint + "/resources/get-database-vendor-names.json";
-        List<String> vendorList = new ArrayList<String> ();
+        List<String> vendorList = new ArrayList<String>();
         try {
             Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null);
             vendorList = RestUtilHandlers.getListFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("children"), "message");
@@ -330,12 +292,10 @@ public class JdbcTempHandler {
         }
         return connDefProps;
     }
-
     public static Logger guiLogger = GuiUtil.getLogger();
     public static final String REASON_FAILED_KEY = "ReasonFailedKey";
     //public static final  String SET_KEY = "SetKey";
     //public static final  String BOOLEAN_KEY = "BooleanKey";
-
     static private final String DATA_SOURCE = "javax.sql.DataSource";
     static private final String XADATA_SOURCE = "javax.sql.XADataSource";
     static private final String CCDATA_SOURCE = "javax.sql.ConnectionPoolDataSource";
@@ -355,7 +315,7 @@ public class JdbcTempHandler {
     static private List dbVendorList = new ArrayList();
 
     static {
-        dbVendorList =  getDatabaseVendorNames();
+        dbVendorList = getDatabaseVendorNames();
         dbVendorList.add(0, "");
         resTypeList.add("");
         resTypeList.add(DATA_SOURCE);

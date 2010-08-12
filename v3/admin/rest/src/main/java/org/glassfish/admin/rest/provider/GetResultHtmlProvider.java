@@ -35,20 +35,15 @@
  */
 package org.glassfish.admin.rest.provider;
 
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
 import org.glassfish.admin.rest.results.GetResult;
 import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.Dom;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import java.util.Map;
-import java.util.Set;
 
 import static org.glassfish.admin.rest.Util.*;
-import static org.glassfish.admin.rest.provider.ProviderUtil.getElementLink;
 
 /**
  *
@@ -65,12 +60,12 @@ public class GetResultHtmlProvider extends BaseProvider<GetResult> {
     }
 
     @Override
-    protected String getContent(GetResult proxy) {
+    public String getContent(GetResult proxy) {
         String result = ProviderUtil.getHtmlHeader();
         final String typeKey = upperCaseFirstLetter((decode(getName(uriInfo.getAbsolutePath().toString(), '/'))));
         result = result + "<h1>" + typeKey + "</h1>";
 
-        String attributes = ProviderUtil.getHtmlRespresentationForAttributes((ConfigBean)proxy.getDom(), uriInfo);
+        String attributes = ProviderUtil.getHtmlRepresentationForAttributes((ConfigBean)proxy.getDom(), uriInfo);
         result = ProviderUtil.getHtmlForComponent(attributes, "Attributes", result);
 
         String deleteCommand = ProviderUtil.getHtmlRespresentationsForCommand(

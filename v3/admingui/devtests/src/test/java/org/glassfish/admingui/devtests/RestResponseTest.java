@@ -57,7 +57,7 @@ public class RestResponseTest {
         RestResponse response = RestApiHandlers.post(URL_GENERATE_JVM_REPORT, new HashMap<String, Object>(){{
             put ("type", "summary");
         }});
-        assertTrue(response.getResponseBody().contains("GlassFish REST Interface"));
+        assertTrue(response.getResponseBody().contains("Operating System Information"));
     }
 
     @Test

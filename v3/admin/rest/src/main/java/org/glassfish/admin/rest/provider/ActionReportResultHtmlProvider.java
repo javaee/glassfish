@@ -37,12 +37,18 @@ package org.glassfish.admin.rest.provider;
 
 import com.sun.enterprise.v3.common.ActionReporter;
 import org.glassfish.admin.rest.results.ActionReportResult;
+import org.glassfish.admin.rest.results.GetResult;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
+import org.jvnet.hk2.config.ConfigBean;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import java.util.*;
+
+import static org.glassfish.admin.rest.provider.ProviderUtil.getHtmlForComponent;
+import static org.glassfish.admin.rest.provider.ProviderUtil.getHtmlRespresentationsForCommand;
 
 /**
  * @author Ludovic Champenois
@@ -56,7 +62,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
     @Override
     public String getContent(ActionReportResult proxy) {
-        ActionReporter ar = (ActionReporter) proxy.getActionReport();
+        RestActionReporter ar = (RestActionReporter) proxy.getActionReport();
         StringBuilder result = new StringBuilder(ProviderUtil.getHtmlHeader());
 
         result.append("<h1>")
@@ -67,9 +73,74 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
             result.append("<h2>Error:</h2>")
                     .append(proxy.getErrorMessage());
         } else {
+            final ConfigBean entity = proxy.getEntity();
+            final Map<String, String> childResources = (Map<String, String>) ar.getExtraProperties().get("childResources");
+            final List<Map<String, String>> commands = (List<Map<String, String>>) ar.getExtraProperties().get("commands");
+            final MethodMetaData postMetaData = proxy.getMetaData().getMethodMetaData("POST");
+
+            if ((postMetaData != null) && (entity == null)) {
+                String postCommand = getHtmlRespresentationsForCommand(postMetaData, "POST", "Create", uriInfo);
+                result.append(getHtmlForComponent(postCommand, "Create " + ar.getActionDescription(), ""));
+            }
+
+            if (entity != null) {
+                String attributes = ProviderUtil.getHtmlRepresentationForAttributes(proxy.getEntity(), uriInfo);
+                result.append(ProviderUtil.getHtmlForComponent(attributes, "Attributes", ""));
+
+                String deleteCommand = ProviderUtil.getHtmlRespresentationsForCommand(proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", "Delete", uriInfo);
+                result.append(ProviderUtil.getHtmlForComponent(deleteCommand, "Delete " + entity.model.getTagName(), ""));
+            }
+
+            if (childResources != null) {
+                String childResourceLinks = getResourcesLinks(childResources);
+                result.append(ProviderUtil.getHtmlForComponent(childResourceLinks, "Child Resources", ""));
+            }
+
+            if (commands != null) {
+                String commandLinks = getCommandLinks(commands);
+                result.append(ProviderUtil.getHtmlForComponent(commandLinks, "Commands", ""));
+            }
+
+            result.append("<h2>Raw Output</h2>");
             result.append(processReport(ar));
         }
         return result.append("</div></body></html>").toString();
+    }
+
+    protected String getResourcesLinks(Map<String, String> childResources) {
+        StringBuilder links = new StringBuilder("<div>");
+        for (Map.Entry<String, String> link : childResources.entrySet()) {
+            links.append("<a href=\"")
+                .append(link.getValue())
+                .append("\">")
+                .append(link.getKey())
+                .append("</a><br>");
+
+        }
+
+        return links.append("</div><br/>").toString();
+    }
+
+    protected String getCommandLinks(List<Map<String, String>> commands) {
+        StringBuilder result = new StringBuilder("<div>");
+
+        for (Map<String, String> commandList : commands) {
+            String command = commandList.get("command");
+            String path = commandList.get("path");
+            if (path.startsWith("_")) {//hidden cli command name
+                result.append("<!--");//hide the link in a comment
+            }
+            result.append("<a href=\"")
+                    .append(ProviderUtil.getElementLink(uriInfo, command))
+                    .append("\">")
+                    .append(command)
+                    .append("</a><br>");
+            if (path.startsWith("_")) {//hidden cli
+                result.append("-->");
+            }
+        }
+
+        return result.append("</div><br>").toString();
     }
 
     protected String processReport(ActionReporter ar) {
@@ -154,7 +225,9 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
     protected String getHtmlRepresentation(Object object) {
         String result = null;
-        if (object instanceof Collection) {
+        if (object == null) {
+            return "";
+        } else if (object instanceof Collection) {
             result = processCollection((Collection) object);
         } else if (object instanceof Map) {
             result = processMap((Map) object);
@@ -174,7 +247,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                     .append("</li>");
         }
 
-        return result.append("</li>").toString();
+        return result.append("</li></ul>").toString();
     }
 
     protected String processMap(Map map) {

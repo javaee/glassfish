@@ -58,7 +58,7 @@ public class StringListResultJsonProvider extends BaseProvider<StringListResult>
     }
 
     @Override
-    protected String getContent(StringListResult proxy) {
+    public String getContent(StringListResult proxy) {
         JSONObject obj = new JSONObject();
         try {
             if (proxy.isError()) {

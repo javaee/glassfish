@@ -70,7 +70,7 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
     }
 
     @Override
-    protected String getContent(GetResult proxy) {
+    public String getContent(GetResult proxy) {
         JSONObject obj = new JSONObject();
         try {
             obj.put(KEY_ENTITY, getAttributes(proxy.getDom()));

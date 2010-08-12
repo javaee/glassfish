@@ -85,9 +85,11 @@ public class RestUtilHandlers {
         try{
             Map responseMap = RestApiHandlers.restRequest( endpoint , attrs, method , handlerCtx);
             ArrayList  messages = (ArrayList) responseMap.get("messages");
-            Map message = (Map) messages.get(index);
-            List<Map<String, String>> props = (List<Map<String, String>>) message.get("properties");
-            processProps(props, handlerCtx);
+            if (messages != null) {
+                Map message = (Map) messages.get(index);
+                List<Map<String, String>> props = (List<Map<String, String>>) message.get("properties");
+                processProps(props, handlerCtx);
+            }
         }catch (Exception ex){
             GuiUtil.getLogger().severe("Error in callRestAndExtratResponse ; \nendpoint = " + endpoint + "attrs=" + attrs + "method="+method);
             //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.

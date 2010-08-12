@@ -238,7 +238,7 @@ public class ProviderUtil {
         return stringMap;
     }
 
-    static protected String getHtmlRespresentationForAttributes(ConfigBean proxy, UriInfo uriInfo) {
+    static protected String getHtmlRepresentationForAttributes(ConfigBean proxy, UriInfo uriInfo) {
         StringBuilder result = new StringBuilder();
 
         Set<String> attributes = proxy.model.getAttributeNames();
@@ -329,9 +329,8 @@ public class ProviderUtil {
 //        return result;
 //    }
 
-    static protected String getHtmlRespresentationsForCommand(
-            MethodMetaData methodMetaData, String commandMethod,
-                String commandDisplayName, UriInfo uriInfo) {
+    static protected String getHtmlRespresentationsForCommand(MethodMetaData methodMetaData, String commandMethod,
+                                                              String commandDisplayName, UriInfo uriInfo) {
         String result ="";
         if (methodMetaData != null) {
             Set<String> parameters = methodMetaData.parameters();
@@ -378,8 +377,7 @@ public class ProviderUtil {
         return result;
     }
 
-    static protected String getHtmlForComponent(String component, String heading,
-            String result) {
+    static protected String getHtmlForComponent(String component, String heading, String result) {
         if ((component != null) && (component.length() > 0)) {
             result = result + "<h2>" + heading + "</h2>";
             result = result + component;

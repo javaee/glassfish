@@ -100,12 +100,12 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colProvId}" sort="Name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="authlayer" text="#{td.value.Name}"
-            url="#{editLink}?name=#{td.value.Name}&msgSecurityName=#{pageSession.Name}&configName=#{configName}" />
+        <sun:hyperlink id="authlayer" text="#{td.value.name}"
+            url="#{editLink}?name=#{td.value.name}&msgSecurityName=#{pageSession.Name}&configName=#{configName}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colProvType}" sort="ProviderType" rowHeader="$boolean{true}" id="col2">
-        <sun:staticText escape="true" id="provType" value="#{td.value.ProviderType}" />
+        <sun:staticText escape="true" id="provType" value="#{td.value.providerType}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.defaultProviderCol}" sort="default" rowHeader="$boolean{true}" id="col3">
@@ -113,7 +113,7 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colClassName}" sort="ClassName" rowHeader="$boolean{true}" id="col4">
-        <sun:staticText escape="true" id="defaultclientprov" value="#{td.value.ClassName}" />
+        <sun:staticText escape="true" id="defaultclientprov" value="#{td.value.className}" />
     </sun:tableColumn>
 
   </sun:tableRowGroup>

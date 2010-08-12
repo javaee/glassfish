@@ -60,6 +60,7 @@ import org.glassfish.admin.rest.Util;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.GetResultList;
 import org.glassfish.admin.rest.results.OptionsResult;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -106,7 +107,7 @@ public class PropertiesBagResource {
         }
 
         String resultType = ResourceUtil.getResultType(requestHeaders);
-        ActionReport ar = RestService.getHabitat().getComponent(ActionReport.class, resultType);
+        RestActionReporter ar = new RestActionReporter();
         ar.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         List properties = new ArrayList();
 

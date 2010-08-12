@@ -54,7 +54,7 @@
         getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
         getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
         foreach (var="row" list="${selectedRows}") {
-            setPageSessionAttribute(key="protocolName" value="#{row['Name']}");
+            setPageSessionAttribute(key="protocolName" value="#{row['name']}");
             setPageSessionAttribute(key="protocolUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol/#{pageSession.protocolName}");
             setPageSessionAttribute(key="protocolHttpUrl", value="#{pageSession.protocolUrl}/http");
             setPageSessionAttribute(key="networkListenerUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners/network-listener");
@@ -143,8 +143,8 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.nameCol}" sort="Name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.Name}"
-            url="#{pageSession.editLink}&name=#{td.value.Name}&cancelTo=protocols.jsf" />
+        <sun:hyperlink id="link" text="#{td.value.name}"
+            url="#{pageSession.editLink}&name=#{td.value.name}&cancelTo=protocols.jsf" />
     </sun:tableColumn>
 
 
@@ -156,7 +156,7 @@
 
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.securityEnabledCol}"  rowHeader="$boolean{true}" id="ss">
-        <staticText id="ss" value="#{td.value.SecurityEnabled}" />
+        <staticText id="ss" value="#{td.value.securityEnabled}" />
     </sun:tableColumn>
 
   </sun:tableRowGroup>

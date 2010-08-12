@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -57,8 +57,9 @@
             //REST related
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
             setPageSessionAttribute(key="rest-api" value="true");
-            // REST - TO DO
-            getJMSFactoriesTable(result="#{requestScope.listOfRows}");
+            setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/connector-connection-pool");
+            getJMSFactoriesTable(endpoint="#{pageSession.selfUrl}", result="#{requestScope.listOfRows}");
+
             setPageSessionAttribute(key="tableTitle" value="$resource{i18njms.resourcesTable.connectionFactories}");
             setPageSessionAttribute(key="editLink" value="/jms/jmsConnectionEdit.jsf");
             setPageSessionAttribute(key="createLink" value="/jms/jmsConnectionNew.jsf");

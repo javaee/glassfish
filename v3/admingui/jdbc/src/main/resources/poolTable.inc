@@ -59,21 +59,21 @@
     </sun:tableColumn>    
 
     <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colPoolName}" sort="Name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.Name}" 
-            url="#{pageSession.editLink}?name=#{td.value.Name}" />
+        <sun:hyperlink id="link" text="#{td.value.name}" 
+            url="#{pageSession.editLink}?name=#{td.value.name}" />
     </sun:tableColumn>
 
 
     <sun:tableColumn headerText="#{resHeader}" sort="ResType" rowHeader="$boolean{true}" id="col22">
-        <sun:staticText escape="true" id="resType"  value="#{td.value.ResType}" />
+        <sun:staticText escape="true" id="resType"  value="#{td.value.resType}" />
     </sun:tableColumn>
     
     <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colClassname}"  rowHeader="$boolean{true}" id="col3">
-        <sun:staticText escape="true" id="datasourceClassname"  value="#{td.value.DatasourceClassname}#{td.value.DriverClassname}" />
+        <sun:staticText escape="true" id="datasourceClassname"  value="#{td.value.datasourceClassname}#{td.value.driverClassname}" />
     </sun:tableColumn>  
     
     <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">
-        <sun:staticText escape="true" id="typeDesc" value="#{td.value.Description}" />
+        <sun:staticText escape="true" id="typeDesc" value="#{td.value.description}" />
     </sun:tableColumn>
     
   </sun:tableRowGroup>

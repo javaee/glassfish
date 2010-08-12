@@ -44,6 +44,8 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.MiscUtil;
+import org.glassfish.admingui.common.util.RestResponse;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -53,8 +55,6 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
-import org.glassfish.admingui.common.util.MiscUtil;
-import org.glassfish.admingui.common.util.RestResponse;
 
 public class RestApiHandlers {
     public static final String FORM_ENCODING = "application/x-www-form-urlencoded";
@@ -104,41 +104,29 @@ public class RestApiHandlers {
             input = {
                     @HandlerInput(name = "endpoint", type = String.class, required = true),
                     @HandlerInput(name = "currentMap", type = Map.class),
-		    @HandlerInput(name = "key", type=String.class, defaultValue="entity")},
+		            @HandlerInput(name = "key", type=String.class, defaultValue="entity")},
             output = {
                     @HandlerOutput(name = "valueMap", type = Map.class)
             })
     public static void getEntityAttrs(HandlerContext handlerCtx) {
-	// Get the inputs...
-	String key = (String) handlerCtx.getInputValue("key");
-	String endpoint = (String) handlerCtx.getInputValue("endpoint");
-	Map<String, Object> currentMap = (Map<String, Object>) handlerCtx.getInputValue("currentMap");
-	Map<String, Object> valueMap = null;
+        // Get the inputs...
+        String key = (String) handlerCtx.getInputValue("key");
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        Map<String, Object> currentMap = (Map<String, Object>) handlerCtx.getInputValue("currentMap");
+        Map<String, Object> valueMap = null;
 
         try {
-	    // Use restRequest to query the endpoint
-            Map<String, Object> result = restRequest(endpoint, (Map<String, Object>) null, "get", handlerCtx);
-	    int responseCode = (Integer) result.get("responseCode");
-            if ((responseCode < 200) || (responseCode > 299)) {
-                throw new RuntimeException((String) result.get("responseBody"));
+            valueMap = getEntityAttrs(endpoint, key);
+            // Current values already set?
+            if (currentMap != null) {
+                valueMap.putAll(currentMap);
             }
-
-	    // Pull off the attribute Map
-	    valueMap = (Map<String, Object>) result.get("data");
-	    if (valueMap.containsKey(key)) {
-		valueMap = (Map<String, Object>) valueMap.get(key);
-	    }
-
-	    // Current values already set?
-	    if (currentMap != null) {
-		valueMap.putAll(currentMap);
-	    }
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
 
-	// Return the Map
-	handlerCtx.setOutputValue("valueMap",  valueMap);
+        // Return the Map
+        handlerCtx.setOutputValue("valueMap", valueMap);
     }
 
     @Handler(id = "gf.checkIfEndPointExist",
@@ -327,7 +315,7 @@ public class RestApiHandlers {
             input = {
                     @HandlerInput(name = "endpoint", type = String.class, required = true),
                     @HandlerInput(name = "selectedRows", type = List.class, required = true),
-                    @HandlerInput(name = "id", type = String.class, defaultValue = "Name"),
+                    @HandlerInput(name = "id", type = String.class, defaultValue = "name"),
                     @HandlerInput(name = "cascade", type = String.class)
             })
     public static void deleteCascade(HandlerContext handlerCtx) {
@@ -337,11 +325,14 @@ public class RestApiHandlers {
             String id = (String) handlerCtx.getInputValue("id");
             String cascade = (String) handlerCtx.getInputValue("cascade");
             if (cascade != null) {
-                payload.put("cascade", "false");
+                payload.put("cascade", cascade);
             }
 
             for (Map oneRow : (List<Map>) handlerCtx.getInputValue("selectedRows")) {
-                delete(endpoint + "/" + (String) oneRow.get(id), payload);
+                RestResponse response = delete(endpoint + "/" + (String) oneRow.get(id), payload);
+                if (!response.isSuccess()) {
+                    GuiUtil.handleError(handlerCtx, "Unable to delete the resource " + (String) oneRow.get(id));
+                }
             }
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
@@ -360,7 +351,7 @@ public class RestApiHandlers {
             @HandlerInput(name = "childType", type = String.class, required = true),
             @HandlerInput(name = "skipList", type = List.class, required = false),
             @HandlerInput(name = "includeList", type = List.class, required = false),
-            @HandlerInput(name = "id", type = String.class, defaultValue = "Name")},
+            @HandlerInput(name = "id", type = String.class, defaultValue = "name")},
         output = {
             @HandlerOutput(name = "result", type = java.util.List.class)
     })
@@ -380,15 +371,13 @@ public class RestApiHandlers {
     @Handler(id = "gf.getChildrenNamesList",
         input = {
             @HandlerInput(name = "endpoint", type = String.class, required = true),
-            @HandlerInput(name = "id", type = String.class, defaultValue = "Name")},
+            @HandlerInput(name = "id", type = String.class, defaultValue = "name")},
         output = {
             @HandlerOutput(name = "result", type = java.util.List.class)
     })
     public static void getChildrenNamesList(HandlerContext handlerCtx) {
         try {
-            handlerCtx.setOutputValue("result",
-                    getChildrenNames((String)handlerCtx.getInputValue("endpoint"),
-                    (String)handlerCtx.getInputValue("id")));
+            handlerCtx.setOutputValue("result", new ArrayList(getChildMap((String)handlerCtx.getInputValue("endpoint")).keySet()));
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -400,7 +389,7 @@ public class RestApiHandlers {
         if (!response.isSuccess()) {
             return new HashMap();
         }
-        return getEntityAttrs(response.getResponseBody());
+        return getEntityAttrs(endpoint, "entity");
     }
 
 
@@ -409,21 +398,18 @@ public class RestApiHandlers {
     protected static Map<String, String> buildDefaultValueMap(String endpoint) throws ParserConfigurationException, SAXException, IOException {
         Map<String, String> defaultValues = new HashMap<String, String>();
 
-        String options = options(endpoint, "application/xml");
-        Document doc = MiscUtil.getDocument(options);
-        Element root = doc.getDocumentElement();
-        NodeList nl = root.getElementsByTagName("messageParameters");
-        if (nl.getLength() > 0) {
-            NodeList params = nl.item(0).getChildNodes();
-            Node child;
-            for (int i = 0; i < params.getLength(); i++) {
-                child = params.item(i);
-                if (child.getNodeType() == Node.ELEMENT_NODE) {
-                    String defaultValue = ((Element) child).getAttribute("defaultValue");
+        RestResponse response = options(endpoint, "application/xml");
+        Map<String, Object> data = (Map<String, Object>)response.getResponse().get("data");
+        Map<String, Object> extraProperties = (Map<String, Object>) data.get("extraProperties");
+        List<Map<String, Object>> methods = (List<Map<String, Object>>) extraProperties.get("methods");
+        for (Map<String, Object> method : methods) {
+            if ("POST".equals(method.get("name"))) {
+                Map<String, Object> messageParameters = (Map<String, Object>) method.get("messageParameters");
+                for (Map.Entry<String, Object> entry : messageParameters.entrySet()) {
+                    String param = entry.getKey();
+                    String defaultValue = (String) ((Map) entry.getValue()).get("defaultValue");
                     if (!"".equals(defaultValue) && (defaultValue != null)) { // null test necessary?
-                        String nodeName = child.getNodeName();
-                        nodeName = nodeName.substring(0, 1).toUpperCase() + nodeName.substring(1);
-                        defaultValues.put(nodeName, defaultValue);
+                        defaultValues.put(param, defaultValue);
                     }
                 }
             }
@@ -542,24 +528,27 @@ public class RestApiHandlers {
         }
     }
 
-    /**
-     * @deprecated
-     */
-    public static Map<String, String> getEntityAttrs(String entity) {
-        Map<String, String> attrs = new HashMap<String, String>();
+    public static Map<String, Object> getEntityAttrs(String endpoint, String key) {
+        Map<String, Object> valueMap = new HashMap<String, Object>();
         try {
-            Document doc = MiscUtil.getDocument(entity);
-            Element root = doc.getDocumentElement();
-            NamedNodeMap nnm = root.getAttributes();
-            for (int i = 0; i < nnm.getLength(); i++) {
-                Node node = nnm.item(i);
-                attrs.put(upperCaseFirstLetter(node.getNodeName()), node.getNodeValue());
+            // Use restRequest to query the endpoint
+            Map<String, Object> result = restRequest(endpoint, (Map<String, Object>) null, "get", null);
+            int responseCode = (Integer) result.get("responseCode");
+            if ((responseCode < 200) || (responseCode > 299)) {
+                throw new RuntimeException((String) result.get("responseBody"));
+            }
+
+            // Pull off the attribute Map
+            Map<String, Object> data = (Map<String, Object>) result.get("data");
+            Map<String, Object> extraProperties = (Map<String, Object>) data.get("extraProperties");
+            if (extraProperties.containsKey(key)) {
+                valueMap = (Map<String, Object>) extraProperties.get(key);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return attrs;
+        return valueMap;
     }
 
     /**
@@ -630,18 +619,15 @@ public class RestApiHandlers {
     public static List<Map> buildChildEntityList(String parent, String childType, List skipList, List includeList, String id) throws Exception {
 
         String endpoint = parent.endsWith("/") ?  parent + childType : parent + "/" + childType;
-        boolean hasSkip =(skipList == null) ? false : true;
-        boolean hasInclude =(includeList == null) ? false : true;
-        boolean convert = childType.equals("property") ? true : false ;
+        boolean hasSkip = (skipList != null);
+        boolean hasInclude = (includeList != null);
+        boolean convert = childType.equals("property");
 
         List<Map> childElements = new ArrayList<Map>();
         try {
-            final RestResponse response = RestApiHandlers.get(endpoint);
-            String parentString = response.getResponseBody();
-            List<String> childUrls = getChildResourceList(parentString);
+            List<String> childUrls = getChildList(endpoint);
             for (String childUrl : childUrls) {
-                String childString = RestApiHandlers.get(childUrl).getResponseBody();
-                Map<String, String> entity = RestApiHandlers.getEntityAttrs(childString);
+                Map<String, Object> entity = getEntityAttrs(childUrl, "entity");
                 HashMap<String, Object> oneRow = new HashMap<String, Object>();
 
                 if (hasSkip && skipList.contains(entity.get(id))) {
@@ -656,8 +642,8 @@ public class RestApiHandlers {
                 for(String attrName : entity.keySet()){
                     oneRow.put(attrName, getA(entity, attrName, convert));
                 }
-                oneRow.put("encodedName", URLEncoder.encode(entity.get(id), "UTF-8"));
-                oneRow.put("Name", entity.get(id));
+                oneRow.put("encodedName", URLEncoder.encode(entity.get(id).toString(), "UTF-8"));
+                oneRow.put("name", entity.get(id));
                 childElements.add(oneRow);
             }
         } catch (Exception e) {
@@ -666,7 +652,7 @@ public class RestApiHandlers {
         return childElements;
     }
 
-    private static String getA(Map<String, String> attrs,  String key, boolean convert){
+    private static String getA(Map<String, Object> attrs,  String key, boolean convert){
         Object val = attrs.get(key);
         if (val == null){
             return "";
@@ -679,24 +665,30 @@ public class RestApiHandlers {
      * contains child entity names.
      *
      * @param endpoint
-     * @param id
      * @return
      * @throws Exception
      */
-    public static List<String> getChildrenNames(String endpoint, String id) throws Exception {
+    public static List<String> getChildList(String endpoint) throws Exception {
         List<String> childElements = new ArrayList<String>();
-        try {
-            String foo = RestApiHandlers.get(endpoint).getResponseBody();
-            List<String> childUrls = getChildResourceList(foo);
-            for (String childUrl : childUrls) {    
-                String element = childUrl.substring(childUrl.lastIndexOf("/")+1); 
-                childElements.add(URLDecoder.decode(element, "UTF-8"));
-            }   
-        } catch (Exception e) {
-            throw e;
-        }   
+        Map<String, String> childResources = getChildMap(endpoint);
+        if (childResources != null) {
+            childElements.addAll(childResources.values());
+        }
         return childElements;
     }
+
+    public static Map<String, String> getChildMap(String endpoint) throws Exception {
+        Map<String, String> childElements = new TreeMap<String, String>();
+        Map responseMap = restRequest(endpoint, new HashMap<String, Object>(), "get", null);
+        Map data = (Map) responseMap.get("data");
+        Map extraProperties = (Map) data.get("extraProperties");
+        if (extraProperties != null) {
+            childElements = (Map<String, String>) extraProperties.get("childResources");
+        }
+
+        return childElements;
+    }
+
     //******************************************************************************************************************
     // Jersey client methods
     //******************************************************************************************************************
@@ -714,7 +706,7 @@ public class RestApiHandlers {
     public static RestResponse post(String address, Map<String, Object> payload) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
         MultivaluedMap formData = buildMultivalueMap(payload);
-        ClientResponse cr = webResource.post(ClientResponse.class, formData);
+        ClientResponse cr = webResource.accept(RESPONSE_TYPE).post(ClientResponse.class, formData);
         //checkStatusForSuccess(cr);
         RestResponse rr = RestResponse.getRestResponse(cr);
         return rr;
@@ -727,15 +719,16 @@ public class RestApiHandlers {
 
     public static RestResponse delete(String address, Map<String, Object> payload) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
-        ClientResponse cr = webResource.queryParams(buildMultivalueMap(payload)).delete(ClientResponse.class);
+        ClientResponse cr = webResource.queryParams(buildMultivalueMap(payload)).accept(RESPONSE_TYPE).delete(ClientResponse.class);
         checkStatusForSuccess(cr);
         return RestResponse.getRestResponse(cr);
     }
 
-    public static String options(String address, String responseType) {
-        return JERSEY_CLIENT.resource(address)
-                .accept(responseType)
-                .options(String.class);
+    public static RestResponse options(String address, String responseType) {
+        WebResource webResource = JERSEY_CLIENT.resource(address);
+        ClientResponse cr = webResource.accept(responseType).options(ClientResponse.class);
+        checkStatusForSuccess(cr);
+        return RestResponse.getRestResponse(cr);
     }
 
     public static void checkStatusForSuccess(ClientResponse cr) {

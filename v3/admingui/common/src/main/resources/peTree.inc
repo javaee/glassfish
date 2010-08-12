@@ -70,9 +70,12 @@ monitoring     web  800
 
   <sun:form id="treeForm">
     <!beforeCreate
-	gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config", result="#{pageSession.configsList}");
-	setAttribute(key="configName" value="#{pageSession.configsList[0]}");
-	gf.encodeId(id="${configName}" result="#{requestScope.configNameId}");
+      gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config.json", method="get", result="#{pageSession.configResponse}");
+
+      gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config", result="#{pageSession.configsList}");
+
+	  setAttribute(key="configName" value="#{pageSession.configsList[0]}");
+      gf.encodeId(id="${configName}" result="#{requestScope.configNameId}");
     />
     <h:commandButton id="update" style="display: none;">
 	<!command

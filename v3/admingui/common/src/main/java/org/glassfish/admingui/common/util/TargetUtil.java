@@ -88,7 +88,7 @@ public class TargetUtil {
     public static List getClusters(){
         List clusters = new ArrayList();
         try{
-            clusters = RestApiHandlers.getChildrenNames(GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster", "Name");
+            clusters = RestApiHandlers.getChildList(GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster");
         }catch (Exception ex){
             GuiUtil.getLogger().severe("Error in getClusters;");
             ex.printStackTrace();

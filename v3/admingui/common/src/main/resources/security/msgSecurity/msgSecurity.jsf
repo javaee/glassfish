@@ -89,18 +89,18 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.msgSecurity.colAuthLayer}" sort="Name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="authlayer" text="#{td.value.Name}"
-            url="#{editLink}?name=#{td.value.Name}&configName=#{configName}" />
+        <sun:hyperlink id="authlayer" text="#{td.value.name}"
+            url="#{editLink}?name=#{td.value.name}&configName=#{configName}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.msgSecurity.colDefaultProv}" sort="DefaultProvider" rowHeader="$boolean{true}" id="col2">
-        <sun:hyperlink id="defaultprov" text="#{td.value.DefaultProvider}"
-            url="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{td.value.DefaultProvider}&msgSecurityName=#{td.value.Name}&configName=#{configName}" />
+        <sun:hyperlink id="defaultprov" text="#{td.value.defaultProvider}"
+            url="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{td.value.defaultProvider}&msgSecurityName=#{td.value.name}&configName=#{configName}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.msgSecurity.colDefaultClientProv}" sort="DefaultClientProvider" rowHeader="$boolean{true}" id="col3">
-        <sun:hyperlink id="defaultclientprov" text="#{td.value.DefaultClientProvider}"
-            url="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{td.value.DefaultClientProvider}&msgSecurityName=#{td.value.Name}&configName=#{configName}&cancelPage=#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf" />
+        <sun:hyperlink id="defaultclientprov" text="#{td.value.defaultClientProvider}"
+            url="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{td.value.defaultClientProvider}&msgSecurityName=#{td.value.name}&configName=#{configName}&cancelPage=#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf" />
 
     </sun:tableColumn>
 

@@ -49,6 +49,7 @@ import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.config.Dom;
 
@@ -81,7 +82,7 @@ public class FindHttpProtocolResource {
         Dom dom = getEntity();
         NetworkListener nl = dom.createProxy(NetworkListener.class);
         Protocol p = nl.findHttpProtocol();
-        ActionReport ar = RestService.getHabitat().getComponent(ActionReport.class, ResourceUtil.getResultType(requestHeaders));
+        RestActionReporter ar = new RestActionReporter();
         ar.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         ar.getTopMessagePart().getProps().put("protocol", p.getName());
 

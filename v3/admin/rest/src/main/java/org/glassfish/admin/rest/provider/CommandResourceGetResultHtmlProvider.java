@@ -55,7 +55,7 @@ public class CommandResourceGetResultHtmlProvider extends BaseProvider<CommandRe
     }
 
     @Override
-    protected String getContent(CommandResourceGetResult proxy) {
+    public String getContent(CommandResourceGetResult proxy) {
         String result = ProviderUtil.getHtmlHeader();
         String commandDisplayName =
             upperCaseFirstLetter(eleminateHypen(proxy.getCommandDisplayName()));

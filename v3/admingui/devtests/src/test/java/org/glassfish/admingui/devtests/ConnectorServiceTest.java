@@ -58,7 +58,7 @@ public class ConnectorServiceTest extends BaseSeleniumTestClass {
         if (selenium.getValue("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy").equals(policy)) {
             policy = "global";
         }
-        final String timeout = "60";
+        final String timeout = Integer.toString(generateRandomNumber(120));
 
         selenium.type("propertyForm:propertySheet:propertSectionTextField:timeout:tiimeout", timeout);
         selenium.select("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy", "label="+policy);

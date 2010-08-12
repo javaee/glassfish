@@ -40,6 +40,8 @@ package org.glassfish.admin.rest.resources;
 
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import org.glassfish.admin.rest.SessionManager;
+import org.glassfish.admin.rest.results.ActionReportResult;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -76,10 +78,10 @@ public class SessionsResource {
      */
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public String create() {
-        GrizzlyRequest grizzlyRequest = request.get();
-        return sessionManager.createSession(grizzlyRequest);
-
+    public ActionReportResult create() {
+        RestActionReporter ar = new RestActionReporter();
+        ar.getExtraProperties().put("token", sessionManager.createSession(grizzlyRequest));
+        return new ActionReportResult(ar);
     }
 
     @Path("{sessionId}/")

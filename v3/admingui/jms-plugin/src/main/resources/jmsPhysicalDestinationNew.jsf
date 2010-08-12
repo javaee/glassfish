@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,6 @@
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.jmsPhysDestinations.newPageHelp}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf");
         getDefaultPhysicalDestinationValues(map="#{pageSession.valueMap}");
-        println("#{pageSession.valueMap}");
         
         //getRequestValue(key="name" value=>$page{targetName});
         //getRequestValue(key="actualLink" value=>$page{actualLink});

@@ -89,16 +89,16 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.transport.nameCol}" sort="Name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.Name}"  url="#{pageSession.editLink}&name=#{td.value.Name}" />
+        <sun:hyperlink id="link" text="#{td.value.name}"  url="#{pageSession.editLink}&name=#{td.value.name}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.transport.classnameCol}" sort="Classname"  rowHeader="$boolean{true}" id="classname">
-        <sun:staticText escape="true" id="classname" value="#{td.value.Classname}" />
+        <sun:staticText escape="true" id="classname" value="#{td.value.classname}" />
     </sun:tableColumn>
 
 
     <sun:tableColumn headerText="$resource{i18n_web.transport.byteBufferTypeCol}" sort="ByteBufferType" rowHeader="$boolean{true}" id="byteType">
-        <sun:staticText escape="true" id="byteType" value="#{td.value.ByteBufferType}" />
+        <sun:staticText escape="true" id="byteType" value="#{td.value.byteBufferType}" />
     </sun:tableColumn>
 
   </sun:tableRowGroup>

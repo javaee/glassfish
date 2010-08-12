@@ -42,6 +42,9 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 
 /**
@@ -65,7 +68,7 @@ public class ResourceHandlers {
         List<Map> rows = (List) handlerCtx.getInputValue("rows");
         String resourceRefEndPoint = (String) handlerCtx.getInputValue("endpoint");
         for (Map oneRow : rows) {
-            String enabled = (String) oneRow.get("Enabled");
+            String enabled = (String) oneRow.get("enabled");
             String name = (String) oneRow.get("encodedName");
             String endpoint = resourceRefEndPoint + "/" +name;
             if (! RestApiHandlers.get(endpoint).isSuccess()){
@@ -74,19 +77,47 @@ public class ResourceHandlers {
             if (enabled == null){
                 continue;   //this should never happen.
             }
-            String resourceRefString = RestApiHandlers.get(endpoint).getResponseBody();
-            Map<String,String> attrMp = RestApiHandlers.getEntityAttrs(resourceRefString);
-            String refStatus = (String) attrMp.get("Enabled");
+            Map<String,Object> attrMp = RestApiHandlers.getEntityAttrs(endpoint, "entity");
+            String refStatus = (String) attrMp.get("enabled");
             if (refStatus.equals("true")){
-                    oneRow.put("Enabled", enabled);   //depend on the resource itself.
+                    oneRow.put("enabled", enabled);   //depend on the resource itself.
             }else{
-                    oneRow.put("Enabled", false);
+                    oneRow.put("enabled", false);
             }            
         }
         handlerCtx.setOutputValue("result", rows);
     }
 
+    @Handler(id = "getJMSFactoriesTable",
+        input = {
+            @HandlerInput(name="endpoint", type = String.class, required = true)
+        },
+        output = {
+        @HandlerOutput(name = "result", type = java.util.List.class)
+    })
+    public static void getJMSFactoriesTable(HandlerContext handlerCtx) throws Exception {
+        String endpoint = (String)handlerCtx.getInputValue("endpoint");
+        Map<String, String> children = RestApiHandlers.getChildMap(endpoint);
 
+        List result = new ArrayList();
 
-
+        for (Map.Entry<String, String> entry : children.entrySet()) {
+            String poolName = entry.getKey();
+            String poolUrl = entry.getValue();
+            if (GuiUtil.isEmpty(poolName)) {
+                continue;   //this is a required attribute, shouldn't happen.
+            }
+            Map<String, Object> poolEntity = RestApiHandlers.getEntityAttrs(poolUrl, "entity");
+            if (poolEntity.get("resourceAdapterName").equals("jmsra")) {
+                Map oneRow = new HashMap();
+                oneRow.put("selected", false);
+                oneRow.put("name", poolName);
+                oneRow.put("jndiName", poolEntity.get("name"));
+                oneRow.put("connectionDefinitionName", poolEntity.get("connectionDefinitionName"));
+                oneRow.put("description",  poolEntity.get("description"));
+                result.add(oneRow);
+            }
+        }
+        handlerCtx.setOutputValue("result", result);
+    }
 }

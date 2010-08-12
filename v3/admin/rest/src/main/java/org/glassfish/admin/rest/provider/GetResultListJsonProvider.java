@@ -66,7 +66,7 @@ public class GetResultListJsonProvider extends BaseProvider<GetResultList> {
     }
 
     @Override
-    protected String getContent(GetResultList proxy) {
+    public String getContent(GetResultList proxy) {
         JSONObject obj = new JSONObject();
         try {
             obj.put(KEY_ENTITY, new JSONObject());

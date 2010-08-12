@@ -78,7 +78,8 @@ public class ClusterHandler {
         },
         output = {
             @HandlerOutput(name = "numRunning", type = String.class),
-            @HandlerOutput(name = "numNotRunning", type = String.class)
+            @HandlerOutput(name = "numNotRunning", type = String.class),
+            @HandlerOutput(name = "status", type = String.class)
         })
     public static void getClusterStatusSummary(HandlerContext handlerCtx) {
         Map propsMap = (Map) handlerCtx.getInputValue("listInstancePropsMap");
@@ -148,7 +149,7 @@ public class ClusterHandler {
         String prefix = GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster/";
 
         for (Map oneRow : rows) {
-            String clusterName = (String) oneRow.get("Name");
+            String clusterName = (String) oneRow.get("name");
 
             boolean error = false;
             if (action.equals("delete-cluster")){
@@ -197,9 +198,9 @@ public class ClusterHandler {
         String prefix = GuiUtil.getSessionValue("REST_URL") + "/servers/server/";
 
         for (Map oneRow : rows) {
-            String instanceName = (String) oneRow.get("Name");
+            String instanceName = (String) oneRow.get("name");
             if(action.equals("delete-instance")){
-                response = deleteInstance(instanceName, (String) oneRow.get("Node"));
+                response = deleteInstance(instanceName, (String) oneRow.get("node"));
             }else{
                 try{
                        response = RestApiHandlers.restRequest(prefix + instanceName + "/" + action , null, "post" ,null);
@@ -245,7 +246,7 @@ public class ClusterHandler {
 
         for (Map oneRow : rows) {
             int code = 500;
-            String nodeName = (String) oneRow.get("Name");
+            String nodeName = (String) oneRow.get("name");
             List instancesList = (List)nodeInstanceMap.get(nodeName);
             if ( instancesList!= null && (instancesList.size()) != 0){
                 GuiUtil.prepareAlert(handlerCtx, "error",  GuiUtil.getMessage("msg.Error"),
@@ -315,8 +316,8 @@ public class ClusterHandler {
      */
     @Handler(id = "gf.getDeploymentTargets",
         input = {
-            @HandlerInput(name = "clusterList", type = List.class),
-            @HandlerInput(name = "listInstanceProps", type = List.class)
+            @HandlerInput(name = "clusterList", type = List.class), // TODO: Should this be a map too?
+            @HandlerInput(name = "listInstanceProps", type = Map.class)
         },
         output = {
             @HandlerOutput(name = "result", type = List.class)
@@ -332,9 +333,9 @@ public class ClusterHandler {
                 }
             }
 
-            List<Map<String, String>> props = (List<Map<String, String>>) handlerCtx.getInputValue("listInstanceProps");
-            for(Map<String, String> oneProp : props){
-                result.add(oneProp.get("name"));
+            Map<String, String> props = (Map<String, String>) handlerCtx.getInputValue("listInstanceProps");
+            if (props != null) {
+                result.addAll(props.keySet());
             }
          }catch(Exception ex){
              GuiUtil.getLogger().severe("getDeploymentTargets failed.");

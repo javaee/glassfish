@@ -197,7 +197,7 @@ public class ApplicationTest extends RestTestBase {
 
             ClientResponse response = get("/domain/applications/application/get-context-root", contextRootPayload);
             checkStatusForSuccess(response);
-            assertTrue(response.getEntity(String.class).contains("entry key=\"contextRoot\" value=\""));
+            assertTrue(response.getEntity(String.class).contains("helloworld"));
         } finally {
             undeployApp(newApp);
         }
@@ -213,5 +213,6 @@ public class ApplicationTest extends RestTestBase {
     protected void undeployApp(Map<String, Object> app) {
         ClientResponse response = delete(URL_APPLICATION_DEPLOY + "/" + app.get("name"));
         checkStatusForSuccess(response);
+        response = delete(URL_APPLICATION_DEPLOY + "/stateles-simple");
     }
 }

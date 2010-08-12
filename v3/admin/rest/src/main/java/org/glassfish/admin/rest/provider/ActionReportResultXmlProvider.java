@@ -61,7 +61,7 @@ public class ActionReportResultXmlProvider extends BaseProvider<ActionReportResu
     public String getContent(ActionReportResult proxy) {
         ActionReporter ar = (ActionReporter)proxy.getActionReport();
         XmlObject result = processReport(ar);
-        return result.toString();
+        return result.toString(getFormattingIndentLevel());
     }
 
     protected XmlObject processReport(ActionReporter ar) {
@@ -133,7 +133,9 @@ public class ActionReportResultXmlProvider extends BaseProvider<ActionReportResu
 
     protected Object getXmlObject(Object object) {
         Object result = null;
-        if (object instanceof Collection) {
+        if (object == null) {
+            result = "";
+        } else if (object instanceof Collection) {
             result = processCollection((Collection)object);
         } else if (object instanceof Map) {
             result = processMap((Map)object);

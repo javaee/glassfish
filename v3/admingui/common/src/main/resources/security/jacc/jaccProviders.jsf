@@ -91,12 +91,12 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.jacc.table.nameCol}"  sort="Name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.Name}"
-            url="#{pageSession.editLink}&name=#{td.value.Name}" />
+        <sun:hyperlink id="link" text="#{td.value.name}"
+            url="#{pageSession.editLink}&name=#{td.value.name}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.jacc.colPolicyProvider}"  rowHeader="$boolean{true}" id="col6">
-        <sun:staticText escape="true" id="classnameCol" value="#{td.value.PolicyProvider}" />
+        <sun:staticText escape="true" id="classnameCol" value="#{td.value.policyProvider}" />
     </sun:tableColumn>
   </sun:tableRowGroup>
 </sun:table>

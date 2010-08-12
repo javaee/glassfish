@@ -35,65 +35,40 @@
  */
 package org.glassfish.admin.rest.resources;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.POST;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.jersey.api.core.ResourceContext;
-
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.jersey.spi.container.ContainerRequest;
-import java.util.ArrayList;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
-
+import org.glassfish.admin.rest.provider.MethodMetaData;
+import org.glassfish.admin.rest.results.ActionReportResult;
+import org.glassfish.admin.rest.results.OptionsResult;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.RestRedirect;
+import org.jvnet.hk2.config.*;
 
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.Dom;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.ValidationException;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.io.*;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.glassfish.admin.rest.results.GetResult;
-import org.glassfish.admin.rest.results.OptionsResult;
-import org.glassfish.admin.rest.provider.MethodMetaData;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigModel;
-import org.jvnet.hk2.config.ConfigSupport;
+import static org.glassfish.admin.rest.ResourceUtil.buildMethodMetadataMap;
+import static org.glassfish.admin.rest.ResourceUtil.getResourceLinks;
+import static org.glassfish.admin.rest.Util.eleminateHypen;
+import static org.glassfish.admin.rest.Util.upperCaseFirstLetter;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
  * @author Rajeshwar Patil
  */
+@Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 public class TemplateResource {
-
     @Context
     protected HttpHeaders requestHeaders;
     @Context
@@ -113,6 +88,192 @@ public class TemplateResource {
 
     /** Creates a new instance of xxxResource */
     public TemplateResource() {
+    }
+
+    @GET
+    public ActionReportResult getEntity(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
+        if (getEntity() == null) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+
+        return buildActionReportResult(true);
+    }
+
+    // TODO: This is wrong. Updates are done via PUT
+    @POST  //update
+    public ActionReportResult createEntity(HashMap<String, String> data) {
+        try {
+            //data.remove("submit");
+            removeAttributesToBeSkipped(data);
+            if (data.containsKey("error")) {
+                String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
+                        "Unable to parse the input entity. Please check the syntax.");
+                return ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo);
+            }
+
+            ResourceUtil.purgeEmptyEntries(data);
+
+            //hack-1 : support delete method for html
+            //Currently, browsers do not support delete method. For html media,
+            //delete operations can be supported through POST. Redirect html
+            //client POST request for delete operation to DELETE method.
+            if ("__deleteoperation".equals(data.get("operation"))) {
+                data.remove("operation");
+                return delete(data);
+            }
+
+            Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
+            data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
+            mapOfChanges.put((ConfigBean) getEntity(), data);
+            RestService.getConfigSupport().apply(mapOfChanges); //throws TransactionFailure
+
+            String successMessage = localStrings.getLocalString("rest.resource.update.message",
+                    "\"{0}\" updated successfully.", new Object[]{uriInfo.getAbsolutePath()});
+            return ResourceUtil.getActionReportResult(200, successMessage, requestHeaders, uriInfo);
+        } catch (Exception ex) {
+            if (ex.getCause() instanceof ValidationException) {
+                return ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo);
+            } else {
+                throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+            }
+        }
+    }
+
+    @DELETE
+    public ActionReportResult delete(HashMap<String, String> data) {
+        if (entity == null) {//wrong resource
+            String errorMessage = localStrings.getLocalString("rest.resource.erromessage.noentity",
+                    "Resource not found.");
+            return ResourceUtil.getActionReportResult(404, errorMessage, requestHeaders, uriInfo);
+        }
+
+        if (getDeleteCommand() == null) {
+            String message = localStrings.getLocalString("rest.resource.delete.forbidden",
+                    "DELETE on \"{0}\" is forbidden.", new Object[]{uriInfo.getAbsolutePath()});
+            return ResourceUtil.getActionReportResult(403, message, requestHeaders, uriInfo); //403 - forbidden
+        }
+        if (getDeleteCommand().equals("GENERIC-DELETE")) {
+            try {
+                ConfigBean p = (ConfigBean) parent;
+                if (parent == null) {
+                    p = (ConfigBean) entity.parent();
+                }
+                ConfigSupport.deleteChild(p, (ConfigBean) entity);
+                String successMessage = localStrings.getLocalString("rest.resource.delete.message",
+                        "\"{0}\" deleted successfully.", new Object[]{uriInfo.getAbsolutePath()});
+                return ResourceUtil.getActionReportResult(200, successMessage, requestHeaders, uriInfo); //200 - ok
+//                return ResourceUtil.getDeleteResponse(200, successMessage, requestHeaders, uriInfo); //200 - ok
+            } catch (TransactionFailure ex) {
+                throw new WebApplicationException(ex,
+                        Response.Status.INTERNAL_SERVER_ERROR);
+            }
+        }
+        //do the delete via the command:
+        try {
+            if (data.containsKey("error")) {
+                String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
+                        "Unable to parse the input entity. Please check the syntax.");
+                return ResourceUtil.getActionReportResult(400, /*parsing error*/
+                        errorMessage, requestHeaders, uriInfo);
+            }
+
+            ResourceUtil.addQueryString(uriInfo.getQueryParameters(), data);
+            ResourceUtil.purgeEmptyEntries(data);
+            ResourceUtil.adjustParameters(data);
+
+            if (data.get("DEFAULT") == null) {
+                addDefaultParameter(data);
+            } else {
+                String resourceName = getResourceName(uriInfo.getAbsolutePath().getPath(), "/");
+                if (!data.get("DEFAULT").equals(resourceName)) {
+                    String errorMessage = localStrings.getLocalString("rest.resource.not.deleted",
+                            "Resource not deleted. Value of \"name\" should be the name of this resource.");
+                    return ResourceUtil.getActionReportResult(403, /*forbidden*/
+                            errorMessage, requestHeaders, uriInfo);
+                }
+            }
+
+            ActionReport actionReport = runCommand(getDeleteCommand(), data);
+
+            if (actionReport != null) {
+                ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
+                if (exitCode != ActionReport.ExitCode.FAILURE) {
+                    String successMessage = localStrings.getLocalString("rest.resource.delete.message",
+                            "\"{0}\" deleted successfully.", new Object[]{uriInfo.getAbsolutePath()});
+                    return ResourceUtil.getActionReportResult(200, successMessage, requestHeaders, uriInfo); //200 - ok
+                }
+
+                String errorMessage = actionReport.getMessage();
+                /*try {
+                String usageMessage =
+                actionReport.getTopMessagePart().getChildren().get(0).getMessage();
+                errorMessage = errorMessage + "\n" + usageMessage;
+                } catch (Exception e) {
+                //ignore
+                }*/
+                return ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo); //400 - bad request
+            }
+
+            String message = localStrings.getLocalString("rest.resource.delete.forbidden",
+                    "DELETE on \"{0}\" is forbidden.", new Object[]{uriInfo.getAbsolutePath()});
+            return ResourceUtil.getActionReportResult(403, message, requestHeaders, uriInfo); //403 - forbidden
+        } catch (Exception e) {
+            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @OPTIONS
+    public ActionReportResult options() {
+        return buildActionReportResult(false);
+    }
+
+    private Map<String, MethodMetaData> getMethodMetaData() {
+        Map<String, MethodMetaData> map = new TreeMap<String, MethodMetaData>();
+        //GET meta data
+        map.put("GET", new MethodMetaData());
+
+        /////optionsResult.putMethodMetaData("POST", new MethodMetaData());
+        MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData((ConfigBean) getEntity());
+        postMethodMetaData.setDescription("Update");
+        map.put("POST", postMethodMetaData);
+
+
+        //DELETE meta data
+        String command = getDeleteCommand();
+        if (command != null) {
+            MethodMetaData deleteMethodMetaData;
+            if (command.equals("GENERIC-DELETE")) {
+                deleteMethodMetaData = new MethodMetaData();
+
+            } else {
+                deleteMethodMetaData = ResourceUtil.getMethodMetaData(
+                        command, RestService.getHabitat(), RestService.logger);
+                //In case of delete operation(command), do not  display/provide id attribute.
+                deleteMethodMetaData.removeParamMetaData("id");
+            }
+
+            map.put("DELETE", deleteMethodMetaData);
+        }
+        return map;
+    }
+
+    /**
+     * allows for remote files to be put in a tmp area and we pass the
+     * local location of this file to the corresponding command instead of the content of the file
+     * * Yu need to add  enctype="multipart/form-data" in the form
+     * for ex:  <form action="http://localhost:4848/management/domain/applications/application" method="post" enctype="multipart/form-data">
+     * then any param of type="file" will be uploaded, stored locally and the param will use the local location
+     * on the server side (ie. just the path)
+     **/
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public void post(FormDataMultiPart formData) {
+        /* data passed to the generic command running
+         *
+         * */
+        HashMap<String, String> data = createDataBasedOnForm(formData);
+        createEntity(data); //execute the deploy command with a copy of the file locally
+
     }
 
     public void setEntity(Dom p) {
@@ -142,212 +303,13 @@ public class TemplateResource {
         }
     }
 
-    @GET
-    @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public GetResult getEntity(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
-        if (getEntity() == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-
-        return new GetResult(getEntity(), getDeleteCommand(), getCommandResourcesPaths(), options());
-    }
-
-    // TODO: This is wrong. Updates are done via PUT
-    @POST  //update
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    @Produces({"text/html;qs=2",
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML})
-    public Response createEntity(HashMap<String, String> data) {
-        try {
-            //data.remove("submit");
-            removeAttributesToBeSkipped(data);
-            if (data.containsKey("error")) {
-                String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
-                        "Unable to parse the input entity. Please check the syntax.");
-                return ResourceUtil.getResponse(400, /*parsing error*/
-                        errorMessage, requestHeaders, uriInfo);
-            }
-
-            ResourceUtil.purgeEmptyEntries(data);
-
-            //hack-1 : support delete method for html
-            //Currently, browsers do not support delete method. For html media,
-            //delete operations can be supported through POST. Redirect html
-            //client POST request for delete operation to DELETE method.
-            if ("__deleteoperation".equals(data.get("operation"))) {
-                data.remove("operation");
-                return delete(data);
-            }
-
-            Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
-            data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
-            mapOfChanges.put((ConfigBean) getEntity(), data);
-            RestService.getConfigSupport().apply(mapOfChanges); //throws TransactionFailure
-
-            String successMessage = localStrings.getLocalString("rest.resource.update.message",
-                    "\"{0}\" updated successfully.", new Object[]{uriInfo.getAbsolutePath()});
-            return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo);
-        } catch (Exception ex) {
-            if (ex.getCause() instanceof ValidationException) {
-                return ResourceUtil.getResponse(400, /*400 - bad request*/
-                        ex.getMessage(), requestHeaders, uriInfo);
-            } else {
-                throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-            }
-        }
-    }
-
     protected void removeAttributesToBeSkipped(Map<String, String> data) {
         for (String item : attributesToSkip) {
             data.remove(item);
         }
     }
 
-    @DELETE
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_OCTET_STREAM})
-    public Response delete(HashMap<String, String> data) {
-        if (entity == null) {//wrong resource
-            String errorMessage = localStrings.getLocalString("rest.resource.erromessage.noentity",
-                    "Resource not found.");
-            return ResourceUtil.getResponse(404, /*parsing error*/
-                    errorMessage, requestHeaders, uriInfo);
-        }
-
-        if (getDeleteCommand() == null) {
-            String message = localStrings.getLocalString("rest.resource.delete.forbidden",
-                    "DELETE on \"{0}\" is forbidden.", new Object[]{uriInfo.getAbsolutePath()});
-            return ResourceUtil.getResponse(403, message, requestHeaders, uriInfo); //403 - forbidden
-        }
-        if (getDeleteCommand().equals("GENERIC-DELETE")) {
-            try {
-                ConfigBean p = (ConfigBean) parent;
-                if (parent == null) {
-                    p = (ConfigBean) entity.parent();
-                }
-                ConfigSupport.deleteChild(p, (ConfigBean) entity);
-                String successMessage = localStrings.getLocalString("rest.resource.delete.message",
-                        "\"{0}\" deleted successfully.", new Object[]{uriInfo.getAbsolutePath()});
-                return ResourceUtil.getDeleteResponse(200, successMessage, requestHeaders, uriInfo); //200 - ok
-            } catch (TransactionFailure ex) {
-                throw new WebApplicationException(ex,
-                        Response.Status.INTERNAL_SERVER_ERROR);
-            }
-        }
-        //do the delete via the command:
-        try {
-            if (data.containsKey("error")) {
-                String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
-                        "Unable to parse the input entity. Please check the syntax.");
-                return ResourceUtil.getResponse(400, /*parsing error*/
-                        errorMessage, requestHeaders, uriInfo);
-            }
-
-            ResourceUtil.addQueryString(uriInfo.getQueryParameters(), data);
-            ResourceUtil.purgeEmptyEntries(data);
-            ResourceUtil.adjustParameters(data);
-
-            if (data.get("DEFAULT") == null) {
-                addDefaultParameter(data);
-            } else {
-                String resourceName = getResourceName(uriInfo.getAbsolutePath().getPath(), "/");
-                if (!data.get("DEFAULT").equals(resourceName)) {
-                    String errorMessage = localStrings.getLocalString("rest.resource.not.deleted",
-                            "Resource not deleted. Value of \"name\" should be the name of this resource.");
-                    return ResourceUtil.getResponse(403, /*forbidden*/
-                            errorMessage, requestHeaders, uriInfo);
-                }
-            }
-
-            ActionReport actionReport = runCommand(getDeleteCommand(), data);
-
-            if (actionReport != null) {
-                ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-                if (exitCode != ActionReport.ExitCode.FAILURE) {
-                    String successMessage = localStrings.getLocalString("rest.resource.delete.message",
-                            "\"{0}\" deleted successfully.", new Object[]{uriInfo.getAbsolutePath()});
-                    return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo); //200 - ok
-                }
-
-                String errorMessage = actionReport.getMessage();
-                /*try {
-                String usageMessage =
-                actionReport.getTopMessagePart().getChildren().get(0).getMessage();
-                errorMessage = errorMessage + "\n" + usageMessage;
-                } catch (Exception e) {
-                //ignore
-                }*/
-                return ResourceUtil.getResponse(400, errorMessage, requestHeaders, uriInfo); //400 - bad request
-            }
-
-            String message = localStrings.getLocalString("rest.resource.delete.forbidden",
-                    "DELETE on \"{0}\" is forbidden.", new Object[]{uriInfo.getAbsolutePath()});
-            return ResourceUtil.getResponse(403, message, requestHeaders, uriInfo); //403 - forbidden
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @OPTIONS
-    @Produces({MediaType.APPLICATION_JSON, "text/html;qs=2", MediaType.APPLICATION_XML})
-    public OptionsResult options() {
-        OptionsResult optionsResult =
-                new OptionsResult(Util.getResourceName(uriInfo));
-
-        try {
-            //GET meta data
-            optionsResult.putMethodMetaData("GET", new MethodMetaData());
-
-            /////optionsResult.putMethodMetaData("POST", new MethodMetaData());
-            MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData((ConfigBean) getEntity());
-            postMethodMetaData.setDescription("Update");
-            optionsResult.putMethodMetaData("POST", postMethodMetaData);
-
-
-            //DELETE meta data
-            String command = getDeleteCommand();
-            if (command != null) {
-                MethodMetaData deleteMethodMetaData;
-                if (command.equals("GENERIC-DELETE")) {
-                    deleteMethodMetaData = new MethodMetaData();
-
-                } else {
-                    deleteMethodMetaData = ResourceUtil.getMethodMetaData(
-                            command, RestService.getHabitat(), RestService.logger);
-                    //In case of delete operation(command), do not  display/provide id attribute.
-                    deleteMethodMetaData.removeParamMetaData("id");
-                }
-
-                optionsResult.putMethodMetaData("DELETE", deleteMethodMetaData);
-            }
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-
-        return optionsResult;
-    }
-    /*
-     * allows for remote files to be put in a tmp area and we pass the
-     * local location of this file to the corresponding command instead of the content of the file
-     * * Yu need to add  enctype="multipart/form-data" in the form
-     * for ex:  <form action="http://localhost:4848/management/domain/applications/application" method="post" enctype="multipart/form-data">
-     * then any param of type="file" will be uploaded, stored locally and the param will use the local location
-     * on the server side (ie. just the path)
-
-     **/
-
-    @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public void post(FormDataMultiPart formData) {
-        /* data passed to the generic command running
-         *
-         * */
-        HashMap<String, String> data = createDataBasedOnForm(formData);
-        createEntity(data); //execute the deploy command with a copy of the file locally
-
-    }
-    /*
+    /**
      * allows for remote files to be put in a tmp area and we pass the
      * local location of this file to the corresponding command instead of the content of the file
      * * Yu need to add  enctype="multipart/form-data" in the form
@@ -356,7 +318,6 @@ public class TemplateResource {
      * on the server side (ie. just the path)
     
      **/
-
     public static HashMap<String, String> createDataBasedOnForm(FormDataMultiPart formData) {
         HashMap<String, String> data = new HashMap<String, String>();
         try {
@@ -413,6 +374,35 @@ public class TemplateResource {
 
     }
 
+    public void setBeanByKey(List<Dom> parentList, String id) {
+        for (Dom c : parentList) {
+            String keyAttributeName = null;
+            ConfigModel model = c.model;
+            if (model.key == null) {
+                try {
+                    for (String s : model.getAttributeNames()) {//no key, by default use the name attr
+                        if (s.equals("name")) {
+                            keyAttributeName = s;
+                        }
+                    }
+                    if (keyAttributeName == null)//nothing, so pick the first one
+                    {
+                        keyAttributeName = model.getAttributeNames().iterator().next();
+                    }
+                } catch (Exception e) {
+                    keyAttributeName = "ThisIsAModelBug:NoKeyAttr"; //no attr choice fo a key!!! Error!!!
+                } //firstone
+            } else {
+                keyAttributeName = model.key.substring(1, model.key.length());
+            }
+
+            String keyvalue = c.attribute(keyAttributeName.toLowerCase());
+            if (keyvalue.equals(id)) {
+                setEntity((ConfigBean) c);
+            }
+        }
+    }
+
     private static File saveFile(String fileName, String mimeType, InputStream fileStream) {
 
 
@@ -455,19 +445,23 @@ public class TemplateResource {
     }
 
     /*
-     * see if we can understand the configbeans annotations like:
+     * see if we can understand the ConfigBeans annotations like:
      * @RestRedirects(
     {
     @RestRedirect(opType= RestRedirect.OpType.DELETE, commandName="undeploy"),
     @RestRedirect(opType= RestRedirect.OpType.POST, commandName = "redeploy")
     }
-     *
-     * */
-    public String[][] getCommandResourcesPaths() {
+     **/
+
+    /**
+     * Returns the list of command resource paths [command, http method, url/path]
+     * @return
+     */
+    protected String[][] getCommandResourcesPaths() {
         return new String[][]{};
     }
 
-    public String getDeleteCommand() {
+    protected String getDeleteCommand() {
         return ResourceUtil.getCommand(RestRedirect.OpType.DELETE, getEntity());
     }
 
@@ -504,32 +498,34 @@ public class TemplateResource {
         }
     }
 
-    public void setBeanByKey(List<Dom> parentList, String id) {
-        for (Dom c : parentList) {
-            String keyAttributeName = null;
-            ConfigModel model = c.model;
-            if (model.key == null) {
-                try {
-                    for (String s : model.getAttributeNames()) {//no key, by default use the name attr
-                        if (s.equals("name")) {
-                            keyAttributeName = s;
-                        }
-                    }
-                    if (keyAttributeName == null)//nothing, so pick the first one
-                    {
-                        keyAttributeName = model.getAttributeNames().iterator().next();
-                    }
-                } catch (Exception e) {
-                    keyAttributeName = "ThisIsAModelBug:NoKeyAttr"; //no attr choice fo a key!!! Error!!!
-                } //firstone
-            } else {
-                keyAttributeName = model.key.substring(1, model.key.length());
-            }
-
-            String keyvalue = c.attribute(keyAttributeName.toLowerCase());
-            if (keyvalue.equals(id)) {
-                setEntity((ConfigBean) c);
-            }
+    //******************************************************************************************************************
+    protected ActionReportResult buildActionReportResult(boolean showEntityValues) {
+        RestActionReporter ar = new RestActionReporter();
+        ConfigBean entity = (ConfigBean)getEntity();
+        ar.setActionDescription(upperCaseFirstLetter(entity.model.getTagName()));
+        if (showEntityValues) {
+            ar.getExtraProperties().put("entity", getAttributes(entity));
         }
+        OptionsResult optionsResult = new OptionsResult(Util.getResourceName(uriInfo));
+        Map<String, MethodMetaData> mmd = getMethodMetaData();
+        optionsResult.putMethodMetaData("GET", mmd.get("GET"));
+        optionsResult.putMethodMetaData("POST", mmd.get("POST"));
+        optionsResult.putMethodMetaData("DELETE", mmd.get("DELETE"));
+
+        ResourceUtil.addMethodMetaData(ar, mmd);
+        ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(entity, uriInfo));
+        ar.getExtraProperties().put("commands", ResourceUtil.getCommandLinks(getCommandResourcesPaths()));
+
+        return new ActionReportResult(ar, entity, optionsResult);
+    }
+
+    private Map<String, String> getAttributes(Dom entity) {
+        Map<String, String> result = new HashMap<String, String>();
+        Set<String> attributeNames = entity.model.getAttributeNames();
+        for (String attributeName : attributeNames) {
+            result.put(eleminateHypen(attributeName), entity.attribute(attributeName));
+        }
+
+        return result;
     }
 }

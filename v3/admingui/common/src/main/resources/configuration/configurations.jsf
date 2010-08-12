@@ -99,11 +99,11 @@
     <sun:tableColumn headerText="$resource{i18n.common.name.header}" rowHeader="$boolean{true}" id="col1">
         <event>
             <!beforeEncode
-                setPageSessionAttribute(key="configName" value="#{td.value.Name}");
+                setPageSessionAttribute(key="configName" value="#{td.value.name}");
             />
         </event>
-        <sun:hyperlink id="link" text="#{td.value.Name}"
-                   url="#{request.contextPath}/common/configuration/configuration.jsf?c=#{td.value.Name}" />
+        <sun:hyperlink id="link" text="#{td.value.name}"
+                   url="#{request.contextPath}/common/configuration/configuration.jsf?c=#{td.value.name}" />
     </sun:tableColumn>
 
      <sun:tableColumn

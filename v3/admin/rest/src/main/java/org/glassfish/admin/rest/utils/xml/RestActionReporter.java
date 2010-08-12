@@ -38,16 +38,19 @@ package org.glassfish.admin.rest.utils.xml;
 import com.sun.enterprise.v3.common.ActionReporter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  *
  * @author jasonlee
  */
-public class RestActionReporter extends ActionReporter {
+public class RestActionReporter extends ActionReporter {    
     public RestActionReporter() {
         super();
+        setExtraProperties(new Properties());
     }
-    
+
     @Override
     public void writeReport(OutputStream os) throws IOException {
         // no-op

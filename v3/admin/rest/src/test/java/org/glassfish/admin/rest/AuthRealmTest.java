@@ -64,7 +64,7 @@ public class AuthRealmTest extends RestTestBase {
         assertEquals("true", groups.get(0));
     }
 
-    @Test
+//    @Test
     public void testUserManagement() {
         final String userName = "user" + generateRandomString();
         Map<String, String> newUser = new HashMap<String, String>() {{

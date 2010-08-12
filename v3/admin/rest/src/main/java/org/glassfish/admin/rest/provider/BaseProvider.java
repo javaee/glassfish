@@ -58,6 +58,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
  */
 @Provider
 public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
+    public static final String HEADER_DEBUG = "__debug";
     @Context
     protected UriInfo uriInfo;
     @Context
@@ -91,18 +92,15 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
         entityStream.write(getContent(proxy).getBytes());
     }
 
-    protected abstract String getContent(T proxy);
+    public abstract String getContent(T proxy);
 
     protected int getFormattingIndentLevel() {
-        List header = requestHeaders.getRequestHeader("__format");
         int indent = -1;
-        if ((header != null) && (header.size() > 0)) {
-            try {
-                indent = Integer.parseInt((String) header.get(0));
-            } catch (Exception e) {
-                indent = 4;
-            }
-
+        try {
+            List header = requestHeaders.getRequestHeader(HEADER_DEBUG);
+            indent = ((header != null) && ("true".equals(header.get(0)))) ? 4 : -1;
+        } catch (Exception e) {
+            //
         }
 
         return indent;
@@ -143,6 +141,8 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
                         lcm = new ArrayList<ConfigModel>();
                         lcm.add(childModel);
                     }
+                    Collections.sort(lcm, new ConfigModelComparator());
+
                     if (lcm != null) {
                         Collections.sort(lcm, new ConfigModelComparator());
                         for (ConfigModel cmodel : lcm) {

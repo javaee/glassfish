@@ -40,6 +40,8 @@ import java.util.HashMap;
 import java.util.Map;
 import com.sun.jersey.api.client.ClientResponse;
 import javax.ws.rs.core.Cookie;
+
+import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -114,7 +116,9 @@ public class TokenAuthenticationTest extends RestTestBase {
     protected String getSessionToken() {
         ClientResponse response = post(URL_DOMAIN_SESSIONS);
         assertTrue(isSuccess(response));
-        return response.getEntity(String.class);
+        Map<String, Object> responseMap = MarshallingUtils.buildMapFromDocument(response.getEntity(String.class));
+        Map<String, Object> extraProperties = (Map<String, Object>)responseMap.get("extraProperties");
+        return (String)extraProperties.get("token");
     }
 
     private void deleteUserAuthTestUser() {

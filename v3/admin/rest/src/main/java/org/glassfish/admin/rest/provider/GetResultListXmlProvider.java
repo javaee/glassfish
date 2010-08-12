@@ -61,7 +61,7 @@ public class GetResultListXmlProvider extends BaseProvider<GetResultList> {
     }
 
     @Override
-    protected String getContent(GetResultList proxy) {
+    public String getContent(GetResultList proxy) {
         StringBuilder result = new StringBuilder();
         String indent = Constants.INDENT;
 

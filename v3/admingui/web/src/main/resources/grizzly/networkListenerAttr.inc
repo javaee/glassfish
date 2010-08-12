@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,7 @@
     <sun:propertySheetSection id="propertSectionTextField">
 
         <sun:property id="nameNew"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}" helpText="$resource{i18n_web.common.nameHelp}">
-            <sun:textField id="name"  required="#{true}" columns="$int{50}" text="#{pageSession.valueMap['Name']}"
+            <sun:textField id="name"  required="#{true}" columns="$int{50}" text="#{pageSession.valueMap['name']}"
                 onChange="setProtocolName()" >
                 <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{listenerId});
@@ -51,8 +51,7 @@
 
 
     <sun:property id="prop1" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.protocol}">
-    <sun:radioButton id="rdBtn" name="rdBtn"
-        selected="#{pageSession.rdBtn}"  selectedValue="create"  onClick="radioBtnAction('create');"  >
+    <sun:radioButton id="rdBtn" name="rdBtn" selected="#{pageSession.rdBtn}" selectedValue="create" onClick="radioBtnAction('create');"  >
       <!beforeCreate
             setPageSessionAttribute(key="rdBtn", value="create");
       />
@@ -66,7 +65,7 @@
 
         "<br/><br/>
         <sun:staticText text="$resource{i18n_web.http.defVirtualServerLabel}" style="margin-left: 12pt" />
-        <sun:dropDown id="vs" selected="#{pageSession.valueMap['DefaultVirtualServer']}" labels="$pageSession{vsList}"  values="$pageSession{vsList}" style="margin-left: 4pt" >
+        <sun:dropDown id="vs" selected="#{pageSession.valueMap['defaultVirtualServer']}" labels="$pageSession{vsList}"  values="$pageSession{vsList}" style="margin-left: 4pt" >
         <!beforeCreate
             gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server" result="#{pageSession.vsList}");
             mapPut(map="#{pageSession.valueMap}" key="defaultVirtualServer"  value="server")
@@ -103,27 +102,27 @@
         </sun:property>
 
         <sun:property id="port"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.port}" helpText="$resource{i18n_web.grizzly.networkListener.portHelp}">
-            <sun:textField id="port" columns="$int{20}" required="#{true}" styleClass="required port" text="#{pageSession.valueMap['Port']}"  />
+            <sun:textField id="port" columns="$int{20}" required="#{true}" styleClass="required port" text="#{pageSession.valueMap['port']}"  />
         </sun:property>
 
         <sun:property id="addr"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.address}" helpText="$resource{i18n_web.grizzly.networkListener.addressHelp}">
-            <sun:textField id="addr" columns="$int{20}" text="#{pageSession.valueMap['Address']}"  />
+            <sun:textField id="addr" columns="$int{20}" text="#{pageSession.valueMap['address']}"  />
         </sun:property>
 
         <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.status}"  helpText="$resource{i18n_web.grizzly.networkListener.statusHelp}" >
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="security"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.security}" helpText="$resource{i18n_web.grizzly.networkListener.securityHelp}" >
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['SecurityEnabled']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="JkEnabled"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.JkEnabled}" helpText="$resource{i18n_web.grizzly.networkListener.JkEnabledHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['JkEnabled']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['jkenabled']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="threadpool"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.threadPool}" helpText="$resource{i18n_web.grizzly.networkListener.threadPoolHelp}">
-            <sun:dropDown id="threadpool" selected="#{pageSession.valueMap['ThreadPool']}" labels="$pageSession{threadPoolList}"  values="$pageSession{threadPoolList}" >
+            <sun:dropDown id="threadpool" selected="#{pageSession.valueMap['threadPool']}" labels="$pageSession{threadPoolList}"  values="$pageSession{threadPoolList}" >
             <!beforeCreate
                 gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/thread-pools/thread-pool" result="#{pageSession.threadPoolList}");
             />
@@ -131,7 +130,7 @@
         </sun:property>
 
         <sun:property id="transport"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.transport}" helpText="$resource{i18n_web.grizzly.networkListener.transportHelp}">
-            <sun:dropDown id="transport" selected="#{pageSession.valueMap['Transport']}" labels="$pageSession{transportList}"  values="$pageSession{transportList}"  >
+            <sun:dropDown id="transport" selected="#{pageSession.valueMap['transport']}" labels="$pageSession{transportList}"  values="$pageSession{transportList}"  >
             <!beforeCreate
                 gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/transports/transport" result="#{pageSession.transportList}");
             />
@@ -140,7 +139,7 @@
 
 <!--
         <sun:property id="protocol"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.protocol}" helpText="$resource{i18n_web.grizzly.networkListener.protocolHelp}">
-            <sun:dropDown id="protocolChoice" selected="#{pageSession.valueMap['Protocol']}" 
+            <sun:dropDown id="protocolChoice" selected="#{pageSession.valueMap['protocol']}"
                 labels="$pageSession{protocolListLabel}"  values="$pageSession{protocolListValue}"
                 onChange="javascript: disableProtocolNameField();" >
             <!beforeCreate

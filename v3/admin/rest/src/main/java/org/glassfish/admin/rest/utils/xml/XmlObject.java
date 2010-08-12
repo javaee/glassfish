@@ -35,18 +35,18 @@
  */
 package org.glassfish.admin.rest.utils.xml;
 
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.transform.Result;
+import javax.xml.transform.*;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -131,6 +131,10 @@ public class XmlObject {
 
     @Override
     public String toString() {
+        return toString(-1);
+    }
+
+    public String toString(int indent) {
         Document document = getDocument();
         document.appendChild(createNode(document));
         try {
@@ -139,14 +143,34 @@ public class XmlObject {
             Result result = new StreamResult(stringWriter);
             TransformerFactory factory = TransformerFactory.newInstance();
             Transformer transformer = factory.newTransformer();
+            if (indent > -1) {
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", String.valueOf(indent));
+            }
             transformer.transform(source, result);
+
+/*
+            Source xmlInput = new StreamSource(new StringReader(input));
+            StringWriter stringWriter = new StringWriter();
+            StreamResult xmlOutput = new StreamResult(stringWriter);
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            transformer.transform(xmlInput, xmlOutput);
+            return xmlOutput.getWriter().toString();
+*/
 
             return stringWriter.getBuffer().toString();
         } catch (Exception ex) {
             Logger.getLogger(XmlEntity.class.getName()).log(Level.SEVERE, null, ex);
             throw new RuntimeException(ex);
         }
+
+
     }
+
+
+
 
 //    public static class XmlNumber extends XmlObject {
 //        private Number value;

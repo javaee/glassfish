@@ -39,6 +39,7 @@ holder.
 
 
 <!-- PropertySheet .... -->
+"<h1>#{wizardPoolExtra}</h1>
 <sun:propertySheet id="propertySheet">
     <sun:propertySheetSection id="generalPropertySheet"  label="$resource{i18n.common.GeneralSettings}">
         <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.poolName}">

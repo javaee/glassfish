@@ -56,7 +56,7 @@ public class StringListResultXmlProvider extends BaseProvider<StringListResult> 
     }
 
     @Override
-    protected String getContent(StringListResult proxy) {
+    public String getContent(StringListResult proxy) {
         String result;
         String uri = uriInfo.getAbsolutePath().toString();
         String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));

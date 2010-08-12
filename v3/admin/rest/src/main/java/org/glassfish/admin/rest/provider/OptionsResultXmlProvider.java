@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -65,7 +65,7 @@ public class OptionsResultXmlProvider extends BaseProvider<OptionsResult> {
 
      //get json representation for the given OptionsResult object
      @Override
-     protected String getContent(OptionsResult proxy) {
+     public String getContent(OptionsResult proxy) {
         String result;
         String indent = Constants.INDENT;
         result = "<" + proxy.getName() + ">" ;
@@ -91,7 +91,7 @@ public class OptionsResultXmlProvider extends BaseProvider<OptionsResult> {
 
            MethodMetaData methodMetaData = proxy.getMethodMetaData(method);
 
-           //query params`
+           //query params
            result = result + getQueryParams(methodMetaData,
                indent + Constants.INDENT);
 
@@ -168,8 +168,7 @@ public class OptionsResultXmlProvider extends BaseProvider<OptionsResult> {
 
 
     //get xml representation for the given parameter
-    private String getParameter(String parameter,
-        ParameterMetaData parameterMetaData, String indent) {
+    private String getParameter(String parameter, ParameterMetaData parameterMetaData, String indent) {
         String result = "\n" + indent;
 
         result = result + "<" + parameter;

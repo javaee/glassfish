@@ -132,18 +132,18 @@
     <sun:tableColumn headerText="$resource{i18n.common.name.header}" rowHeader="$boolean{true}" id="col1">
         <event>
             <!beforeEncode
-                setPageSessionAttribute(key="clusterName" value="#{td.value.Name}");
+                setPageSessionAttribute(key="clusterName" value="#{td.value.name}");
             />
         </event>
-        <sun:hyperlink id="link" text="#{td.value.Name}"
-                   url="#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{td.value.Name}" />
+        <sun:hyperlink id="link" text="#{td.value.name}"
+                   url="#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{td.value.name}" />
     </sun:tableColumn>
 
     <sun:tableColumn
         headerText="$resource{i18n.common.Configuration}" rowHeader="$boolean{true}"
         id="col2">
-        <sun:hyperlink id="configlink" text="#{td.value.ConfigRef}"
-               url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{td.value.ConfigRef}" />
+        <sun:hyperlink id="configlink" text="#{td.value.configRef}"
+               url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{td.value.configRef}" />
     </sun:tableColumn>
 
      <sun:tableColumn

@@ -61,7 +61,7 @@ import static org.junit.Assert.assertTrue;
 public class EncodingTest {
     @Test
     public void encodeAsJson() {
-        ActionReport ar = buildActionReport();
+        RestActionReporter ar = buildActionReport();
         ActionReportResultJsonProvider provider = new ActionReportResultJsonProvider();
         ActionReportResult result = new ActionReportResult("test", ar);
         String json = provider.getContent(result);
@@ -74,7 +74,7 @@ public class EncodingTest {
 
     @Test
     public void encodeAsXml() {
-        ActionReport ar = buildActionReport();
+        RestActionReporter ar = buildActionReport();
         ActionReportResultXmlProvider provider = new ActionReportResultXmlProvider();
         ActionReportResult result = new ActionReportResult("test", ar);
         String xml = provider.getContent(result);
@@ -88,15 +88,15 @@ public class EncodingTest {
 
     @Test
     public void encodeAsHtml() {
-        ActionReport ar = buildActionReport();
+        RestActionReporter ar = buildActionReport();
         ActionReportResultHtmlProvider provider = new ActionReportResultHtmlProvider();
         ActionReportResult result = new ActionReportResult("test", ar);
         String html = provider.getContent(result);
         // How to test this?
     }
 
-    private ActionReporter buildActionReport() {
-        ActionReporter ar = new RestActionReporter();
+    private RestActionReporter buildActionReport() {
+        RestActionReporter ar = new RestActionReporter();
         ar.setActionDescription("test description");
         ar.setActionExitCode(ExitCode.SUCCESS);
         ar.setMessage("test message");

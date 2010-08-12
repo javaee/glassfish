@@ -39,15 +39,7 @@ package org.glassfish.admingui.devtests;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-/**
- * Created by IntelliJ IDEA.
- * User: jasonlee
- * Date: Mar 12, 2010
- * Time: 2:07:13 PM
- * To change this template use File | Settings | File Templates.
- */
 public class AdminServiceTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_EDIT_JMX_CONNECTOR = "Edit JMX Connector";
     private static final String TRIGGER_SSL = "Requires the client to authenticate itself to the server";
