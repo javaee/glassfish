@@ -195,6 +195,70 @@
             <param name="log.id" value="5"/>
             <param name="desc" value="war/servletonly Test asadmin enable"/>
         </antcall>
+
+        <antcall target="common.dotted.disable.ref.asadmin">
+            <param name="testName" value="${testName}"/>
+        </antcall>
+        <antcall target="run.negative">
+            <param name="log.id" value="11"/>
+            <param name="desc" value="war/servletonly Test asadmin dotted disable ref"/>
+        </antcall>
+        <antcall target="common.dotted.enable.ref.asadmin">
+            <param name="testName" value="${testName}"/>
+        </antcall>
+        <antcall target="run.positive">
+            <param name="log.id" value="12"/>
+            <param name="desc" value="war/servletonly Test asadmin dotted enableref "/>
+        </antcall>
+        <antcall target="common.dotted.disable.application.asadmin">
+            <param name="testName" value="${testName}"/>
+        </antcall>
+        <antcall target="run.negative">
+            <param name="log.id" value="13"/>
+            <param name="desc" value="war/servletonly Test asadmin dotted disable application"/>
+        </antcall>
+        <antcall target="common.dotted.enable.application.asadmin">
+            <param name="testName" value="${testName}"/>
+        </antcall>
+        <antcall target="run.positive">
+            <param name="log.id" value="14"/>
+            <param name="desc" value="war/servletonly Test asadmin dotted enable application"/>
+        </antcall>
+       <antcall target="common.dotted.disable.application.asadmin">
+            <param name="testName" value="${testName}"/>
+        </antcall>
+        <antcall target="common.dotted.disable.ref.asadmin">
+            <param name="testName" value="${testName}"/>
+        </antcall>
+        <antcall target="run.negative">
+            <param name="log.id" value="15"/>
+            <param name="desc" value="war/servletonly Test asadmin dotted disable ref and application"/>
+        </antcall>
+        <antcall target="common.dotted.enable.application.asadmin">
+            <param name="testName" value="${testName}"/>
+        </antcall>
+        <antcall target="run.negative">
+            <param name="log.id" value="16"/>
+            <param name="desc" value="war/servletonly Test asadmin dotted disable ref and enable application"/>
+        </antcall>
+        <antcall target="common.dotted.disable.application.asadmin">
+            <param name="testName" value="${testName}"/>
+        </antcall>
+       <antcall target="common.dotted.enable.ref.asadmin">
+            <param name="testName" value="${testName}"/>
+       </antcall>
+        <antcall target="run.negative">
+            <param name="log.id" value="17"/>
+            <param name="desc" value="war/servletonly Test asadmin dotted disable application and enable ref"/>
+        </antcall>
+        <antcall target="common.dotted.enable.application.asadmin">
+            <param name="testName" value="${testName}"/>
+        </antcall>
+        <antcall target="run.positive">
+            <param name="log.id" value="18"/>
+            <param name="desc" value="war/servletonly Test asadmin dotted enable application and enable ref"/>
+        </antcall>
+
         <antcall target="undeploy.asadmin"/>
 
         <antcall target="deploy.jsr88"/>

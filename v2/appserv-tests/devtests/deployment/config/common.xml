@@ -206,6 +206,26 @@
     </condition>
 </target>
 
+<target name="setInstanceName">
+    <condition property="depltest.instance.name" value="${testServer}">
+        <equals arg1="${targetPlatform}" arg2="SERVER"/>
+    </condition>
+
+    <condition property="depltest.instance.name" value="${testClusterServer1}">
+        <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
+    </condition>
+    <condition property="depltest.instance.name" value="server">
+        <and>
+            <not>
+                <equals arg1="${targetPlatform}" arg2="SERVER"/>
+            </not>
+            <not>
+                <equals arg1="${targetPlatform}" arg2="CLUSTER"/>
+            </not>
+        </and>
+    </condition>
+</target>
+
 <target name="setHttpPort">
     <condition property="depltest.port" value="${deploy.serverinstance.httpport}">
         <or>
@@ -224,6 +244,7 @@
         </and>
     </condition>
 </target>
+
 
 <target name="setOrbPort2">
     <condition property="depltest.orbport" value="${deploy.serverinstance.orbport}">
@@ -313,11 +334,42 @@ AS_ADMIN_MASTERPASSWORD=changeit
   <delete file="${user.password.file}" failonerror="false"/>
 </target>
 
+
+<!-- set dotted name enable using asadmin -->
+<target name="common.dotted.enable.ref.asadmin" depends="setInstanceName">
+    <antcall target="common.run.asadmin">
+        <param name="arg.list" 
+               value="set servers.server.${depltest.instance.name}.application-ref.${testName}.enabled=true"/>
+    </antcall>
+</target>
+
+<target name="common.dotted.disable.ref.asadmin" depends="setInstanceName">
+    <antcall target="common.run.asadmin">
+        <param name="arg.list"
+               value="set servers.server.${depltest.instance.name}.application-ref.${testName}.enabled=false"/>
+    </antcall>
+</target>
+
+<target name="common.dotted.enable.application.asadmin">
+    <antcall target="common.run.asadmin">
+        <param name="arg.list"
+               value="set applications.application.${testName}.enabled=true"/>
+    </antcall>
+</target>
+
+<target name="common.dotted.disable.application.asadmin">
+    <antcall target="common.run.asadmin">
+        <param name="arg.list"
+               value="set applications.application.${testName}.enabled=false"/>
+    </antcall>
+</target>
+
+
 <!-- enable using asadmin -->
 <!-- @param ${arg.list} (required) -->
 <target name="common.enable.asadmin" depends="setAsadminArgs">
     <antcall target="common.run.asadmin">
-        <param name="arg.list" 
+        <param name="arg.list"
                value="enable ${ASADMIN-ARGS} ${arg.list}"/>
     </antcall>
     <antcall target="enableAppOnInstance">
@@ -717,6 +769,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
     <record name="client.log" action="start"/>
     <antcall target="preTestsRun"/>
     <antcall target="setup"/>
+    <sleep seconds="10"/>
     <delete dir="${build}/setupdone"/>
     <antcall target="private-all">
         <param name="build" value="${testsRoot}/build"/>
