@@ -341,12 +341,18 @@ AS_ADMIN_MASTERPASSWORD=changeit
         <param name="arg.list" 
                value="set servers.server.${depltest.instance.name}.application-ref.${testName}.enabled=true"/>
     </antcall>
+    <antcall target="dotted.enableAppOnInstance">
+        <param name="testName" value="${testName}"/>
+    </antcall>
 </target>
 
 <target name="common.dotted.disable.ref.asadmin" depends="setInstanceName">
     <antcall target="common.run.asadmin">
         <param name="arg.list"
                value="set servers.server.${depltest.instance.name}.application-ref.${testName}.enabled=false"/>
+    </antcall>
+    <antcall target="dotted.disableAppOnInstance">
+        <param name="testName" value="${testName}"/>
     </antcall>
 </target>
 
@@ -523,6 +529,19 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </antcall>
 </target>
 
+<target name="dotted.enableAppOnInstance" depends="init" if="doCluster">
+    <antcall target="common.run.asadmin">
+        <param name="arg.list" 
+               value="set servers.server.${testServer}.application-ref.${testName}.enabled=true"/>
+    </antcall>
+</target>
+
+<target name="dotted.disableAppOnInstance" depends="init" if="doCluster">
+    <antcall target="common.run.asadmin">
+        <param name="arg.list"
+               value="set servers.server.${testServer}.application-ref.${testName}.enabled=false"/>
+    </antcall>
+</target>
 
 <!-- deploydir using asadmin -->
 <!-- @param ${arg.list} (required) -->
@@ -769,7 +788,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
     <record name="client.log" action="start"/>
     <antcall target="preTestsRun"/>
     <antcall target="setup"/>
-    <sleep seconds="10"/>
+    <sleep seconds="60"/>
     <delete dir="${build}/setupdone"/>
     <antcall target="private-all">
         <param name="build" value="${testsRoot}/build"/>
