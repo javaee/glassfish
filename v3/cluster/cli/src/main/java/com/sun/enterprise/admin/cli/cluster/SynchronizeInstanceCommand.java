@@ -63,14 +63,8 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
     @Param(name = "instance_name", primary = true, optional = true)
     private String instanceName0;
 
-    @Param(name = "syncarchive", optional = true)
-    private boolean syncArchive;
-
-    @Param(name = "syncallapps", optional = true)
-    private boolean syncAllApps;
-
-    @Param(name = "syncfull", optional = true)
-    private boolean syncFull;
+    @Param(name = "fullsync", optional = true)
+    private boolean fullSync;
 
     private RemoteCommand syncCmd;
 
@@ -126,7 +120,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
          * synchronized from the DAS; any other local directories (logs,
          * instance-private state) are left alone.
          */
-        if (syncFull) {
+        if (fullSync) {
             logger.printDetailMessage(
                                 Strings.get("Instance.fullsync", instanceName));
             removeSubdirectory("config");
@@ -301,8 +295,6 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             // _synchronize-files takes a single operand of type File
             // Note: we throw the output away to avoid printing a blank line
             syncCmd.executeAndReturnOutput("_synchronize-files",
-                "--syncarchive", Boolean.toString(syncArchive),
-                "--syncallapps", Boolean.toString(syncAllApps),
                 tempFile.getPath());
 
             // the returned files are automatically saved by the command
