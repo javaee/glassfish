@@ -47,7 +47,16 @@
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/servers,type=server,name=server");
         setPageSessionAttribute(key="childType" value="system-property");
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result=>$attribute{tableList});
+        //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result=>$attribute{tableList});
+	// FIXME: The following does not work!  The REST api does not return anything
+	gf.restRequest(
+	    endpoint="#{REST_URL}/servers/server/server/property.json"
+	    method="GET"
+	    result="#{requestScope.propTable}");
+	setAttribute(
+	    key="tableList"
+	    value="#{requestScope.propTable.data.extraProperties.properties}");
+
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/token.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
