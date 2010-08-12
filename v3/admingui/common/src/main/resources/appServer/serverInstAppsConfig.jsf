@@ -61,11 +61,13 @@
         setPageSessionAttribute(key="showCancelButton" value="#{false}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
-
-        //REST-TODO
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/admin-service,type=das-config");
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
-        
+	gf.restRequest(
+	    endpoint="#{REST_URL}/configs/config/server-config/admin-service/property.json"
+	    method="GET"
+	    result="#{requestScope.propTable}");
+	setAttribute(
+	    key="tableList"
+	    value="#{requestScope.propTable.data.extraProperties.properties}");
         />
     </event>
             <sun:form id="propertyForm">
