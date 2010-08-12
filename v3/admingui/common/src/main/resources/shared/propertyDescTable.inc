@@ -53,7 +53,7 @@
         <sun:button id="addSharedTableButton" disabled="#{false}" text="$resource{i18n.button.AddProperty}" >   
             <!command
                 getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"Name", "Value", "Description"});
+                addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"name", "value", "description"});
             />                                 
         </sun:button>
         <sun:button id="button1" text="$resource{i18n.button.DeleteProperties}" disabled="#{true}" primary="#{false}">
@@ -66,10 +66,32 @@
         </sun:button>
     </sun:panelGroup>
     </facet>       
-    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{tableList}"}  sourceVar="td">
-        <!afterCreate
-         getClientId(component="$this{component}" clientId=>$page{propertyTableRowGroupId});
-        />
+    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{tableList}", "$attribute{tableList2}"}  sourceVar="td">
+        <ui:event type="beforeCreate">
+	    // Ensure all required fields exist
+	    if ("#{requestScope.tableList[0].name}") {
+		if ("!#{requestScope.tableList[0].value}") {
+		    mapPut(map="#{requestScope.tableList[0]}" key="value" value="");
+		}
+		if ("!#{requestScope.tableList[0].description}") {
+		    mapPut(map="#{requestScope.tableList[0]}" key="description" value="");
+		}
+	    }
+
+	    // Add extra table properties...
+	    createList(size="0", result="#{requestScope.tableList2}");
+	    foreach(var="row" list="#{requestScope.tableList}") {
+		selectiveEncode(value="#{row.name}" result="#{requestScope.tlEncName}");
+		gf.createAttributeMap(
+		    keys={"selected", "encodedName", "description"},
+		    values={"$boolean{false}", "$attribute{tlEncName}", ""},
+		    map="#{requestScope.tlMap}");
+		listAdd(list="#{requestScope.tableList2}", value="#{requestScope.tlMap}");
+	    }
+        </ui:event>
+        <ui:event type="afterCreate">
+	    getClientId(component="$this{component}" clientId=>$page{propertyTableRowGroupId});
+        </ui:event>
         <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col1">
             <sun:checkbox id="select" 
                 selected="#{td.value.selected}" 
@@ -77,13 +99,13 @@
                 onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
             />
         </sun:tableColumn>                    
-        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="name" rowHeader="$boolean{false}" id="col2">
             <sun:textField columns="$int{40}" id="col1St" value="#{td.value.name}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="value" rowHeader="$boolean{false}" id="col3">
             <sun:textField columns="$int{40}" id="col1St" value="#{td.value.value}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{i18n.common.Description}" sort="Value" rowHeader="$boolean{false}" id="col4">
+        <sun:tableColumn headerText="$resource{i18n.common.description}" sort="value" rowHeader="$boolean{false}" id="col4">
             <sun:textField columns="$int{20}" id="col1St" value="#{td.value.description}" />
         </sun:tableColumn>
         "<br/>
