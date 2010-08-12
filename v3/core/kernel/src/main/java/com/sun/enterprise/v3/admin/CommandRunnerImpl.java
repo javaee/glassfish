@@ -1041,10 +1041,11 @@ public class CommandRunnerImpl implements CommandRunner {
             }
 
             ClusterOperationUtil.clearInstanceList();
-            if(doReplication) {
-                // Run Supplemental commands that have to run before this command on this instance type
-                SupplementalCommandExecutor supplementalExecutor = habitat.getComponent(SupplementalCommandExecutor.class,
-                        "SupplementalCommandExecutorImpl");
+            // Run Supplemental commands that have to run before this command on this instance type
+            SupplementalCommandExecutor supplementalExecutor = habitat.getComponent(SupplementalCommandExecutor.class,
+                    "SupplementalCommandExecutorImpl");
+            if(doReplication && supplementalExecutor!= null) {
+                
                 ActionReport.ExitCode supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
                             Supplemental.Timing.Before, context, parameters, ufm.optionNameToFileMap());
                 if(supplementalReturn.equals(ActionReport.ExitCode.FAILURE)) {

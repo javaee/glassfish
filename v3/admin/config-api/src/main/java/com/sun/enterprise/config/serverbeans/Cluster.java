@@ -41,11 +41,8 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import java.io.*;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.*;
 import org.glassfish.config.support.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -520,19 +517,20 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         public void decorate(AdminCommandContext context, final Cluster instance) throws TransactionFailure, PropertyVetoException {
             Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Cluster.class);
-            Transaction t = Transaction.getTransaction(instance);
-
-            if (t==null) {
-                throw new TransactionFailure(localStrings.getLocalString(
-                        "noTransaction", "Internal Error - Cannot obtain transaction object"));
-            }
+            
             //There should be no instance/config with the same name as the cluster
             if ((domain.getServerNamed(instance.getName()) != null) ||
                     (domain.getConfigNamed(instance.getName()) != null)){
                 throw new TransactionFailure(localStrings.getLocalString(
                         "cannotAddDuplicate", "There is an instance {0} already present.", instance.getName()));
             }
-
+            //check if cluster software is installed else fail , see issue 12023
+            final CopyConfig command = (CopyConfig) runner
+                    .getCommand("copy-config", context.getActionReport(), context.getLogger());
+            if (command == null ) {
+                throw new TransactionFailure(localStrings.getLocalString("cannot.execute.command",
+                        "Cluster software is not installed"));
+            }
             final String instanceName = instance.getName();
             instance.setGmsBindInterfaceAddress(String.format(
                 "${GMS-BIND-INTERFACE-ADDRESS-%s}",
@@ -563,8 +561,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
 
                 final String configName = instance.getName() + "-config";
                 instance.setConfigRef(configName);
-                final CopyConfig command = (CopyConfig) runner
-                        .getCommand("copy-config", context.getActionReport(), context.getLogger());
+
                 command.configs= new ArrayList<String>();
                 command.configs.add("default-config");
                 command.configs.add(configName);
@@ -614,9 +611,8 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                     autohadb!=null ||
                     portbase!=null
                     ) {
-
-                String msg = localStrings.getLocalString("Cluster.obsoleteOptions","Obsolete options used");
-                throw new TransactionFailure(msg);
+               context.getActionReport().setActionExitCode(ActionReport.ExitCode.WARNING);
+               context.getActionReport().setMessage("Obsolete options used.");
             }
         }
 
