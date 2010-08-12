@@ -36,7 +36,6 @@
 
 package org.glassfish.hk2.classmodel.reflect.impl;
 
-import org.glassfish.hk2.classmodel.reflect.AnnotationType;
 import org.glassfish.hk2.classmodel.reflect.ExtensibleType;
 import org.glassfish.hk2.classmodel.reflect.InterfaceModel;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
@@ -124,7 +123,7 @@ public class ModelClassVisitor implements ClassVisitor {
         final AnnotationModelImpl am = new AnnotationModelImpl(type, at);
 
         // reverse index
-        at.getReferences().add(type);
+        at.getAnnotatedElements().add(type);
 
         // forward index
         type.addAnnotation(am);
@@ -191,36 +190,26 @@ public class ModelClassVisitor implements ClassVisitor {
 //            return null;
 //        }
 
-        TypeProxy fieldType =  typeBuilder.getHolder(asmType.getClassName());
+        TypeProxy<?> fieldType =  typeBuilder.getHolder(asmType.getClassName());
         final FieldModelImpl field = typeBuilder.getFieldModel(name, fieldType, cm);
 
         // reverse index.
-        fieldType.getFieldRefs().add(field);
+        fieldType.getRefs().add(field);
 
         // forward index
         cm.addField(field);
-        return new FieldVisitor() {
+        return new org.objectweb.asm.commons.EmptyVisitor() {
             @Override
             public AnnotationVisitor visitAnnotation(String s, boolean b) {
                 AnnotationTypeImpl annotationType = (AnnotationTypeImpl) typeBuilder.getType(Opcodes.ACC_ANNOTATION, unwrap(s), null );
                 AnnotationModelImpl annotationModel = new AnnotationModelImpl(field, annotationType);
 
                 // reverse index.
-                annotationType.getReferences().add(field);
+                annotationType.getAnnotatedElements().add(field);
 
                 // forward index
                 field.addAnnotation(annotationModel);
                 return null;
-            }
-
-            @Override
-            public void visitAttribute(Attribute attribute) {
-
-            }
-
-            @Override
-            public void visitEnd() {
-
             }
         };
     }
@@ -238,9 +227,24 @@ public class ModelClassVisitor implements ClassVisitor {
             return null;
         }
 
-        MethodModelImpl method = new MethodModelImpl(name, cm);
+        final MethodModelImpl method = new MethodModelImpl(name, cm);
         type.addMethod(method);
-        return null;
+        return new org.objectweb.asm.commons.EmptyVisitor() {
+            @Override
+            public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+
+                AnnotationTypeImpl annotationType = (AnnotationTypeImpl) typeBuilder.getType(Opcodes.ACC_ANNOTATION, unwrap(desc), null );
+                AnnotationModelImpl annotationModel = new AnnotationModelImpl(method, annotationType);
+
+                // reverse index.
+                annotationType.getAnnotatedElements().add(method);
+
+                // forward index
+                method.addAnnotation(annotationModel);
+                return null;
+            }
+
+        };
     }
 
     @Override

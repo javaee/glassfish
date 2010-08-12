@@ -55,13 +55,14 @@ public interface Type extends AnnotatedElement {
     Collection<MethodModel> getMethods();
 
     /**
-     * Returns a unmodifiable collection of fields references. A field
-     * reference is a field declaration in a type which type is this
-     * instance.
+     * Returns a unmodifiable collection of this type references. A
+     * reference can be a field declaration in a type which type is this
+     * instance or it can be a method declaration which return type is
+     * this type
      *
-     * @return fields references on this type
+     * @return references on this type
      */
-    Collection<FieldModel> getFieldReferences();
+    Collection<Member> getReferences();
 
     /**
      * Returns the defining URIs
