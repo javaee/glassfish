@@ -59,6 +59,7 @@ public class SimpleReporterAdapter implements Serializable {
     private final String testSuiteID;
     private final TestSuite suite;
     private Reporter reporter;
+    public static final String DUPLICATE = " -- DUPLICATE";
 
     static {
         String pattern = or(

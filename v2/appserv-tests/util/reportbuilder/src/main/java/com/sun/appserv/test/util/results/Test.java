@@ -91,6 +91,10 @@ public class Test {
         return name;
     }
 
+    public void setName(final String name) {
+        this.name = name;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -116,6 +120,11 @@ public class Test {
     }
 
     public void addTestCase(TestCase testCase) {
+        for (TestCase aCase : testCases) {
+            if (aCase.getName().equals(testCase.getName())) {
+                testCase.setName(testCase.getName() + SimpleReporterAdapter.DUPLICATE);
+            }
+        }
         testCases.add(testCase);
     }
 

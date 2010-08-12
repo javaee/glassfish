@@ -82,6 +82,11 @@ public class TestSuite {
     }
 
     public void addTest(Test test) {
+        for (Test aTest : tests) {
+            if(aTest.getName().equals(test.getName())) {
+                test.setName(test.getName() + SimpleReporterAdapter.DUPLICATE);
+            }
+        }
         tests.add(test);
     }
 
