@@ -72,8 +72,7 @@ public class ListCustomResources implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ListCustomResources.class);
 
-    //TODO primary=true for v2 compatibility
-    @Param(optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     private String target ;
 
     @Inject
