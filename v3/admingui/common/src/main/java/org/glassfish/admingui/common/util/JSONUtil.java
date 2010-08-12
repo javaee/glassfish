@@ -436,7 +436,9 @@ public class JSONUtil {
 	    }
 
 	    // Add the value to the List...
-	    list.add(value);
+	    if ((value == null) || (value != ABORT_PROCESSING)) {
+		list.add(value);
+	    }
 	}
 
 	// Remove the context end and return
