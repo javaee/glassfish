@@ -39,17 +39,20 @@ package com.sun.enterprise.security.auth.realm.file;
 import java.util.*;
 import java.util.logging.Level;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.security.*;
 import com.sun.enterprise.security.auth.realm.User;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
-import com.sun.enterprise.security.util.*;
 import com.sun.enterprise.security.auth.realm.IASRealm;
+import com.sun.enterprise.security.util.*;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.util.Utility;
-import java.nio.charset.Charset;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.api.SharedSecureRandom;
@@ -171,6 +174,31 @@ public final class FileRealm extends IASRealm
      */
     public FileRealm()
     {
+    }
+
+    /**
+     * Return a list of the file names used by all file realms
+     * defined for the specified config.
+     *
+     * @param   config  the config object
+     * @return          a list of the file names for all files realms in the
+     *                  config
+     */
+    public static List<String> getRealmFileNames(Config config) {
+        List<String> files = new ArrayList<String>();
+        SecurityService securityService = config.getSecurityService();
+        for (AuthRealm authRealm : securityService.getAuthRealm()) {
+            String fileRealmClassName = authRealm.getClassname();
+            // skip it if it's not a file realm
+            if (fileRealmClassName == null ||
+                    !fileRealmClassName.equals(FileRealm.class.getName()))
+                continue;
+            String file = authRealm.getPropertyValue("file");
+            if (file == null)           // skip if no "file" property
+                continue;
+            files.add(file);
+        }
+        return files;
     }
 
     

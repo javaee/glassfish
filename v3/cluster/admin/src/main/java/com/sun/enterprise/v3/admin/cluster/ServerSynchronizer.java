@@ -53,9 +53,13 @@ import org.glassfish.api.admin.config.ApplicationName;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.util.cluster.SyncRequest;
 import com.sun.enterprise.util.cluster.SyncRequest.ModTime;
+import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
@@ -74,6 +78,9 @@ public class ServerSynchronizer implements PostConstruct {
 
     @Inject
     private ServerEnvironment env;
+
+    @Inject
+    private Domain domain;
 
     @Inject(optional = true)
     private Applications applications;
@@ -107,7 +114,7 @@ public class ServerSynchronizer implements PostConstruct {
                         "server " + server.getName() + ", directory " + sr.dir);
             // handle the request appropriately based on the directory
             if (sr.dir.equals("config"))
-                synchronizeConfig(payload, sr);
+                synchronizeConfig(payload, server, sr);
             else if (sr.dir.equals("applications"))
                 synchronizeApplications(payload, server, sr);
             else if (sr.dir.equals("lib"))
@@ -140,7 +147,7 @@ public class ServerSynchronizer implements PostConstruct {
      * If the domain.xml file is up to date, don't worry
      * about any of the other files.
      */
-    private void synchronizeConfig(Payload.Outbound payload,
+    private void synchronizeConfig(Payload.Outbound payload, Server server,
                                     SyncRequest sr) throws URISyntaxException {
         logger.finer("ServerSynchronizer: synchronize config");
         // find the domain.xml entry
@@ -164,6 +171,9 @@ public class ServerSynchronizer implements PostConstruct {
         // get the set of all the config files we need to consider
         Set<String> configFileSet = getConfigFileNames();
         configFileSet.remove("domain.xml");     // already handled it
+
+        // add the list of file realm files
+        getRealmFileNames(server, configFileSet);
 
         for (ModTime mt : sr.files) {
             if (mt.name.equals("domain.xml"))   // did domain.xml above
@@ -223,6 +233,26 @@ public class ServerSynchronizer implements PostConstruct {
             }
         }
         return files;
+    }
+
+    /**
+     * Get the names of any realm files in the config directory
+     * and add them to the set of file names.  This will normally
+     * find at least the "admin-keyfile" and "keyfile" files.
+     */
+    private void getRealmFileNames(Server server, Set<String> files) {
+        File configDir = env.getConfigDirPath();
+        URI configURI = configDir.toURI();
+        Config config = domain.getConfigNamed(server.getConfigRef());
+        for (String file : FileRealm.getRealmFileNames(config)) {
+            File rfile = new File(file);
+            if (!rfile.exists())        // skip if file doesn't exist
+                continue;
+            URI rURI = rfile.toURI();
+            URI f = configURI.relativize(rfile.toURI());
+            if (!f.isAbsolute())        // if file is in config dir, add it
+                files.add(f.toString());
+        }
     }
 
     /**
