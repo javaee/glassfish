@@ -713,12 +713,14 @@ public class UtilHandlers {
             LayoutElement elt = handlerCtx.getLayoutElement();
             Map<String, Object> requestMap = handlerCtx.getFacesContext().
                     getExternalContext().getRequestMap();
-	    for (Object obj : list) {
-                requestMap.put(var, obj);
+	    if (list != null) {
+		for (Object obj : list) {
+		    requestMap.put(var, obj);
 
-                // Ignore whats returned by the handler... we need to return
-                // false anyway to prevent children from being executed again
-                elt.dispatchHandlers(handlerCtx, handlers);
+		    // Ignore whats returned by the handler... we need to return
+		    // false anyway to prevent children from being executed again
+		    elt.dispatchHandlers(handlerCtx, handlers);
+		}
 	    }
         }
 
