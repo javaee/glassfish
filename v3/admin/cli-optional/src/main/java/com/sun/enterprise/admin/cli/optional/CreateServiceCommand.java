@@ -70,14 +70,13 @@ public final class CreateServiceCommand extends CLICommand {
     @Param(name = "force", optional = true, defaultValue = "false")
     private boolean force;
     @Param(name = "domaindir", optional = true)
-    private File domainDirParent;
+    private File userSpecifiedDomainDirParent;
     @Param(name = "server_name", primary = true, optional = true, alias = "domain_name")
-    private String serverName;
+    private String userSpecifiedServerName;
     @Param(name = "nodedir", optional = true, alias = "agentdir")
-    protected String nodeDir;           // nodeDirRoot
+    private String userSpecifiedNodeDir;           // nodeDirRoot
     @Param(name = "node", optional = true, alias = "nodeagent")
-    protected String node;
-    private File domainDir;  // the directory of the domain itself
+    private String userSpecifiedNode;
     private File asadminScript;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateServiceCommand.class);
@@ -88,15 +87,19 @@ public final class CreateServiceCommand extends CLICommand {
     /**
      */
     @Override
-    protected void validate()
-            throws CommandException, CommandException {
+    protected void validate() throws CommandException {
         try {
             super.validate(); // pointless empty method but who knows what the future holds?
 
             // The order that you make these calls matters!!
             validateDomainOrInstance();
-            validateDomainDir();
-            validateName();
+
+            if (isInstance())
+                dirs = instanceDirs.getServerDirs();
+            else
+                dirs = domainDirs.getServerDirs();
+
+            validateServiceName();
             validateAsadmin();
         }
         catch (CommandException e) {
@@ -111,22 +114,16 @@ public final class CreateServiceCommand extends CLICommand {
     /**
      */
     @Override
-    protected int executeCommand()
-            throws CommandException, CommandException {
-        // note: all of the calls to File.getPath() are guaranteed to return
-        // good solid absolute paths because SmartFile is used for processing
-        // all File objects in validate()
+    protected int executeCommand() throws CommandException {
         try {
-            String type = "das"; // TODO - make it a command option
             final Service service = ServiceFactory.getService();
             // configure service
+            service.setTrace(logger.isDebug());
             service.setDate(new Date().toString());
             service.setName(serviceName);
             service.setDryRun(dry_run);
-            service.setLocation(domainDir.getPath());
-            service.setType(type.equals("das")
-                    ? AppserverServiceType.Domain
-                    : AppserverServiceType.NodeAgent);
+            service.setLocation(dirs.getServerDir().getPath());
+            service.setType(getType());
             service.setFQSN();
             service.setOSUser();
             service.setAsadminPath(asadminScript.getPath());
@@ -168,124 +165,40 @@ public final class CreateServiceCommand extends CLICommand {
         return 0;
     }
 
-    void validateDomainDir() throws CommandException {
-        if (domainDirParent == null)
-            domainDirParent = getDefaultDomainDirParent();
-        else
-            domainDirParent = SmartFile.sanitize(domainDirParent);
-
-        // either the default or the given is set.  Make sure it is valid...
-        if (!domainDirParent.isDirectory()) {
-            throw new CommandException(
-                    strings.get("create.service.BadDomainDirParent",
-                    domainDirParent));
-        }
-
-        if (!ok(serverName)) {
-            serverName = getTheOneAndOnlyDomain();
-        }
-
-        domainDir = SmartFile.sanitize(new File(domainDirParent, serverName));
-
-        if (!domainDir.isDirectory())
-            throw new CommandException(
-                    strings.get("create.service.BadDomainDir", domainDir));
-    }
-
     /**
      * make sure the parameters make sense for either an instance or a domain.
      */
     private void validateDomainOrInstance() throws CommandException, IOException {
         // case 1: since ddp is specified - it MUST be a domain
-        if (domainDirParent != null) {
-            domainDirs = new DomainDirs(domainDirParent, serverName);
+        if (userSpecifiedDomainDirParent != null) {
+            domainDirs = new DomainDirs(userSpecifiedDomainDirParent, userSpecifiedServerName);
         }
         //case 2: if either of these are set then it MUST be an instance
-        else if (node != null || nodeDir != null) {
-            instanceDirs = new InstanceDirs(nodeDir, node, serverName);
+        else if (userSpecifiedNode != null || userSpecifiedNodeDir != null) {
+            instanceDirs = new InstanceDirs(userSpecifiedNodeDir, userSpecifiedNode, userSpecifiedServerName);
         }
         // case 3: nothing is specified -- use default domain as in v3.0
-        else if (serverName == null) {
-            domainDirs = new DomainDirs(domainDirParent, serverName);
+        else if (userSpecifiedServerName == null) {
+            domainDirs = new DomainDirs(userSpecifiedDomainDirParent, userSpecifiedServerName);
         }
-        // case 4: serverName is set and the other 3 are all null
+        // case 4: userSpecifiedServerName is set and the other 3 are all null
         // we need to figure out if it's a DAS or an instance
         else {
             try {
-                domainDirs = new DomainDirs(domainDirParent, serverName);
+                domainDirs = new DomainDirs(userSpecifiedDomainDirParent, userSpecifiedServerName);
                 return;
             }
-            catch(IOException e) {
+            catch (IOException e) {
                 // handled below
             }
 
-            instanceDirs = new InstanceDirs(nodeDir, node, serverName);
+            instanceDirs = new InstanceDirs(userSpecifiedNodeDir, userSpecifiedNode, userSpecifiedServerName);
         }
     }
 
-    private File getDefaultDomainDirParent() {
-        String ir =
-                System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
-
-        if (!ok(ir))
-            throw new RuntimeException(
-                    "Internal Error: System Property not set: "
-                    + SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
-
-        return SmartFile.sanitize(new File(new File(ir), "domains"));
-    }
-
-    private String getTheOneAndOnlyDomain() {
-        // look for subdirs in the parent dir -- there must be one and only one
-
-        File[] files = domainDirParent.listFiles(new FileFilter() {
-
-            public boolean accept(File f) {
-                return f != null && f.isDirectory();
-            }
-        });
-
-        if (files == null || files.length == 0) {
-            throw new RuntimeException(
-                    strings.get("create.service.noDomainDirs", domainDirParent));
-        }
-
-        if (files.length > 1) {
-            throw new RuntimeException(
-                    strings.get("create.service.tooManyDomainDirs",
-                    domainDirParent));
-        }
-
-        return files[0].getName();
-    }
-
-    /*
-    private void setupDomainRootDir() throws GFLauncherException {
-    // if they set domainrootdir -- it takes precedence
-    if (domainRootDir != null) {
-    domainParentDir = domainRootDir.getParentFile();
-    serverName = domainRootDir.getName();
-    return;
-    }
-
-    // if they set domainParentDir -- use it.  o/w use the default dir
-    if (domainParentDir == null) {
-    domainParentDir = new File(installDir, DEFAULT_DOMAIN_PARENT_DIR);
-    }
-
-    // if they specified domain name -- use it.  o/w use the one and only
-    // dir in the domain parent dir
-
-    if (serverName == null) {
-    serverName = getTheOneAndOnlyDomain();
-    }
-
-    domainRootDir = new File(domainParentDir, serverName);
-    }
-     */
-    private void validateName() {
+    private void validateServiceName() {
         if (!ok(serviceName))
-            serviceName = domainDir.getName();
+            serviceName = dirs.getServerDir().getName();
 
         logger.printDebugMessage("service name = " + serviceName);
     }
@@ -304,5 +217,20 @@ public final class CreateServiceCommand extends CLICommand {
             throw new CommandException(
                     strings.get("create.service.noAsadminScript", asadminScript));
         }
+    }
+
+    private boolean isInstance() {
+        return instanceDirs != null;
+    }
+
+    private boolean isDomain() {
+        return domainDirs != null;
+    }
+
+    private AppserverServiceType getType() {
+        if (isInstance())
+            return AppserverServiceType.Instance;
+        else
+            return AppserverServiceType.Domain;
     }
 }
