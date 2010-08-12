@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,80 +33,57 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-import java.lang.*;
-import java.io.*;
-import java.net.*;
 
-import com.sun.ejte.ccl.reporter.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.Socket;
 
-public class WebTest extends Thread{
-    
-    private static int count = 0;
-    private static int EXPECTED_COUNT = 1;
-    private static boolean executed = false;
-    
-    static SimpleReporterAdapter stat=
-        new SimpleReporterAdapter("appserv-tests");
+import com.sun.appserv.test.util.results.SimpleReporterAdapter;
+
+public class WebTest {
+    static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", "default-keep-alive");
 
     public static void main(String args[]) {
         stat.addDescription("Default keep-alive test");
-
         String host = args[0];
         String portS = args[1];
         String contextRoot = args[2];
-
-        int port = new Integer(portS).intValue();
+        int port = new Integer(portS);
         String name;
-
-        new WebTest().start();
-
         try {
-            goGet(host, port, "/" );
+            goGet(host, port, "/");
         } catch (Throwable t) {
             System.out.println(t.getMessage());
         }
-
-        if (count != EXPECTED_COUNT){
-            stat.addStatus("defaultKeepAlive", stat.FAIL);
-        }           
-        stat.printSummary("web/defaultKeepAlive---> expect " + EXPECTED_COUNT);
+        stat.printSummary();
     }
 
     private static void goGet(String host, int port,
-                              String contextPath) throws Exception {
+        String contextPath) throws Exception {
         Socket s = new Socket(host, port);
         OutputStream os = s.getOutputStream();
-
-        System.out.println(("GET " + contextPath + " HTTP/1.1\n"));
+        System.out.println("GET " + contextPath + " HTTP/1.1\n");
         os.write(("GET " + contextPath + " HTTP/1.1\n").getBytes());
-        os.write(("Host: localhost\n").getBytes());
+        os.write("Host: localhost\n".getBytes());
         os.write("\n".getBytes());
-        
         InputStream is = s.getInputStream();
         BufferedReader bis = new BufferedReader(new InputStreamReader(is));
         String line = null;
-
-        try{
+        final long start = System.currentTimeMillis();
+        try {
             int index;
             while ((line = bis.readLine()) != null) {
                 System.out.println(line);
             }
-            if (executed){
-                stat.addStatus("defaultKeepAlive", stat.PASS);
-            }
-        } catch( Exception ex){
-            ex.printStackTrace();   
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            final long end = System.currentTimeMillis();
+            final long duration = end - start;
+            stat.addStatus("defaultKeepAlive", duration >= 30000 ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL);
+            s.close();
         }
-   }
-  
-   public void run(){
-       try{
-           Thread.sleep(15000);
-           System.out.println("OK keep-alive");
-           executed = true;
-       } catch (Exception ex){
-           ex.printStackTrace();
-       }
-   }
-
+    }
 }
