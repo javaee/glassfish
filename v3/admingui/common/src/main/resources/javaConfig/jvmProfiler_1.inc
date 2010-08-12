@@ -57,7 +57,7 @@
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteProfiler}");
         setPageSessionAttribute(key="profilerUrl", value="#{pageSession.parentUrl}/java-config/profiler");
         setPageSessionAttribute(key="createProfilerUrl", value="#{pageSession.parentUrl}/java-config/create-profiler");
-        setPageSessionAttribute(key="deleteProfilerUrl", value="#{pageSession.parentUrl}/java-config/profiler/delete-profiler");
+        setPageSessionAttribute(key="deleteProfilerUrl", value="#{pageSession.parentUrl}/java-config/profiler");
         gf.checkIfEndPointExist(endpoint="#{pageSession.profilerUrl}" exists="#{pageSession.edit}");
 
         if(#{edit}) {
