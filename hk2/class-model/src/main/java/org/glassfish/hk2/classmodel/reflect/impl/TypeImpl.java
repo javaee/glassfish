@@ -92,8 +92,8 @@ public class TypeImpl extends AnnotatedElementImpl implements Type {
     }
 
     @Override
-    public Collection<FieldModel> getFieldReferences() {
-        return Collections.unmodifiableSet(sink.getFieldRefs());
+    public Collection<Member> getReferences() {
+        return Collections.unmodifiableSet(sink.getRefs());
     }
 
     @Override

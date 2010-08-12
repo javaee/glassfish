@@ -38,6 +38,7 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.ClassModel;
 import org.glassfish.hk2.classmodel.reflect.FieldModel;
+import org.glassfish.hk2.classmodel.reflect.Member;
 import org.glassfish.hk2.classmodel.reflect.Type;
 
 import java.util.*;
@@ -54,7 +55,7 @@ public class TypeProxy<T extends Type> {
     private T value = null;
     private final String name;
     private final Notifier<T> notifier;
-    private final Set<FieldModel> fieldRefs;
+    private final Set<Member> fieldRefs;
     private final Set<Type> subTypeRefs;
     private final Set<ClassModel> implementations = new HashSet<ClassModel>(); 
 
@@ -62,7 +63,7 @@ public class TypeProxy<T extends Type> {
     public TypeProxy(Notifier<T> notifier, String name) {
         this.notifier = notifier;
         this.name = name;
-        fieldRefs = new HashSet<FieldModel>();
+        fieldRefs = new HashSet<Member>();
         subTypeRefs = new HashSet<Type>();
     }
 
@@ -87,7 +88,7 @@ public class TypeProxy<T extends Type> {
         public void valueSet(T value);
     }
 
-    public Set<FieldModel> getFieldRefs() {
+    public Set<Member> getRefs() {
         return fieldRefs;
     }
 

@@ -56,7 +56,7 @@ public class AnnotationTypeImpl extends InterfaceModelImpl implements Annotation
         return Collections.unmodifiableSet(references);
     }
 
-    Set<AnnotatedElement> getReferences() {
+    Set<AnnotatedElement> getAnnotatedElements() {
         return references;
     }
 
