@@ -104,7 +104,7 @@ public class ClusterTest extends AdminBaseDevTest {
         //list-clusters
         report("list-clusters", asadmin("list-clusters"));
         testDeleteClusterWithInstances();
-        testClusterWithObsoleteOptions();
+        //testClusterWithObsoleteOptions();
         testEndToEndDemo();
         testListClusters();
         testDynamicReconfigEnabledFlag();
