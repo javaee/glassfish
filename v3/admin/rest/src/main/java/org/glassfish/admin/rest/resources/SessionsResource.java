@@ -38,6 +38,7 @@ package org.glassfish.admin.rest.resources;
 
 
 
+import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import org.glassfish.admin.rest.SessionManager;
 
 import javax.ws.rs.Consumes;
@@ -63,6 +64,9 @@ public class SessionsResource {
     @Context
     protected UriInfo uriInfo;
 
+    @Context
+    private ThreadLocal<GrizzlyRequest> request;
+
 
     /**
      * Get a new session with GlassFish Rest service
@@ -73,7 +77,9 @@ public class SessionsResource {
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public String create() {
-        return sessionManager.createSession();
+        GrizzlyRequest grizzlyRequest = request.get();
+        return sessionManager.createSession(grizzlyRequest);
+
     }
 
     @Path("{sessionId}/")

@@ -36,6 +36,8 @@
 
 package org.glassfish.admin.rest;
 
+import com.sun.grizzly.tcp.http11.GrizzlyRequest;
+
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Map;
@@ -58,23 +60,23 @@ public class SessionManager {
     private Map<String, SessionData> activeSessions = new ConcurrentHashMap<String, SessionData>(); //To guard against parallel mutation corrupting the map
 
     //TODO createSession is public. this package should not be exported
-    public String createSession() {
+    public String createSession(GrizzlyRequest req) {
         String sessionId;
         do {
             sessionId = new BigInteger(130, randomGenerator).toString(16);
         } while(isSessionExist(sessionId));
 
-        saveSession(sessionId);
+        saveSession(sessionId, req);
         return sessionId;
     }
 
-    public boolean authenticate(String sessionId) {
+    public boolean authenticate(String sessionId, GrizzlyRequest req) {
         boolean authenticated = false;
 
         if(sessionId != null) {
             SessionData sessionData = activeSessions.get(sessionId);
             if(sessionData != null) {
-                authenticated = sessionData.isSessionActive();
+                authenticated = sessionData.authenticate(req);
                 if(authenticated) {
                     // update last access time
                     sessionData.updateLastAccessTime();
@@ -100,9 +102,9 @@ public class SessionManager {
         return sessionDeleted;
     }
 
-    private void saveSession(String sessionId) {
+    private void saveSession(String sessionId, GrizzlyRequest req) {
         purgeInactiveSessions();
-        activeSessions.put(sessionId, new SessionData(sessionId) );
+        activeSessions.put(sessionId, new SessionData(sessionId, req) );
     }
 
     private void purgeInactiveSessions() {
@@ -121,12 +123,15 @@ public class SessionManager {
     private static class SessionData{
         private static long INACTIVE_SESSION_DEFAULT_LIFETIME_IN_MILIS = 30 /*mins*/ * 60 /*secs/min*/ * 1000 /*milis/seconds*/;
         private String sessionId;
+        /** IP address of client as obtained from Grizzly request */
+        private String clientAddress;
         private long creationTime = System.currentTimeMillis();
         private long lassAccessedTime = creationTime;
         private long inactiveSessionLifeTime = INACTIVE_SESSION_DEFAULT_LIFETIME_IN_MILIS;
 
-        public SessionData(String sessionId) {
+        public SessionData(String sessionId, GrizzlyRequest req) {
             this.sessionId = sessionId;
+            this.clientAddress = req.getRemoteAddr();
         }
 
         /**
@@ -141,6 +146,10 @@ public class SessionManager {
          */
         public void updateLastAccessTime() {
             lassAccessedTime = System.currentTimeMillis();
+        }
+
+        public boolean authenticate(GrizzlyRequest req) {
+            return isSessionActive() && clientAddress.equals(req.getRemoteAddr());
         }
     }
 
