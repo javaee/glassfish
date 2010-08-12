@@ -53,9 +53,10 @@
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
         //set the following for including buttons.inc
-        setPageSessionAttribute(key="convertToFalseList" value={"SecurityEnabled" "Enabled"})
+        setPageSessionAttribute(key="convertToFalseList" value={"securityEnabled" "enabled"})
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="restObjStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service,type=iiop-listener" );
+        setPageSessionAttribute(key="skipAttrsList" value={"Enabled", "Port", "Security-enabled"});
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
