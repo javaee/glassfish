@@ -42,11 +42,13 @@ import java.nio.channels.Channels;
 import java.net.URI;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Directory base archive abstraction
  */
-public class DirectoryArchive implements ArchiveAdapter {
+public class DirectoryArchive extends AbstractAdapter {
     public final File directory;
 
     public DirectoryArchive(File directory) {
@@ -74,26 +76,43 @@ public class DirectoryArchive implements ArchiveAdapter {
     }
 
     @Override
-    public void onEachEntry(EntryTask task) throws IOException {
-        parse(directory, task);
+    public void onSelectedEntries(Selector selector, EntryTask task, Logger logger) throws IOException {
+        parse(directory, selector, task, logger);
     }
 
-    private void parse(File dir, EntryTask task) throws IOException {
- 
+    private void parse(File dir, Selector selector, EntryTask task, Logger logger) throws IOException {
+
+        byte[] bytes = new byte[52000];
         for (File f : dir.listFiles()) {
             Entry ae = new Entry(mangle(f), f.length(), f.isDirectory());
             if (!f.isDirectory()) {
+                if (!selector.isSelected(ae))
+                    continue;
                 InputStream is = null;
                 try {
-                    is = Channels.newInputStream((new FileInputStream(f)).getChannel());
-                    task.on(ae, is);
+                    try {
+                        if (bytes.length<f.length()) {
+                            bytes = new byte[(int) f.length()];
+                        }
+                        is = Channels.newInputStream((new FileInputStream(f)).getChannel());
+                        int read=is.read(bytes);
+                        if (read!=f.length()) {
+                             logger.severe("Incorrect file length while reading " + f.getName() +
+                                     " of size " + f.length() + " reported is " + read);
+                        }
+                        task.on(ae, bytes);
+                    } catch(Exception e) {
+                        logger.log(Level.SEVERE, "Exception while processing " + f.getName() +
+                                " of size " + f.length(), e);
+                    }
+
                 } finally {
                     if (is!=null) {
                         is.close();
                     }
                 }
             } else {
-                parse(f, task);
+                parse(f, selector, task, logger);
             }
 
         }

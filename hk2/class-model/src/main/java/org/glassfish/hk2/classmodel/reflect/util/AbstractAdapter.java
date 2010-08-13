@@ -39,65 +39,21 @@ package org.glassfish.hk2.classmodel.reflect.util;
 import org.glassfish.hk2.classmodel.reflect.ArchiveAdapter;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
-import java.util.jar.Manifest;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Archive adapter based on a single InputStream instance.
+ * Common archive adapter implementation
  * @author Jerome Dochez
  */
-public class InputStreamArchiveAdapter extends AbstractAdapter {
+public abstract class AbstractAdapter implements ArchiveAdapter {
     
-    final private InputStream is;
-    final private URI uri;
-
-    public InputStreamArchiveAdapter(URI uri, InputStream is) {
-        this.uri = uri;
-        this.is = is;
-    }
-
     @Override
-    public URI getURI() {
-        return uri;
-    }
-
-    @Override
-    public Manifest getManifest() throws IOException {
-        throw new IOException("Not Implemented");
-    }
-
-    @Override
-    public void onSelectedEntries(Selector selector, EntryTask task, Logger logger) throws IOException {
-        JarInputStream jis = new JarInputStream(is);
-        final byte[] bytes = new byte[52000];
-        JarEntry ja;
-        while ((ja=jis.getNextJarEntry())!=null) {
-            Entry je = new Entry(ja.getName(), ja.getSize(), ja.isDirectory());
-            if (!selector.isSelected(je))
-                continue;
-
-            try {
-                if (ja.getSize()>0) {
-                    if (jis.read(bytes, 0, (int) ja.getSize())!=ja.getSize()) {
-                        logger.severe("Incorrect file length while processing " + ja.getName() + " of size " + ja.getSize());
-                    }
-                }
-                task.on(je, bytes);
-
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Exception while processing " + ja.getName()
-                        + " of size " + ja.getSize(), e);
+    public void onAllEntries(EntryTask task, Logger logger) throws IOException {
+        onSelectedEntries(new Selector() {
+            @Override
+            public boolean isSelected(Entry entry) {
+                return true;
             }
-        }
-    }
-
-    @Override
-    public void close() throws IOException {
-        is.close();
+        }, task, logger);
     }
 }

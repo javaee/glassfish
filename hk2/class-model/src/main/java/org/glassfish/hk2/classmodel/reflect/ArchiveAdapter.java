@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.jar.Manifest;
+import java.util.logging.Logger;
 
 /**
  * adapter for reading archive style structure
@@ -69,24 +70,46 @@ public interface ArchiveAdapter extends Closeable {
      * aimed to be run on particular archive entry.
      */
     public interface EntryTask {
+        
         /**
          * callback to do some processing on an archive entry.
          *
          * @param e the archive entry information such as its name, size...
-         * @param is the archive entry input stream to access the archive entry
-         * content.
+         * @param bytes the archive entry content.
          * @throws IOException if the input stream reading generates a failure
          */
-        public void on(final Entry e, InputStream is) throws IOException;
+        public void on(final Entry e, byte[] bytes) throws IOException;
     }
 
+    public interface Selector {
+
+        /**
+         * callback to select an archive for processing
+         * @param entry the archive entry information
+         * @return true if the archive entry has been selected for processing
+         */
+        public boolean isSelected(final Entry entry);
+    }
+    
     /**
      * perform a task on each archive entry
      *
      * @param task the task to perform
+     * @param logger for any logging activity
      * @throws IOException can be generated while reading the archive entries
      */
-    public void onEachEntry(EntryTask task) throws IOException;
+    public void onAllEntries(EntryTask task, Logger logger) throws IOException;
+
+    /**
+     * perform a task on selected archive entries
+     *
+     * @param selector implementation to select the archive archive entries on
+     * which the task should be performed.
+     * @param task the task to perform
+     * @param logger for any logging activity
+     * @throws IOException can be generated while reading the archive entries
+     */
+    public void onSelectedEntries(Selector selector, EntryTask task, Logger logger) throws IOException;
 
 
     /**
