@@ -212,7 +212,7 @@ public class ListInstancesCommand implements AdminCommand {
                     (stateService.setState(name, InstanceState.StateType.NO_RESPONSE, false));
             String display = state.getDisplayString();
             if(state.equals(InstanceState.StateType.RESTART_REQUIRED)) {
-                display += ("[PENDING CONFIG CHANGES ARE : " + stateService.getFailedCommands(name) + "]");
+                display += (" [pending config changes are : " + stateService.getFailedCommands(name) + "]");
             }
             String value = state.getDescription();
             
