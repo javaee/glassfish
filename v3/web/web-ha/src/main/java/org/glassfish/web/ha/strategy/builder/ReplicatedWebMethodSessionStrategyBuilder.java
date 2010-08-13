@@ -72,24 +72,28 @@ public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceSt
 
         super.initializePersistenceStrategy(ctx, smBean, serverConfigLookup);
         //super.setPassedInPersistenceType("replicated");
+        ReplicationStore store = null;
         if (this.getPersistenceScope().equals("session")) {
             rwepMgr.setSessionFactory(new FullSessionFactory());
-            ReplicationStore store = new ReplicationStore(serverConfigLookup, ioUtils);
-            rwepMgr.setStore(store);
+            store = new ReplicationStore(serverConfigLookup, ioUtils);
+            rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getPath(), SimpleMetadata.class);
         } else if (this.getPersistenceScope().equals("modified-session")) {
             rwepMgr.setSessionFactory(new ModifiedSessionFactory());
+            store = new ReplicationStore(serverConfigLookup, ioUtils);
+            rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getPath(), SimpleMetadata.class);
         } else if (this.getPersistenceScope().equals("modified-attribute")) {
             rwepMgr.setSessionFactory(new ModifiedAttributeSessionFactory());
-            ReplicationAttributeStore store = new ReplicationAttributeStore(serverConfigLookup, ioUtils);
-            rwepMgr.setStore(store);
+            store = new ReplicationAttributeStore(serverConfigLookup, ioUtils);
+            rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getPath(), CompositeMetadata.class);
         }
+        rwepMgr.setStore(store);
 
 
-        rwepMgr.setSessionFactory(new FullSessionFactory());
+
 
 
 //        rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getServletContext().getContextPath());
-        rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getPath());
+
 
 
 
