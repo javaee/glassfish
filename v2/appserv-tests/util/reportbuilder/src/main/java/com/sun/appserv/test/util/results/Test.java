@@ -48,6 +48,7 @@ import java.util.List;
  * @Last Modified : By Justin Lee on 10/05/2009
  */
 public class Test {
+    private String id = ReporterConstants.NA;
     private String name = ReporterConstants.NA;
     private String description = ReporterConstants.NA;
     private String status = ReporterConstants.OPTIONAL;
@@ -62,6 +63,7 @@ public class Test {
     public Test(String name) {
         this();
         this.name = SimpleReporterAdapter.checkNA(name);
+        id = name;
     }
 
     public Test(String name, String description) {
@@ -87,12 +89,17 @@ public class Test {
         this.actual = SimpleReporterAdapter.checkNA(actual);
     }
 
+    public String getId() {
+        return getName();
+    }
+
     public String getName() {
         return name;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public void setName(final String value) {
+        name = SimpleReporterAdapter.checkNA(value);
+        id = name;
     }
 
     public String getDescription() {
@@ -132,7 +139,8 @@ public class Test {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("Test");
-        sb.append("{name='").append(name).append('\'');
+        sb.append("{id='").append(id).append('\'');
+        sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
         sb.append(", actual='").append(actual).append('\'');
         sb.append(", expected='").append(expected).append('\'');
@@ -146,8 +154,8 @@ public class Test {
     public String toXml() {
         StringBuilder buffer = new StringBuilder();
         buffer.append("<test>\n");
+        buffer.append("<id>" + id + "</id>\n");
         if (!name.equals(ReporterConstants.NA)) {
-            buffer.append("<id>" + name.trim() + "</id>\n");
             buffer.append("<name>" + name.trim() + "</name>\n");
         }
         if (!description.equals(ReporterConstants.NA)) {
