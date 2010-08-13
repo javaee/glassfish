@@ -37,12 +37,12 @@
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.config.dom.ThreadPool;
 import com.sun.grizzly.config.dom.Transport;
 import java.util.ArrayList;
 import java.util.List;
-import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
@@ -65,7 +65,7 @@ public class DummyNetworkListener implements NetworkListener {
     private String transport;
     private String jkEnabled;
     private String jkConfigurationFile;
-    private final List<Property> properties = new ArrayList();
+    private final List<Property> properties = new ArrayList<Property>();
 
     public DummyNetworkListener() {
     }
@@ -174,7 +174,7 @@ public class DummyNetworkListener implements NetworkListener {
     }
 
     @Override
-    public ConfigBeanProxy getParent() {
+    public NetworkListeners getParent() {
         throw new UnsupportedOperationException();
     }
 

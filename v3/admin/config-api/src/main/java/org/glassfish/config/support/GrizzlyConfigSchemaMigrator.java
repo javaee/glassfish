@@ -597,6 +597,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
 
     private void createHttp(Protocol protocol, HttpListener listener) throws TransactionFailure {
         Http http = protocol.createChild(Http.class);
+        http.setFileCache(http.createChild(FileCache.class));
         protocol.setHttp(http);
         http.setDefaultVirtualServer(listener.getDefaultVirtualServer());
         http.setServerName(listener.getServerName());

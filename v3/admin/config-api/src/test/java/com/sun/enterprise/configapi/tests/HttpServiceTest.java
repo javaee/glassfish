@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.configapi.tests;
 
+import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
@@ -82,6 +83,7 @@ public class HttpServiceTest extends ConfigApiTest {
                 final Http http = okToChange.createChild(Http.class);
                 http.setMaxConnections("100");
                 http.setTimeoutSeconds("65");
+                http.setFileCache(http.createChild(FileCache.class));
                 ConfigSupport.apply(new SingleConfigCode<Protocol>() {
                     @Override
                     public Object run(Protocol param) {

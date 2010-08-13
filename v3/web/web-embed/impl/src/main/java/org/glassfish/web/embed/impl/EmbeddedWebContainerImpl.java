@@ -44,6 +44,7 @@ import java.util.*;
 import java.util.logging.*;
 
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
@@ -177,6 +178,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
                     param.getProtocol().add(protocol);
                     final Http http = protocol.createChild(Http.class);
                     http.setDefaultVirtualServer(defaultvs);
+                    http.setFileCache(http.createChild(FileCache.class));
                     protocol.setHttp(http);
                     return protocol;
                 }
