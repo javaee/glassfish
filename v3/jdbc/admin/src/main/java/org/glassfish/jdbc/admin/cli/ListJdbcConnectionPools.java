@@ -35,10 +35,14 @@
  */
 package org.glassfish.jdbc.admin.cli;
 
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -53,6 +57,7 @@ import java.util.ArrayList;
  */
 @Service(name="list-jdbc-connection-pools")
 @Scoped(PerLookup.class)
+@Cluster(value={RuntimeType.DAS})
 @I18n("list.jdbc.connection.pools")
 public class ListJdbcConnectionPools implements AdminCommand {
     
@@ -60,7 +65,10 @@ public class ListJdbcConnectionPools implements AdminCommand {
 
     @Inject
     private JdbcConnectionPool[] connPools;
-    
+
+    @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME, alias = "targetName", obsolete = true)
+    private String target ;
+
 
     /**
      * Executes the command with the command parameters passed as Properties

@@ -35,11 +35,14 @@
  */
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -61,6 +64,7 @@ import org.jvnet.hk2.config.types.Property;
  */
 @Service(name="list-resource-adapter-configs")
 @Scoped(PerLookup.class)
+@Cluster(value={RuntimeType.DAS})
 @I18n("list.resource.adapter.configs")
 public class ListResourceAdapterConfigs implements AdminCommand {
 
@@ -71,6 +75,9 @@ public class ListResourceAdapterConfigs implements AdminCommand {
 
     @Param(name="verbose", optional=true, defaultValue="false")
     private Boolean verbose;
+
+    @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME, alias = "targetName", obsolete = true)
+    private String target ;
 
     @Inject
     private ResourceAdapterConfig[] resourceAdapterConfigs;

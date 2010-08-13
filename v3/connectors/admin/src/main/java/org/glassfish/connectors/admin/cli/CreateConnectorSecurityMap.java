@@ -66,7 +66,7 @@ public class CreateConnectorSecurityMap extends ConnectorSecurityMap implements 
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateConnectorSecurityMap.class);
 
-    @Param(optional = true)
+    @Param(optional = true, obsolete = true)
     private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Param(name = SM_POOL_NAME)

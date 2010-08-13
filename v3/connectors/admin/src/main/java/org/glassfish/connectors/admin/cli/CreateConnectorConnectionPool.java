@@ -145,7 +145,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Param(name= PROPERTY, optional=true, separator=':')
     Properties properties;
 
-    @Param(name= TARGET, optional=true)
+    @Param(name= TARGET, optional=true, obsolete = true)
     String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Param(name=CCP_POOL_NAME, primary=true)

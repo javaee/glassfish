@@ -176,9 +176,9 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     
     @Param(name="property", optional=true, separator=':')
     Properties properties;
-    
-    @Param(optional=true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+
+    @Param(optional=true, obsolete = true)
+    String target = SystemPropertyConstants.DAS_SERVER_NAME;
     
     @Param(name="jdbc_connection_pool_id", alias = "name" /*Mapped to ResourceConstants.CONNECTION_POOL_NAME below */,  primary=true)
     String jdbc_connection_pool_id;

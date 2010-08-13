@@ -36,6 +36,7 @@
 
 package org.glassfish.jdbc.admin.cli;
 
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.AdminCommand;
@@ -72,9 +73,9 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
     @Param(name="jdbc_connection_pool_id", primary=true)
     private String poolName;
 
-    @Param(optional=true)
-    private String target; /*deprecated - remove after QA,doc,CCC approval*/
-    
+    @Param(optional=true, obsolete = true)
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME; 
+
     @Inject
     private Resources resources;
     

@@ -72,7 +72,7 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(DeleteConnectorConnectionPool.class);
 
-    private @Param(optional=true)
+    private @Param(optional=true, obsolete = true)
     String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Param(optional=true, defaultValue="false")

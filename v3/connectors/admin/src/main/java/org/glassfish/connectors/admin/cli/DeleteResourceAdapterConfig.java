@@ -69,7 +69,7 @@ public class DeleteResourceAdapterConfig implements AdminCommand {
     @Param(name="raname", primary=true)
     private String raName;
 
-    @Param(optional=true)
+    @Param(optional=true, obsolete = true)
     private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Inject

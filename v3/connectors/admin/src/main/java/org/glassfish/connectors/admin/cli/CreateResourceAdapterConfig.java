@@ -83,8 +83,7 @@ public class CreateResourceAdapterConfig implements AdminCommand {
     @Param(name=PROPERTY, optional=true, separator=':')
     private Properties properties;
 
-    //TODO deprecated ?
-    @Param(name=TARGET, optional=true)
+    @Param(name=TARGET, optional=true, obsolete = true)
     private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Param(name=RAC_THREAD_POOL_ID, optional=true, alias="threadPoolIds")

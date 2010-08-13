@@ -79,7 +79,7 @@ public class DeleteConnectorSecurityMap extends ConnectorSecurityMap implements 
     @Param(name="mapname", primary=true)
     private String mapName;
 
-    @Param(optional = true)
+    @Param(optional = true, obsolete = true)
     private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Inject

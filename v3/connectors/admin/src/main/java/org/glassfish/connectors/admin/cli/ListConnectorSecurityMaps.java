@@ -36,11 +36,14 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -61,6 +64,7 @@ import java.util.logging.Logger;
  */
 @Service(name="list-connector-security-maps")
 @Scoped(PerLookup.class)
+@Cluster(value={RuntimeType.DAS})
 @I18n("list.connector.security.maps")
 public class ListConnectorSecurityMaps extends ConnectorSecurityMap implements AdminCommand {
 
@@ -75,6 +79,9 @@ public class ListConnectorSecurityMaps extends ConnectorSecurityMap implements A
 
     @Param(name="pool-name", primary=true)
     String poolName;
+
+    @Param(optional = true, alias = "targetName", obsolete = true)
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Inject
     ConnectorConnectionPool[] ccPools;
