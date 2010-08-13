@@ -43,7 +43,7 @@
     <servlet>
         <display-name>ServletTest</display-name>
         <servlet-name>ServletTest</servlet-name>
-        <servlet-class>test.ServletTest</servlet-class>
+        <servlet-class>servlet.ServletTest</servlet-class>
     </servlet>  
    <servlet-mapping>
         <servlet-name>ServletTest</servlet-name>

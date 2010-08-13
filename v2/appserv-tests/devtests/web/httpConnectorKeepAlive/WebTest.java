@@ -33,79 +33,59 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-import java.lang.*;
-import java.io.*;
-import java.net.*;
 
-import com.sun.ejte.ccl.reporter.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.Socket;
 
-public class WebTest
-{
-    
-    private static int count = 0;
-    private static int EXPECTED_COUNT = 1;
-    
-    static SimpleReporterAdapter stat=
-        new SimpleReporterAdapter("appserv-tests");
+import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
-    static int tripCount = 0;
+public class WebTest {
+    private static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests",
+        "httpConnectorKeepAlive");
 
-    public static void main(String args[])
-    {
-
-        // The stat reporter writes out the test info and results
-        // into the top-level quicklook directory during a run.
-      
+    public static void main(String args[]) {
         stat.addDescription("Http Connector httpConnectorKeepAlive test");
-
         String host = args[0];
         String portS = args[1];
         String contextRoot = args[2];
-
-        int port = new Integer(portS).intValue();
-        String name;
-        
+        int port = new Integer(portS);
         try {
-            goGet(host, port, "KeepAlive", contextRoot + "/test.jsp" );
+            goGet(host, port, contextRoot + "/test.jsp");
         } catch (Throwable t) {
         } finally {
-            if (count != EXPECTED_COUNT){
-                stat.addStatus("httpConnectorKeepAlive", stat.FAIL);
-            }           
+            stat.printSummary();
         }
-
-        stat.printSummary("web/httpConnectorKeepAlive ---> expect 1 PASS");
     }
 
-    private static void goGet(String host, int port,
-                              String result, String contextPath)
-         throws Exception
-    {
+    private static void goGet(String host, int port, String contextPath)
+        throws Exception {
         boolean closed = true;
         try {
             Socket s = new Socket(host, port);
             OutputStream os = s.getOutputStream();
-
             os.write(("GET " + contextPath + " HTTP/1.0\n").getBytes());
             os.write("Connection: keep-alive\n".getBytes());
             os.write("\n".getBytes());
-
             InputStream is = s.getInputStream();
             BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-            String line = null;
+            String line;
             while ((line = bis.readLine()) != null) {
                 int index = line.indexOf("Connection:");
                 System.out.println("--" + line);
                 if (index >= 0 && line.contains("closed")) {
                     closed = false;
-                    stat.addStatus("httpConnectorKeepAlive", stat.FAIL);
-                } 
+                    stat.addStatus("httpConnectorKeepAlive", SimpleReporterAdapter.FAIL);
+                }
             }
-        } catch( Exception ex){
-            ex.printStackTrace();   
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         System.out.println(closed);
-        if (closed)
-            stat.addStatus("httpConnectorKeepAlive", stat.PASS);
+        if (closed) {
+            stat.addStatus("httpConnectorKeepAlive", SimpleReporterAdapter.PASS);
+        }
     }
 }

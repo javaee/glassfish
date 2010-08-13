@@ -80,6 +80,7 @@
     <target name="run" depends="init-common">
           <javac
             srcdir="."
+            debug="true"
             classpath="${env.APS_HOME}/lib/reportbuilder.jar"
             includes="WebTest.java"/>
 

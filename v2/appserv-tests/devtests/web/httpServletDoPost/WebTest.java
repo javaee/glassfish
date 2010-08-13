@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,153 +33,108 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-import java.lang.*;
-import java.io.*;
-import java.net.*;
 
-import com.sun.ejte.ccl.reporter.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.Socket;
+import java.net.URL;
+import java.net.URLConnection;
 
-public class WebTest
-{
-    
-    private static URLConnection conn = null;
-    private static URL url;
-    private static ObjectOutputStream objectWriter = null;
-    private static ObjectInputStream objectReader = null;  
-    private static int count = 0;
-    private static int EXPECTED_COUNT = 3;
-    
-    static SimpleReporterAdapter stat=
-        new SimpleReporterAdapter("appserv-tests");
+import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
-    public static void main(String args[])
-    {
+public class WebTest {
+    private static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", "httpServletDoPost");
 
+    public static void main(String args[]) {
         // The stat reporter writes out the test info and results
         // into the top-level quicklook directory during a run.
-      
         stat.addDescription("Invoking HttpServlet.doPost");
-
         String host = args[0];
         String portS = args[1];
         String contextRoot = args[2];
-
-        int port = new Integer(portS).intValue();
-        String name;
-        
+        int port = new Integer(portS);
         try {
-            goGet(host, port, contextRoot + "/ServletTest" );
+            goGet(host, port, contextRoot + "/ServletTest");
         } catch (Throwable t) {
             System.out.println(t.getMessage());
         }
-
-        if (count != EXPECTED_COUNT){
-            stat.addStatus("httpServletDoPost", stat.FAIL);
-        }           
-        stat.printSummary("web/httpServletDoPost---> expect " + EXPECTED_COUNT);
+        stat.printSummary();
     }
 
-    private static void goGet(String host, int port,
-                              String contextPath)
-         throws Exception
-    {
-        url = new URL("http://" + host  + ":" + port + contextPath);
+    private static void goGet(String host, int port, String contextPath)
+        throws Exception {
+        checkResponseCode(host, port, contextPath);
+        test(host, port, contextPath, "HTTP/1.1");
+        test(host, port, contextPath, "HTTP/1.0");
+    }
+
+    private static void checkResponseCode(final String host, final int port, final String contextPath)
+        throws IOException {
+        final URL url = new URL("http://" + host + ":" + port + contextPath);
         System.out.println("\n Invoking url: " + url.toString());
-        conn = url.openConnection();
-        if (conn instanceof HttpURLConnection) {
-            HttpURLConnection urlConnection = (HttpURLConnection)conn;
-            urlConnection.setDoOutput(true);
+        final URLConnection conn = url.openConnection();
+        DataOutputStream out = null;
+        try {
+            if (conn instanceof HttpURLConnection) {
+                HttpURLConnection urlConnection = (HttpURLConnection) conn;
+                urlConnection.setDoOutput(true);
+                out = new DataOutputStream(urlConnection.getOutputStream());
+                out.writeByte(1);
+                int responseCode = urlConnection.getResponseCode();
+                stat.addStatus("httpServletDoPost",
+                    urlConnection.getResponseCode() == 405 ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL);
 
-            DataOutputStream out = 
-               new DataOutputStream(urlConnection.getOutputStream());
-                                out.writeByte(1);
-
-           int responseCode=  urlConnection.getResponseCode();
-           System.out.println("responseCode: " + responseCode);
-            
-           if (urlConnection.getResponseCode() != 405){
-                stat.addStatus("httpServletDoPost", stat.FAIL);
-           } else {
-                stat.addStatus("httpServletDoPost", stat.PASS);
-           }
+                urlConnection.disconnect();
+            }
+        } finally {
+            if(out != null) {
+                out.close();
+            }
         }
+    }
 
+    private static void test(final String host, final int port, final String contextPath, final String protocol)
+        throws IOException {
         boolean mark = false;
         int i = 0;
-        try{
-            long time = System.currentTimeMillis();
-            Socket s = new Socket(host, port);
+        final String name = "httpServletDoPost-noCL-" + protocol;
+        Socket s = new Socket(host, port);
+        try {
             s.setSoTimeout(10000);
             OutputStream os = s.getOutputStream();
-
-            System.out.println(("POST " + contextPath + " HTTP/1.1\n"));
-            os.write(("POST " + contextPath + " HTTP/1.1\n").getBytes());
-            os.write(("Host: localhost\r\n").getBytes());
+            System.out.println("POST " + contextPath + " " + protocol + "\n");
+            os.write(("POST " + contextPath + " " + protocol + "\n").getBytes());
+            os.write("Host: localhost\r\n".getBytes());
             os.write("content-length: 0\r\n".getBytes());
             os.write("\r\n".getBytes());
-            
             InputStream is = s.getInputStream();
             BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-            String line = null;
-
-            int index = 0;
+            String line;
+            int index;
             while ((line = bis.readLine()) != null) {
                 index = line.indexOf("httpServletDoPost");
                 System.out.println(i++ + ": " + line);
                 if (index != -1) {
                     index = line.indexOf("::");
-                    String status = line.substring(index+1);
-                    
-                    if (status.equalsIgnoreCase("FAIL")){
-                        stat.addStatus("httpServletDoPost-noCL", stat.FAIL);
+                    String status = line.substring(index + 1);
+                    if ("FAIL".equalsIgnoreCase(status)) {
+                        stat.addStatus(name, SimpleReporterAdapter.FAIL);
                         mark = true;
                     }
-                    count++;
-                } 
+                }
             }
-        } catch( Exception ex){
+        } catch (Exception ex) {
         } finally {
-            if (!mark && i > 0)
-               stat.addStatus("httpServletDoPost-noCL", stat.PASS);
-        }
-
-        try{
-            long time = System.currentTimeMillis();
-            Socket s = new Socket(host, port);
-            s.setSoTimeout(10000);
-            OutputStream os = s.getOutputStream();
-
-            System.out.println(("POST " + contextPath + " HTTP/1.0\n"));
-            os.write(("POST " + contextPath + " HTTP/1.0\n").getBytes());
-            os.write(("Host: localhost\r\n").getBytes());
-            os.write("content-length: 0\r\n".getBytes());
-            os.write("\r\n".getBytes());
-            
-            InputStream is = s.getInputStream();
-            BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-            String line = null;
-
-            int index = 0;
-            while ((line = bis.readLine()) != null) {
-                index = line.indexOf("httpServletDoPost");
-                System.out.println(i++ + ": " + line);
-                if (index != -1) {
-                    index = line.indexOf("::");
-                    String status = line.substring(index+1);
-                    
-                    if (status.equalsIgnoreCase("FAIL")){
-                        stat.addStatus("httpServletDoPost-noCL-http10", stat.FAIL);
-                        mark = true;
-                    }
-                    count++;
-                } 
+            s.close();
+            if (!mark && i > 0) {
+                stat.addStatus(name, SimpleReporterAdapter.PASS);
             }
-        } catch( Exception ex){
-        } finally {
-            if (!mark && i > 0)
-               stat.addStatus("httpServletDoPost-noCL-http10", stat.PASS);
         }
-         
-   }
-  
+    }
+
 }

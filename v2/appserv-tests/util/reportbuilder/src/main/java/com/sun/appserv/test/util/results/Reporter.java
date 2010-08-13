@@ -73,7 +73,6 @@ public class Reporter implements Serializable {
     public static Reporter getInstance(String home) {
         if (reporterInstance == null) {
             String path = new File(".").getAbsolutePath();
-            System.out.println("Reporter.getInstance: home = " + home);
             String outputDir = path.substring(0, path.indexOf(home)) + home;
             reporterInstance = new Reporter(outputDir + "/test_results.xml");
         }
