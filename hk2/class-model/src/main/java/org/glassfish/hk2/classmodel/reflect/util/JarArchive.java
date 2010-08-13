@@ -38,6 +38,7 @@ package org.glassfish.hk2.classmodel.reflect.util;
 
 import org.glassfish.hk2.classmodel.reflect.ArchiveAdapter;
 
+import java.io.BufferedInputStream;
 import java.net.URI;
 import java.io.File;
 import java.io.IOException;
@@ -47,11 +48,13 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Jar based archive abstraction
  */
-public class JarArchive implements ArchiveAdapter {
+public class JarArchive extends AbstractAdapter {
 
     private final JarFile jar;
     private final URI uri;
@@ -69,7 +72,8 @@ public class JarArchive implements ArchiveAdapter {
     }
 
     @Override
-     public void onEachEntry(EntryTask task) throws IOException {
+     public void onSelectedEntries(Selector selector, EntryTask task, Logger logger) throws IOException {
+         byte[] bytes = new byte[52000];
          Enumeration<JarEntry> enumEntries = jar.entries();
          while(enumEntries.hasMoreElements()) {
              JarEntry ja = enumEntries.nextElement();
@@ -88,7 +92,7 @@ public class JarArchive implements ArchiveAdapter {
                      }
                      subArchive = new InputStreamArchiveAdapter(subURI,
                              jar.getInputStream(jar.getEntry(ja.getName())));
-                     subArchive.onEachEntry(task);
+                     subArchive.onSelectedEntries(selector, task, logger);
                  } finally {
                      if (subArchive!=null) {
                          subArchive.close();
@@ -97,8 +101,27 @@ public class JarArchive implements ArchiveAdapter {
              }
              InputStream is = null;
              try {
-                 is = jar.getInputStream(ja);
-                 task.on(new Entry(ja.getName(), ja.getSize(), ja.isDirectory()), is);
+                 Entry entry = new Entry(ja.getName(), ja.getSize(), ja.isDirectory());
+                 if (!selector.isSelected(entry))
+                    continue;
+                 is = new BufferedInputStream(jar.getInputStream(ja));
+                 try {
+                     if (ja.getSize()>0) {
+                         if (bytes.length<ja.getSize()) {
+                             bytes = new byte[(int) ja.getSize()];
+                         }
+                         int read = is.read(bytes, 0, (int) ja.getSize());
+                         if (read!=ja.getSize()) {
+                             logger.severe("Incorrect file length while reading " + ja.getName() +
+                                     " inside " + jar.getName() +
+                                     " of size " + ja.getSize() + " reported is " + read);
+                         }
+                     }
+                     task.on(entry, bytes);
+                 } catch (Exception e) {
+                     logger.log(Level.SEVERE, "Exception while processing " + ja.getName()
+                             + " inside " + jar.getName() + " of size " + ja.getSize(), e);
+                 }
              } finally {
                  if (is!=null) {
                      is.close();

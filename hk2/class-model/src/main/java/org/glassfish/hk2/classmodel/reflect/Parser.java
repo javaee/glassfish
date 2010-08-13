@@ -49,6 +49,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Parse jar files or directories and create the model for any classes found.
@@ -59,7 +60,6 @@ public class Parser {
 
     private final ParsingContext context;
     private final Parser parent;
-    private final Map<String, Parser> children = new HashMap<String, Parser>();
     private final Map<URI, Types> processedURI = Collections.synchronizedMap(new HashMap<URI, Types>());
 
     private final List<Future<Result>> futures = Collections.synchronizedList(new ArrayList<Future<Result>>());
@@ -80,19 +80,6 @@ public class Parser {
         return awaitTermination(10, TimeUnit.SECONDS);
     }
 
-    public Parser pushContext(String name) {
-
-        ParsingContext childContext = new ParsingContext(context);
-        Parser childParser = new Parser(childContext);
-
-        children.put(name, childParser);
-        return childParser;
-    }
-
-    public Parser popContext(String name) {
-        return children.get(name);
-
-    }
 
     public synchronized Exception[] awaitTermination(int timeOut, TimeUnit unit) throws InterruptedException {
 
@@ -149,30 +136,33 @@ public class Parser {
 
     public synchronized void parse(final ArchiveAdapter source, final Runnable doneHook) throws IOException {
 
+        final Logger logger = context.logger;
         Types types = getResult(source.getURI());
         if (types!=null) {
             if (!processedURI.containsKey(source.getURI())) {
                 processedURI.put(source.getURI(), types);    
             }
-            System.out.println("Skipping reparsing..." + source.getURI());
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Skipping reparsing..." + source.getURI());
+            }
             return;
         }
         
-        if (context.logger.isLoggable(Level.FINE)) {
-            context.logger.log(Level.FINE, "submitting file " + source.getURI().getPath());
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "submitting file " + source.getURI().getPath());
         }
         futures.add(getExecutorService().submit(new Callable<Result>() {
             @Override
             public Result call() throws Exception {
                 try {
-                    if (context.logger.isLoggable(Level.FINE)) {
-                        context.logger.log(Level.FINE, "elected file " + source.getURI().getPath());
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE, "elected file " + source.getURI().getPath());
                     }
                     doJob(source, doneHook);
                     
                     return new Result(source.getURI().getPath(), null);
                 } catch (Exception e) {
-                    context.logger.log(Level.SEVERE, "Exception while parsing file " + source, e);
+                    logger.log(Level.SEVERE, "Exception while parsing file " + source, e);
                     return new Result(source.getURI().getPath(), e);
                 }
             }
@@ -186,7 +176,7 @@ public class Parser {
         }
         return types;
     }
-
+                               
     private void saveResult(URI uri, Types types) {
         this.processedURI.put(uri, types);
         if (parent!=null) {
@@ -195,35 +185,47 @@ public class Parser {
     }
 
     private void doJob(final ArchiveAdapter adapter, final Runnable doneHook) throws Exception {
-        if (context.archiveSelector==null || context.archiveSelector.selects(adapter)) {
-            if (context.logger.isLoggable(Level.FINE)) {
-                context.logger.log(Level.FINE, "Parsing file " + adapter.getURI().getPath());
+        final Logger logger = context.logger;
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Parsing " + adapter.getURI() + " on thread " + Thread.currentThread().getName());
+        }
+        if (context.archiveSelector == null || context.archiveSelector.selects(adapter)) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "Parsing file " + adapter.getURI().getPath());
             }
             final URI uri = adapter.getURI();
 
-                    adapter.onEachEntry(new ArchiveAdapter.EntryTask() {
-                         @Override
-                         public void on(ArchiveAdapter.Entry entry, InputStream is) throws IOException {
-                             if (entry.name.endsWith(".class")) {
-                                 if (context.logger.isLoggable(Level.FINER)) {
-                                     context.logger.log(Level.FINER, "Parsing class " + entry.name);
-                                 }
-                                 ClassReader cr = new ClassReader(is);
-                                 cr.accept(context.getClassVisitor(uri, entry.name), ClassReader.SKIP_DEBUG);
-                              }
-                         }
-                });
-                saveResult(uri, context.getTypes());
-            }
-            if (context.logger.isLoggable(Level.FINE)) {
-                context.logger.log(Level.FINE, "before running doneHook" + adapter.getURI().getPath());
-            }
-            if (doneHook!=null)
-                doneHook.run();
-            if (context.logger.isLoggable(Level.FINE)) {
-                context.logger.log(Level.FINE, "after running doneHook " + adapter.getURI().getPath());
-            }
+            adapter.onSelectedEntries(
+                    new ArchiveAdapter.Selector() {
+                        @Override
+                        public boolean isSelected(ArchiveAdapter.Entry entry) {
+                            return entry.name.endsWith(".class");
+                        }
+                    },
+                    new ArchiveAdapter.EntryTask() {
+                        @Override
+                        public void on(ArchiveAdapter.Entry entry, byte[] bytes) throws IOException {
+                            if (logger.isLoggable(Level.FINER)) {
+                                logger.log(Level.FINER, "Parsing class " + entry.name);
+                            }
+
+                            ClassReader cr = new ClassReader(bytes);
+                            cr.accept(context.getClassVisitor(uri, entry.name), ClassReader.SKIP_DEBUG);
+                        }
+                    },
+                    logger
+            );
+            saveResult(uri, context.getTypes());
         }
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "before running doneHook" + adapter.getURI().getPath());
+        }
+        if (doneHook != null)
+            doneHook.run();
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "after running doneHook " + adapter.getURI().getPath());
+        }
+    }
 
     /**
      * Returns the context this parser instance was initialized with during
@@ -234,34 +236,6 @@ public class Parser {
      */
     public ParsingContext getContext() {
         return context;
-    }
-
-    public Types getTypes() {
-        if (!children.isEmpty()) {
-            return new Types() {
-                @Override
-                public Collection<Type> getAllTypes() {
-                    List<Type> types = new ArrayList<Type>();
-                    types.addAll(context.getTypes().getAllTypes());
-                    for (Parser child : children.values()) {
-                        types.addAll(child.getTypes().getAllTypes());
-                    }
-                    return types;
-                }
-
-                @Override
-                public Type getBy(String name) {
-                    return null;  //To change body of implemented methods use File | Settings | File Templates.
-                }
-
-                @Override
-                public <T extends Type> T getBy(Class<T> type, String name) {
-                    return null;  //To change body of implemented methods use File | Settings | File Templates.
-                }
-            };
-        } else {
-            return context.getTypes();
-        }
     }
 
     private synchronized ExecutorService getExecutorService() {

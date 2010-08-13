@@ -57,14 +57,14 @@ public class TypeProxy<T extends Type> {
     private final Notifier<T> notifier;
     private final Set<Member> fieldRefs;
     private final Set<Type> subTypeRefs;
-    private final Set<ClassModel> implementations = new HashSet<ClassModel>(); 
+    private final Set<ClassModel> implementations = Collections.synchronizedSet(new HashSet<ClassModel>()); 
 
 
     public TypeProxy(Notifier<T> notifier, String name) {
         this.notifier = notifier;
         this.name = name;
-        fieldRefs = new HashSet<Member>();
-        subTypeRefs = new HashSet<Type>();
+        fieldRefs = Collections.synchronizedSet(new HashSet<Member>());
+        subTypeRefs = Collections.synchronizedSet(new HashSet<Type>());
     }
 
     public void set(T  value) {
