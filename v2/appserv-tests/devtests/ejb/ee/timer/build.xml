@@ -59,6 +59,11 @@
       <antcall target="clean-results"/>
       <antcall target="start-database"/>
       <ant target="startDomain"/>
+      <antcall target="asadmin-common">
+          <param name="admin.command" value="set"/>
+          <param name="operand.props"
+              value="configs.config.default-config.ejb-container.ejb-timer-service.timer-datasource=jdbc/__default"/>
+      </antcall>
       <antcall target="setup-cluster"/>
       <antcall target="setup-timer-service"/>
     </target>
@@ -72,28 +77,18 @@
 
     <target name="setup-timer-service">
       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="resources.jdbc-resource.jdbc/__TimerPool.pool-name=DerbyPool"/>
-      </antcall>
-      <antcall target="asadmin-common">
           <param name="admin.command" value="create-resource-ref"/>
           <param name="operand.props"
-              value="--target ${cluster-name} jdbc/__TimerPool"/>
+              value="--target ${cluster-name} jdbc/__default"/>
       </antcall>
       <antcall target="asadmin-common">
             <param name="admin.command" value="create-resource-ref"/>
             <param name="operand.props"
-              value="--target ${instance-name-3} jdbc/__TimerPool"/>
+              value="--target ${instance-name-3} jdbc/__default"/>
       </antcall>
     </target>
 
     <target name="unsetup-timer-service">
-      <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="resources.jdbc-resource.jdbc/__TimerPool.pool-name=__TimerPool"/>
-      </antcall> 
     </target>
 
     <target name="setup-cluster" depends="init-common">
