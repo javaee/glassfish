@@ -1,4 +1,4 @@
-<jnlp>
+<jnlp codebase="should-be-ignored" href="should-be-ignored-also">
   <information>
     <title>Custom Title</title>
     <vendor>Acme Software</vendor>
@@ -10,7 +10,7 @@
   <resources>
     <jar href="reporter.jar"/>
     <property name="myExtra.prop" value="some value"/>
-    <extension href="showArgs-client.jar!myExt.jnlp"/>
+    <extension href="myExt.jnlp"/>
   </resources>
   <application-desc main-class="my.Main">
     <argument>excluded</argument>
