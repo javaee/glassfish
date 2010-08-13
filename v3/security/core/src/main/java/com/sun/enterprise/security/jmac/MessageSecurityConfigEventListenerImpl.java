@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.security.jmac.provider.config;
+package com.sun.enterprise.security.jmac;
 
 import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 import com.sun.enterprise.config.serverbeans.SecurityService;

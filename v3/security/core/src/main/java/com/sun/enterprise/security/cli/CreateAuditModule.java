@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.v3.admin;
+package com.sun.enterprise.security.cli;
 
 import org.jvnet.hk2.config.types.Property;
 import java.util.List;
@@ -56,6 +56,7 @@ import com.sun.enterprise.config.serverbeans.AuditModule;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.security.SecurityConfigListener;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
@@ -114,6 +115,9 @@ public class CreateAuditModule implements AdminCommand {
 
     @Inject
     Configs configs;
+
+    @Inject
+    SecurityConfigListener securityConfigListener;
 
     /**
      * Executes the command with the command parameters passed as Properties

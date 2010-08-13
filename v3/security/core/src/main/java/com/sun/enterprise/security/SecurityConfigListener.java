@@ -53,6 +53,7 @@ import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
+import com.sun.enterprise.security.embedded.EmbeddedSecurityUtil;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
@@ -90,9 +91,15 @@ public class SecurityConfigListener implements ConfigListener, PostConstruct {
 
     @Inject
     private RealmsManager realmsManager;
+
+    @Inject
+    AuditManager auditManager;
     
     private String auditEnabled = null;
     private String defaultRealm = null;
+    private String jacc = null;
+    private String activateDefaultP2RMapping = null;
+    private String mappedPrincipalClassName = null;
 
     public SecurityConfigListener() {
         
@@ -205,9 +212,17 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
                }
                if ((auditEnabled != null) &&
                        !auditEnabled.equals(((SecurityService)instance).getAuditEnabled())) {
-                   AuditManager manager = SecurityServicesUtil.getInstance().getAuditManager();
                    boolean auditON = Boolean.parseBoolean(((SecurityService)instance).getAuditEnabled());
-                   manager.setAuditOn(auditON);
+                   auditManager.setAuditOn(auditON);
+               }
+               if (!jacc.equals(((SecurityService)instance).getJacc())) {
+                   np = new NotProcessed( "Cannot change JACC provider once installed, restart required" );
+               }
+               if ((mappedPrincipalClassName != null) && !mappedPrincipalClassName.equals(((SecurityService)instance).getMappedPrincipalClass())) {
+                   np = new NotProcessed( "MappedPrincipalClassname changes for existing applications requires restart and redeployment" );
+               }
+               if (!activateDefaultP2RMapping.equals(((SecurityService)instance).getActivateDefaultPrincipalToRoleMapping())) {
+                   np = new NotProcessed( "DefaultP2R changes for existng applications requires restart and redeployment" );
                }
             }
             else {
@@ -303,6 +318,12 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         //read from securityService.
         auditEnabled = securityService.getAuditEnabled();
         defaultRealm = securityService.getDefaultRealm();
+        jacc = securityService.getJacc();
+        if(jacc == null) {
+            jacc = "default";
+        }
+        activateDefaultP2RMapping = securityService.getActivateDefaultPrincipalToRoleMapping();
+        mappedPrincipalClassName = securityService.getMappedPrincipalClass();
         
     }
     
@@ -321,8 +342,7 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
                     properties.put(p.getName(), p.getValue());
                 }
             }
-            AuditManager manager = SecurityServicesUtil.getInstance().getAuditManager();
-            manager.addAuditModule(instance.getName(), classname, properties);
+            auditManager.addAuditModule(instance.getName(), classname, properties);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -334,8 +354,8 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
      * AuditModuleEvent.ACTION_DELETE is received.
      */
     public void auditModuleDeleted(AuditModule instance) {
-        AuditManager manager = SecurityServicesUtil.getInstance().getAuditManager();
-        manager.removeAuditModule(instance.getName());
+       
+        auditManager.removeAuditModule(instance.getName());
     }
 
     /**
@@ -355,8 +375,8 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
             }
             // we don't have a way to get hold of the Old Module in V3
             // so we would always delete and create new
-            AuditManager manager = SecurityServicesUtil.getInstance().getAuditManager();
-            manager.addAuditModule(instance.getName(), instance.getClassname(), properties);
+           
+            auditManager.addAuditModule(instance.getName(), instance.getClassname(), properties);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

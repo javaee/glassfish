@@ -69,6 +69,7 @@ import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
+import org.jvnet.hk2.config.ConfigListener;
 
 /**
  * Create Message Security Provider Command
@@ -166,6 +167,9 @@ public class CreateMessageSecurityProvider implements AdminCommand {
 
     @Inject
     Configs configs;
+
+    @Inject(name="MessageSecurityConfigListener")
+    private ConfigListener msgSecurityConfigListener;
 
     
     /**

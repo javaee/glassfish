@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin;
+package com.sun.enterprise.security.cli;
 
 
 import org.glassfish.api.admin.AdminCommand;
