@@ -112,8 +112,8 @@
         <commons.collections.version>2.1</commons.collections.version>
         <commons.digester.version>1.5</commons.digester.version>
         <commons.modeler.version>1.1</commons.modeler.version>
-        <hk2.version>1.0.36</hk2.version>
-        <hk2.plugin.version>1.0.36</hk2.plugin.version>
+        <hk2.version>1.0.37</hk2.version>
+        <hk2.plugin.version>1.0.37</hk2.plugin.version>
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
         <trilead-ssh2.version>build212-hudson-5</trilead-ssh2.version>
@@ -215,7 +215,6 @@
                 <module>webservices</module>
                 <module>orb</module>
                 <module>appclient</module>
-                <module>jbi/serviceengine/sun-javaee-engine</module>
                 <module>verifier/verifier-impl</module>
                 <module>verifier/verifier-scripts</module>
                 <module>verifier/verifier-jdk-extension-bundle</module>
@@ -361,7 +360,6 @@
                 <module>sun-glassfish/distributions</module>
                 <module>sun-glassfish/installer</module>
                 <module>appclient</module>
-                <module>jbi/serviceengine/sun-javaee-engine</module>
                 <module>verifier/verifier-impl</module>
                 <module>verifier/verifier-scripts</module>
                 <module>verifier/verifier-jdk-extension-bundle</module>
@@ -415,7 +413,6 @@
                 <module>sun-glassfish/distributions/web-ri</module>
                 <module>sun-glassfish/distributions/glassfish-ri</module>
                 <module>appclient</module>
-                <module>jbi/serviceengine/sun-javaee-engine</module>
                 <module>verifier/verifier-impl</module>
                 <module>verifier/verifier-scripts</module>
                 <module>verifier/verifier-jdk-extension-bundle</module>

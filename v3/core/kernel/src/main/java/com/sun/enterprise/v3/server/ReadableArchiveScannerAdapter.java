@@ -1,7 +1,43 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ *  Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ *
+ *  The contents of this file are subject to the terms of either the GNU
+ *  General Public License Version 2 only ("GPL") or the Common Development
+ *  and Distribution License("CDDL") (collectively, the "License").  You
+ *  may not use this file except in compliance with the License. You can obtain
+ *  a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ *  or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ *  language governing permissions and limitations under the License.
+ *
+ *  When distributing the software, include this License Header Notice in each
+ *  file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ *  Sun designates this particular file as subject to the "Classpath" exception
+ *  as provided by Sun in the GPL Version 2 section of the License file that
+ *  accompanied this code.  If applicable, add the following below the License
+ *  Header, with the fields enclosed by brackets [] replaced by your own
+ *  identifying information: "Portions Copyrighted [year]
+ *  [name of copyright owner]"
+ *
+ *  Contributor(s):
+ *
+ *  If you wish your version of this file to be governed by only the CDDL or
+ *  only the GPL Version 2, indicate your decision by adding "[Contributor]
+ *  elects to include this software in this distribution under the [CDDL or GPL
+ *  Version 2] license."  If you don't indicate a single choice of license, a
+ *  recipient has the option to distribute your version of this file under
+ *  either the CDDL, the GPL Version 2 or to extend the choice of license to
+ *  its licensees as provided above.  However, if you add GPL Version 2 code
+ *  and therefore, elected the GPL Version 2 license, then the option applies
+ *  only if the new code is made subject to such option by the copyright
+ *  holder.
+ */
 package com.sun.enterprise.v3.server;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.hk2.classmodel.reflect.ArchiveAdapter;
+import org.glassfish.hk2.classmodel.reflect.util.AbstractAdapter;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,15 +45,15 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
 import java.net.URI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Jul 28, 2010
- * Time: 6:03:52 AM
- * To change this template use File | Settings | File Templates.
+ * ArchiveAdapter for DOL readable archive instances
+ * 
+ * @author Jerome Dochez
  */
-public class ReadableArchiveScannerAdapter implements ArchiveAdapter {
+public class ReadableArchiveScannerAdapter extends AbstractAdapter {
     final ReadableArchive archive;
 
     public ReadableArchiveScannerAdapter(ReadableArchive archive) {
@@ -35,23 +71,39 @@ public class ReadableArchiveScannerAdapter implements ArchiveAdapter {
     }
 
     @Override
-    public void onEachEntry(EntryTask entryTask) throws IOException {
+    public void onSelectedEntries(ArchiveAdapter.Selector selector, EntryTask entryTask, Logger logger ) throws IOException {
 
         Enumeration<String> entries = archive.entries();
+        byte[] bytes = new byte[52000];
         while (entries.hasMoreElements()) {
             String name = entries.nextElement();
-            if (name.endsWith(".class")) {
+            Entry entry = new Entry(name, archive.getEntrySize(name), false);
+            if (selector.isSelected(entry)) {
                 InputStream is = null;
                 try {
-                    is = archive.getEntry(name);
-                    Entry entry = new Entry(name, archive.getEntrySize(name), false);
-                    entryTask.on(entry, is);
+                    try {
+                        is = archive.getEntry(name);
+                        if (bytes.length<entry.size) {
+                            bytes = new byte[(int) entry.size];
+                        }
+                        int read = is.read(bytes, 0, (int) entry.size);
+                        if (read!=entry.size) {
+                            logger.severe("Incorrect file length while reading " + entry.name +
+                                    " inside " + archive.getName() +
+                                    " of size " + entry.size + " reported is " + read);
+
+                        }
+                 } catch (Exception e) {
+                     logger.log(Level.SEVERE, "Exception while processing " + entry.name
+                             + " inside " + archive.getName() + " of size " + entry.size, e);
+                 }                        
+                    entryTask.on(entry, bytes);
                 } finally {
                     if (is!=null)
                         is.close();
                 }
             }
-            // ok for now, I am assuming that all wars/rars have been exploded...
+            // check for non exploded jars.
             if (name.endsWith(".jar")) {
 
                 // we need to check that there is no exploded directory by this name.
@@ -63,7 +115,7 @@ public class ReadableArchiveScannerAdapter implements ArchiveAdapter {
                         subArchive = archive.getSubArchive(name);
                         if (subArchive!=null) {
                             ReadableArchiveScannerAdapter adapter = new ReadableArchiveScannerAdapter(subArchive);
-                            adapter.onEachEntry(entryTask);
+                            adapter.onSelectedEntries(selector, entryTask, logger);
                         }
                     } finally {
                         if (subArchive!=null) {
