@@ -856,6 +856,8 @@ public class CommandRunnerImpl implements CommandRunner {
         // lets not even look Supplemental command and such. A small optimization
         boolean doReplication = false;
         if( (domain.getServers().getServer().size() > 1) || (domain.getClusters().getCluster().size() != 0) ) {
+            logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.devmode",
+            "The GlassFish environment does not have any clusters or instances present; Replication is turned off"));
             doReplication = true;
         }
 
@@ -868,6 +870,8 @@ public class CommandRunnerImpl implements CommandRunner {
                     inv.inboundPayload());
 
             if (inv.typedParams() != null) {
+                logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.delegatedcommand",
+                        "This command is a delegated command. Dynamic reconfiguration will be bypassed"));
                 InjectionResolver<Param> injectionTarget =
                     new DelegatedInjectionResolver(model, inv.typedParams(),
                         ufm.optionNameToFileMap()
@@ -929,6 +933,9 @@ public class CommandRunnerImpl implements CommandRunner {
             if(!injectParameters(model, command, injectionMgr, context).equals(ActionReport.ExitCode.SUCCESS))
                     return;
 
+            logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.injectiondone",
+                    "Parameter mapping, validation, injection completed successfully; Starting paramater injection"));
+
             // Read cluster annotation attributes
             org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
             if(clAnnotation == null) {
@@ -954,6 +961,9 @@ public class CommandRunnerImpl implements CommandRunner {
             String targetName = parameters.getOne("target");
             if(targetName == null)
                 targetName = "server";
+
+            logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.target",
+                    "@Cluster parsing and default settings done; Current target is " + targetName));
 
             if(serverEnv.isDas()) {
 
@@ -982,6 +992,11 @@ public class CommandRunnerImpl implements CommandRunner {
                         !runtimeTypes.contains(RuntimeType.DAS)) {
                     runtimeTypes.add(RuntimeType.DAS);
                 }
+
+                logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.runtimeTypes",
+                        "RuntimeTypes are : " + runtimeTypes.toString()));
+                logger.fine(adminStrings.getLocalString("dynamicreconfiguration,diagnostics.targetTypes",
+                        "TargetTypes are : " + targetTypesAllowed.toString()));
 
                 // Check if the target is valid
                 //Is there a server or a cluster or a config with given name ?
@@ -1026,11 +1041,15 @@ public class CommandRunnerImpl implements CommandRunner {
                                 model.getCommandName(), targetName, c.getName()));
                     return;
                 }
+                logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.replicationvalidationdone",
+                        "All @Cluster attribute and type validation completed successfully. Starting replication stages"));
             }
 
             // If command is undoable, then invoke prepare method
-            if(command.getClass().isAssignableFrom(UndoableCommand.class)) {
+            if(command instanceof UndoableCommand) {
                 UndoableCommand uCmd = (UndoableCommand) command;
+                logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.prepareunodable",
+                        "Command execution stage 1 : Calling prepare for undoable command " + inv.name()));
                 if(!uCmd.prepare(context, parameters).equals(ActionReport.ExitCode.SUCCESS)) {
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     report.setMessage(adminStrings.getLocalString("commandrunner.executor..errorinprepare",
@@ -1045,7 +1064,9 @@ public class CommandRunnerImpl implements CommandRunner {
             SupplementalCommandExecutor supplementalExecutor = habitat.getComponent(SupplementalCommandExecutor.class,
                     "SupplementalCommandExecutorImpl");
             if(doReplication && supplementalExecutor!= null) {
-                
+
+                logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.presupplemental",
+                        "Command execution stage 2 : Call pre supplemental commands for " + inv.name()));
                 ActionReport.ExitCode supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
                             Supplemental.Timing.Before, context, parameters, ufm.optionNameToFileMap());
                 if(supplementalReturn.equals(ActionReport.ExitCode.FAILURE)) {
@@ -1059,12 +1080,16 @@ public class CommandRunnerImpl implements CommandRunner {
                     (serverEnv.isDas() &&
                         (CommandTarget.DOMAIN.isValid(habitat, targetName) || runtimeTypes.contains(RuntimeType.DAS))) ||
                     (serverEnv.isInstance() && runtimeTypes.contains(RuntimeType.INSTANCE)) ) {
+                    logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.maincommand",
+                            "Command execution stage 3 : Calling main command implementation for " + inv.name()));
                     doCommand(model, command, context);
                 }
 
                 if(!FailurePolicy.applyFailurePolicy(fp,
                         report.getActionExitCode()).equals(ActionReport.ExitCode.FAILURE)) {
                     //Run Supplemental commands that have to be run after this command on this instance type
+                    logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.postsupplemental",
+                            "Command execution stage 4 : Call post supplemental commands for " + inv.name()));
                     supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
                             Supplemental.Timing.After, context, parameters, ufm.optionNameToFileMap());
                     if(supplementalReturn.equals(ActionReport.ExitCode.FAILURE)) {
@@ -1107,6 +1132,8 @@ public class CommandRunnerImpl implements CommandRunner {
                 (!FailurePolicy.applyFailurePolicy(fp, report.getActionExitCode()).equals(ActionReport.ExitCode.FAILURE)) &&
                     (serverEnv.isDas()) &&
                         (runtimeTypes.contains(RuntimeType.INSTANCE) || runtimeTypes.contains(RuntimeType.ALL)) ) {
+            logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.startreplication",
+                    "Command execution stages completed on DAS; Starting replication on remote instances"));
             ClusterExecutor executor = null;
             if(model.getClusteringAttributes() != null && model.getClusteringAttributes().executor() != null) {
                 executor = habitat.getComponent(model.getClusteringAttributes().executor());
@@ -1129,8 +1156,10 @@ public class CommandRunnerImpl implements CommandRunner {
         }
         if(report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
             // If command is undoable, then invoke undo method method
-            if(command.getClass().isAssignableFrom(UndoableCommand.class)) {
+            if(command instanceof UndoableCommand) {
                 UndoableCommand uCmd = (UndoableCommand) command;
+                logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.undo",
+                        "Command execution failed; calling undo() for command " + inv.name()));
                 uCmd.undo(context, parameters, ClusterOperationUtil.getCompletedInstances());
             }
         } else {

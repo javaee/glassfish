@@ -37,28 +37,22 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.admin.remote.RemoteAdminCommand;
-import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.hk2.component.InjectionResolver;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.common.util.admin.MapInjectionResolver;
-import org.glassfish.common.util.admin.UnacceptableValueException;
 import org.jvnet.hk2.component.*;
 import org.glassfish.common.util.admin.CommandModelImpl;
-import org.glassfish.config.support.GenericCrudCommand;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;
-import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -80,6 +74,9 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
 
     @Inject
     private ServerEnvironment serverEnv;
+
+    private final Logger logger = LogDomains.getLogger(SupplementalCommandExecutorImpl.class,
+                                        LogDomains.ADMIN_LOGGER);
 
     private static final LocalStringManagerImpl strings =
                         new LocalStringManagerImpl(SupplementalCommandExecutor.class);
@@ -108,6 +105,8 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
                                 finalResult = result;
                             continue;
                         }
+                        logger.fine(strings.getLocalString("dynamicreconfiguration.diagnostics.supplementalexec",
+                                "Executing supplemental command " + aCmd.getClass().getCanonicalName()));
                         aCmd.execute(context);
                         if(context.getActionReport().hasFailures()) {
                             result = FailurePolicy.applyFailurePolicy(aCmd.onFailure(), ActionReport.ExitCode.FAILURE);
