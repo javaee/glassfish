@@ -41,6 +41,8 @@ import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.EjbTimerService;
 import com.sun.enterprise.config.serverbeans.ServerTags;
@@ -52,6 +54,7 @@ import com.sun.logging.LogDomains;
 import com.sun.ejb.base.sfsb.util.EJBServerConfigLookup;
 
 import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.config.ReferenceContainer;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -178,6 +181,9 @@ public class EjbContainerUtilImpl
 
     @Inject
     ProbeProviderFactory probeProviderFactory;
+
+    @Inject
+    Domain domain;
 
     private  static EjbContainerUtil _me;
 
@@ -470,7 +476,7 @@ public class EjbContainerUtilImpl
                     try {
                         File rootScratchDir = env.getApplicationStubPath();
                         File appScratchDir = new File(rootScratchDir, appName);
-                        String resourceName = getTimerResource();
+                        String resourceName = getTimerResource(target);
                         if ((env.isDas() || env.isEmbedded()) && (appScratchDir.createNewFile() && !isUpgrade(resourceName))) {
                             params.origin = OpsParams.Origin.deploy;
                             if (target != null) {
@@ -493,6 +499,9 @@ public class EjbContainerUtilImpl
                             _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: " +
                                     report.getFailureCause());
                         }
+
+                        _logger.log(Level.INFO, "ejb.timer_service_started", new Object[] { resourceName } );
+
                     } catch (Exception ioe) {
                         _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: " + ioe);
                     }
@@ -525,9 +534,13 @@ public class EjbContainerUtilImpl
             }
         }
 
-        _logger.fine("===> Upgrade? <==");
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("===> Upgrade? <==");
+        }
         if (upgrade) {
-            _logger.fine("===> Upgrade! <==");
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("===> Upgrade! <==");
+            }
             boolean success = false;
             try {
                 File root = serverContext.getInstallRoot();
@@ -560,12 +573,31 @@ public class EjbContainerUtilImpl
         return upgrade;
     }
 
-    private String getTimerResource() {
+    private String getTimerResource(String target) {
         String resource = EjbContainerUtil.TIMER_RESOURCE_JNDI;
-        EjbTimerService ejbt = getEjbContainer().getEjbTimerService();
+        EjbTimerService ejbt = null;
+        if (target == null) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Looking for current instance ejb-container config");
+            }
+            ejbt = getEjbContainer().getEjbTimerService();
+        } else {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Looking for " + target + " ejb-container config");
+            }
+            ReferenceContainer rc  =  domain.getReferenceContainerNamed(target);
+            Config config = domain.getConfigNamed(rc.getReference());
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Found " + config);
+            }
+            ejbt = config.getEjbContainer().getEjbTimerService();
+        }
         if (ejbt != null) {
             if (ejbt.getTimerDatasource() != null) {
                 resource = ejbt.getTimerDatasource();
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("Found Timer Service resource name " + resource);
+                }
             }
         }
         return resource;

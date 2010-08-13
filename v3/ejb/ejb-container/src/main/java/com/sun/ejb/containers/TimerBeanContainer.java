@@ -108,9 +108,6 @@ public class TimerBeanContainer
             ejbTimerService = new EJBTimerService(appID, timerLocal);
             ejbContainerUtil.setEJBTimerService(ejbTimerService);
 
-            _logger.log(Level.INFO, "ejb.timer_service_started",
-                        new Object[] { timerResourceJndiName } );
-
             _logger.log(Level.INFO, "==> Restoring Timers ... " );
             ejbTimerService.restoreEJBTimers();
             _logger.log(Level.INFO, "<== ... Timers Restored.");
