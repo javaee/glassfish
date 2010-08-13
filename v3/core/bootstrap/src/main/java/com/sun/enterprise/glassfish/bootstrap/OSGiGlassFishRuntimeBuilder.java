@@ -55,7 +55,8 @@ import java.util.Properties;
  * the system. AutoProcessor installs and starts such bundles, The provisioning bundle is also configured
  * via the same properties object.
  * <p/>
- * It is the responsibility of the caller to pass in a properly populated properties object.
+ * If caller does not pass in a properly populated properties object, we assume that we are
+ * running against an existing installation of glassfish and set appropriate default values.
  * <p/>
  * <p/>
  * This class is registered as a provider of RuntimeBuilder using META-INF/services file.
@@ -71,6 +72,7 @@ public final class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runti
     public OSGiGlassFishRuntimeBuilder() {}
 
     public GlassFishRuntime build(Properties properties) throws Exception {
+        ASMainHelper.buildStartupContext(properties);
         final OSGiFrameworkLauncher fwLauncher = new OSGiFrameworkLauncher(properties);
         this.framework = fwLauncher.launchOSGiFrameWork();
         debug("Initialized " + framework);
@@ -78,8 +80,10 @@ public final class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runti
     }
 
     public boolean handles(Properties properties) {
+        // default is Felix
         Constants.Platform platform =
-                Constants.Platform.valueOf(properties.getProperty(Constants.PLATFORM_PROPERTY_KEY));
+                Constants.Platform.valueOf(properties.getProperty(
+                        Constants.PLATFORM_PROPERTY_KEY, Constants.Platform.Felix.name()));
         // TODO(Sahoo): Add support for generic OSGi platform
         switch (platform) {
             case Felix:

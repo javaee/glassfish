@@ -408,6 +408,40 @@ class ASMainHelper {
         return ctx;
     }
 
+    static void buildStartupContext(Properties ctx) {
+        if (ctx.getProperty(StartupContext.TIME_ZERO_NAME) == null) {
+            ctx.setProperty(StartupContext.TIME_ZERO_NAME, (new Long(System.currentTimeMillis())).toString());
+        } else {
+            // Optimisation
+            // Skip the rest of the code. We assume that we are called from GlassFishMain
+            // which already passes a properly populated properties object.
+            return;
+        }
+
+        if (ctx.getProperty(Constants.PLATFORM_PROPERTY_KEY) == null) {
+            ctx.setProperty(Constants.PLATFORM_PROPERTY_KEY, Constants.Platform.Felix.name());
+        }
+
+        if (ctx.getProperty(Constants.INSTALL_ROOT_PROP_NAME) == null) {
+            File installRoot = findInstallRoot();
+            ctx.setProperty(Constants.INSTALL_ROOT_PROP_NAME, installRoot.getAbsolutePath());
+            ctx.setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME, installRoot.toURI().toString());
+        }
+
+        if (ctx.getProperty(Constants.INSTANCE_ROOT_PROP_NAME) == null) {
+            File installRoot = new File(ctx.getProperty(Constants.INSTALL_ROOT_PROP_NAME));
+            File instanceRoot = findInstanceRoot(installRoot, ctx);
+            ctx.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, instanceRoot.getAbsolutePath());
+            ctx.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME, instanceRoot.toURI().toString());
+        }
+
+        if (ctx.getProperty(StartupContext.STARTUP_MODULE_NAME) == null) {
+            ctx.setProperty(StartupContext.STARTUP_MODULE_NAME, Constants.GF_KERNEL);
+        }
+
+        mergePlatformConfiguration(ctx);
+    }
+
     /**
      * Need the raw unprocessed args for RestartDomainCommand in case we were NOT started
      * by CLI
