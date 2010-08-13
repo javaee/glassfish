@@ -381,6 +381,12 @@ public class ApplicationInfo extends ModuleInfo {
 
         for (ModuleInfo module : modules) {
             Module modConfig = app.getModule(module.getName());
+            if (modConfig == null) {
+                // not a JavaEE module, create it here
+                modConfig = app.createChild(Module.class);
+                modConfig.setName(module.getName());
+                app.getModule().add(modConfig);
+            }
             module.save(modConfig);
         }        
     }
