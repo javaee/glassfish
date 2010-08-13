@@ -111,11 +111,11 @@ public abstract class HAStoreBase extends StoreBase {
         }
 
         // Determine the appropriate value our debug level
-        if (level.equals(Level.FINE))
+        if (_logLevel.equals(Level.FINE))
             _debug = 1;
-        else if (level.equals(Level.FINER))
+        else if (_logLevel.equals(Level.FINER))
             _debug = 2;
-        else if (level.equals(Level.FINEST))
+        else if (_logLevel.equals(Level.FINEST))
             _debug = 5;
         else
             _debug = 0;

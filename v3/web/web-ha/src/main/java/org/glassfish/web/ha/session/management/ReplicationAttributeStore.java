@@ -155,6 +155,7 @@ public class ReplicationAttributeStore extends ReplicationStore {
             = (ReplicationManagerBase)this.getManager();
 //        BackingStore replicator = mgr.getCompositeBackingStore();
         BackingStore replicator = mgr.getBackingStore();
+        System.out.println("ReplicationAttributeStore>>save: replicator: " + replicator);                    
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("ReplicationAttributeStore>>save: replicator: " + replicator);                    
         }         
@@ -162,6 +163,7 @@ public class ReplicationAttributeStore extends ReplicationStore {
             = createCompositeMetadata(modAttrSession);
                 
         try {        
+            System.out.println("Calling save with composite metadata");
             replicator.save(session.getIdInternal(), //id
                     compositeMetadata, !((HASession) session).isPersistent());
             modAttrSession.resetAttributeState();
@@ -192,6 +194,7 @@ public class ReplicationAttributeStore extends ReplicationStore {
             = (ReplicationManagerBase)this.getManager();
 //        BackingStore replicator = mgr.getCompositeBackingStore();
         BackingStore replicator = mgr.getBackingStore();
+        System.out.println("in do save");
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("ReplicationAttributeStore>>doSave: replicator: " + replicator);                    
         }         
@@ -199,6 +202,7 @@ public class ReplicationAttributeStore extends ReplicationStore {
             = createCompositeMetadata(modAttrSession);
                 
         try {        
+            System.out.println("Calling save on backing store");
             replicator.save(session.getIdInternal(), //id
                     compositeMetadata, !((HASession) session).isPersistent());
             modAttrSession.resetAttributeState();

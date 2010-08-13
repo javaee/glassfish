@@ -280,7 +280,7 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
 
 
     @Override
-    public void createBackingStore(String persistenceType, String storeName) {
+    public void createBackingStore(String persistenceType, String storeName, Class metadataClass) {
         _logger.info("Create backing store invoked with persistence type " + persistenceType + " and store name " + storeName);
         BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, "replication");
         BackingStoreConfiguration<String, SimpleMetadata> conf = new BackingStoreConfiguration<String, SimpleMetadata>();
@@ -294,7 +294,7 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
                 .setClusterName(clusterName)
                 .setInstanceName(instanceName)
                 .setStoreType(persistenceType)
-                .setKeyClazz(String.class).setValueClazz(SimpleMetadata.class);
+                .setKeyClazz(String.class).setValueClazz(metadataClass);
 
 
         try {

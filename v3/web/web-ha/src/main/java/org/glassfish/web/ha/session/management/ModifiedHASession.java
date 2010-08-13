@@ -49,7 +49,7 @@ import java.io.Serializable;
 public class ModifiedHASession extends BaseHASession 
     implements HttpSession, HASession, Serializable {
 
-    private transient boolean _dirtyFlag = false;
+    private transient boolean dirtyFlag = false;
 
 
     /** Creates a new instance of ModifiedHASession */
@@ -82,7 +82,7 @@ public class ModifiedHASession extends BaseHASession
      * return isDirty
      */     
     public boolean isDirty() {
-        return _dirtyFlag;
+        return dirtyFlag;
     }
     
     /**
@@ -90,7 +90,7 @@ public class ModifiedHASession extends BaseHASession
      * @param isDirty
      */      
     public void setDirty(boolean isDirty) {
-        _dirtyFlag = isDirty;
+        dirtyFlag = isDirty;
     }
 
 }
