@@ -52,11 +52,10 @@ public class SimpleReporterAdapter implements Serializable {
     public static final String DID_NOT_RUN = "did_not_run";
     public static final String FAIL = "fail";
     private static final Pattern TOKENIZER;
-    private final boolean debug = false;
+    private final boolean debug = true;
     private final String ws_home;
-    private Test test = new Test();
+    private Test test;
     private final String testSuiteName;
-    private final String testSuiteID;
     private final TestSuite suite;
     private Reporter reporter;
     public static final String DUPLICATE = " -- DUPLICATE";
@@ -89,8 +88,8 @@ public class SimpleReporterAdapter implements Serializable {
         } else {
             testSuiteName = suiteName;
         }
-        testSuiteID = testSuiteName + "ID";
         suite = new TestSuite(testSuiteName);
+        test = new Test(testSuiteName);
         suite.addTest(test);
     }
 

@@ -44,6 +44,7 @@ package com.sun.appserv.test.util.results;
  * @Last Modified : By Justin Lee on 10/05/2009
  */
 public class TestCase {
+    private String id;
     private String name = ReporterConstants.NA;
     private String description = ReporterConstants.NA;
     private String status = ReporterConstants.DID_NOT_RUN;
@@ -55,6 +56,7 @@ public class TestCase {
     public TestCase(String name) {
         this();
         this.name = SimpleReporterAdapter.checkNA(name);
+        id = name;
     }
 
     public TestCase(String name, String description) {
@@ -66,12 +68,17 @@ public class TestCase {
         this.status = SimpleReporterAdapter.checkNA(status);
     }
 
+    public String getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(final String value) {
         name = SimpleReporterAdapter.checkNA(value);
+        id = name;
     }
 
     public String getDescription() {
@@ -89,7 +96,8 @@ public class TestCase {
     @Override
     public String toString() {
         return "TestCase{" +
-            "name='" + name + '\'' +
+            "id='" + id + '\'' +
+            ", name='" + name + '\'' +
             ", status='" + status + '\'' +
             '}';
     }
@@ -97,8 +105,8 @@ public class TestCase {
     public String toXml() {
         StringBuilder buffer = new StringBuilder();
         buffer.append("<testcase>\n");
+        buffer.append("<id>" + id + "</id>\n");
         if (!name.equals(ReporterConstants.NA)) {
-            buffer.append("<id>" + name.trim() + "</id>\n");
             buffer.append("<name>" + name.trim() + "</name>\n");
         }
         if (!description.equals(ReporterConstants.NA)) {

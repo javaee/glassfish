@@ -47,6 +47,7 @@ import java.util.List;
  * @Last Modified : By Justin Lee on 10/05/2009
  */
 public class TestSuite {
+    private String id;
     private String name = ReporterConstants.NA;
     private String description = ReporterConstants.NA;
     private List<Test> tests = new ArrayList<Test>();
@@ -63,6 +64,11 @@ public class TestSuite {
     public TestSuite(String name) {
         this();
         this.name = SimpleReporterAdapter.checkNA(name);
+        id = name;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {
@@ -94,7 +100,8 @@ public class TestSuite {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("TestSuite");
-        sb.append("{name='").append(name).append('\'');
+        sb.append("{id='").append(id).append('\'');
+        sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
         sb.append(", tests=").append(tests);
         sb.append('}');
@@ -104,8 +111,8 @@ public class TestSuite {
     public String toXml() {
         StringBuilder buffer = new StringBuilder();
         buffer.append("<testsuite>\n");
+        buffer.append("<id>" + id.trim() + "</id>\n");
         if (!name.equals(ReporterConstants.NA)) {
-            buffer.append("<id>" + name.trim() + "</id>\n");
             buffer.append("<name>" + name.trim() + "</name>\n");
         }
         if (!description.equals(ReporterConstants.NA)) {
