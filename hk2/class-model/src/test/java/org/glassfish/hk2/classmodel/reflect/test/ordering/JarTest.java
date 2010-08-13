@@ -33,15 +33,60 @@
  *  only if the new code is made subject to such option by the copyright
  *  holder.
  */
-package org.glassfish.hk2.classmodel.reflect.test.model;
+package org.glassfish.hk2.classmodel.reflect.test.ordering;
+
+import org.glassfish.hk2.classmodel.reflect.Parser;
+import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+import org.glassfish.hk2.classmodel.reflect.Type;
+import org.junit.Ignore;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Jan 12, 2010
- * Time: 2:45:43 PM
- * To change this template use File | Settings | File Templates.
+ * main program to test a particular archive scanning
+ * 
  */
-public class Payment {
+@Ignore
+public class JarTest {
+    public static void main(String[] args) {
+        if (args.length!=1) {
+            System.out.println("usage : JarTest <path_to_jar_file>");
+            return;
+        }
+        JarTest jt = new JarTest();
+        try {
+            jt.process(args[0]);
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    public void process(String path) throws IOException {
+        File f = new File(path);
+        if (!f.exists()) {
+            System.out.println("File not found : " + path);
+            return;
+        }
+        Logger logger = Logger.getAnonymousLogger();
+        logger.setLevel(Level.FINE);
+        ParsingContext pc = new ParsingContext.Builder().logger(logger).build();
+        Parser parser = new Parser(pc);
+        parser.parse(f, null);
+        try {
+            parser.awaitTermination();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Collection<Type> types = pc.getTypes().getAllTypes();
+        for (Type type : types) {
+            System.out.println("Parsed " + type.getName());
+        }
+        System.out.println("Finished parsing " + types.size() + " classes");
+
+    }
 
 }
