@@ -346,7 +346,7 @@ public final class MethodDescriptor extends Descriptor {
 		} catch(NoSuchMethodException nsme) {}
             }
         } catch(Exception e) {
-            _logger.log(Level.SEVERE,"enterprise.deployment.backend.methodClassLoadFailure",new Object[]{ejbDescriptor});
+            _logger.log(Level.SEVERE,"enterprise.deployment.backend.methodClassLoadFailure",new Object[]{e.getMessage(), ejbDescriptor});
         }
         return method;
     }
