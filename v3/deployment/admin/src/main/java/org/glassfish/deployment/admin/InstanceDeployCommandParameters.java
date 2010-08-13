@@ -49,7 +49,7 @@ import org.glassfish.api.deployment.DeployCommandParameters;
  */
 public class InstanceDeployCommandParameters extends DeployCommandParameters {
 
-    @Param(name=ParameterNames.GENERATED_CONTENT)
+    @Param(name=ParameterNames.GENERATED_CONTENT, optional=true)
     public File generatedcontent = null;
 
     @Param(name=ParameterNames.APP_PROPS, separator=':')

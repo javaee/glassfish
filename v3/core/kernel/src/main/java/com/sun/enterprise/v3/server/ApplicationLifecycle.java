@@ -1553,10 +1553,13 @@ public class ApplicationLifecycle implements Deployment {
         /*
          * Create a single ZIP file containing the various generated
          * directories for this app.
+         *
+         * Note that some deployments - such as of OSGI modules - might not
+         * create any generated content.
          */
         final File generatedContentZip = createGeneratedContentZip();
-        final ZipOutputStream zipOS = new ZipOutputStream(
-                new BufferedOutputStream(new FileOutputStream(generatedContentZip)));
+
+        ZipOutputStream zipOS = null;
 
         /*
          * We want the ZIP file to contain xml/(appname), ejb/(appname), etc.
@@ -1568,13 +1571,19 @@ public class ApplicationLifecycle implements Deployment {
         final File baseDir = dc.getScratchDir("xml").getParentFile().getParentFile();
 
         for (String scratchType : UPLOADED_GENERATED_DIRS) {
-            addScratchContentIfPresent(dc, baseDir, zipOS, scratchType);
+            
+            zipOS = addScratchContentIfPresent(dc, baseDir, zipOS, generatedContentZip, scratchType);
         }
 
-        zipOS.close();
-        
-        // set the generated content param
-        paramMap.set("generatedcontent", generatedContentZip.getAbsolutePath());
+        if (zipOS != null) {
+            /*
+             * Because we did zip up some generated content, add the just-generated
+             * zip file as a parameter to the param map.
+             */
+            zipOS.close();
+            // set the generated content param
+            paramMap.set("generatedcontent", generatedContentZip.getAbsolutePath());
+        }
     }
 
     private File createGeneratedContentZip() throws IOException {
@@ -1583,14 +1592,20 @@ public class ApplicationLifecycle implements Deployment {
         return tempFile;
     }
 
-    private void addScratchContentIfPresent(final DeploymentContext dc,
+    private ZipOutputStream addScratchContentIfPresent(final DeploymentContext dc,
             final File baseDir,
-            final ZipOutputStream zipOS,
+            ZipOutputStream zipOS,
+            final File generatedContentZip,
             final String scratchDirName) throws IOException {
         final File genDir = dc.getScratchDir(scratchDirName);
         if (genDir.isDirectory()) {
+            if (zipOS == null) {
+                zipOS = new ZipOutputStream(
+                    new BufferedOutputStream(new FileOutputStream(generatedContentZip)));
+            }
             addFileToZip(zipOS, baseDir, genDir);
         }
+        return zipOS;
     }
 
     private void addFileToZip(final ZipOutputStream zipOS, final File baseDir, final File f) throws IOException {
