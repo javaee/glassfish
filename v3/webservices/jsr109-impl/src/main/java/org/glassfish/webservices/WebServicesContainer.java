@@ -36,40 +36,46 @@
 
 package org.glassfish.webservices;
 
+import com.sun.xml.ws.assembler.dev.HighAvailabilityProvider;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.webservices.deployment.WebServicesDeploymentMBean;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
+import org.glassfish.gms.bootstrap.GMSAdapterService;
 import org.glassfish.external.amx.AMXGlassfish;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
 
 import javax.management.ObjectName;
 import java.io.IOException;
 
 /**
- * Webservices container service
+ * Web services container service
  *
  */
 @Service(name="org.glassfish.webservices.WebServicesContainer")
 @Scoped(Singleton.class)
 public class WebServicesContainer implements Container, PostConstruct, PreDestroy {
+//    @Inject
+//    private Habitat habitat;
+
     @Inject
-    private Habitat habitat;
+    GMSAdapterService gmsAdapterService;
 
     private final WebServicesDeploymentMBean deploymentBean = new WebServicesDeploymentMBean();
     private ManagedObjectManager mom;
 
+    @Override
     public String getName() {
         return "webservices";
     }
 
+    @Override
     public void postConstruct() {
         ObjectName MONITORING_SERVER = AMXGlassfish.DEFAULT.serverMon(AMXGlassfish.DEFAULT.dasName());
         mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
@@ -78,16 +84,25 @@ public class WebServicesContainer implements Container, PostConstruct, PreDestro
             mom.stripPackagePrefix();
             mom.createRoot(deploymentBean, "webservices-deployment");
         }
+
+        if(gmsAdapterService.isGmsEnabled()) {
+            final String clusterName = gmsAdapterService.getGMSAdapter().getClusterName();
+            final String instanceName = gmsAdapterService.getGMSAdapter().getModule().getInstanceName();
+            
+            HighAvailabilityProvider.INSTANCE.initHaEnvironment(clusterName, instanceName);
+        }
     }
 
     /* package */ WebServicesDeploymentMBean getDeploymentBean() {
         return deploymentBean;
     }
 
+    @Override
     public Class<? extends Deployer> getDeployer() {
         return WebServicesDeployer.class;
     }
 
+    @Override
     public void preDestroy() {
         try {
             if (mom != null) {
