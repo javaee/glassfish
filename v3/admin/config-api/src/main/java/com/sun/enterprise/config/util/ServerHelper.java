@@ -35,17 +35,16 @@
  */
 package com.sun.enterprise.config.util;
 
-import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.net.NetUtils;
+import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import java.util.List;
 import org.glassfish.config.support.GlassFishConfigBean;
@@ -89,7 +88,16 @@ public class ServerHelper {
         return -1;
     }
 
-    public final String getHost() {
+    public final String getAdminHost() {
+         if (server == null || config == null) {
+            return null;
+        }
+        // Look at the address for the admin-listener first
+        NetworkListener nl = getAdminListener(config);
+        String addr = nl.getAddress();
+        if (addr != null && !addr.equals("0.0.0.0")) {
+            return addr;
+        }
 
         if (server.isDas()) {
             return null;    // IT 12778 -- it is impossible to know
@@ -98,9 +106,6 @@ public class ServerHelper {
         String hostName = null;
         Dom serverDom = Dom.unwrap(server);
         Nodes nodes = serverDom.getHabitat().getComponent(Nodes.class);
-        if (server == null || nodes == null) {
-            return null;
-        }
 
         // Get it from the node associated with the server
         String nodeName = server.getNode();
@@ -119,15 +124,13 @@ public class ServerHelper {
         if (StringUtils.ok(hostName)) {
             return hostName;
         }
-        else {
-            return null;
-        }
+        return null;
     }
 
     // very simple generic check
     public final boolean isRunning() {
         try {
-            return NetUtils.isRunning(getHost(), getAdminPort());
+            return NetUtils.isRunning(getAdminHost(), getAdminPort());
         }
         catch (Exception e) {
             // fall through
@@ -135,28 +138,33 @@ public class ServerHelper {
         return false;
     }
 
+    public static NetworkListener getAdminListener(Config config) {
+        NetworkConfig nwc = config.getNetworkConfig();
+        if (nwc == null)
+            throw new IllegalStateException("Can't operate without <http-service>");
+        List<NetworkListener> lss = nwc.getNetworkListeners().getNetworkListener();
+        if (lss == null || lss.isEmpty())
+            throw new IllegalStateException("Can't operate without at least one <network-listener>");
+        for (NetworkListener ls : lss) {
+            if (ServerTags.ADMIN_LISTENER_ID.equals(ls.getName())) {
+                return ls;
+            }
+        }
+        // if we can't find the admin-listener, then use the first one
+        return lss.get(0);
+    }
+
     ///////////////////////////////////////////
     ///////////////////  all private below
     ///////////////////////////////////////////
-    private String getAdminPortString(Server server, Config config) {
+    private static String getAdminPortString(Server server, Config config) {
         if (server == null || config == null)
             return null;
 
-        try {
-            List<NetworkListener> listeners = config.getNetworkConfig().getNetworkListeners().getNetworkListener();
-
-            for (NetworkListener listener : listeners) {
-                if ("admin-listener".equals(listener.getProtocol()))
-                    return translatePort(listener, server, config);
-            }
-        }
-        catch (Exception e) {
-            // handled below...
-        }
-        return null;
+        return translatePort(getAdminListener(config), server, config);
     }
 
-    private String translatePort(NetworkListener adminListener, Server server, Config config) {
+    private static String translatePort(NetworkListener adminListener, Server server, Config config) {
         NetworkListener adminListenerRaw = null;
 
         try {
@@ -179,7 +187,7 @@ public class ServerHelper {
         }
     }
 
-    private String translatePortOld(String portString, Server server, Config config) {
+    private static String translatePortOld(String portString, Server server, Config config) {
         if (!isToken(portString))
             return portString;
 

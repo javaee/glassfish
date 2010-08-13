@@ -123,7 +123,7 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
 
                 if (name != null) {
                     InstanceInfo ii = new InstanceInfo(
-                            name, helper.getAdminPort(server), server.getHost(),
+                            name, helper.getAdminPort(server), server.getAdminHost(),
                             clusterName, logger, timeoutInMsec);
                     infos.add(ii);
                     InstanceState.StateType state = (ii.isRunning()) ?

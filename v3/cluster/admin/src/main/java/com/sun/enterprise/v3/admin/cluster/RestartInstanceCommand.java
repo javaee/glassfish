@@ -96,7 +96,7 @@ public class RestartInstanceCommand implements AdminCommand {
         if (instance == null)
             return Strings.get("stop.instance.noSuchInstance", instanceName);
 
-        String host = instance.getHost();
+        String host = instance.getAdminHost();
 
         if (host == null)
             return Strings.get("stop.instance.noHost", instanceName);

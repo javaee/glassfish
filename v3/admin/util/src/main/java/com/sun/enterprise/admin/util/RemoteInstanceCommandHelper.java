@@ -79,7 +79,7 @@ public final class RemoteInstanceCommandHelper {
         String host = null;
         Server server = getServer(serverName);
         if (server != null) {
-            host = server.getHost();
+            host = server.getAdminHost();
         }
         return host;
     }
@@ -117,19 +117,7 @@ public final class RemoteInstanceCommandHelper {
     }
 
     public final int getAdminPort(Server server) {
-        String portString = getAdminPortString(server, getConfig(server));
-
-        if (portString == null)
-            return -1; // get out quick.  it is kosher to call with a null Server
-
-        try {
-            return Integer.parseInt(portString);
-        }
-        catch (Exception e) {
-            // drop through...
-        }
-        // we might have something like "${SOME_PORT}" as the value of the port
-        return -1;
+        return server.getAdminPort();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -137,102 +125,7 @@ public final class RemoteInstanceCommandHelper {
     // upgrade to pkg-private and move it above this line.  Change the keyword
     // private to final on the method
     ///////////////////////////////////////////////////////////////////////////
-    private String getAdminPortString(Server server, Config config) {
-        if (server == null || config == null)
-            return null;
 
-        try {
-            List<NetworkListener> listeners = config.getNetworkConfig().getNetworkListeners().getNetworkListener();
-
-            for (NetworkListener listener : listeners) {
-                if ("admin-listener".equals(listener.getProtocol()))
-                    return translatePort(listener, server);
-            }
-        }
-        catch (Exception e) {
-            // handled below...
-        }
-        return null;
-    }
-
-    private Config getConfig(final Server server) {
-        // multiple returns makes this short method more readable...
-        if (server == null)
-            return null;
-
-        String cfgName = server.getConfigRef();
-
-        if (cfgName == null)
-            return null;
-
-        for (Config config : configs)
-            if (cfgName.equals(config.getName()))
-                return config;
-
-        return null;
-    }
-
-    private String translatePort(NetworkListener adminListener, Server server) {
-        NetworkListener adminListenerRaw = null;
-
-        try {
-            adminListenerRaw = GlassFishConfigBean.getRawView(adminListener);
-            String portString = adminListenerRaw.getPort();
-
-            if (!isToken(portString))
-                return portString;
-
-            PropertyResolver resolver = new PropertyResolver(domain, server.getName());
-            return resolver.getPropertyValue(portString);
-        }
-        catch (ClassCastException e) {
-            //jc: workaround for issue 12354
-            // TODO severe error 
-            return translatePortOld(adminListener.getPort(), server, getConfig(server));
-        }
-    }
-
-    /**
-     * The way the automatic translation works is that system-property
-     * elements are used to resolve tokens.  But we are inside DAS.  We need to
-     * resolve relative to an instance.  The values are NOT in System.getProperty() !!
-     * There are potentially FOUR elements to check, in order of precedence high to low:
-     * 1. server for the instance
-     * 2. config for the instance
-     * 3. cluster for the instance
-     * 4. config for the cluster
-     * @return the port number or -1 if there is an error.
-     */
-    private String translatePortOld(String portString, Server server, Config config) {
-        if (!isToken(portString))
-            return portString;
-
-        // isToken returned true so we are NOT assuming anything below!
-        String key = portString.substring(2, portString.length() - 1);
-
-        // check cluster and the cluster's config if applicable
-        // bnevins Jul 18, 2010 -- don't botehr this should never be called anymore
-        SystemProperty prop = server.getSystemProperty(key);
-
-        if (prop != null) {
-            return prop.getValue();
-        }
-
-        prop = config.getSystemProperty(key);
-
-        if (prop != null) {
-            return prop.getValue();
-        }
-
-        return null;
-    }
-
-    private static boolean isToken(String s) {
-        return s != null
-                && s.startsWith("${")
-                && s.endsWith("}")
-                && s.length() > 3;
-    }
     final private List<Server> servers;
     final private List<Config> configs;
     final private Nodes nodes;

@@ -782,4 +782,5 @@ public class ServerTags  {
     public static final String ADMIN_CONSOLE_DOWNLOAD_LOCATION	= "adminConsoleDownloadLocation";
     public static final String IPS_ROOT				= "ipsRoot";
     public static final String ADMIN_CONSOLE_VERSION		= "adminConsoleVersion";
+    public static final String ADMIN_LISTENER_ID = "admin-listener";
 }

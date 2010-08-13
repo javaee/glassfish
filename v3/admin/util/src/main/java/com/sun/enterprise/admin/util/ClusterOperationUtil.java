@@ -221,7 +221,7 @@ public class ClusterOperationUtil {
         ArrayList<InstanceCommandExecutor> list = new ArrayList<InstanceCommandExecutor>();
         RemoteInstanceCommandHelper rich = new RemoteInstanceCommandHelper(habitat);
         for(Server svr : servers) {
-            String host = svr.getHost();
+            String host = svr.getAdminHost();
             int port = rich.getAdminPort(svr);
             list.add(new InstanceCommandExecutor(commandName, svr, host, port, logger));
         }

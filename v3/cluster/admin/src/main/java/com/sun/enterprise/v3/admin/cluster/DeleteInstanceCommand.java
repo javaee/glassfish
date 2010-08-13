@@ -119,7 +119,7 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
             report.setMessage(msg);
             return;
         }
-        instanceHost = instance.getHost();
+        instanceHost = instance.getAdminHost();
 
         // We attempt to delete the instance filesystem first by running
         // _delete-instance-filesystem. We then remove the instance

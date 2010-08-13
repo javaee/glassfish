@@ -145,7 +145,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         if (instance == null)
             return Strings.get("stop.instance.noSuchInstance", instanceName);
 
-        String host = instance.getHost();
+        String host = instance.getAdminHost();
 
         if (host == null)
             return Strings.get("stop.instance.noHost", instanceName);

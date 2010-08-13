@@ -260,7 +260,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     boolean isInstance();
 
     @DuckTyped
-    String getHost();
+    String getAdminHost();
 
     @DuckTyped
     int getAdminPort();
@@ -393,10 +393,10 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             return -1;
         }
 
-        public static String getHost(Server server) {
+        public static String getAdminHost(Server server) {
             try {
                 ServerHelper helper = new ServerHelper(server, getConfig(server));
-                return helper.getHost();
+                return helper.getAdminHost();
             }
             catch (Exception e) {
                 // drop through...

@@ -40,7 +40,6 @@ import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.v3.admin.AdminAdapter;
-import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -69,7 +68,6 @@ public final class AdminEndpointDecider {
     private Config cfg;
     private Logger log;
     
-    public static final String ADMIN_LISTENER_ID = "admin-listener";
     public static final int ADMIN_PORT           = 4848;
     
     public AdminEndpointDecider(Config cfg, Logger log) {
@@ -103,51 +101,32 @@ public final class AdminEndpointDecider {
     public String getGuiContextRoot() {
         return guiContextRoot;
     }
+    
     private void setValues() {
         asadminContextRoot = AdminAdapter.PREFIX_URI;  //can't change
         //asadminHosts       = Collections.emptyList();  //asadmin is handled completely by the adapter, no VS needed
-        NetworkConfig config = cfg.getNetworkConfig();
-        if (config == null)
-            throw new IllegalStateException("Can't operate without <http-service>");
-        List<NetworkListener> lss = config.getNetworkListeners().getNetworkListener();
-        if (lss == null || lss.isEmpty())
-            throw new IllegalStateException("Can't operate without at least one <network-listener>");
-        boolean dedicatedAdmin = false;
-        for (NetworkListener ls : lss) {
-            if(ADMIN_LISTENER_ID.equals(ls.getName())) {
-                guiContextRoot = "";  //at the root context for separate admin-listener
-                String dvs     = ls.findHttpProtocol().getHttp().getDefaultVirtualServer();
-                guiHosts       = Collections.unmodifiableList(Arrays.asList(dvs));
-                asadminHosts   = guiHosts;  //same for now
-                try {
-                    port = Integer.valueOf(ls.getPort());
-                } catch(NumberFormatException ne) {
-                    port = ADMIN_PORT;
-                }
-                try {
-                    address = InetAddress.getByName(ls.getAddress());
-                } catch (UnknownHostException e) {
-                    throw new IllegalStateException(e);
-                }
-                dedicatedAdmin = true;
-                break;
+        NetworkListener nl = cfg.getAdminListener();
+        String dvs     = nl.findHttpProtocol().getHttp().getDefaultVirtualServer();
+        guiHosts       = Collections.unmodifiableList(Arrays.asList(dvs));
+        asadminHosts   = guiHosts;  //same for now
+        try {
+            address = InetAddress.getByName(nl.getAddress());
+        } catch (UnknownHostException e) {
+            throw new IllegalStateException(e);
+        }
+        if (ServerTags.ADMIN_LISTENER_ID.equals(nl.getName())) {
+            guiContextRoot = "";  //at the root context for separate admin-listener
+            try {
+                port = Integer.valueOf(nl.getPort());
+            } catch(NumberFormatException ne) {
+                port = ADMIN_PORT;
             }
         }
-        if (!dedicatedAdmin) {
-            //pick first
-            NetworkListener effective = lss.get(0);
-            String dvs = effective.findHttpProtocol().getHttp().getDefaultVirtualServer();
-            guiHosts = Collections.unmodifiableList(Arrays.asList(dvs));
-            asadminHosts = guiHosts;
+        else {
             try {
-                port = Integer.valueOf(effective.getPort());
+                port = Integer.valueOf(nl.getPort());
             } catch(NumberFormatException ne) {
                 port = 8080;   // this is the last resort
-            }
-            try {
-                address = InetAddress.getByName(effective.getAddress());
-            } catch (UnknownHostException e) {
-                throw new IllegalStateException(e);
             }
             //get the context root from admin-service
             AdminService as = cfg.getAdminService();

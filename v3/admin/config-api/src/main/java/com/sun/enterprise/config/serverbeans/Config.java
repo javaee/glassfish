@@ -44,7 +44,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
+import com.sun.enterprise.config.util.ServerHelper;
 import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.admin.config.*;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
@@ -521,6 +523,9 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
     @DuckTyped
     Map<String, String> updateLoggingProperties( Map<String, String> properties);
 
+    @DuckTyped
+    NetworkListener getAdminListener();
+
     /**
      * Return an extension configuration given the extension type.
      *
@@ -585,6 +590,10 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
                 }
             }
             return null;
+        }
+
+        public static NetworkListener getAdminListener(Config c) {
+            return ServerHelper.getAdminListener(c);
         }
 
     }

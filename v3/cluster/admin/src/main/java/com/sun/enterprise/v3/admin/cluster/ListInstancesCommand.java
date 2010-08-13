@@ -187,7 +187,7 @@ public class ListInstancesCommand implements AdminCommand {
             // skip DAS
             if (notDas(name)) {
                 InstanceInfo ii = new InstanceInfo(
-                        name, helper.getAdminPort(server), server.getHost(),
+                        name, helper.getAdminPort(server), server.getAdminHost(),
                         clusterName, logger, timeoutInMsec);
                 infos.add(ii);
             }
