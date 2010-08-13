@@ -239,20 +239,25 @@ public final class Transactions implements PostConstruct, PreDestroy {
             public UnprocessedChangeEvents call() throws Exception {
 
                 try {
-                    // temporary structure to store our future notifications
-                    List<Future<UnprocessedChangeEvents>> futures = new ArrayList<Future<UnprocessedChangeEvents>>();
+                    // temporary structure to store our future notifications with pointer to the
+                    // originator config listener
+                    Map<Future<UnprocessedChangeEvents>, ConfigListener> futures = new HashMap<Future<UnprocessedChangeEvents>, ConfigListener>();
 
                     for (final ConfigListener listener : configListeners) {
                         // each listener is notified in it's own thread.
-
-                        futures.add(executor.submit(new Callable<UnprocessedChangeEvents>() {
+                        System.out.println("Spwaning for " + listener.getClass());
+                        futures.put(executor.submit(new Callable<UnprocessedChangeEvents>() {
                             public UnprocessedChangeEvents call() throws Exception {
-                                return job.process(listener);
+                                System.out.println("Going with " + listener.getClass());                                
+                                UnprocessedChangeEvents e = job.process(listener);
+                                System.out.println("Done with " + listener.getClass());
+                                return e;
+
                             }
-                        }));
+                        }), listener);
                     }
                     List<UnprocessedChangeEvents> unprocessed = new ArrayList<UnprocessedChangeEvents>(futures.size());
-                    for (Future<UnprocessedChangeEvents> future : futures) {
+                    for (Future<UnprocessedChangeEvents> future : futures.keySet()) {
                         try {
                             UnprocessedChangeEvents result = future.get(200, TimeUnit.SECONDS);
                             if (result.getUnprocessed()!=null && result.getUnprocessed().size()>0) {
@@ -262,11 +267,12 @@ public final class Transactions implements PostConstruct, PreDestroy {
                                 unprocessed.add(result);
                             }
                         } catch (InterruptedException e) {
-                            Logger.getAnonymousLogger().log(Level.SEVERE, "Config Listener notification got interruped", e);
+                            Logger.getAnonymousLogger().log(Level.SEVERE, "Config Listener notification got interrupted", e);
                         } catch (ExecutionException e) {
-                            Logger.getAnonymousLogger().log(Level.SEVERE, "Config Listener notification got interruped", e);
+                            Logger.getAnonymousLogger().log(Level.SEVERE, "Config Listener notification got interrupted", e);
                         } catch (TimeoutException e) {
-                            Logger.getAnonymousLogger().log(Level.SEVERE, "Config Listener notification took too long", e);
+                            ConfigListener cl = futures.get(future);
+                            Logger.getAnonymousLogger().log(Level.SEVERE, "Config Listener " + cl.getClass() + " notification took too long", e);
                         }
                     }
 
@@ -377,7 +383,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
         synchronized(listeners) {
             listeners.add(new Holder<ListenerNotifier<TransactionListener, ?, Void>>() {
 
-                final ListenerNotifier tsListener = new ListenerNotifier<TransactionListener, PropertyChangeEvent, Void>(listener);
+                final ListenerNotifier<TransactionListener, PropertyChangeEvent, Void> tsListener = new ListenerNotifier<TransactionListener, PropertyChangeEvent, Void>(listener);
                 final CountDownLatch initialized = new CountDownLatch(1);
 
                 public ListenerNotifier<TransactionListener, PropertyChangeEvent, Void> get() {
