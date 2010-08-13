@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.rest;
 
+import java.util.ArrayList;
 import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +55,9 @@ public class PropertiesBagTest extends RestTestBase {
 
     protected static final String PROP_DOMAIN_NAME = "administrative.domain.name";
     protected static final String URL_DOMAIN_PROPERTIES = "/domain/property";
+    protected static final String URL_JAVA_CONFIG_PROPERTIES = "/domain/configs/config/default-config/java-config/property";
+    protected static final String URL_SERVER_PROPERTIES = "/domain/servers/server/server/property";
+    private static final String REQUEST_FORMAT = MediaType.APPLICATION_JSON;
 
     @Test
     public void propertyRetrieval() {
@@ -64,33 +68,23 @@ public class PropertiesBagTest extends RestTestBase {
     }
 
     @Test
-    public void addProperties() {
+    public void addDomainProperties() {
         final String propName = "property_" + generateRandomString();
         final String propValue = generateRandomString();
-        Map<String, String> domainProps = new HashMap<String, String>() {{
+        final Map<String, String> domainProps = new HashMap<String, String>() {{
             put("name", propName);
             put("value", propValue);
         }};
 
         try {
-            final String payload = MarshallingUtils.getXmlForProperties(domainProps);
-            ClientResponse response = client.resource(getAddress(URL_DOMAIN_PROPERTIES))
-                .header("Content-Type", MediaType.APPLICATION_XML)
-                .accept(RESPONSE_TYPE)
-                .post(ClientResponse.class, payload);
-            checkStatusForSuccess(response);
-            response = get(URL_DOMAIN_PROPERTIES);
-            checkStatusForSuccess(response);
-            List<Map<String, String>> properties = getProperties(response);
-            assertTrue(isPropertyFound(properties, propName));
-            assertFalse(isPropertyFound(properties, PROP_DOMAIN_NAME));
+            createProperties(URL_DOMAIN_PROPERTIES, new ArrayList<Map<String, String>>() {{ add(domainProps); }});
         } finally {
             restoreDomainProperties();
         }
     }
 
     @Test
-    public void deleteProperties() {
+    public void deleteDomainProperties() {
         try {
             ClientResponse response = delete(URL_DOMAIN_PROPERTIES);
             checkStatusForSuccess(response);
@@ -104,20 +98,76 @@ public class PropertiesBagTest extends RestTestBase {
 
     }
 
+    @Test
+    public void javaConfigProperties() {
+        createAndDeleteProperties(URL_JAVA_CONFIG_PROPERTIES);
+    }
+
+    @Test
+    public void serverProperties() {
+        createAndDeleteProperties(URL_SERVER_PROPERTIES);
+    }
+
+    protected void createAndDeleteProperties(String endpoint) {
+        ClientResponse response = get(endpoint);
+        checkStatusForSuccess(response);
+        assertNotNull(getProperties(response));
+
+        List<Map<String, String>> properties = new ArrayList<Map<String, String>>();
+
+        for(int i = 0, max = generateRandomNumber(16); i < max; i++) {
+            properties.add(new HashMap<String, String>() {{
+                put ("name", "property_" + generateRandomString());
+                put ("value", generateRandomString());
+                put ("description", generateRandomString());
+            }});
+        }
+
+        createProperties(endpoint, properties);
+        response = delete(endpoint);
+        checkStatusForSuccess(response);
+    }
+
+    protected void createProperties(String endpoint, List<Map<String, String>> properties) {
+        final String payload = buildPayload(properties);
+        ClientResponse response = client.resource(getAddress(endpoint))
+            .header("Content-Type", REQUEST_FORMAT)
+            .accept(RESPONSE_TYPE)
+            .post(ClientResponse.class, payload);
+        checkStatusForSuccess(response);
+        response = get(endpoint);
+        checkStatusForSuccess(response);
+
+        // Retrieve the properties and make sure they were created.
+        List<Map<String, String>> newProperties = getProperties(response);
+
+        for (Map<String, String> property : properties) {
+            assertTrue(isPropertyFound(newProperties, property.get("name")));
+        }
+    }
+
     // Restore and verify the default domain properties
     protected void restoreDomainProperties() {
-        HashMap<String, String> domainProps = new HashMap<String, String>() {{
+        final HashMap<String, String> domainProps = new HashMap<String, String>() {{
             put("name", PROP_DOMAIN_NAME);
             put("value", "domain1");
         }};
         ClientResponse response = client.resource(getAddress(URL_DOMAIN_PROPERTIES))
-                .header("Content-Type", MediaType.APPLICATION_XML)
+                .header("Content-Type", REQUEST_FORMAT)
                 .accept(RESPONSE_TYPE)
-                .put(ClientResponse.class, MarshallingUtils.getXmlForProperties(domainProps));
+                .put(ClientResponse.class, buildPayload(new ArrayList<Map<String, String>>() {{ add(domainProps); }}));
         checkStatusForSuccess(response);
         response = get(URL_DOMAIN_PROPERTIES);
         checkStatusForSuccess(response);
         assertTrue(isPropertyFound(getProperties(response), PROP_DOMAIN_NAME));
+    }
+
+    protected String buildPayload(List<Map<String, String>> properties) {
+        if (RESPONSE_TYPE.equals(MediaType.APPLICATION_XML)) {
+            return MarshallingUtils.getXmlForProperties(properties);
+        } else {
+            return MarshallingUtils.getJsonForProperties(properties);
+        }
     }
 
     protected boolean isPropertyFound(List<Map<String, String>> properties, String name) {

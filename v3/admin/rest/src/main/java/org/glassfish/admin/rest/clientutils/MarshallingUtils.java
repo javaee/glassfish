@@ -145,6 +145,21 @@ public class MarshallingUtils {
         }
     }
 
+    public static String getJsonForProperties(final Map<String, String> properties) {
+        return getJsonForProperties(new ArrayList<Map<String, String>>() {{ add(properties); }} );
+    }
+    public static String getJsonForProperties(List<Map<String, String>> properties) {
+        JSONArray list = new JSONArray();
+
+        for (Map<String, String> property : properties) {
+            JSONObject map = new JSONObject();
+
+            list.put(property);
+        }
+
+        return list.toString();
+    }
+
     public static Map buildMapFromDocument(String text) {
         Map map = null;
         if (text == null) {

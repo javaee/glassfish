@@ -102,6 +102,16 @@ public class RestTestBase {
         return new BigInteger(130, random).toString(16);
     }
 
+    protected static int generateRandomNumber() {
+        Random r = new Random();
+        return Math.abs(r.nextInt()) + 1;
+    }
+
+    protected int generateRandomNumber(int max) {
+        Random r = new Random();
+        return Math.abs(r.nextInt(max - 1)) + 1;
+    }
+
     protected boolean isSuccess(ClientResponse response) {
         int status = response.getStatus();
         return ((status == 200) || (status == 201));

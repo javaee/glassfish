@@ -55,7 +55,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.glassfish.admin.rest.ResourceUtil;
-import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.GetResultList;
