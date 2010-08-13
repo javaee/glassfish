@@ -352,7 +352,7 @@ public class JavaMailResourceTest extends AdminBaseDevTest {
 
     public void testListMailResourceTargetServer() {
         String testName = "testListMailResourceTargetServer";
-        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, TARGET_OPTION, SERVER);
+        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, SERVER);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME,
@@ -363,7 +363,7 @@ public class JavaMailResourceTest extends AdminBaseDevTest {
         String testName = "testListMailResourceTargetDomain";
 
         {
-        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, TARGET_OPTION, DOMAIN);
+        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, DOMAIN);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
         }
@@ -375,19 +375,19 @@ public class JavaMailResourceTest extends AdminBaseDevTest {
         }
 
         {
-        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, TARGET_OPTION, SERVER);
+        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, SERVER);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result, "Nothing to list.");
         }
 
         {
-        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, TARGET_OPTION, CLUSTER_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, CLUSTER_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result,"Nothing to list.");
         }
 
         {
-        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, TARGET_OPTION, STANDALONE_INSTANCE_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, STANDALONE_INSTANCE_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result, "Nothing to list.");
         }
@@ -395,7 +395,7 @@ public class JavaMailResourceTest extends AdminBaseDevTest {
 
     public void testListMailResourceTargetCluster() {
         String testName = "testListMailResourceTargetCluster";
-        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, TARGET_OPTION, CLUSTER_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, CLUSTER_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
         reportUnexpectedResult(testName, result, INSTANCE1_NAME, INSTANCE2_NAME);
@@ -404,7 +404,7 @@ public class JavaMailResourceTest extends AdminBaseDevTest {
 
     public void testListMailResourceTargetInstance1() {
         String testName = "testListMailResourceTargetInstance1";
-        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, TARGET_OPTION, INSTANCE1_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, INSTANCE1_NAME);
         reportFailureResultStatus(testName, result);
         reportExpectedFailureResult(testName, result, "not allowed");
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME);
@@ -412,7 +412,7 @@ public class JavaMailResourceTest extends AdminBaseDevTest {
 
     public void testListMailResourceTargetInstance2() {
         String testName = "testListMailResourceTargetInstance2";
-        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, TARGET_OPTION, INSTANCE2_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, INSTANCE2_NAME);
         reportFailureResultStatus(testName, result);
         reportExpectedFailureResult(testName, result, "not allowed");
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME );
@@ -420,7 +420,7 @@ public class JavaMailResourceTest extends AdminBaseDevTest {
 
     public void testListMailResourceTargetStandaloneInstance() {
         String testName = "testListMailResourceTargetStandaloneInstance";
-        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, TARGET_OPTION, STANDALONE_INSTANCE_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, STANDALONE_INSTANCE_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
         reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME);

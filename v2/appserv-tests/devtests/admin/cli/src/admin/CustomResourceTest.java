@@ -345,7 +345,7 @@ public class CustomResourceTest extends AdminBaseDevTest {
 
     public void testListCustomResourceTargetServer() {
         String testName = "testListCustomResourceTargetServer";
-        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, TARGET_OPTION, SERVER);
+        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, SERVER);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME,
@@ -356,7 +356,7 @@ public class CustomResourceTest extends AdminBaseDevTest {
         String testName = "testListCustomResourceTargetDomain";
 
         {
-        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, TARGET_OPTION, DOMAIN);
+        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, DOMAIN);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
         }
@@ -368,19 +368,19 @@ public class CustomResourceTest extends AdminBaseDevTest {
         }
 
         {
-        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, TARGET_OPTION, SERVER);
+        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, SERVER);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result, "Nothing to list.");
         }
 
         {
-        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, TARGET_OPTION, CLUSTER_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, CLUSTER_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result,"Nothing to list.");
         }
 
         {
-        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, TARGET_OPTION, STANDALONE_INSTANCE_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, STANDALONE_INSTANCE_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result, "Nothing to list.");
         }
@@ -388,7 +388,7 @@ public class CustomResourceTest extends AdminBaseDevTest {
 
     public void testListCustomResourceTargetCluster() {
         String testName = "testListCustomResourceTargetCluster";
-        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, TARGET_OPTION, CLUSTER_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, CLUSTER_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
         reportUnexpectedResult(testName, result, INSTANCE1_NAME, INSTANCE2_NAME);
@@ -397,7 +397,7 @@ public class CustomResourceTest extends AdminBaseDevTest {
 
     public void testListCustomResourceTargetInstance1() {
         String testName = "testListCustomResourceTargetInstance1";
-        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, TARGET_OPTION, INSTANCE1_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, INSTANCE1_NAME);
         reportFailureResultStatus(testName, result);
         reportExpectedFailureResult(testName, result, "not allowed");
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME);
@@ -405,7 +405,7 @@ public class CustomResourceTest extends AdminBaseDevTest {
 
     public void testListCustomResourceTargetInstance2() {
         String testName = "testListCustomResourceTargetInstance2";
-        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, TARGET_OPTION, INSTANCE2_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, INSTANCE2_NAME);
         reportFailureResultStatus(testName, result);
         reportExpectedFailureResult(testName, result, "not allowed");
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME );
@@ -413,7 +413,7 @@ public class CustomResourceTest extends AdminBaseDevTest {
 
     public void testListCustomResourceTargetStandaloneInstance() {
         String testName = "testListCustomResourceTargetStandaloneInstance";
-        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, TARGET_OPTION, STANDALONE_INSTANCE_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, STANDALONE_INSTANCE_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
         reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME);

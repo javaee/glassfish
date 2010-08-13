@@ -352,7 +352,7 @@ public class ExternalJndiResourceTest extends AdminBaseDevTest {
 
     public void testListJndiResourceTargetServer() {
         String testName = "testListJndiResourceTargetServer";
-        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, TARGET_OPTION, SERVER);
+        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, SERVER);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME,
@@ -363,7 +363,7 @@ public class ExternalJndiResourceTest extends AdminBaseDevTest {
         String testName = "testListJndiResourceTargetDomain";
 
         {
-        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, TARGET_OPTION, DOMAIN);
+        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, DOMAIN);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
         }
@@ -375,19 +375,19 @@ public class ExternalJndiResourceTest extends AdminBaseDevTest {
         }
 
         {
-        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, TARGET_OPTION, SERVER);
+        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, SERVER);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result, "Nothing to list.");
         }
 
         {
-        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, TARGET_OPTION, CLUSTER_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, CLUSTER_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result,"Nothing to list.");
         }
 
         {
-        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, TARGET_OPTION, STANDALONE_INSTANCE_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, STANDALONE_INSTANCE_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result, "Nothing to list.");
         }
@@ -395,7 +395,7 @@ public class ExternalJndiResourceTest extends AdminBaseDevTest {
 
     public void testListJndiResourceTargetCluster() {
         String testName = "testListJndiResourceTargetCluster";
-        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, TARGET_OPTION, CLUSTER_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, CLUSTER_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
         reportUnexpectedResult(testName, result, INSTANCE1_NAME, INSTANCE2_NAME);
@@ -404,7 +404,7 @@ public class ExternalJndiResourceTest extends AdminBaseDevTest {
 
     public void testListJndiResourceTargetInstance1() {
         String testName = "testListJndiResourceTargetInstance1";
-        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, TARGET_OPTION, INSTANCE1_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, INSTANCE1_NAME);
         reportFailureResultStatus(testName, result);
         reportExpectedFailureResult(testName, result, "not allowed");
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME);
@@ -412,7 +412,7 @@ public class ExternalJndiResourceTest extends AdminBaseDevTest {
 
     public void testListJndiResourceTargetInstance2() {
         String testName = "testListJndiResourceTargetInstance2";
-        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, TARGET_OPTION, INSTANCE2_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, INSTANCE2_NAME);
         reportFailureResultStatus(testName, result);
         reportExpectedFailureResult(testName, result, "not allowed");
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME );
@@ -420,7 +420,7 @@ public class ExternalJndiResourceTest extends AdminBaseDevTest {
 
     public void testListJndiResourceTargetStandaloneInstance() {
         String testName = "testListJndiResourceTargetStandaloneInstance";
-        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, TARGET_OPTION, STANDALONE_INSTANCE_NAME);
+        AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, STANDALONE_INSTANCE_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
         reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
