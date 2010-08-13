@@ -45,8 +45,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-import org.glassfish.admin.rest.ResourceUtil;
-import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
@@ -86,7 +84,7 @@ public class FindHttpProtocolResource {
         ar.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         ar.getTopMessagePart().getProps().put("protocol", p.getName());
 
-        ActionReportResult result = new ActionReportResult("find-http-protocal", ar, new OptionsResult());
+        ActionReportResult result = new ActionReportResult("find-http-protocol", ar, new OptionsResult());
 
         return result;
     }

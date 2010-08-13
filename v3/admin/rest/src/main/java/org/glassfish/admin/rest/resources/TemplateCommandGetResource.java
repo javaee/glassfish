@@ -37,11 +37,8 @@ package org.glassfish.admin.rest.resources;
 
 
 import com.sun.jersey.spi.container.ContainerRequest;
-import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.results.ActionReportResult;
-import org.glassfish.admin.rest.results.CommandResourceGetResult;
-import org.glassfish.admin.rest.results.Result;
 import org.glassfish.api.admin.ParameterMap;
 
 import javax.ws.rs.GET;

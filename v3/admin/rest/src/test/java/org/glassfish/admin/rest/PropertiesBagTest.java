@@ -73,10 +73,11 @@ public class PropertiesBagTest extends RestTestBase {
         }};
 
         try {
+            final String payload = MarshallingUtils.getXmlForProperties(domainProps);
             ClientResponse response = client.resource(getAddress(URL_DOMAIN_PROPERTIES))
                 .header("Content-Type", MediaType.APPLICATION_XML)
                 .accept(RESPONSE_TYPE)
-                .post(ClientResponse.class, MarshallingUtils.getXmlForProperties(domainProps));
+                .post(ClientResponse.class, payload);
             checkStatusForSuccess(response);
             response = get(URL_DOMAIN_PROPERTIES);
             checkStatusForSuccess(response);

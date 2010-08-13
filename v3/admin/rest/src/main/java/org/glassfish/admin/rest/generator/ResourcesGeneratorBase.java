@@ -458,7 +458,8 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
     private static final String[][] configBeanCustomResources = {
         // ConfigBean, Custom Resource Class, path
-        {"NetworkListener", "FindHttpProtocolResource", "find-http-protocol"}
+        {"NetworkListener", "FindHttpProtocolResource", "find-http-protocol"},
+        {"Server", "SystemPropertiesCliResource", "system-properties"}
     };
 
     private static class CollectionLeafMetaData {
