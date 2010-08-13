@@ -40,7 +40,7 @@
 <!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 
-<project name="webcontainer_unittest" default="all" basedir=".">
+<project name="dosBrokenPost" default="all" basedir=".">
 
     &commonSetup;
     &commonBuild;
