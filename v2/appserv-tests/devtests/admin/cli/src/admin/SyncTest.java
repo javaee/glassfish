@@ -57,7 +57,7 @@ public class SyncTest extends AdminBaseDevTest {
         }
         host = host0;
         System.out.println("Host= " + host);
-        instancesHome = new File(new File(getGlassFishHome(), "nodeagents"), host);
+        instancesHome = new File(new File(getGlassFishHome(), "nodes"), host);
 
     }
     @Override

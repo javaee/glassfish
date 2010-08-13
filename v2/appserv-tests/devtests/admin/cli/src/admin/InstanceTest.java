@@ -75,7 +75,7 @@ public class InstanceTest extends AdminBaseDevTest {
         glassFishHome = getGlassFishHome();
         domainHome = new File(glassFishHome, "domains/domain1");    // yes it is hard-coded!!
         // it does NOT need to exist -- do not insist!
-        nodeDir = new File(glassFishHome, "nodeagents");
+        nodeDir = new File(glassFishHome, "nodes");
         instancesHome = new File(nodeDir, host);
         printf("GF HOME = " + glassFishHome);
     }
