@@ -200,7 +200,7 @@ public class MQAddressList {
             if(!StringUtils.ok(installRootPath))
                 installRootPath = System.getProperty(
                     SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
-            agentsDirPath = installRootPath + File.separator + "nodeagents";
+            agentsDirPath = installRootPath + File.separator + "nodes";
         }
        // if(!StringUtils.ok(installRootPath))
          //   throw new CommandException("Agent.noInstallDirPath");

@@ -80,7 +80,7 @@ public class LogFilterForInstance {
 
             instanceLogFile = new File(tempFile.getAbsolutePath() + File.separator + instanceName + ".log");
 
-            InputStream inputStream = sftpClient.read(node.getInstallDir() + File.separator + "nodeagents" + File.separator
+            InputStream inputStream = sftpClient.read(node.getInstallDir() + File.separator + "nodes" + File.separator
                     + sNode + File.separator + instanceName + File.separator + "logs" + File.separator + "server.log");
 
             BufferedInputStream in = new BufferedInputStream(inputStream);

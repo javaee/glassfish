@@ -63,7 +63,7 @@ import com.sun.enterprise.universal.io.SmartFile;
  *
  * Default instance file structure.
  * ||---- <GlassFish Install Root>
- *          ||---- nodeagents (nodeDirRoot, --nodedir)
+ *          ||---- nodes (nodeDirRoot, --nodedir)
  *                  ||---- <node-1> (nodeDirChild, --node)
  *                          || ---- agent
  *                                  || ---- config
@@ -133,7 +133,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         String nodeDirRootPath = null;  
         if(ok(nodeDir))
             nodeDirRootPath = nodeDir;
-        else // node dir = <install-root>/nodeagents
+        else // node dir = <install-root>/nodes
             nodeDirRootPath = getNodeDirRootDefault();
 
         nodeDirRoot = new File(nodeDirRootPath);
@@ -425,7 +425,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     /**
      * Return the default value for nodeDirRoot, first checking if com.sun.aas.agentRoot
      * was specified in asenv.conf and returning this value. If not specified,
-     * then the defaut value is the {GlassFish_Install_Root}/nodeagents.
+     * then the defaut value is the {GlassFish_Install_Root}/nodes.
      * nodeDirRoot is the parent directory of the node(s).
      *
      * @return String default nodeDirRoot - parent directory of node(s)
@@ -439,7 +439,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             return nodeDirDefault;
 
         String installRootPath = getInstallRootPath();
-        return installRootPath + "/" + "nodeagents";
+        return installRootPath + "/" + "nodes";
     }
 
 }

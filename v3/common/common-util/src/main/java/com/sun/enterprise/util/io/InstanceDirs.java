@@ -47,11 +47,11 @@ import java.io.IOException;
  * when working with invalid directories...
  *
  * Example:
- * new InstanceDirs(new File("/glassfishv3/glassfish/nodeagents/mymachine/instance1"));
+ * new InstanceDirs(new File("/glassfishv3/glassfish/nodes/mymachine/instance1"));
  *
- * getInstanceDir()   == /glassfishv3/glassfish/nodeagents/mymachine/instance1
- * getNodeAgentDir()  == /glassfishv3/glassfish/nodeagents/mymachine
- * getNodeAgentsDir() == /glassfishv3/glassfish/nodeagents
+ * getInstanceDir()   == /glassfishv3/glassfish/nodes/mymachine/instance1
+ * getNodeAgentDir()  == /glassfishv3/glassfish/nodes/mymachine
+ * getNodeAgentsDir() == /glassfishv3/glassfish/nodes
  * getInstanceName()  == instance1
  *
  *
@@ -78,8 +78,8 @@ public final class InstanceDirs {
     /**
      * This constructor handles 0, 1, 2 or 3 null args.
      * It is smart enough to figure out many defaults.
-     * @param nodeDirParent E.g. install-dir/nodeagents
-     * @param nodeDir E.g. install-dir/nodeagents/localhost
+     * @param nodeDirParent E.g. install-dir/nodes
+     * @param nodeDir E.g. install-dir/nodes/localhost
      * @param instanceName E.g. i1
      */
     public InstanceDirs(String nodeDirParentPath, String nodeDirName, String instanceName) throws IOException {
@@ -175,7 +175,7 @@ public final class InstanceDirs {
     /**
      * Return the default value for nodeDirRoot, first checking if com.sun.aas.agentRoot
      * was specified in asenv.conf and returning this value. If not specified,
-     * then the default value is the {GlassFish_Install_Root}/nodeagents.
+     * then the default value is the {GlassFish_Install_Root}/nodes.
      * nodeDirRoot is the parent directory of the node(s).
      *
      * @return String default nodeDirRoot - parent directory of node(s)
@@ -189,7 +189,7 @@ public final class InstanceDirs {
             return nodeDirDefault;
 
         String installRootPath = getInstallRootPath();
-        return installRootPath + "/" + "nodeagents";
+        return installRootPath + "/" + "nodes";
     }
 
     /**

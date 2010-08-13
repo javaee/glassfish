@@ -467,7 +467,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
             String dirList[] = {
                 installDir + File.separator + "glassfish" + File.separator + "domains",
                 installDir + File.separator + "glassfish" + File.separator + "modules",
-                installDir + File.separator + "glassfish" + File.separator + "nodeagents",
+                installDir + File.separator + "glassfish" + File.separator + "nodes",
                 installDir + File.separator + "glassfish" + File.separator + "lib"
             };
             for (int i = 0; i < dirList.length; i++) {

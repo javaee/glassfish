@@ -90,7 +90,7 @@ public final class CreateNodeAgentCommand extends CLICommand {
             else
                 agentsDir = new File(new File(getSystemProperty(
                                 SystemPropertyConstants.INSTALL_ROOT_PROPERTY)),
-                                "nodeagents");
+                                "nodes");
         }
 
         // XXX - validate lots more...

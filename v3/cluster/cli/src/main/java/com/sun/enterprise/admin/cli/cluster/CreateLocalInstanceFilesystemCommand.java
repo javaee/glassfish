@@ -55,7 +55,7 @@ import com.sun.enterprise.util.net.NetUtils;
 /**
  *  This is a local command that creates a local instance.
  *  Create the local directory structure
- *  nodeagents/<host-name>/
+ *  nodes/<host-name>/
  *   || ---- agent
  *             || ---- config
  *                     | ---- das.properties

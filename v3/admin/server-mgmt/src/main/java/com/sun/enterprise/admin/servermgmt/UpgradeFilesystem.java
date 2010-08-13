@@ -34,73 +34,51 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.cluster;
+package com.sun.enterprise.admin.servermgmt;
 
-import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import java.io.*;
-import org.glassfish.api.admin.CommandException;
-import org.glassfish.api.admin.CommandValidationException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.api.admin.config.ConfigurationUpgrade;
+
+import java.io.File;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
+ * Startup service to update the filesystem from v2 to the v3 format
  *
- * @author bnevins
+ * @author Joe Di Pol
  */
-public class LocalInstanceCommandTest extends LocalInstanceCommand{
+@Service
+public class UpgradeFilesystem implements ConfigurationUpgrade, PostConstruct {
 
-    public LocalInstanceCommandTest() {
-    }
-
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-        me = new LocalInstanceCommandTest();
-    }
-
-    @After
-    public void tearDown() {
-    }
-
-    /**
-     * Test of validate method, of class LocalInstanceCommand.
-     */
-    @Test
-    public void testValidate() throws Exception {
-        System.out.println("test LocalInstanceCommand.validate");
-        try {
-            nodeDir = nodeAgentsDir.getAbsolutePath();
-            instanceName = "i1";
-            validate();
-        }
-        catch(CommandException e) {
-            fail("validate failed!!!");
-            throw e;
-        }
-    }
 
     @Override
-    protected int executeCommand() throws CommandException, CommandValidationException {
-        System.out.println("Do nothing!");
-        return 0;
+    public void postConstruct() {
+        upgradeFilesystem();
     }
 
-    private LocalInstanceCommandTest me;
-    private static File installDir;
-    private static File nodeAgentsDir;
+    private void upgradeFilesystem() {
 
-    static {
-        String installDirPath = LocalInstanceCommandTest.class.getClassLoader().getResource("fake_gf_install_dir").getPath();
-        installDir = SmartFile.sanitize(new File(installDirPath));
-        nodeAgentsDir = new File(installDir, "nodes");
+        // Rename nodeagents to nodes
+        String installDir = System.getProperty(
+                SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+
+        File agentsDir = new File(installDir, "nodeagents");
+        File nodesDir = new File(installDir, "nodes");
+
+        // Only do this if nodeagents exists and nodes does not
+        if (agentsDir.exists() && ! nodesDir.exists() ) {
+            String msg = "Renaming " + agentsDir.getPath() +
+                        " to " + nodesDir.getPath();
+            Logger.getAnonymousLogger().log(Level.INFO, msg);
+            if ( ! agentsDir.renameTo(nodesDir)) {
+                msg = "Failed to rename " + agentsDir.getPath() +
+                        " to " + nodesDir.getPath();
+                Logger.getAnonymousLogger().log(Level.SEVERE, msg);
+            }
+        }
     }
 }
