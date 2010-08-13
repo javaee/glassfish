@@ -38,6 +38,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.glassfish.config.support.*;
 import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
@@ -62,4 +63,24 @@ public interface Clusters extends ConfigBeanProxy, Injectable {
     @Delete(value="delete-cluster", resolver= TypeAndNameResolver.class, decorator=Cluster.DeleteDecorator.class)
 
     public List<Cluster> getCluster();
+
+    /**
+     * Return the cluster with the given name, or null if no such cluster exists.
+     *
+     * @param   name    the name of the cluster
+     * @return          the Cluster object, or null if no such server
+     */
+    @DuckTyped
+    public Cluster getCluster(String name);
+
+    class Duck {
+        public static Cluster getCluster(Clusters clusters, String name) {
+            for (Cluster cluster : clusters.getCluster()) {
+                if (cluster.getName().equals(name)) {
+                    return cluster;
+                }
+            }
+            return null;
+        }
+    }
 }
