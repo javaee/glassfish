@@ -65,7 +65,6 @@ public final class RemoteInstanceCommandHelper {
 
         try {
             habitat = habitatIn;
-            configs = habitat.getByType(Configs.class).getConfig();
             servers = habitat.getByType(Servers.class).getServer();
             domain = habitat.getByType(Domain.class);
             nodes = habitat.getByType(Nodes.class);
@@ -127,7 +126,6 @@ public final class RemoteInstanceCommandHelper {
     ///////////////////////////////////////////////////////////////////////////
 
     final private List<Server> servers;
-    final private List<Config> configs;
     final private Nodes nodes;
     final private Habitat habitat;
     final private Domain domain;
