@@ -55,6 +55,8 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Date;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -141,9 +143,12 @@ public class GetHealthCommand implements AdminCommand {
             setFail(Strings.get("get.health.noHistoryError"));
             return;
         }
+
+        // order by instance name and output
+        SortedSet<String> names = new TreeSet<String>(history.getInstances());
         String formatState = "Instance %s %s";
-        String formatTime = " since %s"; 
-        for(String name: history.getInstances()) {
+        String formatTime = " since %s";
+        for(String name : names) {
             HealthHistory.InstanceHealth ih = history.getHealthByInstance(name);
             result.append(String.format(formatState, name, ih.state));
             if (HealthHistory.NOTIME != ih.time) {
@@ -152,7 +157,8 @@ public class GetHealthCommand implements AdminCommand {
             }
             result.append("\n");
         }
-        report.setMessage(result.toString());
+        String rawResult = result.toString();
+        report.setMessage(rawResult.substring(0, rawResult.lastIndexOf("\n")));
     }
 
     // come fail away, come fail away, come fail away with me....
