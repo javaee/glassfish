@@ -53,7 +53,7 @@ import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
  * of the beast.
  * @author Byron Nevins
  */
-public class WindowsService extends ServiceAdapter {
+public class WindowsService extends NonSMFServiceAdapter {
 
     static boolean apropos() {
         return OS.isWindowsForSure();
@@ -119,6 +119,34 @@ public class WindowsService extends ServiceAdapter {
         return ObjectAnalyzer.toString(this);
     }
 
+    @Override
+    public final String getLocationArgsStart(ServerDirs dirs) {
+        if (isDomain()) {
+            return makeStartArg("--domaindir")
+                    + makeStartArg(dirs.getServerParentDir().getPath());
+        }
+        else {
+            return makeStartArg("--nodedir")
+                    + makeStartArg(dirs.getServerGrandParentDir().getPath().replace('\\', '/'))
+                    + makeStartArg("--node")
+                    + makeStartArg(dirs.getServerParentDir().getName());
+        }
+    }
+
+    @Override
+    public final String getLocationArgsStop(ServerDirs dirs) {
+        if (isDomain()) {
+            return makeStopArg("--domaindir")
+                    + makeStopArg(dirs.getServerParentDir().getPath());
+        }
+        else {
+            return makeStopArg("--nodedir")
+                    + makeStopArg(dirs.getServerGrandParentDir().getPath().replace('\\', '/'))
+                    + makeStopArg("--node")
+                    + makeStopArg(dirs.getServerParentDir().getName());
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////
     //////////////////////////   ALL PRIVATE BELOW    /////////////////////
     ///////////////////////////////////////////////////////////////////////
@@ -155,13 +183,13 @@ public class WindowsService extends ServiceAdapter {
         map.put(CREDENTIALS_STOP_TN, getAsadminCredentials("stopargument"));
         map.put(START_COMMAND_TN, getStartCommand());
         map.put(STOP_COMMAND_TN, getStopCommand());
-        map.put(LOCATIONS_COMMAND_TN, getLocationArgs(dirs));
+        map.put(LOCATION_ARGS_START_TN, getLocationArgsStart(dirs));
+        map.put(LOCATION_ARGS_STOP_TN, getLocationArgsStop(dirs));
 
         trace("MAP --> " + map.toString());
 
         ServicesUtils.tokenReplaceTemplateAtDestination(
                 map, templateFile.getPath(), targetXml.getPath());
-
         trace("Target XML file written: " + targetXml);
     }
 
@@ -311,6 +339,15 @@ public class WindowsService extends ServiceAdapter {
             }
         }
     }
+
+    private String makeStartArg(String s) {
+        return "  " + START_ARG_START + s + START_ARG_END + "\n";
+    }
+
+    private String makeStopArg(String s) {
+        return "  " + STOP_ARG_START + s + STOP_ARG_END + "\n";
+    }
+
 
     private static boolean ok(String s) {
         return s != null && s.length() > 0;

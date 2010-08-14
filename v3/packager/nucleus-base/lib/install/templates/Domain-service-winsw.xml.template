@@ -22,8 +22,7 @@
   <depend>tcpip</depend>
   <startargument>%%%START_COMMAND%%%</startargument>
   <startargument>--verbose</startargument>
-  %%%CREDENTIALS_START%%%%%%LOCATION_ARGS%%%<startargument>%%%ENTITY_NAME%%%</startargument>
+  %%%CREDENTIALS_START%%%%%%LOCATION_ARGS_START%%%<startargument>%%%ENTITY_NAME%%%</startargument>
   <stopargument>%%%STOP_COMMAND%%%</stopargument>
-  %%%CREDENTIALS_STOP%%%%%%LOCATION_ARGS%%%<stopargument>%%%ENTITY_NAME%%%</stopargument>
+  %%%CREDENTIALS_STOP%%%%%%LOCATION_ARGS_STOP%%%<stopargument>%%%ENTITY_NAME%%%</stopargument>
 </service>
-

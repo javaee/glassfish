@@ -33,8 +33,8 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.servermgmt.services;
+
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.ProcessExecutor;
@@ -46,6 +46,7 @@ import com.sun.enterprise.util.io.ServerDirs;
 import java.io.File;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,6 +56,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Properties;
 import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** Represents the SMF Service.
  * Holds the tokens and their values that are consumed by the SMF templates. The recommended
@@ -65,34 +68,33 @@ import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
  * @since SJSAS 9.0
  * @see #isConfigValid
  * @see SMFServiceHandler
+ * @author Kedar Mhaswade
  */
-public final class SMFService implements Service {
-    public static final String TIMEOUT_SECONDS_DV           = "0";
-    public static final String AS_ADMIN_USER_DEF_VAL        = "admin";
-    public static final String SP_DELIMITER                 = ":";
-    public static final String PRIVILEGES_DEFAULT_VAL       = "basic";
-    public static final String NETADDR_PRIV_VAL             = "net_privaddr";
-    public static final String BASIC_NETADDR_PRIV_VAL       = PRIVILEGES_DEFAULT_VAL + "," + NETADDR_PRIV_VAL;
-    public static final String START_INSTANCES_TN           = "START_INSTANCES";
-    public static final String START_INSTANCES_DEFAULT_VAL  = Boolean.TRUE.toString();
-    public static final String NO_START_INSTANCES_PROPERTY  = "startinstances=false";
-    public static final String SVCCFG                       = "/usr/sbin/svccfg";
-    public static final String SVCADM                       = "/usr/sbin/svcadm";
-    public static final String MANIFEST_HOME                = "/var/svc/manifest/application/GlassFish/";
+public final class SMFService extends ServiceAdapter {
 
-    private static final String NULL_VALUE                  = "null";
-    private static final StringManager sm                   = StringManager.getManager(SMFService.class);
-    private static final String nullArgMsg                  = sm.getString("null_arg");
-    private static final String MANIFEST_FILE_SUFFIX        = "-service-smf.xml";
-    private static final String MANIFEST_FILE_TEMPL_SUFFIX  = MANIFEST_FILE_SUFFIX + ".template";
-
-    private static final String SERVICE_NAME_PREFIX         = "application/GlassFish/";
-    private static final String REL_PATH_TEMPLATES          = "lib/install/templates";
-
+    public static final String TIMEOUT_SECONDS_DV = "0";
+    public static final String AS_ADMIN_USER_DEF_VAL = "admin";
+    public static final String SP_DELIMITER = ":";
+    public static final String PRIVILEGES_DEFAULT_VAL = "basic";
+    public static final String NETADDR_PRIV_VAL = "net_privaddr";
+    public static final String BASIC_NETADDR_PRIV_VAL = PRIVILEGES_DEFAULT_VAL + "," + NETADDR_PRIV_VAL;
+    public static final String START_INSTANCES_TN = "START_INSTANCES";
+    public static final String START_INSTANCES_DEFAULT_VAL = Boolean.TRUE.toString();
+    public static final String NO_START_INSTANCES_PROPERTY = "startinstances=false";
+    public static final String SVCCFG = "/usr/sbin/svccfg";
+    public static final String SVCADM = "/usr/sbin/svcadm";
+    public static final String MANIFEST_HOME = "/var/svc/manifest/application/GlassFish/";
+    private static final String NULL_VALUE = "null";
+    private static final StringManager sm = StringManager.getManager(SMFService.class);
+    private static final String nullArgMsg = sm.getString("null_arg");
+    private static final String MANIFEST_FILE_SUFFIX = "-service-smf.xml";
+    private static final String MANIFEST_FILE_TEMPL_SUFFIX = MANIFEST_FILE_SUFFIX + ".template";
+    private static final String SERVICE_NAME_PREFIX = "application/GlassFish/";
+    private static final String REL_PATH_TEMPLATES = "lib/install/templates";
     private final Map<String, String> pairs;
     private boolean trace = true;
     private boolean dryRun;
-    private String  shortName;
+    private String shortName;
     private boolean force;
 
     /**
@@ -101,14 +103,14 @@ public final class SMFService implements Service {
      * using this instance.
      */
     SMFService() {
-        if(!apropos()) {
+        if (!apropos()) {
             throw new IllegalArgumentException("Internal Error: SMFService constructor called but SMF is not available.");
         }
-        pairs = new HashMap<String, String> ();
+        pairs = new HashMap<String, String>();
         init();
     }
 
- /**
+    /**
      * Creates SMFService instance with tokens initialized from given map. Given
      * Map may not be null. Callers must verify that the tokens are properly token-replaced before
      * using this instance.
@@ -119,10 +121,8 @@ public final class SMFService implements Service {
         if (tv == null)
             throw new IllegalArgumentException(nullArgMsg);
 
-        pairs = new HashMap<String, String> (tv);
+        pairs = new HashMap<String, String>(tv);
     }
-
-
 
     static boolean apropos() {
         // suggested by smf-discuss forum on OpenSolaris
@@ -132,9 +132,9 @@ public final class SMFService implements Service {
     /** Returns the <code> name </code> of the SMF Service.
      */
     public String getName() {
-        return ( pairs.get(SERVICE_NAME_TN) );
+        return (pairs.get(SERVICE_NAME_TN));
     }
-    
+
     /** Sets the name of the service. Parameter may not be null, 
      * an IllegalArgumentException results otherwise.
      */
@@ -149,28 +149,35 @@ public final class SMFService implements Service {
         }
         pairs.put(SERVICE_NAME_TN, fullName);
     }
+
     /** Returns the <code> type </code> of service as an enum AppserverServiceType, from the given String.
      * @throws IllegalArgumentException if the enum value in the internal data structure is
      * not valid.
      * @see AppserverServiceType
      */
     public AppserverServiceType getType() {
-        return ( AppserverServiceType.valueOf(pairs.get(SERVICE_TYPE_TN)) );
+        return (AppserverServiceType.valueOf(pairs.get(SERVICE_TYPE_TN)));
     }
+
     /** Sets the type of the service to the given value in the enum.
      * @see AppserverServiceType
      */
     public void setType(final AppserverServiceType type) {
+        // bnevins -- FRAGILE.  Caller must call this method or we'll have issues!
         pairs.put(SERVICE_TYPE_TN, type.toString());
+        pairs.put(START_COMMAND_TN, type.startCommand());
+        pairs.put(STOP_COMMAND_TN, type.stopCommand());
+
     }
-    
+
     /** Returns the date the service is created.
      * @return A String Representation of Date.
      * @see java.util.Date
      */
     public String getDate() {
-        return ( pairs.get(DATE_CREATED_TN) );
+        return (pairs.get(DATE_CREATED_TN));
     }
+
     /** Sets the date as the date when this service is created.
      * @param date String representation of the date
      * @throws IllegalArgumentException if the parameter is null
@@ -180,13 +187,14 @@ public final class SMFService implements Service {
             throw new IllegalArgumentException(nullArgMsg);
         pairs.put(DATE_CREATED_TN, date);
     }
-    
+
     /** Returns the location where configuration of the service is stored
      * on the disk.
      */
     public String getLocation() {
-        return ( pairs.get(CFG_LOCATION_TN) );
+        return (pairs.get(CFG_LOCATION_TN));
     }
+
     /** Sets the location to the parent of given location.
      * The location is treated as absolute and hence caller
      * must ensure that it passes the absolute location.
@@ -201,6 +209,7 @@ public final class SMFService implements Service {
         pairs.put(CFG_LOCATION_TN, cf.getParent());
         pairs.put(ENTITY_NAME_TN, cf.getName());
     }
+
     /** Returns the so-called <b> Fully Qualified Service Name </b> for this service.
      * It is a function of name and location where the configuration of the
      * service is stored. Might not return the intended value if the name and/or
@@ -208,8 +217,9 @@ public final class SMFService implements Service {
      * @return String representing the place where the manifest is stored
      */
     public String getFQSN() {
-        return ( pairs.get(FQSN_TN) );
+        return (pairs.get(FQSN_TN));
     }
+
     /** Sets the so-called <b> Fully Qualified Service Name </b> for this service.
      * Note that there is no parameter accepted by this method. This is because the
      * <b> Fully Qualified Service Name </b> is a function of name and location. The
@@ -219,22 +229,23 @@ public final class SMFService implements Service {
     public void setFQSN() {
         //note that this is function of name and location
         //note that it is a programming error to call this method b4 setName()
-        assert !NULL_VALUE.equals(pairs.get(SERVICE_NAME_TN)):"Internal: Caller tried to call this method before setName()";
+        assert !NULL_VALUE.equals(pairs.get(SERVICE_NAME_TN)) : "Internal: Caller tried to call this method before setName()";
         final String underscored = pairs.get(ENTITY_NAME_TN) + pairs.get(CFG_LOCATION_TN).replace('/', '_');
         pairs.put(FQSN_TN, underscored);
     }
-    
+
     /** Returns the absolute path to the asadmin script.
      */
     public String getAsadminPath() {
-        return (pairs.get(AS_ADMIN_PATH_TN) );
+        return (pairs.get(AS_ADMIN_PATH_TN));
     }
+
     /** Sets the absolute path to the asadmin script. May not be null.
      */
     public void setAsadminPath(final String path) {
         if (path == null)
             throw new IllegalArgumentException(nullArgMsg);
-        if (! new File(path).exists()) {
+        if (!new File(path).exists()) {
             final String msg = sm.getString("doesNotExist", path);
             throw new IllegalArgumentException(msg);
         }
@@ -255,7 +266,7 @@ public final class SMFService implements Service {
         // bnevins, 1/13/2010 IT: 11119
         // admin username and admin password are never required to start a domain
         // starting in V3.0.  At most the (non-default) master password is needed.
-        
+
         if (path == null)
             throw new IllegalArgumentException(nullArgMsg);
         String msg = null;
@@ -264,7 +275,7 @@ public final class SMFService implements Service {
             throw new IllegalArgumentException(msg);
         }
         final String cp = FileUtils.safeGetCanonicalPath(new File(path));
-        final Map<String, String> tv = new HashMap<String, String> ();
+        final Map<String, String> tv = new HashMap<String, String>();
 
         if (!fileContainsToken(path, AS_ADMIN_MASTERPASSWORD_TN, tv)) {
             msg = sm.getString("missingParamsInFile", cp, AS_ADMIN_MASTERPASSWORD_TN);
@@ -272,13 +283,15 @@ public final class SMFService implements Service {
         }
         pairs.put(CREDENTIALS_TN, " --passwordfile " + cp + " ");
     }
+
     /** Returns timeout in seconds before the master boot restarter should
      * give up starting this service.
      */
     public int getTimeoutSeconds() {
         final int to = Integer.parseInt(pairs.get(TIMEOUT_SECONDS_TN));
-        return ( to );
+        return (to);
     }
+
     /** Sets timeout in seconds before the master boot restarter should
      * give up starting this service.
      * @param number a non-negative integer representing timeout. A value of zero implies infinite timeout.
@@ -289,14 +302,16 @@ public final class SMFService implements Service {
             final String msg = sm.getString("invalidTO", number);
             throw new IllegalArgumentException(msg);
         }
-        pairs.put(TIMEOUT_SECONDS_TN, to.toString() );
+        pairs.put(TIMEOUT_SECONDS_TN, to.toString());
     }
+
     /** Returns the OS-level user-id who should start and own the processes started
      * by this service.
      */
     public String getOSUser() {
-        return (pairs.get(OS_USER_TN) );
+        return (pairs.get(OS_USER_TN));
     }
+
     /** Sets the OS-level user-id who should start and own the processes started
      * by this service. This user is the same as the value returned by
      * System.getProperty("user.name"). The idea is that the method is
@@ -311,21 +326,21 @@ public final class SMFService implements Service {
             msg = sm.getString("noPermissionToCreateManifest", user, MANIFEST_HOME);
             throw new IllegalArgumentException(msg);
         }
-        final StringBuilder auths =  new StringBuilder();
+        final StringBuilder auths = new StringBuilder();
         if (!isUserSmfAuthorized(user, auths)) {
             msg = sm.getString("noSmfAuth", user, auths);
             throw new IllegalArgumentException(msg);
         }
         pairs.put(OS_USER_TN, user);
     }
-    
+
     /** Returns the additional properties of the Service.
      * @return String representing addtional properties of the service. May return default properties as well.
      */
     public String getServiceProperties() {
-        return ( pairs.get(PRIVILEGES_TN) );
+        return (pairs.get(PRIVILEGES_TN));
     }
-    
+
     /** Sets the additional service properties that are specific to it.
      * @param must be a colon separated String, if not null. No effect, if null is passed.
      */
@@ -340,11 +355,11 @@ public final class SMFService implements Service {
                 pairs.put(PRIVILEGES_TN, BASIC_NETADDR_PRIV_VAL); // you get both basic, netaddr_priv
             }
             if (props.contains(NO_START_INSTANCES_PROPERTY)) {
-               pairs.put(START_INSTANCES_TN, Boolean.FALSE.toString());
+                pairs.put(START_INSTANCES_TN, Boolean.FALSE.toString());
             }
         }
     }
-    
+
     /** Determines if the configuration of the method is valid. When this class
      * is constructed, appropriate defaults are used. But before attempting to create
      * the service in the Solaris platform, it is important that the necessary
@@ -356,6 +371,17 @@ public final class SMFService implements Service {
      * @return true if the configuration is valid, an exception is thrown otherwise
      */
     public boolean isConfigValid() {
+
+        ServerDirs dirs;
+        try {
+            dirs = new ServerDirs(getServerDirectory());
+        }
+        catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        pairs.put(LOCATION_ARGS_START_TN, getLocationArgsStart(dirs));
+        pairs.put(LOCATION_ARGS_STOP_TN, getLocationArgsStop(dirs));
+
         final Set<String> keys = pairs.keySet();
         for (final String k : keys) {
             final boolean aNullValue = NULL_VALUE.equals(pairs.get(k));
@@ -374,33 +400,35 @@ public final class SMFService implements Service {
         // passwordfile is now optional for start-domain
         // BEFORE:  --user %%%AS_ADMIN_USER%%% --passwordfile %%%PASSWORD_FILE_PATH%%%
         // AFTER:   %%%CREDENTIALS%%%
-        
 
-        return ( true );
+
+        return (true);
     }
-    
+
     /** Returns the tokens and values of the service as a map.
      * Note that a copy is returned.
      * @return a copy of tokens and values
      */
     public Map<String, String> tokensAndValues() {
-        return ( new HashMap<String, String> (pairs) ); //send only copy
+        return (new HashMap<String, String>(pairs)); //send only copy
     }
+
     /** Returns the absolute location of the manifest file as SMF understands it.
      * It takes into account the name, type and configuration location of the 
      * service. It is expected that these are set before calling this method.
      * If the <b> Fully Qualified Service Name </b> is invalid, a RuntimeException results.
      */
     public String getManifestFilePath() {
-        final String fqsn           = getFQSN();
+        final String fqsn = getFQSN();
         if (NULL_VALUE.equals(fqsn)) {
             final String msg = sm.getString("serviceNameInvalid", fqsn);
             throw new RuntimeException(msg);
         }
         //now we are sure that this is called after proper configuration
         final String fn = new StringBuilder().append(MANIFEST_HOME).append(fqsn).append("/").append(this.getType().toString()).append(MANIFEST_FILE_SUFFIX).toString();
-        return ( fn ) ;
+        return (fn);
     }
+
     /** Returns the absolute location of the template for the given service.
      * If the file can not be found at its required location then the file will be
      * copied from inside this jar file to the file system.
@@ -414,12 +442,12 @@ public final class SMFService implements Service {
         }
 
         String ir = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
-        if(!ok(ir))
+        if (!ok(ir))
             throw new RuntimeException("Internal Error - System Property not set: "
-                    +  SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+                    + SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
 
         File rootDir = SmartFile.sanitize(new File(ir));
-        if(!rootDir.isDirectory())
+        if (!rootDir.isDirectory())
             throw new RuntimeException("Internal Error - Not a directory: " + rootDir);
 
         File templatesDir = new File(rootDir, REL_PATH_TEMPLATES);
@@ -430,12 +458,11 @@ public final class SMFService implements Service {
     }
 
     private static boolean ok(String s) {
-        return s!=null && s.length() > 0;
+        return s != null && s.length() > 0;
     }
 
     /** Creates the service on the given platform.
      */
-    
     public void createService(final Map<String, String> params) throws RuntimeException {
         final SMFService smf = new SMFService(params);
         boolean success = false;
@@ -452,23 +479,26 @@ public final class SMFService implements Service {
                     smf.getManifestFilePath());
             validateService(smf);
             success = importService(smf);
-        } catch(final Exception e) {
+        }
+        catch (final Exception e) {
             if (!success && !previousManifestExists) {
                 cleanupManifest(smf);
             }
             throw new RuntimeException(e);
         }
     }
+
     /** Sets the trace information for debuggging purposes.
      */
     public void setTrace(boolean trace) {
         this.trace = trace;
-    }    
+    }
+
     /** Returns a String representation of the SMFService. It contains a new-line
-        separated "name=value" String that contains the name and value of each of
-        of the tokens that were set in the service.
-        @return a String according to above description, never returns null
-    */
+    separated "name=value" String that contains the name and value of each of
+    of the tokens that were set in the service.
+    @return a String according to above description, never returns null
+     */
     public String toString() {
         /* toString method useful for debugging */
         final StringBuilder sb = new StringBuilder();
@@ -477,20 +507,21 @@ public final class SMFService implements Service {
         for (final String n : ka) {
             sb.append(n).append("=").append(pairs.get(n)).append(System.getProperty("line.separator"));
         }
-        return ( sb.toString() );
+        return (sb.toString());
     }
+
     /** For safety -- this is similar to the subversion dry-run command.
      * It does everything except create the service.
      */
     public void setDryRun(final boolean aDryRun) {
         dryRun = aDryRun;
-}
+    }
 
     public String getSuccessMessage() {
         String msg = Strings.get("SMFServiceCreated", getName(), getType().toString(),
                 getLocation(), getManifestFilePath(), shortName);
 
-        if(dryRun) {
+        if (dryRun) {
             msg += Strings.get("dryrun");
         }
 
@@ -514,14 +545,14 @@ public final class SMFService implements Service {
         pairs.put(PRIVILEGES_TN, BASIC_NETADDR_PRIV_VAL);
         pairs.put(CREDENTIALS_TN, " ");
     }
-    
+
     private Set<String> ps2Pairs(final String cds) {
         final StringTokenizer p = new StringTokenizer(cds, SP_DELIMITER);
         final Set<String> tokens = new HashSet<String>();
         while (p.hasMoreTokens()) {
             tokens.add(p.nextToken());
         }
-        return ( tokens );
+        return (tokens);
     }
 
     private boolean canCreateManifest() {
@@ -535,40 +566,43 @@ public final class SMFService implements Service {
                 ok = false;
             }
         }
-        return ( ok );
+        return (ok);
     }
+
     private boolean isUserSmfAuthorized(final String user, final StringBuilder auths) {
-          boolean authorized = false;
-          String path2Auths = "auths";
-          String at = ",";
-          final String AUTH1 = "solaris.*";
-          final String AUTH2 = "solaris.smf.*";
-          final String AUTH3 = "solaris.smf.modify";
-          if (System.getProperty("PATH_2_AUTHS") != null)
-              path2Auths = System.getProperty("PATH_2_AUTHS");
-          if (System.getProperty("AUTH_TOKEN") != null)
-              at = System.getProperty("AUTH_TOKEN");
-          try {
-              final String[] cmd = new String[]{path2Auths, user};
-              ProcessExecutor pe = new ProcessExecutor(cmd);
-              pe.setExecutionRetentionFlag(true);
-              pe.execute();
-              auths.append(pe.getLastExecutionOutput());
-              final StringTokenizer st = new StringTokenizer(pe.getLastExecutionOutput(), at);
-              while (st.hasMoreTokens()) {
-                  String t = st.nextToken();
-                  if (t != null)
-                      t = t.trim();
-                  if (AUTH1.equals(t) || AUTH2.equals(t) || AUTH3.equals(t)) {
-                      authorized = true;
-                      break;
-                  }
-              }
-              return ( authorized );
-         } catch(Exception e) {
-             throw new RuntimeException(e);
-         }
+        boolean authorized = false;
+        String path2Auths = "auths";
+        String at = ",";
+        final String AUTH1 = "solaris.*";
+        final String AUTH2 = "solaris.smf.*";
+        final String AUTH3 = "solaris.smf.modify";
+        if (System.getProperty("PATH_2_AUTHS") != null)
+            path2Auths = System.getProperty("PATH_2_AUTHS");
+        if (System.getProperty("AUTH_TOKEN") != null)
+            at = System.getProperty("AUTH_TOKEN");
+        try {
+            final String[] cmd = new String[]{path2Auths, user};
+            ProcessExecutor pe = new ProcessExecutor(cmd);
+            pe.setExecutionRetentionFlag(true);
+            pe.execute();
+            auths.append(pe.getLastExecutionOutput());
+            final StringTokenizer st = new StringTokenizer(pe.getLastExecutionOutput(), at);
+            while (st.hasMoreTokens()) {
+                String t = st.nextToken();
+                if (t != null)
+                    t = t.trim();
+                if (AUTH1.equals(t) || AUTH2.equals(t) || AUTH3.equals(t)) {
+                    authorized = true;
+                    break;
+                }
+            }
+            return (authorized);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+
     private boolean fileContainsToken(final String path, final String t, final Map<String, String> tv) throws RuntimeException {
         BufferedInputStream bis = null;
         try {
@@ -577,52 +611,53 @@ public final class SMFService implements Service {
             final Properties p = new Properties();
             p.load(bis);
             if (p.containsKey(t)) {
-                tv.put(t, (String)p.get(t));
+                tv.put(t, (String) p.get(t));
                 present = true;
             }
-            return ( present );
+            return (present);
         }
-        catch(final Exception e) {
+        catch (final Exception e) {
             throw new RuntimeException(e);
         }
         finally {
             if (bis != null) {
                 try {
                     bis.close();
-                } catch(Exception ee) {
+                }
+                catch (Exception ee) {
                     IGNORE_EXCEPTION(ee);
                 }
             }
         }
     }
-    
-    
-    private static void IGNORE_EXCEPTION(final Exception e ) {
+
+    private static void IGNORE_EXCEPTION(final Exception e) {
         // ignore
     }
-    
+
     private boolean serviceNameExists(final String sn) {
         boolean exists = false;
         try {
-            final String[] cmd = new String[] {"/usr/bin/svcs", sn};
+            final String[] cmd = new String[]{"/usr/bin/svcs", sn};
             ProcessExecutor pe = new ProcessExecutor(cmd);
             pe.setExecutionRetentionFlag(true);
             pe.execute();
             exists = true;
-        } catch(final Exception e) {
+        }
+        catch (final Exception e) {
             //returns a non-zero status -- the service does not exist, status is already set
         }
-        return ( exists );
+        return (exists);
     }
 
     private void validateManifest(final String manifestPath) throws Exception {
         final File manifest = new File(manifestPath);
         final File manifestParent = manifest.getParentFile();
         final String msg = sm.getString("smfLeftoverFiles", manifest.getParentFile().getAbsolutePath());
-        
+
         if (manifestParent != null && manifestParent.isDirectory()) {
-            
-            if(isForce()) {
+
+            if (isForce()) {
                 FileUtils.whack(manifestParent);
 
                 if (manifestParent != null && manifestParent.isDirectory()) {
@@ -637,6 +672,7 @@ public final class SMFService implements Service {
         if (trace)
             printOut("Manifest validated: " + manifestPath);
     }
+
     private void validateService(final SMFService smf) throws Exception {
         final String[] cmda = new String[]{SMFService.SVCCFG, "validate", smf.getManifestFilePath()};
         final ProcessExecutor pe = new ProcessExecutor(cmda);
@@ -644,35 +680,38 @@ public final class SMFService implements Service {
         if (trace)
             printOut("Validated the SMF Service: " + smf.getFQSN() + " using: " + SMFService.SVCCFG);
     }
+
     private boolean importService(final SMFService smf) throws Exception {
         final String[] cmda = new String[]{SMFService.SVCCFG, "import", smf.getManifestFilePath()};
         final ProcessExecutor pe = new ProcessExecutor(cmda);
-    
-        if(dryRun)
+
+        if (dryRun)
             cleanupManifest(smf);
         else
             pe.execute(); //throws ExecException in case of an error
 
         if (trace)
             printOut("Imported the SMF Service: " + smf.getFQSN());
-        return ( true );
+        return (true);
     }
+
     private void cleanupManifest(final SMFService smf) throws RuntimeException {
         final File manifest = new File(smf.getManifestFilePath());
         if (manifest.exists()) {
             manifest.delete();
             manifest.deleteOnExit();
-            if(trace)
+            if (trace)
                 printOut("Attempted deleting failed service manifest: " + manifest.getAbsolutePath());
         }
         final File failedServiceNode = manifest.getParentFile();
         if (failedServiceNode.exists()) {
             failedServiceNode.delete();
             failedServiceNode.deleteOnExit();
-            if(trace)
+            if (trace)
                 printOut("Attempted deleting failed service folder: " + failedServiceNode.getAbsolutePath());
         }
     }
+
     private void printOut(final String s) {
         System.out.println(s);
     }
@@ -709,16 +748,25 @@ public final class SMFService implements Service {
 
     @Override
     public String getStartCommand() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getType().startCommand();
     }
 
     @Override
     public String getStopCommand() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getType().stopCommand();
     }
 
     @Override
-    public String getLocationArgs(ServerDirs dirs) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public final String getLocationArgsStart(ServerDirs dirs) {
+        if (isDomain())
+            return " --domaindir " + dirs.getServerParentDir().getPath() + " ";
+        else
+            return " --nodedir " + dirs.getServerGrandParentDir().getPath()
+                    + " --node " + dirs.getServerParentDir().getName() + " ";
+    }
+
+    @Override
+    public final String getLocationArgsStop(ServerDirs dirs) {
+        return getLocationArgsStart(dirs);  // same with SMF
     }
 }

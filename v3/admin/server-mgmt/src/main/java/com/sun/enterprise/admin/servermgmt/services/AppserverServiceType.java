@@ -45,6 +45,22 @@ package com.sun.enterprise.admin.servermgmt.services;
  *
  */
     public enum AppserverServiceType {
-        Domain,
-        Instance
+        Domain("start-domain", "stop-domain"),
+        Instance("start-local-instance", "stop-local-instance");
+
+        public String startCommand() {
+            return start;
+        }
+
+        public String stopCommand() {
+            return stop;
+        }
+
+        private AppserverServiceType(String start, String stop) {
+            this.start = start;
+            this.stop = stop;
+        }
+        
+        private final String start;
+        private final String stop;
     }

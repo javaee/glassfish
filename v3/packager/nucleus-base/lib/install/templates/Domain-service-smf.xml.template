@@ -21,7 +21,7 @@
     <single_instance/>
     <exec_method type="method"
                  name="start"
-                 exec="%%%AS_ADMIN_PATH%%% start-domain %%%CREDENTIALS%%% --domaindir %%%LOCATION%%% %%%ENTITY_NAME%%%"
+                 exec="%%%AS_ADMIN_PATH%%% %%%START_COMMAND%%% %%%CREDENTIALS%%% %%%LOCATION_ARGS_START%%% %%%ENTITY_NAME%%%"
                  timeout_seconds="%%%TIMEOUT_SECONDS%%%">
       <method_context working_directory=":default">
         <method_credential user="%%%OS_USER%%%"
@@ -32,7 +32,7 @@
     </exec_method>
     <exec_method type="method"
                  name="stop"
-                 exec="%%%AS_ADMIN_PATH%%% stop-domain --domaindir %%%LOCATION%%% %%%ENTITY_NAME%%%"
+                 exec="%%%AS_ADMIN_PATH%%% %%%STOP_COMMAND%%%  %%%LOCATION_ARGS_STOP%%% %%%ENTITY_NAME%%%"
                  timeout_seconds="%%%TIMEOUT_SECONDS%%%">
       <method_context working_directory=":default">
         <method_credential user="%%%OS_USER%%%"

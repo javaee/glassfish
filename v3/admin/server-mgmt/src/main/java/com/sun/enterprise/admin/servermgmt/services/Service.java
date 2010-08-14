@@ -58,6 +58,7 @@ import java.util.Properties;
  * @since SJSAS 9.1
  * @see #isConfigValid
  * @see ServiceHandler
+ * @author Kedar Mhaswade
  */
 public interface Service {
     
@@ -226,5 +227,8 @@ public interface Service {
     public void setForce(boolean b);
     public String getStartCommand();
     public String getStopCommand();
-    public String getLocationArgs(ServerDirs dirs);
+    public String getLocationArgsStart(ServerDirs dirs);
+    public String getLocationArgsStop(ServerDirs dirs);
+    public boolean isDomain();
+    public boolean isInstance();
 }

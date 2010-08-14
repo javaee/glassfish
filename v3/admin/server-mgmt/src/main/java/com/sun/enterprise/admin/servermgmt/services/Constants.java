@@ -41,7 +41,6 @@ package com.sun.enterprise.admin.servermgmt.services;
  * @author bnevins
  */
 class Constants {
-    //TODO try to move common stuff to ServiceAdapter
     static final String DATE_CREATED_TN              = "DATE_CREATED";
     static final String AS_ADMIN_PATH_TN             = "AS_ADMIN_PATH";
     static final String CREDENTIALS_TN               = "CREDENTIALS";
@@ -59,7 +58,8 @@ class Constants {
     static final String PRIVILEGES_TN                = "PRIVILEGES";
     static final String START_COMMAND_TN             = "START_COMMAND";
     static final String STOP_COMMAND_TN              = "STOP_COMMAND";
-    static final String LOCATIONS_COMMAND_TN         = "LOCATION_ARGS";
+    static final String LOCATION_ARGS_START_TN      = "LOCATION_ARGS_START";
+    static final String LOCATION_ARGS_STOP_TN       = "LOCATION_ARGS_STOP";
     static final String START_ARG_START              = "<startargument>";
     static final String STOP_ARG_START               = "<stopargument>";
     static final String START_ARG_END                = "</startargument>";
