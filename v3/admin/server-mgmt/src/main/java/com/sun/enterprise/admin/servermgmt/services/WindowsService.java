@@ -42,9 +42,11 @@ import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.util.io.ServerDirs;
 import java.io.*;
 import java.util.*;
 import java.util.Map;
+import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
 
 /**
  * Warning: there is lots of file twiddling going on in this class.  It is the nature
@@ -66,12 +68,12 @@ public class WindowsService extends ServiceAdapter {
     }
 
     @Override
-    public boolean isConfigValid() {
+    public final boolean isConfigValid() {
         return true;
     }
 
     @Override
-    public void createService(Map<String, String> params) throws RuntimeException {
+    public final void createService(Map<String, String> params) throws RuntimeException {
         try {
             init();
             trace("**********   Object Dump  **********\n" + this.toString());
@@ -92,23 +94,23 @@ public class WindowsService extends ServiceAdapter {
     }
 
     @Override
-    public String getSuccessMessage() {
+    public final String getSuccessMessage() {
         if (isDryRun())
             return Strings.get("dryrun");
 
         return Strings.get("WindowsServiceCreated", getName(),
-                serverName + " GlassFish Server", serverDir, targetXml, targetWin32Exe);
+                serverName + " GlassFish Server", dirs.getServerDir(), targetXml, targetWin32Exe);
     }
 
     @Override
-    public void writeReadmeFile(String msg) {
+    public final void writeReadmeFile(String msg) {
         // TODO 1/19/2010 bnevins duplicated in SMFService
-        File f = new File(getDomainDirectory(), "PlatformServices.log");
+        File f = new File(getServerDirectory(), "PlatformServices.log");
         ServicesUtils.appendTextToFile(f, msg);
     }
 
     @Override
-    public File getDomainDirectory() {
+    public final File getServerDirectory() {
         return new File(getLocation());
     }
 
@@ -127,10 +129,9 @@ public class WindowsService extends ServiceAdapter {
         setTemplateFile();
         setSourceWin32Exe();
 
-        serverDir = SmartFile.sanitize(new File(getLocation()));
-        serverName = serverDir.getName();
-        serversDir = SmartFile.sanitize(new File(serverDir, ".."));
-        targetDir = new File(serverDir, TARGET_DIR);
+        dirs = new ServerDirs(SmartFile.sanitize(new File(getLocation())));
+        serverName = dirs.getServerName();
+        targetDir = new File(dirs.getServerDir(), TARGET_DIR);
         targetDir.mkdirs(); // just in case...
 
         if (!targetDir.isDirectory())
@@ -145,13 +146,16 @@ public class WindowsService extends ServiceAdapter {
 
         // TODO move constants to its own class
         Map<String, String> map = new HashMap<String, String>();
-        map.put(SMFService.ENTITY_NAME_TN, serverName);
-        map.put(SMFService.DATE_CREATED_TN, getDate());
-        map.put(SMFService.SERVICE_NAME_TN, getName());
-        map.put(SMFService.AS_ADMIN_PATH_TN, getAsadminPath().replace('\\', '/'));
-        map.put(SMFService.CFG_LOCATION_TN, serversDir.getPath().replace('\\', '/'));
+        map.put(ENTITY_NAME_TN, serverName);
+        map.put(DATE_CREATED_TN, getDate());
+        map.put(SERVICE_NAME_TN, getName());
+        map.put(AS_ADMIN_PATH_TN, getAsadminPath().replace('\\', '/'));
+        map.put(CFG_LOCATION_TN, dirs.getServerParentDir().getPath().replace('\\', '/'));
         map.put(CREDENTIALS_START_TN, getAsadminCredentials("startargument"));
         map.put(CREDENTIALS_STOP_TN, getAsadminCredentials("stopargument"));
+        map.put(START_COMMAND_TN, getStartCommand());
+        map.put(STOP_COMMAND_TN, getStopCommand());
+        map.put(LOCATIONS_COMMAND_TN, getLocationArgs(dirs));
 
         trace("MAP --> " + map.toString());
 
@@ -208,6 +212,15 @@ public class WindowsService extends ServiceAdapter {
 
     private void setTemplateFile() {
         templateFile = new File(libDir, "install/templates/" + TEMPLATE_FILE_NAME);
+
+        
+        
+        if(SUPER_DEBUG) {
+            templateFile = new File(   
+            "C:/gf/v3/admin/server-mgmt/src/main/java/com/sun/enterprise/admin/servermgmt/services/Domain-service-winsw.xml.template");
+            System.out.println("WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            System.out.println("WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        }
     }
 
     /**
@@ -266,7 +279,9 @@ public class WindowsService extends ServiceAdapter {
 
         if (isDryRun()) {
             // dry-run not so useful on Windows.  Very useful on UNIX...
-            targetXml.delete();
+            if(!SUPER_DEBUG)
+                targetXml.delete();
+
             targetWin32Exe.delete();
         }
         else {
@@ -300,6 +315,7 @@ public class WindowsService extends ServiceAdapter {
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
+
     private static final String TRACE_PREPEND = "TRACE:  ";
     private static final String SOURCE_WIN32_EXE_FILENAME = "winsw.exe";
     private static final String TARGET_DIR = "bin";
@@ -314,6 +330,16 @@ public class WindowsService extends ServiceAdapter {
     private File installRootDir;
     private File libDir;
     private File templateFile;
-    private File serverDir;
-    private File serversDir;
+    private ServerDirs dirs;
+    private final static boolean SUPER_DEBUG;
+
+    static {
+        boolean a = System.getProperty("user.name").equals("bnevins");
+        String s = System.getenv("AS_SUPER_DEBUG");
+        boolean b = Boolean.parseBoolean(s);
+        if(a && b) 
+            SUPER_DEBUG = true;
+        else
+            SUPER_DEBUG = false;
+    }
 }

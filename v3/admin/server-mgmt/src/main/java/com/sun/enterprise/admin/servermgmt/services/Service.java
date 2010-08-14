@@ -39,6 +39,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.ProcessExecutor;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.util.io.ServerDirs;
 import java.io.File;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -220,7 +221,10 @@ public interface Service {
     public String getSuccessMessage();
 
     public void writeReadmeFile(String msg);
-    public File getDomainDirectory();
+    public File getServerDirectory();
     public boolean isForce();
     public void setForce(boolean b);
+    public String getStartCommand();
+    public String getStopCommand();
+    public String getLocationArgs(ServerDirs dirs);
 }

@@ -4,10 +4,10 @@
  * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
- * General Public License Version 2 only ("GPL") or the Common Development
+ * General public final  License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License. You can obtain
- * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * a copy of the License at https://glassfish.dev.java.net/public final /CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -33,42 +33,51 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.servermgmt.services;
 
 import com.sun.enterprise.universal.PropertiesDecoder;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.io.ServerDirs;
 import java.io.*;
 import java.util.*;
 import java.util.Map;
+import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
 
 /**
  *
  * @author bnevins
  */
-public abstract class ServiceAdapter implements Service{
-    public String getName() {
+public abstract class ServiceAdapter implements Service {
+
+    @Override
+    public final String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    @Override
+    public final void setName(String name) {
         this.name = name;
     }
 
-    public AppserverServiceType getType() {
+    @Override
+    public final AppserverServiceType getType() {
         return type;
     }
 
-    public void setType(AppserverServiceType type) {
+    @Override
+    public final void setType(AppserverServiceType type) {
         this.type = type;
     }
 
-    public String getDate() {
+    @Override
+    public final String getDate() {
         return date;
     }
-    public void setDate(String date) {
+
+    @Override
+    public final void setDate(String date) {
         this.date = date;
     }
 
@@ -76,34 +85,41 @@ public abstract class ServiceAdapter implements Service{
      *
      * @return the domain directory
      */
-    public String getLocation() {
+    @Override
+    public final String getLocation() {
         return location;
     }
 
     /**
      * @param location the domain directoory
      */
-    public void setLocation(String location) {
+    @Override
+    public final void setLocation(String location) {
         this.location = location;
     }
 
-    public String getFQSN() {
+    @Override
+    public final String getFQSN() {
         throw new UnsupportedOperationException("getFQSN not supported for this Platform Service");
     }
 
-    public void setFQSN() {
+    @Override
+    public final void setFQSN() {
         // NOOP
     }
 
-    public String getAsadminPath() {
+    @Override
+    public final String getAsadminPath() {
         return asadminPath;
     }
 
-    public void setAsadminPath(String path) {
+    @Override
+    public final void setAsadminPath(String path) {
         asadminPath = path;
     }
 
-    public String getPasswordFilePath() {
+    @Override
+    public final String getPasswordFilePath() {
         return passwordFilePath;
     }
 
@@ -112,76 +128,129 @@ public abstract class ServiceAdapter implements Service{
      * the contents of the file.
      * @param path
      */
-    public void setPasswordFilePath(String path) {
+    @Override
+    public final void setPasswordFilePath(String path) {
         setAsadminCredentials(path);
     }
 
-    public int getTimeoutSeconds() {
+    @Override
+    public final int getTimeoutSeconds() {
         throw new UnsupportedOperationException("getTimeoutSeconds() is not supported on this platform");
     }
 
-    public void setTimeoutSeconds(int number) {
+    @Override
+    public final void setTimeoutSeconds(int number) {
         throw new UnsupportedOperationException("setTimeoutSeconds() is not supported on this platform");
     }
 
-    public String getOSUser() {
+    @Override
+    public final String getOSUser() {
         return user;
     }
 
-    public void setOSUser() {
+    @Override
+    public final void setOSUser() {
         // it has been done already...
     }
 
-    public String getServiceProperties() {
+    @Override
+    public final String getServiceProperties() {
         return flattenedServicePropertes;
     }
 
-    public void setServiceProperties(String cds) {
+    @Override
+    public final void setServiceProperties(String cds) {
         flattenedServicePropertes = cds;
     }
 
-    public Map<String, String> tokensAndValues() {
+    @Override
+    public final Map<String, String> tokensAndValues() {
         return PropertiesDecoder.unflatten(flattenedServicePropertes);
     }
-    
-    public String getManifestFilePath() {
+
+    @Override
+    public final String getManifestFilePath() {
         UnsupportedOperationException ex = new UnsupportedOperationException("getManifestFilePath() is not supported in this platform.");
 
         ex.printStackTrace();
         throw ex;
     }
 
-    public String getManifestFileTemplatePath() {
+    @Override
+    public final String getManifestFileTemplatePath() {
         throw new UnsupportedOperationException("getManifestFileTemplatePath() is not supported in this platform.");
     }
 
-    public void setTrace(boolean trace) {
+    @Override
+    public final void setTrace(boolean trace) {
         this.trace = trace;
     }
 
-    public boolean isTrace() {
+    @Override
+    public final boolean isTrace() {
         return trace;
     }
 
-    public void setDryRun(boolean dryRun) {
+    @Override
+    public final void setDryRun(boolean dryRun) {
         this.dryRun = dryRun;
     }
 
-    public boolean isDryRun() {
+    @Override
+    public final boolean isDryRun() {
         return dryRun;
     }
 
-    public boolean isForce() {
+    @Override
+    public final boolean isForce() {
         return force;
     }
-    
-    public void setForce(boolean b) {
+
+    @Override
+    public final void setForce(boolean b) {
         force = b;
     }
 
-
     final String getAppserverUser() {
         return appserverUser;
+    }
+
+    final boolean isDomain() {
+        return type == AppserverServiceType.Domain;
+    }
+
+    final boolean isInstance() {
+        return type == AppserverServiceType.Instance;
+    }
+
+    @Override
+    public final String getStartCommand() {
+        if (isDomain())
+            return "start-domain";
+        else
+            return "start-local-instance";
+    }
+
+    @Override
+    public final String getStopCommand() {
+        if (isDomain())
+            return "stop-domain";
+        else
+            return "stop-local-instance";
+    }
+
+    @Override
+    public final String getLocationArgs(ServerDirs dirs) {
+        if (isDomain()) {
+            return makeStartArg("--domaindir")
+                    + makeStartArg(dirs.getServerParentDir().getPath());
+        }
+        else {
+            return makeStartArg("--nodedir")
+                    + makeStartArg(dirs.getServerGrandParentDir().getPath().replace('\\', '/'))
+                    + makeStartArg("--node")
+                    + makeStartArg(dirs.getServerParentDir().getName());
+        }
     }
 
     /**
@@ -194,17 +263,17 @@ public abstract class ServiceAdapter implements Service{
         appserverUser = null;
         passwordFilePath = null;
 
-       // it is allowed to have no passwordfile specified in V3
-        if(!ok(path))
+        // it is allowed to have no passwordfile specified in V3
+        if (!ok(path))
             return;
 
         // But if they DID specify it -- it must be kosher...
         File f = SmartFile.sanitize(new File(path));
 
-        if(!f.isFile())
+        if (!f.isFile())
             throw new IllegalArgumentException(Strings.get("windows.services.passwordFileNotA", f));
-        
-        if(!f.canRead())
+
+        if (!f.canRead())
             throw new IllegalArgumentException(Strings.get("windows.services.passwordFileNotReadable", f));
 
         Properties p = getProperties(f);
@@ -217,7 +286,7 @@ public abstract class ServiceAdapter implements Service{
 
         // we need a user for "--user" arg to start-domain
 
-        if(!ok(appserverUser))
+        if (!ok(appserverUser))
             appserverUser = null;
 
         passwordFilePath = f.getPath().replace('\\', '/'); // already sanitized
@@ -228,9 +297,9 @@ public abstract class ServiceAdapter implements Service{
      * @return
      */
     private String validateProperty(File f, Properties p, String key) {
-        String value = (String)p.get(key);
+        String value = (String) p.get(key);
 
-        if(!ok(value))
+        if (!ok(value))
             throw new IllegalArgumentException(Strings.get("missingParamsInFile", f, key));
 
         return value;
@@ -245,7 +314,7 @@ public abstract class ServiceAdapter implements Service{
             p.load(bis);
             return p;
         }
-        catch(final Exception e) {
+        catch (final Exception e) {
             throw new RuntimeException(e);
         }
         finally {
@@ -253,28 +322,30 @@ public abstract class ServiceAdapter implements Service{
                 try {
                     bis.close();
                 }
-                catch(Exception ee) {
+                catch (Exception ee) {
                     // ignore
                 }
             }
         }
     }
 
+    private String makeStartArg(String s) {
+        return "  " + START_ARG_START + s + START_ARG_END + "\n";
+    }
+
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
-
-    private final String    user = System.getProperty("user.name");
-
-    private String          date = new Date().toString();    // default date string
-    private String          location;
-    private String          name;
-    private String          asadminPath;
-    private String          passwordFilePath;
-    private String          flattenedServicePropertes;
-    private String          appserverUser;
-    private boolean         trace;
-    private boolean         dryRun;
-    private boolean         force;
+    private final String user = System.getProperty("user.name");
+    private String date = new Date().toString();    // default date string
+    private String location;
+    private String name;
+    private String asadminPath;
+    private String passwordFilePath;
+    private String flattenedServicePropertes;
+    private String appserverUser;
+    private boolean trace;
+    private boolean dryRun;
+    private boolean force;
     private AppserverServiceType type = AppserverServiceType.Domain;
 }

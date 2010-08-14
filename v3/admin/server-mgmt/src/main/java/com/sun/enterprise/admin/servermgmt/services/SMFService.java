@@ -35,18 +35,14 @@
  */
 
 package com.sun.enterprise.admin.servermgmt.services;
-import com.sun.enterprise.admin.util.LineTokenReplacer;
-import com.sun.enterprise.admin.util.TokenValue;
-import com.sun.enterprise.admin.util.TokenValueSet;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.ProcessExecutor;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.util.io.ServerDirs;
 
-import java.io.*;
 import java.io.File;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -58,6 +54,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Properties;
+import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
 
 /** Represents the SMF Service.
  * Holds the tokens and their values that are consumed by the SMF templates. The recommended
@@ -70,23 +67,6 @@ import java.util.Properties;
  * @see SMFServiceHandler
  */
 public final class SMFService implements Service {
-    //TODO try to move common stuff to ServiceAdapter
-    public static final String DATE_CREATED_TN              = "DATE_CREATED";
-    public static final String AS_ADMIN_PATH_TN             = "AS_ADMIN_PATH";
-    public static final String CREDENTIALS_TN               = "CREDENTIALS";
-    public static final String SERVICE_NAME_TN              = "NAME";
-    public static final String SERVICE_TYPE_TN              = "TYPE";
-    public static final String CFG_LOCATION_TN              = "LOCATION";
-    public static final String ENTITY_NAME_TN               = "ENTITY_NAME";
-    public static final String FQSN_TN                      = "FQSN";
-    public static final String AS_ADMIN_USER_TN             = "AS_ADMIN_USER";
-    public static final String AS_ADMIN_PASSWORD_TN         = "AS_ADMIN_PASSWORD";
-    public static final String AS_ADMIN_MASTERPASSWORD_TN   = "AS_ADMIN_MASTERPASSWORD";
-    //public static final String PASSWORD_FILE_PATH_TN        = "PASSWORD_FILE_PATH";
-    public static final String TIMEOUT_SECONDS_TN           = "TIMEOUT_SECONDS";
-    public static final String OS_USER_TN                   = "OS_USER";
-    public static final String PRIVILEGES_TN                = "PRIVILEGES";
-    
     public static final String TIMEOUT_SECONDS_DV           = "0";
     public static final String AS_ADMIN_USER_DEF_VAL        = "admin";
     public static final String SP_DELIMITER                 = ":";
@@ -215,6 +195,9 @@ public final class SMFService implements Service {
         if (cfgLocation == null)
             throw new IllegalArgumentException(nullArgMsg);
         final File cf = FileUtils.safeGetCanonicalFile(new File(cfgLocation));
+
+        // CRAZY CODE here!!!  Note the getParent() call !!!!
+
         pairs.put(CFG_LOCATION_TN, cf.getParent());
         pairs.put(ENTITY_NAME_TN, cf.getName());
     }
@@ -704,13 +687,13 @@ public final class SMFService implements Service {
 
     // duplicated
     public void writeReadmeFile(String msg) {
-        File f = new File(getDomainDirectory(), shortName);
+        File f = new File(getServerDirectory(), shortName);
         ServicesUtils.appendTextToFile(f, msg);
     }
 
     @Override
-    public File getDomainDirectory() {
-        // location is the domain's parent dir
+    public File getServerDirectory() {
+        // location is the server's parent dir
         return new File(getLocation() + "/" + shortName);
     }
 
@@ -722,5 +705,20 @@ public final class SMFService implements Service {
     @Override
     public void setForce(boolean b) {
         force = b;
+    }
+
+    @Override
+    public String getStartCommand() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String getStopCommand() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String getLocationArgs(ServerDirs dirs) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
