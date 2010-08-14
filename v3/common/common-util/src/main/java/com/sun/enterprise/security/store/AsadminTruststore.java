@@ -43,19 +43,19 @@ import java.io.FileOutputStream;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.Certificate;
-import javax.crypto.spec.SecretKeySpec;
 
-import java.util.Enumeration;
 
 /**
  * This class implements an adapter for password manipulation a JCEKS.
+ * <p>
+ * This class delegates the work of actually opening the trust store to
+ * AsadminSecurityUtil.
+ *
  * @author Shing Wai Chan
  */
 public class AsadminTruststore {
@@ -73,32 +73,40 @@ public class AsadminTruststore {
             return new File(location);
         }
     }
+
+    public static AsadminTruststore newInstance()
+            throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
+        return AsadminSecurityUtil
+                .getInstance(true /* isPromptable */)
+                .getAsadminTruststore();
+    }
+
+    public static AsadminTruststore newInstance(final char[] password)
+            throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
+        return AsadminSecurityUtil
+                .getInstance(password, true /* isPromptable */)
+                .getAsadminTruststore();
+    }
     
-    public static String getAsadminTruststorePassword()
-    {
-        return System.getProperty(SystemPropertyConstants.CLIENT_TRUSTSTORE_PASSWORD_PROPERTY, 
-            "changeit");
-    }        
-    
-    public AsadminTruststore() throws CertificateException, IOException, 
+    private AsadminTruststore() throws CertificateException, IOException,
         KeyStoreException, NoSuchAlgorithmException 
     {                 
-        this(getAsadminTruststorePassword());
+        this(AsadminSecurityUtil.getAsadminTruststorePassword());
     }
             
-    public AsadminTruststore(String password) throws CertificateException, IOException, 
+    private AsadminTruststore(final char[] password) throws CertificateException, IOException,
         KeyStoreException, NoSuchAlgorithmException 
     {                 
         init(getAsadminTruststore(), password);
     }
     
-    private void init(File keyfile, String password)
+    private void init(File keyfile, final char[] password)
         throws CertificateException, IOException,
         KeyStoreException, NoSuchAlgorithmException 
     {
         _keyFile = keyfile;
         _keyStore = KeyStore.getInstance("JKS"); 
-        _password = password.toCharArray();
+        _password = password;
         BufferedInputStream bInput = null;        
         if (_keyFile.exists()) {
             bInput = new BufferedInputStream(new FileInputStream(_keyFile));

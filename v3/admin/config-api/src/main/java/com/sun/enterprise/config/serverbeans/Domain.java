@@ -133,6 +133,13 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     String getVersion();
 
     /**
+     * Gets the SecureAdminPrincipal values defined in the domain.
+     * @return List<{@link SecureAdminPrincipal }
+     */
+    @Element
+    List<SecureAdmin> getSecureAdmins();
+
+    /**
      * Gets the value of the applications property.
      *
      * @return possible object is
@@ -457,6 +464,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
 
     @DuckTyped
     List<Server> getInstancesOnNode(String nodeName);
+
+    @DuckTyped
+    SecureAdmin getSecureAdmin();
 
     class Duck {
         /* return an empty list if given garbage -- or errors are encountered
@@ -853,6 +863,13 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
         public static boolean isServer(Domain d, String name) {
             final Server server = d.getServerNamed(name);
             return (server != null ? true : false);
+        }
+
+        public static SecureAdmin getSecureAdmin(final Domain domain) {
+            if (domain.getSecureAdmins().isEmpty()) {
+                return null;
+            }
+            return domain.getSecureAdmins().get(0);
         }
     }
 }

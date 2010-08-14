@@ -76,6 +76,8 @@ public class KeystoreManager {
         ",OU=GlassFish,O=Oracle Corporation,L=Santa Clara,ST=California,C=US";
         
     public static final String CERTIFICATE_ALIAS = "s1as";
+    public static final String INSTANCE_SECURE_ADMIN_ALIAS = "glassfish-instance";
+
     public static final String DEFAULT_MASTER_PASSWORD = "changeit";
     
     private static final String SKID_EXTENSION_SYSTEM_PROPERTY = 
@@ -205,22 +207,31 @@ public class KeystoreManager {
         final PEFileLayout layout = getFileLayout(config);   
         final File keystore = layout.getKeyStore();
         //Create the default self signed cert
-        final String[] keytoolCmd = {                
+        addSelfSignedCertToKeyStore(keystore, CERTIFICATE_ALIAS, config, masterPassword);
+
+        // Create the default self-signed cert for instances to use for SSL auth.
+        addSelfSignedCertToKeyStore(keystore, INSTANCE_SECURE_ADMIN_ALIAS, config, masterPassword);
+    }
+
+    private void addSelfSignedCertToKeyStore(final File keystore,
+            final String alias,
+            final RepositoryConfig config,
+            final String masterPassword) throws RepositoryException {
+        final String[] keytoolCmd = {
             "-genkey",
             "-keyalg", "RSA",
             "-keystore", keystore.getAbsolutePath(),
             "-alias", CERTIFICATE_ALIAS,
             "-dname", getCertificateDN(config),
-            "-validity", "3650",                 
+            "-validity", "3650",
             "-keypass", masterPassword,
             "-storepass", masterPassword,
             SKID_EXTENSION_SYSTEM_PROPERTY
         };
 
-        KeytoolExecutor p = new KeytoolExecutor(keytoolCmd, 60);         
-        p.execute("keystoreNotCreated", keystore);                                
+        KeytoolExecutor p = new KeytoolExecutor(keytoolCmd, 60);
+        p.execute("keystoreNotCreated", keystore);
     }
-    
     /*
     protected void addToAsadminTrustStore(
         RepositoryConfig config, File certFile) throws RepositoryException
@@ -280,7 +291,7 @@ public class KeystoreManager {
     */
     /**
      * Create the default SSL trust store. We take throws template cacerts.jks, change its password
-     * to the master password, and then add in the self signed s1as certificate created earlier. 
+     * to the master password, and then add in the self signed s1as and instance certificate created earlier.
      * All this is done my exec'ing keytool
      * @param config
      * @param masterPassword
@@ -293,7 +304,6 @@ public class KeystoreManager {
         final PEFileLayout layout = getFileLayout(config);
         final File src = layout.getTrustStoreTemplate();
         final File truststore = layout.getTrustStore();
-        File certFile = null;
         
         try {
             FileUtils.copy(src, truststore);
@@ -302,50 +312,60 @@ public class KeystoreManager {
                 _strMgr.getString("trustStoreNotCreated", truststore), ioe);
         }
                 
+        changeKeystorePassword(DEFAULT_MASTER_PASSWORD, masterPassword, truststore);
+
+        copyCert(layout, CERTIFICATE_ALIAS, masterPassword);
+        copyCert(layout, INSTANCE_SECURE_ADMIN_ALIAS, masterPassword);
+    }
+
+    private void copyCert(final PEFileLayout layout,
+            final String alias,
+            final String masterPassword) throws RepositoryException {
+        final File keystore = layout.getKeyStore();
+        final File truststore = layout.getTrustStore();
+        File certFile = null;
+        String[] input = {masterPassword};
+        String[] keytoolCmd = null;
+        KeytoolExecutor p = null;
+
         try {
-            String[] input = {masterPassword};
-            String[] keytoolCmd = null;
-            KeytoolExecutor p = null;
-            
-            changeKeystorePassword(DEFAULT_MASTER_PASSWORD, masterPassword, truststore);
-            
             //export the newly created certificate from the keystore
-            certFile = new File(layout.getConfigRoot(), CERTIFICATE_ALIAS + ".cer");            
-            keytoolCmd = new String[] {                
+            certFile = new File(layout.getConfigRoot(), alias + ".cer");
+            keytoolCmd = new String[] {
                 "-export",
-                "-keystore", layout.getKeyStore().getAbsolutePath(),                
-                "-alias", CERTIFICATE_ALIAS,
-                "-file", certFile.getAbsolutePath(),                
-            };                        
-            
-            p = new KeytoolExecutor(keytoolCmd, 30, input); 
+                "-keystore", keystore.getAbsolutePath(),
+                "-alias", alias,
+                "-file", certFile.getAbsolutePath(),
+            };
+
+            p = new KeytoolExecutor(keytoolCmd, 30, input);
             p.execute("trustStoreNotCreated", truststore);
-                       
+
             //import the newly created certificate into the truststore
-            keytoolCmd = new String[] {                
+            keytoolCmd = new String[] {
                 "-import",
                 "-noprompt",
-                "-keystore", truststore.getAbsolutePath(),                
-                "-alias", CERTIFICATE_ALIAS,
-                "-file", certFile.getAbsolutePath(),                
-            };                        
-            
-            p = new KeytoolExecutor(keytoolCmd, 30, input);              
-            p.execute("trustStoreNotCreated", truststore);                                      
-             
+                "-keystore", truststore.getAbsolutePath(),
+                "-alias", alias,
+                "-file", certFile.getAbsolutePath(),
+            };
+
+            p = new KeytoolExecutor(keytoolCmd, 30, input);
+            p.execute("trustStoreNotCreated", truststore);
+
             //import the newly created certificate into the asadmin truststore
             /* commented out till asadmintruststore can be added back */
             //addToAsadminTrustStore(config, certFile);
-            
+
             //clean up the exported cert file
-            certFile.delete();           
+            certFile.delete();
             certFile = null;
         }  finally {
             if (certFile != null) {
                 certFile.delete();
             }
         }
-    }    
+    }
 
     /**
      * Changes the keystore password

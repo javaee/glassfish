@@ -117,7 +117,7 @@ public final class HttpConnectorAddress {
             try {
                 SSLContext sc = SSLContext.getInstance("TLS");
                 TrustManager[] tms = {new AsadminTrustManager()};
-                sc.init(null, tms, new SecureRandom());
+                sc.init(SecureAdminClientManager.getKeyManagers(), tms, new SecureRandom());
                 HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
                 HttpsURLConnection.setDefaultHostnameVerifier(new BasicHostnameVerifier(this.host));
             } catch (NoSuchAlgorithmException e) {

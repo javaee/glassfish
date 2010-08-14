@@ -138,24 +138,7 @@ class AsadminTrustManager implements X509TrustManager {
     public X509Certificate[] getAcceptedIssuers() {
         return new X509Certificate[0];
     }
-
-    /**
-     * If we fail to open the client database using the default password
-     * (changeit) or the password found in  "javax.net.ssl.trustStorePassword"
-     * system property, then the fallback behavior is to prompt the user for
-     * the password by calling this method.
-     * @return the password to the client side truststore
-     */    
-    private String promptForPassword() throws IOException {
-        Console cons = System.console();
-        if (cons != null) {
-            char[] pwd = cons.readPassword(strmgr.get("certificateDbPrompt"));
-            if (pwd != null)
-                return new String(pwd);
-        }
-        return null;
-    }
-
+    
     /**
      * Displays the certificate and prompts the user whether or 
      * not it is trusted.
@@ -202,21 +185,12 @@ class AsadminTrustManager implements X509TrustManager {
         for (int i = 0 ; i < chain.length ; i ++) {
             chain[i].checkValidity();   
         }
-        try {            
-            AsadminTruststore truststore = null;
-            try {
-                truststore = new AsadminTruststore(); 
-            } catch (IOException ex) {                    
-                // An IOException is thrown when an invalid keystore password
-                // is entered.
-                // In this case, we prompt the user for the truststore password.
-                String password = promptForPassword();
-                if (password != null) {
-                    truststore = new AsadminTruststore(password);
-                } else {
-                    throw ex;
-                }                    
-            }
+        try {
+            /*
+             * Open the trust store, prompting the user if needed for a valid
+             * password to use.
+             */
+            AsadminTruststore truststore = AsadminTruststore.newInstance();
             // if the certificate already exists in the truststore,
             // it is implicitly trusted
             if (!truststore.certificateExists(chain[0])) {
