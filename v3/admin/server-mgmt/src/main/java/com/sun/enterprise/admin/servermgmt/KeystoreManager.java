@@ -82,6 +82,8 @@ public class KeystoreManager {
     
     private static final String SKID_EXTENSION_SYSTEM_PROPERTY = 
             "-J-Dsun.security.internal.keytool.skid";
+
+    private static final String INSTANCE_CN_SUFFIX = "-instance";
     
     protected class KeytoolExecutor extends ProcessExecutor {            
                 
@@ -139,7 +141,7 @@ public class KeystoreManager {
     public KeystoreManager() {
     }
    
-    protected String getCertificateDN(RepositoryConfig cfg)
+    protected String getCertificateDN(RepositoryConfig cfg, final String CNSuffix)
     {
         String cn = getCNFromCfg(cfg);
         if (cn == null) {
@@ -149,7 +151,12 @@ public class KeystoreManager {
                 cn = "localhost";
             }
         }
-        String x509DistinguishedName = CERTIFICATE_DN_PREFIX + cn + CERTIFICATE_DN_SUFFIX;
+        /*
+         * Use the suffix, if provided, in creating the DN (by augmenting
+         * the CN).
+         */
+        String x509DistinguishedName = CERTIFICATE_DN_PREFIX + cn +
+                (CNSuffix != null ? CNSuffix : "") + CERTIFICATE_DN_SUFFIX;
         System.out.println(_strMgr.getString("CertificateDN", x509DistinguishedName));
         return x509DistinguishedName;  //must be of form "CN=..., OU=..."
     }
@@ -207,22 +214,23 @@ public class KeystoreManager {
         final PEFileLayout layout = getFileLayout(config);   
         final File keystore = layout.getKeyStore();
         //Create the default self signed cert
-        addSelfSignedCertToKeyStore(keystore, CERTIFICATE_ALIAS, config, masterPassword);
+        addSelfSignedCertToKeyStore(keystore, CERTIFICATE_ALIAS, config, masterPassword, null);
 
         // Create the default self-signed cert for instances to use for SSL auth.
-        addSelfSignedCertToKeyStore(keystore, INSTANCE_SECURE_ADMIN_ALIAS, config, masterPassword);
+        addSelfSignedCertToKeyStore(keystore, INSTANCE_SECURE_ADMIN_ALIAS, config, masterPassword, INSTANCE_CN_SUFFIX);
     }
 
     private void addSelfSignedCertToKeyStore(final File keystore,
             final String alias,
             final RepositoryConfig config,
-            final String masterPassword) throws RepositoryException {
+            final String masterPassword,
+            final String CNSuffix) throws RepositoryException {
         final String[] keytoolCmd = {
             "-genkey",
             "-keyalg", "RSA",
             "-keystore", keystore.getAbsolutePath(),
-            "-alias", CERTIFICATE_ALIAS,
-            "-dname", getCertificateDN(config),
+            "-alias", alias,
+            "-dname", getCertificateDN(config, CNSuffix),
             "-validity", "3650",
             "-keypass", masterPassword,
             "-storepass", masterPassword,
