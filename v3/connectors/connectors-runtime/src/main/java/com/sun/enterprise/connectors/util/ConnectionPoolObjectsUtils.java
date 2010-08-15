@@ -38,6 +38,7 @@ package com.sun.enterprise.connectors.util;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.appserv.connectors.spi.TransactionSupport;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -89,15 +90,15 @@ public final class ConnectionPoolObjectsUtils {
      * Creates default ConnectorConnectionPool consisting of default
      * pool values.
      *
-     * @param poolName Name of the pool
+     * @param poolInfo Name of the pool
      * @return ConnectorConnectionPool created ConnectorConnectionPool instance
      */
 
     public static ConnectorConnectionPool createDefaultConnectorPoolObject(
-            String poolName, String rarName) {
+            PoolInfo poolInfo, String rarName) {
 
         ConnectorConnectionPool connectorPoolObj =
-                new ConnectorConnectionPool(poolName);
+                new ConnectorConnectionPool(poolInfo);
         connectorPoolObj.setMaxPoolSize("20");
         connectorPoolObj.setSteadyPoolSize("10");
         connectorPoolObj.setMaxWaitTimeInMillis("7889");
@@ -138,15 +139,15 @@ public final class ConnectionPoolObjectsUtils {
      * mentioned in the sun-ra/xml i.e it represents the pool mentioned in the
      * sun-ra.xm.
      *
-     * @param poolName Name of the pool
+     * @param poolInfo Name of the pool
      * @param desc     ConnectorDescriptor which represent ra.xml and sun-ra.xml.
      * @return ConnectorConnectionPool created ConnectorConnectionPool instance
      */
     public static ConnectorConnectionPool createSunRaConnectorPoolObject(
-            String poolName, ConnectorDescriptor desc, String rarName) {
+            PoolInfo poolInfo, ConnectorDescriptor desc, String rarName) {
 
         ConnectorConnectionPool connectorPoolObj =
-                new ConnectorConnectionPool(poolName);
+                new ConnectorConnectionPool(poolInfo);
         SunConnector sundesc = desc.getSunDescriptor();
         ResourceAdapter sunRAXML = sundesc.getResourceAdapter();
 
@@ -177,7 +178,7 @@ public final class ConnectionPoolObjectsUtils {
         //For SunRAPool, get the value of system property VALIDATE_ATMOST_EVERY_IDLE_SECS.
         if (validateAtmostEveryIdleSecsProperty != null && validateAtmostEveryIdleSecsProperty.equalsIgnoreCase("TRUE")) {
             validateAtmostEveryIdleSecs = true;
-            _logger.log(Level.FINE, "CCP.ValidateAtmostEveryIdleSecs.Set", poolName);
+            _logger.log(Level.FINE, "CCP.ValidateAtmostEveryIdleSecs.Set", poolInfo);
         }
         connectorPoolObj.setValidateAtmostEveryIdleSecs(validateAtmostEveryIdleSecs);
 
@@ -290,7 +291,7 @@ public final class ConnectionPoolObjectsUtils {
         return null;
     }
 
-    public static String getValueFromMCF(String prop, String poolName,
+    public static String getValueFromMCF(String prop, PoolInfo poolInfo,
                                          ManagedConnectionFactory mcf) {
         String result = null;
         try {
@@ -373,7 +374,8 @@ public final class ConnectionPoolObjectsUtils {
      * @param adminPool  Config Bean
      * @param conConnPool Connector Connection Pool
      */
-    public static void setLazyEnlistAndLazyAssocProperties(String lazyAssocString, List<Property> properties, ConnectorConnectionPool conConnPool){
+    public static void setLazyEnlistAndLazyAssocProperties(String lazyAssocString, List<Property> properties,
+                                                           ConnectorConnectionPool conConnPool){
 
         //Get LazyEnlistment value.
         //To set LazyAssoc to true, LazyEnlist also need to be true.

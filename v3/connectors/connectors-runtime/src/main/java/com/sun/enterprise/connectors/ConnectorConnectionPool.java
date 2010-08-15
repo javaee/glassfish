@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.connectors;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.authentication.ConnectorSecurityMap;
 import com.sun.enterprise.deployment.ConnectorConfigProperty;
 import com.sun.logging.LogDomains;
@@ -119,6 +120,8 @@ public class ConnectorConnectionPool implements Serializable {
 
     private static Logger _logger = LogDomains.getLogger(ConnectorConnectionPool.class, LogDomains.RSR_LOGGER);
     private String name;
+    private String applicationName;
+    private String moduleName;
 
 
     /**
@@ -126,9 +129,55 @@ public class ConnectorConnectionPool implements Serializable {
      *
      * @param name Name of the connector connection pool
      */
+    public ConnectorConnectionPool(String name, String applicationName) {
+        this.name = name;
+        this.applicationName = applicationName;
+    }
 
+    /**
+     * Constructor
+     *
+     * @param name Name of the connector connection pool
+     */
+    public ConnectorConnectionPool(String name, String applicationName, String moduleName) {
+        this.name = name;
+        this.applicationName = applicationName;
+        this.moduleName = moduleName;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param name Name of the connector connection pool
+     */
     public ConnectorConnectionPool(String name) {
         this.name = name;
+    }
+
+    public ConnectorConnectionPool(PoolInfo poolInfo){
+        this.name = poolInfo.getName();
+        this.applicationName = poolInfo.getApplicationName();
+        this.moduleName = poolInfo.getModuleName();
+    }
+
+    public String getApplicationName(){
+        return applicationName;
+    }
+
+    public void setApplicationName(String applicationName){
+        this.applicationName = applicationName;
+    }
+
+    public String getModuleName(){
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName){
+        this.moduleName = moduleName;
+    }
+
+    public boolean isApplicationScopedResource(){
+        return applicationName != null;
     }
 
     public boolean getPingDuringPoolCreation() {
@@ -835,4 +884,15 @@ public class ConnectorConnectionPool implements Serializable {
     public void setDynamicReconfigWaitTimeout(long dynamicReconfigWaitTimeout) {
         this.dynamicReconfigWaitTimeout = dynamicReconfigWaitTimeout;
     }
+
+    public PoolInfo getPoolInfo(){
+        if(applicationName != null && moduleName != null){
+            return new PoolInfo(name, applicationName, moduleName);
+        }else if(applicationName != null){
+            return new PoolInfo(name, applicationName);
+        }else{
+            return new PoolInfo(name);
+        }
+    }
+
 }

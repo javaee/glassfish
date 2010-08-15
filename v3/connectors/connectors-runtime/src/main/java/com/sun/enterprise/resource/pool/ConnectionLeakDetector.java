@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.resource.pool;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.util.i18n.StringManager;
@@ -58,7 +59,7 @@ public class ConnectionLeakDetector {
     private boolean connectionLeakTracing;
     private long connectionLeakTimeoutInMillis;
     private boolean connectionLeakReclaim;
-    private String connectionPoolName;
+    private PoolInfo connectionPoolInfo;
     private Map<ResourceHandle, ConnectionLeakListener> listeners;
 
     //Lock on HashMap to trace connection leaks
@@ -69,8 +70,8 @@ public class ConnectionLeakDetector {
             StringManager.getManager(ConnectionPool.class);
 
 
-    public ConnectionLeakDetector(String poolName, boolean leakTracing, long leakTimeoutInMillis, boolean leakReclaim) {
-        connectionPoolName = poolName;
+    public ConnectionLeakDetector(PoolInfo poolInfo, boolean leakTracing, long leakTimeoutInMillis, boolean leakReclaim) {
+        connectionPoolInfo = poolInfo;
         connectionLeakThreadStackHashMap = new HashMap<ResourceHandle, StackTraceElement[]>();
         connectionLeakTimerTaskHashMap = new HashMap<ResourceHandle, ConnectionLeakTask>();
         listeners = new HashMap<ResourceHandle, ConnectionLeakListener>();
@@ -171,9 +172,9 @@ public class ConnectionLeakDetector {
         StringBuffer stackTrace = new StringBuffer();
         String msg = localStrings.getStringWithDefault(
                 "potential.connection.leak.msg",
-                "A potential connection leak detected for connection pool " + connectionPoolName +
+                "A potential connection leak detected for connection pool " + connectionPoolInfo +
                         ". The stack trace of the thread is provided below : ",
-                new Object[]{connectionPoolName});
+                new Object[]{connectionPoolInfo});
         stackTrace.append(msg);
         stackTrace.append("\n");
         for (int i = 2; i < threadStackTrace.length; i++) {
@@ -181,7 +182,7 @@ public class ConnectionLeakDetector {
             stackTrace.append("\n");
         }
         connLeakListener.printConnectionLeakTrace(stackTrace);
-        _logger.log(Level.WARNING, stackTrace.toString(), "ConnectionPoolName=" + connectionPoolName);
+        _logger.log(Level.WARNING, stackTrace.toString(), "ConnectionPoolName=" + connectionPoolInfo);
     }
 
     /**

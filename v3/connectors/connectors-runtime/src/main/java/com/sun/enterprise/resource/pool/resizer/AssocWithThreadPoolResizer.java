@@ -35,12 +35,14 @@
  */
 package com.sun.enterprise.resource.pool.resizer;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.resource.AssocWithThreadResourceHandle;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceState;
 import com.sun.enterprise.resource.pool.PoolProperties;
 import com.sun.enterprise.resource.pool.ResourceHandler;
 import com.sun.enterprise.resource.pool.datastructure.DataStructure;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -54,10 +56,10 @@ import javax.resource.ResourceException;
  */
 public class AssocWithThreadPoolResizer extends Resizer {
 
-    public AssocWithThreadPoolResizer(String poolName, DataStructure ds,
+    public AssocWithThreadPoolResizer(PoolInfo poolInfo, DataStructure ds,
             PoolProperties pp, ResourceHandler handler,
             boolean preferValidateOverRecreate) {
-        super(poolName, ds, pp, handler, preferValidateOverRecreate);
+        super(poolInfo, ds, pp, handler, preferValidateOverRecreate);
     }
 
     /**
@@ -168,15 +170,15 @@ public class AssocWithThreadPoolResizer extends Resizer {
         //locks the pool throughout its operations.
         if (preferValidateOverRecreate) {
             debug("Idle resources validated and kept in the steady pool for pool [ "
-                    + poolName + " ] - " + idleConnKeptInSteadyCounter);
-            debug("Number of Idle resources freed for pool [ " + poolName + " ] - "
+                    + poolInfo + " ] - " + idleConnKeptInSteadyCounter);
+            debug("Number of Idle resources freed for pool [ " + poolInfo + " ] - "
                     + (resourcesToRemove.size()));
-            debug("Number of Invalid resources removed for pool [ " + poolName + " ] - "
+            debug("Number of Invalid resources removed for pool [ " + poolInfo + " ] - "
                     + noOfInvalidResources);
         } else {
-            debug("Number of Idle resources freed for pool [ " + poolName + " ] - "
+            debug("Number of Idle resources freed for pool [ " + poolInfo + " ] - "
                     + resourcesToRemove.size());
-            debug("Number of Invalid resources removed for pool [ " + poolName + " ] - "
+            debug("Number of Invalid resources removed for pool [ " + poolInfo + " ] - "
                     + noOfInvalidResources);
         }
         noOfResourcesRemoved = poolSizeBeforeRemoval - ds.getResourcesSize();

@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.transaction.api;
 
+import org.glassfish.resource.common.PoolInfo;
 import org.jvnet.hk2.annotations.Contract;
 
 import javax.persistence.EntityManager;
@@ -65,11 +66,11 @@ public interface JavaEETransaction
 
     public Set getAllParticipatingPools();
 
-    public Set getResources(String poolName);
+    public Set getResources(Object poolInfo);
 
     public TransactionalResource getNonXAResource();
 
-    public void setResources(Set resources, String poolName);
+    public void setResources(Set resources, Object poolInfo);
 
     public boolean isLocalTx();
 

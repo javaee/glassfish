@@ -49,11 +49,8 @@
  */
 package com.sun.enterprise.resource.deployer;
 
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.appserv.connectors.internal.api.JavaEEResource;
+import com.sun.appserv.connectors.internal.api.*;
 import com.sun.enterprise.resource.beans.CustomResource;
-import com.sun.appserv.connectors.internal.api.ResourcePropertyImpl;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -64,8 +61,8 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.repository.ResourceProperty;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
+import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.config.types.Property;
-import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -101,30 +98,49 @@ public class CustomResourceDeployer implements ResourceDeployer {
         StringManager.getManager(CustomResourceDeployer.class);
 
     @Inject
-    private GlassfishNamingManager namingMgr;
+    private ResourceNamingService cns;
     /** logger for this deployer */
     private static Logger _logger=LogDomains.getLogger(CustomResourceDeployer.class, LogDomains.CORE_LOGGER);
 
     /**
      * {@inheritDoc}
      */
+    public synchronized void deployResource(Object resource, String applicationName, String moduleName)
+            throws Exception {
+        com.sun.enterprise.config.serverbeans.CustomResource customResource =
+                (com.sun.enterprise.config.serverbeans.CustomResource)resource;
+        ResourceInfo resourceInfo = new ResourceInfo(customResource.getJndiName(), applicationName, moduleName);
+        deployResource(resource, resourceInfo);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
 	public synchronized void deployResource(Object resource) throws Exception {
+        com.sun.enterprise.config.serverbeans.CustomResource customResource =
+                (com.sun.enterprise.config.serverbeans.CustomResource)resource;
+        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(customResource);
+        deployResource(customResource, resourceInfo);
+    }
+
+    private void deployResource(Object resource, ResourceInfo resourceInfo){
 
         com.sun.enterprise.config.serverbeans.CustomResource customRes =
             (com.sun.enterprise.config.serverbeans.CustomResource) resource;
 
         if (ConnectorsUtil.parseBoolean(customRes.getEnabled())) {
             // converts the config data to j2ee resource
-            JavaEEResource j2eeResource = toCustomJavaEEResource(customRes);
+            JavaEEResource j2eeResource = toCustomJavaEEResource(customRes, resourceInfo);
 
             // installs the resource
-            installCustomResource((CustomResource) j2eeResource);
+            installCustomResource((CustomResource) j2eeResource, resourceInfo);
 
         } else {
             _logger.log(Level.INFO, "core.resource_disabled",
                 new Object[] {customRes.getJndiName(),
                               ConnectorConstants.RES_TYPE_CUSTOM});
         }
+
     }
 
     /**
@@ -136,11 +152,12 @@ public class CustomResourceDeployer implements ResourceDeployer {
         com.sun.enterprise.config.serverbeans.CustomResource customRes =
             (com.sun.enterprise.config.serverbeans.CustomResource) resource;
 
+        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(customRes);
         // converts the config data to j2ee resource
-        JavaEEResource j2eeResource = toCustomJavaEEResource(customRes);
+        //JavaEEResource j2eeResource = toCustomJavaEEResource(customRes, resourceInfo);
 
         // removes the resource from jndi naming
-        namingMgr.unpublishObject( j2eeResource.getName() );
+        cns.unpublishObject(resourceInfo, resourceInfo.getName());
 
     }
 
@@ -197,21 +214,15 @@ public class CustomResourceDeployer implements ResourceDeployer {
      *
      * @param customRes custom resource
      */
-    public void installCustomResource(CustomResource customRes) {
-
-        String bindName = null;
+    public void installCustomResource(CustomResource customRes, ResourceInfo resourceInfo) {
 
         try {
-            bindName = customRes.getName();
-
             if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE,"installCustomResource by jndi-name : "+ bindName);
+                _logger.log(Level.FINE,"installCustomResource by jndi-name : "+ resourceInfo);
             }
 
             // bind a Reference to the object factory
-            Reference ref = new Reference(customRes.getResType(),
-                    customRes.getFactoryClass(),
-                    null);
+            Reference ref = new Reference(customRes.getResType(), customRes.getFactoryClass(), null);
 
             // add resource properties as StringRefAddrs
             for (Iterator props = customRes.getProperties().iterator();
@@ -224,9 +235,9 @@ public class CustomResourceDeployer implements ResourceDeployer {
             }
 
             // publish the reference
-            namingMgr.publishObject(bindName, ref, true);
+            cns.publishObject(resourceInfo, ref, true);
         } catch (Exception ex) {
-            _logger.log(Level.SEVERE, "customrsrc.create_ref_error", bindName);
+            _logger.log(Level.SEVERE, "customrsrc.create_ref_error", resourceInfo);
             _logger.log(Level.SEVERE, "customrsrc.create_ref_error_excp", ex);
         }
     }
@@ -243,9 +254,10 @@ public class CustomResourceDeployer implements ResourceDeployer {
      * @return   new instance of j2ee custom resource
      */
     public static JavaEEResource toCustomJavaEEResource(
-            com.sun.enterprise.config.serverbeans.CustomResource rbean) {
+            com.sun.enterprise.config.serverbeans.CustomResource rbean, ResourceInfo resourceInfo) {
 
-        CustomResource jr = new CustomResource( rbean.getJndiName() );
+
+        CustomResource jr = new CustomResource(resourceInfo);
 
         //jr.setDescription(rbean.getDescription()); // FIXME: getting error
 

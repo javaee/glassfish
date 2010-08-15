@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.connectors;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
 import com.sun.enterprise.deployment.ResourcePrincipal;
 
@@ -60,7 +61,7 @@ import javax.security.auth.Subject;
 public class PoolMetaData {
 
     private ManagedConnectionFactory mcf = null;
-    private String poolName = null;
+    private PoolInfo poolInfo = null;
     private Subject subj = null;
     private ResourcePrincipal prin_;
     private int txSupport_;
@@ -71,11 +72,11 @@ public class PoolMetaData {
     private boolean lazyAssoc_ = false;
     private boolean isAuthCredentialsDefinedInPool_ = true;
 
-    public PoolMetaData(String poolName, ManagedConnectionFactory mcf,
+    public PoolMetaData(PoolInfo poolInfo, ManagedConnectionFactory mcf,
                         Subject s, int txSupport, ResourcePrincipal prin,
                         boolean isPM, boolean isNonTx, boolean lazyEnlistable,
                         RuntimeSecurityMap runtimeSecurityMap, boolean lazyAssoc) {
-        this.poolName = poolName;
+        this.poolInfo = poolInfo;
         this.mcf = mcf;
         this.subj = s;
         txSupport_ = txSupport;
@@ -152,7 +153,7 @@ public class PoolMetaData {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer("PoolMetaData : " + poolName);
+        StringBuffer sb = new StringBuffer("PoolMetaData : " + poolInfo);
         sb.append("\ntxSupport => " + txSupport_);
         sb.append("\nisPM_     => " + isPM_);
         sb.append("\nisNonTx_  => " + isNonTx_);

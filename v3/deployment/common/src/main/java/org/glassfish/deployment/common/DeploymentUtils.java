@@ -68,7 +68,8 @@ public class DeploymentUtils {
     private static final String WEB_INF = "WEB-INF";
     private static final String JSP_SUFFIX = ".jsp";
     private static final String RA_XML = "META-INF/ra.xml";
-    private static final String APPLICATION_XML = "META-INF/application.xml";    
+    private static final String RESOURCES_XML = "META-INF/glassfish-resources.xml";
+    private static final String APPLICATION_XML = "META-INF/application.xml";
     private static final String SUN_APPLICATION_XML = "META-INF/sun-application.xml";    
     private static final String GF_APPLICATION_XML = "META-INF/glassfish-application.xml";    
     private static final String EAR_EXTENSION = ".ear";
@@ -224,6 +225,35 @@ public class DeploymentUtils {
         } else {
             return pathName;
         }
+    }
+
+    public static boolean hasResourcesXML(ReadableArchive archive){
+        boolean hasResourcesXML = false;
+        try{
+            if(archive.exists(RESOURCES_XML)){
+                return true;
+            }
+
+            Enumeration<String> resourcesXMLs = archive.entries(RESOURCES_XML);
+            if(resourcesXMLs.hasMoreElements()){
+                return true;
+            }
+
+            Enumeration<String> entries = archive.entries();
+            while(entries.hasMoreElements()){
+                String element = entries.nextElement();
+                if(element.endsWith(".jar") || element.endsWith(".war") || element.endsWith(".rar") ||
+                        element.endsWith("_jar") || element.endsWith("_war") || element.endsWith("_rar")){
+                    ReadableArchive subArchive = archive.getSubArchive(element);
+                    if(hasResourcesXML(subArchive)){
+                        return true;
+                    }
+                }
+            }
+        }catch(IOException ioe){
+            //ignore
+        }
+        return hasResourcesXML;
     }
     /**
      * check whether the archive is a .rar

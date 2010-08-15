@@ -74,10 +74,8 @@ public class AdministeredObjectFactory implements ObjectFactory {
 	logger.fine("AdministeredObjectFactory: " + ref +
 		    " Name:" + name);
 
-        //String jndiName = (String) ref.get(0).getContent();
         AdministeredObjectResource aor =
             (AdministeredObjectResource) ref.get(0).getContent();
-        String jndiName = aor.getName();
         String moduleName = aor.getResourceAdapter();
 
 
@@ -123,9 +121,6 @@ public class AdministeredObjectFactory implements ObjectFactory {
                 loader = ConnectorRegistry.getInstance().getActiveResourceAdapter(moduleName).getClassLoader();
             }
         }
-
-
 	return aor.createAdministeredObject(loader);
     }
-
 }

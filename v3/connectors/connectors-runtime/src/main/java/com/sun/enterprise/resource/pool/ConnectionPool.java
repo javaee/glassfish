@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.resource.pool;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.appserv.connectors.internal.spi.BadConnectionEventListener;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -55,8 +56,6 @@ import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.RetryableUnavailableException;
@@ -129,12 +128,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     private long reconfigWaitTime ;
     protected String poolWaitQueueClass;
 
-    protected final String name; //poolName
+    protected final PoolInfo poolInfo; //poolName
 
     private PoolTxHelper poolTxHelper;
-
-    // adding resourceSpec and allocator
-    protected ResourceSpec resourceSpec;
 
     // NOTE: This resource allocator may not be the same as the allocator passed in to getResource()
     protected ResourceAllocator allocator;
@@ -144,15 +140,15 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     private boolean blocked = false;
     
     
-    public ConnectionPool(String poolName, Hashtable env) throws PoolingException {
-        this.name = poolName;
+    public ConnectionPool(PoolInfo poolInfo, Hashtable env) throws PoolingException {
+        this.poolInfo = poolInfo;
         setPoolConfiguration(env);
         initializePoolDataStructure();
         initializeResourceSelectionStrategy();
         initializePoolWaitQueue();
-        poolTxHelper = new PoolTxHelper(name);
+        poolTxHelper = new PoolTxHelper(this.poolInfo);
         gateway = ResourceGateway.getInstance(resourceGatewayClass);
-        _logger.log(Level.FINE, "Connection Pool : " + poolName);
+        _logger.log(Level.FINE, "Connection Pool : " + this.poolInfo);
     }
 
     protected void initializePoolWaitQueue() throws PoolingException {
@@ -205,16 +201,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     protected ConnectorConnectionPool getPoolConfigurationFromJndi(Hashtable env) throws PoolingException {
         ConnectorConnectionPool poolResource;
         try {
-            //Context ic = _runtime.getNamingManager().getInitialContext();
-            Context ic ;
-            if(env != null){
-                ic = new InitialContext(env);
-            }else{
-                ic = new InitialContext();
-            }
-
-            String jndiNameOfPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(name);
-            poolResource = (ConnectorConnectionPool) ic.lookup(jndiNameOfPool);
+            String jndiNameOfPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolInfo);
+            poolResource = (ConnectorConnectionPool)
+                    ConnectorRuntime.getRuntime().getResourceNamingService().lookup(poolInfo, jndiNameOfPool, env);
         } catch (NamingException ex) {
             throw new PoolingException(ex);
         }
@@ -223,15 +212,13 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
     // This method does not need to be synchronized since all caller methods are,
     // but it does not hurt. Just to be safe.
-    protected synchronized void initPool(ResourceSpec resourceSpec,
-                                         ResourceAllocator allocator)
+    protected synchronized void initPool(ResourceAllocator allocator)
             throws PoolingException {
 
         if (poolInitialized) {
             return;
         }
 
-        this.resourceSpec = resourceSpec;
         this.allocator = allocator;
 
         createResources(this.allocator, steadyPoolSize - ds.getResourcesSize());
@@ -276,7 +263,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     }
 
     protected Resizer initializeResizer() {
-        return new Resizer(name, ds, this, this, preferValidateOverRecreate);
+        return new Resizer(poolInfo, ds, this, this, preferValidateOverRecreate);
     }
 
     /**
@@ -379,7 +366,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                 JavaEETransaction jtx = ((JavaEETransaction) txn);
                 Set resourcesSet = null;
                 if(jtx != null){
-	                resourcesSet = jtx.getResources(name);
+	                resourcesSet = jtx.getResources(poolInfo);
 		        }
                 //allow when the pool is not blocked or at-least one resource is
                 //already obtained in the current transaction.
@@ -504,7 +491,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                                                  ResourceAllocator alloc,
                                                  Transaction tran) throws PoolingException {
         if (!poolInitialized) {
-            initPool(spec, alloc);
+            initPool(alloc);
         }
         ResourceHandle result;
 
@@ -547,7 +534,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                 //TODO should be handled by PoolTxHelper
                 JavaEETransaction j2eetran = (JavaEETransaction) tran;
                 // case 1. look for free and enlisted in same tx
-                Set set = j2eetran.getResources(name);
+                Set set = j2eetran.getResources(poolInfo);
                 if (set != null) {
                     Iterator iter = set.iterator();
                     while (iter.hasNext()) {
@@ -877,7 +864,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
 
     /**
-     * Method to be used to create resource, instead of calling ResourceAllocator.createResource().
+     * Method to be used to create resource, instead of calling ResourceAllocator.createConfigBean().
      * This method handles the connection creation retrial in case of failure
      *
      * @param resourceAllocator ResourceAllocator
@@ -936,7 +923,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             resourceHandle.getResourceAllocator().destroyResource(resourceHandle);
         } catch (Exception ex) {
             Object[] args = new Object[] {
-                    resourceHandle.getResourceSpec().getConnectionPoolName(),
+                    resourceHandle.getResourceSpec().getPoolInfo(),
                     ex.getMessage() == null ? "" : ex.getMessage() };
             _logger.log(Level.WARNING, "poolmgr.destroy_resource_failed", args);
             if (_logger.isLoggable(Level.FINE)) {
@@ -1054,7 +1041,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             ResourceAllocator alloc = handle.getResourceAllocator();
             alloc.cleanup(handle);
         } catch (PoolingException ex) {
-            Object[] params = new Object[]{name, ex};
+            Object[] params = new Object[]{poolInfo, ex};
             _logger.log(Level.WARNING, "cleanup.resource.failed", params);
             cleanupSuccessful = false;
             resourceErrorOccurred(handle);
@@ -1143,7 +1130,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      * @param status status of transaction
      */
     public void transactionCompleted(Transaction tran, int status) throws IllegalStateException {
-        List<ResourceHandle> delistedResources = poolTxHelper.transactionCompleted(tran, status, name);
+        List<ResourceHandle> delistedResources = poolTxHelper.transactionCompleted(tran, status, poolInfo);
         for (ResourceHandle resource : delistedResources) {
             // Application might not have closed the connection.
             if (isResourceUnused(resource)) {
@@ -1230,14 +1217,14 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
     public void emptyPool() {
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "EmptyPool: Name = " + name);
+            _logger.log(Level.FINE, "EmptyPool: Name = " + poolInfo);
         }
         ds.removeAll();
     }
 
     public void emptyFreeConnectionsInPool() {
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "Emptying free connections in pool : " + name);
+            _logger.log(Level.FINE, "Emptying free connections in pool : " + poolInfo);
         }
 
         ResourceHandle h;
@@ -1248,7 +1235,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
     public String toString() {
         StringBuffer sb = new StringBuffer("Pool [");
-        sb.append(name);
+        sb.append(poolInfo);
         sb.append("] PoolSize=");
         sb.append(ds.getResourcesSize());
         sb.append("  FreeResources=");
@@ -1300,9 +1287,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         logFine("Flush Connection Pool entered");        
         
         if(!poolInitialized) {
-            _logger.log(Level.WARNING, "poolmgr.flush_noop_pool_not_initialized", getPoolName());
+            _logger.log(Level.WARNING, "poolmgr.flush_noop_pool_not_initialized", getPoolInfo());
             throw new PoolingException("Flush Connection Pool failed for " +
-                    getPoolName() +
+                    getPoolInfo() +
                     ". Please see server.log for more details.");
         }
         
@@ -1311,7 +1298,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             increaseSteadyPoolSize(steadyPoolSize);
         } catch(PoolingException ex) {
             _logger.log(Level.WARNING, "pool.flush_pool_failure", 
-                    new Object[] {getPoolName(), ex.getMessage()});
+                    new Object[] {getPoolInfo(), ex.getMessage()});
             throw ex;
         }
         logFine("Flush Connection Pool done");        
@@ -1434,7 +1421,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
         boolean connectionLeakTracing_ = connectionLeakTimeoutInMilliSeconds_ > 0;
         if (leakDetector == null) {
-            leakDetector = new ConnectionLeakDetector(name, connectionLeakTracing_,
+            leakDetector = new ConnectionLeakDetector(poolInfo, connectionLeakTracing_,
                     connectionLeakTimeoutInMilliSeconds_, connectionLeakReclaim_);
         } else {
             leakDetector.reset(connectionLeakTracing_,
@@ -1490,8 +1477,8 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      *
      * @return the name of this pool
      */
-    public String getPoolName() {
-        return name;
+    public PoolInfo getPoolInfo() {
+        return poolInfo;
     }
 
     public synchronized void cancelResizerTask() {
@@ -1512,7 +1499,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      * This method can be used for debugging purposes
      */
     public synchronized void dumpPoolStatus() {
-        _logger.log(Level.INFO, "Name of pool :" + name);
+        _logger.log(Level.INFO, "Name of pool :" + poolInfo);
         _logger.log(Level.INFO, "Free connections :" + ds.getFreeListSize());
         _logger.log(Level.INFO, "Total connections :" + ds.getResourcesSize());
         _logger.log(Level.INFO, "Pool's matching is :" + matchConnections);
@@ -1573,7 +1560,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
     public void setSelfManaged(boolean selfManaged) {
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "Setting selfManaged to : " + selfManaged + " in pool : " + name);
+            _logger.log(Level.FINE, "Setting selfManaged to : " + selfManaged + " in pool : " + poolInfo);
         }
         selfManaged_ = selfManaged;
     }
@@ -1616,7 +1603,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      * @return PoolStatus object
      */
     public PoolStatus getPoolStatus() {
-        PoolStatus poolStatus = new PoolStatus(this.name);
+        PoolStatus poolStatus = new PoolStatus(this.poolInfo);
         int numFree = (this.poolInitialized) ? ds.getFreeListSize() : 0;
         int numUsed = (this.poolInitialized) ? ds.getResourcesSize()-ds.getFreeListSize() : 0;
         poolStatus.setNumConnFree(numFree);

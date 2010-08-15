@@ -41,6 +41,7 @@ import java.io.Serializable;
 import com.sun.enterprise.deployment.interfaces.MailResourceIntf;
 import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
 import com.sun.appserv.connectors.internal.api.JavaEEResource;
+import org.glassfish.resource.common.ResourceInfo;
 
 /**
  * Resource info for MailResource.
@@ -63,15 +64,20 @@ public class MailResource extends JavaEEResourceBase
     private String mailFrom_;
     private boolean debug_;
 
-    public MailResource(String name) {
-        super(name);
+    public MailResource(ResourceInfo resourceInfo) {
+        super(resourceInfo);
     }
 
-    protected JavaEEResource doClone(String name) {
-        MailResource clone = new MailResource(name);
+    protected JavaEEResource doClone(ResourceInfo resourceInfo) {
+        MailResource clone = new MailResource(resourceInfo);
         clone.setResType(getResType());
         clone.setFactoryClass(getFactoryClass());
         return clone;
+    }
+
+    //unused implementation ie., com.sun.enterprise.deployment.MailConfiguration uses this, but is unused in-turn.
+    public String getName() {
+        return getResourceInfo().getName();
     }
 
     public int getType() {
@@ -159,6 +165,6 @@ public class MailResource extends JavaEEResourceBase
     }
 
     public String toString() {
-        return "< Mail Resource : " + getName() + " , " + getResType() + "... >";
+        return "< Mail Resource : " + getResourceInfo() + " , " + getResType() + "... >";
     }
 }

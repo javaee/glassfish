@@ -42,6 +42,7 @@ import javax.management.ObjectName;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.glassfish.resource.common.PoolInfo;
 import org.glassfish.admin.amx.base.ConnectorRuntimeAPIProvider;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.util.ExceptionUtil;
@@ -456,7 +457,10 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
-            boolean flushStatus = connRuntime.flushConnectionPool(poolName);
+            //as per the method parameters, this is not applicable for "application-scoped" pools
+            PoolInfo poolInfo = new PoolInfo(poolName);
+            boolean flushStatus = connRuntime.flushConnectionPool(poolInfo);
+
             result.put(ConnectorRuntimeAPIProvider.FLUSH_CONNECTION_POOL_KEY, flushStatus);    
         }            
         catch (ConnectorRuntimeException ex)
@@ -490,7 +494,9 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
-            final Set<String> tableNames = connRuntime.getValidationTableNames(poolName);
+            //as per the method parameters, this is not applicable for "application-scoped" pools
+            PoolInfo poolInfo = new PoolInfo(poolName);
+            final Set<String> tableNames = connRuntime.getValidationTableNames(poolInfo);
             result.put(ConnectorRuntimeAPIProvider.VALIDATION_TABLE_NAMES_KEY, tableNames);
         }
         catch (ComponentException e)
@@ -609,7 +615,9 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
-            final boolean pingStatus = connRuntime.pingConnectionPool(poolName);
+            //as per the method parameters, this is not applicable for "application-scoped" pools
+            PoolInfo poolInfo = new PoolInfo(poolName);
+            final boolean pingStatus = connRuntime.pingConnectionPool(poolInfo);
             result.put(ConnectorRuntimeAPIProvider.PING_CONNECTION_POOL_KEY, pingStatus);
         }
         catch (ResourceException ex)

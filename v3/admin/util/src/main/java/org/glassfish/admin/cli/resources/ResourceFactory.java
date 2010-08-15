@@ -58,7 +58,7 @@ public class ResourceFactory {
     @Inject
     private Habitat habitat;
 
-    ResourceManager getResourceManager(Resource resource) {
+    public ResourceManager getResourceManager(Resource resource) {
         String resourceType = resource.getType();
 
         ResourceManager resourceManager = null;

@@ -36,6 +36,10 @@
 
 package com.sun.enterprise.resource.deployer;
 
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import org.glassfish.resource.common.PoolInfo;
+import org.glassfish.resource.common.ResourceInfo;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.logging.LogDomains;
@@ -66,17 +70,32 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
     /**
      * {@inheritDoc}
      */
+    public synchronized void deployResource(Object resource, String applicationName, String moduleName) throws Exception {
+        //deployResource is not synchronized as there is only one caller
+        //ResourceProxy which is synchronized
+        ConnectorResource domainResource = (ConnectorResource) resource;
+        ResourceInfo resourceInfo = new ResourceInfo(domainResource.getJndiName(), applicationName, moduleName);
+        PoolInfo poolInfo = new PoolInfo(domainResource.getPoolName(), applicationName, moduleName);
+        createConnectorResource(resourceInfo, poolInfo);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
     public void deployResource(Object resource) throws Exception {
         //deployResource is not synchronized as there is only one caller
         //ResourceProxy which is synchronized
-        
         ConnectorResource domainResource = (ConnectorResource) resource;
-        String jndiName = domainResource.getJndiName();
         String poolName = domainResource.getPoolName();
-        _logger.log(Level.FINE, "Calling backend to add connector resource", jndiName);
+        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(domainResource);
+        PoolInfo poolInfo = new PoolInfo(poolName, resourceInfo.getApplicationName(), resourceInfo.getModuleName());
+        createConnectorResource(resourceInfo, poolInfo);
+    }
 
-        runtime.createConnectorResource(jndiName, poolName, null);
-        _logger.log(Level.FINE, "Added connector resource in backend", jndiName);
+    private void createConnectorResource(ResourceInfo resourceInfo, PoolInfo poolInfo) throws ConnectorRuntimeException {
+        _logger.log(Level.FINE, "Calling backend to add connector resource", resourceInfo);
+        runtime.createConnectorResource(resourceInfo, poolInfo, null);
+        _logger.log(Level.FINE, "Added connector resource in backend", resourceInfo);
     }
 
     /**
@@ -85,8 +104,8 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
     public synchronized void undeployResource(Object resource)
             throws Exception {
         ConnectorResource domainResource = (ConnectorResource) resource;
-        String jndiName = domainResource.getJndiName();
-        runtime.deleteConnectorResource(jndiName);
+        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(domainResource);
+        runtime.deleteConnectorResource(resourceInfo);
 
         //Since 8.1 PE/SE/EE - if no more resource-ref to the pool
         //of this resource in this server instance, remove pool from connector
@@ -148,15 +167,15 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
     private void checkAndDeletePool(ConnectorResource cr) throws Exception {
         String poolName = cr.getPoolName();
         try {
-            Resources res = (Resources) cr.getParent();
+            ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(cr);
+            ConnectorConnectionPool ccp = ResourcesUtil.createInstance().getConnectorConnectionPoolOfResource(resourceInfo);
+            PoolInfo poolInfo = ConnectorsUtil.getPoolInfo(ccp);
 
             boolean poolReferred =
-                ResourcesUtil.createInstance().isPoolReferredInServerInstance(poolName);
+                ResourcesUtil.createInstance().isPoolReferredInServerInstance(poolInfo);
             if (!poolReferred) {
                 _logger.fine("Deleting pool [" + poolName + "] as there are no more " +
                         "resource-refs to the pool in this server instance");
-                ConnectorConnectionPool ccp = (ConnectorConnectionPool)
-                        res.getResourceByName(ConnectorConnectionPool.class, poolName);
                 //Delete/Undeploy Pool
                 runtime.getResourceDeployer(ccp).undeployResource(ccp);
             }

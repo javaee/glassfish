@@ -37,6 +37,7 @@
 package com.sun.enterprise.connectors.service;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -67,12 +68,12 @@ public class ConnectorAdminServiceUtils implements ConnectorConstants {
      * @throws NamingException if poolname lookup fails
      */
 
-    public static ResourcePrincipal getDefaultResourcePrincipal(String poolName)
+    public static ResourcePrincipal getDefaultResourcePrincipal(PoolInfo poolInfo)
             throws NamingException {
         // All this to get the default user name and principal
         ConnectorConnectionPool connectorConnectionPool = null;
         try {
-            String jndiNameForPool = getReservePrefixedJNDINameForPool(poolName);
+            String jndiNameForPool = getReservePrefixedJNDINameForPool(poolInfo);
             Context ic = ConnectorRuntime.getRuntime().getNamingManager().getInitialContext();
             connectorConnectionPool =
                     (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
@@ -108,8 +109,8 @@ public class ConnectorAdminServiceUtils implements ConnectorConstants {
         return prefix + resourceName;
     }
 
-    public static String getReservePrefixedJNDINameForPool(String poolName) {
-        return getReservePrefixedJNDIName(ConnectorConstants.POOLS_JNDINAME_PREFIX, poolName);
+    public static String getReservePrefixedJNDINameForPool(PoolInfo poolInfo) {
+        return getReservePrefixedJNDIName(ConnectorConstants.POOLS_JNDINAME_PREFIX, poolInfo.getName());
     }
 
     public static String getReservePrefixedJNDINameForDescriptor(String moduleName) {

@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.resource.recovery;
 
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.transaction.api.XAResourceWrapper;
@@ -43,6 +45,7 @@ import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
+import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.config.types.Property;
 
 import javax.naming.InitialContext;
@@ -77,6 +80,9 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
     private Resources resources;
 
     @Inject
+    private Applications applications;
+
+    @Inject
     private Habitat connectorRuntimeHabitat;
 
     private ResourcesUtil resourcesUtil = null;
@@ -85,6 +91,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
 
     private void loadAllJdbcResources() {
 
+        _logger.log(Level.FINEST, "loadAllJdbcResources start");
         try {
             Collection<JdbcResource> jdbcResources = getJdbcResources();
             InitialContext ic = new InitialContext();
@@ -108,10 +115,31 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                 _logger.log(Level.FINE, ne.toString(), ne);
             }
         }
+        _logger.log(Level.FINEST, "loadAllJdbcResources end");
     }
 
     private Collection<JdbcResource> getJdbcResources() {
-        return resources.getResources(JdbcResource.class);
+        Collection<JdbcResource> allResources = new ArrayList<JdbcResource>();
+        Collection<JdbcResource> jdbcResources = resources.getResources(JdbcResource.class);
+        allResources.addAll(jdbcResources);
+         for(Application app : applications.getApplications()){
+             if(ResourcesUtil.createInstance().isEnabled(app)){
+                 Resources appScopedResources = app.getResources();
+                 if(appScopedResources != null && appScopedResources.getResources() != null){
+                     allResources.addAll(appScopedResources.getResources(JdbcResource.class));
+                 }
+                 List<Module> modules = app.getModule();
+                 if(modules != null){
+                     for(Module module : modules){
+                         Resources msr = module.getResources();
+                         if(msr != null && msr.getResources() != null){
+                             allResources.addAll(msr.getResources(JdbcResource.class));
+                         }
+                     }
+                 }
+             }
+         }
+        return allResources;
     }
 
     private ResourcesUtil getResourcesUtil(){
@@ -129,6 +157,9 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
         Collection<JdbcResource> jdbcResources = getJdbcResources();
 
         if (jdbcResources == null || jdbcResources.size() == 0) {
+            if (_logger.isLoggable(Level.FINEST)) {
+                _logger.finest("loadXAResourcesAndItsConnections : no resources" );
+            }
             return;
         }
 
@@ -140,9 +171,9 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
         for (Resource resource : jdbcResources) {
             JdbcResource jdbcResource = (JdbcResource) resource;
             if(getResourcesUtil().isEnabled(jdbcResource)) {
-                JdbcConnectionPool pool = getJdbcConnectionPoolByName(jdbcResource.getPoolName());
-                if (pool != null &&
-                        "javax.sql.XADataSource".equals(pool.getResType())) {
+                ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(jdbcResource);
+                JdbcConnectionPool pool = ResourcesUtil.createInstance().getJdbcConnectionPoolOfResource(resourceInfo);
+                if (pool != null && "javax.sql.XADataSource".equals(pool.getResType())) {
                     jdbcPools.add(pool);
                 }
                 if (_logger.isLoggable(Level.FINE)) {
@@ -188,16 +219,23 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                     || jdbcConnectionPool.getName() == null
                     || !jdbcConnectionPool.getResType().equals(
                     "javax.sql.XADataSource")) {
+                if (_logger.isLoggable(Level.FINEST)) {
+                    _logger.finest("skipping pool : " + jdbcConnectionPool.getName());
+                }
                 continue;
             }
-            String poolName = jdbcConnectionPool.getName();
+            if (_logger.isLoggable(Level.FINEST)) {
+                _logger.finest(" using pool : " + jdbcConnectionPool.getName());
+            }
+
+            PoolInfo poolInfo = ConnectorsUtil.getPoolInfo(jdbcConnectionPool);
             try {
 
                 String[] dbUserPassword = getdbUserPasswordOfJdbcConnectionPool(jdbcConnectionPool);
                 String dbUser = dbUserPassword[0];
                 String dbPassword = dbUserPassword[1];
                 ManagedConnectionFactory fac =
-                        crt.obtainManagedConnectionFactory(poolName);
+                        crt.obtainManagedConnectionFactory(poolInfo);
                 Subject subject = new Subject();
                 PasswordCredential pc = new PasswordCredential(
                         dbUser, dbPassword.toCharArray());
@@ -226,26 +264,29 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                             xaresWrapper = (XAResourceWrapper) crt.getConnectorClassLoader().loadClass(wrapperclass).
                                     newInstance();
                             xaresWrapper.init(mc, subject);
+                            if (_logger.isLoggable(Level.FINEST)) {
+                                _logger.finest("adding resource " + poolInfo + " -- "+xaresWrapper);
+                            }
                             xaresList.add(xaresWrapper);
                         } else {
+                            if (_logger.isLoggable(Level.FINEST)) {
+                                _logger.finest("adding resource " + poolInfo + " -- " + xares);
+                            }
                             xaresList.add(xares);
                         }
                     }
                 } catch (ResourceException ex) {
+                    _logger.log(Level.WARNING, "datasource.xadatasource_error", poolInfo);
+                    _logger.log(Level.FINE, "datasource.xadatasource_error_excp", ex);
                     // ignored. Not at XA_TRANSACTION level
                 }
             } catch (Exception ex) {
-                _logger.log(Level.WARNING, "datasource.xadatasource_error",
-                        poolName);
+                _logger.log(Level.WARNING, "datasource.xadatasource_error", poolInfo);
                 _logger.log(Level.FINE, "datasource.xadatasource_error_excp", ex);
             }
         }
     }
 
-
-    private JdbcConnectionPool getJdbcConnectionPoolByName(String poolName) {
-        return (JdbcConnectionPool)resources.getResourceByName(JdbcConnectionPool.class, poolName);
-    }
 
     /**
      * {@inheritDoc}

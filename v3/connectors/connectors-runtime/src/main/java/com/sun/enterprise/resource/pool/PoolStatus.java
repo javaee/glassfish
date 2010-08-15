@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.resource.pool;
 
+import org.glassfish.resource.common.PoolInfo;
+
 /**
  * Reflects the current status of the Connection Pool. This class is used to 
  * get the status of the pool specifically the number of connections free or 
@@ -45,7 +47,7 @@ package com.sun.enterprise.resource.pool;
  */
 public class PoolStatus {
 
-    private String poolName;
+    private PoolInfo poolInfo;
     
     //Number of free connections in the pool
     private int numConnFree;
@@ -69,15 +71,15 @@ public class PoolStatus {
         this.numConnUsed = numConnUsed;
     }
 
-    public String getPoolName() {
-        return poolName;
+    public PoolInfo getPoolInfo() {
+        return poolInfo;
     }
 
-    public void setPoolName(String poolName) {
-        this.poolName = poolName;
+    public void setPoolInfo(PoolInfo poolInfo) {
+        this.poolInfo = poolInfo;
     }
 
-    public PoolStatus(String poolName) {
-        this.poolName = poolName;
+    public PoolStatus(PoolInfo poolInfo) {
+        this.poolInfo = poolInfo;
     }
 }

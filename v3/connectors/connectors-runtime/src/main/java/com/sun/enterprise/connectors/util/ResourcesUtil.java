@@ -39,6 +39,7 @@ package com.sun.enterprise.connectors.util;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.DeferredResourceConfig;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -49,6 +50,7 @@ import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.logging.LogDomains;
+import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.util.ArrayList;
@@ -91,11 +93,16 @@ public class ResourcesUtil {
     private ResourcesUtil(){
     }
 
-    private Resources getResources() {
-        if(resources == null){
-            resources = getRuntime().getResources();
-        }
-        return resources;
+    private Resources getGlobalResources(){
+        ResourceInfo resourceInfo = null;
+        return getRuntime().getResources(resourceInfo);
+    }
+    public Resources getResources(ResourceInfo resourceInfo) {
+        return getRuntime().getResources(resourceInfo);
+    }
+
+    public Resources getResources(PoolInfo poolInfo) {
+        return getRuntime().getResources(poolInfo);
     }
 
     private Domain getDomain(){
@@ -118,11 +125,6 @@ public class ResourcesUtil {
         }
         return server;
     }
-/*
-    public static void setServerContext(ServerContext sc) {
-        sc_ = sc;
-    }
-*/
 
     private Applications getApplications(){
         return getRuntime().getApplications();
@@ -214,14 +216,14 @@ public class ResourcesUtil {
         }
 
         //check if its XA
-        if ("javax.sql.XADataSource".equals(pool.getResType())) {
+        if (ConnectorConstants.JAVAX_SQL_XA_DATASOURCE.equals(pool.getResType())) {
             if (javax.sql.XADataSource.class.isAssignableFrom(dsClass)) {
                 return ConnectorConstants.JDBCXA_RA_NAME;
             }
         }
 
         //check if its CP
-        if ("javax.sql.ConnectionPoolDataSource".equals(pool.getResType())) {
+        if (ConnectorConstants.JAVAX_SQL_CONNECTION_POOL_DATASOURCE.equals(pool.getResType())) {
             if (javax.sql.ConnectionPoolDataSource.class.isAssignableFrom(
                     dsClass)) {
                 return ConnectorConstants.JDBCCONNECTIONPOOLDATASOURCE_RA_NAME;
@@ -229,7 +231,7 @@ public class ResourcesUtil {
         }
         
         //check if its DM
-        if("java.sql.Driver".equals(pool.getResType())) {
+        if(ConnectorConstants.JAVA_SQL_DRIVER.equals(pool.getResType())) {
             if(java.sql.Driver.class.isAssignableFrom(dsClass)) {
                 return ConnectorConstants.JDBCDRIVER_RA_NAME;
             }
@@ -248,42 +250,42 @@ public class ResourcesUtil {
         return dsRAName;
     }
 
-    public DeferredResourceConfig getDeferredResourceConfig(String resourceName) {
-        DeferredResourceConfig resConfig = getDeferredConnectorResourceConfigs(
-                resourceName);
+
+    public DeferredResourceConfig getDeferredResourceConfig(ResourceInfo resourceInfo) {
+        DeferredResourceConfig resConfig = getDeferredConnectorResourceConfigs(resourceInfo);
         if(resConfig != null) {
             return resConfig;
         }
 
-        resConfig = getDeferredJdbcResourceConfigs(
-                resourceName);
+        resConfig = getDeferredJdbcResourceConfigs(resourceInfo);
 
         if(resConfig != null) {
             return resConfig;
         }
 
-        resConfig = getDeferredAdminObjectConfigs(
-                resourceName);
+        resConfig = getDeferredAdminObjectConfigs(resourceInfo);
 
         return resConfig;
     }
 
-    public DeferredResourceConfig getDeferredPoolConfig(String poolName) {
 
-        DeferredResourceConfig resConfig = getDeferredConnectorPoolConfigs(
-                poolName);
+
+    public DeferredResourceConfig getDeferredPoolConfig(PoolInfo poolInfo) {
+
+        DeferredResourceConfig resConfig = getDeferredConnectorPoolConfigs(poolInfo);
         if(resConfig != null) {
             return resConfig;
         }
 
-        if(poolName == null){
+        if(poolInfo == null){
             return null;
         }
 
-        resConfig = getDeferredJdbcPoolConfigs(poolName);
+        resConfig = getDeferredJdbcPoolConfigs(poolInfo);
 
         return resConfig;
     }
+
 
     public DeferredResourceConfig getDeferredResourceConfig(Object resource, Object pool, String resType, String raName)
             throws ConnectorRuntimeException {
@@ -341,35 +343,34 @@ public class ResourcesUtil {
      * not have any resource or admin object associated with it are not loaded at start-up. They are
      * all lazily loaded.
      */
-    protected DeferredResourceConfig getDeferredConnectorResourceConfigs(
-            String resourceName) {
+    protected DeferredResourceConfig getDeferredConnectorResourceConfigs(ResourceInfo resourceInfo) {
 
-        if (resourceName == null) {
+        if (resourceInfo == null) {
             return null;
         }
         Resource[] resourcesToload = new Resource[2];
 
         try {
-            if (!isReferenced(resourceName)) {
+            if (!isReferenced(resourceInfo)) {
                 return null;
             }
         } catch (Exception e) {
             String message = localStrings.getString(
                     "error.finding.resources.references",
-                    resourceName);
+                    resourceInfo);
             _logger.log(Level.WARNING, message + e.getMessage());
             _logger.log(Level.FINE, message + e.getMessage(), e);
         }
 
 
         ConnectorResource connectorResource = (ConnectorResource)
-                getResources().getResourceByName(ConnectorResource.class, resourceName);
+                getResources(resourceInfo).getResourceByName(ConnectorResource.class, resourceInfo.getName());
         if (connectorResource == null || !ConnectorsUtil.parseBoolean(connectorResource.getEnabled())) {
             return null;
         }
         String poolName = connectorResource.getPoolName();
         ConnectorConnectionPool ccPool = (ConnectorConnectionPool)
-                getResources().getResourceByName(ConnectorConnectionPool.class, poolName);
+                getResources(resourceInfo).getResourceByName(ConnectorConnectionPool.class, poolName);
         if (ccPool == null) {
             return null;
         }
@@ -378,9 +379,10 @@ public class ResourcesUtil {
             resourcesToload[0] = ccPool;
             resourcesToload[1] = connectorResource;
 
+            //TODO ASR :need to get RACs from application/modules resources also ?
             ResourceAdapterConfig[] resourceAdapterConfig = new ResourceAdapterConfig[1];
             resourceAdapterConfig[0] = (ResourceAdapterConfig)
-                    getResources().getResourceByName(ResourceAdapterConfig.class, rarName);
+                    getGlobalResources().getResourceByName(ResourceAdapterConfig.class, rarName);
 
             DeferredResourceConfig resourceConfig =
                     new DeferredResourceConfig(rarName, null, ccPool, connectorResource, null, null,
@@ -391,39 +393,40 @@ public class ResourcesUtil {
         return null;
     }
 
-    protected DeferredResourceConfig getDeferredJdbcResourceConfigs(String resourceName) {
+
+    protected DeferredResourceConfig getDeferredJdbcResourceConfigs(ResourceInfo resourceInfo) {
 
         Resource[] resourcesToload = new Resource[2];
-        if(resourceName == null) {
+        if(resourceInfo == null) {
             return null;
         }
 
         try {
             //__pm does not have a domain.xml entry and hence will not
             //be referenced
-            if(!(resourceName.endsWith("__pm"))){
-                if(!isReferenced(resourceName)){
+            if(!(resourceInfo.getName().endsWith("__pm"))){
+                if(!isReferenced(resourceInfo)){
                     return null;
                 }
             }
         } catch (Exception e) {
-            String message = localStrings.getString(
-                    "error.finding.resources.references",
-                    resourceName);
+            String message = localStrings.getString("error.finding.resources.references", resourceInfo);
             _logger.log(Level.WARNING, message + e.getMessage());
             _logger.log(Level.FINE,message + e.getMessage(), e);
         }
 
-        JdbcResource jdbcResource = (JdbcResource) getResources().getResourceByName(JdbcResource.class, resourceName);
+        JdbcResource jdbcResource = (JdbcResource) getResources(resourceInfo).getResourceByName(JdbcResource.class,
+                resourceInfo.getName());
         if(jdbcResource == null || !ConnectorsUtil.parseBoolean(jdbcResource.getEnabled())) {
-            String cmpResourceName = getCorrespondingCmpResourceName(resourceName);
-            jdbcResource = (JdbcResource) getResources().getResourceByName(JdbcResource.class, cmpResourceName);
+            String cmpResourceName = getCorrespondingCmpResourceName(resourceInfo);
+            jdbcResource = (JdbcResource) getResources(resourceInfo).getResourceByName(JdbcResource.class,
+                    cmpResourceName);
             if(jdbcResource == null) {
                 return null;
             }
         }
         JdbcConnectionPool jdbcPool = (JdbcConnectionPool)
-                getResources().getResourceByName(JdbcConnectionPool.class, jdbcResource.getPoolName());
+                getResources(resourceInfo).getResourceByName(JdbcConnectionPool.class, jdbcResource.getPoolName());
         if(jdbcPool == null) {
             return null;
         }
@@ -440,43 +443,47 @@ public class ResourcesUtil {
         return null;
     }
 
-    /**
+
+
+/**
      * Returns the deferred admin object config. This can be admin object of JMS RA which is lazily
      * loaded. Or for other connector RA which is not loaded at start-up. The connector RA which does
      * not have any resource or admin object associated with it are not loaded at start-up. They are
      * all lazily loaded.
      */
-    protected DeferredResourceConfig getDeferredAdminObjectConfigs(String resourceName) {
 
-        if(resourceName == null) {
+    protected DeferredResourceConfig getDeferredAdminObjectConfigs(ResourceInfo resourceInfo) {
+
+        if(resourceInfo == null) {
             return null;
         }
         Resource[] resourcesToload = new Resource[1];
 
         try {
-            if(!isReferenced(resourceName)){
+            if(!isReferenced(resourceInfo)){
                 return null;
             }
         } catch (Exception e) {
             String message = localStrings.getString(
                     "error.finding.resources.references",
-                    resourceName);
+                    resourceInfo);
             _logger.log(Level.WARNING, message + e.getMessage());
             _logger.log(Level.FINE,message + e.getMessage(), e);
         }
 
         AdminObjectResource adminObjectResource = (AdminObjectResource)
-                getResources().getResourceByName(AdminObjectResource.class, resourceName);
+                getResources(resourceInfo).getResourceByName(AdminObjectResource.class, resourceInfo.getName());
         if(adminObjectResource == null || !ConnectorsUtil.parseBoolean(adminObjectResource.getEnabled())) {
             return null;
         }
         String rarName = adminObjectResource.getResAdapter();
         if(rarName != null){
+            //TODO ASR : look for RACs in application/module's resources also 
             resourcesToload[0] = adminObjectResource;
             ResourceAdapterConfig[] resourceAdapterConfig =
                     new ResourceAdapterConfig[1];
             resourceAdapterConfig[0] = (ResourceAdapterConfig)
-                    getResources().getResourceByName(ResourceAdapterConfig.class, rarName);
+                    getGlobalResources().getResourceByName(ResourceAdapterConfig.class, rarName);
             DeferredResourceConfig resourceConfig =
                     new DeferredResourceConfig(rarName,adminObjectResource,
                     null,null,null,null,resourceAdapterConfig);
@@ -485,32 +492,34 @@ public class ResourcesUtil {
         }
         return null;
     }
+     
+    protected String getCorrespondingCmpResourceName(ResourceInfo resourceInfo) {
 
-    protected String getCorrespondingCmpResourceName(String resourceName) {
-
-        int index = resourceName.lastIndexOf("__pm");
+        int index = resourceInfo.getName().lastIndexOf("__pm");
         if(index != -1) {
-            return resourceName.substring(0,index);
+            return resourceInfo.getName().substring(0,index);
         }
         return null;
     }
 
-    /**
-     * Returns the deffered connector connection pool config. This can be pool of JMS RA which is lazily
+
+/**
+     * Returns the deferred connector connection pool config. This can be pool of JMS RA which is lazily
      * loaded. Or for other connector RA which is not loaded at startup. The connector RA which does
      * not have any resource or admin object associated with it are not loaded at startup. They are
      * all lazily loaded.
      */
-    protected DeferredResourceConfig getDeferredConnectorPoolConfigs(String poolName) {
+
+    protected DeferredResourceConfig getDeferredConnectorPoolConfigs(PoolInfo poolInfo) {
 
         Resource[] resourcesToload = new Resource[1];
-        if(poolName == null) {
+        if(poolInfo == null) {
             return null;
         }
 
 
         ConnectorConnectionPool ccPool = (ConnectorConnectionPool)
-                getResources().getResourceByName(ConnectorConnectionPool.class, poolName);
+                getResources(poolInfo).getResourceByName(ConnectorConnectionPool.class, poolInfo.getName());
         if(ccPool == null) {
             return null;
         }
@@ -518,11 +527,12 @@ public class ResourcesUtil {
         String rarName = ccPool.getResourceAdapterName();
 
         if(rarName != null){
+            //TODO ASR : look for RAC in application/module's namespaces
             resourcesToload[0] = ccPool;
             ResourceAdapterConfig[] resourceAdapterConfig =
                     new ResourceAdapterConfig[1];
             resourceAdapterConfig[0] = (ResourceAdapterConfig)
-                    getResources().getResourceByName(ResourceAdapterConfig.class, rarName);
+                    getGlobalResources().getResourceByName(ResourceAdapterConfig.class, rarName);
             DeferredResourceConfig resourceConfig =
                     new DeferredResourceConfig(rarName,null,ccPool,
                     null,null,null,resourceAdapterConfig);
@@ -532,15 +542,15 @@ public class ResourcesUtil {
         return null;
     }
 
-    protected DeferredResourceConfig getDeferredJdbcPoolConfigs(String poolName) {
+    protected DeferredResourceConfig getDeferredJdbcPoolConfigs(PoolInfo poolInfo) {
 
         Resource[] resourcesToload = new Resource[1];
-        if(poolName == null) {
+        if(poolInfo == null) {
             return null;
         }
 
         JdbcConnectionPool jdbcPool = (JdbcConnectionPool)
-                getResources().getResourceByName(JdbcConnectionPool.class, poolName);
+                getResources(poolInfo).getResourceByName(JdbcConnectionPool.class, poolInfo.getName());
         if(jdbcPool == null) {
             return null;
         }
@@ -557,6 +567,8 @@ public class ResourcesUtil {
         return null;
     }
 
+
+/*
     public boolean poolBelongsToSystemRar(String poolName) {
         ConnectorConnectionPool ccPool = (ConnectorConnectionPool)
                 getResources().getResourceByName(ConnectorConnectionPool.class, poolName);
@@ -580,7 +592,9 @@ public class ResourcesUtil {
         }
         return false;
     }
+*/
 
+/*
     public boolean resourceBelongsToSystemRar(String resourceName) {
         ConnectorResource connectorResource = (ConnectorResource)
                 getResources().getResourceByName(ConnectorResource.class, resourceName);
@@ -595,19 +609,40 @@ public class ResourcesUtil {
         }
         return false;
     }
+*/
 
     /**
      * Returns true if the given resource is referenced by this server.
      *
-     * @param resourceName the name of the resource
+     * @param resourceInfo the name of the resource
      * @return true if the named resource is used/referred by this server
      */
-    protected boolean isReferenced(String resourceName) {
-        boolean refExists = getServer().isResourceRefExists(resourceName);
+    protected boolean isReferenced(ResourceInfo resourceInfo) {
+        boolean refExists = false;
+        if (ConnectorsUtil.isModuleScopedResource(resourceInfo) ||
+                ConnectorsUtil.isApplicationScopedResource(resourceInfo)) {
+            refExists = getServer().getApplicationRef(resourceInfo.getApplicationName()) != null;
+        } else {
+            String resourceName = resourceInfo.getName();
+            refExists = getServer().isResourceRefExists(resourceName);
+        }
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine("isReferenced :: " + resourceName + " - "+ refExists);
+            _logger.fine("isReferenced :: " + resourceInfo + " - " + refExists);
         }
         return refExists;
+    }
+
+    public boolean isEnabled(Application application){
+        if(application == null){
+            return false;
+        }
+        boolean appEnabled = Boolean.valueOf(application.getEnabled());
+        ApplicationRef appRef = getServer().getApplicationRef(application.getName());
+        boolean appRefEnabled = false;
+        if(appRef != null ){
+            appRefEnabled = Boolean.valueOf(appRef.getEnabled());
+        }
+        return appEnabled && appRefEnabled;
     }
 
     /**
@@ -659,13 +694,14 @@ public class ResourcesUtil {
     }
 
     public boolean isEnabled(BindableResource br) {
+        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(br);
         boolean enabled = false;
         //this cannot happen? need to remove later?
         if (br == null) {
             return false;
         }
         boolean resourceEnabled = ConnectorsUtil.parseBoolean(br.getEnabled());
-        boolean refEnabled = isResourceReferenceEnabled(br.getJndiName());
+        boolean refEnabled = isResourceReferenceEnabled(resourceInfo);
 
         if((br instanceof JdbcResource) ||
                 (br instanceof MailResource) ||
@@ -678,7 +714,7 @@ public class ResourcesUtil {
             ConnectorResource cr = (ConnectorResource) br;
             String poolName = cr.getPoolName();
             ConnectorConnectionPool ccp = (ConnectorConnectionPool)
-                    getResources().getResourceByName(ConnectorConnectionPool.class, poolName);
+                    getResources(resourceInfo).getResourceByName(ConnectorConnectionPool.class, poolName);
             if (ccp == null) {
                 return false;
             }
@@ -718,22 +754,20 @@ public class ResourcesUtil {
         ApplicationRef appRef = getServer().getApplicationRef(appName);
         if (appRef == null) {
             _logger.fine("ResourcesUtil :: isApplicationReferenceEnabled null ref");
-/*  TODO revisit
-            if(isADeployEvent()){
-                return true;
-            }else{
-*/
                 return false;
-//            }
         }
         _logger.fine("ResourcesUtil :: isApplicationReferenceEnabled appRef enabled ?" + appRef.getEnabled());
         return ConnectorsUtil.parseBoolean(appRef.getEnabled());
     }
 
+    public AdminObjectResource[] getEnabledAdminObjectResources(String raName)  {
+        return getEnabledAdminObjectResources(raName, getGlobalResources());
+    }
+
     //TODO can be made generic
     //TODO probably, DuckTyped for resources
-    public AdminObjectResource[] getEnabledAdminObjectResources(String raName)  {
-        List resourcesList = getResources().getResources();
+    public AdminObjectResource[] getEnabledAdminObjectResources(String raName, Resources resources)  {
+        List resourcesList = resources.getResources();
         int resourceCount = resourcesList.size();      //sizeAdminObjectResource();
         if(resourceCount == 0) {
             return null;
@@ -763,25 +797,6 @@ public class ResourcesUtil {
         return adminObjectResources.toArray(allAdminObjectResources);
     }
 
-
-
-/*
-    */
-/**
-     * Checks whether call is from a deploy event.
-     * Since in case of deploy event, the localResourceUtil will be set, so check is based on that.
-     * @return boolean indicating the status
-     *//*
-
-
-    private boolean isADeployEvent(){
-        if(localResourcesUtil.get() != null)
-            return true;
-        return false;
-    }
-*/
-
-
     private boolean belongToEmbeddedRarAndEnabled(String resourceAdapterName)  {
         String appName = getAppNameToken(resourceAdapterName);
         if(appName==null)
@@ -808,23 +823,32 @@ public class ResourcesUtil {
 
     /**
      * Checks if a resource reference is enabled
-     * @param resourceName resource-name
-     * @since SJSAS 8.1 PE/SE/EE
-     * @return boolean indicating whether the resource-ref is enabled.
+     * For application-scoped-resource, checks whether application-ref is enabled
+     *
+     * @param resourceInfo resourceInfo ResourceInfo
+     * @return boolean indicating whether the resource-ref/application-ref is enabled.
      */
-    private boolean isResourceReferenceEnabled(String resourceName) {
-        ResourceRef ref = getServer().getResourceRef(resourceName);
-        if (ref == null) {
-            _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null ref");
-/* TODO revisit
-            if(isADeployEvent())
-                return true;
-            else
-*/
-                return false;
+    private boolean isResourceReferenceEnabled(ResourceInfo resourceInfo) {
+        String enabled = "false";
+        if (ConnectorsUtil.isModuleScopedResource(resourceInfo) ||
+                ConnectorsUtil.isApplicationScopedResource(resourceInfo)) {
+            ApplicationRef appRef = getServer().getApplicationRef(resourceInfo.getApplicationName());
+            if (appRef != null) {
+                enabled = appRef.getEnabled();
+            } else {
+                _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null app-ref");
+            }
+        } else {
+            ResourceRef ref = getServer().getResourceRef(resourceInfo.getName());
+            if (ref != null) {
+                enabled = ref.getEnabled();
+            } else {
+                _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null ref");
+            }
         }
-        _logger.fine("ResourcesUtil :: isResourceReferenceEnabled ref enabled ?" + ref.getEnabled());
-        return ConnectorsUtil.parseBoolean(ref.getEnabled());
+        _logger.fine("ResourcesUtil :: isResourceReferenceEnabled ref enabled ?" + enabled);
+
+        return ConnectorsUtil.parseBoolean(enabled);
     }
 
     /**
@@ -835,6 +859,7 @@ public class ResourcesUtil {
      *                       whether it is referenced or not.
      * @return JdbcResource resource
      */
+/*
     public JdbcResource getJdbcResourceByJndiName( String jndiName, boolean checkReference) {
 
         if (_logger.isLoggable(Level.FINE)) {
@@ -862,6 +887,7 @@ public class ResourcesUtil {
             return jdbcResource;
         }
     }
+*/
 
     public String getResourceType(ConfigBeanProxy cb) {
         if (cb instanceof ConnectorConnectionPool) {
@@ -902,22 +928,24 @@ public class ResourcesUtil {
     /**
      * Determines if a connector connection pool is referred in a
      * server-instance via resource-refs
-     * @param poolName pool-name
+     * @param poolInfo pool-name
      * @return boolean true if pool is referred in this server instance, false
      * otherwise
      */
-    public boolean isPoolReferredInServerInstance(String poolName) {
+    public boolean isPoolReferredInServerInstance(PoolInfo poolInfo) {
 
-        Collection<ConnectorResource> connectorResources = getRuntime().getResources().getResources(ConnectorResource.class);
+        Collection<ConnectorResource> connectorResources = getRuntime().getResources(poolInfo).
+                getResources(ConnectorResource.class);
         for (ConnectorResource resource : connectorResources) {
             _logger.fine("poolname " + resource.getPoolName() + "resource " + resource.getJndiName());
-            if ((resource.getPoolName().equalsIgnoreCase(poolName)) && isReferenced(resource.getJndiName())){
+            ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(resource);
+            if ((resource.getPoolName().equalsIgnoreCase(poolInfo.getName())) && isReferenced(resourceInfo)){
                 _logger.fine("Connector resource "  + resource.getJndiName() + "refers "
-                        + poolName + "in this server instance");
+                        + poolInfo + "in this server instance");
                 return true;
             }
         }
-        _logger.fine("No Connector resource refers [ " + poolName + " ] in this server instance");
+        _logger.fine("No Connector resource refers [ " + poolInfo + " ] in this server instance");
         return false;
     }
 
@@ -928,21 +956,59 @@ public class ResourcesUtil {
      * @return boolean true if pool is referred in this server instance, false
      * otherwise
      */
-    public boolean isJdbcPoolReferredInServerInstance(String poolName) {
+    public boolean isJdbcPoolReferredInServerInstance(PoolInfo poolInfo) {
 
-        Collection<JdbcResource> jdbcResources = getRuntime().getResources().getResources(JdbcResource.class);
+        Collection<JdbcResource> jdbcResources = getRuntime().getResources(poolInfo).getResources(JdbcResource.class);
 
         for (JdbcResource resource : jdbcResources) {
-            _logger.fine("poolname " + resource.getPoolName() + "resource " + resource.getJndiName()
-            + " referred " + isReferenced(resource.getJndiName()));
+            ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(resource);
             //Have to check isReferenced here!
-            if ((resource.getPoolName().equalsIgnoreCase(poolName)) && isReferenced(resource.getJndiName())){
-                _logger.fine("JDBC resource "  + resource.getJndiName() + "refers " + poolName +
+            if ((resource.getPoolName().equalsIgnoreCase(poolInfo.getName())) && isReferenced(resourceInfo)){
+                _logger.fine("pool " + poolInfo + "resource " + resourceInfo
+                + " referred " + isReferenced(resourceInfo));
+
+                _logger.fine("JDBC resource "  + resource.getJndiName() + "refers " + poolInfo +
                         "in this server instance");
                 return true;
             }
         }
-        _logger.fine("No JDBC resource refers [ " + poolName + " ] in this server instance");
+        _logger.fine("No JDBC resource refers [ " + poolInfo + " ] in this server instance");
         return false;
     }
+
+    public JdbcConnectionPool getJdbcConnectionPoolOfResource(ResourceInfo resourceInfo) {
+        JdbcResource resource = null;
+        JdbcConnectionPool pool = null;
+        Resources resources = getResources(resourceInfo);
+        if(resources != null){
+            resource = (JdbcResource)resources.getResourceByName(JdbcResource.class, resourceInfo.getName());
+            if(resource != null){
+                pool = (JdbcConnectionPool)resources.getResourceByName(JdbcConnectionPool.class, resource.getPoolName());
+            }
+        }
+        return pool;
+    }
+
+    public ResourcePool getPoolConfig(PoolInfo poolInfo){
+        Resources resources = getResources(poolInfo);
+        ResourcePool pool = null;
+        if(resources != null){
+            pool = (ResourcePool)resources.getResourceByName(ResourcePool.class, poolInfo.getName());
+        }
+        return pool;
+    }
+
+    public ConnectorConnectionPool getConnectorConnectionPoolOfResource(ResourceInfo resourceInfo) {
+        ConnectorResource resource = null;
+        ConnectorConnectionPool pool = null;
+        Resources resources = getResources(resourceInfo);
+        if(resources != null){
+            resource = (ConnectorResource)resources.getResourceByName(ConnectorResource.class, resourceInfo.getName());
+            if(resource != null){
+                pool = (ConnectorConnectionPool)resources.getResourceByName(ConnectorConnectionPool.class, resource.getPoolName());
+            }
+        }
+        return pool;
+    }
+
 }

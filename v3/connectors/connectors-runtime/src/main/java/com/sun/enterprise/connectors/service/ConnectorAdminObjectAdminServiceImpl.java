@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.connectors.service;
 
+import com.sun.appserv.connectors.internal.api.ResourceNamingService;
+import org.glassfish.resource.common.ResourceInfo;
 import com.sun.enterprise.connectors.ActiveOutboundResourceAdapter;
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
 
@@ -64,7 +66,7 @@ public class ConnectorAdminObjectAdminServiceImpl extends
     public void addAdminObject(
             String appName,
             String connectorName,
-            String jndiName,
+            ResourceInfo resourceInfo,
             String adminObjectType,
             String adminObjectClassName, 
             Properties props)
@@ -78,23 +80,23 @@ public class ConnectorAdminObjectAdminServiceImpl extends
         if (ar instanceof ActiveOutboundResourceAdapter) {
             ActiveOutboundResourceAdapter aor =
                     (ActiveOutboundResourceAdapter) ar;
-            aor.addAdminObject(appName, connectorName, jndiName,
+            aor.addAdminObject(appName, connectorName, resourceInfo,
                     adminObjectType, adminObjectClassName, props);
         } else {
             ConnectorRuntimeException cre = new ConnectorRuntimeException(
                     "This adapter is not 1.5 compliant");
             _logger.log(Level.SEVERE,
-                    "rardeployment.non_1.5_compliant_rar", jndiName);
+                    "rardeployment.non_1.5_compliant_rar", resourceInfo);
             throw cre;
         }
     }
 
-    public void deleteAdminObject(String jndiName)
+    public void deleteAdminObject(ResourceInfo resourceInfo)
             throws ConnectorRuntimeException {
 
+        ResourceNamingService namingService = _runtime.getResourceNamingService();
         try {
-            Context ic = _runtime.getNamingManager().getInitialContext();
-            ic.unbind(jndiName);
+            namingService.unpublishObject(resourceInfo, resourceInfo.getName());
         }
         catch (NamingException ne) {
             /* TODO V3 JMS RA ?
@@ -105,7 +107,7 @@ public class ConnectorAdminObjectAdminServiceImpl extends
             */
             if (ne instanceof NameNotFoundException) {
                 _logger.log(Level.FINE,
-                        "rardeployment.admin_object_delete_failure", jndiName);
+                        "rardeployment.admin_object_delete_failure", resourceInfo);
                 _logger.log(Level.FINE, "", ne);
                 return;
             }
@@ -113,7 +115,7 @@ public class ConnectorAdminObjectAdminServiceImpl extends
                     "Failed to delete admin object from jndi");
             cre.initCause(ne);
             _logger.log(Level.SEVERE,
-                    "rardeployment.admin_object_delete_failure", jndiName);
+                    "rardeployment.admin_object_delete_failure", resourceInfo);
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
         }

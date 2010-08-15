@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.connectors;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
@@ -43,6 +44,7 @@ import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
 import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.enterprise.resource.DynamicallyReconfigurableResource;
 import com.sun.logging.LogDomains;
+import org.glassfish.resource.common.ResourceInfo;
 
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.validation.Validator;
@@ -76,11 +78,11 @@ public class ConnectorRegistry {
      */
     protected final Map<String, ActiveResourceAdapter> resourceAdapters;
 
-    protected final Map<String, PoolMetaData> factories;
+    protected final Map<PoolInfo, PoolMetaData> factories;
     protected final Map<String, ResourceAdapterConfig> resourceAdapterConfig;
     protected final Map<String, ConnectorApplication> rarModules;
     protected final Map<String, Validator> beanValidators;
-    protected final Map<String, Map<DynamicallyReconfigurableResource, Boolean>> resourceProxies;
+    protected final Map<ResourceInfo, Map<DynamicallyReconfigurableResource, Boolean>> resourceProxies;
 
     /**
      * Return the ConnectorRegistry instance
@@ -99,11 +101,11 @@ public class ConnectorRegistry {
 
     protected ConnectorRegistry() {
         resourceAdapters = Collections.synchronizedMap(new HashMap<String, ActiveResourceAdapter>());
-        factories = Collections.synchronizedMap(new HashMap<String, PoolMetaData>());
+        factories = Collections.synchronizedMap(new HashMap<PoolInfo, PoolMetaData>());
         resourceAdapterConfig = Collections.synchronizedMap(new HashMap<String, ResourceAdapterConfig>());
         rarModules = Collections.synchronizedMap(new HashMap<String, ConnectorApplication>());
         beanValidators = Collections.synchronizedMap(new HashMap<String, Validator>());
-        resourceProxies = new HashMap<String, Map<DynamicallyReconfigurableResource, Boolean>>();
+        resourceProxies = new HashMap<ResourceInfo, Map<DynamicallyReconfigurableResource, Boolean>>();
         _logger.log(Level.FINE, "initialized the connector registry");
     }
 
@@ -125,27 +127,27 @@ public class ConnectorRegistry {
 
     /**
      * get the map of factories (proxy to actual factory) using the resource. 
-     * @param name resource-name
+     * @param resourceInfo resource-name
      * @return Map of factories
      */
-    public Map<DynamicallyReconfigurableResource, Boolean> getResourceFactories(String name){
-        Map<DynamicallyReconfigurableResource, Boolean> map = resourceProxies.get(name);
+    public Map<DynamicallyReconfigurableResource, Boolean> getResourceFactories(ResourceInfo resourceInfo){
+        Map<DynamicallyReconfigurableResource, Boolean> map = resourceProxies.get(resourceInfo);
         //TODO synchronization
         if(map == null){
             map = new HashMap<DynamicallyReconfigurableResource, Boolean>();
-            resourceProxies.put(name, map);
+            resourceProxies.put(resourceInfo, map);
         }
         return map;
     }
 
     /**
      * remove and invalidate factories (proxy to actual factory) using the resource.
-     * @param name resource-name
+     * @param resourceInfo resource-name
      * @return boolean indicating whether the factories are invalidated or not
      */
-    public boolean removeResourceFactories(String name){
+    public boolean removeResourceFactories(ResourceInfo resourceInfo){
         boolean mapRemoved = false;
-        Map<DynamicallyReconfigurableResource, Boolean> map = resourceProxies.remove(name);
+        Map<DynamicallyReconfigurableResource, Boolean> map = resourceProxies.remove(resourceInfo);
         if(map != null){
             for(DynamicallyReconfigurableResource resource : map.keySet()){
                 resource.setInvalid();
@@ -261,15 +263,15 @@ public class ConnectorRegistry {
      * Checks if the MCF pertaining to the pool is instantiated and present
      * in the registry. Each pool has its own MCF instance.
      *
-     * @param poolName Name of the pool
+     * @param poolInfo Name of the pool
      * @return true if the MCF is found.
      *         false if MCF is not found
      */
 
 
-    public boolean isMCFCreated(String poolName) {
-        boolean created = factories.containsKey(poolName);
-        _logger.fine("isMCFCreated " + poolName + " - " + created);
+    public boolean isMCFCreated(PoolInfo poolInfo) {
+        boolean created = factories.containsKey(poolInfo);
+        _logger.fine("isMCFCreated " + poolInfo + " - " + created);
         return created;
     }
 
@@ -277,18 +279,18 @@ public class ConnectorRegistry {
     /**
      * Remove MCF instance pertaining to the poolName from the registry.
      *
-     * @param poolName Name of the pool
+     * @param poolInfo Name of the pool
      * @return true if successfully removed.
      *         false if removal fails.
      */
 
-    public boolean removeManagedConnectionFactory(String poolName) {
-        if (factories.remove(poolName) == null) {
+    public boolean removeManagedConnectionFactory(PoolInfo poolInfo) {
+        if (factories.remove(poolInfo) == null) {
             _logger.log(Level.FINE,
-                    "Failed to remove the MCF from connector registry.", poolName);
+                    "Failed to remove the MCF from connector registry.", poolInfo);
             return false;
         } else {
-            _logger.fine("removeMCF " + poolName + " - " + !factories.containsKey(poolName));
+            _logger.fine("removeMCF " + poolInfo + " - " + !factories.containsKey(poolInfo));
             return true;
         }
     }
@@ -296,30 +298,30 @@ public class ConnectorRegistry {
     /**
      * Add MCF instance pertaining to the poolName to the registry.
      *
-     * @param poolName Name of the pool
+     * @param poolInfo Name of the pool
      * @param pmd      MCF instance to be added.
      */
-    public void addManagedConnectionFactory(String poolName,
+    public void addManagedConnectionFactory(PoolInfo poolInfo,
                                             PoolMetaData pmd) {
-        factories.put(poolName, pmd);
-        _logger.fine("Added MCF to connector registry for: " + poolName);
+        factories.put(poolInfo, pmd);
+        _logger.fine("Added MCF to connector registry for: " + poolInfo);
     }
 
     /**
      * Retrieve MCF instance pertaining to the poolName from the registry.
      *
-     * @param poolName Name of the pool
+     * @param poolInfo Name of the pool
      * @return factory MCF instance retrieved.
      */
 
 
     public ManagedConnectionFactory getManagedConnectionFactory(
-            String poolName) {
-        if (poolName != null) {
+            PoolInfo poolInfo) {
+        if (poolInfo != null) {
             _logger.log(Level.FINE,
-                    "Returning the MCF from connector registry.", poolName);
+                    "Returning the MCF from connector registry.", poolInfo);
 
-            PoolMetaData pmd = factories.get(poolName);
+            PoolMetaData pmd = factories.get(poolInfo);
             if (pmd != null) {
                 return pmd.getMCF();
             }
@@ -370,17 +372,17 @@ public class ConnectorRegistry {
 
     /** Gets the runtime equivalent of policies enforced by the Security Maps 
      *  pertaining to a pool from the Pool's Meta Data.   
-     *  @param poolName Name of the pool
+     *  @param poolInfo pool information
      *  @return runtimeSecurityMap in the form of HashMap of
      *   HashMaps (user and groups). 
      *  @see SecurityMapUtils.processSecurityMaps(SecurityMap[])
      */
 
 
-    public RuntimeSecurityMap getRuntimeSecurityMap(String poolName) {
-        if(poolName != null) {
-            _logger.log(Level.FINE, "Returing the security map from connector registry.", poolName);
-            PoolMetaData pmd = factories.get(poolName);
+    public RuntimeSecurityMap getRuntimeSecurityMap(PoolInfo poolInfo) {
+        if(poolInfo != null) {
+            _logger.log(Level.FINE, "Returing the security map from connector registry.", poolInfo);
+            PoolMetaData pmd = factories.get(poolInfo);
             return pmd.getRuntimeSecurityMap();
         } else {
             return null;
@@ -454,8 +456,8 @@ public class ConnectorRegistry {
         return this.resourceAdapters.values().toArray(new ActiveResourceAdapter[]{});
     }
 
-    public PoolMetaData getPoolMetaData(String poolName) {
-        return factories.get(poolName);
+    public PoolMetaData getPoolMetaData(PoolInfo poolInfo) {
+        return factories.get(poolInfo);
     }
 
     /**

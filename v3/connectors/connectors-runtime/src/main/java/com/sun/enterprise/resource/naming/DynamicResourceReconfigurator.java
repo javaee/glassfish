@@ -36,12 +36,14 @@
 package com.sun.enterprise.resource.naming;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ResourceNamingService;
 import com.sun.appserv.connectors.internal.spi.BadConnectionEventListener;
 import com.sun.enterprise.connectors.ConnectorRegistry;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.DynamicallyReconfigurableResource;
 import com.sun.logging.LogDomains;
+import org.glassfish.resource.common.ResourceInfo;
 
-import javax.naming.InitialContext;
 import javax.resource.ResourceException;
 import javax.resource.spi.RetryableUnavailableException;
 import java.lang.reflect.InvocationHandler;
@@ -60,20 +62,20 @@ import java.util.logging.Logger;
 public class DynamicResourceReconfigurator implements InvocationHandler, DynamicallyReconfigurableResource {
 
     private Object actualObject;
-    private String jndiName;
+    private ResourceInfo resourceInfo;
     private boolean invalid = false;
 
     protected final static Logger _logger = LogDomains.getLogger(DynamicResourceReconfigurator.class,LogDomains.RSR_LOGGER);
 
-    public DynamicResourceReconfigurator(Object actualObject, String jndiName){
+    public DynamicResourceReconfigurator(Object actualObject, ResourceInfo resourceInfo){
         this.actualObject = actualObject;
-        this.jndiName = jndiName;
+        this.resourceInfo = resourceInfo;
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
         if (invalid) {
-            throw new ResourceException("Resource ["+jndiName+"] instance is not valid any more");
+            throw new ResourceException("Resource ["+ resourceInfo +"] instance is not valid any more");
         }
 
         if (method.getName().equals(DynamicallyReconfigurableResource.SET_DELEGATE_METHOD_NAME) && args.length == 1) {
@@ -83,14 +85,15 @@ public class DynamicResourceReconfigurator implements InvocationHandler, Dynamic
             setInvalid();
         } else {
             Map<DynamicallyReconfigurableResource, Boolean> proxies =
-                    ConnectorRegistry.getInstance().getResourceFactories(jndiName);
+                    ConnectorRegistry.getInstance().getResourceFactories(resourceInfo);
             Boolean status = proxies.get(this);
             if (status == null || !status) {
                 debug("status is null or false: " + this);
-                Hashtable ht = new Hashtable();
-                ht.put(ConnectorConstants.DYNAMIC_RECONFIGURATION_PROXY_CALL, "TRUE");
-                InitialContext ic = new InitialContext(ht);
-                actualObject = ic.lookup(jndiName);
+                Hashtable env = new Hashtable();
+                env.put(ConnectorConstants.DYNAMIC_RECONFIGURATION_PROXY_CALL, "TRUE");
+                //TODO ASR : resource-naming-service need to support "env" for module/app scope also
+                ResourceNamingService  namingService = ConnectorRuntime.getRuntime().getResourceNamingService();
+                actualObject = namingService.lookup(resourceInfo, resourceInfo.getName(), env);
                 proxies.put(this, true);
                 debug("actualObject : " + actualObject);
             }else{

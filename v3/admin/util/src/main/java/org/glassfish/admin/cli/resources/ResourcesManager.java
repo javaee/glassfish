@@ -52,11 +52,11 @@ import java.io.File;
  * This class serves as the API to creating new resources when an xml file 
  * is supplied containing the resource definitions
  * 
- * @author Prashanth Abbagani
+ * @author PRASHANTH ABBAGANI
  */
 public class ResourcesManager {
 
-    /**
+     /**
      * Creating resources from sun-resources.xml file. This method is used by 
      * the admin framework when the add-resources command is used to create
      * resources
@@ -68,7 +68,7 @@ public class ResourcesManager {
             new ResourcesXMLParser(resourceXMLFile);
         List<Resource> vResources = resourcesParser.getResourcesList();
         //First add all non connector resources.
-        Iterator<Resource> nonConnectorResources = ResourcesXMLParser.getNonConnectorResourcesList(vResources,false).iterator();
+        Iterator<Resource> nonConnectorResources = ResourcesXMLParser.getNonConnectorResourcesList(vResources,false, false).iterator();
         while (nonConnectorResources.hasNext()) {
             Resource resource = (Resource) nonConnectorResources.next();
             HashMap attrList = resource.getAttributes();
@@ -81,7 +81,7 @@ public class ResourcesManager {
             ResourceStatus rs;
             try {
                 ResourceManager rm = resourceFactory.getResourceManager(resource);
-                rs = rm.create(resources, attrList, props, target, true, true);
+                rs = rm.create(resources, attrList, props, target, true, true, true);
             } catch (Exception e) {
                 String msg = e.getMessage();
                 rs = new ResourceStatus(ResourceStatus.FAILURE, msg);
@@ -90,7 +90,7 @@ public class ResourcesManager {
         }
 
         //Now add all connector resources
-        Iterator connectorResources = ResourcesXMLParser.getConnectorResourcesList(vResources, false).iterator();
+        Iterator connectorResources = ResourcesXMLParser.getConnectorResourcesList(vResources, false, false).iterator();
         while (connectorResources.hasNext()) {
             Resource resource = (Resource) connectorResources.next();
             HashMap attrList = resource.getAttributes();
@@ -103,7 +103,7 @@ public class ResourcesManager {
             ResourceStatus rs;
             try {
                 ResourceManager rm = resourceFactory.getResourceManager(resource);
-                rs = rm.create(resources, attrList, props, target, true, true);
+                rs = rm.create(resources, attrList, props, target, true, true, true);
             } catch (Exception e) {
                 String msg = e.getMessage();
                 rs = new ResourceStatus(ResourceStatus.FAILURE, msg);

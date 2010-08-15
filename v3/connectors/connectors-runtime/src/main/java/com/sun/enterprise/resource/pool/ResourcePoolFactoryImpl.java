@@ -38,6 +38,7 @@ package com.sun.enterprise.resource.pool;
 
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants.PoolType;
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -63,22 +64,22 @@ public class ResourcePoolFactoryImpl {
 
     private static Logger _logger = LogDomains.getLogger(ResourcePoolFactoryImpl.class,LogDomains.RSR_LOGGER);
 
-    public static ResourcePool newInstance(String poolName, PoolType pt, Hashtable env)
+    public static ResourcePool newInstance(PoolInfo poolInfo, PoolType pt, Hashtable env)
             throws PoolingException {
 
         if(ConnectorRuntime.getRuntime().isACCRuntime()){
             if("TRUE".equalsIgnoreCase(switchOffACCConnectionPoolingProperty))
-                return new UnpooledResource( poolName, env );
+                return new UnpooledResource( poolInfo, env );
         }
 
         ResourcePool pool = null;
         if( pt == PoolType.POOLING_DISABLED ) {
-            return new UnpooledResource( poolName, env );
+            return new UnpooledResource( poolInfo, env );
         }
         if ( pt == PoolType.ASSOCIATE_WITH_THREAD_POOL ) {
-            pool = new AssocWithThreadResourcePool( poolName, env );
+            pool = new AssocWithThreadResourcePool( poolInfo, env );
         } else {
-            pool = new ConnectionPool( poolName, env );
+            pool = new ConnectionPool( poolInfo, env );
         }
 
         if (_logger.isLoggable(Level.FINE)) {

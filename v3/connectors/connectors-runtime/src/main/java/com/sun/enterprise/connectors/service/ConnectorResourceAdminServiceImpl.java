@@ -36,15 +36,16 @@
 
 package com.sun.enterprise.connectors.service;
 
-import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.*;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.naming.ConnectorResourceNamingEventNotifier;
 import com.sun.appserv.connectors.internal.spi.ConnectorNamingEvent;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
-import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.enterprise.resource.naming.SerializableObjectRefAddr;
+import org.glassfish.resource.common.PoolInfo;
+import org.glassfish.resource.common.ResourceInfo;
 
 import javax.naming.*;
 import javax.sql.DataSource;
@@ -62,6 +63,7 @@ import java.util.logging.Level;
  */
 public class ConnectorResourceAdminServiceImpl extends ConnectorService {
 
+    private ResourceNamingService namingService = _runtime.getResourceNamingService();
     /**
      * Default constructor
      */
@@ -73,51 +75,50 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
      * Creates the connector resource on a given connection pool
      *
      * @param jndiName     JNDI name of the resource to be created
-     * @param poolName     PoolName to which the connector resource belongs.
+     * @param poolInfo     PoolName to which the connector resource belongs.
      * @param resourceType Resource type Unused.
      * @throws ConnectorRuntimeException If the resouce creation fails.
      */
-    public void createConnectorResource(String jndiName, String poolName,
+    public void createConnectorResource(ResourceInfo resourceInfo, PoolInfo poolInfo,
                                         String resourceType) throws ConnectorRuntimeException {
 
         String errMsg = "rardeployment.jndi_lookup_failed";
-        String name = poolName;
         try {
             ConnectorConnectionPool ccp = null;
             String jndiNameForPool = ConnectorAdminServiceUtils.
-                    getReservePrefixedJNDINameForPool(poolName);
-            Context ic = _runtime.getNamingManager().getInitialContext();
+                    getReservePrefixedJNDINameForPool(poolInfo);
             try {
-                ccp =
-                        (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
+                ccp = (ConnectorConnectionPool) namingService.lookup(poolInfo, jndiNameForPool);
             } catch (NamingException ne) {
                 //Probably the pool is not yet initialized (lazy-loading), try doing a lookup
                 try {
-                    checkAndLoadPool(poolName);
-                    ccp =
-                            (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
+                    checkAndLoadPool(poolInfo);
+                    ccp = (ConnectorConnectionPool) namingService.lookup(poolInfo, jndiNameForPool);
                 } catch (NamingException e) {
-                    Object params[] = new Object[]{name, e};
+                    Object params[] = new Object[]{poolInfo, e};
                     _logger.log(Level.SEVERE, "unable.to.lookup.pool", params);
                 }
             }
 
-            ccp = (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
+            if(ccp == null){
+                ccp = (ConnectorConnectionPool) namingService.lookup(poolInfo, jndiNameForPool);
+            }
             ConnectorDescriptorInfo cdi = ccp.getConnectorDescriptorInfo();
 
             javax.naming.Reference ref=new  javax.naming.Reference(
                    cdi.getConnectionFactoryClass(), 
                    "com.sun.enterprise.resource.naming.ConnectorObjectFactory",
                    null);
-            StringRefAddr addr = new StringRefAddr("poolName",poolName);
+            RefAddr addr = new SerializableObjectRefAddr(PoolInfo.class.getName(), poolInfo);
             ref.add(addr);
             addr = new StringRefAddr("rarName", cdi.getRarName() );
             ref.add(addr);
+            RefAddr resAddr = new SerializableObjectRefAddr(ResourceInfo.class.getName(), resourceInfo);
+            ref.add(resAddr);
+
 
             errMsg = "Failed to bind connector resource in JNDI";
-            name = jndiName;
-            _runtime.getNamingManager().publishObject(
-                          jndiName,ref,true);
+            namingService.publishObject(resourceInfo, ref, true);
 
 /*
 
@@ -129,15 +130,14 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
 
             //To notify that a connector resource rebind has happened.
             ConnectorResourceNamingEventNotifier.getInstance().
-                    notifyListeners(
-                            new ConnectorNamingEvent(
-                                    jndiName, ConnectorNamingEvent.EVENT_OBJECT_REBIND));
+                    notifyListeners(new ConnectorNamingEvent(resourceInfo.toString(),
+                            ConnectorNamingEvent.EVENT_OBJECT_REBIND));
 
         } catch (NamingException ne) {
             ConnectorRuntimeException cre =
                     new ConnectorRuntimeException(errMsg);
             cre.initCause(ne);
-            _logger.log(Level.SEVERE, errMsg, name);
+            _logger.log(Level.SEVERE, errMsg, resourceInfo);
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
         }
@@ -146,14 +146,14 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
     /**
      * Deletes the connector resource.
      *
-     * @param jndiName JNDI name of the resource to delete.
+     * @param resourceInfo JNDI name of the resource to delete.
      * @throws ConnectorRuntimeException if connector resource deletion fails.
      */
-    public void deleteConnectorResource(String jndiName)
+    public void deleteConnectorResource(ResourceInfo resourceInfo)
             throws ConnectorRuntimeException {
 
         try {
-            _runtime.getNamingManager().unpublishObject(jndiName);
+            namingService.unpublishObject(resourceInfo, resourceInfo.getName());
         } catch (NamingException ne) {
             /* TODO for System RAR (not needed as proxy will always be present ?)
             ResourcesUtil resUtil = ResourcesUtil.createInstance();
@@ -162,14 +162,14 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
             }
             */
             if (ne instanceof NameNotFoundException) {
-                _logger.log(Level.FINE, "rardeployment.connectorresource_removal_from_jndi_error", jndiName);
+                _logger.log(Level.FINE, "rardeployment.connectorresource_removal_from_jndi_error", resourceInfo);
                 _logger.log(Level.FINE, "", ne);
                 return;
             }
             ConnectorRuntimeException cre = new ConnectorRuntimeException
                     ("Failed to delete connector resource from jndi");
             cre.initCause(ne);
-            _logger.log(Level.SEVERE, "rardeployment.connectorresource_removal_from_jndi_error", jndiName);
+            _logger.log(Level.SEVERE, "rardeployment.connectorresource_removal_from_jndi_error", resourceInfo);
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
         }
@@ -189,22 +189,25 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
      * Look up the JNDI name with appropriate suffix.
      * Suffix can be either __pm or __nontx.
      *
-     * @param name resource-name
+     * @param resourceInfo resource-name
      * @return Object - from jndi
      * @throws NamingException - when unable to get the object form jndi
      */
-    public Object lookup(String name) throws NamingException {
-        Hashtable ht = null;
-        String suffix = ConnectorsUtil.getValidSuffix(name);
-        if (suffix != null) {
-            ht = new Hashtable();
-            ht.put(ConnectorConstants.JNDI_SUFFIX_PROPERTY, suffix);
-            name = name.substring(0, name.lastIndexOf(suffix));
-        }
-        //Context ic = _runtime.getNamingManager().getInitialContext();
+    public Object lookup(ResourceInfo resourceInfo) throws NamingException {
+
+        Hashtable env = null;
+        String jndiName = resourceInfo.getName();
+        String suffix = ConnectorsUtil.getValidSuffix(jndiName);
+
         //To pass suffix that will be used by connector runtime during lookup
-        Context ic = new InitialContext(ht);
-        return ic.lookup(name);
+        if(suffix != null){
+            env = new Hashtable();
+            env.put(ConnectorConstants.JNDI_SUFFIX_PROPERTY, suffix);
+            jndiName = jndiName.substring(0, jndiName.lastIndexOf(suffix));
+        }
+        ResourceInfo actualResourceInfo = new ResourceInfo(jndiName, resourceInfo.getApplicationName(),
+                resourceInfo.getModuleName());
+        return namingService.lookup(actualResourceInfo, actualResourceInfo.getName(), env);
     }
 
     /**
@@ -220,27 +223,27 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
      * @param jndiName the jndi name of the resource
      * @return DataSource representing the resource.
      */
-    public Object lookupDataSourceInDAS(String jndiName){
+    public Object lookupDataSourceInDAS(ResourceInfo resourceInfo){
         MyDataSource myDS = new MyDataSource();
-        myDS.setJndiName(jndiName);
+        myDS.setResourceInfo(resourceInfo);
         return myDS;
     }
 
     class MyDataSource implements DataSource {
-        private String jndiName ;
+        private ResourceInfo resourceInfo;
         private PrintWriter logWriter;
         private int loginTimeout;
 
-        public void setJndiName(String name){
-            jndiName = name;
+        public void setResourceInfo(ResourceInfo resourceInfo){
+            this.resourceInfo = resourceInfo;
         }
 
         public Connection getConnection() throws SQLException {
-            return ConnectorRuntime.getRuntime().getConnection(jndiName);
+            return ConnectorRuntime.getRuntime().getConnection(resourceInfo);
         }
 
         public Connection getConnection(String username, String password) throws SQLException {
-            return ConnectorRuntime.getRuntime().getConnection(jndiName,username,password);
+            return ConnectorRuntime.getRuntime().getConnection(resourceInfo, username, password);
         }
 
         public PrintWriter getLogWriter() throws SQLException {

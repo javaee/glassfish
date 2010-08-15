@@ -49,8 +49,9 @@ import javax.resource.spi.ManagedConnectionFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Set;
-import java.util.Iterator;
 
+import org.glassfish.resource.common.PoolInfo;
+import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
@@ -228,7 +229,8 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             String connectionDefName = aConnectionDefs_.getConnectionFactoryIntf();
             String resourceJndiName = connectorRuntime_.getDefaultPoolName(moduleName_, connectionDefName);
             try {
-                connectorRuntime_.deleteConnectorConnectionPool(resourceJndiName);
+                PoolInfo poolInfo = new PoolInfo(resourceJndiName);
+                connectorRuntime_.deleteConnectorConnectionPool(poolInfo);
             } catch (ConnectorRuntimeException cre) {
                 _logger.log(Level.WARNING, "rar.undeployment.default_pool_delete_fail", resourceJndiName);
             }
@@ -243,7 +245,8 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             String connectionDefName = aConnectionDefs_.getConnectionFactoryIntf();
             String resourceJndiName = connectorRuntime_.getDefaultResourceName(moduleName_, connectionDefName);
             try {
-                connectorRuntime_.deleteConnectorResource(resourceJndiName);
+                ResourceInfo resourceInfo = new ResourceInfo(resourceJndiName);
+                connectorRuntime_.deleteConnectorResource(resourceInfo);
             } catch (ConnectorRuntimeException cre) {
                 _logger.log(Level.WARNING, "rar.undeployment.default_resource_delete_fail", resourceJndiName);
                 _logger.log(Level.FINE, "Error while trying to delete the default connector resource", cre);
@@ -403,7 +406,9 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             String resourceName = connectorRuntime_.getDefaultResourceName(moduleName_, connectionDefName);
             String poolName = connectorRuntime_.getDefaultPoolName(moduleName_, connectionDefName);
 
-            connectorRuntime_.createConnectorResource(resourceName, poolName, null);
+            PoolInfo poolInfo = new PoolInfo(poolName);
+            ResourceInfo resourceInfo = new ResourceInfo(resourceName);
+            connectorRuntime_.createConnectorResource(resourceInfo, poolInfo, null);
             desc_.addDefaultResourceName(resourceName);
 
             _logger.log(Level.FINE, "Created default connector resource [ " + resourceName + " ] " );
@@ -421,6 +426,7 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
 
         for (ConnectionDefDescriptor descriptor : connectionDefs_) {
             String poolName = connectorRuntime_.getDefaultPoolName(moduleName_, descriptor.getConnectionFactoryIntf());
+            PoolInfo poolInfo = new PoolInfo(poolName);
 
             ConnectorDescriptorInfo connectorDescriptorInfo =
                     ConnectorDDTransformUtils.getConnectorDescriptorInfo(descriptor);
@@ -432,15 +438,15 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             // from sunRAXML
             if (useSunRA) {
                 connectorPoolObj =
-                        ConnectionPoolObjectsUtils.createSunRaConnectorPoolObject(poolName, desc_, moduleName_);
+                        ConnectionPoolObjectsUtils.createSunRaConnectorPoolObject(poolInfo, desc_, moduleName_);
             } else {
                 connectorPoolObj =
-                        ConnectionPoolObjectsUtils.createDefaultConnectorPoolObject(poolName, moduleName_);
+                        ConnectionPoolObjectsUtils.createDefaultConnectorPoolObject(poolInfo, moduleName_);
             }
 
             connectorPoolObj.setConnectorDescriptorInfo(connectorDescriptorInfo);
             connectorRuntime_.createConnectorConnectionPool(connectorPoolObj);
-            _logger.log(Level.FINE, "Created default connection pool [ "+ poolName + " ] ");
+            _logger.log(Level.FINE, "Created default connection pool [ "+ poolInfo + " ] ");
         }
     }
 
@@ -456,22 +462,24 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
                 moduleName_, connectionDefs_[0].getConnectionFactoryIntf());
 
         String sunRAPoolName = defaultPoolName + ConnectorConstants.SUN_RA_POOL;
+        PoolInfo poolInfo = new PoolInfo(sunRAPoolName);
 
         ConnectorDescriptorInfo connectorDescriptorInfo =
                 ConnectorDDTransformUtils.getConnectorDescriptorInfo(connectionDefs_[0]);
         connectorDescriptorInfo.setRarName(moduleName_);
         connectorDescriptorInfo.setResourceAdapterClassName(desc_.getResourceAdapterClass());
         ConnectorConnectionPool connectorPoolObj =
-                ConnectionPoolObjectsUtils.createSunRaConnectorPoolObject(sunRAPoolName, desc_, moduleName_);
+                ConnectionPoolObjectsUtils.createSunRaConnectorPoolObject(poolInfo, desc_, moduleName_);
 
         connectorPoolObj.setConnectorDescriptorInfo(connectorDescriptorInfo);
         connectorRuntime_.createConnectorConnectionPool(connectorPoolObj);
-        _logger.log(Level.FINE, "Created SUN-RA connection pool:", sunRAPoolName);
+        _logger.log(Level.FINE, "Created SUN-RA connection pool:", poolInfo);
 
         String jndiName = (String) desc_.getSunDescriptor().
                 getResourceAdapter().getValue(ResourceAdapter.JNDI_NAME);
-        connectorRuntime_.createConnectorResource(jndiName, sunRAPoolName, null);
-        _logger.log(Level.FINE, "Created SUN-RA connector resource : ", jndiName);
+        ResourceInfo resourceInfo = new ResourceInfo(jndiName);
+        connectorRuntime_.createConnectorResource(resourceInfo, poolInfo, null);
+        _logger.log(Level.FINE, "Created SUN-RA connector resource : ", resourceInfo);
 
     }
 
@@ -485,10 +493,11 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
                 moduleName_, connectionDefs_[0].getConnectionFactoryIntf());
 
         String sunRAPoolName = defaultPoolName + ConnectorConstants.SUN_RA_POOL;
+        PoolInfo poolInfo = new PoolInfo(sunRAPoolName);
         try {
-            connectorRuntime_.deleteConnectorConnectionPool(sunRAPoolName);
+            connectorRuntime_.deleteConnectorConnectionPool(poolInfo);
         } catch (ConnectorRuntimeException cre) {
-            _logger.log(Level.WARNING, "rar.undeployment.sun_ra_pool_delete_fail", sunRAPoolName);
+            _logger.log(Level.WARNING, "rar.undeployment.sun_ra_pool_delete_fail", poolInfo);
         }
     }
 

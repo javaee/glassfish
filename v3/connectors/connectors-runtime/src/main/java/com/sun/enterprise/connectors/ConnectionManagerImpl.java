@@ -36,11 +36,8 @@
 
 package com.sun.enterprise.connectors;
 
+import com.sun.appserv.connectors.internal.api.*;
 import com.sun.appserv.connectors.internal.spi.ConnectionManager;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.appserv.connectors.internal.api.PoolingException;
-import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
@@ -56,6 +53,7 @@ import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.logging.LogDomains;
+import org.glassfish.resource.common.PoolInfo;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.*;
@@ -75,7 +73,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
     protected String jndiName;
     protected String logicalName;
-    protected String poolName;
+    protected PoolInfo poolInfo;
 
     private static Logger logger = LogDomains.getLogger(ConnectionManagerImpl.class,LogDomains.RSR_LOGGER);
     private static StringManager localStrings = StringManager.getManager(ConnectionManagerImpl.class);
@@ -84,8 +82,8 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
     protected ResourcePrincipal defaultPrin = null;
 
-    public ConnectionManagerImpl(String poolName) {
-        this.poolName = poolName;
+    public ConnectionManagerImpl(PoolInfo poolInfo) {
+        this.poolInfo = poolInfo;
     }
 
     public void setJndiName(String jndiName) {
@@ -105,8 +103,8 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
     }
 
 
-    public void setPoolName(String poolName) {
-        this.poolName = poolName;
+    public void setPoolInfo(PoolInfo poolInfo) {
+        this.poolInfo = poolInfo;
     }
 
     /**
@@ -185,7 +183,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
                 String msg = getLocalStrings().getString("con_mgr.null_userpass");
                 throw new ResourceException(msg);
             }
-            ConnectorRuntime.getRuntime().switchOnMatching(rarName, poolName);
+            ConnectorRuntime.getRuntime().switchOnMatching(rarName, poolInfo);
             return internalGetConnection(mcf, null, cxRequestInfo,
                     resourceShareable, jndiNameToUse, conn, false);
         } else {
@@ -200,7 +198,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
                     (callerPrincipal = securityContext.getCallerPrincipal()) != null &&
                     (principalSet = securityContext.getPrincipalSet()) != null) {
                 AuthenticationService authService =
-                        connectorRuntime.getAuthenticationService(rarName, poolName);
+                        connectorRuntime.getAuthenticationService(rarName, poolInfo);
                 if (authService != null) {
                     prin = (ResourcePrincipal) authService.mapPrincipal(
                             callerPrincipal, principalSet);
@@ -216,7 +214,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
                     prin = defaultPrin;
                 } else if (!prin.equals(defaultPrin)) {
-                    ConnectorRuntime.getRuntime().switchOnMatching(rarName, poolName);
+                    ConnectorRuntime.getRuntime().switchOnMatching(rarName, poolInfo);
                 }
             }
             return internalGetConnection(mcf, prin, cxRequestInfo,
@@ -231,11 +229,11 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
         try {
             PoolManager poolmgr = ConnectorRuntime.getRuntime().getPoolManager();
             ConnectorRegistry registry = ConnectorRegistry.getInstance();
-            PoolMetaData pmd = registry.getPoolMetaData(poolName);
+            PoolMetaData pmd = registry.getPoolMetaData(poolInfo);
 
             ResourceSpec spec = new ResourceSpec(jndiNameToUse,
                     ResourceSpec.JNDI_NAME, pmd);
-            spec.setConnectionPoolName(this.poolName);
+            spec.setPoolInfo(this.poolInfo);
             ManagedConnectionFactory freshMCF = pmd.getMCF();
 
             if (getLogger().isLoggable(Level.INFO)) {
@@ -278,14 +276,14 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
             int txLevel = pmd.getTransactionSupport();
             if (getLogger().isLoggable(Level.FINE)) {
-                logFine("ConnectionMgr: poolName " + poolName +
+                logFine("ConnectionMgr: poolName " + poolInfo +
                         "  txLevel : " + txLevel);
             }
 
             return getResource(txLevel, poolmgr, mcf, spec, subject, cxRequestInfo, info, desc, shareable);
 
         } catch (PoolingException ex) {
-            Object[] params = new Object[]{poolName, ex};
+            Object[] params = new Object[]{poolInfo, ex};
             getLogger().log(Level.WARNING, "poolmgr.get_connection_failure", params);
             String i18nMsg = getLocalStrings().getString("con_mgr.error_creating_connection", ex.getMessage());
             ResourceAllocationException rae = new ResourceAllocationException(i18nMsg);
@@ -344,15 +342,15 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
             jndiName = ConnectorsUtil.getPMJndiName(jndiName);
         }
         ConnectorRegistry registry = ConnectorRegistry.getInstance();
-        PoolMetaData pmd = registry.getPoolMetaData(poolName);
+        PoolMetaData pmd = registry.getPoolMetaData(poolInfo);
         defaultPrin = pmd.getResourcePrincipal();
     }
 
     private void validatePool() throws ResourceException {
         ConnectorRegistry registry = ConnectorRegistry.getInstance();
-        if (registry.getPoolMetaData(poolName) == null) {
-            String msg = getLocalStrings().getString("con_mgr.no_pool_meta_data", poolName);
-            throw new ResourceException(poolName + ": " + msg);
+        if (registry.getPoolMetaData(poolInfo) == null) {
+            String msg = getLocalStrings().getString("con_mgr.no_pool_meta_data", poolInfo);
+            throw new ResourceException(poolInfo + ": " + msg);
         }
     }
 

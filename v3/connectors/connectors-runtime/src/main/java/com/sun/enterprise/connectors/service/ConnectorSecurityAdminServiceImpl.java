@@ -37,10 +37,10 @@
 package com.sun.enterprise.connectors.service;
 
 import java.util.*;
+
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.authentication.*;
-import com.sun.enterprise.connectors.util.*;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.config.serverbeans.*;
 
 /**
  * This is Security administration service. Performs funtionality of
@@ -65,12 +65,12 @@ public class ConnectorSecurityAdminServiceImpl extends ConnectorService {
      * Currently only the BasicPassword authentication is supported.
      *
      * @param rarName  Rar module Name
-     * @param poolName Name of the pool. Used for creation of
+     * @param poolInfo Name of the pool. Used for creation of
      *                 BasicPasswordAuthenticationService
      * @return AuthenticationService
      */
     public AuthenticationService getAuthenticationService(String rarName,
-                                                          String poolName) {
+                                                          PoolInfo poolInfo) {
 
         ConnectorDescriptor cd = _registry.getDescriptor(rarName);
         OutboundResourceAdapter obra = cd.getOutboundResourceAdapter();
@@ -79,7 +79,7 @@ public class ConnectorSecurityAdminServiceImpl extends ConnectorService {
             AuthMechanism authMechanism = (AuthMechanism) authMech;
             String mech = authMechanism.getAuthMechType();
             if (mech.equals("BasicPassword")) {
-                return new BasicPasswordAuthenticationService(rarName, poolName);
+                return new BasicPasswordAuthenticationService(rarName, poolInfo);
             }
         }
         return null;

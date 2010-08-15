@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.resource.pool;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.enterprise.resource.AssocWithThreadResourceHandle;
 import com.sun.enterprise.resource.ResourceHandle;
@@ -59,9 +60,9 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
     private static ThreadLocal<AssocWithThreadResourceHandle> localResource =
             new ThreadLocal<AssocWithThreadResourceHandle>();
 
-    public AssocWithThreadResourcePool(String poolName, Hashtable env)
+    public AssocWithThreadResourcePool(PoolInfo poolInfo, Hashtable env)
             throws PoolingException {
-        super(poolName, env);
+        super(poolInfo, env);
     }
 
     @Override
@@ -142,7 +143,7 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
 
     @Override
     protected Resizer initializeResizer() {
-        return new AssocWithThreadPoolResizer(name, ds, this, this,
+        return new AssocWithThreadPoolResizer(poolInfo, ds, this, this,
                 preferValidateOverRecreate);
     }
 

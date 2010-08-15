@@ -36,11 +36,9 @@
 
 package com.sun.enterprise.connectors;
 
-import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.appserv.connectors.internal.api.WorkContextHandler;
+import com.sun.appserv.connectors.internal.api.*;
+import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.config.types.Property;
-import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -377,7 +375,7 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
     public void addAdminObject(
             String appName,
             String connectorName,
-            String jndiName,
+            ResourceInfo resourceInfo,
             String adminObjectType,
             String adminObjectClassName,
             Properties props)
@@ -405,7 +403,7 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
             aoDesc = desc.getAdminObject(adminObjectType, adminObjectClassName);
         }
 
-        AdministeredObjectResource aor = new AdministeredObjectResource(jndiName);
+        AdministeredObjectResource aor = new AdministeredObjectResource(resourceInfo);
         aor.initialize(aoDesc);
         aor.setResourceAdapter(connectorName);
 
@@ -439,9 +437,7 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
         try {
 
             Reference ref = aor.createAdminObjectReference();
-            GlassfishNamingManager nm = ConnectorRuntime.getRuntime().getNamingManager();
-            nm.publishObject(jndiName, ref, true);
-
+            connectorRuntime_.getResourceNamingService().publishObject(resourceInfo, ref, true);
         } catch (NamingException ex) {
             String i18nMsg = localStrings.getString(
                     "aira.cannot_bind_admin_obj");

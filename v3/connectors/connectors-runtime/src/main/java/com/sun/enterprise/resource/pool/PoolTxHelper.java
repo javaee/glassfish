@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.resource.pool;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceState;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -55,12 +56,12 @@ import java.util.*;
  */
 public class PoolTxHelper {
 
-    private String poolName;
+    private PoolInfo poolInfo;
 
     protected final static Logger _logger = LogDomains.getLogger(PoolTxHelper.class, LogDomains.RSR_LOGGER);
 
-    public PoolTxHelper(String poolName){
-        this.poolName = poolName;
+    public PoolTxHelper(PoolInfo poolInfo){
+        this.poolInfo = poolInfo;
     }
 
     /**
@@ -76,7 +77,7 @@ public class PoolTxHelper {
             try {
                 enforceDelistment(h);
             } catch (SystemException se) {
-                _logger.log(Level.FINE, "Exception while delisting the local resource [ of pool : "+poolName+" ] " +
+                _logger.log(Level.FINE, "Exception while delisting the local resource [ of pool : "+ poolInfo +" ] " +
                         "forcibily from transaction", se);
                 return result;
             }
@@ -95,7 +96,7 @@ public class PoolTxHelper {
     private void enforceDelistment(ResourceHandle h) throws SystemException {
         JavaEETransaction txn = (JavaEETransaction) ConnectorRuntime.getRuntime().getTransaction();
         if (txn != null) {
-            Set set = txn.getResources(poolName);
+            Set set = txn.getResources(poolInfo);
             if (set != null)
                 set.remove(h);
         }
@@ -115,7 +116,7 @@ public class PoolTxHelper {
             }
         } catch (SystemException e) {
             _logger.log(Level.FINE, "Exception while checking whether a local " +
-                    "transaction is in progress while using pool : "+poolName, e);            
+                    "transaction is in progress while using pool : "+ poolInfo, e);
         }
         return result;
     }
@@ -132,7 +133,7 @@ public class PoolTxHelper {
             if (txn != null)
                 result = isNonXAResourceInTransaction(txn, h);
         } catch (SystemException e) {
-            _logger.log(Level.FINE, "Exception while checking whether the resource [ of pool : "+poolName+" ] " +
+            _logger.log(Level.FINE, "Exception while checking whether the resource [ of pool : "+ poolInfo +" ] " +
                     "is nonxa and is enlisted in transaction : ", e);
         }
         return result;
@@ -180,20 +181,20 @@ public class PoolTxHelper {
     public void resourceEnlisted(Transaction tran, ResourceHandle resource) {
         try {
             JavaEETransaction j2eetran = (JavaEETransaction) tran;
-            Set set = j2eetran.getResources(poolName);
+            Set set = j2eetran.getResources(poolInfo);
             if (set == null) {
                 set = new HashSet();
-                j2eetran.setResources(set, poolName);
+                j2eetran.setResources(set, poolInfo);
             }
             set.add(resource);
         } catch (ClassCastException e) {
-            _logger.log(Level.FINE, "Pool [ "+poolName+" ]: resourceEnlisted:" +
+            _logger.log(Level.FINE, "Pool [ "+ poolInfo +" ]: resourceEnlisted:" +
                     "transaction is not J2EETransaction but a " + tran.getClass().getName(), e);
         }
         ResourceState state = resource.getResourceState();
         state.setEnlisted(true);
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "Pool [ "+poolName+" ]: resourceEnlisted: " + resource);
+            _logger.log(Level.FINE, "Pool [ "+ poolInfo +" ]: resourceEnlisted: " + resource);
         }
     }
 
@@ -201,10 +202,10 @@ public class PoolTxHelper {
      * this method is called when transaction tran is completed
      * @param tran transaction which has completed
      * @param status transaction status
-     * @param poolName Pool name
+     * @param poolInfo Pool name
      * @return delisted resources
      */
-    public List<ResourceHandle> transactionCompleted(Transaction tran, int status, String poolName) {
+    public List<ResourceHandle> transactionCompleted(Transaction tran, int status, PoolInfo poolInfo) {
         JavaEETransaction j2eetran;
         List<ResourceHandle> delistedResources = new ArrayList<ResourceHandle>();
         try {
@@ -214,7 +215,7 @@ public class PoolTxHelper {
                     "transaction is not J2EETransaction but a " + tran.getClass().getName(), e);
             return delistedResources;
         }
-        Set set = j2eetran.getResources(poolName);
+        Set set = j2eetran.getResources(poolInfo);
 
         if (set == null) return delistedResources;
 

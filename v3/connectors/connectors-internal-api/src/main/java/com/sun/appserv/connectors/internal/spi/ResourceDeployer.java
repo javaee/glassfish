@@ -63,6 +63,18 @@ public interface ResourceDeployer {
 
     /**
      * Deploy the resource into the server's runtime naming context
+     * This API is used in cases where the "config" bean is not
+     * yet persisted in domain.xml and is part of the "config" transaction.
+     *
+     * @param resource a resource object (eg. JmsResource)
+     * @param applicationName application-name
+     * @param moduleName module-name
+     * @throws Exception thrown if fail
+     */
+    void deployResource(Object resource, String applicationName, String moduleName) throws Exception; 
+
+    /**
+     * Deploy the resource into the server's runtime naming context
      *
      * @param resource a resource object (eg. JmsResource)
      * @throws Exception thrown if fail

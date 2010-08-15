@@ -36,6 +36,8 @@
 
 package org.glassfish.javaee.services;
 
+import com.sun.appserv.connectors.internal.api.ResourceNamingService;
+import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -63,21 +65,21 @@ public class ResourcesBinder {
     private Logger logger;
 
     @Inject
-    private Habitat raProxyHabitat;
+    private Habitat genericResourceProxy;
 
     @Inject
-    private Habitat genericResourceProxy;
+    private ResourceNamingService resourceNamingService;
 
     /**
      * deploy proxy for the resource
-     * @param jndiName   jndi name with which the resource need to be deployed
+     * @param resourceInfo   jndi name with which the resource need to be deployed
      * @param resource config object of the resource
      */
-    public void deployResource( String jndiName, Resource resource){
+    public void deployResource( ResourceInfo resourceInfo, Resource resource){
         try{
-            bindResource(resource, jndiName);
+            bindResource(resourceInfo, resource);
         }catch(NamingException ne){
-            Object[] params = {jndiName, ne};
+            Object[] params = {resourceInfo, ne};
             logger.log(Level.SEVERE,"resources.resources-binder.bind-resource-failed", params);            
         }
     }
@@ -88,10 +90,10 @@ public class ResourcesBinder {
      * @param jndiName jndi name with which the resource need to be deployed
      * @throws NamingException
      */
-    private void bindResource(Resource resource, String jndiName) throws NamingException {
+    private void bindResource(ResourceInfo resourceInfo, Resource resource) throws NamingException {
         ResourceProxy proxy = genericResourceProxy.getComponent(ResourceProxy.class);
         proxy.setResource(resource);
-        proxy.setJndiName(jndiName);
-        manager.publishObject(jndiName, proxy, true);
+        proxy.setResourceInfo(resourceInfo);
+        resourceNamingService.publishObject(resourceInfo, proxy, true);
     }
 }

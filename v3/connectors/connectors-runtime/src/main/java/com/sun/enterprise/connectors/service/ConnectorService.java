@@ -38,6 +38,7 @@ package com.sun.enterprise.connectors.service;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.DeferredResourceConfig;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
@@ -48,12 +49,8 @@ import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.deploy.shared.FileArchive;
-import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
-import java.io.IOException;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -62,9 +59,6 @@ import java.util.logging.Logger;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Iterator;
-import java.util.Set;
-import org.xml.sax.SAXParseException;
 
 
 /**
@@ -287,10 +281,10 @@ public class ConnectorService implements ConnectorConstants {
      * Matching will be switched off in the pool, by default. This will be
      * switched on if the connections with different resource principals reach the pool.
      *
-     * @param poolName Name of the pool to switchOn matching.
+     * @param poolInfo Name of the pool to switchOn matching.
      * @param rarName  Name of the resource adater.
      */
-    public void switchOnMatching(String rarName, String poolName) {
+    public void switchOnMatching(String rarName, PoolInfo poolInfo) {
         // At present it is applicable to only JDBC resource adapters
         // Later other resource adapters also become applicable.
         if (rarName.equals(ConnectorConstants.JDBCDATASOURCE_RA_NAME)
@@ -298,10 +292,10 @@ public class ConnectorService implements ConnectorConstants {
                 rarName.equals(ConnectorConstants.JDBCXA_RA_NAME)) {
 
             PoolManager poolMgr = _runtime.getPoolManager();
-            boolean result = poolMgr.switchOnMatching(poolName);
+            boolean result = poolMgr.switchOnMatching(poolInfo);
             if (!result) {
                 try {
-                    _runtime.switchOnMatchingInJndi(poolName);
+                    _runtime.switchOnMatchingInJndi(poolInfo);
                 } catch (ConnectorRuntimeException cre) {
                     // This will never happen.
                 }
@@ -309,16 +303,16 @@ public class ConnectorService implements ConnectorConstants {
         }
     }
 
-    public boolean checkAndLoadPool(String poolName) {
+    public boolean checkAndLoadPool(PoolInfo poolInfo) {
         boolean status = false;
         try {
-            ResourcePool pool = _runtime.getConnectionPoolConfig(poolName);
+            ResourcePool pool = _runtime.getConnectionPoolConfig(poolInfo);
             //DeferredResourceConfig defResConfig = resutil.getDeferredPoolConfig(poolName);
             DeferredResourceConfig defResConfig =
                     getResourcesUtil().getDeferredResourceConfig(null, pool, ConnectorsUtil.getResourceType(pool), null);
             status = loadResourcesAndItsRar(defResConfig);
         } catch (ConnectorRuntimeException cre) {
-            Object params[] = new Object[]{poolName, cre};
+            Object params[] = new Object[]{poolInfo, cre};
             _logger.log(Level.WARNING, "unable.to.load.connection.pool", params);
         }
         return status;

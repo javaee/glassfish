@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.resource.naming;
 
+import com.sun.enterprise.config.serverbeans.Resources;
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.connectors.ConnectorRegistry;
@@ -61,6 +63,7 @@ import java.util.logging.Logger;
 import java.util.Hashtable;
 
 import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.resource.common.ResourceInfo;
 
 /**
  * An object factory to handle creation of Connection Factories
@@ -85,8 +88,9 @@ public class ConnectorObjectFactory implements ObjectFactory {
             _logger.log(Level.FINE,"ConnectorObjectFactory: " + ref +
                 " Name:" + name);
         }
-            String poolName = (String) ref.get(0).getContent();
+            PoolInfo poolInfo = (PoolInfo) ref.get(0).getContent();
             String moduleName  = (String) ref.get(1).getContent();
+            ResourceInfo resourceInfo = (ResourceInfo) ref.get(2).getContent();
 
 
         if (getRuntime().isACCRuntime() || getRuntime().isNonACCRuntime()) {
@@ -114,9 +118,9 @@ public class ConnectorObjectFactory implements ObjectFactory {
 
         Object cf = null;
         try {
-            ManagedConnectionFactory mcf = getRuntime().obtainManagedConnectionFactory(poolName, env);
+            ManagedConnectionFactory mcf = getRuntime().obtainManagedConnectionFactory(poolInfo, env);
             if (mcf == null) {
-                _logger.log(Level.FINE, "Failed to create MCF ", poolName);
+                _logger.log(Level.FINE, "Failed to create MCF ", poolInfo);
                 throw new ConnectorRuntimeException("Failed to create MCF");
             }
 
@@ -129,7 +133,7 @@ public class ConnectorObjectFactory implements ObjectFactory {
 
             String derivedJndiName = ConnectorsUtil.deriveJndiName(jndiName, env);
             ConnectionManagerImpl mgr = (ConnectionManagerImpl)
-                    getRuntime().obtainConnectionManager(poolName, forceNoLazyAssoc);
+                    getRuntime().obtainConnectionManager(poolInfo, forceNoLazyAssoc);
             mgr.setJndiName(derivedJndiName);
             mgr.setRarName(moduleName);
 
@@ -147,27 +151,31 @@ public class ConnectorObjectFactory implements ObjectFactory {
             }
 
             if (getRuntime().isServer() || getRuntime().isEmbedded()) {
-                ResourcePool resourcePool = (ResourcePool)
-                        getRuntime().getResources().getResourceByName(ResourcePool.class, poolName);
+                Resources resources = getRuntime().getResources(poolInfo);
+                ResourcePool resourcePool = null;
+                if (resources != null) {
+                    resourcePool = (ResourcePool) resources.getResourceByName(ResourcePool.class, poolInfo.getName());
+                    if (resourcePool != null) {
+                        ResourceDeployer deployer = getRuntime().getResourceDeployer(resourcePool);
+                        if (deployer != null && deployer.supportsDynamicReconfiguration() &&
+                                ConnectorsUtil.isDynamicReconfigurationEnabled(resourcePool)) {
 
-                ResourceDeployer deployer = getRuntime().getResourceDeployer(resourcePool);
-                if (deployer != null && deployer.supportsDynamicReconfiguration() &&
-                        ConnectorsUtil.isDynamicReconfigurationEnabled(resourcePool)) {
+                            Object o = env.get(ConnectorConstants.DYNAMIC_RECONFIGURATION_PROXY_CALL);
+                            if (o == null || Boolean.valueOf(o.toString()).equals(false)) {
+                                //TODO use list ? (even in the ResourceDeployer API)
+                                Class[] classes = deployer.getProxyClassesForDynamicReconfiguration();
+                                Class[] proxyClasses = new Class[classes.length + 1];
+                                for (int i = 0; i < classes.length; i++) {
+                                    proxyClasses[i] = classes[i];
+                                }
+                                proxyClasses[proxyClasses.length - 1] = DynamicallyReconfigurableResource.class;
 
-                    Object o = env.get(ConnectorConstants.DYNAMIC_RECONFIGURATION_PROXY_CALL);
-                    if (o == null  || Boolean.valueOf(o.toString()).equals(false)) {
-                        //TODO use list ? (even in the ResourceDeployer API)
-                        Class[] classes = deployer.getProxyClassesForDynamicReconfiguration();
-                        Class[] proxyClasses = new Class[classes.length + 1];
-                        for (int i = 0; i < classes.length; i++) {
-                            proxyClasses[i] = classes[i];
+                                cf = getProxyObject(cf, proxyClasses, resourceInfo);
+                                Map<DynamicallyReconfigurableResource, Boolean> resourceFactories =
+                                        ConnectorRegistry.getInstance().getResourceFactories(resourceInfo);
+                                resourceFactories.put((DynamicallyReconfigurableResource) Proxy.getInvocationHandler(cf), true);
+                            }
                         }
-                        proxyClasses[proxyClasses.length - 1] = DynamicallyReconfigurableResource.class;
-
-                        cf = getProxyObject(cf, proxyClasses, jndiName);
-                        Map<DynamicallyReconfigurableResource, Boolean> resources =
-                                ConnectorRegistry.getInstance().getResourceFactories(jndiName);
-                        resources.put((DynamicallyReconfigurableResource) Proxy.getInvocationHandler(cf), true);
                     }
                 }
             }
@@ -182,8 +190,8 @@ public class ConnectorObjectFactory implements ObjectFactory {
         return cf;
     }
 
-      protected <T> T getProxyObject(final Object actualObject, Class<T>[] ifaces, String jndiName) throws Exception {
-        InvocationHandler ih = new DynamicResourceReconfigurator(actualObject, jndiName);
+      protected <T> T getProxyObject(final Object actualObject, Class<T>[] ifaces, ResourceInfo resourceInfo) throws Exception {
+        InvocationHandler ih = new DynamicResourceReconfigurator(actualObject, resourceInfo);
         return (T) Proxy.newProxyInstance(actualObject.getClass().getClassLoader(), ifaces, ih);
     }
 

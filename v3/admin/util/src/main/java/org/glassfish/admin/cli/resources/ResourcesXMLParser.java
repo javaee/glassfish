@@ -37,13 +37,14 @@
 package org.glassfish.admin.cli.resources;
 
 import org.glassfish.resource.common.Resource;
-import javax.xml.parsers.DocumentBuilder; 
+
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;  
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
- 
-import org.xml.sax.SAXException;  
+
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;  
 import org.xml.sax.InputSource;
 import org.xml.sax.ErrorHandler;
@@ -80,8 +81,6 @@ import static org.glassfish.resource.common.ResourceConstants.*;
 @I18n("resources.parser")
 public class ResourcesXMLParser implements EntityResolver
 {
-    public static final String kLoggerName = 
-            "javax.enterprise.system.tools.admin";
 
     private File resourceFile = null;
     private Document document;
@@ -105,12 +104,37 @@ public class ResourcesXMLParser implements EntityResolver
 
     private static final String SUN_RESOURCES = "sun-resources";
 
+    public static final String JAVA_APP_SCOPE_PREFIX = "java:app/";
+    public static final String JAVA_COMP_SCOPE_PREFIX = "java:comp/";
+    public static final String JAVA_MODULE_SCOPE_PREFIX = "java:module/";
+    public static final String JAVA_GLOBAL_SCOPE_PREFIX = "java:global/";
+
+    /**
+     * List of naming scopes
+     */
+    public static final List<String> namingScopes = Collections.unmodifiableList(
+            Arrays.asList(
+                JAVA_APP_SCOPE_PREFIX,
+                JAVA_COMP_SCOPE_PREFIX,
+                JAVA_MODULE_SCOPE_PREFIX,
+                JAVA_GLOBAL_SCOPE_PREFIX
+            ));
+
     /** Creates new ResourcesXMLParser */
     public ResourcesXMLParser(File resourceFile) throws Exception {
         this.resourceFile = resourceFile;
         initProperties();
         vResources = new ArrayList<Resource>();
-        generateResourceObjects();
+        String scope = "";
+        generateResourceObjects(scope);
+    }
+
+    /** Creates new ResourcesXMLParser */
+    public ResourcesXMLParser(File resourceFile, String scope) throws Exception {
+        this.resourceFile = resourceFile;
+        initProperties();
+        vResources = new ArrayList<Resource>();
+        generateResourceObjects(scope);
     }
 
     /**
@@ -186,7 +210,7 @@ public class ResourcesXMLParser implements EntityResolver
      * Get All the resources from the document object.
      *
      */
-    private void generateResourceObjects() throws Exception
+    private void generateResourceObjects(String scope) throws Exception
     {
         if (document != null) {
             for (Node nextKid = document.getDocumentElement().getFirstChild();
@@ -194,49 +218,43 @@ public class ResourcesXMLParser implements EntityResolver
             {
                 String nodeName = nextKid.getNodeName();
                 if (nodeName.equalsIgnoreCase(Resource.CUSTOM_RESOURCE)) {
-                    generateCustomResource(nextKid);
+                    generateCustomResource(nextKid, scope);
                 }
                 else if (nodeName.equalsIgnoreCase(Resource.EXTERNAL_JNDI_RESOURCE)) 
                 {
-                    generateJNDIResource(nextKid);
+                    generateJNDIResource(nextKid, scope);
                 }
                 else if (nodeName.equalsIgnoreCase(Resource.JDBC_RESOURCE)) 
                 {
-                    generateJDBCResource(nextKid);
+                    generateJDBCResource(nextKid, scope);
                 }
                 else if (nodeName.equalsIgnoreCase(Resource.JDBC_CONNECTION_POOL)) 
                 {
-                    generateJDBCConnectionPoolResource(nextKid);
+                    generateJDBCConnectionPoolResource(nextKid, scope);
                 }
                 else if (nodeName.equalsIgnoreCase(Resource.MAIL_RESOURCE)) 
                 {
-                    generateMailResource(nextKid);
+                    generateMailResource(nextKid, scope);
                 }
-/* //PMF resource is no more supported and hence removing support form sun-resources.xml
-                else if (nodeName.equalsIgnoreCase(Resource.PERSISTENCE_MANAGER_FACTORY_RESOURCE))
-                {
-                    generatePersistenceResource(nextKid);
-                }
-*/
                 else if (nodeName.equalsIgnoreCase(Resource.ADMIN_OBJECT_RESOURCE))
                 {
-                    generateAdminObjectResource(nextKid);
+                    generateAdminObjectResource(nextKid, scope);
                 }
                 else if (nodeName.equalsIgnoreCase(Resource.CONNECTOR_RESOURCE)) 
                 {
-                    generateConnectorResource(nextKid);
+                    generateConnectorResource(nextKid, scope);
                 }
                 else if (nodeName.equalsIgnoreCase(Resource.CONNECTOR_CONNECTION_POOL)) 
                 {
-                    generateConnectorConnectionPoolResource(nextKid);
+                    generateConnectorConnectionPoolResource(nextKid, scope);
                 }
                 else if (nodeName.equalsIgnoreCase(Resource.RESOURCE_ADAPTER_CONFIG)) 
                 {
-                    generateResourceAdapterConfig(nextKid);
+                    generateResourceAdapterConfig(nextKid, scope);
                 }
                 else if (nodeName.equalsIgnoreCase(Resource.CONNECTOR_WORK_SECURITY_MAP))
                 {
-                    generateWorkSecurityMap(nextKid);
+                    generateWorkSecurityMap(nextKid, scope);
                 }
             }
         }
@@ -264,7 +282,7 @@ public class ResourcesXMLParser implements EntityResolver
      *  <code>PreResDeletionPhase</code>
      */
     private static List<Resource> getResourcesOfType(List<Resource> resources, 
-                                            int type, boolean isResourceCreation) {
+                                            int type, boolean isResourceCreation, boolean ignoreDuplicates) {
         List<Resource> nonConnectorResources = new ArrayList<Resource>();
         List<Resource> connectorResources = new ArrayList<Resource>();
         
@@ -275,15 +293,15 @@ public class ResourcesXMLParser implements EntityResolver
                         //RA config is considered as a nonConnector Resource, 
                         //during sun-resources.xml resource-creation phase, so that 
                         //it could be created before the RAR is deployed.
-                        nonConnectorResources.add(res);
+                        addToList(nonConnectorResources, res, ignoreDuplicates);
                     } else {
-                        connectorResources.add(res);
+                        addToList(connectorResources, res, ignoreDuplicates);
                     }
                 } else {
-                    connectorResources.add(res);
+                    addToList(connectorResources, res, ignoreDuplicates);
                 }
             } else {
-                nonConnectorResources.add(res);
+                addToList(nonConnectorResources, res, ignoreDuplicates);
             }
         }
         
@@ -296,10 +314,20 @@ public class ResourcesXMLParser implements EntityResolver
         }
     }
 
+    private static void addToList(List<Resource> resources, Resource res, boolean ignoreDuplicates){
+        if(ignoreDuplicates){
+            if(!resources.contains(res)){
+                resources.add(res);
+            }
+        }else{
+            resources.add(res);
+        }
+    }
+
     /**
      * Sort connector resources
-     * Resource Adater configs are added first.
-     * Pools are then added to the list, so that the conncetion
+     * Resource Adapter configs are added first.
+     * Pools are then added to the list, so that the connection
      * pools can be created prior to any other connector resource defined
      * in the resources configuration xml file.
      * @param connectorResources List of Resources to be sorted.
@@ -347,6 +375,7 @@ public class ResourcesXMLParser implements EntityResolver
             if(resource.getType().equals(Resource.JDBC_CONNECTION_POOL)) {
                 jdbccps.add(resource);
             } else if(resource.getType().equals(Resource.PERSISTENCE_MANAGER_FACTORY_RESOURCE)) {
+                //TODO throw exception as pmf resource is not supported anymore
                 pmfs.add(resource);
             } else {
                 others.add(resource);
@@ -378,10 +407,31 @@ public class ResourcesXMLParser implements EntityResolver
             );
     }
 
+    private String getScopedName(String name, String scope) throws Exception{
+        if(namingScopes.contains(scope)){
+            if(name != null){
+                for(String namingScope : namingScopes){
+                    if(name.startsWith(namingScope) && !namingScope.equals(scope)){
+                        String msg = localStrings.getString( "invalid.scope.defined.for.resource",
+                                                                "Resource [ {0} ] is not allowed to specify the scope " +
+                                                                        "[ {1} ]. Acceptable scope for this resource" +
+                                                                        " is [ {2} ]",
+                                                                name, namingScope, scope );
+                        throw new IllegalStateException(msg);
+                    }
+                }
+                if(!name.startsWith(scope)){
+                    name = scope + name;
+                }
+            }
+        }
+        return name;
+    }
+
     /*
      * Generate the Custom resource
      */
-    private void generateCustomResource(Node nextKid) throws Exception
+    private void generateCustomResource(Node nextKid, String scope) throws Exception
     {
         NamedNodeMap attributes = nextKid.getAttributes();
         
@@ -389,7 +439,7 @@ public class ResourcesXMLParser implements EntityResolver
             return;
         
         Node jndiNameNode = attributes.getNamedItem(JNDI_NAME);
-        String jndiName = jndiNameNode.getNodeValue();
+        String jndiName = getScopedName(jndiNameNode.getNodeValue(), scope);
         
         Node resTypeNode = attributes.getNamedItem(RES_TYPE);
         String resType = resTypeNode.getNodeValue();
@@ -416,17 +466,17 @@ public class ResourcesXMLParser implements EntityResolver
         printResourceElements(customResource);
     }
     
-    /*
+    /**
      * Generate the JNDI resource
      */
-    private void generateJNDIResource(Node nextKid) throws Exception
+    private void generateJNDIResource(Node nextKid, String scope) throws Exception
     {
         NamedNodeMap attributes = nextKid.getAttributes();
         if (attributes == null)
             return;
         
         Node jndiNameNode = attributes.getNamedItem(JNDI_NAME);
-        String jndiName = jndiNameNode.getNodeValue();
+        String jndiName = getScopedName(jndiNameNode.getNodeValue(), scope);
         Node jndiLookupNode = attributes.getNamedItem(JNDI_LOOKUP);
         String jndiLookup = jndiLookupNode.getNodeValue();
         Node resTypeNode = attributes.getNamedItem(RES_TYPE);
@@ -453,18 +503,18 @@ public class ResourcesXMLParser implements EntityResolver
         printResourceElements(jndiResource);
     }
     
-    /*
+    /**
      * Generate the JDBC resource
      */
-    private void generateJDBCResource(Node nextKid) throws Exception {
+    private void generateJDBCResource(Node nextKid, String scope) throws Exception {
         NamedNodeMap attributes = nextKid.getAttributes();
         if (attributes == null)
             return;
         
         Node jndiNameNode = attributes.getNamedItem(JNDI_NAME);
-        String jndiName = jndiNameNode.getNodeValue();
+        String jndiName = getScopedName(jndiNameNode.getNodeValue(), scope);
         Node poolNameNode = attributes.getNamedItem(POOL_NAME);
-        String poolName = poolNameNode.getNodeValue();
+        String poolName = getScopedName(poolNameNode.getNodeValue(), scope);
         Node enabledNode = attributes.getNamedItem(ENABLED);
 
         Resource jdbcResource = new Resource(Resource.JDBC_RESOURCE);
@@ -496,17 +546,17 @@ public class ResourcesXMLParser implements EntityResolver
         printResourceElements(jdbcResource);
     }
     
-    /*
+    /**
      * Generate the JDBC Connection pool Resource
      */
-    private void generateJDBCConnectionPoolResource(Node nextKid) throws Exception
+    private void generateJDBCConnectionPoolResource(Node nextKid, String scope) throws Exception
     {
         NamedNodeMap attributes = nextKid.getAttributes();
         if (attributes == null)
             return;
         
         Node nameNode = attributes.getNamedItem(CONNECTION_POOL_NAME);
-        String name = nameNode.getNodeValue();
+        String name = getScopedName(nameNode.getNodeValue(), scope);
         Node nSteadyPoolSizeNode = attributes.getNamedItem(STEADY_POOL_SIZE);
         Node nMaxPoolSizeNode = attributes.getNamedItem(MAX_POOL_SIZE);
         Node nMaxWaitTimeInMillisNode  = 
@@ -720,10 +770,10 @@ public class ResourcesXMLParser implements EntityResolver
         printResourceElements(jdbcConnPool);
     }
     
-    /*
+    /**
      * Generate the Mail resource
      */
-    private void generateMailResource(Node nextKid) throws Exception
+    private void generateMailResource(Node nextKid, String scope) throws Exception
     {
         NamedNodeMap attributes = nextKid.getAttributes();
         if (attributes == null)
@@ -740,7 +790,7 @@ public class ResourcesXMLParser implements EntityResolver
         Node debugNode   = attributes.getNamedItem(MAIL_DEBUG);
         Node enabledNode   = attributes.getNamedItem(ENABLED);
 
-        String jndiName = jndiNameNode.getNodeValue();
+        String jndiName = getScopedName(jndiNameNode.getNodeValue(), scope);
         String host     = hostNode.getNodeValue();
         String user     = userNode.getNodeValue();
         String fromAddress = fromAddressNode.getNodeValue();
@@ -784,60 +834,17 @@ public class ResourcesXMLParser implements EntityResolver
         printResourceElements(mailResource);
     }
     
-/* //PMF resource is no more supported and hence removing support form sun-resources.xml
-    */
-/*
-     * Generate the Persistence Factory Manager resource
-     */
-/*
-    private void generatePersistenceResource(Node nextKid) throws Exception
-    {
-        NamedNodeMap attributes = nextKid.getAttributes();
-        if (attributes == null)
-            return;
-        
-        Node jndiNameNode = attributes.getNamedItem(JNDI_NAME);
-        String jndiName = jndiNameNode.getNodeValue();
-        Node factoryClassNode = attributes.getNamedItem(FACTORY_CLASS);
-        Node poolNameNode = attributes.getNamedItem(JDBC_RESOURCE_JNDI_NAME);
-        Node enabledNode = attributes.getNamedItem(ENABLED);
-
-        Resource persistenceResource = 
-                    new Resource(Resource.PERSISTENCE_MANAGER_FACTORY_RESOURCE);
-        persistenceResource.setAttribute(JNDI_NAME, jndiName);
-        if (factoryClassNode != null) {
-           String factoryClass = factoryClassNode.getNodeValue();
-           persistenceResource.setAttribute(FACTORY_CLASS, factoryClass);
-        }
-        if (poolNameNode != null) {
-           String poolName = poolNameNode.getNodeValue();
-           persistenceResource.setAttribute(JDBC_RESOURCE_JNDI_NAME, poolName);
-        }
-        if (enabledNode != null) {
-           String sEnabled = enabledNode.getNodeValue();
-           persistenceResource.setAttribute(ENABLED, sEnabled);
-        }
-        
-        NodeList children = nextKid.getChildNodes();
-        generatePropertyElement(persistenceResource, children);
-        vResources.add(persistenceResource);
-        
-        //debug strings
-        printResourceElements(persistenceResource);
-    }
-*/
-
-    /*
+    /**
      * Generate the Admin Object resource
      */
-    private void generateAdminObjectResource(Node nextKid) throws Exception
+    private void generateAdminObjectResource(Node nextKid, String scope) throws Exception
     {
         NamedNodeMap attributes = nextKid.getAttributes();
         if (attributes == null)
             return;
         
         Node jndiNameNode = attributes.getNamedItem(JNDI_NAME);
-        String jndiName = jndiNameNode.getNodeValue();
+        String jndiName = getScopedName(jndiNameNode.getNodeValue(), scope);
         Node resTypeNode = attributes.getNamedItem(RES_TYPE);
         String resType = resTypeNode.getNodeValue();
         Node classNameNode = attributes.getNamedItem(ADMIN_OBJECT_CLASS_NAME);
@@ -871,19 +878,19 @@ public class ResourcesXMLParser implements EntityResolver
         printResourceElements(adminObjectResource);
     }
 
-    /*
+    /**
      * Generate the Connector resource
      */
-    private void generateConnectorResource(Node nextKid) throws Exception
+    private void generateConnectorResource(Node nextKid, String scope) throws Exception
     {
         NamedNodeMap attributes = nextKid.getAttributes();
         if (attributes == null)
             return;
         
         Node jndiNameNode = attributes.getNamedItem(JNDI_NAME);
-        String jndiName = jndiNameNode.getNodeValue();
+        String jndiName = getScopedName(jndiNameNode.getNodeValue(), scope);
         Node poolNameNode = attributes.getNamedItem(POOL_NAME);
-        String poolName = poolNameNode.getNodeValue();
+        String poolName = getScopedName(poolNameNode.getNodeValue(), scope);
         Node resTypeNode = attributes.getNamedItem(RESOURCE_TYPE);
         Node enabledNode = attributes.getNamedItem(ENABLED);
 
@@ -954,10 +961,10 @@ public class ResourcesXMLParser implements EntityResolver
         }
     }
     
-    /*
+    /**
      * Generate the Connector Connection pool Resource
      */
-    private void generateConnectorConnectionPoolResource(Node nextKid) throws Exception
+    private void generateConnectorConnectionPoolResource(Node nextKid, String scope) throws Exception
     {
         NamedNodeMap attributes = nextKid.getAttributes();
         if (attributes == null)
@@ -1014,7 +1021,7 @@ public class ResourcesXMLParser implements EntityResolver
         
         Resource connectorConnPoolResource = new Resource(Resource.CONNECTOR_CONNECTION_POOL);
         if(nameNode != null){
-            poolName = nameNode.getNodeValue();
+            poolName = getScopedName(nameNode.getNodeValue(), scope);
             connectorConnPoolResource.setAttribute(CONNECTION_POOL_NAME, poolName);
         }    
        if(raConfigNode != null){
@@ -1129,7 +1136,7 @@ public class ResourcesXMLParser implements EntityResolver
         if (children != null){
             for (int i=0; i<children.getLength(); i++) {
                 if((children.item(i).getNodeName().equals(SECURITY_MAP)))
-                    generateSecurityMap(poolName,children.item(i));
+                    generateSecurityMap(poolName,children.item(i), scope);
                     
             }
         }
@@ -1137,7 +1144,10 @@ public class ResourcesXMLParser implements EntityResolver
         printResourceElements(connectorConnPoolResource);
     }
 
-    private void generateWorkSecurityMap(Node node) throws Exception {
+    private void generateWorkSecurityMap(Node node, String scope) throws Exception {
+
+        //ignore "scope" as work-security-map is not a bindable resource
+        
         NamedNodeMap attributes = node.getAttributes();
         if(attributes == null){
             return;
@@ -1199,7 +1209,9 @@ public class ResourcesXMLParser implements EntityResolver
         //debug strings
         printResourceElements(workSecurityMapResource);
     }
-    private void generateSecurityMap(String poolName,Node mapNode) throws Exception{
+    private void generateSecurityMap(String poolName,Node mapNode, String scope) throws Exception{
+
+        //scope is not needed for security map.
         
         NamedNodeMap attributes = mapNode.getAttributes();
         if (attributes == null)
@@ -1256,14 +1268,15 @@ public class ResourcesXMLParser implements EntityResolver
     }//end of generateSecurityMap....     
    
     
-    /*
+    /**
      * Generate the Resource Adapter Config
      *
      */
-       
-     
-    private void generateResourceAdapterConfig(Node nextKid) throws Exception
-    { NamedNodeMap attributes = nextKid.getAttributes();
+    private void generateResourceAdapterConfig(Node nextKid, String scope) throws Exception
+    {
+        //ignore "scope" as resource-adapter-config is not a bindable resource
+        
+        NamedNodeMap attributes = nextKid.getAttributes();
         if (attributes == null)
             return;
         
@@ -1317,9 +1330,9 @@ public class ResourcesXMLParser implements EntityResolver
      * non connector list, so that the RA config is created prior to the
      * RA deployment. For all other purpose, this flag needs to be set to false. 
      */
-    public static List getNonConnectorResourcesList(List<Resource> resources, 
-                                                 boolean isResourceCreation) {
-        return getResourcesOfType(resources, NONCONNECTOR, isResourceCreation);
+    public static List  getNonConnectorResourcesList(List<Resource> resources, 
+                                                 boolean isResourceCreation, boolean ignoreDuplicates) {
+        return getResourcesOfType(resources, NONCONNECTOR, isResourceCreation, ignoreDuplicates);
     }
 
     /**
@@ -1335,11 +1348,12 @@ public class ResourcesXMLParser implements EntityResolver
      * RA deployment. For all other purpose, this flag needs to be set to false. 
      */
     
-    public static List getConnectorResourcesList(List<Resource> resources, boolean isResourceCreation) {
-        return getResourcesOfType(resources, CONNECTOR, isResourceCreation);
+    public static List getConnectorResourcesList(List<Resource> resources, boolean isResourceCreation,
+                                                 boolean ignoreDuplicates) {
+        return getResourcesOfType(resources, CONNECTOR, isResourceCreation, ignoreDuplicates);
     }
     
-    /*
+    /**
      * Print(Debug) the resource
      */
     private void printResourceElements(Resource resource)

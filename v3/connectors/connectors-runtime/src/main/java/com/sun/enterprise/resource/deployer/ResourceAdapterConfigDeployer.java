@@ -58,7 +58,14 @@ public class ResourceAdapterConfigDeployer implements ResourceDeployer {
 
     private static Logger _logger = LogDomains.getLogger(ResourceAdapterConfigDeployer.class, LogDomains.RSR_LOGGER);
 
-
+    /**
+     * {@inheritDoc}
+     */
+    public synchronized void deployResource(Object resource, String applicationName, String moduleName)
+            throws Exception {   
+        deployResource(resource);
+    }
+    
     /**
      * {@inheritDoc}
      */

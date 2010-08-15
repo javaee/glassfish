@@ -38,6 +38,7 @@ package com.sun.enterprise.resource.beans;
 
 import com.sun.appserv.connectors.internal.api.JavaEEResource;
 import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
+import org.glassfish.resource.common.ResourceInfo;
 
 import java.io.Serializable;
 
@@ -52,12 +53,12 @@ public class CustomResource extends JavaEEResourceBase implements Serializable {
     private String resType_;
     private String factoryClass_;
 
-    public CustomResource(String name) {
-        super(name);
+    public CustomResource(ResourceInfo resourceInfo) {
+        super(resourceInfo);
     }
 
-    protected JavaEEResource doClone(String name) {
-        CustomResource clone = new CustomResource(name);
+    protected JavaEEResource doClone(ResourceInfo resourceInfo) {
+        CustomResource clone = new CustomResource(resourceInfo);
         clone.setResType(getResType());
         clone.setFactoryClass(getFactoryClass());
         return clone;
@@ -84,6 +85,6 @@ public class CustomResource extends JavaEEResourceBase implements Serializable {
     }
 
     public String toString() {
-        return "< Custom Resource : " + getName() + " , " + getResType() + "... >";
+        return "< Custom Resource : " + getResourceInfo() + " , " + getResType() + "... >";
     }
 }

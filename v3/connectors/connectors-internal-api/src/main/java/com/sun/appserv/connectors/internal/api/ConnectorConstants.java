@@ -55,6 +55,21 @@ public interface ConnectorConstants {
      */
     public static final String CONNECTOR_MODULE = "connector";
 
+    /**
+     * Represents the glassfish-resources.xml handling module name / type for .ear
+     */
+    public static final String GF_RESOURCES_MODULE_EAR = "resources_ear";
+
+    /**
+     * Represents the glassfish-resources.xml handling module name / type for standalone application
+     */
+    public static final String GF_RESOURCES_MODULE = "resources";
+
+    /**
+     * Represents the location where glassfish-resources.xml will be present in an archive
+     */
+    public static final String GF_RESOURCES_LOCATION ="META-INF/glassfish-resources.xml";
+
      /**
      *  JAXR  system resource adapter name.
      */
@@ -419,6 +434,18 @@ public interface ConnectorConstants {
     public static final String ACCESS_ALL_RARS = "access-all-rars";
     //flag to indiate additional RARs required for an application, apart from the ones referred via app's DD
     public static final String REQUIRED_RARS_FOR_APP_PREFIX="required-rars-for-";
+
+    public static final String JAVA_APP_SCOPE_PREFIX = "java:app/";
+    public static final String JAVA_COMP_SCOPE_PREFIX = "java:comp/";
+    public static final String JAVA_MODULE_SCOPE_PREFIX = "java:module/";
+    public static final String JAVA_GLOBAL_SCOPE_PREFIX = "java:global/";
+
+    public final static String CONNECTOR_RESOURCES = "CONNECTOR";
+    public final static String NON_CONNECTOR_RESOURCES = "NON-CONNECTOR";
+
+    public final static String APP_META_DATA_RESOURCES = "app-level-resources-config";
+    public final static String APP_SCOPED_RESOURCES_MAP = "app-scoped-resources-map";
+
 
     //flag to indicate that the call to lookup is a proxy's call so that actual object can be returned
     public static final String DYNAMIC_RECONFIGURATION_PROXY_CALL = "com.sun.enterprise.resource.reconfig.proxyCall";

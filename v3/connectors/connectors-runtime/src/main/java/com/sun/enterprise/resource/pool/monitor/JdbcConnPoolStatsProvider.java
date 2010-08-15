@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.resource.pool.monitor;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.pool.PoolLifeCycleListenerRegistry;
 import com.sun.enterprise.resource.pool.PoolStatus;
@@ -66,10 +67,13 @@ import org.glassfish.gmbal.ManagedObject;
 @ManagedObject
 @Description("JDBC Statistics")
 public class JdbcConnPoolStatsProvider {
-    
-    private String jdbcPoolName;
+
+    private PoolInfo poolInfo;
     private Logger logger;
-    
+    //TODO ASR comparison against jdbcPoolName is incorrect (check all the methods)
+
+    private String jdbcPoolName;
+
     //Registry that stores all listeners to this object
     private PoolLifeCycleListenerRegistry poolRegistry;
 
@@ -134,8 +138,9 @@ public class JdbcConnPoolStatsProvider {
     private final String JDBC_PROBE_LISTENER = "glassfish:jdbc:connection-pool:";
 
 
-    public JdbcConnPoolStatsProvider(String jdbcPoolName, Logger logger) {    
-        this.jdbcPoolName = jdbcPoolName;
+    public JdbcConnPoolStatsProvider(PoolInfo poolInfo, Logger logger) {
+        this.poolInfo = poolInfo;
+        this.jdbcPoolName = poolInfo.getName();
         this.logger = logger;
     }
     
@@ -404,7 +409,9 @@ public class JdbcConnPoolStatsProvider {
         if(logger.isLoggable(Level.FINEST)) {        
             logger.finest("Reset event received - poolName = " + jdbcPoolName);
         }
-        PoolStatus status = ConnectorRuntime.getRuntime().getPoolManager().getPoolStatus(jdbcPoolName);
+        //TODO ASR (incorrect, use app-name, module-name)
+        //PoolInfo poolInfo = new PoolInfo(jdbcPoolName);
+        PoolStatus status = ConnectorRuntime.getRuntime().getPoolManager().getPoolStatus(poolInfo);
         numConnUsed.setCurrent(status.getNumConnUsed());
         numConnFree.setCurrent(status.getNumConnFree());
         numConnCreated.reset();
@@ -484,8 +491,8 @@ public class JdbcConnPoolStatsProvider {
         }                        
     }
 
-    protected String getJdbcPoolName() {
-        return jdbcPoolName;
+    protected PoolInfo getPoolInfo() {
+        return poolInfo;
     }
 
     protected void setPoolRegistry(PoolLifeCycleListenerRegistry poolRegistry) {

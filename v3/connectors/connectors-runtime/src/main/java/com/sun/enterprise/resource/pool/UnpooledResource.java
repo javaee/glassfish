@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.resource.pool;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.enterprise.resource.ResourceSpec;
@@ -57,8 +58,8 @@ public class UnpooledResource extends ConnectionPool{
     private int poolSize;
 
     /** Creates a new instance of UnpooledResourcePool */
-    public UnpooledResource(String poolName, Hashtable env) throws PoolingException {
-        super(poolName, env);
+    public UnpooledResource(PoolInfo poolInfo, Hashtable env) throws PoolingException {
+        super(poolInfo, env);
 
         //No pool is being maintained, hence no pool cleanup is needed
         //in case of failure
@@ -66,9 +67,8 @@ public class UnpooledResource extends ConnectionPool{
     }
 
     @Override
-    protected synchronized void initPool(ResourceSpec resourceSpec,
-            ResourceAllocator allocator)
-            throws PoolingException {
+    protected synchronized void initPool(ResourceAllocator allocator)
+            throws PoolingException{
 
         if (poolInitialized) {
             return;

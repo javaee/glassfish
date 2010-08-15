@@ -37,6 +37,7 @@
 
 package com.sun.appserv.connectors.internal.api;
 
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -50,6 +51,7 @@ import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.runtime.connector.SunConnector;
 import com.sun.enterprise.deployment.runtime.connector.ResourceAdapter;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.logging.LogDomains;
 
 import java.util.*;
@@ -102,21 +104,24 @@ public class AppSpecificConnectorClassLoaderUtil {
         // default connector resource
 
         //handle application.xml bundle descriptor
-        processDescriptorForRAReferences(app, app);
+        processDescriptorForRAReferences(app, null, app);
 
         Collection<BundleDescriptor> bundleDescriptors = app.getBundleDescriptors();
 
         //bundle descriptors
         for (BundleDescriptor bundleDesc : bundleDescriptors) {
+
+            String moduleName = getModuleName(bundleDesc, app);
+
             if (bundleDesc instanceof JndiNameEnvironment) {
-                processDescriptorForRAReferences(app, bundleDesc);
+                processDescriptorForRAReferences(app, moduleName, bundleDesc);
             }
             // ejb descriptors
             if (bundleDesc instanceof EjbBundleDescriptor) {
                 EjbBundleDescriptor ejbDesc = (EjbBundleDescriptor) bundleDesc;
                 Set<EjbDescriptor> ejbDescriptors = ejbDesc.getEjbs();
                 for (EjbDescriptor ejbDescriptor : ejbDescriptors) {
-                    processDescriptorForRAReferences(app, ejbDescriptor);
+                    processDescriptorForRAReferences(app, moduleName, ejbDescriptor);
 
                     if (ejbDescriptor instanceof EjbMessageBeanDescriptor) {
                         EjbMessageBeanDescriptor messageBeanDesc = (EjbMessageBeanDescriptor) ejbDescriptor;
@@ -130,16 +135,28 @@ public class AppSpecificConnectorClassLoaderUtil {
                 //ejb interceptors
                 Set<EjbInterceptor> ejbInterceptors = ejbDesc.getInterceptors();
                 for (EjbInterceptor ejbInterceptor : ejbInterceptors) {
-                    processDescriptorForRAReferences(app, ejbInterceptor);
+                    processDescriptorForRAReferences(app, moduleName, ejbInterceptor);
                 }
 
             }
             // managed bean descriptors
             Set<ManagedBeanDescriptor> managedBeanDescriptors = bundleDesc.getManagedBeans();
             for (ManagedBeanDescriptor mbd : managedBeanDescriptors) {
-                processDescriptorForRAReferences(app, mbd);
+                processDescriptorForRAReferences(app, moduleName, mbd);
             }
         }
+    }
+
+    private String getModuleName(BundleDescriptor bundleDesc, Application app) {
+        Set<ModuleDescriptor<BundleDescriptor>> moduleDescriptors = app.getModules();
+        if(moduleDescriptors != null){
+            for(ModuleDescriptor moduleDesc : moduleDescriptors){
+                if(bundleDesc.equals(moduleDesc.getDescriptor())){
+                    return moduleDesc.getModuleName();
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -157,7 +174,7 @@ public class AppSpecificConnectorClassLoaderUtil {
     }
 
     private void processDescriptorForRAReferences(com.sun.enterprise.deployment.Application app,
-                                                  Descriptor descriptor) {
+                                                  String moduleName, Descriptor descriptor) {
         if (descriptor instanceof JndiNameEnvironment) {
             JndiNameEnvironment jndiEnv = (JndiNameEnvironment) descriptor;
 
@@ -167,7 +184,7 @@ public class AppSpecificConnectorClassLoaderUtil {
                 String jndiName = resRefDesc.getJndiName();
                 //ignore refs where jndi-name is not available
                 if(jndiName != null){
-                    detectResourceInRA(app, jndiName);
+                    detectResourceInRA(app, moduleName, jndiName);
                 }
             }
 
@@ -177,21 +194,40 @@ public class AppSpecificConnectorClassLoaderUtil {
                 String jndiName = jmsDestRefDesc.getJndiName();
                 //ignore refs where jndi-name is not available
                 if(jndiName != null){
-                    detectResourceInRA(app, jndiName);
+                    detectResourceInRA(app, moduleName, jndiName);
                 }
             }
         }
     }
 
-    private void detectResourceInRA(Application app, String jndiName) {
+    private void detectResourceInRA(Application app, String moduleName, String jndiName) {
         //domain.xml
-        Resource res = getResources().getResourceByName(BindableResource.class, jndiName);
+        Resource res = null;
+
+        if(jndiName.startsWith(ConnectorConstants.JAVA_APP_SCOPE_PREFIX) /*|| jndiName.startsWith("java:global/")*/  ){
+            ApplicationInfo appInfo = appRegistry.get(app.getName());
+            res = getApplicationScopedResource(jndiName, BindableResource.class, appInfo);
+        }else if(jndiName.startsWith(ConnectorConstants.JAVA_MODULE_SCOPE_PREFIX)){
+            ApplicationInfo appInfo = appRegistry.get(app.getName());
+            res = getModuleScopedResource(jndiName, moduleName, BindableResource.class, appInfo);
+        }else{
+            res = getResources().getResourceByName(BindableResource.class, jndiName);
+        }
         //embedded ra's resources may not be created yet as they can be created only after .ear deploy
         //  (and .ear may refer to these resources in DD)
         if (res != null) {
             if (ConnectorResource.class.isAssignableFrom(res.getClass())) {
-                String poolName = ((ConnectorResource) res).getPoolName();
-                Resource pool = getResources().getResourceByName(ResourcePool.class, poolName);
+                ConnectorResource connResource = (ConnectorResource)res;
+                String poolName = connResource.getPoolName();
+                Resource pool ;
+                ApplicationInfo appInfo = appRegistry.get(app.getName());
+                if(jndiName.startsWith(ConnectorConstants.JAVA_APP_SCOPE_PREFIX) /*|| jndiName.startsWith("java:global/")*/){
+                    pool = getApplicationScopedResource(poolName, ResourcePool.class, appInfo);
+                } else if(jndiName.startsWith(ConnectorConstants.JAVA_MODULE_SCOPE_PREFIX)){
+                    pool = getModuleScopedResource(poolName, moduleName, ResourcePool.class, appInfo);
+                } else{
+                    pool = getResources().getResourceByName(ResourcePool.class, poolName);
+                }
                 if (ConnectorConnectionPool.class.isAssignableFrom(pool.getClass())) {
                     String raName = ((ConnectorConnectionPool) pool).getResourceAdapterName();
                     app.addResourceAdapter(raName);
@@ -240,6 +276,116 @@ public class AppSpecificConnectorClassLoaderUtil {
                 DOLUtils.getDefaultLogger().log(Level.FINEST, "could not find resource by name : " + jndiName);
             }
         }
+    }
+
+    private <T> Resource getApplicationScopedResource(String name, Class<T> type, ApplicationInfo appInfo){
+        Resource foundRes = null;
+        if(appInfo != null){
+
+            com.sun.enterprise.config.serverbeans.Application app =
+                    appInfo.getTransientAppMetaData(com.sun.enterprise.config.serverbeans.Application.APPLICATION, 
+                    com.sun.enterprise.config.serverbeans.Application.class);
+            Resources resources = null;
+            if(app != null){
+                resources = app.getResources();
+            }
+            if(resources != null){
+
+            boolean bindableResource = BindableResource.class.isAssignableFrom(type);
+            boolean poolResource = ResourcePool.class.isAssignableFrom(type);
+            boolean workSecurityMap = WorkSecurityMap.class.isAssignableFrom(type);
+            boolean rac = ResourceAdapterConfig.class.isAssignableFrom(type);
+
+            Iterator itr = resources.getResources().iterator();
+            while(itr.hasNext()){
+                String resourceName = null;
+                Resource res = (Resource)itr.next();
+                if(bindableResource && res instanceof BindableResource){
+                    resourceName = ((BindableResource)res).getJndiName();
+                } else if(poolResource && res instanceof ResourcePool){
+                    resourceName = ((ResourcePool)res).getName();
+                } else if(rac && res instanceof ResourceAdapterConfig){
+                    resourceName = ((ResourceAdapterConfig)res).getName();
+                } else if(workSecurityMap && res instanceof WorkSecurityMap){
+                    resourceName = ((WorkSecurityMap)res).getName();
+                }
+                if(resourceName != null){
+                    if(!(resourceName.startsWith("java:app/") || resourceName.startsWith("java:global/"))){
+                        resourceName = "java:app/" + resourceName;
+                    }
+                    if(!(name.startsWith("java:app/") || name.startsWith("java:global/"))){
+                        name = "java:app/" + name;
+                    }
+                    if(name.equals(resourceName)){
+                        foundRes = res;
+                        break;
+                    }
+                }
+            }
+            }
+        }
+        return foundRes;
+    }
+
+    private <T> Resource getModuleScopedResource(String name, String moduleName, Class<T> type, ApplicationInfo appInfo){
+        Resource foundRes = null;
+        if(appInfo != null){
+
+            com.sun.enterprise.config.serverbeans.Application app =
+                    appInfo.getTransientAppMetaData(com.sun.enterprise.config.serverbeans.Application.APPLICATION,
+                    com.sun.enterprise.config.serverbeans.Application.class);
+            Resources resources = null;
+            if(app != null){
+                //Module module = app.getModule(moduleName);
+                Module module = null;
+                List<Module> modules = app.getModule();
+                for(Module m : modules){
+                    if(ConnectorsUtil.getActualModuleName(m.getName()).equals(moduleName)){
+                        module = m;
+                        break;
+                    }
+                }
+                if(module != null){
+                    //resources = module.getResources();
+                    resources = appInfo.getTransientAppMetaData(module.getName()+"-resources", Resources.class);
+                }
+            }
+            if(resources != null){
+
+            boolean bindableResource = BindableResource.class.isAssignableFrom(type);
+            boolean poolResource = ResourcePool.class.isAssignableFrom(type);
+            boolean workSecurityMap = WorkSecurityMap.class.isAssignableFrom(type);
+            boolean rac = ResourceAdapterConfig.class.isAssignableFrom(type);
+
+            Iterator itr = resources.getResources().iterator();
+            while(itr.hasNext()){
+                String resourceName = null;
+                Resource res = (Resource)itr.next();
+                if(bindableResource && res instanceof BindableResource){
+                    resourceName = ((BindableResource)res).getJndiName();
+                } else if(poolResource && res instanceof ResourcePool){
+                    resourceName = ((ResourcePool)res).getName();
+                } else if(rac && res instanceof ResourceAdapterConfig){
+                    resourceName = ((ResourceAdapterConfig)res).getName();
+                } else if(workSecurityMap && res instanceof WorkSecurityMap){
+                    resourceName = ((WorkSecurityMap)res).getName();
+                }
+                if(resourceName != null){
+                    if(!(resourceName.startsWith("java:module/") /*|| resourceName.startsWith("java:global/")*/)){
+                        resourceName = "java:module/" + resourceName;
+                    }
+                    if(!(name.startsWith("java:module/") /*|| name.startsWith("java:global/")*/)){
+                        name = "java:module/" + name;
+                    }
+                    if(name.equals(resourceName)){
+                        foundRes = res;
+                        break;
+                    }
+                }
+            }
+            }
+        }
+        return foundRes;
     }
 
     public Collection<ConnectorClassFinder> getSystemRARClassLoaders() {

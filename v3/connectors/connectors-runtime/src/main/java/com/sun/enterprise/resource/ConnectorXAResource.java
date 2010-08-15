@@ -36,11 +36,14 @@
 
 package com.sun.enterprise.resource;
 
+import javax.resource.ResourceException;
 import javax.transaction.xa.*;
 import javax.resource.spi.*;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.transaction.api.JavaEETransaction;
+import com.sun.enterprise.transaction.spi.LocalTxResource;
 import com.sun.enterprise.transaction.api.TransactionConstants;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
@@ -65,7 +68,7 @@ public class ConnectorXAResource implements XAResource {
 
     private Object userHandle;
     private ResourceSpec spec;
-    private String poolName;
+    private PoolInfo poolInfo;
     private ResourceAllocator alloc;
     private PoolManager poolMgr;
     private ManagedConnection localConnection;
@@ -90,7 +93,7 @@ public class ConnectorXAResource implements XAResource {
         this.poolMgr = ConnectorRuntime.getRuntime().getPoolManager();
         this.userHandle = null;
         this.spec = spec;
-	    this.poolName = spec.getConnectionPoolName();
+	    this.poolInfo = spec.getPoolInfo();
         this.alloc = alloc;
         this.info = info;
         localConnection = (ManagedConnection) handle.getResource();
@@ -120,6 +123,7 @@ public class ConnectorXAResource implements XAResource {
             resetAssociation();
         }
     }
+
 
     public void start(Xid xid, int flags) throws XAException {
         try {
@@ -210,6 +214,32 @@ public class ConnectorXAResource implements XAResource {
 
     public static void freeListener(ManagedConnection mc) {
         listenerTable.remove(mc);
+    }
+
+    private ResourceHandle getResourceHandle(JavaEETransaction javaEETransaction) throws PoolingException,
+            ResourceException {
+        ResourceHandle h = null;
+        
+        if (javaEETransaction == null) {      //Only if some thing is wrong with tx manager.
+            h = localHandle_;        //Just return the local handle.
+        } else {
+            h = (ResourceHandle)javaEETransaction.getNonXAResource();
+        //make sure that if local-tx resource is set as 'unshareable', only one resource
+        //can be acquired. If the resource in question is not the one in transaction, fail
+        if(!localHandle_.isShareable()){
+               if(h != localHandle_){
+                    throw new ResourceAllocationException("Cannot use more than one local-tx resource " +
+                            "in unshareable scope");
+                }
+            }
+        }
+        if (h.getResourceState().isUnenlisted()) {
+            ManagedConnection mc = (ManagedConnection) h.getResource();
+            // begin the local transaction if first time
+            // this ManagedConnection is used in this JTA transaction
+            mc.getLocalTransaction().begin();
+        }
+        return h;
     }
 
     private ResourceHandle getResourceHandle() throws PoolingException {

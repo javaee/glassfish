@@ -38,6 +38,7 @@ package com.sun.enterprise.resource.naming;
 
 
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import org.glassfish.resource.common.ResourceInfo;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -58,10 +59,10 @@ public class JndiProxyObjectFactory implements ObjectFactory {
 
     // for every external-jndi-resource there is an InitialContext
     // created from the factory and environment properties
-    private static Hashtable contextMap = new Hashtable();
+    private static Hashtable<ResourceInfo, Context> contextMap = new Hashtable<ResourceInfo, Context>();
 
-    public static Context removeInitialContext(String jndiName) {
-        return (Context) contextMap.remove(jndiName);
+    public static Context removeInitialContext(ResourceInfo resourceInfo) {
+        return contextMap.remove(resourceInfo);
     }
 
     /**
@@ -104,7 +105,7 @@ public class JndiProxyObjectFactory implements ObjectFactory {
         // name to lookup in the external factory
         String jndiLookupName = "";
         String jndiFactoryClass = null;
- 	    String bindName = null;
+ 	    ResourceInfo resourceInfo = null;
 
         // get the target initial naming context and the lookup name
         Reference ref = (Reference) obj;
@@ -113,8 +114,8 @@ public class JndiProxyObjectFactory implements ObjectFactory {
             RefAddr addr = (RefAddr) addrs.nextElement();
 
             String prop = addr.getType();
-            if (prop.equals("jndiName")) {
-                bindName = (String)addr.getContent();
+            if (prop.equals("resourceInfo")) {
+                resourceInfo = (ResourceInfo)addr.getContent();
             }
             else if (prop.equals("jndiLookupName")) {
                 jndiLookupName = (String) addr.getContent();
@@ -124,12 +125,12 @@ public class JndiProxyObjectFactory implements ObjectFactory {
             }
         }
 
-        if (bindName == null) {
-		    throw new NamingException("JndiProxyObjectFactory: no bindName context info");
+        if (resourceInfo == null) {
+		    throw new NamingException("JndiProxyObjectFactory: no resourceInfo context info");
 	    }
 
 	    com.sun.enterprise.resource.naming.ProxyRefAddr contextAddr =
-                (com.sun.enterprise.resource.naming.ProxyRefAddr)ref.get(bindName);
+                (com.sun.enterprise.resource.naming.ProxyRefAddr)ref.get(resourceInfo.getName());
 	    Hashtable env = null;
 	    if (contextAddr == null ||
             jndiFactoryClass == null ||
@@ -140,13 +141,13 @@ public class JndiProxyObjectFactory implements ObjectFactory {
 	}
 
         // Context of the external naming factory
-        Context context = (Context)contextMap.get(bindName);
+        Context context = contextMap.get(resourceInfo);
         if (context == null) {
             synchronized (contextMap) {
-                context = (Context)contextMap.get(bindName);
+                context = contextMap.get(resourceInfo);
                 if (context == null) {
                     context = loadInitialContext(jndiFactoryClass, env);
-                    contextMap.put(bindName, context);
+                    contextMap.put(resourceInfo, context);
                 }
             }
         }

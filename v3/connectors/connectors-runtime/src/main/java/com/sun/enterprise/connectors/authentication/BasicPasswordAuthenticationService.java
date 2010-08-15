@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.connectors.authentication;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.*;
 import com.sun.logging.LogDomains;
 
@@ -64,7 +65,7 @@ public class BasicPasswordAuthenticationService
         implements AuthenticationService {
 
     private String rarName_;
-    private String poolName_;
+    private PoolInfo poolInfo_;
     ConnectorRegistry connectorRegistry_ = ConnectorRegistry.getInstance();
     static Logger _logger = LogDomains.getLogger(BasicPasswordAuthenticationService.class, LogDomains.RSR_LOGGER);
     private Object containerContext = null;
@@ -74,11 +75,11 @@ public class BasicPasswordAuthenticationService
      * Constructor
      *
      * @param rarName  Name of the rar
-     * @param poolName Name of the pool.
+     * @param poolInfo Name of the pool.
      */
-    public BasicPasswordAuthenticationService(String rarName, String poolName) {
+    public BasicPasswordAuthenticationService(String rarName, PoolInfo poolInfo) {
         rarName_ = rarName;
-        poolName_ = poolName;
+        poolInfo_ = poolInfo;
         _logger.log(Level.FINE, "Contructor:BasicPasswordAuthenticationService");
     }
 
@@ -92,7 +93,7 @@ public class BasicPasswordAuthenticationService
 
         // If no security maps are associated with this pool, return empty
         RuntimeSecurityMap runtimeSecurityMap =
-                connectorRegistry_.getRuntimeSecurityMap(poolName_);
+                connectorRegistry_.getRuntimeSecurityMap(poolInfo_);
         if (runtimeSecurityMap == null) {
             return null;
         }

@@ -37,6 +37,7 @@
 package com.sun.enterprise.resource;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.PoolMetaData;
 
 import java.io.Serializable;
@@ -58,7 +59,7 @@ public class ResourceSpec implements Serializable {
     private Object connectionToAssoc_;
 
 
-    private String connectionPoolName;
+    private PoolInfo poolInfo;
 
     static public final int JDBC_URL = 0;
     static public final int JNDI_NAME = 1;
@@ -109,13 +110,13 @@ public class ResourceSpec implements Serializable {
 
     }
 
-    public String getConnectionPoolName() {
-        return connectionPoolName;
+    public PoolInfo getPoolInfo() {
+        return poolInfo;
     }
 
 
-    public void setConnectionPoolName(String name) {
-        connectionPoolName = name;
+    public void setPoolInfo(PoolInfo poolInfo) {
+        this.poolInfo = poolInfo;
     }
 
     /**
@@ -131,11 +132,11 @@ public class ResourceSpec implements Serializable {
         if (other == null) return false;
         if (other instanceof ResourceSpec) {
             ResourceSpec obj = (ResourceSpec) other;
-            if (connectionPoolName == null) {
+            if (poolInfo == null) {
                 return (resourceId.equals(obj.resourceId) &&
                         resourceIdType == obj.resourceIdType);
             } else {
-                return (connectionPoolName.equals(obj.connectionPoolName));
+                return (poolInfo.equals(obj.poolInfo));
 
             }
         } else {
@@ -151,10 +152,10 @@ public class ResourceSpec implements Serializable {
      * resourceId + resourceIdType
      */
     public int hashCode() {
-        if (connectionPoolName == null) {
+        if (poolInfo == null) {
             return resourceId.hashCode() + resourceIdType;
         } else {
-            return connectionPoolName.hashCode();
+            return poolInfo.hashCode();
         }
     }
 
@@ -211,7 +212,7 @@ public class ResourceSpec implements Serializable {
 
     public String toString() {
         StringBuffer sb = new StringBuffer("ResourceSpec :- ");
-        sb.append("\nconnectionPoolName : ").append(connectionPoolName);
+        sb.append("\nconnectionPoolName : ").append(poolInfo);
         sb.append("\nisXA_ : ").append(isXA_);
         sb.append("\nresoureId : ").append(resourceId);
         sb.append("\nresoureIdType : ").append(resourceIdType);

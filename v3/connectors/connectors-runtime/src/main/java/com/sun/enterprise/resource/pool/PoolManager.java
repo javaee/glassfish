@@ -37,6 +37,7 @@
 package com.sun.enterprise.resource.pool;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants.PoolType;
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.appserv.connectors.internal.api.TransactedPoolManager;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
@@ -53,7 +54,6 @@ import javax.resource.spi.ManagedConnection;
 import javax.resource.spi.RetryableUnavailableException;
 import javax.transaction.Transaction;
 import java.util.Hashtable;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * PoolManager manages jdbc and connector connection pool
@@ -77,26 +77,26 @@ public interface PoolManager extends TransactedPoolManager {
     /**
      * Flush Connection pool by reinitializing the connections 
      * established in the pool.
-     * @param poolName
+     * @param poolInfo
      * @throws com.sun.appserv.connectors.internal.api.PoolingException
      */
-    public boolean flushConnectionPool(String poolName) throws PoolingException;
+    public boolean flushConnectionPool(PoolInfo poolInfo) throws PoolingException;
 
     //Get status of pool
-    public PoolStatus getPoolStatus(String poolName);
+    public PoolStatus getPoolStatus(PoolInfo poolInfo);
     
 
     public ResourceHandle getResourceFromPool(ResourceSpec spec, ResourceAllocator alloc, ClientSecurityInfo info,
                                        Transaction tran) throws PoolingException, RetryableUnavailableException;
 
-    public void createEmptyConnectionPool(String name, PoolType pt, Hashtable env) throws PoolingException;
+    public void createEmptyConnectionPool(PoolInfo poolInfo, PoolType pt, Hashtable env) throws PoolingException;
 
 
     public void putbackResourceToPool(ResourceHandle h, boolean errorOccurred);
 
     public void putbackBadResourceToPool(ResourceHandle h);
 
-    public void putbackDirectToPool(ResourceHandle h, String poolName);
+    public void putbackDirectToPool(ResourceHandle h, PoolInfo poolInfo);
 
 
     public void resourceClosed(ResourceHandle res);
@@ -109,7 +109,7 @@ public interface PoolManager extends TransactedPoolManager {
 
     public void emptyResourcePool(ResourceSpec spec);
 
-    public void killPool(String poolName);
+    public void killPool(PoolInfo poolInfo);
 
     public void reconfigPoolProperties(ConnectorConnectionPool ccp) throws PoolingException;
 
@@ -117,7 +117,7 @@ public interface PoolManager extends TransactedPoolManager {
     public ConcurrentHashMap getMonitoredPoolTable();
 */
 
-    public boolean switchOnMatching(String poolName);
+    public boolean switchOnMatching(PoolInfo poolInfo);
 
     /**
      * Obtain a transactional resource such as JDBC connection
@@ -138,9 +138,9 @@ public interface PoolManager extends TransactedPoolManager {
 
     public void killFreeConnectionsInPools();
 
-    public ResourcePool getPool(String poolName);
+    public ResourcePool getPool(PoolInfo poolInfo);
 
-    public void setSelfManaged(String poolName, boolean flag);
+    public void setSelfManaged(PoolInfo poolInfo, boolean flag);
 
     public void lazyEnlist(ManagedConnection mc) throws ResourceException;
 

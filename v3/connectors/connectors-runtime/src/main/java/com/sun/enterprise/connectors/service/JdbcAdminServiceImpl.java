@@ -37,9 +37,10 @@
 package com.sun.enterprise.connectors.service;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
-import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
+
 import java.sql.DatabaseMetaData;
 import java.util.Set;
 import java.util.SortedSet;
@@ -95,26 +96,26 @@ public class JdbcAdminServiceImpl extends ConnectorService {
     /**
      * Get Validation table names list for the database that the jdbc 
      * connection pool refers to. This is used for connection validation.
-     * @param poolName
+     * @param poolInfo
      * @return all validation table names.
      * @throws javax.resource.ResourceException
      * @throws javax.naming.NamingException
      */
-    public Set<String> getValidationTableNames(String poolName)
+    public Set<String> getValidationTableNames(PoolInfo poolInfo)
             throws ResourceException {
         ManagedConnectionFactory mcf = null;
         Subject defaultSubject = null;
         ManagedConnection mc = null;
         java.sql.Connection con = null;
         try {
-            mc = (ManagedConnection) ccPoolAdmService.getUnpooledConnection(poolName, null, false);
-            mcf = ccPoolAdmService.obtainManagedConnectionFactory(poolName);
+            mc = (ManagedConnection) ccPoolAdmService.getUnpooledConnection(poolInfo, null, false);
+            mcf = ccPoolAdmService.obtainManagedConnectionFactory(poolInfo);
 
             if (mc != null) {
                 con = (java.sql.Connection) mc.getConnection(defaultSubject, null);
             }
             return getValidationTableNames(con,
-                    getDefaultDatabaseName(poolName, mcf));
+                    getDefaultDatabaseName(poolInfo, mcf));
         } catch(Exception re) {
             _logger.log(Level.WARNING, "pool.get_validation_table_names_failure", re.getMessage());
             throw new ResourceException(re);
@@ -124,25 +125,25 @@ public class JdbcAdminServiceImpl extends ConnectorService {
                     mc.destroy();
                 }
             } catch(Exception ex) {
-                _logger.log(Level.FINEST, "pool.get_validation_table_names_mc_destroy", poolName);
+                _logger.log(Level.FINEST, "pool.get_validation_table_names_mc_destroy", poolInfo);
             }
         }
     }
 
     /**
      * Returns a databaseName that is populated in pool's default DATABASENAME
-     * @param poolName
+     * @param poolInfo
      * @param mcf
      * @return
      * @throws javax.naming.NamingException if poolName lookup fails
      */
-    private String getDefaultDatabaseName(String poolName, ManagedConnectionFactory mcf) 
+    private String getDefaultDatabaseName(PoolInfo poolInfo, ManagedConnectionFactory mcf) 
             throws NamingException {
         // All this to get the default user name and principal
         String databaseName = null;
         ConnectorConnectionPool connectorConnectionPool = null;
         try {
-            String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolName);
+            String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolInfo);
             Context ic = _runtime.getNamingManager().getInitialContext();
             connectorConnectionPool = (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
         } catch (NamingException ne) {
@@ -154,7 +155,7 @@ public class JdbcAdminServiceImpl extends ConnectorService {
         // To avoid using "" as the default databasename, try to get
         // the databasename from MCF. 
         if (databaseName == null || databaseName.trim().equals("")) {
-            databaseName = ConnectionPoolObjectsUtils.getValueFromMCF("DatabaseName", poolName, mcf);
+            databaseName = ConnectionPoolObjectsUtils.getValueFromMCF("DatabaseName", poolInfo, mcf);
         }
         return databaseName;
     }    

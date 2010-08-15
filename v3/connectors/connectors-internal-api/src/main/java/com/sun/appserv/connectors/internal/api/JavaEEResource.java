@@ -37,6 +37,7 @@
 package com.sun.appserv.connectors.internal.api;
 
 import com.sun.enterprise.repository.ResourceProperty;
+import org.glassfish.resource.common.ResourceInfo;
 
 import java.util.Set;
 
@@ -69,9 +70,9 @@ public interface JavaEEResource {
     // END OF IASRI #4626188
 
     /**
-     * Resource name. Immutable.
+     * Resource Info. Immutable.
      */
-    String getName();
+    ResourceInfo getResourceInfo();
 
     /**
      * Resource type.  Defined above. Immutable.
@@ -116,7 +117,7 @@ public interface JavaEEResource {
      * that has the same attribute and property
      * settings as the invoked object.
      */
-    JavaEEResource makeClone(String name);
+    JavaEEResource makeClone(ResourceInfo resourceInfo);
 
     // START OF IASRI #4626188
     void setEnabled(boolean value);

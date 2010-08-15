@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.resource.pool.monitor;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.resource.listener.PoolLifeCycleListener;
 
 /**
@@ -47,6 +48,8 @@ import com.sun.enterprise.resource.listener.PoolLifeCycleListener;
  */
 public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     private String poolName;
+    //TODO ASR check all methods for poolName usage which is incorrect
+    private PoolInfo poolInfo;
     private ConnectionPoolProbeProvider poolProbeProvider;
 
     /**
@@ -55,8 +58,9 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * @param jdbcPool the jdbc connection pool on whose behalf this
      * ConnectionPoolEmitterImpl emits jdbc pool related probe events
      */
-    public ConnectionPoolEmitterImpl(String poolName, ConnectionPoolProbeProvider provider) {
-        this.poolName = poolName;
+    public ConnectionPoolEmitterImpl(PoolInfo poolInfo, ConnectionPoolProbeProvider provider) {
+        this.poolInfo = poolInfo;
+        this.poolName = poolInfo.getName();
         this.poolProbeProvider = provider;
     }
 

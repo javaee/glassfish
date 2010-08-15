@@ -36,6 +36,8 @@
 
 package org.glassfish.javaee.services;
 
+import com.sun.appserv.connectors.internal.api.ResourceNamingService;
+import org.glassfish.resource.common.ResourceInfo;
 import org.glassfish.api.naming.NamingObjectProxy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -46,7 +48,6 @@ import org.jvnet.hk2.component.PerLookup;
 import javax.naming.Context;
 import javax.naming.NamingException;
 
-import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.config.serverbeans.Resource;
 
@@ -63,15 +64,16 @@ import java.util.Collection;
 @Service
 @Scoped(PerLookup.class)
 public class ResourceProxy implements NamingObjectProxy.InitializationNamingObjectProxy {
-    @Inject
-    protected Habitat connectorRuntimeHabitat;
 
     @Inject
     private Habitat deployerHabitat;
 
+    @Inject
+    private ResourceNamingService namingService;
+
     private Resource resource = null;
     private Object result = null;
-    private String jndiName = null;
+    private ResourceInfo resourceInfo = null;
 
     public Object create(Context ic) throws NamingException {
         //this is a per-lookup object and once we have the resource,
@@ -81,18 +83,15 @@ public class ResourceProxy implements NamingObjectProxy.InitializationNamingObje
         synchronized(this){
             try{
                 if(result == null){
-                    getResourceDeployer(resource).deployResource(resource);
+                    getResourceDeployer(resource).deployResource(resource, resourceInfo.getApplicationName(),
+                            resourceInfo.getModuleName());
                 }
-                result = ic.lookup(jndiName);
+                result = namingService.lookup(resourceInfo, resourceInfo.getName());
             }catch(Exception e){
-                throwResourceNotFoundException(e, jndiName);
+                throwResourceNotFoundException(e, resourceInfo);
             }
         }
         return result;
-    }
-
-    protected ConnectorRuntime getConnectorRuntime() {
-        return connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
     }
 
     /**
@@ -106,14 +105,14 @@ public class ResourceProxy implements NamingObjectProxy.InitializationNamingObje
 
     /**
      * Name by which the proxy (or the resource) will be bound in JNDI
-     * @param jndiName jndi-name
+     * @param resourceInfo resource-info
      */
-    public void setJndiName(String jndiName) {
-        this.jndiName = jndiName;
+    public void setResourceInfo(ResourceInfo resourceInfo) {
+        this.resourceInfo = resourceInfo;
     }
 
-    protected Object throwResourceNotFoundException(Exception e, String resourceName) throws NamingException {
-        NamingException ne = new NamingException("Unable to lookup resource : " + resourceName);
+    protected Object throwResourceNotFoundException(Exception e, ResourceInfo resourceInfo) throws NamingException {
+        NamingException ne = new NamingException("Unable to lookup resource : " + resourceInfo);
         ne.initCause(e);
         throw ne;
     }

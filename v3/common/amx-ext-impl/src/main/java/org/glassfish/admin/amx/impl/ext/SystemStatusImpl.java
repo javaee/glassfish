@@ -37,6 +37,7 @@
 package org.glassfish.admin.amx.impl.ext;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import org.glassfish.resource.common.PoolInfo;
 import org.glassfish.admin.amx.intf.config.JdbcConnectionPool;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.jvnet.hk2.component.ComponentException;
@@ -116,7 +117,8 @@ public final class SystemStatusImpl extends AMXImplBase
         // do the ping
         try
         {
-            final boolean pingable = connRuntime.pingConnectionPool(poolName);
+            PoolInfo poolInfo = new PoolInfo(poolName);
+            final boolean pingable = connRuntime.pingConnectionPool(poolInfo);
             result.put(PING_SUCCEEDED_KEY, pingable);
         }
         catch (final ResourceException e)

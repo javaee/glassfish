@@ -38,6 +38,7 @@ package org.glassfish.admingui.plugin.jms;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.connectors.jms.system.JmsProviderLifecycle;
@@ -396,7 +397,8 @@ public class JmsHandlers {
         try {
             String poolName = (String) handlerCtx.getInputValue("poolName");
             ConnectorRuntime connectorRuntime = GuiUtil.getHabitat().getComponent(ConnectorRuntime.class);
-            connectorRuntime.pingConnectionPool(poolName);
+            PoolInfo poolInfo = new PoolInfo(poolName);
+            connectorRuntime.pingConnectionPool(poolInfo);
             GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("msg.PingSucceed"), null);
         } catch (Exception ex) {
             GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), ex.getMessage());

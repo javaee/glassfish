@@ -52,6 +52,8 @@ import javax.transaction.xa.XAResource;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsClassLoaderUtil;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -64,6 +66,7 @@ import com.sun.enterprise.deployment.ConnectorConfigProperty ;
 import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.resource.deployer.ConnectorResourceDeployer;
 import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
+import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.config.types.Property;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
@@ -83,6 +86,9 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
     private Resources resources;
 
     @Inject
+    private Applications applications;
+
+    @Inject
     private ConnectorsClassLoaderUtil cclUtil;
 
     @Inject
@@ -98,13 +104,38 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
     
     private static Logger _logger = LogDomains.getLogger(ConnectorsRecoveryResourceHandler.class, LogDomains.RSR_LOGGER);
 
+
+    private Collection<ConnectorResource> getConnectorResources() {
+        Collection<ConnectorResource> allResources = new ArrayList<ConnectorResource>();
+        Collection<ConnectorResource> connectorResources = resources.getResources(ConnectorResource.class);
+        allResources.addAll(connectorResources);
+         for(Application app : applications.getApplications()){
+             if(ResourcesUtil.createInstance().isEnabled(app)){
+                 Resources appScopedResources = app.getResources();
+                 if(appScopedResources != null && appScopedResources.getResources() != null){
+                     allResources.addAll(appScopedResources.getResources(ConnectorResource.class));
+                 }
+                 List<Module> modules = app.getModule();
+                 if(modules != null){
+                     for(Module module : modules){
+                         Resources msr = module.getResources();
+                         if(msr != null && msr.getResources() != null){
+                             allResources.addAll(msr.getResources(ConnectorResource.class));
+                         }
+                     }
+                 }
+             }
+         }
+        return allResources;
+    }
+
     /**
      * does a lookup of resources so that they are loaded for sure.
      */
     private void loadAllConnectorResources() {
 
         try {
-            Collection<ConnectorResource> connResources = resources.getResources(ConnectorResource.class);
+            Collection<ConnectorResource> connResources = getConnectorResources();
             InitialContext ic = new InitialContext();
             for (ConnectorResource connResource : connResources) {
                 if(getResourcesUtil().isEnabled(connResource)) {
@@ -115,12 +146,15 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
                         //If you are here then it is most probably an embedded RAR resource
                         //So we need to explicitly load that rar and create the resources
                         try {
+                            ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(connResource);
                             com.sun.enterprise.config.serverbeans.ConnectorConnectionPool connConnectionPool =
-                                    getConnectorConnectionPoolByName(connResource.getPoolName());
-                            //TODO V3 ideally this should not happen if connector modules (and embedded rars)
-                            //TODO  are loaded before recovery
-                            createActiveResourceAdapter(connConnectionPool.getResourceAdapterName());
-                            getConnectorResourceDeployer().deployResource(connResource);
+                                    ResourcesUtil.createInstance().getConnectorConnectionPoolOfResource(resourceInfo);
+                            if(connConnectionPool != null){
+                                //TODO V3 ideally this should not happen if connector modules (and embedded rars)
+                                //TODO  are loaded before recovery
+                                createActiveResourceAdapter(connConnectionPool.getResourceAdapterName());
+                                getConnectorResourceDeployer().deployResource(connResource);
+                            }
                         } catch (Exception ex) {
                             _logger.log(Level.SEVERE, "error.loading.connector.resources.during.recovery",
                                     connResource.getJndiName());
@@ -162,15 +196,6 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
     }
 
     /**
-     * provides a connector connection pool configuration
-     * @param poolName pool-name
-     * @return ccp
-     */
-    private ConnectorConnectionPool getConnectorConnectionPoolByName(String poolName) {
-        return (ConnectorConnectionPool)resources.getResourceByName(ConnectorConnectionPool.class, poolName);
-    }
-
-    /**
      * {@inheritDoc}
      */
     public void loadXAResourcesAndItsConnections(List xaresList, List connList) {
@@ -181,7 +206,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
             return;
         }
 
-        //TODO V3 done so as to initialize connectors-runtime before loading jdbc-resources. need a better way ?
+        //TODO V3 done so as to initialize connectors-runtime before loading connector-resources. need a better way ?
         ConnectorRuntime crt = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class);
 
         //TODO V3 done so as to load all connector-modules. need to load only connector-modules instead of all apps
@@ -191,7 +216,8 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
         for (Resource resource : connectorResources) {
             ConnectorResource connResource = (ConnectorResource) resource;
             if(getResourcesUtil().isEnabled(connResource)) {
-                ConnectorConnectionPool pool = getConnectorConnectionPoolByName(connResource.getPoolName());
+                ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(connResource);
+                ConnectorConnectionPool pool = ResourcesUtil.createInstance().getConnectorConnectionPoolOfResource(resourceInfo);
                 if (pool != null &&
                         ConnectorConstants.XA_TRANSACTION_TX_SUPPORT_STRING.equals(
                                 getTransactionSupport(pool))) {
@@ -208,7 +234,9 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
         _logger.log(Level.FINE, "Recovering pools : " + connPools.size());
 
         for(ConnectorConnectionPool connPool : connPools){
-            String poolName = connPool.getName();
+
+            PoolInfo poolInfo = ConnectorsUtil.getPoolInfo(connPool);
+
             try {
                 String[] dbUserPassword = getdbUserPasswordOfConnectorConnectionPool(connPool);
                 if (dbUserPassword == null) {
@@ -226,20 +254,20 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
                 if (dbPassword == null) {
                     dbPassword = "";
                     _logger.log(Level.WARNING,
-                            "datasource.xadatasource_nullpassword_error", poolName);
+                            "datasource.xadatasource_nullpassword_error", poolInfo);
                 }
 
                 if (dbUser == null) {
                     dbUser = "";
                     _logger.log(Level.WARNING,
-                            "datasource.xadatasource_nulluser_error", poolName);
+                            "datasource.xadatasource_nulluser_error", poolInfo);
                 }
                 String rarName = connPool.getResourceAdapterName();
                 //TODO V3 JMS-RA ??
                 if (ConnectorAdminServiceUtils.isJMSRA(rarName)) {
-                    _logger.log(Level.FINE, "Performing recovery for JMS RA, poolName  " + poolName);
+                    _logger.log(Level.FINE, "Performing recovery for JMS RA, poolName  " + poolInfo);
                     ManagedConnectionFactory[] mcfs =
-                            crt.obtainManagedConnectionFactories(poolName);
+                            crt.obtainManagedConnectionFactories(poolInfo);
                     _logger.log(Level.INFO, "JMS resource recovery has created CFs = " + mcfs.length);
                     for (int i = 0; i < mcfs.length; i++) {
                         PasswordCredential pc = new PasswordCredential(
@@ -264,7 +292,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
 
                 } else {
                     ManagedConnectionFactory mcf =
-                            crt.obtainManagedConnectionFactory(poolName);
+                            crt.obtainManagedConnectionFactory(poolInfo);
                     PasswordCredential pc = new PasswordCredential(
                             dbUser, dbPassword.toCharArray());
                     pc.setManagedConnectionFactory(mcf);
@@ -284,7 +312,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
                 }
             } catch (Exception ex) {
                 _logger.log(Level.WARNING, "datasource.xadatasource_error",
-                        poolName);
+                        poolInfo);
                 _logger.log(Level.FINE, "datasource.xadatasource_error_excp", ex);
             }
         }
@@ -362,7 +390,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
             }
         }
 
-        String poolName = connectorConnectionPool.getName();
+        PoolInfo poolInfo = ConnectorsUtil.getPoolInfo(connectorConnectionPool);
         String rarName = connectorConnectionPool.getResourceAdapterName();
         String connectionDefName =
                 connectorConnectionPool.getConnectionDefinitionName();
@@ -392,11 +420,11 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
 
         //else read the default username and password from the ra.xml
         ManagedConnectionFactory mcf =
-                connectorRegistry.getManagedConnectionFactory(poolName);
+                connectorRegistry.getManagedConnectionFactory(poolInfo);
         userPassword[0] = ConnectionPoolObjectsUtils.getValueFromMCF(
-                "UserName", poolName, mcf);
+                "UserName", poolInfo, mcf);
         userPassword[1] = ConnectionPoolObjectsUtils.getValueFromMCF(
-                "Password", poolName, mcf);
+                "Password", poolInfo, mcf);
 
         return userPassword;
     }

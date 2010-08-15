@@ -36,6 +36,7 @@
 
 package org.glassfish.jms.admin.cli;
 
+import org.glassfish.resource.common.PoolInfo;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -195,7 +196,8 @@ public class JMSPing implements AdminCommand {
 
     boolean pingConnectionPool(String tmpJMSResource) throws ResourceException
     {
-        return connectorRuntime.pingConnectionPool(tmpJMSResource);
+        PoolInfo poolInfo = new PoolInfo(tmpJMSResource);
+        return connectorRuntime.pingConnectionPool(poolInfo);
     }
     
     void deleteJMSResource(ActionReport subReport, String tmpJMSResource)

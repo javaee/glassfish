@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.resource.pool.resizer;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceState;
 import com.sun.enterprise.resource.pool.PoolProperties;
@@ -65,7 +66,7 @@ import java.util.logging.Logger;
  * @author Jagadish Ramu
  */
 public class Resizer extends TimerTask {
-    protected String poolName;
+    protected PoolInfo poolInfo;
     protected DataStructure ds;
     protected PoolProperties pool;
     protected ResourceHandler handler;
@@ -73,9 +74,9 @@ public class Resizer extends TimerTask {
 
     protected final static Logger _logger = LogDomains.getLogger(Resizer.class, LogDomains.RSR_LOGGER);
 
-    public Resizer(String poolName, DataStructure ds, PoolProperties pp, ResourceHandler handler,
+    public Resizer(PoolInfo poolInfo, DataStructure ds, PoolProperties pp, ResourceHandler handler,
             boolean preferValidateOverRecreate) {
-        this.poolName = poolName;
+        this.poolInfo = poolInfo;
         this.ds = ds;
         this.pool = pp;
         this.handler = handler;
@@ -83,11 +84,11 @@ public class Resizer extends TimerTask {
     }
 
     public void run() {
-        debug("Resizer for pool " + poolName);
+        debug("Resizer for pool " + poolInfo);
         try {
             resizePool(true);
         } catch(Exception ex) {
-            Object[] params = new Object[]{poolName, ex.getMessage()};
+            Object[] params = new Object[]{poolInfo, ex.getMessage()};
             _logger.log(Level.WARNING, "resource_pool.resize_pool_error", params);
         }
     }
@@ -114,7 +115,7 @@ public class Resizer extends TimerTask {
         //ensure that steady-pool-size is maintained
         ensureSteadyPool();
 
-        debug("No. of resources held for pool [ " + poolName + " ] : " + ds.getResourcesSize());
+        debug("No. of resources held for pool [ " + poolInfo + " ] : " + ds.getResourcesSize());
     }
 
     /**
@@ -128,7 +129,7 @@ public class Resizer extends TimerTask {
                 try {
                     handler.createResourceAndAddToPool();
                 } catch (PoolingException ex) {
-                    Object[] params = new Object[]{poolName, ex.getMessage()};
+                    Object[] params = new Object[]{poolInfo, ex.getMessage()};
                     _logger.log(Level.WARNING, "resource_pool.resize_pool_error", params);
                 }
             }
@@ -217,15 +218,15 @@ public class Resizer extends TimerTask {
         //These statistic computations will work fine as long as resizer locks the pool throughout its operations.
         if (preferValidateOverRecreate) {
             debug("Idle resources validated and kept in the steady pool for pool [ " +
-                    poolName + " ] - " + idleConnKeptInSteadyCounter);
-            debug("Number of Idle resources freed for pool [ " + poolName + " ] - " +
+                    poolInfo + " ] - " + idleConnKeptInSteadyCounter);
+            debug("Number of Idle resources freed for pool [ " + poolInfo + " ] - " +
                     (size - activeResources.size() - idleConnKeptInSteadyCounter));
-            debug("Number of Invalid resources removed for pool [ " + poolName + " ] - " +
+            debug("Number of Invalid resources removed for pool [ " + poolInfo + " ] - " +
                     (activeResources.size() - ds.getFreeListSize() + idleConnKeptInSteadyCounter));
         } else {
-            debug("Number of Idle resources freed for pool [ " + poolName + " ] - " +
+            debug("Number of Idle resources freed for pool [ " + poolInfo + " ] - " +
                     (size - activeResources.size()));
-            debug("Number of Invalid resources removed for pool [ " + poolName + " ] - " +
+            debug("Number of Invalid resources removed for pool [ " + poolInfo + " ] - " +
                     (activeResources.size() - ds.getFreeListSize()));
         }
         noOfResourcesRemoved = poolSizeBeforeRemoval - ds.getResourcesSize();

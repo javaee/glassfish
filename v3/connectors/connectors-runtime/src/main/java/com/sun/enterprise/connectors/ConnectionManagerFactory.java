@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.connectors;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 
@@ -49,11 +50,11 @@ import java.util.logging.Logger;
 public class ConnectionManagerFactory {
 
     public static ConnectionManager getAvailableConnectionManager(
-            String poolName, boolean forceNoLazyAssoc)
+            PoolInfo poolInfo, boolean forceNoLazyAssoc)
             throws ConnectorRuntimeException {
 
         ConnectorRegistry registry = ConnectorRegistry.getInstance();
-        PoolMetaData pmd = registry.getPoolMetaData(poolName);
+        PoolMetaData pmd = registry.getPoolMetaData(poolInfo);
         boolean isLazyEnlist = pmd.isLazyEnlistable();
         boolean isLazyAssoc = pmd.isLazyAssociatable();
 
@@ -61,13 +62,13 @@ public class ConnectionManagerFactory {
 
         if (isLazyAssoc && !forceNoLazyAssoc) {
             logFine("Creating LazyAssociatableConnectionManager");
-            mgr = new LazyAssociatableConnectionManagerImpl(poolName);
+            mgr = new LazyAssociatableConnectionManagerImpl(poolInfo);
         }else if (isLazyEnlist) {
             logFine("Creating LazyEnlistableConnectionManager");
-            mgr = new LazyEnlistableConnectionManagerImpl(poolName);
+            mgr = new LazyEnlistableConnectionManagerImpl(poolInfo);
         } else {
             logFine("Creating plain ConnectionManager");
-            mgr = new ConnectionManagerImpl(poolName);
+            mgr = new ConnectionManagerImpl(poolInfo);
         }
         return mgr;
     }

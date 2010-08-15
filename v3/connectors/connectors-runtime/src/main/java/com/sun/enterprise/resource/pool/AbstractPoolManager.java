@@ -36,15 +36,10 @@
 
 package com.sun.enterprise.resource.pool;
 
-import com.sun.enterprise.connectors.ConnectorConnectionPool;
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.resource.ResourceSpec;
 
-import javax.resource.ResourceException;
-import javax.resource.spi.ManagedConnection;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-import com.sun.logging.LogDomains;
-import com.sun.appserv.connectors.internal.api.PoolingException;
 
 /**
  * Abstract Pool manager for unimplemented features. Throws UnsupportedOperationException when invoked.
@@ -59,7 +54,7 @@ public abstract class AbstractPoolManager implements PoolManager {
         throw new UnsupportedOperationException();
     }
 
-    public void setSelfManaged(String poolName, boolean flag) {
+    public void setSelfManaged(PoolInfo poolInfo, boolean flag) {
         throw new UnsupportedOperationException();
     }
 

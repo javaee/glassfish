@@ -36,6 +36,7 @@
 
 package com.sun.appserv.connectors.internal.api;
 
+import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
@@ -57,6 +58,8 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.admin.*;
 import org.glassfish.deployment.common.InstalledLibrariesResolver;
 import org.glassfish.loader.util.ASClassLoaderUtil;
+import org.glassfish.resource.common.PoolInfo;
+import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 
@@ -84,18 +87,35 @@ public class ConnectorsUtil {
         return result;
     }
 
-    public static boolean getPingDuringPoolCreation(String poolName, Resources allResources) {
+    public static boolean getPingDuringPoolCreation(PoolInfo poolInfo, Resources allResources) {
         boolean pingOn = false;
-        ResourcePool pool = getConnectionPoolConfig(poolName, allResources);
+        ResourcePool pool = getConnectionPoolConfig(poolInfo, allResources);
         if(pool instanceof JdbcConnectionPool) {
             JdbcConnectionPool jdbcPool = (JdbcConnectionPool) pool;
             pingOn = Boolean.parseBoolean(jdbcPool.getPing());
         } else if (pool instanceof com.sun.enterprise.config.serverbeans.ConnectorConnectionPool) {
-            com.sun.enterprise.config.serverbeans.ConnectorConnectionPool ccPool = 
+            com.sun.enterprise.config.serverbeans.ConnectorConnectionPool ccPool =
                     (com.sun.enterprise.config.serverbeans.ConnectorConnectionPool) pool;
-            pingOn = Boolean.parseBoolean(ccPool.getPing());                    
+            pingOn = Boolean.parseBoolean(ccPool.getPing());
         }
-        return pingOn;                        
+        return pingOn;
+    }
+
+    /**
+     * determine whether the RAR in question is a System RAR
+     * @param raName RarName
+     * @return boolean
+     */
+    public static boolean belongsToJdbcRA(String raName) {
+        boolean result = false;
+
+        for (String systemRarName : ConnectorConstants.jdbcSystemRarNames) {
+            if (systemRarName.equals(raName)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
     }
 
     /**
@@ -202,12 +222,12 @@ public class ConnectorsUtil {
                 instance instanceof ResourceAdapterConfig ) ;
     }
 
-    public static ResourcePool getConnectionPoolConfig(String poolName, Resources allResources){
+    public static ResourcePool getConnectionPoolConfig(PoolInfo poolInfo, Resources allResources){
         ResourcePool pool = null;
         for(Resource configuredResource : allResources.getResources()){
             if(configuredResource instanceof ResourcePool){
                 ResourcePool resourcePool= (ResourcePool)configuredResource;
-                if(resourcePool.getName().equalsIgnoreCase(poolName)){
+                if(resourcePool.getName().equals(poolInfo.getName())){
                     pool = resourcePool;
                     break;
                 }
@@ -306,9 +326,9 @@ public class ConnectorsUtil {
         return resources;
     }
 
-    /**
+/**
      * Given the poolname, retrieve the resourceadapter name
-     * @param poolName connection pool name
+     * @param poolInfo connection pool name
      * @param allResources resources
      * @return resource-adapter name
      */
@@ -476,20 +496,23 @@ public class ConnectorsUtil {
      * @param resource
      * @return resource name / jndi-name
      */
-    public static String getResourceName(Resource resource){
+    public static ResourceInfo getGenericResourceInfo(Resource resource){
+        ResourceInfo resourceInfo = null;
+        String resourceName = null;
         if(resource instanceof BindableResource){
-            return ((BindableResource)resource).getJndiName();
+            resourceName = ((BindableResource)resource).getJndiName();
         }else if (resource instanceof ResourcePool){
-            return ((ResourcePool)resource).getName();
+            resourceName = ((ResourcePool)resource).getName();
         }else if (resource instanceof ResourceAdapterConfig){
-            return ((ResourceAdapterConfig)resource).getName();
+            resourceName = ((ResourceAdapterConfig)resource).getName();
         }else if (resource instanceof WorkSecurityMap){
             //TODO toString duckType for WorkSecurityMap config bean ?
             WorkSecurityMap wsm = (WorkSecurityMap)resource;
-            return ("resource-adapter name : " + wsm.getResourceAdapterName()
+            resourceName = ("resource-adapter name : " + wsm.getResourceAdapterName()
                     + " : security map name : " +  wsm.getName());
         }
-        return null;
+        resourceInfo = getGenericResourceInfo(resource, resourceName);
+        return resourceInfo;
     }
 
     /**
@@ -635,6 +658,26 @@ public class ConnectorsUtil {
         return moduleName;
     }
 
+    public static String getApplicationNameOfEmbeddedRar(String embeddedRarName) {
+        int index = embeddedRarName.indexOf(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER);
+        String applicationName = embeddedRarName;
+
+        if(index != -1){
+            applicationName = embeddedRarName.substring(0,index);
+        }
+        return applicationName;
+    }
+
+    public static String getRarNameFromApplication(String appName) {
+        int index = appName.indexOf(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER);
+        String rarName = appName;
+
+        if(index != -1 && appName.length() > index+1){
+            rarName = appName.substring(index+1);
+        }
+        return rarName;
+    }
+
     public static boolean isEmbedded(DeploymentContext context) {
         ReadableArchive archive = context.getSource();
         return (archive != null && archive.getParentArchive() != null);
@@ -645,6 +688,8 @@ public class ConnectorsUtil {
         ReadableArchive parentArchive = context.getSource().getParentArchive();
         if (parentArchive != null) {
             applicationName = parentArchive.getName();
+        }else{
+            applicationName = context.getSource().getName();
         }
         return applicationName;
     }
@@ -795,4 +840,99 @@ public class ConnectorsUtil {
             }
         }
     }
+    public static ResourceInfo getGenericResourceInfo(Resource resource, String resourceName){
+        if(resource.getParent() != null && resource.getParent().getParent() instanceof Application){
+            Application application = (Application)resource.getParent().getParent();
+            return new ResourceInfo(resourceName, application.getName());
+        }else if(resource.getParent() != null && resource.getParent().getParent() instanceof Module){
+            Module module = (Module)resource.getParent().getParent();
+            Application application = (Application)module.getParent();
+            return new ResourceInfo(resourceName, application.getName(), module.getName());
+        }else{
+            return new ResourceInfo(resourceName);
+        }
+    }
+
+    public static PoolInfo getPoolInfo(ResourcePool resource){
+
+        if(resource.getParent() != null && resource.getParent().getParent() instanceof Application){
+            Application application = (Application)resource.getParent().getParent();
+            return new PoolInfo(resource.getName(), application.getName());
+        }else if(resource.getParent() != null && resource.getParent().getParent() instanceof Module){
+            Module module = (Module)resource.getParent().getParent();
+            Application application = (Application)module.getParent();
+            return new PoolInfo(resource.getName(), application.getName(), module.getName());
+        }else{
+            return new PoolInfo(resource.getName());
+        }
+    }
+
+    public static ResourceInfo getResourceInfo(BindableResource resource){
+
+        if(resource.getParent() != null && resource.getParent().getParent() instanceof Application){
+            Application application = (Application)resource.getParent().getParent();
+            return new ResourceInfo(resource.getJndiName(), application.getName());
+        }else if(resource.getParent() != null && resource.getParent().getParent() instanceof Module){
+            Module module = (Module)resource.getParent().getParent();
+            Application application = (Application)module.getParent();
+            return new ResourceInfo(resource.getJndiName(), application.getName(), module.getName());
+        }else{
+            return new ResourceInfo(resource.getJndiName());
+        }
+    }
+
+
+    public static String getApplicationName(Resource resource){
+        String applicationName = null;
+        if(resource.getParent() != null && resource.getParent().getParent() instanceof Application){
+            Application application = (Application)resource.getParent().getParent();
+            applicationName = application.getName();
+        }
+        return applicationName;
+    }
+
+    public static String getApplicationName(PoolInfo poolInfo){
+        return poolInfo.getApplicationName();
+    }
+
+    //TODO ASR : instead of explicit APIs, getScope() can return "none" or "app" or "module" enum value ?
+    public static boolean isApplicationScopedResource(PoolInfo poolInfo){
+        return poolInfo != null && poolInfo.getApplicationName() != null;
+    }
+
+    public static boolean isModuleScopedResource(PoolInfo poolInfo){
+        return poolInfo != null && poolInfo.getApplicationName() != null && poolInfo.getModuleName() != null;
+    }
+
+    public static boolean isApplicationScopedResource(ResourceInfo resourceInfo){
+        return resourceInfo != null && resourceInfo.getApplicationName() != null;
+    }
+
+    public static boolean isModuleScopedResource(ResourceInfo resourceInfo){
+        return resourceInfo != null && resourceInfo.getApplicationName() != null && resourceInfo.getModuleName() != null;
+    }
+
+    public static String getPoolMonitoringSubTreeRoot(PoolInfo poolInfo) {
+        String resourcesPrefix = "resources/";
+        String suffix = poolInfo.getName();
+        String subTreeRoot = resourcesPrefix + suffix;
+        if(ConnectorsUtil.isModuleScopedResource(poolInfo)){
+            subTreeRoot = "applications/" + poolInfo.getApplicationName()+ "/" + poolInfo.getModuleName() + "/" +
+                    resourcesPrefix + "/" + suffix;
+        }else if(ConnectorsUtil.isApplicationScopedResource(poolInfo)){
+            subTreeRoot = "applications/" + poolInfo.getApplicationName()  + "/" + resourcesPrefix + "/" + suffix;
+        }
+        return subTreeRoot;
+    }
+
+    //TODO ASR : checking for .jar / .rar / .war / .ear ?
+    public static String getActualModuleName(String moduleName){
+        if(moduleName != null){
+            if(moduleName.endsWith(".jar") /*|| moduleName.endsWith(".war") */|| moduleName.endsWith(".rar")){
+                moduleName = moduleName.substring(0,moduleName.length()-4);
+            }
+        }
+        return moduleName;
+    }
+    
 }

@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.resource.pool.monitor;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.pool.PoolLifeCycleListenerRegistry;
 import com.sun.enterprise.resource.pool.PoolStatus;
@@ -69,6 +70,9 @@ public class ConnectorConnPoolStatsProvider {
     
     private String ccPoolName;
     private Logger logger;
+    //TODO ASR using poolName in all methods which is incorrect
+    private PoolInfo poolInfo;    
+
     
     //Registry that stores all listeners to this object
     private PoolLifeCycleListenerRegistry poolRegistry;
@@ -133,8 +137,8 @@ public class ConnectorConnPoolStatsProvider {
             "Number of connection requests in the queue waiting to be serviced.");    
     private final String JCA_PROBE_LISTENER = "glassfish:jca:connection-pool:";
 
-    public ConnectorConnPoolStatsProvider(String poolName, Logger logger) {    
-        this.ccPoolName = poolName;
+    public ConnectorConnPoolStatsProvider(PoolInfo poolInfo, Logger logger) {    
+        this.poolInfo = poolInfo;
         this.logger = logger;
     }
     
@@ -401,7 +405,7 @@ public class ConnectorConnPoolStatsProvider {
         if(logger.isLoggable(Level.FINEST)) {        
             logger.finest("Reset event received - poolName = " + ccPoolName);
         }
-        PoolStatus status = ConnectorRuntime.getRuntime().getPoolManager().getPoolStatus(ccPoolName);
+        PoolStatus status = ConnectorRuntime.getRuntime().getPoolManager().getPoolStatus(poolInfo);
         numConnUsed.setCurrent(status.getNumConnUsed());
         numConnFree.setCurrent(status.getNumConnFree());    
         numConnCreated.reset();
@@ -481,8 +485,8 @@ public class ConnectorConnPoolStatsProvider {
         }                        
     }
 
-    protected String getCcPoolName() {
-        return ccPoolName;
+    protected PoolInfo getPoolInfo() {
+        return poolInfo;
     }
 
     protected void setPoolRegistry(PoolLifeCycleListenerRegistry registry) {

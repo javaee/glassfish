@@ -37,6 +37,8 @@
 package com.sun.appserv.connectors.internal.api;
 
 import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.resource.common.PoolInfo;
+import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.annotations.Contract;
 import org.glassfish.api.invocation.InvocationManager;
 
@@ -178,6 +180,46 @@ public interface ConnectorRuntime extends ConnectorConstants{
     public Object lookupPMResource(String jndiName, boolean force) throws NamingException;
 
     /**
+     * Does lookup of non-tx-datasource. If found, it will be returned.<br><br>
+     * <p/>
+     * If not found and <b>force</b> is true,  this api will try to get a wrapper datasource specified
+     * by the jdbcjndi name. The motivation for having this
+     * API is to provide the CMP backend/ JPA-Java2DB a means of acquiring a connection during
+     * the codegen phase. If a user is trying to deploy an JPA-Java2DB app on a remote server,
+     * without this API, a resource reference has to be present both in the DAS
+     * and the server instance. This makes the deployment more complex for the
+     * user since a resource needs to be forcibly created in the DAS Too.
+     * This API will mitigate this need.
+     *
+     * @param resourceInfo jndi name of the resource
+     * @param force    provide the resource (in DAS)  even if it is not enabled in DAS
+     * @return DataSource representing the resource.
+     * @throws javax.naming.NamingException when not able to get the datasource.
+     */
+    public Object lookupNonTxResource(ResourceInfo resourceInfo, boolean force) throws NamingException;
+
+    /**
+     * Does lookup of "__pm" datasource. If found, it will be returned.<br><br>
+     * <p/>
+     * If not found and <b>force</b> is true, this api will try to get a wrapper datasource specified
+     * by the jdbcjndi name. The motivation for having this
+     * API is to provide the CMP backend/ JPA-Java2DB a means of acquiring a connection during
+     * the codegen phase. If a user is trying to deploy an JPA-Java2DB app on a remote server,
+     * without this API, a resource reference has to be present both in the DAS
+     * and the server instance. This makes the deployment more complex for the
+     * user since a resource needs to be forcibly created in the DAS Too.
+     * This API will mitigate this need.
+     * When the resource is not enabled, datasource wrapper provided will not be of
+     * type "__pm"
+     *
+     * @param resourceInfo jndi name of the resource
+     * @param force    provide the resource (in DAS)  even if it is not enabled in DAS
+     * @return DataSource representing the resource.
+     * @throws javax.naming.NamingException when not able to get the datasource.
+     */
+    public Object lookupPMResource(ResourceInfo resourceInfo, boolean force) throws NamingException;
+
+    /**
      * register the connector naming event listener
      * @param listener connector-naming-event-listener
      */
@@ -191,18 +233,18 @@ public interface ConnectorRuntime extends ConnectorConstants{
 
     /**
      * Provide the configuration of the pool
-     * @param poolName connection pool name
+     * @param PoolInfo connection pool info
      * @return ResourcePool connection pool configuration
      */
-    public ResourcePool getConnectionPoolConfig(String poolName);
+    public ResourcePool getConnectionPoolConfig(PoolInfo poolInfo);
 
     /**
      * Tests whether the configuration for the pool is valid by making a connection.
-     * @param poolName connection pool name
+     * @param PoolInfo connection pool info.
      * @return boolean indicating ping status
      * @throws ResourceException when unable to ping
      */
-    public boolean pingConnectionPool(String poolName) throws ResourceException;
+    public boolean pingConnectionPool(PoolInfo poolInfo) throws ResourceException;
 
     /**
      * provides the transactionManager
@@ -227,13 +269,13 @@ public interface ConnectorRuntime extends ConnectorConstants{
     /** Returns the MCF instance. If the MCF is already created and
      *  present in connectorRegistry that instance is returned. Otherwise it
      *  is created explicitly and added to ConnectorRegistry.
-     *  @param poolName Name of the pool.MCF pertaining to this pool is
+     *  @param PoolInfo Name of the pool.MCF pertaining to this pool is
      *         created/returned.
      *  @return created/already present MCF instance
      *  @throws ConnectorRuntimeException if creation/retrieval of MCF fails
      */
-    public ManagedConnectionFactory obtainManagedConnectionFactory(
-           String poolName) throws ConnectorRuntimeException ;
+    public ManagedConnectionFactory obtainManagedConnectionFactory( PoolInfo poolInfo)
+            throws ConnectorRuntimeException ;
 
     /**
      * provide the MCF of the pool (either retrieve or create)
@@ -242,7 +284,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @return ManagedConnectionFactory mcf of the pool
      * @throws ConnectorRuntimeException when unable to provide the MCF
      */
-    public ManagedConnectionFactory obtainManagedConnectionFactory(String poolName, Hashtable env)
+    public ManagedConnectionFactory obtainManagedConnectionFactory(PoolInfo poolInfo, Hashtable env)
             throws ConnectorRuntimeException;
 
     /**
@@ -547,20 +589,28 @@ public interface ConnectorRuntime extends ConnectorConstants{
     /**
      * Flush Connection pool by reinitializing the connections 
      * established in the pool.
-     * @param poolName connection pool name
+     * @param PoolInfo connection pool info
+     * @throws ConnectorRuntimeException
+     */
+    public boolean flushConnectionPool(PoolInfo poolInfo) throws ConnectorRuntimeException;
+
+    /**
+     * Flush Connection pool by reinitializing the connections
+     * established in the pool.
+     * @param PoolInfo connection pool info
      * @throws ConnectorRuntimeException
      */
     public boolean flushConnectionPool(String poolName) throws ConnectorRuntimeException;
-    
+
     /**
      * Get Validation table names list for the database that the jdbc 
      * connection pool refers to. This is used for connection validation.
-     * @param poolName connection pool name
+     * @param PoolInfo connection pool info
      * @return all validation table names.
      * @throws javax.resource.ResourceException
      * @throws javax.naming.NamingException
      */
-    public Set<String> getValidationTableNames(String poolName) 
+    public Set<String> getValidationTableNames(PoolInfo poolInfo) 
             throws ResourceException;
 
      /**
@@ -602,10 +652,10 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * Check if Ping attribute is on during pool creation. This is used for
      * pinging the pool for erroneous values during pool creation.
      * 
-     * @param poolName connection-pool-name
+     * @param PoolInfo connection pool info
      * @return true if ping is on
      */
-    public boolean getPingDuringPoolCreation(String poolName);
+    public boolean getPingDuringPoolCreation(PoolInfo poolInfo);
 
     /**
      * given a resource-adapter name, retrieves the connector-descriptor

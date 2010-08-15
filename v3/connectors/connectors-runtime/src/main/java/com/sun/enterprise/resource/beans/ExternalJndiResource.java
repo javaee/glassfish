@@ -39,6 +39,7 @@ package com.sun.enterprise.resource.beans;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.JavaEEResource;
 import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
+import org.glassfish.resource.common.ResourceInfo;
 
 import java.io.Serializable;
 
@@ -55,12 +56,12 @@ public class ExternalJndiResource extends JavaEEResourceBase implements Serializ
     private String resType_;
     private String factoryClass_;
 
-    public ExternalJndiResource(String name) {
-        super(name);
+    public ExternalJndiResource(ResourceInfo resourceInfo) {
+        super(resourceInfo);
     }
 
-    protected JavaEEResource doClone(String name) {
-        ExternalJndiResource clone = new ExternalJndiResource(name);
+    protected JavaEEResource doClone(ResourceInfo resourceInfo) {
+        ExternalJndiResource clone = new ExternalJndiResource(resourceInfo);
         clone.setJndiLookupName(getJndiLookupName());
         clone.setResType(getResType());
         clone.setFactoryClass(getFactoryClass());
@@ -105,6 +106,6 @@ public class ExternalJndiResource extends JavaEEResourceBase implements Serializ
     //END OF IASRI 4660565
 
     public String toString() {
-        return "< External Jndi Resource : " + getName() + " , " + getJndiLookupName() + "... >";
+        return "< External Jndi Resource : " + getResourceInfo() + " , " + getJndiLookupName() + "... >";
     }
 }

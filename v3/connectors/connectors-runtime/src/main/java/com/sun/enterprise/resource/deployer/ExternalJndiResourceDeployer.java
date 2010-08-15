@@ -49,10 +49,8 @@
  */
 package com.sun.enterprise.resource.deployer;
 
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.appserv.connectors.internal.api.JavaEEResource;
+import com.sun.appserv.connectors.internal.api.*;
 import com.sun.enterprise.resource.beans.ExternalJndiResource;
-import com.sun.appserv.connectors.internal.api.ResourcePropertyImpl;
 import com.sun.enterprise.resource.naming.JndiProxyObjectFactory;
 
 import java.util.logging.Logger;
@@ -61,11 +59,12 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import com.sun.enterprise.resource.naming.SerializableObjectRefAddr;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.repository.ResourceProperty;
-import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
+import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -96,7 +95,7 @@ import javax.naming.spi.InitialContextFactory;
 public class ExternalJndiResourceDeployer implements ResourceDeployer {
 
     @Inject
-    private GlassfishNamingManager namingMgr;
+    private ResourceNamingService namingService;
 
     /** StringManager for this deployer */
     private static final StringManager localStrings =
@@ -107,18 +106,32 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
     /**
      * {@inheritDoc}
      */
+    public synchronized void deployResource(Object resource, String applicationName, String moduleName) throws Exception {
+        com.sun.enterprise.config.serverbeans.ExternalJndiResource jndiRes =
+                (com.sun.enterprise.config.serverbeans.ExternalJndiResource) resource;
+        ResourceInfo resourceInfo = new ResourceInfo(jndiRes.getJndiName(), applicationName, moduleName);
+        createExternalJndiResource(jndiRes, resourceInfo);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
 	public synchronized void deployResource(Object resource) throws Exception {
 
         com.sun.enterprise.config.serverbeans.ExternalJndiResource jndiRes =
-            (com.sun.enterprise.config.serverbeans.ExternalJndiResource) resource;
+                (com.sun.enterprise.config.serverbeans.ExternalJndiResource) resource;
+        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(jndiRes);
+        createExternalJndiResource(jndiRes, resourceInfo);
+    }
 
+    private void createExternalJndiResource(com.sun.enterprise.config.serverbeans.ExternalJndiResource jndiRes,
+                                            ResourceInfo resourceInfo) {
         if (ConnectorsUtil.parseBoolean(jndiRes.getEnabled())) {
             // converts the config data to j2ee resource
-            JavaEEResource j2eeRes = toExternalJndiJavaEEResource(jndiRes);
+            JavaEEResource j2eeRes = toExternalJndiJavaEEResource(jndiRes, resourceInfo);
 
             // installs the resource
-            installExternalJndiResource(
-                (com.sun.enterprise.resource.beans.ExternalJndiResource) j2eeRes);
+            installExternalJndiResource((ExternalJndiResource) j2eeRes, resourceInfo);
 
         } else {
             _logger.log(Level.INFO, "core.resource_disabled",
@@ -138,10 +151,11 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
             (com.sun.enterprise.config.serverbeans.ExternalJndiResource) resource;
 
         // converts the config data to j2ee resource
-        JavaEEResource j2eeResource = toExternalJndiJavaEEResource(jndiRes);
+        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(jndiRes);
+        JavaEEResource j2eeResource = toExternalJndiJavaEEResource(jndiRes, resourceInfo);
 
         // un-installs the resource
-        uninstallExternalJndiResource(j2eeResource);
+        uninstallExternalJndiResource(j2eeResource, resourceInfo);
     }
 
     /**
@@ -197,21 +211,17 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
      *
      * @param extJndiRes external jndi resource
      */
-    public void installExternalJndiResource(com.sun.enterprise.resource.beans.ExternalJndiResource extJndiRes) {
-
-        String bindName = null;
+    public void installExternalJndiResource(ExternalJndiResource extJndiRes, ResourceInfo resourceInfo) {
 
         try {
-            bindName = extJndiRes.getName();
-
             // create the external JNDI factory, its initial context and
             // pass them as references.
             String factoryClass = extJndiRes.getFactoryClass();
             String jndiLookupName = extJndiRes.getJndiLookupName();
 
             if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "installExternalJndiResources jndiName "
-                        + bindName + " factoryClass " + factoryClass
+                _logger.log(Level.FINE, "installExternalJndiResources resourceName "
+                        + resourceInfo + " factoryClass " + factoryClass
                         + " jndiLookupName = " + jndiLookupName);
             }
 
@@ -260,7 +270,7 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
                     null);
 
             // unique JNDI name within server runtime
-            ref.add(new StringRefAddr("jndiName", bindName));
+            ref.add(new SerializableObjectRefAddr("resourceInfo", resourceInfo));
 
             // target JNDI name
             ref.add(new StringRefAddr("jndiLookupName", jndiLookupName));
@@ -269,13 +279,13 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
             ref.add(new StringRefAddr("jndiFactoryClass", factoryClass));
 
             // add Context info as a reference address
-            ref.add(new com.sun.enterprise.resource.naming.ProxyRefAddr(bindName, env));
+            ref.add(new com.sun.enterprise.resource.naming.ProxyRefAddr(extJndiRes.getResourceInfo().getName(), env));
 
             // Publish the reference
-            namingMgr.publishObject(bindName, ref, true);
+            namingService.publishObject(resourceInfo, ref, true);
 
         } catch (Exception ex) {
-            _logger.log(Level.SEVERE, "customrsrc.create_ref_error", bindName);
+            _logger.log(Level.SEVERE, "customrsrc.create_ref_error", resourceInfo);
             _logger.log(Level.SEVERE, "customrsrc.create_ref_error_excp", ex);
 
         }
@@ -286,24 +296,25 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
      *
      * @param resource external jndi resource
      */
-    public void uninstallExternalJndiResource(JavaEEResource resource) {
+    public void uninstallExternalJndiResource(JavaEEResource resource, ResourceInfo resourceInfo) {
 
         // removes the jndi context from the factory cache
-        JndiProxyObjectFactory.removeInitialContext(resource.getName());
+        //String bindName = resource.getResourceInfo().getName();
+        JndiProxyObjectFactory.removeInitialContext(resource.getResourceInfo());
 
         // removes the resource from jndi naming
         try {
-            namingMgr.unpublishObject(resource.getName());
+            namingService.unpublishObject(resourceInfo, resourceInfo.getName());
             /* TODO V3 handle jms later
             //START OF IASRI 4660565
             if (((ExternalJndiResource)resource).isJMSConnectionFactory()) {
-                nm.unpublishObject(IASJmsUtil.getXAConnectionFactoryName(resource.getName()));
+                nm.unpublishObject(IASJmsUtil.getXAConnectionFactoryName(resourceName));
             }
             //END OF IASRI 4660565
             */
         } catch (javax.naming.NamingException e) {
             _logger.log(Level.FINE,
-                    "Error while unpublishing resource: " + resource.getName(), e);
+                    "Error while unpublishing resource: " + resourceInfo, e);
         }
     }
 
@@ -322,9 +333,9 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
      *
      */
     public static JavaEEResource toExternalJndiJavaEEResource(
-            com.sun.enterprise.config.serverbeans.ExternalJndiResource rbean) {
+            com.sun.enterprise.config.serverbeans.ExternalJndiResource rbean, ResourceInfo resourceInfo) {
 
-        ExternalJndiResource jr = new com.sun.enterprise.resource.beans.ExternalJndiResource(rbean.getJndiName());
+        ExternalJndiResource jr = new com.sun.enterprise.resource.beans.ExternalJndiResource(resourceInfo);
 
         //jr.setDescription( rbean.getDescription() ); // FIXME: getting error
 

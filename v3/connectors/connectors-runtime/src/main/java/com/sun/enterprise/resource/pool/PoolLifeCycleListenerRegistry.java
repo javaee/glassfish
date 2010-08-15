@@ -36,8 +36,10 @@
 
 package com.sun.enterprise.resource.pool;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycleListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,10 +57,10 @@ public class PoolLifeCycleListenerRegistry implements PoolLifeCycleListener {
     protected List<PoolLifeCycleListener> poolListenersList;
     
     //name of the pool for which the registry is maintained
-    private String poolName;
+    private PoolInfo poolInfo;
 
-    public PoolLifeCycleListenerRegistry(String poolName) {
-        this.poolName = poolName;
+    public PoolLifeCycleListenerRegistry(PoolInfo poolInfo) {
+        this.poolInfo = poolInfo;
         poolListenersList = new ArrayList<PoolLifeCycleListener>();
     }
 
@@ -75,7 +77,7 @@ public class PoolLifeCycleListenerRegistry implements PoolLifeCycleListener {
         if(!(poolListenersList.size() > 1)) {
             //If the pool is already created, set this registry object to the pool.
             PoolManager poolMgr = ConnectorRuntime.getRuntime().getPoolManager();
-            ResourcePool pool = poolMgr.getPool(poolName);
+            ResourcePool pool = poolMgr.getPool(poolInfo);
             pool.setPoolLifeCycleListener(this);
         }
     }
@@ -86,9 +88,9 @@ public class PoolLifeCycleListenerRegistry implements PoolLifeCycleListener {
      * listeners need not be stored.
      * @param poolName
      */
-    public void unRegisterPoolLifeCycleListener(String poolName) {
+    public void unRegisterPoolLifeCycleListener(PoolInfo poolInfo) {
         //To make sure the registry is for the given pool name
-        if (this.poolName.equals(poolName)) {
+        if (this.poolInfo.equals(poolInfo)) {
             if (poolListenersList != null && !poolListenersList.isEmpty()) {
                 //Remove all listeners from this list
                 poolListenersList.clear();

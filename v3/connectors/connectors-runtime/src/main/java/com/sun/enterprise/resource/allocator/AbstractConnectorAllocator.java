@@ -120,7 +120,7 @@ public abstract class AbstractConnectorAllocator
             //ignore and continue??
             //there's nothing the container can do but log it.
             Object[] args = new Object[] {
-                    h.getResourceSpec().getConnectionPoolName(),
+                    h.getResourceSpec().getPoolInfo(),
                     re.getClass(),
                     re.getMessage() };
             _logger.log(Level.WARNING,
@@ -200,9 +200,9 @@ public abstract class AbstractConnectorAllocator
 
         ConnectorConstants.PoolType pt = ConnectorConstants.PoolType.STANDARD_POOL;
         try {
-            pt = ConnectorRuntime.getRuntime().getPoolType(spec.getConnectionPoolName());
+            pt = ConnectorRuntime.getRuntime().getPoolType(spec.getPoolInfo());
         } catch (ConnectorRuntimeException cre) {
-            _logger.log(Level.WARNING,"unable_to_determine_pool_type", spec.getConnectionPoolName());
+            _logger.log(Level.WARNING,"unable_to_determine_pool_type", spec.getPoolInfo());
         }
         if (pt == ConnectorConstants.PoolType.ASSOCIATE_WITH_THREAD_POOL) {
             return new AssocWithThreadResourceHandle(resource, spec, alloc, info);

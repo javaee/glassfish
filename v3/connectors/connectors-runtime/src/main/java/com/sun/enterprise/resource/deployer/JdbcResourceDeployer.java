@@ -50,6 +50,8 @@
 package com.sun.enterprise.resource.deployer;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import org.glassfish.resource.common.PoolInfo;
+import org.glassfish.resource.common.ResourceInfo;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
@@ -96,26 +98,40 @@ public class JdbcResourceDeployer implements ResourceDeployer {
     /**
      * {@inheritDoc}
      */
-    public void deployResource(Object resource) throws Exception {
+    public synchronized void deployResource(Object resource, String applicationName, String moduleName)
+            throws Exception {
         //deployResource is not synchronized as there is only one caller
         //ResourceProxy which is synchronized
 
-        JdbcResource jdbcRes = (JdbcResource) resource;
+        com.sun.enterprise.config.serverbeans.JdbcResource jdbcRes =
+                (com.sun.enterprise.config.serverbeans.JdbcResource) resource;
 
-        if (ConnectorsUtil.parseBoolean(jdbcRes.getEnabled())) {
-            String jndiName = jdbcRes.getJndiName();
-            String poolName = jdbcRes.getPoolName();
-            
-            runtime.createConnectorResource(jndiName, poolName, null);
+        String jndiName = jdbcRes.getJndiName();
+        String poolName = jdbcRes.getPoolName();
+        PoolInfo poolInfo = new PoolInfo(poolName, applicationName, moduleName);
+        ResourceInfo resourceInfo = new ResourceInfo(jndiName, applicationName, moduleName);
+
+        if (ConnectorsUtil.parseBoolean(jdbcRes.getEnabled())){
+            runtime.createConnectorResource(resourceInfo, poolInfo, null);
             //In-case the resource is explicitly created with a suffix (__nontx or __PM), no need to create one
             if(ConnectorsUtil.getValidSuffix(jndiName) == null){
-                runtime.createConnectorResource( ConnectorsUtil.getPMJndiName( jndiName), poolName, null);
+                ResourceInfo pmResourceInfo = new ResourceInfo(ConnectorsUtil.getPMJndiName(jndiName),
+                        resourceInfo.getApplicationName(), resourceInfo.getModuleName());
+                runtime.createConnectorResource( pmResourceInfo, poolInfo, null);
             }
             _logger.finest("deployed resource " + jndiName);
         } else {
             _logger.log(Level.INFO, "core.resource_disabled",
                     new Object[]{jdbcRes.getJndiName(), ConnectorConstants.RES_TYPE_JDBC});
         }
+    }
+    /**
+     * {@inheritDoc}
+     */
+    public void deployResource(Object resource) throws Exception {
+        JdbcResource jdbcRes = (JdbcResource) resource;
+        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(jdbcRes);
+        deployResource(jdbcRes, resourceInfo.getApplicationName(), resourceInfo.getModuleName());
     }
 
     /**
@@ -125,16 +141,16 @@ public class JdbcResourceDeployer implements ResourceDeployer {
             throws Exception {
 
         JdbcResource jdbcRes = (JdbcResource) resource;
+        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(jdbcRes);
 
-        String jndiName = jdbcRes.getJndiName();
-
-        runtime.deleteConnectorResource(jndiName);
-        ConnectorRegistry.getInstance().removeResourceFactories(jndiName);
+        runtime.deleteConnectorResource(resourceInfo);
+        ConnectorRegistry.getInstance().removeResourceFactories(resourceInfo);
         //In-case the resource is explicitly created with a suffix (__nontx or __PM), no need to delete one
-        if(ConnectorsUtil.getValidSuffix(jndiName) == null){
-            String pmJndiName = ConnectorsUtil.getPMJndiName( jndiName) ;
-            runtime.deleteConnectorResource(pmJndiName);
-            ConnectorRegistry.getInstance().removeResourceFactories(pmJndiName);
+        if(ConnectorsUtil.getValidSuffix(resourceInfo.getName()) == null){
+            String pmJndiName = ConnectorsUtil.getPMJndiName( resourceInfo.getName()) ;
+            ResourceInfo pmResourceInfo = new ResourceInfo(pmJndiName, resourceInfo.getApplicationName(), resourceInfo.getModuleName());
+            runtime.deleteConnectorResource(pmResourceInfo);
+            ConnectorRegistry.getInstance().removeResourceFactories(pmResourceInfo);
         }
 
         //Since 8.1 PE/SE/EE - if no more resource-ref to the pool
@@ -198,18 +214,20 @@ public class JdbcResourceDeployer implements ResourceDeployer {
      */
     private void checkAndDeletePool(JdbcResource cr) throws Exception {
         String poolName = cr.getPoolName();
-        Resources res = (Resources) cr.getParent();
+        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(cr);
+        PoolInfo poolInfo = new PoolInfo(poolName, resourceInfo.getApplicationName(), resourceInfo.getModuleName());
+        Resources resources = (Resources) cr.getParent();
         //Its possible that the JdbcResource here is a DataSourceDefinition. Ignore optimization.
-        if(res != null){
+        if(resources != null){
             try {
                 boolean poolReferred =
-                    ResourcesUtil.createInstance().isJdbcPoolReferredInServerInstance(poolName);
+                    ResourcesUtil.createInstance().isJdbcPoolReferredInServerInstance(poolInfo);
                 if (!poolReferred) {
                     _logger.fine("Deleting JDBC pool [" + poolName + " ] as there are no more " +
                             "resource-refs to the pool in this server instance");
 
                     JdbcConnectionPool jcp = (JdbcConnectionPool)
-                            res.getResourceByName(JdbcConnectionPool.class, poolName);
+                            resources.getResourceByName(JdbcConnectionPool.class, poolName);
                     //Delete/Undeploy Pool
                     runtime.getResourceDeployer(jcp).undeployResource(jcp);
                 }

@@ -36,6 +36,7 @@
 
 package org.glassfish.javaee.services;
 
+import org.glassfish.resource.common.ResourceInfo;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -65,7 +66,7 @@ import org.jvnet.hk2.config.ObservableBean;
 import javax.naming.NamingException;
 
 /**
- * Resource manager to bind various resources during startup, create/update/delete of resource/pool
+ * Resource manager to bind various resources during start-up, create/update/delete of resource/pool
  * @author Jagadish Ramu
  */
 @Service(name="ResourceManager") // this name is used in ApplicationLoaderService
@@ -150,7 +151,8 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
             if(resource instanceof BindableResource){
                 BindableResource bindableResource = (BindableResource)resource;
                 if(isBindableResourceEnabled(bindableResource.getJndiName())){
-                    resourcesBinder.deployResource(bindableResource.getJndiName(), resource);
+                    ResourceInfo resourceInfo = new ResourceInfo(bindableResource.getJndiName());
+                    resourcesBinder.deployResource(resourceInfo, resource);
                 }
             } else if (resource instanceof ResourcePool) {
                 // ignore, as they are loaded lazily
@@ -159,7 +161,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                 try{
                     getResourceDeployer(resource).deployResource(resource);
                 }catch(Exception e){
-                    Object[] params = {ConnectorsUtil.getResourceName(resource), e};
+                    Object[] params = {ConnectorsUtil.getGenericResourceInfo(resource), e};
                     logger.log(Level.WARNING, "resources.resource-manager.deploy-resource-failed", params);
                 }
             }
@@ -233,7 +235,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
             try{
                 getResourceDeployer(resource).undeployResource(resource);
             }catch(Exception e){
-                Object[] params = {ConnectorsUtil.getResourceName(resource), e};
+                Object[] params = {ConnectorsUtil.getGenericResourceInfo(resource), e};
                 logger.log(Level.WARNING, "resources.resource-manager.undeploy-resource-failed", params);
             }finally{
                 removeListenerForResource(resource);
@@ -385,8 +387,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                 try {
                     getResourceDeployer(instance).deployResource(instance);
                 } catch (Exception e) {
-                    String resourceName = ConnectorsUtil.getResourceName((Resource) instance);
-                    Object params[] = {resourceName, e};
+                    Object params[] = {ConnectorsUtil.getGenericResourceInfo((Resource) instance), e};
                     logger.log(Level.WARNING, "resources.resource-manager.deploy-resource-failed", params);
                 }
             } else if (instance instanceof Property) {
@@ -397,9 +398,8 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                 ResourceRef ref = (ResourceRef)instance;
                 BindableResource resource = (BindableResource)
                         allResources.getResourceByName(BindableResource.class, ref.getRef());
-                resourcesBinder.deployResource(resource.getJndiName(), resource);
-            } else {
-                //For any other type of instance, don't do anything.
+                ResourceInfo resourceInfo = new ResourceInfo(resource.getJndiName());
+                resourcesBinder.deployResource(resourceInfo, resource);
             }
             return np;
         }

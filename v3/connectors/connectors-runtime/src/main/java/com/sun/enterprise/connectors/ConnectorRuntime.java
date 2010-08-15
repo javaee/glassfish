@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.connectors;
 
+import com.sun.appserv.connectors.internal.api.ResourceNamingService;
 import com.sun.enterprise.connectors.util.*;
 
 import java.io.IOException;
@@ -78,11 +79,11 @@ import com.sun.enterprise.resource.pool.monitor.ConnectionPoolProbeProviderUtil;
 import com.sun.enterprise.security.jmac.callback.ContainerCallbackHandler;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import org.glassfish.resource.common.PoolInfo;
+import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.admin.*;
 import com.sun.logging.LogDomains;
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
@@ -175,8 +176,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     private ConnectorClassLoaderService connectorClassLoaderService;
 
     @Inject
-    ServerEnvironmentImpl env;
+    private ServerEnvironmentImpl env;
 
+    @Inject
+    private ResourceNamingService resourceNamingService;
 
     // performance improvement, cache the lookup of transaction manager.
     private JavaEETransactionManager transactionManager;
@@ -208,6 +211,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     public ConnectionPoolProbeProviderUtil getProbeProviderUtil(){
         return habitat.getComponent(ConnectionPoolProbeProviderUtil.class);
     }
+
+    public ResourceNamingService getResourceNamingService(){
+        return resourceNamingService;
+    }
     
     /**
      * Returns the execution environment.
@@ -236,13 +243,14 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * Deletes connector Connection pool
      *
-     * @param poolName Name of the pool to delete
+     * @param poolInfo Name of the pool to delete
      * @throws ConnectorRuntimeException if pool deletion operation fails
      */
-    public void deleteConnectorConnectionPool(String poolName)
+    public void deleteConnectorConnectionPool(PoolInfo poolInfo)
             throws ConnectorRuntimeException {
-        ccPoolAdmService.deleteConnectorConnectionPool(poolName);
+        ccPoolAdmService.deleteConnectorConnectionPool(poolInfo);
     }
+
 
     /**
      * Creates connector connection pool in the connector container.
@@ -260,15 +268,15 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * Creates the connector resource on a given connection pool
      *
-     * @param jndiName     JNDI name of the resource to be created
-     * @param poolName     to which the connector resource belongs.
+     * @param resourceInfo     JNDI name of the resource to be created
+     * @param poolInfo     to which the connector resource belongs.
      * @param resourceType Unused.
      * @throws ConnectorRuntimeException If the resouce creation fails.
      */
-    public void createConnectorResource(String jndiName, String poolName,
+    public void createConnectorResource(ResourceInfo resourceInfo, PoolInfo poolInfo,
                                         String resourceType) throws ConnectorRuntimeException {
 
-        connectorResourceAdmService.createConnectorResource(jndiName, poolName, resourceType);
+        connectorResourceAdmService.createConnectorResource(resourceInfo, poolInfo, resourceType);
     }
 
     /**
@@ -302,9 +310,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @param jndiName JNDI name of the resource to delete.
      * @throws ConnectorRuntimeException if connector resource deletion fails.
      */
-    public void deleteConnectorResource(String jndiName)
-            throws ConnectorRuntimeException {
-        connectorResourceAdmService.deleteConnectorResource(jndiName);
+    public void deleteConnectorResource(ResourceInfo resourceInfo) throws ConnectorRuntimeException {
+        connectorResourceAdmService.deleteConnectorResource(resourceInfo);
     }
 
     /**
@@ -366,14 +373,14 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /** Returns the MCF instance. If the MCF is already created and
      *  present in connectorRegistry that instance is returned. Otherwise it
      *  is created explicitly and added to ConnectorRegistry.
-     *  @param poolName Name of the pool.MCF pertaining to this pool is
+     *  @param poolInfo Name of the pool.MCF pertaining to this pool is
      *         created/returned.
      *  @return created/already present MCF instance
      *  @throws ConnectorRuntimeException if creation/retrieval of MCF fails
      */
     public ManagedConnectionFactory obtainManagedConnectionFactory(
-           String poolName) throws ConnectorRuntimeException {
-        return ccPoolAdmService.obtainManagedConnectionFactory(poolName);
+           PoolInfo poolInfo) throws ConnectorRuntimeException {
+        return ccPoolAdmService.obtainManagedConnectionFactory(poolInfo);
      }
 
 
@@ -382,77 +389,96 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * present in connectorRegistry that instance is returned. Otherwise it
      * is created explicitly and added to ConnectorRegistry.
      *
-     * @param poolName Name of the pool.MCF pertaining to this pool is
+     * @param poolInfo Name of the pool.MCF pertaining to this pool is
      *                 created/returned.
      * @return created/already present MCF instance
      * @throws ConnectorRuntimeException if creation/retrieval of MCF fails
      */
     public ManagedConnectionFactory obtainManagedConnectionFactory(
-            String poolName, Hashtable env) throws ConnectorRuntimeException {
-        return ccPoolAdmService.obtainManagedConnectionFactory(poolName, env);
+            PoolInfo poolInfo, Hashtable env) throws ConnectorRuntimeException {
+        return ccPoolAdmService.obtainManagedConnectionFactory(poolInfo, env);
     }
 
     /** Returns the MCF instances in scenarions where a pool has to
      *  return multiple mcfs. Should be used only during JMS RA recovery.
-     *  @param poolName Name of the pool.MCFs pertaining to this pool is
+     *  @param poolInfo Name of the pool.MCFs pertaining to this pool is
      *         created/returned.
      *  @return created MCF instances
      *  @throws ConnectorRuntimeException if creation/retrieval of MCFs fails
      */
 
     public ManagedConnectionFactory[]  obtainManagedConnectionFactories(
-           String poolName) throws ConnectorRuntimeException {
-        return ccPoolAdmService.obtainManagedConnectionFactories(poolName);
+           PoolInfo poolInfo) throws ConnectorRuntimeException {
+        return ccPoolAdmService.obtainManagedConnectionFactories(poolInfo);
     }
 
 
     /**
      * provides connection manager for a pool
      *
-     * @param poolName         pool name
+     * @param poolInfo         pool name
      * @param forceNoLazyAssoc when set to true, lazy association feature will be turned off (even if it is ON via
      *                         pool attribute)
      * @return ConnectionManager for the pool
      * @throws ConnectorRuntimeException when unable to provide a connection manager
      */
-    public ConnectionManager obtainConnectionManager(String poolName,
+    public ConnectionManager obtainConnectionManager(PoolInfo poolInfo,
                                                      boolean forceNoLazyAssoc)
             throws ConnectorRuntimeException {
         ConnectionManager mgr = ConnectionManagerFactory.
-                getAvailableConnectionManager(poolName, forceNoLazyAssoc);
+                getAvailableConnectionManager(poolInfo, forceNoLazyAssoc);
         return mgr;
     }
 
     /**
      * {@inheritDoc}
      */
-    public Object lookupPMResource(String jndiName, boolean force) throws NamingException {
+    public Object lookupPMResource(ResourceInfo resourceInfo, boolean force) throws NamingException{
         Object result ;
         try{
-            result = connectorResourceAdmService.lookup(jndiName + PM_JNDI_SUFFIX);
+            result = connectorResourceAdmService.lookup(resourceInfo);
         }catch(NamingException ne){
             if(force && isDAS()){
-                _logger.log(Level.FINE, "jdbc.unable_to_lookup_resource",new Object[] {jndiName});
-                result = lookupDataSourceInDAS(jndiName);
+                _logger.log(Level.FINE, "jdbc.unable_to_lookup_resource",new Object[] {resourceInfo});
+                result = lookupDataSourceInDAS(resourceInfo);
             }else{
                 throw ne;
             }
         }
         return result;
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Object lookupPMResource(String jndiName, boolean force) throws NamingException {
+        jndiName = jndiName + PM_JNDI_SUFFIX;
+        ResourceInfo resourceInfo = new ResourceInfo(jndiName);
+        return lookupPMResource(resourceInfo, force);
     }
 
     /**
      * {@inheritDoc}
      */
     public Object lookupNonTxResource(String jndiName, boolean force) throws NamingException {
+        jndiName = jndiName + NON_TX_JNDI_SUFFIX;
+
+        ResourceInfo resourceInfo = new ResourceInfo(jndiName);
+        return lookupNonTxResource(resourceInfo, force);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object lookupNonTxResource(ResourceInfo resourceInfo, boolean force) throws NamingException {
+
         Object result ;
         try{
-            result = connectorResourceAdmService.lookup(jndiName + NON_TX_JNDI_SUFFIX);
+            result = connectorResourceAdmService.lookup(resourceInfo);
         }catch(NamingException ne){
             if(force && isDAS()){
-                _logger.log(Level.FINE, "jdbc.unable_to_lookup_resource",new Object[] {jndiName});
-                result = lookupDataSourceInDAS(jndiName);
+                _logger.log(Level.FINE, "jdbc.unable_to_lookup_resource",new Object[] {resourceInfo});
+                result = lookupDataSourceInDAS(resourceInfo);
             }else{
                 throw ne;
             }
@@ -477,8 +503,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @param jndiName  jndi name of the resource
      * @return DataSource representing the resource.
      */
-    private Object lookupDataSourceInDAS(String jndiName){
-        return connectorResourceAdmService.lookupDataSourceInDAS(jndiName);
+    private Object lookupDataSourceInDAS(ResourceInfo resourceInfo){
+        return connectorResourceAdmService.lookupDataSourceInDAS(resourceInfo);
     }
 
     /**
@@ -491,7 +517,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * user since a resource needs to be forcibly created in the DAS Too.
      * This API will mitigate this need.
      *
-     * @param jndiName the jndi name of the resource being used to get Connection from
+     * @param resourceInfo the jndi name of the resource being used to get Connection from
      *                 This resource can either be a pmf resource or a jdbc resource
      * @param user  the user used to authenticate this request
      * @param password  the password used to authenticate this request
@@ -499,9 +525,9 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @return a java.sql.Connection
      * @throws java.sql.SQLException in case of errors
      */
-    public Connection getConnection(String jndiName, String user, String password)
+    public Connection getConnection(ResourceInfo resourceInfo, String user, String password)
             throws SQLException{
-	    return ccPoolAdmService.getConnection( jndiName, user, password );
+	    return ccPoolAdmService.getConnection( resourceInfo, user, password );
     }
 
     /**
@@ -514,15 +540,15 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * user since a resource needs to be forcibly created in the DAS Too.
      * This API will mitigate this need.
      *
-     * @param jndiName the jndi name of the resource being used to get Connection from
+     * @param resourceInfo the jndi name of the resource being used to get Connection from
      *                 This resource can either be a pmf resource or a jdbc resource
      *
      * @return a java.sql.Connection
      * @throws java.sql.SQLException in case of errors
      */
-    public Connection getConnection(String jndiName)
+    public Connection getConnection(ResourceInfo resourceInfo)
             throws SQLException{
-	    return ccPoolAdmService.getConnection( jndiName );
+	    return ccPoolAdmService.getConnection( resourceInfo );
     }
 
 
@@ -716,22 +742,22 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * object that is bound in JNDI.
      *
      * @param rarName  Name of Resource Adpater.
-     * @param poolName Name of the pool.
+     * @param poolInfo Name of the pool.
      */
-    public void switchOnMatching(String rarName, String poolName) {
-        connectorService.switchOnMatching(rarName, poolName);
+    public void switchOnMatching(String rarName, PoolInfo poolInfo) {
+        connectorService.switchOnMatching(rarName, poolInfo);
     }
 
     /**
      * Causes matching to be switched on the ConnectorConnectionPool
      * bound in JNDI
      *
-     * @param poolName Name of the pool
+     * @param poolInfo Name of the pool
      * @throws ConnectorRuntimeException when unable to set matching via jndi object
      */
-    public void switchOnMatchingInJndi(String poolName)
+    public void switchOnMatchingInJndi(PoolInfo poolInfo)
             throws ConnectorRuntimeException {
-        ccPoolAdmService.switchOnMatching(poolName);
+        ccPoolAdmService.switchOnMatching(poolInfo);
     }
 
     public GlassfishNamingManager getNamingManager() {
@@ -776,11 +802,11 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * Checks if a conncetor connection pool has been deployed to this server
      * instance
      *
-     * @param poolName connection pool name
+     * @param poolInfo connection pool name
      * @return boolean indicating whether the resource is deployed or not
      */
-    public boolean isConnectorConnectionPoolDeployed(String poolName) {
-        return ccPoolAdmService.isConnectorConnectionPoolDeployed(poolName);
+    public boolean isConnectorConnectionPoolDeployed(PoolInfo poolInfo) {
+        return ccPoolAdmService.isConnectorConnectionPoolDeployed(poolInfo);
     }
 
     /**
@@ -905,14 +931,14 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * Currently only the BasicPassword authentication is supported.
      *
      * @param rarName  Rar module Name
-     * @param poolName Name of the pool. Used for creation of
+     * @param poolInfo Name of the pool. Used for creation of
      *                 BasicPasswordAuthenticationService
      * @return AuthenticationService connector runtime's authentication service
      */
     public AuthenticationService getAuthenticationService(String rarName,
-                                                          String poolName) {
+                                                          PoolInfo poolInfo) {
 
-        return connectorSecurityAdmService.getAuthenticationService(rarName, poolName);
+        return connectorSecurityAdmService.getAuthenticationService(rarName, poolInfo);
     }
 
     /**
@@ -995,17 +1021,60 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
 
-    public ResourcePool getConnectionPoolConfig(String poolName) {
-        return ConnectorsUtil.getConnectionPoolConfig(poolName, getResources());
+    public ResourcePool getConnectionPoolConfig(PoolInfo poolInfo) {
+
+/*        if(ConnectorsUtil.isApplicationScopedResource(poolInfo)){
+            String applicationName = ConnectorsUtil.getApplicationName(poolInfo);
+            Resources asc = getApplications().getApplication(applicationName).
+                    getResources();
+            poolInfo = ConnectorsUtil.getResourceNameFromApplicationScopedResourceName(poolInfo);
+            ResourcePool pool = ConnectorsUtil.getConnectionPoolConfig(poolInfo, asc);
+            if(pool == null && poolInfo.startsWith(JAVA_APP_SCOPE_PREFIX)){
+                String name = poolInfo.substring(poolInfo.indexOf(JAVA_APP_SCOPE_PREFIX) + JAVA_APP_SCOPE_PREFIX.length());
+                pool = ConnectorsUtil.getConnectionPoolConfig(name, asc);
+                if(pool == null){
+                    throw new RuntimeException("No pool by name ["+poolInfo+"] found for application ["+applicationName+"]");
+                }
+            }
+            return pool;
+        }*/
+        if(ConnectorsUtil.isApplicationScopedResource(poolInfo)){
+            String applicationName = poolInfo.getApplicationName();
+            String moduleName = poolInfo.getModuleName();
+            Resources asc = null;
+            if(applicationName != null && moduleName != null){
+                asc = getApplications().getApplication(applicationName).getModule(moduleName).getResources(); 
+            }else if(applicationName != null){
+                asc = getApplications().getApplication(applicationName).getResources();
+            }
+            //poolInfo = ConnectorsUtil.getResourceNameFromApplicationScopedResourceName(poolInfo);
+            ResourcePool pool = ConnectorsUtil.getConnectionPoolConfig(poolInfo, asc);
+
+/*
+            if(pool == null && poolInfo.startsWith(JAVA_APP_SCOPE_PREFIX)){
+                String name = poolInfo.substring(poolInfo.indexOf(JAVA_APP_SCOPE_PREFIX) + JAVA_APP_SCOPE_PREFIX.length());
+                pool = ConnectorsUtil.getConnectionPoolConfig(name, asc);
+                if(pool == null){
+                    throw new RuntimeException("No pool by name ["+poolInfo+"] found for applicaton ["+applicationName+"]");
+                }
+            }
+*/
+            if(pool == null){
+                throw new RuntimeException("No pool by name ["+poolInfo+"] found for applicaton ["+applicationName+"]");
+            }
+            return pool;
+        }else{
+            return ConnectorsUtil.getConnectionPoolConfig(poolInfo, getResources());
+        }
+    }
+
+    public boolean pingConnectionPool(PoolInfo poolInfo) throws ResourceException {
+        return ccPoolAdmService.testConnectionPool(poolInfo);
     }
 
 
-    public boolean pingConnectionPool(String poolName) throws ResourceException {
-        return ccPoolAdmService.testConnectionPool(poolName);
-    }
-
-    public PoolType getPoolType(String poolName) throws ConnectorRuntimeException {
-        return ccPoolAdmService.getPoolType(poolName);
+    public PoolType getPoolType(PoolInfo poolInfo) throws ConnectorRuntimeException {
+        return ccPoolAdmService.getPoolType(poolInfo);
     }
 
     /**
@@ -1017,7 +1086,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @return WorkManager
      * @throws ConnectorRuntimeException when unable to get work manager
      */
-    public WorkManager getWorkManagerProxy(String poolId, String moduleName, ClassLoader rarCL) throws ConnectorRuntimeException {
+    public WorkManager getWorkManagerProxy(String poolId, String moduleName, ClassLoader rarCL)
+            throws ConnectorRuntimeException {
         return habitat.getComponent(WorkManagerFactory.class).getWorkManagerProxy(poolId, moduleName, rarCL);
     }
 
@@ -1035,15 +1105,15 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         habitat.getComponent(WorkManagerFactory.class).removeWorkManager(moduleName);
     }
 
-    public void addAdminObject(String appName, String connectorName,
-                               String jndiName, String adminObjectType, String adminObjectClassName, Properties props)
+    public void addAdminObject(String appName, String connectorName, ResourceInfo resourceInfo,
+                               String adminObjectType, String adminObjectClassName, Properties props)
             throws ConnectorRuntimeException {
-        adminObjectAdminService.addAdminObject(appName, connectorName, jndiName, adminObjectType, adminObjectClassName,
-                props);
+        adminObjectAdminService.addAdminObject(appName, connectorName, resourceInfo, adminObjectType, 
+                adminObjectClassName, props);
     }
 
-    public void deleteAdminObject(String jndiName) throws ConnectorRuntimeException {
-        adminObjectAdminService.deleteAdminObject(jndiName);
+    public void deleteAdminObject(ResourceInfo resourceInfo) throws ConnectorRuntimeException {
+        adminObjectAdminService.deleteAdminObject(resourceInfo);
     }
 
     public ClassLoader getSystemRARClassLoader(String rarName) throws ConnectorRuntimeException{
@@ -1222,12 +1292,75 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * {@inheritDoc}
      */
-    public List<WorkSecurityMap> getWorkSecurityMap(String raName){
-        return ConnectorsUtil.getWorkSecurityMaps(raName, getResources());
+    public List<WorkSecurityMap> getWorkSecurityMap(String raName) {
+        List<WorkSecurityMap> workSecurityMap =
+                ConnectorsUtil.getWorkSecurityMaps(raName, getResources());
+        List<WorkSecurityMap> appScopedMap = null;
+        String appName = raName;
+
+        if (!ConnectorsUtil.isStandAloneRA(raName)) {
+            appName = ConnectorsUtil.getApplicationNameOfEmbeddedRar(raName);
+            Application application = getApplications().getApplication(appName);
+            if(application != null){
+                //embedded RAR
+                String resourceAdapterName = ConnectorsUtil.getRarNameFromApplication(raName);
+                Module module = application.getModule(resourceAdapterName);
+                if (module != null) {
+                    Resources msr = module.getResources();
+                    if (msr != null) {
+                        appScopedMap = ConnectorsUtil.getWorkSecurityMaps(raName, msr);
+                    }
+                }
+            }
+        }else{
+            Application app = getApplications().getApplication(appName);
+            if (app != null) {
+                Resources asc = app.getResources();
+                if (asc != null) {
+                    appScopedMap = ConnectorsUtil.getWorkSecurityMaps(raName, asc);
+                }
+            }
+        }
+        if (appScopedMap != null) {
+            workSecurityMap.addAll(appScopedMap);
+        }
+        return workSecurityMap;
     }
 
-    public Resources getResources(){
-        //TODO revisit when app-scoped-resources is introduced
+    public Resources getResources(PoolInfo poolInfo){
+        Resources resources;
+        if(ConnectorsUtil.isModuleScopedResource(poolInfo)){
+            Application application  = getApplications().getApplication(poolInfo.getApplicationName());
+            if(application != null){
+                Module module = application.getModule(poolInfo.getModuleName());
+                return module.getResources();
+            }else{
+                return null;
+            }
+        }else if(ConnectorsUtil.isApplicationScopedResource(poolInfo)){
+            Application application  = getApplications().getApplication(poolInfo.getApplicationName());
+            if(application != null){
+                return application.getResources();
+            }else{
+                return null;
+            }
+        }
+        return getResources();
+    }
+
+    public Resources getResources(ResourceInfo resourceInfo){
+        if(ConnectorsUtil.isModuleScopedResource(resourceInfo)){
+            Application application  = getApplications().getApplication(resourceInfo.getApplicationName());
+            Module module = application.getModule(resourceInfo.getModuleName());
+            return module.getResources();
+        }else if(ConnectorsUtil.isApplicationScopedResource(resourceInfo)){
+            Application application  = getApplications().getApplication(resourceInfo.getApplicationName());
+            return application.getResources();
+        }
+        return getResources();
+    }
+
+    private Resources getResources(){
         return habitat.getComponent(Resources.class);
     }
 
@@ -1239,27 +1372,38 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         return ConnectorsUtil.getShutdownTimeout(
                 habitat.getComponent(com.sun.enterprise.config.serverbeans.ConnectorService.class));
     }
-    
+
     /**
-     * Flush Connection pool by reinitializing the connections 
+     * Flush Connection pool by reinitializing the connections
      * established in the pool.
-     * @param poolName
+     * @param poolInfo
      * @throws com.sun.appserv.connectors.internal.api.ConnectorRuntimeException
      */
     public boolean flushConnectionPool(String poolName) throws ConnectorRuntimeException {
-        return ccPoolAdmService.flushConnectionPool(poolName);
+        return ccPoolAdmService.flushConnectionPool(new PoolInfo(poolName));
     }
+
+    /**
+     * Flush Connection pool by reinitializing the connections
+     * established in the pool.
+     * @param poolInfo
+     * @throws com.sun.appserv.connectors.internal.api.ConnectorRuntimeException
+     */
+    public boolean flushConnectionPool(PoolInfo poolInfo) throws ConnectorRuntimeException {
+        return ccPoolAdmService.flushConnectionPool(poolInfo);
+    }
+
 
     /**
      * Get Validation table names list for the database that the jdbc 
      * connection pool refers to. This is used for connection validation.
-     * @param poolName
+     * @param poolInfo
      * @return all validation table names.
      * @throws javax.resource.ResourceException
      * @throws javax.naming.NamingException
      */        
-    public Set<String> getValidationTableNames(String poolName) throws ResourceException {
-        return jdbcAdminService.getValidationTableNames(poolName);
+    public Set<String> getValidationTableNames(PoolInfo poolInfo) throws ResourceException {
+        return jdbcAdminService.getValidationTableNames(poolInfo);
     }
 
     /**
@@ -1310,12 +1454,11 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * Check if ping is on during pool creation. 
      * 
-     * @param poolName
+     * @param poolInfo
      * @return
      */
-    public boolean getPingDuringPoolCreation(String poolName) {
-        return ConnectorsUtil.getPingDuringPoolCreation(poolName, 
-                getResources());
+    public boolean getPingDuringPoolCreation(PoolInfo poolInfo) {
+        return ConnectorsUtil.getPingDuringPoolCreation(poolInfo, getResources(poolInfo));
     }
     
     /**

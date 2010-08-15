@@ -49,6 +49,7 @@ import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.JavaEEResource;
 import com.sun.logging.LogDomains;
+import org.glassfish.resource.common.ResourceInfo;
 
 import java.io.Serializable;
 import java.security.AccessController;
@@ -79,13 +80,13 @@ public class AdministeredObjectResource extends JavaEEResourceBase
     private Set configProperties_;
 
 
-    public AdministeredObjectResource(String name) {
-        super(name);
+    public AdministeredObjectResource(ResourceInfo resourceInfo) {
+        super(resourceInfo);
     }
 
-    protected JavaEEResource doClone(String name) {
+    protected JavaEEResource doClone(ResourceInfo resourceInfo) {
         AdministeredObjectResource clone =
-                new AdministeredObjectResource(name);
+                new AdministeredObjectResource(resourceInfo);
         clone.setResourceAdapter(getResourceAdapter());
         clone.setAdminObjectType(getAdminObjectType());
         return clone;
@@ -203,7 +204,7 @@ public class AdministeredObjectResource extends JavaEEResourceBase
     }
 
     public String toString() {
-        return "< Administered Object : " + getName() +
+        return "< Administered Object : " + getResourceInfo() +
                 " , " + getResourceAdapter() +
                 " , " + getAdminObjectType() + " >";
     }

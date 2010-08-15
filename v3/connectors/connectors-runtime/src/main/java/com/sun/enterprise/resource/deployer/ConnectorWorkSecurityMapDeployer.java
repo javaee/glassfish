@@ -46,6 +46,11 @@ import com.sun.enterprise.config.serverbeans.WorkSecurityMap;
 @Scoped(Singleton.class)
 public class ConnectorWorkSecurityMapDeployer implements ResourceDeployer {
 
+    public synchronized void deployResource(Object resource, String applicationName, String moduleName)
+            throws Exception {
+        //no-op
+    }
+    
     public void deployResource(Object resoure) throws Exception {
         //no-op
     }

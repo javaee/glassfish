@@ -38,6 +38,8 @@ package com.sun.enterprise.resource.deployer;
 
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import org.glassfish.resource.common.PoolInfo;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -84,25 +86,25 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
     /**
      * {@inheritDoc}
      */
-    public void deployResource(Object resource) throws Exception {
+    public void deployResource(Object resource, String applicationName, String moduleName) throws Exception {
         //deployResource is not synchronized as there is only one caller
         //ResourceProxy which is synchronized
-        
+
         _logger.fine("ConnectorConnectionPoolDeployer : deployResource ");
 
         final com.sun.enterprise.config.serverbeans.ConnectorConnectionPool
                 domainCcp =
                 (com.sun.enterprise.config.serverbeans.ConnectorConnectionPool) resource;
 
-        // If the user is trying to modify the default pool, 
+        // If the user is trying to modify the default pool,
         // redirect call to redeployResource
         if (ConnectionPoolObjectsUtils.isPoolSystemPool(domainCcp)) {
             this.redeployResource(resource);
             return;
         }
 
-
-        final ConnectorConnectionPool ccp = getConnectorConnectionPool(domainCcp);
+        PoolInfo poolInfo = new PoolInfo(domainCcp.getName(), applicationName, moduleName);
+        final ConnectorConnectionPool ccp = getConnectorConnectionPool(domainCcp, poolInfo);
         final String defName = domainCcp.getConnectionDefinitionName();
 
         /*if (domainCcp.isEnabled()) {
@@ -127,6 +129,17 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
                 domainCcp.getProperty(), domainCcp.getSecurityMap());
         _logger.log(Level.FINE, "Added connectorConnectionPool in backend",
                 domainCcp.getResourceAdapterName());
+
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void deployResource(Object resource) throws Exception {
+        com.sun.enterprise.config.serverbeans.ConnectorConnectionPool ccp =
+                (com.sun.enterprise.config.serverbeans.ConnectorConnectionPool)resource;
+        PoolInfo poolInfo = ConnectorsUtil.getPoolInfo(ccp);
+        deployResource(resource, poolInfo.getApplicationName(), poolInfo.getModuleName());
     }
 
     /**
@@ -138,13 +151,11 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         final com.sun.enterprise.config.serverbeans.ConnectorConnectionPool
                 domainCcp =
                 (com.sun.enterprise.config.serverbeans.ConnectorConnectionPool) resource;
-        final String poolName = domainCcp.getName();
+        PoolInfo poolInfo = ConnectorsUtil.getPoolInfo(domainCcp);
 
-        _logger.log(Level.FINE,
-                "Calling backend to delete ConnectorConnectionPool", poolName);
-        runtime.deleteConnectorConnectionPool(poolName);
-        _logger.log(Level.FINE,
-                "Deleted ConnectorConnectionPool in backend", poolName);
+        _logger.log(Level.FINE, "Calling backend to delete ConnectorConnectionPool", domainCcp);
+        runtime.deleteConnectorConnectionPool(poolInfo);
+        _logger.log(Level.FINE, "Deleted ConnectorConnectionPool in backend", domainCcp);
 
         /*//unregister the managed object
         if (QUEUE_CF.equals(defName) || TOPIC_CF.equals(defName)) {
@@ -167,13 +178,12 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
                 domainCcp =
                 (com.sun.enterprise.config.serverbeans.ConnectorConnectionPool) resource;
         List<SecurityMap> securityMaps = domainCcp.getSecurityMap();
-        String poolName = domainCcp.getName();
-
 
         //Since 8.1 PE/SE/EE, only if pool has already been deployed in this 
         //server-instance earlier, reconfig this pool
-        if (!runtime.isConnectorConnectionPoolDeployed(poolName)) {
-            _logger.fine("The connector connection pool " + poolName
+        PoolInfo poolInfo = ConnectorsUtil.getPoolInfo(domainCcp);
+        if (!runtime.isConnectorConnectionPoolDeployed(poolInfo)) {
+            _logger.fine("The connector connection pool " + poolInfo
                     + " is either not referred or not yet created in "
                     + "this server instance and pool and hence "
                     + "redeployment is ignored");
@@ -184,7 +194,7 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         String rarName = domainCcp.getResourceAdapterName();
         String connDefName = domainCcp.getConnectionDefinitionName();
         List<Property> props = domainCcp.getProperty();
-        ConnectorConnectionPool ccp = getConnectorConnectionPool(domainCcp);
+        ConnectorConnectionPool ccp = getConnectorConnectionPool(domainCcp, poolInfo);
         populateConnectorConnectionPool(ccp, connDefName, rarName, props, securityMaps);
 
         boolean poolRecreateRequired = false;
@@ -193,7 +203,7 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
             poolRecreateRequired = runtime.reconfigureConnectorConnectionPool(ccp,
                     new HashSet());
         } catch (ConnectorRuntimeException cre) {
-            Object params[] = new Object[]{poolName, cre};
+            Object params[] = new Object[]{poolInfo, cre};
             _logger.log(Level.WARNING,"error.reconfiguring.pool", params);
         }
 
@@ -240,10 +250,10 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
     }
 
     private ConnectorConnectionPool getConnectorConnectionPool(
-            com.sun.enterprise.config.serverbeans.ConnectorConnectionPool
-                    domainCcp) throws Exception {
-        ConnectorConnectionPool ccp =
-                new ConnectorConnectionPool(domainCcp.getName());
+            com.sun.enterprise.config.serverbeans.ConnectorConnectionPool domainCcp, PoolInfo poolInfo)
+            throws Exception {
+        ConnectorConnectionPool ccp ;
+        ccp = new ConnectorConnectionPool(poolInfo);
         ccp.setSteadyPoolSize(domainCcp.getSteadyPoolSize());
         ccp.setMaxPoolSize(domainCcp.getMaxPoolSize());
         ccp.setMaxWaitTimeInMillis(domainCcp.getMaxWaitTimeInMillis());

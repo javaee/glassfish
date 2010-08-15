@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.resource.deployer;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.deployment.DataSourceDefinitionDescriptor;
@@ -69,6 +70,9 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
 
     private static Logger _logger = LogDomains.getLogger(DataSourceDefinitionDeployer.class, LogDomains.RSR_LOGGER);
 
+    public void deployResource(Object resource, String applicationName, String moduleName) throws Exception {
+        //TODO ASR
+    }
     public void deployResource(Object resource) throws Exception {
 
         final DataSourceDefinitionDescriptor desc = (DataSourceDefinitionDescriptor) resource;
@@ -299,7 +303,10 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         }
 
         public String getDatasourceClassname() {
-            return desc.getClassName();
+            if(!getResType().equals(ConnectorConstants.JAVA_SQL_DRIVER)){
+                return desc.getClassName();
+            }
+            return null;
         }
 
         public void setDatasourceClassname(String value) throws PropertyVetoException {
@@ -307,17 +314,21 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         }
 
         public String getResType() {
-            String type = "javax.sql.DataSource";
+            String type = ConnectorConstants.JAVAX_SQL_DATASOURCE;
             try {
                 Class clz = Thread.currentThread().getContextClassLoader().loadClass(desc.getClassName());
-                if (javax.sql.ConnectionPoolDataSource.class.isAssignableFrom(clz)) {
-                    type = "javax.sql.ConnectionPoolDataSource";
-                } else if (javax.sql.XADataSource.class.isAssignableFrom(clz)) {
-                    type = "javax.sql.XADataSource";
-                }
+                 if (javax.sql.XADataSource.class.isAssignableFrom(clz)) {
+                    type = ConnectorConstants.JAVAX_SQL_XA_DATASOURCE;
+                } else if (javax.sql.ConnectionPoolDataSource.class.isAssignableFrom(clz)) {
+                    type = ConnectorConstants.JAVAX_SQL_CONNECTION_POOL_DATASOURCE;
+                } else if (javax.sql.DataSource.class.isAssignableFrom(clz)){
+                    type = ConnectorConstants.JAVAX_SQL_DATASOURCE;
+                } else if(java.sql.Driver.class.isAssignableFrom(clz)){
+                     type = ConnectorConstants.JAVA_SQL_DRIVER;
+                 }
             } catch (ClassNotFoundException e) {
                 _logger.log(Level.FINEST, "Unable to load class [ " + desc.getClassName() + " ] to " +
-                        "determine its res-type, defaulting to javax.sql.DataSource");
+                        "determine its res-type, defaulting to ["+ConnectorConstants.JAVAX_SQL_DATASOURCE+"]");
                 // ignore and default to "javax.sql.DataSource"
             }
             return type;
@@ -711,7 +722,10 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         }
 
         public String getDriverClassname() {
-            return desc.getClassName();
+            if(getResType().equals(ConnectorConstants.JAVA_SQL_DRIVER)){
+                return desc.getClassName();
+            }
+            return null;
         }
 
         public void setDriverClassname(String value) throws PropertyVetoException {

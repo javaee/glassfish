@@ -44,6 +44,7 @@ import javax.transaction.xa.*;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityManager;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.util.i18n.StringManager;
 
@@ -688,12 +689,12 @@ public final class JavaEETransactionImpl extends TimerTask implements
     }
     // END IASRI 4662745
 
-    public void setResources(Set resources, String poolName) {
-        resourceTable.put(poolName, resources);
+    public void setResources(Set resources, Object poolInfo) {
+        resourceTable.put(poolInfo, resources);
     }
 
-    public Set getResources(String poolName) {
-        return (Set) resourceTable.get(poolName);
+    public Set getResources(Object poolInfo) {
+        return (Set) resourceTable.get(poolInfo);
     }
 
     /**

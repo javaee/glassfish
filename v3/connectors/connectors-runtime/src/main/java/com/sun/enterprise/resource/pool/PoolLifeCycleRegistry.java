@@ -36,10 +36,12 @@
 
 package com.sun.enterprise.resource.pool;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycle;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 
@@ -103,21 +105,21 @@ public class PoolLifeCycleRegistry implements PoolLifeCycle {
     
     /**
      * Invoke poolCreated for all listeners of this pool.
-     * @param poolName
+     * @param poolInfo
      */
-    public void poolCreated(String poolName) {
+    public void poolCreated(PoolInfo poolInfo) {
         for (PoolLifeCycle listener : lifeCycleListeners) {
-            listener.poolCreated(poolName);
+            listener.poolCreated(poolInfo);
         }
     }
 
     /**
      * Invoke poolDestroyed for all listeners of this pool.
-     * @param poolName
+     * @param poolInfo
      */
-    public void poolDestroyed(String poolName) {
+    public void poolDestroyed(PoolInfo poolInfo) {
         for (PoolLifeCycle listener : lifeCycleListeners) {
-            listener.poolDestroyed(poolName);
+            listener.poolDestroyed(poolInfo);
         }
     }
 }

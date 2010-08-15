@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.resource.listener;
 
+import org.glassfish.resource.common.PoolInfo;
+
 /**
  * Pool Life cycle listener that can be implemented by listeners for getting
  * events on the pool's lifecycle like creation/destruction.
@@ -43,6 +45,6 @@ package com.sun.enterprise.resource.listener;
  * @author Jagadish Ramu
  */
 public interface PoolLifeCycle {
-    void poolCreated(String poolName);
-    void poolDestroyed(String poolName);
+    void poolCreated(PoolInfo poolInfo);
+    void poolDestroyed(PoolInfo poolInfo);
 }

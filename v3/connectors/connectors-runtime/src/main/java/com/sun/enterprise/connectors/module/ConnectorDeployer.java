@@ -53,6 +53,7 @@ import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.event.Events;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
+import org.glassfish.javaee.services.ApplicationScopedResourcesManager;
 import org.glassfish.javaee.services.ResourceManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ConnectorClassFinder;
@@ -92,6 +93,9 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
 
     @Inject
     private ResourceManager resourceManager;
+
+    @Inject
+    private ApplicationScopedResourcesManager asrManager;
 
     @Inject
     private Resources resources;
@@ -187,7 +191,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
             }
         }
         return new ConnectorApplication(moduleName, ConnectorsUtil.getApplicationName(context), resourceManager,
-                classLoader, runtime, events, connDesc);
+                asrManager, classLoader, runtime, events, connDesc);
     }
 
 

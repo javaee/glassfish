@@ -37,6 +37,7 @@
 package com.sun.enterprise.resource.pool;
 
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceSpec;
@@ -88,7 +89,7 @@ public interface ResourcePool {
 
     public void switchOnMatching();
 
-    public String getPoolName();
+    public PoolInfo getPoolInfo();
 
     public void emptyFreeConnectionsInPool();
 
