@@ -36,12 +36,17 @@
 
 package org.glassfish.cluster.ssh.launcher;
 
+import com.sun.enterprise.security.store.PasswordAdapter;
+import com.sun.enterprise.util.StringUtils;
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.KnownHosts;
 import org.glassfish.cluster.ssh.util.HostVerifier;
 import org.glassfish.cluster.ssh.util.SSHUtil;
+import org.glassfish.internal.api.MasterPassword;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
@@ -94,10 +99,17 @@ public class SSHLauncher {
 
     private String authType;
 
+    private String keyPassPhrase;
+
 
     private File knownHosts;
 
     private Logger logger;
+
+    private String password;
+
+    @Inject
+    private Habitat habitat;
 
 
     public void init(Node node, Logger logger) {
@@ -122,7 +134,9 @@ public class SSHLauncher {
         String userName = null;
         if (sshAuth != null) {
             userName = sshAuth.getUserName();
-            this.keyFile = sshAuth.getKeyfile();            
+            this.keyFile = sshAuth.getKeyfile();
+            this.password = expandPasswordAlias(sshAuth.getPassword());
+            this.keyPassPhrase = expandPasswordAlias(sshAuth.getKeyPassphrase());
         }
         try {
             port = Integer.parseInt(connector.getSshPort());
@@ -166,8 +180,7 @@ public class SSHLauncher {
     connection = new Connection(host, port);
 
         connection.connect(new HostVerifier(knownHostsDatabase));
-        String userName = this.userName;
-        if(SSHUtil.checkString(keyFile) == null) {
+        if(SSHUtil.checkString(keyFile) == null && SSHUtil.checkString(password) == null) {
             // check the default key locations if no authentication
             // method is explicitly configured.
             File home = new File(System.getProperty("user.home"));
@@ -190,11 +203,15 @@ public class SSHLauncher {
         if (!isAuthenticated && SSHUtil.checkString(keyFile) != null) {
             File key = new File(keyFile);
             if (key.exists()) {
+                //See if the key file is protected with passphrase
+                
                isAuthenticated = connection.authenticateWithPublicKey(
-                                            userName, key, null);
+                                            userName, key, keyPassPhrase);
 
             }
-        }
+        } if (!isAuthenticated && SSHUtil.checkString(password) != null) {
+          isAuthenticated = connection.authenticateWithPassword(userName, password);
+      }
 
         if (!isAuthenticated && !connection.isAuthenticationComplete()) {
             connection.close();
@@ -254,6 +271,40 @@ public class SSHLauncher {
         SFTPClient sftpClient = new SFTPClient(connection);
         return sftpClient;
     }
+
+    public String expandPasswordAlias(String alias) {
+            final String ALIAS_PREFIX = "${ALIAS=";
+            final String ALIAS_SUFFIX = "}";
+
+            if (alias == null) {
+                return null;
+            }
+
+            int head = alias.indexOf(ALIAS_PREFIX);
+            int tail = alias.lastIndexOf(ALIAS_SUFFIX);
+
+            if (head == -1 || tail == -1) {
+                return alias;
+            }
+
+            // Skip over prefix
+            head += ALIAS_PREFIX.length();
+
+            String aliasName = alias.substring(head, tail);
+
+            MasterPassword masterPasswordHelper =
+                    habitat.getByContract(MasterPassword.class);
+
+            try {
+                PasswordAdapter pa = masterPasswordHelper.getMasterPasswordAdapter();
+                String p = pa.getPasswordForAlias(aliasName);
+                return p;
+            } catch (Exception e) {
+                logger.warning(StringUtils.cat(": ", aliasName, e.getMessage()));
+                return null;
+            }
+        }
+
 
     @Override
     public String toString() {

@@ -123,17 +123,17 @@ public class NodeUtils {
             }
         }
 
-        validatePassword(map.getOne(PARAM_SSHPASSWORD));
-        validatePassword(map.getOne(PARAM_SSHKEYPASSPHRASE));
+        validatePassword(map.getOne(PARAM_SSHPASSWORD), sshL);
+        validatePassword(map.getOne(PARAM_SSHKEYPASSPHRASE), sshL);
 
         if (sshL != null) {
             validateSSHConnection(map, sshL);
         }
     }
 
-    private void validatePassword(String p) throws CommandValidationException {
+    private void validatePassword(String p, SSHLauncher sshL) throws CommandValidationException {
         if (StringUtils.ok(p)) {
-            String expandedPassword = expandPasswordAlias(p);
+            String expandedPassword = sshL.expandPasswordAlias(p);
             if (expandedPassword == null) {
                 throw new CommandValidationException(
                         Strings.get("no.such.password.alias", p));
