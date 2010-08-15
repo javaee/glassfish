@@ -82,6 +82,11 @@ public interface Deployment {
      * failed.
      */
     public final EventTypes<DeploymentContext> DEPLOYMENT_FAILURE = EventTypes.create("Deployment_Failed", DeploymentContext.class);
+    /**
+     * This asynchronous event is sent before prepare phase of deployment. 
+     */
+    public final EventTypes<DeploymentContext> DEPLOYMENT_BEFORE_CLASSLOADER_CREATION =
+            EventTypes.create("Deployment_ClassLoader_Creation", DeploymentContext.class);
 
     /**
      * This asynchronous event is sent when a deployment activity (first time deploy or loading of an already deployed application)

@@ -308,6 +308,8 @@ public class ApplicationLifecycle implements Deployment {
                 tempAppInfo.setIsJavaEEApp(sortedEngineInfos);
                 appRegistry.add(appName, tempAppInfo);
 
+                events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_BEFORE_CLASSLOADER_CREATION, context), false);
+
                 context.createApplicationClassLoader(clh, handler);
 
 
