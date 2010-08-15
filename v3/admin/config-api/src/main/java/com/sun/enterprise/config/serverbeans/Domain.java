@@ -175,6 +175,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link Resources }
      */
     @Element
+    @NotNull            
     Resources getResources();
 
     /**
