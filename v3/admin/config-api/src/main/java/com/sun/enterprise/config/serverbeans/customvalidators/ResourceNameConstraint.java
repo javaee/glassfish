@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,53 +32,28 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ *
  */
+package com.sun.enterprise.config.serverbeans.customvalidators;
 
-package com.sun.enterprise.config.serverbeans;
+import javax.validation.Constraint;
+import javax.validation.Payload;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import com.sun.enterprise.config.serverbeans.customvalidators.ResourceNameConstraint;
-import org.jvnet.hk2.config.Attribute;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.beans.PropertyVetoException;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
-@ResourceNameConstraint
-public interface BindableResource extends Resource{
-    /**
-     * Gets the value of the jndiName property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(key=true)
-    @NotNull
-    @Pattern(regexp="[^',][^',]*")
-    public String getJndiName();
-
-    /**
-     * Sets the value of the jndiName property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setJndiName(String value) throws PropertyVetoException;
-
-    /**
-     * Gets the value of the enabled property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute (defaultValue="true",dataType=Boolean.class)
-    String getEnabled();
-
-    /**
-     * Sets the value of the enabled property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    void setEnabled(String value) throws PropertyVetoException;
+@Retention(RUNTIME)
+@Target({METHOD, FIELD, TYPE})
+@Documented
+@Constraint(validatedBy = ResourceNameValidator.class)
+public @interface ResourceNameConstraint {
+    String message() default "resource name cannot contain ':' character";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
 }

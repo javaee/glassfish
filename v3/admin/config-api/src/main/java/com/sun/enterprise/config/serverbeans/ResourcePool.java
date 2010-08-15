@@ -36,12 +36,15 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.ResourceNameConstraint;
 import org.jvnet.hk2.config.Attribute;
 
 import java.beans.PropertyVetoException;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
+@ResourceNameConstraint
 public interface ResourcePool extends Resource {
     /**
      * Gets the value of the name property.
@@ -51,6 +54,7 @@ public interface ResourcePool extends Resource {
      */
     @Attribute(key=true)
     @NotNull
+    @Pattern(regexp="[^',][^',]*")
     public String getName();
 
     /**
@@ -60,11 +64,4 @@ public interface ResourcePool extends Resource {
      *              {@link String }
      */
     public void setName(String value) throws PropertyVetoException;
-
-    /**
-     * Gets the value of the datasourceClassname property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
 }

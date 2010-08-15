@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,53 +32,41 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ *
  */
+package com.sun.enterprise.config.serverbeans.customvalidators;
 
-package com.sun.enterprise.config.serverbeans;
 
-import com.sun.enterprise.config.serverbeans.customvalidators.ResourceNameConstraint;
-import org.jvnet.hk2.config.Attribute;
+import com.sun.enterprise.config.serverbeans.BindableResource;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.config.serverbeans.ResourcePool;
 
-import java.beans.PropertyVetoException;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
-@ResourceNameConstraint
-public interface BindableResource extends Resource{
-    /**
-     * Gets the value of the jndiName property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(key=true)
-    @NotNull
-    @Pattern(regexp="[^',][^',]*")
-    public String getJndiName();
+public class ResourceNameValidator
+    implements ConstraintValidator<ResourceNameConstraint, Resource> {
 
-    /**
-     * Sets the value of the jndiName property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setJndiName(String value) throws PropertyVetoException;
+    public void initialize(final ResourceNameConstraint constraint) {
+    }
 
-    /**
-     * Gets the value of the enabled property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute (defaultValue="true",dataType=Boolean.class)
-    String getEnabled();
-
-    /**
-     * Sets the value of the enabled property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    void setEnabled(String value) throws PropertyVetoException;
+    @Override
+    public boolean isValid(final Resource resource,
+        final ConstraintValidatorContext constraintValidatorContext) {
+        if(resource.getParent().getParent() instanceof Domain){
+            if(resource instanceof BindableResource){
+                if(((BindableResource)resource).getJndiName().contains(":")){
+                    return false;
+                }
+            }else if(resource instanceof ResourcePool){
+                if(((ResourcePool)resource).getName().contains(":")){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
+
