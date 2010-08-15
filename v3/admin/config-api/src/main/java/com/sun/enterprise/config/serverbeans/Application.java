@@ -282,6 +282,11 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
     @Element
     List<WebServiceEndpoint> getWebServiceEndpoint();
 
+    @Element
+    Resources getResources();
+
+    void setResources(Resources resources) throws PropertyVetoException;
+
     @DuckTyped
     Module getModule(String moduleName);
 

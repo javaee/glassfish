@@ -521,6 +521,16 @@ public class VersioningServiceTest {
         }
 
         @Override
+        public void setResources(com.sun.enterprise.config.serverbeans.Resources resources){
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public com.sun.enterprise.config.serverbeans.Resources  getResources(){
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
         public String getContextRoot() {
             throw new UnsupportedOperationException("Not supported yet.");
         }

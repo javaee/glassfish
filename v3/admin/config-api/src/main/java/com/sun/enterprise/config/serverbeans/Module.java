@@ -37,6 +37,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.jvnet.hk2.config.types.PropertyBag;
@@ -57,6 +58,11 @@ public interface Module extends Named, ConfigBeanProxy, PropertyBag {
 
     @Element("*")
     List<Engine> getEngines();
+
+    @Element
+    Resources getResources();
+
+    void setResources(Resources resources) throws PropertyVetoException;
 
     @DuckTyped
     Engine getEngine(String snifferType);
