@@ -54,7 +54,6 @@ import com.sun.enterprise.connectors.jms.inflow.MdbContainerProps;
 import com.sun.enterprise.connectors.jms.system.MQAddressList;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.ConnectorConfigProperty;
-import com.sun.enterprise.server.Constants;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.zip.ZipFile;
 import com.sun.enterprise.util.zip.ZipFileException;
@@ -369,7 +368,7 @@ public class JmsRaUtil {
         }
 
         String deployed_dir =
-           java.lang. System.getProperty(Constants.INSTALL_ROOT)
+           java.lang. System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY)
            + File.separator + SYSTEM_APP_DIR + File.separator
            + ConnectorConstants.DEFAULT_JMS_ADAPTER;
 
@@ -426,7 +425,7 @@ public class JmsRaUtil {
        String ver = null;
         // Full path of Mq client library that is deployed in appserver.
        String deployed_dir =
-           System.getProperty(Constants.INSTALL_ROOT)
+           System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY)
            + File.separator + SYSTEM_APP_DIR;
        String manifestFile = deployed_dir + File.separator +
                              MQ_RAR_MANIFEST;
