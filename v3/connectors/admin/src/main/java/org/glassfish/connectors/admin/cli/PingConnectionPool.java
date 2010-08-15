@@ -36,6 +36,8 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import org.glassfish.resource.common.PoolInfo;
+import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -47,8 +49,6 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 
 /**
  * Ping Connection Pool Command
@@ -61,72 +61,80 @@ public class PingConnectionPool implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(PingConnectionPool.class);
-
+                                                    
     @Param(name="pool_name", primary=true)
-    String poolName;
+    private String poolName;
 
     @Inject
     private ConnectorRuntime connRuntime;
 
     @Inject
-    JdbcConnectionPool[] jdbcPools;
+    private Resources resources;
+
+    @Param(name="appname", optional=true)
+    private String applicationName;
+
+    @Param(name="modulename", optional=true)
+    private String moduleName;
 
     @Inject
-    ConnectorConnectionPool[] connPools;
+    private ConnectionPoolUtil poolUtil;
+
+    @Inject
+    private Applications applications;
+
+    @Inject
+    private ApplicationRef[] applicationRefs;
 
     /**
      * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * where the keys are the parameter names and the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         boolean status = false;
+        Resources resources = this.resources;
+        String scope = "";
+        if(moduleName != null){
+            if(!poolUtil.isValidModule(applicationName, moduleName, poolName, report)){
+                return ;
+            }
+            Application application = applications.getApplication(applicationName);
+            Module module = application.getModule(moduleName);
+            resources = module.getResources();
+            scope = "java:module/";
+        }else if(applicationName != null){
+            if(!poolUtil.isValidApplication(applicationName, poolName, report)){
+                return;    
+            }
+            Application application = applications.getApplication(applicationName);
+            resources = application.getResources();
+            scope = "java:app/";
+        }
 
-        if (!isConnPoolExists(poolName)) {
-            report.setMessage(localStrings.getLocalString("ping.connection.pool.connPoolNotFound",
-                "Connection pool {0} not found.", poolName));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        if(!poolUtil.isValidPool(resources, poolName, scope, report)){
             return;
         }
 
+        PoolInfo poolInfo = new PoolInfo(poolName, applicationName, moduleName);
         try {
-            status = connRuntime.pingConnectionPool(poolName);
+            status = connRuntime.pingConnectionPool(poolInfo);
             if (status) {
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             } else {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(
-                    localStrings.getLocalString( "ping.connection.pool.fail", 
-                    "Ping JDBC Connection Pool for {0} Failed", poolName));
+                        localStrings.getLocalString("ping.connection.pool.fail",
+                                "Ping Connection Pool for {0} Failed", poolInfo));
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             report.setMessage(
-                localStrings.getLocalString(
-                    "ping.connection.pool.fail", 
-                    "Ping JDBC Connection Pool for {0} Failed", poolName) + " " +
-                    e.getLocalizedMessage());
+                    localStrings.getLocalString("ping.connection.pool.fail",
+                            "Ping Connection Pool for {0} Failed", poolInfo) + " " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
-    }
-
-    private boolean isConnPoolExists(String poolName) {
-        if (jdbcPools != null) {
-            for (JdbcConnectionPool pool : jdbcPools) {
-                if (pool.getName().equals(poolName)) {
-                    return true;
-                }
-            }
-        }
-        if (connPools != null) {
-            for (ConnectorConnectionPool pool : connPools) {
-                if (pool.getName().equals(poolName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

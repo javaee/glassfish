@@ -37,6 +37,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.config.serverbeans.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -61,24 +62,53 @@ public class FlushConnectionPool implements AdminCommand {
             new LocalStringManagerImpl(FlushConnectionPool.class);
 
     @Param(name = "pool_name", primary = true)
-    String poolName;
+    private String poolName;
 
     @Inject
-    Resources resources;
+    private Resources resources;
+
+    @Param(name="appname", optional=true)
+    private String applicationName;
+
+    @Param(name="modulename", optional=true)
+    private String moduleName;
 
     @Inject
-    ConnectorRuntime _runtime;
+    private Applications applications;
+
+    @Inject
+    private ConnectionPoolUtil poolUtil;
+
+    @Inject
+    private ApplicationRef[] applicationRefs;
+
+    @Inject
+    private ConnectorRuntime _runtime;
 
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        if (!isPoolExist()) {
-            report.setMessage(localStrings.getLocalString(
-                    "flush.connection.pool.notexist",
-                    "Resource pool {0} does not exist.", poolName));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
+        Resources resources = this.resources;
+        String scope = "";
+        if(moduleName != null){
+            if(!poolUtil.isValidModule(applicationName, moduleName, poolName, report)){
+                return ;
+            }
+            Application application = applications.getApplication(applicationName);
+            Module module = application.getModule(moduleName);
+            resources = module.getResources();
+            scope = "java:module/";
+        }else if(applicationName != null){
+            if(!poolUtil.isValidApplication(applicationName, poolName, report)){
+                return;
+            }
+            Application application = applications.getApplication(applicationName);
+            resources = application.getResources();
+            scope = "java:app/";
+        }
 
+        if(!poolUtil.isValidPool(resources, poolName, scope, report)){
+            return;
         }
 
         boolean poolingEnabled = false;
@@ -101,7 +131,8 @@ public class FlushConnectionPool implements AdminCommand {
         }
 
         try {
-            _runtime.flushConnectionPool(poolName);
+            PoolInfo poolInfo = new PoolInfo(poolName, applicationName, moduleName);
+            _runtime.flushConnectionPool(poolInfo);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (ConnectorRuntimeException e) {
             report.setMessage(localStrings.getLocalString("flush.connection.pool.fail",
@@ -109,16 +140,5 @@ public class FlushConnectionPool implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
-    }
-
-    private boolean isPoolExist() {
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof ResourcePool) {
-                if (((ResourcePool) resource).getName().equals(poolName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }
