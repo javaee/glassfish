@@ -386,6 +386,51 @@ public final class  GlassfishNamingManagerImpl
         return namespace;
     }
 
+    private Object lookupFromNamespace(String name, Map namespace) throws NamingException {
+        Object o = namespace.get(name);
+        if (o == null) {
+            throw new NameNotFoundException("No object bound to name " + name);
+        } else {
+            if (o instanceof NamingObjectProxy) {
+                NamingObjectProxy namingProxy = (NamingObjectProxy) o;
+                o = namingProxy.create(initialContext);
+            } else if (o instanceof Reference) {
+                try {
+                    o = getObjectInstance(name, o);
+                } catch (Exception e) {
+                    _logger.log(Level.FINEST,"Unable to get Object instance from Reference for name ["+name+"]. " +
+                            "Hence returning the Reference object ", e);
+                }
+            }
+            return o;
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public Object lookupFromAppNamespace(String appName, String name) throws NamingException {
+        Map namespace = getAppNamespace(appName);
+        return lookupFromNamespace(name, namespace);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public Object lookupFromModuleNamespace(String appName, String moduleName, String name) throws NamingException {
+        AppModuleKey appModuleKey = new AppModuleKey(appName, moduleName);
+        Map namespace = getModuleNamespace(appModuleKey);
+        return lookupFromNamespace(name, namespace);
+    }
+    
+    private Object getObjectInstance(String name, Object obj) throws Exception {
+            Object retObj = javax.naming.spi.NamingManager
+                    .getObjectInstance(obj, new CompositeName(name), null,
+                            new Hashtable());
+
+            return retObj;
+    }
+
      private Map getAppNamespace(String appName)
             throws NamingException {
 
@@ -544,18 +589,33 @@ public final class  GlassfishNamingManagerImpl
     }
 
 
+    /**
+     * @inheritDoc
+     */
+    public void bindToModuleNamespace(String appName, String moduleName, Collection<? extends JNDIBinding> bindings)
+            throws NamingException {
+        AppModuleKey appModuleKey = new AppModuleKey(appName, moduleName);
+        Map namespace = getModuleNamespace(appModuleKey);
+        for (JNDIBinding binding : bindings) {
+          String logicalJndiName = binding.getName();
+            if ( logicalJndiName.startsWith("java:module")) {
+              bindToNamespace(namespace, binding.getName(), binding.getValue());
+            }
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
     public void bindToAppNamespace(String appName, Collection<? extends JNDIBinding> bindings)
             throws NamingException {
-
+          Map namespace = getAppNamespace(appName);
           for (JNDIBinding binding : bindings) {
             String logicalJndiName = binding.getName();
-
               if ( logicalJndiName.startsWith("java:app")) {
-                    Map namespace = getAppNamespace(appName);
-                    bindToNamespace(namespace, binding.getName(), binding.getValue());
+                bindToNamespace(namespace, binding.getName(), binding.getValue());
               }
           }
-
     }
 
     private void bindIntermediateContexts(Map namespace, String name)
@@ -609,6 +669,26 @@ public final class  GlassfishNamingManagerImpl
         }
     }
 
+    /**
+     * @inheritDoc
+     */
+    public void unbindAppObject(String appName, String name) throws NamingException {
+        Map<String, Map> namespaces = appNamespaces.get(appName);
+        if(namespaces != null){
+            namespaces.remove(name);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public void unbindModuleObject(String appName, String moduleName, String name) throws NamingException {
+        AppModuleKey appModuleKey = new AppModuleKey(appName, moduleName);
+        Map<String, Map> namespaces = moduleNamespaces.get(appModuleKey);
+        if(namespaces != null){
+            namespaces.remove(name);
+        }
+    }
 
     /**
      * Recreate a context for java:comp/env or one of its sub-contexts given the

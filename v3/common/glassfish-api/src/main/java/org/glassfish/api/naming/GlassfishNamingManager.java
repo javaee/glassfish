@@ -46,6 +46,7 @@ import java.util.Collection;
 import org.omg.CORBA.ORB;
 
 import java.rmi.Remote;
+import java.util.Map;
 
 /**
  * The NamingManager provides an interface for various components to use naming
@@ -69,6 +70,27 @@ public interface GlassfishNamingManager {
      * Lookup a naming entry for a particular componentId
      */
     public Object lookup(String componentId, String name) throws NamingException;
+
+    /**
+     *
+     * Lookup a naming entry in a particular application's namespace
+     * @param appName application-name
+     * @param name name of the object
+     * @return Object found by the name
+     * @throws javax.naming.NamingException when unable to find the object
+     */
+    public Object lookupFromAppNamespace(String appName, String name) throws NamingException ;
+
+    /**
+     *
+     * Lookup a naming entry in a particular application's module's namespace
+     * @param appName application-name
+     * @param moduleName module-name
+     * @param name name of the object
+     * @return Object found by the name
+     * @throws javax.naming.NamingException when unable to find the object
+     */
+    public Object lookupFromModuleNamespace(String appName, String moduleName, String name) throws NamingException ;
 
     /**
      * Publish an object in the naming service.
@@ -124,7 +146,33 @@ public interface GlassfishNamingManager {
             throws NamingException;
 
 
+    /**
+     * Binds the bindings to module namespace of an application<br>
+     * Typically, to get access to application's namespace, invocation context
+     * must be set to appropriate application's context.<br>
+     * This API is useful in cases where containers within GlassFish
+     * need to bind the objects in application's name-space and do not have
+     * application's invocation context<br>
+     * @param appName application-name
+     * @param bindings list of bindings
+     * @throws NamingException when unable to bind the bindings
+     */
     public void bindToAppNamespace(String appName, Collection<? extends JNDIBinding> bindings)
+            throws NamingException;
+
+    /**
+     * Binds the bindings to module namespace of an application<br>
+     * Typically, to get access to application's module namespace, invocation context
+     * must be set to appropriate application's context.<br>
+     * This API is useful in cases where containers within GlassFish
+     * need to bind the objects in application's module name-space and do not have
+     * application's invocation context<br>
+     * @param appName application-name
+     * @param moduleName module-name
+     * @param bindings list of bindings
+     * @throws NamingException when unable to bind the bindings
+     */
+    public void bindToModuleNamespace(String appName, String moduleName, Collection<? extends JNDIBinding> bindings)
             throws NamingException;
 
     /**
@@ -143,7 +191,32 @@ public interface GlassfishNamingManager {
      */
     public void unpublishCosNamingObject(String name) throws NamingException;
 
+    /**
+     * Remove an object from the application's namespace.<br>
+     * Typically, to get access to application's namespace, invocation context
+     * must be set to appropriate application's context.<br>
+     * This API is useful in cases where containers within GlassFish
+     * need to unbind the objects in application's name-space and do not have
+     * application's invocation context<br>
+     * @param name Name that the object is bound as.
+     * @param appName application-name
+     * @throws NamingException when unable to unbind the object
+     */
+    public void unbindAppObject(String appName, String name) throws NamingException;
 
+    /**
+     * Remove an object from the module name-space of an application<br>
+     * Typically, to get access to application's module namespace, invocation context
+     * must be set to appropriate application's context.<br>
+     * This API is useful in cases where containers within GlassFish
+     * need to unbind the objects in application's module name-space and do not have
+     * application's invocation context<br>
+     * @param name Name that the object is bound as.
+     * @param appName application-name
+     * @param moduleName module-name
+     * @throws NamingException when unable to unbind the object
+     */
+    public void unbindModuleObject(String appName, String moduleName, String name) throws NamingException;
 
     /**
      * Remove an object from the naming service.
