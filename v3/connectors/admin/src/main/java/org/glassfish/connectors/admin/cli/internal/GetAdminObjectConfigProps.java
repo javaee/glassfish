@@ -36,7 +36,6 @@
 package org.glassfish.connectors.admin.cli.internal;
 
 
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -48,6 +47,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Jagadish Ramu
@@ -74,25 +74,23 @@ public class GetAdminObjectConfigProps implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
+            Properties properties = new Properties();
             if (adminObjectClass == null) {
                 Map<String, String> adminObjectConfigProps =
                         connectorRuntime.getAdminObjectConfigProps(rarName, adminObjectInterface);
 
                 for (String key : adminObjectConfigProps.keySet()) {
-                    final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                    part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER +
-                            adminObjectConfigProps.get(key));
+                    properties.put(key, adminObjectConfigProps.get(key));
                 }
             } else {
                 Map<String, String> adminObjectConfigProps =
                         connectorRuntime.getAdminObjectConfigProps(rarName, adminObjectInterface, adminObjectClass);
 
                 for (String key : adminObjectConfigProps.keySet()) {
-                    final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                    part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER +
-                            adminObjectConfigProps.get(key));
+                    properties.put(key, adminObjectConfigProps.get(key));
                 }
             }
+            report.setExtraProperties(properties);
 
         } catch (Exception e) {
             report.setMessage("_get-admin-object-config-properties failed");

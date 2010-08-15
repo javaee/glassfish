@@ -35,7 +35,6 @@
 */
 package org.glassfish.connectors.admin.cli.internal;
 
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -47,6 +46,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Jagadish Ramu
@@ -74,13 +74,12 @@ public class GetConnectionDefinitionPropertiesAndDefaults implements AdminComman
         try {
             Map<String, Object> connectionDefinitionPropertiesAndDefaults =
                     connectorRuntime.getConnectionDefinitionPropertiesAndDefaults(connectionDefinitionClass, resType);
+            Properties properties = new Properties();
 
             for (String key : connectionDefinitionPropertiesAndDefaults.keySet()) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER +
-                        connectionDefinitionPropertiesAndDefaults.get(key));
+                properties.put(key, connectionDefinitionPropertiesAndDefaults.get(key));
             }
-
+            report.setExtraProperties(properties);
         } catch (Exception e) {
             report.setMessage("_get-connection-definition-properties-and-defaults failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

@@ -35,7 +35,6 @@
 */
 package org.glassfish.connectors.admin.cli.internal;
 
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
@@ -46,6 +45,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Jagadish Ramu
@@ -65,13 +65,11 @@ public class GetBuiltInCustomResources implements AdminCommand {
 
         try {
             Map<String, String> builtInCustomResources = connectorRuntime.getBuiltInCustomResources();
-
+            Properties properties = new Properties();
             for (String key : builtInCustomResources.keySet()) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER +
-                        builtInCustomResources.get(key));
+                properties.put(key,builtInCustomResources.get(key));
             }
-
+            report.setExtraProperties(properties);
         } catch (Exception e) {
             report.setMessage("_get-built-in-custom-resources failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

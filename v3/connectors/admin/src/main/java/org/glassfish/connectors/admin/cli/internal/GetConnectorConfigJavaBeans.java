@@ -35,7 +35,6 @@
 */
 package org.glassfish.connectors.admin.cli.internal;
 
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -47,6 +46,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Map;
+import java.util.Properties;
 
 
 /**
@@ -74,14 +74,14 @@ public class GetConnectorConfigJavaBeans implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
+            Properties properties = new Properties();
             Map<String, String> configProps =
                     connectorRuntime.getConnectorConfigJavaBeans(rarName, connectionDefnName, javaBeanType);
 
             for (String key : configProps.keySet()) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER +
-                        configProps.get(key));
+                properties.put(key, configProps.get(key));
             }
+            report.setExtraProperties(properties);
         } catch (Exception e) {
             report.setMessage("_get-connector-config-java-beans failed");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

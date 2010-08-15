@@ -35,7 +35,6 @@
 */
 package org.glassfish.connectors.admin.cli.internal;
 
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -47,6 +46,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Jagadish Ramu
@@ -72,12 +72,11 @@ public class GetMessageListenerConfigPropertyTypes implements AdminCommand {
         try {
             Map<String, String> messageListenerConfigPropTypes =
                     connectorRuntime.getMessageListenerConfigPropTypes(rarName, messageListenerType);
-
+            Properties properties = new Properties();
             for (String key : messageListenerConfigPropTypes.keySet()) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(key + ConnectorConstants.HIDDEN_CLI_NAME_VALUE_PAIR_DELIMITER +
-                        messageListenerConfigPropTypes.get(key));
+                properties.put(key, messageListenerConfigPropTypes.get(key));
             }
+            report.setExtraProperties(properties);
         } catch (Exception e) {
             report.setMessage("_get-message-listener-config-property-types");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
