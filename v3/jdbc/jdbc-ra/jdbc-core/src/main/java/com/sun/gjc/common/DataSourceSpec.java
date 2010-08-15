@@ -92,7 +92,7 @@ public class DataSourceSpec implements java.io.Serializable {
     public static final int CUSTOMVALIDATION = 37;
     public static final int SQLTRACELISTENERS = 38;
     public static final int INITSQL = 39;
-    public static final int POOLNAME = 40;
+    public static final int POOLMONITORINGSUBTREEROOT = 40;
     public static final int NUMBEROFTOPQUERIESTOREPORT = 41;
     public static final int TIMETOKEEPQUERIESINMINUTES = 42;
 

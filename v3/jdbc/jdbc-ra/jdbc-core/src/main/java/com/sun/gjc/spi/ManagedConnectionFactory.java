@@ -259,20 +259,20 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      */
     public Set getInvalidConnections(Set connectionSet) throws ResourceException {
         Iterator iter = connectionSet.iterator();
-        Set invalid = new HashSet();
+        Set<ManagedConnection> invalidConnections = new HashSet<ManagedConnection>();
         while (iter.hasNext()) {
             ManagedConnection mc = (ManagedConnection) iter.next();
             try {
                 isValid(mc);
             } catch (ResourceException re) {
-                invalid.add(mc);
+                invalidConnections.add(mc);
                 mc.connectionErrorOccurred(re, null);
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.log(Level.FINE, "jdbc.invalid_connection", re);
                 }
             }
         }
-        return invalid;
+        return invalidConnections;
     }
 
     //GJCINT
@@ -540,7 +540,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         String delimiter = ",";
         
         if(sqlTraceListeners != null && !sqlTraceListeners.equals("null")) {
-            sqlTraceDelegator = new SQLTraceDelegator(getPoolName());
+            sqlTraceDelegator = new SQLTraceDelegator(getPoolMonitoringSubTreeRoot());
             StringTokenizer st = new StringTokenizer(sqlTraceListeners, delimiter);
             while (st.hasMoreTokens()) {
                 String sqlTraceListener = st.nextToken().trim();            
@@ -995,12 +995,12 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         return spec.getDetail(DataSourceSpec.STATEMENTCACHESIZE);
     }
 
-    public void setPoolName(String value) {
-        spec.setDetail(DataSourceSpec.POOLNAME, value);
+    public void setPoolMonitoringSubTreeRoot(String value) {
+        spec.setDetail(DataSourceSpec.POOLMONITORINGSUBTREEROOT, value);
     }
 
-    public String getPoolName() {
-        return spec.getDetail(DataSourceSpec.POOLNAME);
+    public String getPoolMonitoringSubTreeRoot() {
+        return spec.getDetail(DataSourceSpec.POOLMONITORINGSUBTREEROOT);
     }
     
     public String getStatementCacheType() {
@@ -1208,7 +1208,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
                                                            Connection sqlCon, PasswordCredential passCred,
                                                            ManagedConnectionFactory mcf) throws ResourceException {
         return new com.sun.gjc.spi.ManagedConnection(pc, sqlCon, passCred, mcf, 
-                getPoolName(), statementCacheSize, statementCacheType, sqlTraceDelegator);
+                getPoolMonitoringSubTreeRoot(), statementCacheSize, statementCacheType, sqlTraceDelegator);
     }
 
     /**
@@ -1298,7 +1298,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
 
     @Override
     public void mcfCreated() {
-        String poolName = getPoolName();
+        String poolMonitoringSubTreeRoot = getPoolMonitoringSubTreeRoot();
         String sqlTraceListeners = getSqlTraceListeners();
 
         //Default values used in case sql tracing is OFF
@@ -1326,13 +1326,13 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         _logger.finest("MCF Created");
         if (statementCacheSize > 0 ||
                 (sqlTraceListeners != null && !sqlTraceListeners.equals("null"))) {
-            jdbcStatsProvider = new JdbcStatsProvider(poolName, sqlTraceCacheSize,
+            jdbcStatsProvider = new JdbcStatsProvider(getPoolMonitoringSubTreeRoot(), sqlTraceCacheSize,
                     timeToKeepQueries);
             //get the poolname and use it to initialize the stats provider n register
             StatsProviderManager.register(
                     ContainerMonitoring.JDBC_CONNECTION_POOL,
                     PluginPoint.SERVER,
-                    "resources/" + poolName, jdbcStatsProvider);
+                    poolMonitoringSubTreeRoot, jdbcStatsProvider);
             if(jdbcStatsProvider.getSqlTraceCache() != null) {
                 _logger.finest("Scheduling timer task for sql trace caching");
                 Timer timer = ((com.sun.gjc.spi.ResourceAdapter) ra).getTimer();
