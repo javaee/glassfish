@@ -348,7 +348,7 @@ public class ApplicationScopedResourcesManager implements PostStartup, PostConst
     }
 
     private void  debug(String message){
-         System.out.println("[ASR] [ApplicationScopedResourcesManager] " + message);
+         _logger.finest("[ASR] [ApplicationScopedResourcesManager] " + message);
      }
 
     /**
