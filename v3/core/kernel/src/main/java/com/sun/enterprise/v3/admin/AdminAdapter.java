@@ -242,9 +242,6 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
     public boolean authenticate(Request req)
             throws Exception {
-        if (requesterIsServer(req)) {
-            return true;
-        }
         String[] up = getUserPassword(req);
         String user = up[0];
         String password = up.length > 1 ? up[1] : "";
@@ -253,11 +250,6 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
             return authenticator.loginAsAdmin(user, password, as.getAuthRealmName());
         }
         return true;   //if the authenticator is not available, allow all access - per Jerome
-    }
-
-    private boolean requesterIsServer(final Request req) {
-        final String isServerHeader = req.getHeader("X-isServer");
-        return isServerHeader != null && isServerHeader.length() > 0;
     }
 
     /** A convenience method to extract user name from a request. It assumes the HTTP Basic Auth.

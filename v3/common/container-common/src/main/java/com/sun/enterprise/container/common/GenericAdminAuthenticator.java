@@ -35,18 +35,20 @@
  */
 package com.sun.enterprise.container.common;
 
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.file.FileRealmUser;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.*;
-import org.glassfish.internal.api.LocalPassword;
 import com.sun.enterprise.admin.util.AdminConstants;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.AdminService;
+import com.sun.enterprise.security.ssl.SSLUtils;
 import org.glassfish.internal.api.*;
 import org.glassfish.security.common.Group;
 import org.jvnet.hk2.annotations.*;
@@ -60,6 +62,10 @@ import java.util.logging.Logger;
 import java.util.Enumeration;
 import java.util.Set;
 import java.io.File;
+import java.security.KeyStore;
+import java.security.Principal;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 
 /** Implementation of {@link AdminAccessController} that delegates to LoginContextDriver.
  *  @author Kedar Mhaswade (km@dev.java.net)
@@ -96,6 +102,12 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     @Inject
     ServerContext sc;
 
+    @Inject
+    SSLUtils sslUtils;
+
+    @Inject
+    Domain domain;
+
     private static LocalStringManagerImpl lsm = new LocalStringManagerImpl(GenericAdminAuthenticator.class);
     
     private final Logger logger = Logger.getAnonymousLogger();
@@ -109,12 +121,31 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
      * @throws LoginException
      */
     public boolean loginAsAdmin(String user, String password, String realm) throws LoginException {
+        return loginAsAdmin(user, password, realm, null, null);
+    }
+
+    /** Ensures that authentication and authorization works as specified in class documentation.
+     *
+     * @param user String representing the user name of the user doing an admin opearation
+     * @param password String representing clear-text password of the user doing an admin operation
+     * @param realm String representing the name of the admin realm for given server
+     * @param candidateAdminIndicator String containing the special admin indicator (null if absent)
+     * @param requestPrincipal Principal, typically as reported by the secure transport delivering the admin request
+     * @return boolean representing successful authentication and group membership
+     * @throws LoginException
+     */
+    public boolean loginAsAdmin(String user, String password, String realm,
+            final String candidateAdminIndicator, final Principal requestPrincipal) throws LoginException {
         boolean isLocal = isLocalPassword(user, password); //local password gets preference
         if (isLocal)
             return true;
-        if (as.usesFileRealm())
-            return handleFileRealm(user, password);
-        else {
+        if (as.usesFileRealm()) {
+            boolean result = handleFileRealm(user, password);
+            if ( ! result) {
+                result = authenticateAsTrustedSender(candidateAdminIndicator, requestPrincipal);
+            }
+            return result;
+        } else {
             //now, deleate to the security service
             ClassLoader pc = null;
             boolean hack = false;
@@ -138,13 +169,58 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
 //              LoginException le = new LoginException("login failed!");
 //              le.initCause(e);
 //              thorw le //TODO need to work on this, this is rather too ugly
-                return false;
+                return authenticateAsTrustedSender(candidateAdminIndicator, requestPrincipal);
            } finally {
                 if (hack)
                     Thread.currentThread().setContextClassLoader(pc);
             }
         }
     }
+
+    /**
+     * Try to authenticate using a Principal, typically from the incoming admin request.
+     * @param reqPrincipal Principal, typically as returned by the secure transport which delivered the incoming admin request
+     * @return true if the Principal is non-null and is the expected one and is therefore authorized for admin tasks; false otherwise
+     * @throws Exception
+     */
+    private boolean authenticateAsTrustedSender(
+            final String candidateSpecialAdminIndicator, final Principal reqPrincipal) throws LoginException  {
+        final SecureAdmin secureAdmin = domain.getSecureAdmin();
+
+        /*
+         * If secure admin is enabled, use only the cert check.  If it's not
+         * enabled, use only the special indicator check.
+         */
+        return (SecureAdmin.Util.isEnabled(secureAdmin) ?
+            authenticateUsingCert(reqPrincipal, secureAdmin.getInstanceAlias()) :
+            authenticateUsingSpecialIndicator(candidateSpecialAdminIndicator,
+                SecureAdmin.Util.configuredAdminIndicator(secureAdmin)));
+    }
+
+    private boolean authenticateUsingCert(final Principal reqPrincipal, final String instanceAlias) throws LoginException {
+        if (reqPrincipal == null) {
+            return false;
+        }
+        try {
+            final KeyStore trustStore = sslUtils.getTrustStore();
+            final Certificate cert = trustStore.getCertificate(instanceAlias);
+            if (cert == null || ! (cert instanceof X509Certificate)) {
+                return false;
+            }
+            final Principal expectedPrincipal = ((X509Certificate) cert).getSubjectX500Principal();
+            return (expectedPrincipal != null ? expectedPrincipal.equals(reqPrincipal) : false);
+        } catch (Exception ex) {
+            final LoginException loginEx = new LoginException();
+            loginEx.initCause(ex);
+            throw loginEx;
+        }
+    }
+
+    private boolean authenticateUsingSpecialIndicator(final String candidateSpecialAdminIndicator,
+            final String configuredSpecialAdminIndicator) {
+        return (configuredSpecialAdminIndicator.equals(candidateSpecialAdminIndicator));
+    }
+
 
     private boolean ensureGroupMembership(String user, String realm) {
         try {

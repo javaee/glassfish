@@ -63,6 +63,7 @@ import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.admin.util.CommandModelData.ParamData;
 import com.sun.enterprise.admin.util.AuthenticationInfo;
 import com.sun.enterprise.admin.util.HttpConnectorAddress;
+import com.sun.enterprise.admin.util.SecureAdminClientManager;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.net.NetUtils;
 import org.glassfish.admin.payload.PayloadFilesManager;
@@ -496,6 +497,10 @@ public class RemoteAdminCommand {
             HttpCommand cmd) throws CommandException {
         HttpURLConnection urlConnection = null;
         try {
+            /*
+             * Note: HttpConnectorAddress will set up SSL/TLS client cert
+             * handling if the current configuration calls for it.
+             */
             HttpConnectorAddress url = new HttpConnectorAddress(
                             host, port, secure);
             logger.finer("URI: " + uriString);
@@ -518,7 +523,7 @@ public class RemoteAdminCommand {
             urlConnection.setReadTimeout(readTimeout);
             if (connectTimeout >= 0)
                 urlConnection.setConnectTimeout(connectTimeout);
-            addSpecialHeaderIfServer(urlConnection);
+            addAdminIndicatorHeaderIfReqd(urlConnection);
             cmd.doCommand(urlConnection);
             logger.finer("doHttpCommand succeeds");
 
@@ -583,10 +588,18 @@ public class RemoteAdminCommand {
         }
     }
 
-    private void addSpecialHeaderIfServer(final URLConnection urlConnection) {
-        final String alias = System.getProperty("com.sun.enterprise.security.httpsOutboundKeyAlias");
-        if (alias != null) {
-            urlConnection.setRequestProperty("X-isServer", "true");
+    /**
+     * Adds the admin indicator header to the request if this admin client
+     * (which could be a real client or a server) has initialized
+     * admin client security.
+     * @param urlConnection
+     */
+    private void addAdminIndicatorHeaderIfReqd(final URLConnection urlConnection) {
+        final String indicatorValue = SecureAdminClientManager.getConfiguredAdminIndicatorValue();
+        if (indicatorValue != null) {
+            urlConnection.setRequestProperty(
+                    SecureAdminClientManager.getConfigureAdminIndicatorHeaderName(),
+                    indicatorValue);
         }
     }
     

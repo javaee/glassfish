@@ -36,10 +36,14 @@
 
 package com.sun.enterprise.admin.util;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.security.store.AsadminSecurityUtil;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
+import com.sun.enterprise.util.io.ServerDirs;
 import com.sun.logging.LogDomains;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.security.cert.Certificate;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -50,72 +54,160 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.config.ConfigParser;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.DomDocument;
 
 /**
  * Encapsulates the implementation of secure admin.
  * <p>
- * Some CLI commands need to connect to the DAS securely but will have neither
- * a user-provided master password nor a human who we could prompt for the
- * master password.  Such commands need to connect using SSL and a client certificate.
- * Such CLI command classes should @Inject SecureAdminClientManager and then
- * invoke its init method.
+ * A process that needs to send admin messages to another server and might not
+ * have a user-provided username and password should inject this class and
+ * invoke {@link #initClientAuthentication(char[], boolean) } before it
+ * sends a message to the admin listener.  The code which actually prepares
+ * the message can then retrieve the initialized information from this
+ * class in constructing the outbound admin message.
+ * <p>
+ * The class offers static accessors to the important values so, for example,
+ * RemoteAdminCommand (which is not a service and it therefore not subject
+ * to injection) can retrieve what it needs to build the outbound admin
+ * request.
+ * <p>
+ * This allows us to support CLI commands which need to connect to the DAS
+ * securely but will have neither a user-provided master password nor
+ * a human who we could prompt for the master password.
  *
  * @author Tim Quinn
  */
-@Service
-@Scoped(PerLookup.class)
-public class SecureAdminClientManager implements PostConstruct {
+public class SecureAdminClientManager {
 
     private static final Logger logger = LogDomains.getLogger(SecureAdminClientManager.class,
             LogDomains.ADMIN_LOGGER);
 
+    /**
+     * the hk2-managed instance - used only by the static accessors
+     */
+    private static SecureAdminClientManager instance = null;
+
+    /**
+     * is cert-based secure admin enabled?
+     */
     private boolean isEnabled;
 
-    private static KeyManager[] keyManagers = null;
+    /**
+     * suitable for passing to SSLContext.init
+     */
+    private KeyManager[] keyManagers = null;
+
+    /**
+     * suitable for setting as the value in an HTTP header to flag a
+     * message source as trusted to submit admin requests (only in the
+     * non-secure case)
+     */
+    private String configuredAdminIndicator = null;
     
-    @Inject
-    private SecureAdmin secureAdmin;
+    private Domain domain;
+
+    private SecureAdmin secureAdmin = null;
 
     private String instanceAlias = null;
 
+    /**
+     * Returns KeyManagers which access the SSL key store for use in
+     * performing client cert authentication.  The returned KeyManagers will
+     * most likely be passed to {@link SSLContext.init }.
+     * @return KeyManagers
+     */
     public static KeyManager[] getKeyManagers() {
-        return keyManagers;
+        return (instance == null ? null : instance.keyManagers());
     }
 
-    @Override
-    public void postConstruct() {
-        isEnabled = Boolean.parseBoolean(secureAdmin.getEnabled());
+    /**
+     * Returne the currently-configured admin indicator value, suitable for
+     * an HTTP header value to identify the sender as a trusted admin
+     * requester (only in the non-secure case).
+     * @return the admin indicator value
+     */
+    public static String getConfiguredAdminIndicatorValue() {
+        return (instance == null ? SecureAdmin.Util.configuredAdminIndicator(null) : instance.configuredAdminIndicatorValue());
+    }
+
+    /**
+     * Returns the name of the HTTP header in which the admin indicator
+     * value should be set.
+     * @return HTTP header name in which the admin indicator value should be set
+     */
+    public static String getConfigureAdminIndicatorHeaderName() {
+        return SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME;
+    }
+
+    /**
+     * Prepares the manager so SSL/TLS will provide the correct client cert
+     * when connecting to a remote admin port.  The main result of invoking this method is to
+     * build an array of KeyManagers which can be passed to SSLContext.initClientAuthentication
+     * so SSL can use the managers to find certs that meet the requirements of
+     * the partner on the other end of the connection.
+     * <p>
+     * This method opens the keystore, so it will need the master password.  The calling
+     * command should pass the master password which the user specified in the
+     * file specified by the --passwordfile option (if any).
+     * Because the user-provided password might be
+     * wrong or missing, the caller also indicates whether a human user is present to
+     * respond to a prompt for the password.  This will not be the case, for
+     * example, during an unattended start-up of an instance.
+     * <p>
+     * The caller also provides at least one of the server name, the node directory,
+     * or the node.  These are used to locate where the domain.xml file is
+     * that contains security config information we need.
+     *
+     * @param commandMasterPassword master password provided by the user on the command line; null if none
+     * @param isInteractive whether the caller is in a context where a human could be prompted to enter a password
+     * @param serverName name of the server where domain.xml resides
+     * @param nodeDir directory of the node where domain.xml resides
+     * @param node name of the node whose directory contains domain.xml
+     */
+    public static void initClientAuthentication(
+            final char[] commandMasterPassword,
+            final boolean isInteractive,
+            final String serverName,
+            final String nodeDir,
+            final String node) {
+        
+        if (instance != null) {
+            throw new IllegalStateException();
+        }
+        instance = new SecureAdminClientManager(commandMasterPassword,
+                isInteractive, serverName, nodeDir, node);
+    }
+
+    private SecureAdminClientManager(final char[] commandMasterPassword,
+            final boolean isInteractive,
+            final String serverName,
+            final String nodeDir,
+            final String node) {
+        domain = prepareDomain(serverName, nodeDir, node);
+        if (domain == null) {
+            return;
+        }
+        secureAdmin = domain.getSecureAdmin();
+        isEnabled = SecureAdmin.Util.isEnabled(secureAdmin);
         if (isEnabled) {
             instanceAlias = secureAdmin.getInstanceAlias();
             logger.fine("SecureAdminClientManager: secure admin is enabled");
         } else {
             logger.fine("SecureAdminClientManager: secure admin is disabled");
         }
-    }
 
-    /**
-     * Prepares the manager for later use, typically when making a connection to
-     * a remote admin port.  The main result of invoking this method is to
-     * build an array of KeyManagers which can be passed to SSLContext.init
-     * so SSL can use the managers to find certs that meet the requirements of
-     * the partner on the other end of the connection.
-     * <p>
-     * This method opens the keystore, so it will need the master password.  The calling
-     * command should pass the master password which the user specified via the
-     * --passwordfile option (if any).  Because the user-provided password might be
-     * wrong or missing, the caller also indicates whether a human user is present to
-     * respond to a prompt for the password.  This will not be the case, for
-     * example, during an unattended start-up of an instance.
-     *
-     * @param commandMasterPassword master password provided by the user on the command line; null if none
-     * @param isPromptable whether the caller is in a context where a human could be prompted to enter a password
-     */
-    public void init(final char[] commandMasterPassword, final boolean isPromptable) {
+        /*
+         * Store the static value of the admin indicator header so (for example)
+         * RemoteAdminCommand can get it using the static accessor to
+         * prepare the outbound admin request.
+         */
+        configuredAdminIndicator = SecureAdmin.Util.configuredAdminIndicator(secureAdmin);
+
         if (isEnabled) {
             try {
                 /*
@@ -131,7 +223,7 @@ public class SecureAdminClientManager implements PostConstruct {
                  * the cert for the configured instance alias and we'll use that
                  * keystore for SSL.
                  */
-                keyManagers = prepareKeyManagers(commandMasterPassword, isPromptable);
+                keyManagers = prepareKeyManagers(commandMasterPassword, isInteractive);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -146,6 +238,51 @@ public class SecureAdminClientManager implements PostConstruct {
      */
     public boolean isEnabled() {
         return isEnabled;
+    }
+
+    public KeyManager[] keyManagers() {
+        return keyManagers;
+    }
+
+    public String configuredAdminIndicatorValue() {
+        return configuredAdminIndicator;
+    }
+
+    private Domain prepareDomain(final String serverName,
+            final String node,
+            final String nodeDir) {
+        final ServerDirsSelector selector;
+        try {
+            selector = ServerDirsSelector.getInstance(null, serverName, nodeDir, node);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+
+        /*
+         * If the caller did not pass any of the values we can use to locate
+         * the domain.xml, then we cannot run in client-cert mode.
+         */
+        final ServerDirs dirs = selector.dirs();
+        if (dirs == null) {
+            return null;
+        }
+
+        final File domainXMLFile = dirs.getDomainXml();
+        if ( ! domainXMLFile.exists()) {
+            return null;
+        }
+
+        try {
+            Habitat habitat = Globals.getStaticHabitat();
+            ConfigParser parser = new ConfigParser(habitat);
+            URL domainURL = domainXMLFile.toURI().toURL();
+            DomDocument doc = parser.parse(domainURL);
+            Dom domDomain = doc.getRoot();
+            Domain d = domDomain.createProxy(Domain.class);
+            return d;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private KeyManager[] prepareKeyManagers(final char[] commandMasterPassword,
@@ -164,7 +301,7 @@ public class SecureAdminClientManager implements PostConstruct {
 
         /*
          * The caller will eventually need an array of KeyManagers to pass to
-         * SSLContext.init.  Create that array now from the internal, single-cert
+         * SSLContext.initClientAuthentication.  Create that array now from the internal, single-cert
          * keystore so it's available later.
          */
 

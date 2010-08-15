@@ -35,7 +35,7 @@
  */
 package com.sun.enterprise.admin.cli.optional;
 
-import com.sun.enterprise.util.io.DomainDirs;
+import com.sun.enterprise.admin.util.ServerDirsSelector;
 import java.io.*;
 import java.util.*;
 import org.jvnet.hk2.annotations.Scoped;
@@ -50,7 +50,6 @@ import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.util.io.InstanceDirs;
 import com.sun.enterprise.util.io.ServerDirs;
 
 /**
@@ -71,18 +70,25 @@ public final class CreateServiceCommand extends CLICommand {
     private boolean force;
     @Param(name = "domaindir", optional = true)
     private File userSpecifiedDomainDirParent;
+
+    /*
+     * The following parameters allow an unattended start-up any number of
+     * ways to tell where the domain.xml file is that should be read for
+     * client/instance-side security confir.
+     */
     @Param(name = "server_name", primary = true, optional = true, alias = "domain_name")
     private String userSpecifiedServerName;
     @Param(name = "nodedir", optional = true, alias = "agentdir")
     private String userSpecifiedNodeDir;           // nodeDirRoot
     @Param(name = "node", optional = true, alias = "nodeagent")
     private String userSpecifiedNode;
+    
     private File asadminScript;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateServiceCommand.class);
     private ServerDirs dirs;
-    private InstanceDirs instanceDirs;
-    private DomainDirs domainDirs;
+
+    private ServerDirsSelector selector = null;
 
     /**
      */
@@ -92,12 +98,13 @@ public final class CreateServiceCommand extends CLICommand {
             super.validate(); // pointless empty method but who knows what the future holds?
 
             // The order that you make these calls matters!!
-            validateDomainOrInstance();
 
-            if (isInstance())
-                dirs = instanceDirs.getServerDirs();
-            else
-                dirs = domainDirs.getServerDirs();
+            selector = ServerDirsSelector.getInstance(
+                    userSpecifiedDomainDirParent,
+                    userSpecifiedServerName,
+                    userSpecifiedNodeDir,
+                    userSpecifiedNode);
+            dirs = selector.dirs();
 
             validateServiceName();
             validateAsadmin();
@@ -165,36 +172,7 @@ public final class CreateServiceCommand extends CLICommand {
         return 0;
     }
 
-    /**
-     * make sure the parameters make sense for either an instance or a domain.
-     */
-    private void validateDomainOrInstance() throws CommandException, IOException {
-        // case 1: since ddp is specified - it MUST be a domain
-        if (userSpecifiedDomainDirParent != null) {
-            domainDirs = new DomainDirs(userSpecifiedDomainDirParent, userSpecifiedServerName);
-        }
-        //case 2: if either of these are set then it MUST be an instance
-        else if (userSpecifiedNode != null || userSpecifiedNodeDir != null) {
-            instanceDirs = new InstanceDirs(userSpecifiedNodeDir, userSpecifiedNode, userSpecifiedServerName);
-        }
-        // case 3: nothing is specified -- use default domain as in v3.0
-        else if (userSpecifiedServerName == null) {
-            domainDirs = new DomainDirs(userSpecifiedDomainDirParent, userSpecifiedServerName);
-        }
-        // case 4: userSpecifiedServerName is set and the other 3 are all null
-        // we need to figure out if it's a DAS or an instance
-        else {
-            try {
-                domainDirs = new DomainDirs(userSpecifiedDomainDirParent, userSpecifiedServerName);
-                return;
-            }
-            catch (IOException e) {
-                // handled below
-            }
-
-            instanceDirs = new InstanceDirs(userSpecifiedNodeDir, userSpecifiedNode, userSpecifiedServerName);
-        }
-    }
+    
 
     private void validateServiceName() {
         if (!ok(serviceName))
@@ -219,16 +197,8 @@ public final class CreateServiceCommand extends CLICommand {
         }
     }
 
-    private boolean isInstance() {
-        return instanceDirs != null;
-    }
-
-    private boolean isDomain() {
-        return domainDirs != null;
-    }
-
     private AppserverServiceType getType() {
-        if (isInstance())
+        if (selector.isInstance())
             return AppserverServiceType.Instance;
         else
             return AppserverServiceType.Domain;

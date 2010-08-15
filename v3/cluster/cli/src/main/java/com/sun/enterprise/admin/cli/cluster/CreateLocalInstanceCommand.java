@@ -36,7 +36,9 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
+import com.sun.enterprise.admin.cli.CLIConstants;
 import com.sun.enterprise.admin.cli.CLILogger;
+import com.sun.enterprise.admin.cli.ProgramOptions;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -47,6 +49,7 @@ import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
+import com.sun.enterprise.admin.util.SecureAdminClientManager;
 
 
 /**
@@ -75,6 +78,16 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
 
     @Param(name = "checkports", optional = true, defaultValue = "true")
     private boolean checkPorts = true;
+
+    @Param(name = "server_name", primary = true, optional = true, alias = "domain_name")
+    private String userSpecifiedServerName;
+
+    @Param(name = "nodedir", optional = true, alias = "agentdir")
+    private String userSpecifiedNodeDir;           // nodeDirRoot
+
+    @Param(name = "node", optional = true, alias = "nodeagent")
+    private String userSpecifiedNode;
+
 
     private static final String RENDEZVOUS_PROPERTY_NAME = "rendezvousOccurred";
     private String INSTANCE_DOTTED_NAME;
@@ -106,7 +119,20 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         super.validate();  // instanceName is validated and set in super.validate(), directories created
         INSTANCE_DOTTED_NAME = "servers.server." + instanceName;
         RENDEZVOUS_DOTTED_NAME = INSTANCE_DOTTED_NAME + ".property." + RENDEZVOUS_PROPERTY_NAME;
-        
+
+        /*
+         * Before contacting the DAS, intialize client authentication so
+         * we either send the admin indicator header or we use client cert
+         * authentication, depending on the current configuration.
+         */
+        SecureAdminClientManager.initClientAuthentication(
+                passwords.get(CLIConstants.MASTER_PASSWORD) != null ?
+                    passwords.get(CLIConstants.MASTER_PASSWORD).toCharArray() : null,
+                programOpts.isInteractive(),
+                userSpecifiedServerName, 
+                userSpecifiedNodeDir,
+                userSpecifiedNode);
+
         if (!rendezvousWithDAS()) {
             instanceDir.delete();
             throw new CommandException(

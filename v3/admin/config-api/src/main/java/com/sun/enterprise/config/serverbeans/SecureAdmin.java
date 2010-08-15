@@ -42,6 +42,7 @@ import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.Element;
 
 
 
@@ -51,6 +52,7 @@ import org.jvnet.hk2.config.DuckTyped;
  *
  */
 public interface SecureAdmin extends ConfigBeanProxy, Injectable {
+
 
     /**
      * Gets whether admin security is turned on.
@@ -67,11 +69,17 @@ public interface SecureAdmin extends ConfigBeanProxy, Injectable {
      */
     void setEnabled(String value);
 
+    @Attribute (defaultValue=Util.ADMIN_INDICATOR_DEFAULT_VALUE)
+    String getSpecialAdminIndicator();
+
+    void setSpecialAdminIndicator(String value);
+
     /**
      * Gets the list of principals to be used for SSL/TLS authentication
      * among servers in this domain.
      * @return list of SecureAdminPrincipal objects
      */
+    @Element
     List<SecureAdminPrincipal> getSecureAdminPrincipals();
 
     /**
@@ -101,6 +109,32 @@ public interface SecureAdmin extends ConfigBeanProxy, Injectable {
                 }
             }
             return null;
+        }
+    }
+    
+    public static class Util {
+        
+        public static final String ADMIN_INDICATOR_HEADER_NAME = "X-GlassFish-admin";
+        private static final String ADMIN_INDICATOR_DEFAULT_VALUE = "true";
+
+        
+        /**
+         * Reports whether secure admin is enabled.
+         * @param secureAdmin the SecureAdmin, typically returned from domain.getSecureAdmin()
+         * @return true if secure admin is enabled; false otherwise
+         */
+        public static boolean isEnabled(final SecureAdmin secureAdmin) {
+            return (secureAdmin != null && Boolean.parseBoolean(secureAdmin.getEnabled()));
+        }
+
+        /**
+         * Returns the configured (which could be the default) value for the
+         * special admin indicator.
+         * @param secureAdmin the SecureAdmin, typically returned from domain.getSecureAdmin()
+         * @return the current value for the admin indicator
+         */
+        public static String configuredAdminIndicator(final SecureAdmin secureAdmin) {
+            return (secureAdmin == null ? ADMIN_INDICATOR_DEFAULT_VALUE : secureAdmin.getSpecialAdminIndicator());
         }
     }
 }
