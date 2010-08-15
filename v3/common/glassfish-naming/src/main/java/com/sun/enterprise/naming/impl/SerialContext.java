@@ -439,7 +439,13 @@ public class SerialContext implements Context {
 
         try {
             if (isjavaURL(name)) {
-                return javaUrlContext.lookup(name);
+                //it is possible that the object bound in a java url ("java:") is
+                //reference object.
+                Object o = javaUrlContext.lookup(name);
+                if(o instanceof Reference){
+                    o = getObjectInstance(name, o);
+                }
+                return o;
             } else {
                 Object obj = getProvider().lookup(name);
                 if (obj instanceof NamingObjectProxy) {
