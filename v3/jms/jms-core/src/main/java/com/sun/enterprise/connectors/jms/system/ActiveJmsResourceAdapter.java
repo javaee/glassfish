@@ -867,7 +867,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     }
 
     private String adjustForDirectMode(String brokerType) {
-        if (brokerType.equals(EMBEDDED)) {
+        if (! isClustered() && brokerType.equals(EMBEDDED)) {
             String revertToEmbedded = System.getProperty(REVERT_TO_EMBEDDED_PROPERTY);
             if ((revertToEmbedded != null) && (revertToEmbedded.equals("true"))){
                 return EMBEDDED;
@@ -1042,8 +1042,11 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                 ConnectorConfigProperty  envProp = new ConnectorConfigProperty
                     (GROUPNAME, val, "Group Name", "java.lang.String");
                 setProperty(cd, envProp);
+		boolean inClusteredContainer = false;
+		if(jmsService.getType().equals(EMBEDDED))
+			inClusteredContainer = true;
                 ConnectorConfigProperty  envProp1 = new ConnectorConfigProperty
-                  (CLUSTERCONTAINER, "false", "Cluster container flag",
+                  (CLUSTERCONTAINER, Boolean.toString(inClusteredContainer), "Cluster container flag",
                     "java.lang.Boolean");
                 setProperty(cd, envProp1);
                 logFine("CLUSTERED instance - setting groupname as"
@@ -1095,7 +1098,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     }
 
 
-    private static boolean isClustered() throws ConnectorRuntimeException {
+    private static boolean isClustered()  {
         Domain domain = Globals.get(Domain.class);
         Clusters clusters = domain.getClusters();
         if (clusters == null) return false;

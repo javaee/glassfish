@@ -50,6 +50,8 @@ import org.jvnet.hk2.component.Habitat;
 //import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
+import com.sun.enterprise.util.*;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
@@ -58,6 +60,9 @@ import com.sun.hk2.component.Holder;
 import org.glassfish.internal.api.PostStartup;
 import com.sun.enterprise.config.serverbeans.JmsHost;
 import com.sun.enterprise.config.serverbeans.JmsService;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Clusters;
+import java.util.List;
 //import com.sun.enterprise.config.serverbeans.MonitoringService;
 
 //import java.beans.PropertyVetoException;
@@ -107,6 +112,7 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
     }
     private boolean eagerStartupRequired(){
         String integrationMode =getJmsService().getType();
+	
 
         //we don't manage lifecycle of remote brokers
         if(REMOTE.equals(integrationMode))
@@ -114,6 +120,9 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
 
          //Eager startup is currently enabled based on a system property
         String jmsEagerStartup = System.getProperty(JMS_EAGER_STARTUP);
+
+	if(isClustered() && !"false".equals(jmsEagerStartup))
+		return true;
 
         //if embedded broker and system property is false or not defined, don't do eager startup
         if (EMBEDDED.equals(integrationMode) && (jmsEagerStartup == null || "".equals(jmsEagerStartup) || "false".equals(jmsEagerStartup)))
@@ -132,6 +141,18 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
 
 
         return false;
+    }
+
+    private boolean isClustered()
+    {
+	    Domain domain = Globals.get(Domain.class);
+	    Clusters clusters = domain.getClusters();
+	    if (clusters == null) return false;
+
+	    List clusterList = clusters.getCluster();
+	    String serverName = System.getProperty(SystemPropertyConstants.SERVER_NAME);
+	    return JmsRaUtil.isClustered(clusterList, serverName);
+
     }
 
         private JmsService getJmsService(){
