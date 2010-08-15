@@ -43,7 +43,6 @@ import javax.resource.spi.*;
 import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.transaction.api.JavaEETransaction;
-import com.sun.enterprise.transaction.spi.LocalTxResource;
 import com.sun.enterprise.transaction.api.TransactionConstants;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
