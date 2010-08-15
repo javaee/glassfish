@@ -68,13 +68,13 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import org.jvnet.hk2.annotations.Service;
 
-@Service
 /**
  * Driver Loader to load the jdbc drivers and get driver/datasource classnames
- * by introspection. 
- * 
+ * by introspection.
+ *
  * @author Shalini M
  */
+@Service
 public class DriverLoader implements ConnectorConstants {
 
     private static Logger logger =
