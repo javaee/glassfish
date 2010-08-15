@@ -41,6 +41,7 @@ import com.sun.enterprise.deployment.ConnectorConfigProperty;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -69,8 +70,8 @@ public final class ConnectorDescriptorInfo implements Serializable {
      */
     public ConnectorDescriptorInfo() {
 
-        mcfConfigProperties_ = new HashSet<ConnectorConfigProperty >();
-        resourceAdapterConfigProperties_ = new HashSet<ConnectorConfigProperty >();
+        mcfConfigProperties_ = new LinkedHashSet<ConnectorConfigProperty >();
+        resourceAdapterConfigProperties_ = new LinkedHashSet<ConnectorConfigProperty >();
     }
 
     /**

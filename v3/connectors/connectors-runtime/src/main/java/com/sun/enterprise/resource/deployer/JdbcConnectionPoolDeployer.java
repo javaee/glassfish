@@ -311,6 +311,11 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 "Statement Timeout",
                 "java.lang.String"));
 
+        propList.add(new ConnectorConfigProperty ("PoolMonitoringSubTreeRoot",
+                ConnectorsUtil.getPoolMonitoringSubTreeRoot(conConnPool.getPoolInfo()) + "",
+                "Pool Monitoring Sub Tree Root",
+                "java.lang.String"));
+
         propList.add(new ConnectorConfigProperty ("StatementCacheSize",
                 adminPool.getStatementCacheSize() + "",
                 "Statement Cache Size",
@@ -326,11 +331,6 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 "Sql Trace Listeners",
                 "java.lang.String"));
         
-        propList.add(new ConnectorConfigProperty ("PoolMonitoringSubTreeRoot",
-                ConnectorsUtil.getPoolMonitoringSubTreeRoot(conConnPool.getPoolInfo()) + "",
-                "Pool Monitoring Sub Tree Root",
-                "java.lang.String"));
-
         //dump user defined poperties into the list
         Set connDefDescSet = connDesc.getOutboundResourceAdapter().
                 getConnectionDefs();

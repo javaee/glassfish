@@ -1326,7 +1326,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         _logger.finest("MCF Created");
         if (statementCacheSize > 0 ||
                 (sqlTraceListeners != null && !sqlTraceListeners.equals("null"))) {
-            jdbcStatsProvider = new JdbcStatsProvider(getPoolMonitoringSubTreeRoot(), sqlTraceCacheSize,
+            jdbcStatsProvider = new JdbcStatsProvider(poolMonitoringSubTreeRoot, sqlTraceCacheSize,
                     timeToKeepQueries);
             //get the poolname and use it to initialize the stats provider n register
             StatsProviderManager.register(
