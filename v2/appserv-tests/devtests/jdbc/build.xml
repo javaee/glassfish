@@ -103,6 +103,7 @@
 	<ant dir="flushconnectionpool" target="all"/>
 	<ant dir="connleakreclaimnotify" target="all"/>
 	<ant dir="stmtCaching_hit_miss.monitoring" target="all"/>
+	<ant dir="transparent-pool-reconfig" target="all"/>
 	<ant dir="sqltracemonitoring" target="all"/>
 	<!--<antcall target="all-oracle"/>-->
     </target>
@@ -147,6 +148,7 @@
         <ant dir="txisolation" target="all"/>
 	<ant dir="stmtCaching_hit_miss" target="all"/>
 	<ant dir="pooling" target="all"/>
+	<ant dir="transparent-pool-reconfig" target="all"/>
         <record name="jdbc.output" action="stop"/>
     </target>
 
@@ -405,6 +407,12 @@
 	<record name="connleakreclaimnotify.output" action="stop"/>
     </target>
   
+    <target name="transparent-pool-reconfig">
+	<record name="transparent-pool-reconfig.output" action="start"/>
+	<ant dir="transparent-pool-reconfig" target="all"/>
+	<record name="transparent-pool-reconfig.output" action="stop"/>
+    </target>
+
     <target name="usage">
         <echo>
             Usage:
