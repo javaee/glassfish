@@ -310,10 +310,10 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                 com.sun.enterprise.config.serverbeans.Resource configBeanResource =
                         rm.createConfigBean(resources, attrList, props);
                 if (configBeanResource != null) {
-                    if(embedded && isEmbeddedRarResource(configBeanResource, resources.getResources())){
+                    if(embedded && isEmbeddedRarResource(configBeanResource, resources.getResources())== ConnectorConstants.TriState.yes){
                         resources.getResources().add(configBeanResource);
                         resourceConfigs.add(configBeanResource);
-                    }else if(!embedded && !isEmbeddedRarResource(configBeanResource, resources.getResources())){
+                    }else if(!embedded && isEmbeddedRarResource(configBeanResource, resources.getResources())== ConnectorConstants.TriState.no){
                         resources.getResources().add(configBeanResource);
                         resourceConfigs.add(configBeanResource);
                     }
@@ -385,11 +385,11 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                 ResourcePool resourcePool = (ResourcePool)configBeanResource;
 
                 if(embedded){
-                    if(isEmbeddedRarResource(configBeanResource, configBeanResources)){
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources) == ConnectorConstants.TriState.yes){
                         getResourceDeployer(resourcePool).deployResource(resourcePool, applicationName, moduleName);
                     }
                 }else{
-                    if(!isEmbeddedRarResource(configBeanResource, configBeanResources)){
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources) == ConnectorConstants.TriState.no){
                         getResourceDeployer(resourcePool).deployResource(resourcePool, applicationName, moduleName);
                     }
                 }
@@ -397,22 +397,22 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                 BindableResource resource = (BindableResource)configBeanResource;
                 ResourceInfo resourceInfo = new ResourceInfo(resource.getJndiName(), applicationName, moduleName);
                 if(embedded){
-                    if(isEmbeddedRarResource(configBeanResource, configBeanResources)){
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources) == ConnectorConstants.TriState.yes){
                         resourcesBinder.deployResource(resourceInfo, resource);
                     }
                 }else{
-                    if(!isEmbeddedRarResource(configBeanResource, configBeanResources)){
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources)== ConnectorConstants.TriState.no){
                         resourcesBinder.deployResource(resourceInfo, resource);
                     }
                 }
             }else{
                 if(embedded){
-                    if(isEmbeddedRarResource(configBeanResource, configBeanResources)){
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources)== ConnectorConstants.TriState.yes){
                         //work-security-map, resource-adapter-config
                         getResourceDeployer(configBeanResource).deployResource(configBeanResource);
                     }
                 }else{
-                    if(!isEmbeddedRarResource(configBeanResource, configBeanResources)){
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources)== ConnectorConstants.TriState.no){
                         //work-security-map, resource-adapter-config
                         getResourceDeployer(configBeanResource).deployResource(configBeanResource);
                     }
@@ -423,24 +423,36 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
 
     //TODO what if the module being deployed is a RAR and has gf-resources.xml ?
     //TODO can the RAR define its own resources ? eg: connector-resource, pool, a-o-r ?
-    public static boolean isEmbeddedRarResource(com.sun.enterprise.config.serverbeans.Resource configBeanResource,
+    public static ConnectorConstants.TriState
+    isEmbeddedRarResource(com.sun.enterprise.config.serverbeans.Resource configBeanResource,
                                           Collection<com.sun.enterprise.config.serverbeans.Resource> configBeanResources) {
-        boolean result = false;
+        //boolean result = false;
+        ConnectorConstants.TriState result = ConnectorConstants.TriState.no;
         if(configBeanResource instanceof ConnectorResource){
             String poolName = ((ConnectorResource)configBeanResource).getPoolName();
             ConnectorConnectionPool pool = getPool(configBeanResources, poolName);
             if(pool != null){
-                result = pool.getResourceAdapterName().contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER);
+                if(pool.getResourceAdapterName().contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER)){
+                    result = ConnectorConstants.TriState.yes;
+                }
+            }else{
+                result = ConnectorConstants.TriState.unknown;
             }
         }else if(configBeanResource instanceof AdminObjectResource){
             AdminObjectResource aor = (AdminObjectResource)configBeanResource;
-            result = aor.getResAdapter().contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER);
+            if(aor.getResAdapter().contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER)){
+                result = ConnectorConstants.TriState.yes;
+            }
         }else if (configBeanResource instanceof ConnectorConnectionPool){
             ConnectorConnectionPool ccp = (ConnectorConnectionPool)configBeanResource;
-            result = ccp.getResourceAdapterName().contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER);
+            if(ccp.getResourceAdapterName().contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER)){
+                result = ConnectorConstants.TriState.yes;
+            }
         }else if (configBeanResource instanceof WorkSecurityMap){
             WorkSecurityMap wsm = (WorkSecurityMap)configBeanResource;
-            result = wsm.getResourceAdapterName().contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER);
+            if(wsm.getResourceAdapterName().contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER)){
+                result = ConnectorConstants.TriState.yes;
+            }
         }/*else if (configBeanResource instanceof ResourceAdapterConfig){
             ResourceAdapterConfig rac = (ResourceAdapterConfig)configBeanResource;
             result = rac.getResourceAdapterName().contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER);
