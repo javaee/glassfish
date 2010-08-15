@@ -36,6 +36,7 @@
 package org.glassfish.jdbc.admin.cli.internal;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import org.glassfish.resource.common.PoolInfo;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
@@ -60,6 +61,12 @@ public class GetValidationTableNames implements AdminCommand {
     @Param
     private String poolName;
 
+    @Param (optional=true)
+    private String applicationName;
+
+    @Param (optional=true)
+    private String moduleName;
+
     /**
      * @inheritDoc
      */
@@ -67,7 +74,8 @@ public class GetValidationTableNames implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
-            Set<String> validationTableNames = connectorRuntime.getValidationTableNames(poolName);
+            PoolInfo poolInfo = new PoolInfo(poolName, applicationName, moduleName);
+            Set<String> validationTableNames = connectorRuntime.getValidationTableNames(poolInfo);
 
             for (String vendorName : validationTableNames) {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
