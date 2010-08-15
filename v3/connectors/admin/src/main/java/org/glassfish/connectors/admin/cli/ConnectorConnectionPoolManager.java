@@ -35,11 +35,6 @@
  * holder.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.glassfish.connectors.admin.cli;
 
 import java.beans.PropertyVetoException;
@@ -49,6 +44,7 @@ import java.util.logging.Logger;
 import java.util.Properties;
 
 import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.admin.cli.resources.ResourceManager;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
@@ -66,7 +62,6 @@ import static com.sun.appserv.connectors.internal.api.ConnectorConstants.*;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.admin.cli.resources.ResourceManager;
 
 
 /**
@@ -126,7 +121,8 @@ public class ConnectorConnectionPoolManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef)
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
+                                 boolean requiresValidation)
             throws Exception {
         setParams(attributes);
 
@@ -143,7 +139,7 @@ public class ConnectorConnectionPoolManager implements ResourceManager {
         }
 
         //no need to validate in remote instance as the validation would have happened in DAS.
-        if(environment.isDas()){
+        if(environment.isDas() && requiresNewTransaction){
 
             if (applications == null) {
                 String msg = localStrings.getLocalString("noApplications",

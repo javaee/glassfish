@@ -35,6 +35,8 @@
  */
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -42,7 +44,6 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -50,11 +51,6 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.GroupMap;
-import com.sun.enterprise.config.serverbeans.PrincipalMap;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.WorkSecurityMap;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import static org.glassfish.connectors.admin.cli.CLIConstants.*;
@@ -96,6 +92,10 @@ public class CreateConnectorWorkSecurityMap implements AdminCommand {
 
     @Inject
     private Resources resources;
+
+    @Inject
+    private Applications applications;
+    
 
     //TODO common code replicated in ConnectorWorkSecurityMapManager
     /**
@@ -142,16 +142,33 @@ public class CreateConnectorWorkSecurityMap implements AdminCommand {
         }
 
         // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof WorkSecurityMap) {
-                if (((WorkSecurityMap) resource).getName().equals(mapName) &&
-                    ((WorkSecurityMap) resource).getResourceAdapterName().equals(raName)){
-                    report.setMessage(localStrings.getLocalString(
-                            "create.connector.work.security.map.duplicate",
-                            "A connector work security map named {0} for resource adapter {1} already exists.",
-                            mapName, raName));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
+        if (hasDuplicate(resources, report)) return;
+
+        //TODO ASR : need similar validation while creating app-scoped-resource of w-s-m
+        String appName = raName;
+        if (!ConnectorsUtil.isStandAloneRA(raName)) {
+            appName = ConnectorsUtil.getApplicationNameOfEmbeddedRar(raName);
+
+            Application application = applications.getApplication(appName);
+            if(application != null){
+
+                //embedded RAR
+                String resourceAdapterName = ConnectorsUtil.getRarNameFromApplication(raName);
+                Module module = application.getModule(resourceAdapterName);
+                if(module != null){
+                    Resources msr = module.getResources();
+                    if(msr != null){
+                        if(hasDuplicate(msr, report)) return;
+                    }
+                }
+            }
+        }else{
+            //standalone RAR
+            Application application = applications.getApplication(appName);
+            if(application != null){
+                Resources appScopedResources = application.getResources();
+                if(appScopedResources != null){
+                    if(hasDuplicate(appScopedResources, report)) return;
                 }
             }
         }
@@ -203,5 +220,22 @@ public class CreateConnectorWorkSecurityMap implements AdminCommand {
         }
         
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    }
+
+    private boolean hasDuplicate(Resources resources, ActionReport report) {
+        for (Resource resource : resources.getResources()) {
+            if (resource instanceof WorkSecurityMap) {
+                if (((WorkSecurityMap) resource).getName().equals(mapName) &&
+                    ((WorkSecurityMap) resource).getResourceAdapterName().equals(raName)){
+                    report.setMessage(localStrings.getLocalString(
+                            "create.connector.work.security.map.duplicate",
+                            "A connector work security map named {0} for resource adapter {1} already exists.",
+                            mapName, raName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

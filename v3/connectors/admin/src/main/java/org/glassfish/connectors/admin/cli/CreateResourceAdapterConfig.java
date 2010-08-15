@@ -37,6 +37,10 @@ package org.glassfish.connectors.admin.cli;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.resource.common.ResourceStatus;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -51,10 +55,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -96,6 +96,9 @@ public class CreateResourceAdapterConfig implements AdminCommand {
     private Resources resources;
 
     @Inject
+    private Applications applications;
+
+    @Inject
     private Domain domain;
 
     /**
@@ -115,9 +118,37 @@ public class CreateResourceAdapterConfig implements AdminCommand {
 
         ResourceStatus rs;
 
+        //TODO ASR : need similar validation while creating app-scoped-resource of resource-adapter-config
+        String appName = raName;
+        if (!ConnectorsUtil.isStandAloneRA(raName)) {
+            appName = ConnectorsUtil.getApplicationNameOfEmbeddedRar(raName);
+
+            Application application = applications.getApplication(appName);
+            if(application != null){
+                //embedded RAR
+                String resourceAdapterName = ConnectorsUtil.getRarNameFromApplication(raName);
+                Module module = application.getModule(resourceAdapterName);
+                if(module != null){
+                    Resources msr = module.getResources();
+                    if(msr != null){
+                        if(hasDuplicate(msr, report)) return;
+                    }
+                }
+            }
+        }else{
+            //standalone RAR
+            Application application = applications.getApplication(appName);
+            if(application != null){
+                Resources appScopedResources = application.getResources();
+                if(appScopedResources != null){
+                    if(hasDuplicate(appScopedResources, report)) return;
+                }
+            }
+        }
+
         ResourceAdapterConfigManager resAdapterConfigMgr = new ResourceAdapterConfigManager();
         try {
-            rs = resAdapterConfigMgr.create(resources, attrList, properties, target, true, false);
+            rs = resAdapterConfigMgr.create(resources, attrList, properties, target, true, false, true);
         } catch (Exception ex) {
             Logger.getLogger(CreateResourceAdapterConfig.class.getName()).log(
                     Level.SEVERE,
@@ -142,5 +173,16 @@ public class CreateResourceAdapterConfig implements AdminCommand {
                 report.setFailureCause(rs.getException());
         }
         report.setActionExitCode(ec);
+    }
+
+    private boolean hasDuplicate(Resources resources, ActionReport report) {
+        if(resources.getResourceByName(ResourceAdapterConfig.class, raName) != null){
+            String msg = localStrings.getLocalString("create.resource.adapter.config.duplicate",
+                    "Resource adapter config already exists for RAR", raName);
+            report.setMessage(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return true;
+        }
+        return false;
     }
 }

@@ -126,7 +126,7 @@ public class CreateConnectorResource implements AdminCommand {
         ResourceStatus rs;
 
         try {
-            rs = connResMgr.create(resources, attrList, properties, target, true, true);
+            rs = connResMgr.create(resources, attrList, properties, target, true, true, true);
         } catch(Exception e) {
             Logger.getLogger(CreateConnectorResource.class.getName()).log(Level.SEVERE,
                     "Unable to create connector resource " + jndiName, e);

@@ -35,11 +35,6 @@
  * holder.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.glassfish.connectors.admin.cli;
 
 import java.beans.PropertyVetoException;
@@ -49,9 +44,11 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.admin.cli.resources.ResourceManager;
 import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -60,7 +57,7 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import static org.glassfish.resource.common.ResourceConstants.*;
-import org.glassfish.resource.common.ResourceStatus;
+
 import org.jvnet.hk2.config.types.Property;
 import static com.sun.appserv.connectors.internal.api.ConnectorConstants.*;
 import com.sun.enterprise.config.serverbeans.BindableResource;
@@ -73,7 +70,6 @@ import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.admin.cli.resources.ResourceManager;
 
 
 /**
@@ -118,10 +114,12 @@ public class AdminObjectManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef)
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
+                                 boolean requiresValidation)
             throws Exception {
         setAttributes(attributes, target);
 
+        if(requiresValidation){
         if (jndiName == null) {
             String msg = localStrings.getLocalString("create.admin.object.noJndiName",
                             "No JNDI name defined for administered object.");
@@ -145,6 +143,7 @@ public class AdminObjectManager implements ResourceManager {
             if (status.getStatus() == ResourceStatus.FAILURE) {
                 return status;
             }
+        }
         }
 
         if (requiresNewTransaction) {

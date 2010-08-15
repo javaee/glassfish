@@ -120,7 +120,8 @@ public class JDBCConnectionPoolManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef) throws Exception {
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
+                                 boolean requiresValidation) throws Exception {
         setAttributes(attributes);
         if (jdbcconnectionpoolid == null) {
             String msg = localStrings.getLocalString("add.resources.noJdbcConnectionPoolId",

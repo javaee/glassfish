@@ -90,7 +90,8 @@ public class JDBCResourceManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef)
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
+                                 boolean requiresValidation)
             throws Exception {
 
         setAttributes(attributes, target);

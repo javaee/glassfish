@@ -48,6 +48,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.admin.cli.resources.ResourceManager;
+import org.glassfish.resource.common.ResourceStatus;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -58,14 +61,13 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 
 import static org.glassfish.resource.common.ResourceConstants.*;
-import org.glassfish.resource.common.ResourceStatus;
+
 import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.admin.cli.resources.ResourceManager;
 
 
 /**
@@ -90,7 +92,8 @@ public class ResourceAdapterConfigManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef) throws Exception {
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
+                                 boolean requiresValidation) throws Exception {
         setParams(attributes);
 
         if (raName == null) {

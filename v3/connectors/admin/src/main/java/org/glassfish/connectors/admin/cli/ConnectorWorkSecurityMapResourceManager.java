@@ -38,10 +38,10 @@
 package org.glassfish.connectors.admin.cli;
 
 
-import org.glassfish.api.I18n;
 import org.glassfish.resource.common.ResourceConstants;
-import org.glassfish.resource.common.ResourceStatus;
 import org.glassfish.admin.cli.resources.ResourceManager;
+import org.glassfish.resource.common.ResourceStatus;
+import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
@@ -72,7 +72,8 @@ public class ConnectorWorkSecurityMapResourceManager implements ResourceManager 
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef)
+                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
+                                 boolean requiresValidation)
             throws Exception {
 
         setAttributes(attributes);
@@ -185,7 +186,7 @@ public class ConnectorWorkSecurityMapResourceManager implements ResourceManager 
 
     public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception{
         setAttributes(attributes);
-        //TODO ASR no use of props ?
+        //TODO no use of props ?
         //return createConfigBean(resources, props);
         return createConfigBean(resources);        
     }
