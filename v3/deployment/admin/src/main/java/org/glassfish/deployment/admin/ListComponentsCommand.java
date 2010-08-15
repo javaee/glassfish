@@ -56,10 +56,8 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.LinkedHashSet;
+
+import java.util.*;
 
 /**
  * list-components command
@@ -82,6 +80,9 @@ public class ListComponentsCommand  implements AdminCommand {
 
     @Param(optional=true, defaultValue="false")
     public Boolean subcomponents = false;
+
+    @Param(optional=true, defaultValue="false")
+    private Boolean resources = false;
 
     @Inject
     protected Domain domain;
@@ -108,7 +109,10 @@ public class ListComponentsCommand  implements AdminCommand {
                                     + getAppSnifferEngines(app, true);
                         if( verbose ){
                             message += getVerboseStatus(app);
-                        } 
+                        }
+                        if(resources){
+                            displayAppScopedResources(app.getName(), report, childPart);
+                        }
                         if (subcomponents) {
                             displaySubComponents(app.getName(), report, 
                                 childPart);
@@ -240,6 +244,30 @@ public class ListComponentsCommand  implements AdminCommand {
         return sniffer.isUserVisible();
     }
 
+    private void displayAppScopedResources(String applicationName, ActionReport report, ActionReport.MessagePart part) {
+
+        Application application = null;
+        List<Application> applications = domain.getApplicationsInTarget(target);
+        for (Application app : applications) {
+            if (app.getName().equals(applicationName)) {
+                application = app;
+            }
+        }
+        if (application != null) {
+            ActionReport subReport = report.addSubActionsReport();
+            CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("_list-resources", subReport);
+            final ParameterMap parameters = new ParameterMap();
+            parameters.add("appname", application.getName());
+            inv.parameters(parameters).execute();
+
+            ActionReport.MessagePart subPart = subReport.getTopMessagePart();
+            for (ActionReport.MessagePart cp: subPart.getChildren()) {
+                ActionReport.MessagePart resourcesChildPart = part.addChild();
+                resourcesChildPart.setMessage(cp.getMessage());
+            }
+        }
+    }
+
     private void displaySubComponents(String appName, ActionReport report,
         ActionReport.MessagePart part) {
         ActionReport subReport = report.addSubActionsReport();
@@ -247,12 +275,17 @@ public class ListComponentsCommand  implements AdminCommand {
 
         final ParameterMap parameters = new ParameterMap();
         parameters.add("DEFAULT", appName);
+        parameters.add("resources", resources.toString());
 
         inv.parameters(parameters).execute();
 
         ActionReport.MessagePart subPart = subReport.getTopMessagePart();       
         for (ActionReport.MessagePart childPart: subPart.getChildren()) {
-            part.addChild().setMessage("  " + childPart.getMessage());
+            ActionReport.MessagePart actualChildPart = part.addChild();
+            actualChildPart.setMessage("  " + childPart.getMessage());
+            for(ActionReport.MessagePart grandChildPart : childPart.getChildren()){
+                actualChildPart.addChild().setMessage(grandChildPart.getMessage());
+            }
         }
     }
 }

@@ -183,6 +183,9 @@ public class ListComponentsCommandTest {
         }
 
        public List<Property> getProperty() {return null;}
+  public void setResources(com.sun.enterprise.config.serverbeans.Resources res){}
+        public Resources  getResources(){return null;}
+
 
     }
         //mock-up Application object
@@ -192,6 +195,8 @@ public class ListComponentsCommandTest {
         public String getName() {
             return "hello";
         }
+        public void setResources(com.sun.enterprise.config.serverbeans.Resources res){}
+        public Resources  getResources(){return null;}
         public void setName(String value) throws PropertyVetoException {}
         public String getContextRoot() { return "hello";}
         public void setContextRoot(String value) throws PropertyVetoException {}
