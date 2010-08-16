@@ -56,8 +56,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Properties;
 import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /** Represents the SMF Service.
  * Holds the tokens and their values that are consumed by the SMF templates. The recommended
