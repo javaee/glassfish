@@ -53,6 +53,7 @@ import org.w3c.dom.Node;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import org.glassfish.security.common.Group;
 import org.glassfish.security.common.PrincipalImpl;
 
 
@@ -159,15 +160,19 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
     public void addDescriptor(Object newDescriptor) {
         if (newDescriptor instanceof WLSecurityRoleAssignment) {
             WLSecurityRoleAssignment roleMap = (WLSecurityRoleAssignment) newDescriptor;
-            descriptor.getApplication().addWLRoleAssignments(roleMap);
             if (descriptor!=null) {
+                descriptor.getApplication().addWLRoleAssignments(roleMap);
                 Role role = new Role(roleMap.getRoleName());
                 SecurityRoleMapper rm = descriptor.getApplication().getRoleMapper();
                 if (rm != null) {
-                    List<String> principals = roleMap.getPrincipalNames();
-                    for (int i = 0; i < principals.size(); i++) {
-                        rm.assignRole(new PrincipalImpl(principals.get(i)),
-                            role, descriptor);
+                    if(roleMap.isExternallyDefined()){
+                        rm.assignRole(new Group(role.getName()), role, descriptor);
+                    } else {
+                        List<String> principals = roleMap.getPrincipalNames();
+                        for (int i = 0; i < principals.size(); i++) {
+                            rm.assignRole(new PrincipalImpl(principals.get(i)),
+                                    role, descriptor);
+                        }
                     }
                 }
             }

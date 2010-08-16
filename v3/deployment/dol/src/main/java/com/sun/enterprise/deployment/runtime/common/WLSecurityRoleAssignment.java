@@ -46,8 +46,8 @@ import java.util.List;
  * in this object.  The implementation of Principal is not instantiated
  * here.  This is because 1) the dol should avoid loading any classes
  * as the classloaders used for deployment and runtime can be different.
- * 2) verifier uses this information and it has not access to the rolemaper
- * on the server.
+ * 2) verifier uses this information and it has not access to the
+ * role-mapper on the server.
  *
  * @author Sudarsan Sridhar
  */
@@ -62,7 +62,7 @@ public class WLSecurityRoleAssignment extends RuntimeDescriptor {
     }
 
     public void setExternallyDefined() {
-        throw new UnsupportedOperationException("externally-defined flag not supported");
+        externallyDefined = true;
     }
 
 

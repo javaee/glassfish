@@ -56,6 +56,7 @@ import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import org.glassfish.security.common.Group;
 import org.glassfish.security.common.PrincipalImpl;
 
 
@@ -150,15 +151,20 @@ public class WLApplicationRuntimeNode extends RuntimeBundleNode<Application> {
             descriptor.addWLModule((WLModuleDescriptor)newDescriptor);
         } else if (newDescriptor instanceof WLSecurityRoleAssignment) {
             WLSecurityRoleAssignment roleMap = (WLSecurityRoleAssignment) newDescriptor;
-            descriptor.addWLRoleAssignments(roleMap);
             if (descriptor!=null && !descriptor.isVirtual()) {
+                descriptor.addWLRoleAssignments(roleMap);
                 Role role = new Role(roleMap.getRoleName());
                 SecurityRoleMapper rm = descriptor.getRoleMapper();
                 if (rm != null) {
-                    List<String> principals = roleMap.getPrincipalNames();
-                    for (int i = 0; i < principals.size(); i++) {
-                        rm.assignRole(new PrincipalImpl(principals.get(i)),
-                            role, descriptor);
+                    if(roleMap.isExternallyDefined()){
+                        rm.assignRole(new Group(roleMap.getRoleName()),
+                                role, descriptor);
+                    } else {
+                        List<String> principals = roleMap.getPrincipalNames();
+                        for (int i = 0; i < principals.size(); i++) {
+                            rm.assignRole(new PrincipalImpl(principals.get(i)),
+                                    role, descriptor);
+                        }
                     }
                 }
             }
