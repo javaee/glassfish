@@ -132,6 +132,10 @@ public class EjbContainerUtilImpl
     // Flag that allows to load EJBTimerService on the 1st access and
     // distinguish between not available and not loaded
     private  volatile boolean _ejbTimerServiceVerified = false;
+
+    // If EJBTimerService is not yet loaded, keep the value to set it later.
+    private  volatile boolean _doDBReadBeforeTimeout = false;
+
     private static Object lock = new Object();
 
     private  volatile EJBTimerService _ejbTimerService;
@@ -205,6 +209,10 @@ public class EjbContainerUtilImpl
         ThreadFactory tf = new EjbTimerThreadFactory();
         executorService = Executors.newCachedThreadPool(tf);
 
+        if (!isDas()) {
+            // On a clustered instance default is true
+            _doDBReadBeforeTimeout = true;
+        }
         _me = this;
     }
 
@@ -254,9 +262,29 @@ public class EjbContainerUtilImpl
         return getEJBTimerService(null);
     }
 
+    public  boolean isEJBTimerServiceLoaded() {
+        return _ejbTimerServiceVerified;
+    }
+
+    public  void setEJBTimerServiceDBReadBeforeTimeout(boolean value) {
+        if (isEJBTimerServiceLoaded()) {
+            _ejbTimerService.setPerformDBReadBeforeTimeout(value);
+        } else {
+            _doDBReadBeforeTimeout = value;
+        }
+    }
+
     public  EJBTimerService getEJBTimerService(String target) {
         if (!_ejbTimerServiceVerified) {
             deployEJBTimerService(target);
+            // Check EJB Timers in this instance if Timer Service is available
+            if (target == null && _ejbTimerService != null) {
+                _logger.log(Level.INFO, "==> Restoring Timers ... " );
+                if (_ejbTimerService.restoreEJBTimers()) {
+                    _logger.log(Level.INFO, "<== ... Timers Restored.");
+                }
+                _ejbTimerService.setPerformDBReadBeforeTimeout(_doDBReadBeforeTimeout);
+            }
         }
         return _ejbTimerService;
     }
@@ -477,7 +505,7 @@ public class EjbContainerUtilImpl
                         File rootScratchDir = env.getApplicationStubPath();
                         File appScratchDir = new File(rootScratchDir, appName);
                         String resourceName = getTimerResource(target);
-                        if ((env.isDas() || env.isEmbedded()) && (appScratchDir.createNewFile() && !isUpgrade(resourceName))) {
+                        if (isDas() && (appScratchDir.createNewFile() && !isUpgrade(resourceName))) {
                             params.origin = OpsParams.Origin.deploy;
                             if (target != null) {
                                 params.target = target;
@@ -606,4 +634,12 @@ public class EjbContainerUtilImpl
     public ProbeProviderFactory getProbeProviderFactory() {
         return probeProviderFactory;
     }
+
+   /**
+    * Embedded is a single-instance like DAS
+    */
+    private boolean isDas() {
+        return env.isDas() || env.isEmbedded();
+    }
+
 }

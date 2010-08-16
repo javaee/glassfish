@@ -450,10 +450,16 @@ public class EJBTimerService
     public boolean restoreEJBTimers() {
         boolean rc = false;
         try {
-// XXX TODO XXX this count will be right the 1st time
             if( totalTimedObjectsInitialized_ > 0 ) {
                 restoreTimers();
                 rc = true;
+            } else {
+                int s = (timerLocal_.findActiveTimersOwnedByThisServer()).size();
+                if (s > 0) {
+                    logger.log(Level.INFO, "[" + s + "] EJB Timers owned by this server will be restored when timeout beans are loaded");
+                } else {
+                    logger.log(Level.INFO, "There are no EJB Timers owned by this server");
+                }
             }
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Exception restoring EJB Timers", ex);
@@ -791,7 +797,6 @@ public class EJBTimerService
             logger.log(Level.WARNING, "ejb.destroy_timers_error",
                        new Object[] { String.valueOf(containerId) });
             logger.log(Level.WARNING, "", ex);
-            return;
         } finally {
             try {
                 tm.commit();

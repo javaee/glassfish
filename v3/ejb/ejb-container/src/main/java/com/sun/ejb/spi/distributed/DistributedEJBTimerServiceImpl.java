@@ -87,14 +87,8 @@ public class DistributedEJBTimerServiceImpl
     }
 
     public void setPerformDBReadBeforeTimeout( boolean defaultDBReadValue ) {
-        EJBTimerService ejbTimerService = ejbContainerUtil.getEJBTimerService();
-        if( null != ejbTimerService ) {
-            ejbTimerService.setPerformDBReadBeforeTimeout( 
-                                           defaultDBReadValue );
-        } else {
-            // Should we ensure that the EJBTimerService can not be null
-            // in the case of SE/EE
-        }
+        // Set it if and when EJBTimerService is available
+        ejbContainerUtil.setEJBTimerServiceDBReadBeforeTimeout(defaultDBReadValue);
     }
 
 } //DistributedEJBTimerServiceImpl.java
