@@ -58,15 +58,33 @@
         //REST - TO DO
         getApplicationBySnifferType(type="connector" result="#{requestScope.tmpList}")
         filterOutRarExtension(inList="#{requestScope.tmpList}" convertedList="#{requestScope.rarList}")
-        addSystemConnectors(rarList="#{requestScope.rarList}" result="#{requestScope.modList}")
+        //Add SystemConnectors
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-system-rars-allowing-pool-creation"
+                       method="GET"
+                       result="#{requestScope.result}");
+        gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
+                           id="message"
+                           keyList="#{requestScope.modList}");
+        gf.listCombine(list="#{requestScope.modList}" list2="#{requestScope.rarList}");
         addEmptyFirstElement(in="$attribute{modList}"  out="#{pageSession.modules}")
-        getConnectorConnectionPoolWizard(
+        gf.getConnectorConnectionPoolWizard(
                 fromStep1="$attribute{fromStep1}"
                 fromStep2="$attribute{fromStep2}"
                 poolName="$attribute{poolName}"
                 attrMap="#{pageSession.tmpMap}"
                 resAdapter="$attribute{resAdapterChoosen}" 
-                connectionDefinitions=>$attribute{connectionDefinitions} )
+                resultAdapter=>$attribute{resultAdapter} )
+                //To get the connection definitions
+        if("#{resultAdapter}") {
+            gf.createAttributeMap(keys={"rarName"} values={"$attribute{resultAdapter}"} map="#{requestScope.connDefAttrs}");
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-connection-definition-names"
+                           attrs="#{requestScope.connDefAttrs}"
+                           method="GET"
+                           result="#{requestScope.result}");
+            gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
+                               id="message"
+                               keyList=>$attribute{connectionDefinitions});
+        }
         
     />
       
@@ -85,7 +103,25 @@
                             onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                             <!command
                                 //REST - TO DO
-                                updateConnectorConnectionPoolWizard();
+                                //Update the connector connection pool wizard
+                                setAttribute(key="currentAdapter" value="#{wizardPoolExtra.ResourceAdapterName}");
+                                setAttribute(key="currentconnDef" value="#{wizardPoolExtra.ConnectionDefinitionName}");
+                                if ("#{currentAdapter} & #{currentconnDef}") {
+                                    if ("!((#{currentAdapter} = #{wizardPoolExtra.previousResAdapter}) &
+                                         (#{currentconnDef} = #{wizardPoolExtra.previousDefinition}))") {
+                                        gf.createAttributeMap(keys={"rarName", "connectionDefnName"}
+                                                              values={"$attribute{currentAdapter}", "$attribute{currentconnDef}"}
+                                                              map="#{requestScope.mcfAttrs}");
+                                        gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-mcf-config-properties"
+                                                       attrs="#{requestScope.mcfAttrs}"
+                                                       method="GET"
+                                                       result="#{requestScope.result}");
+                                        gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
+                                                           id="message"
+                                                           propsMap=>$attribute{mcfProps});
+                                        gf.updateConnectorConnectionPoolWizard(props="#{mcfProps}" currentAdapter="#{currentAdapter}" currentDef="#{currentConnDef}");
+                                    }
+                                }
                                 gf.redirect(page="#{request.contextPath}/jca/connectorConnectionPoolNew2.jsf")
                             />
                         </sun:button>
