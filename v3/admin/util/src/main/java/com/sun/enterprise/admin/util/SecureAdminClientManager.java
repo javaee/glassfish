@@ -169,18 +169,25 @@ public class SecureAdminClientManager {
      * @param nodeDir directory of the node where domain.xml resides
      * @param node name of the node whose directory contains domain.xml
      */
-    public static void initClientAuthentication(
+    public synchronized static void initClientAuthentication(
             final char[] commandMasterPassword,
             final boolean isInteractive,
             final String serverName,
             final String nodeDir,
             final String node) {
-        
-        if (instance != null) {
-            throw new IllegalStateException();
+
+        /*
+         * The client/instance security information is common to a whole domain.
+         * So, once this manager is initialized the same settings will be used
+         * going forward.  It does not matter whether a different server name
+         * or node directory or node is specified.  They should all lead to the
+         * same, shared configuration for whether client/instance SSL security
+         * should be used or not.
+         */
+        if (instance == null) {
+            instance = new SecureAdminClientManager(commandMasterPassword,
+                    isInteractive, serverName, nodeDir, node);
         }
-        instance = new SecureAdminClientManager(commandMasterPassword,
-                isInteractive, serverName, nodeDir, node);
     }
 
     private SecureAdminClientManager(final char[] commandMasterPassword,
