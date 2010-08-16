@@ -156,10 +156,9 @@ public class ListInstancesCommand implements AdminCommand {
                     firstServer = false;
                 else
                     sb.append(EOL);
+
                 sb.append(name);
-                ActionReport.MessagePart m = top.addChild();
-                m.addProperty("name", name);
-                m.addProperty("status", "");
+                top.addProperty(name, "");
             }
         }
     }
@@ -215,13 +214,11 @@ public class ListInstancesCommand implements AdminCommand {
             if(state.equals(InstanceState.StateType.RESTART_REQUIRED)) {
                 display += (" [pending config changes are : " + stateService.getFailedCommands(name) + "]");
             }
+            String value = state.getDescription();
+            
             sb.append(name).append(display);
-            ActionReport.MessagePart m = top.addChild();
-            m.addProperty("name", name);
-            m.addProperty("status", state.getDescription());
-            if(state.equals(InstanceState.StateType.RESTART_REQUIRED)) {
-                m.addProperty("restartReasons", stateService.getFailedCommands(name));
-            }
+            top.addProperty(name, value);
+            if (ii.isRunning()) top.addProperty(name + ".uptime", "" + ii.getUptime());
         }
 
         if (verbose)
