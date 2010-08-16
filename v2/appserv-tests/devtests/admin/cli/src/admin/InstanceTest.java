@@ -359,9 +359,9 @@ public class InstanceTest extends AdminBaseDevTest {
         String nodedir = installdir + File.separator + "mynodes";
         String node = "n1";
         String instance = "i1";
-        //Uncomment when _validate-node is implemented - Issue 12544. Otherwise bogus node dir gets created.
-        //report("create-local-instance-nosuchnode", !asadmin("create-local-instance",
-        //    "--node", "bogus", "bogusinstance"));
+        
+        report("create-local-instance-nosuchnode", !asadmin("create-local-instance",
+            "--node", "bogus", "bogusinstance"));
 
         report("create-node-config-i1n1", asadmin("create-node-config",
              node ));
