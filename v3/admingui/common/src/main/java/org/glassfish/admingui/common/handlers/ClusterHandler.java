@@ -317,7 +317,7 @@ public class ClusterHandler {
     @Handler(id = "gf.getDeploymentTargets",
         input = {
             @HandlerInput(name = "clusterList", type = List.class), // TODO: Should this be a map too?
-            @HandlerInput(name = "listInstanceProps", type = Map.class)
+            @HandlerInput(name = "listInstanceProps", type = List.class)
         },
         output = {
             @HandlerOutput(name = "result", type = List.class)
@@ -333,12 +333,20 @@ public class ClusterHandler {
                 }
             }
 
-            Map<String, String> props = (Map<String, String>) handlerCtx.getInputValue("listInstanceProps");
-            if (props != null) {
-                result.addAll(props.keySet());
+            Object foo = handlerCtx.getInputValue("listInstanceProps");
+            List instanceList = (List) handlerCtx.getInputValue("listInstanceProps");
+            if (instanceList != null) {
+                for (Map instance : (List<Map>)instanceList) {
+                    Map props = (Map)instance.get("properties");
+                    String name = (String)props.get("name");
+                    if (name != null) {
+                        result.add(name);
+                    }
+                }
+//                result.addAll(props.keySet());
             }
          }catch(Exception ex){
-             GuiUtil.getLogger().severe("getDeploymentTargets failed.");
+             GuiUtil.getLogger().severe(ex.getLocalizedMessage());//"getDeploymentTargets failed.");
              //print stacktrace ??
          }
         handlerCtx.setOutputValue("result", result);
