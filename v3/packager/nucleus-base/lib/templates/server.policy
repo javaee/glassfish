@@ -22,7 +22,7 @@
 /* Copyright 2004 Sun Microsystems, Inc. All rights reserved.     */
 /* SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms. */
 
-// Core server classes get all permissions by default
+// classes in lib get all permissions by default
 grant codeBase "file:${com.sun.aas.installRoot}/lib/-" {
     permission java.security.AllPermission;
 };
@@ -38,39 +38,39 @@ grant codeBase "file:${com.sun.aas.installRoot}/osgi/felix/bin/-" {
 };
 
 // jdmk classes get all permissions by default
-grant codeBase "file:${com.sun.aas.jdmkHome}/lib/-" {
-    permission java.security.AllPermission;
-};
+//grant codeBase "file:${com.sun.aas.jdmkHome}/lib/-" {
+//    permission java.security.AllPermission;
+//};
 
 // mfwk_instrum_tk.jar  get all permissions by default
-grant codeBase "file:${com.sun.aas.mfwkHome}/lib/mfwk_instrum_tk.jar" {
-    permission java.security.AllPermission;
-};
+//grant codeBase "file:${com.sun.aas.mfwkHome}/lib/mfwk_instrum_tk.jar" {
+//    permission java.security.AllPermission;
+//};
 
 // lockhart classes get all permissions by default
-grant codeBase "file:${com.sun.aas.webconsoleLib}/cc.jar" {
-        permission java.security.AllPermission;
-};
+//grant codeBase "file:${com.sun.aas.webconsoleLib}/cc.jar" {
+//        permission java.security.AllPermission;
+//};
 
 // jato classes get all permissions by default
-grant codeBase "file:${com.sun.aas.jatoRoot}/jato.jar" {
-        permission java.security.AllPermission;
-};
+//grant codeBase "file:${com.sun.aas.jatoRoot}/jato.jar" {
+//        permission java.security.AllPermission;
+//};
 
 // JBI get all permissions by default
-grant codeBase "file:${com.sun.aas.installRoot}/jbi/-" {
-    permission java.security.AllPermission;
-};
+//grant codeBase "file:${com.sun.aas.installRoot}/jbi/-" {
+//    permission java.security.AllPermission;
+//};
 
 // JBI instances get all permissions by default
-grant codeBase "file:${com.sun.aas.instanceRoot}/jbi/-" {
-    permission java.security.AllPermission;
-};
+//grant codeBase "file:${com.sun.aas.instanceRoot}/jbi/-" {
+//    permission java.security.AllPermission;
+//};
 
 // Composite applications get all permissions by default
-grant codeBase "file:${com.sun.aas.instanceRoot}/applications/composite-applications/-" {
-    permission java.security.AllPermission;
-};
+//grant codeBase "file:${com.sun.aas.instanceRoot}/applications/composite-applications/-" {
+//    permission java.security.AllPermission;
+//};
 
 // iMQ classes get all permissions by default
 grant codeBase "file:${com.sun.aas.imqLib}/-" {
@@ -78,9 +78,9 @@ grant codeBase "file:${com.sun.aas.imqLib}/-" {
 };
 
 // ANT classes get all permissions by default
-grant codeBase "file:${com.sun.aas.antLib}/-" {
-    permission java.security.AllPermission;
-};
+//grant codeBase "file:${com.sun.aas.antLib}/-" {
+//    permission java.security.AllPermission;
+//};
 
 // Derby driver classes get all permissions by default
 grant codeBase "file:${com.sun.aas.derbyRoot}/lib/-" {
@@ -88,24 +88,24 @@ grant codeBase "file:${com.sun.aas.derbyRoot}/lib/-" {
 }; 
 
 // Pointbase embedded server classes get all permissions by default
-grant codeBase "file:${com.sun.aas.pointbaseRoot}/lib/-" {
-    permission java.security.AllPermission;
-};
+//grant codeBase "file:${com.sun.aas.pointbaseRoot}/lib/-" {
+//    permission java.security.AllPermission;
+//};
 
 // Web Services classes get all permissions by default
-grant codeBase "file:${com.sun.aas.webServicesLib}/-" {
-    permission java.security.AllPermission;
-};
+//grant codeBase "file:${com.sun.aas.webServicesLib}/-" {
+//    permission java.security.AllPermission;
+//};
 
 // permissions for avkit classes
-grant codeBase "file:${j2ee.appverification.home}/lib/-" {
-    permission java.security.AllPermission;
-};
+//grant codeBase "file:${j2ee.appverification.home}/lib/-" {
+//    permission java.security.AllPermission;
+//};
 
 // permissions for HADB jar file(s)
-grant codeBase "file:${com.sun.aas.hadbRoot}/lib/-" {
-    permission java.security.AllPermission;
-};
+//grant codeBase "file:${com.sun.aas.hadbRoot}/lib/-" {
+//    permission java.security.AllPermission;
+//};
 
 // permission for JDK's tools.jar to enable webservice annotation processing
 // at runtime by wsgen tool: 
@@ -127,6 +127,12 @@ grant {
 
 
 // Basic set of required permissions granted to all remaining code
+// The permission FilePermission "<<ALL FILES>>", "read,write"
+// allows all applications to read and write any file in the filesystem.
+// It should be changed based on real deployment needs. If you know your
+// applications just need to read/write a few directories consider removing
+// this permission and adding grants indicating those specific directories.
+// against the codebase of your application(s).
 grant {
     //Workaround for bugs #6484935, 6513799
     permission java.lang.RuntimePermission "getProtectionDomain";
