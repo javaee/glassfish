@@ -41,6 +41,7 @@ import com.sun.enterprise.admin.cli.CLILogger;
 import com.sun.enterprise.admin.cli.ProgramOptions;
 import java.io.File;
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 import static com.sun.enterprise.admin.cli.cluster.PortBaseHelper.*;
 import java.util.*;
@@ -192,7 +193,22 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         RemoteCommand rc = new RemoteCommand("_bootstrap-secure-admin", this.programOpts, this.env);
         rc.setFileOutputDirectory(instanceDir);
         logger.printDetailMessage("Download root for bootstrapping: " + instanceDir.getAbsolutePath());
-        return rc.execute(new String[] {"_bootstrap-secure-admin"});
+        final int result = rc.execute(new String[] {"_bootstrap-secure-admin"});
+
+        /*
+         * The domain.xml just bootstrapped will look up-to-date compared to
+         * the domain.xml on the DAS when this instance is started (if nothing
+         * else happens in the meantime to change the DAS domain.xml timestamp).
+         * That would fool the synchronization logic into thinking the instance
+         * is up-to-date, whereas the instance will need to be sync-ed.
+         *
+         * So, adjust the just downloaded domain.xml's timestamp so it will
+         * seem obsolete and trigger a sync when the instance is started.
+         */
+        final URI domainXMLURI = URI.create("config/domain.xml");
+        final File domainXMLFile = new File(instanceDir.toURI().resolve(domainXMLURI));
+        domainXMLFile.setLastModified(domainXMLFile.lastModified() - 1000);
+        return result;
     }
 
     private boolean rendezvousWithDAS() {
