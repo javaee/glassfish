@@ -622,10 +622,10 @@ public class ClusterTest extends AdminBaseDevTest {
 
 	// Test instance states
         ret = asadminWithOutput("list-instances", i1name);
-        success = ret.outAndErr.indexOf("[PENDING CONFIG CHANGES ARE : create-jdbc-connection-pool testPool") >= 0;
+        success = ret.outAndErr.indexOf("[pending config changes are : create-jdbc-connection-pool testPool") >= 0;
         report(tn+"test-in1-requires-restart", success);
         ret = asadminWithOutput("list-instances", i2name);
-        success = ret.outAndErr.indexOf("[PENDING CONFIG CHANGES ARE : create-jdbc-connection-pool testPool") >= 0;
+        success = ret.outAndErr.indexOf("[pending config changes are : create-jdbc-connection-pool testPool") >= 0;
         report(tn+"test-in2-requires-restart", success);
         ret = asadminWithOutput("list-instances", i3name);
         success = ret.outAndErr.indexOf(i3name+" running") >= 0;
@@ -642,12 +642,12 @@ public class ClusterTest extends AdminBaseDevTest {
 
 	// Test instance states
         ret = asadminWithOutput("list-instances", i1name);
-        success = ret.outAndErr.indexOf("[PENDING CONFIG CHANGES ARE : create-jdbc-connection-pool testPool") >= 0;
+        success = ret.outAndErr.indexOf("[pending config changes are : create-jdbc-connection-pool testPool") >= 0;
         report(tn+"test-in1-has-1st-failed-cmd", success);
         success = ret.outAndErr.indexOf("create-jdbc-connection-pool testPool2") >= 0;
         report(tn+"test-in1-has-2nd-failed-cmd", success);
         ret = asadminWithOutput("list-instances", i2name);
-        success = ret.outAndErr.indexOf("[PENDING CONFIG CHANGES ARE : create-jdbc-connection-pool testPool") >= 0;
+        success = ret.outAndErr.indexOf("[pending config changes are : create-jdbc-connection-pool testPool") >= 0;
         report(tn+"test-in2-has-1st-failed-cmd", success);
         success = ret.outAndErr.indexOf("create-jdbc-connection-pool testPool2") >= 0;
         report(tn+"test-in2-has-2nd-failed-cmd", success);
@@ -659,12 +659,12 @@ public class ClusterTest extends AdminBaseDevTest {
 	asadminWithOutput("restart-domain");
 	// Test instance states
         ret = asadminWithOutput("list-instances", i1name);
-        success = ret.outAndErr.indexOf("[PENDING CONFIG CHANGES ARE : create-jdbc-connection-pool testPool") >= 0;
+        success = ret.outAndErr.indexOf("[pending config changes are : create-jdbc-connection-pool testPool") >= 0;
         report(tn+"test-in1-state-after-restart", success);
         success = ret.outAndErr.indexOf("create-jdbc-connection-pool testPool2") >= 0;
         report(tn+"test-in1-state-after-restart", success);
         ret = asadminWithOutput("list-instances", i2name);
-        success = ret.outAndErr.indexOf("[PENDING CONFIG CHANGES ARE : create-jdbc-connection-pool testPool") >= 0;
+        success = ret.outAndErr.indexOf("[pending config changes are : create-jdbc-connection-pool testPool") >= 0;
         report(tn+"test-in2-state-after-restart", success);
         success = ret.outAndErr.indexOf("create-jdbc-connection-pool testPool2") >= 0;
         report(tn+"test-in2-state-after-restart", success);
