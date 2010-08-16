@@ -87,7 +87,7 @@ public final class SMFService extends ServiceAdapter {
     private static final String NULL_VALUE = "null";
     private static final StringManager sm = StringManager.getManager(SMFService.class);
     private static final String nullArgMsg = sm.getString("null_arg");
-    private static final String MANIFEST_FILE_SUFFIX = "-service-smf.xml";
+    private static final String MANIFEST_FILE_SUFFIX = "Domain-service-smf.xml";
     private static final String MANIFEST_FILE_TEMPL_SUFFIX = MANIFEST_FILE_SUFFIX + ".template";
     private static final String SERVICE_NAME_PREFIX = "application/GlassFish/";
     private static final String REL_PATH_TEMPLATES = "lib/install/templates";
@@ -425,7 +425,7 @@ public final class SMFService extends ServiceAdapter {
             throw new RuntimeException(msg);
         }
         //now we are sure that this is called after proper configuration
-        final String fn = new StringBuilder().append(MANIFEST_HOME).append(fqsn).append("/").append(this.getType().toString()).append(MANIFEST_FILE_SUFFIX).toString();
+        final String fn = new StringBuilder().append(MANIFEST_HOME).append(fqsn).append("/").append(MANIFEST_FILE_SUFFIX).toString();
         return (fn);
     }
 
@@ -451,7 +451,7 @@ public final class SMFService extends ServiceAdapter {
             throw new RuntimeException("Internal Error - Not a directory: " + rootDir);
 
         File templatesDir = new File(rootDir, REL_PATH_TEMPLATES);
-        String filename = getType().toString() + MANIFEST_FILE_TEMPL_SUFFIX;
+        String filename = MANIFEST_FILE_TEMPL_SUFFIX;
 
         File f = new File(templatesDir, filename);
         return f.getPath();
