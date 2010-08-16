@@ -464,25 +464,25 @@ public final class SMFService extends ServiceAdapter {
     /** Creates the service on the given platform.
      */
     public void createService(final Map<String, String> params) throws RuntimeException {
-        final SMFService smf = new SMFService(params);
+        //final SMFService smf = new SMFService(params);
         boolean success = false;
-        boolean previousManifestExists = new File(smf.getManifestFilePath()).exists();
+        boolean previousManifestExists = new File(getManifestFilePath()).exists();
         try {
-            smf.isConfigValid(); //safe, throws exception if not valid
+            isConfigValid(); //safe, throws exception if not valid
             if (trace)
-                printOut(smf.toString());
-            validateManifest(smf.getManifestFilePath());
+                printOut(toString());
+            validateManifest(getManifestFilePath());
             previousManifestExists = false;
             ServicesUtils.tokenReplaceTemplateAtDestination(
-                    smf.tokensAndValues(),
-                    smf.getManifestFileTemplatePath(),
-                    smf.getManifestFilePath());
-            validateService(smf);
-            success = importService(smf);
+                    tokensAndValues(),
+                    getManifestFileTemplatePath(),
+                    getManifestFilePath());
+            validateService(this);
+            success = importService(this);
         }
         catch (final Exception e) {
             if (!success && !previousManifestExists) {
-                cleanupManifest(smf);
+                cleanupManifest(this);
             }
             throw new RuntimeException(e);
         }
