@@ -34,52 +34,25 @@
  * holder.
  */
 
-package com.sun.enterprise.transaction.api;
-
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
-
-import java.util.*;
-
-import com.sun.enterprise.transaction.spi.RecoveryResourceListener;
-import com.sun.enterprise.transaction.spi.RecoveryEventListener;
-
+package com.sun.enterprise.transaction.spi;
 
 /**
- * This is a registry class that keep the recoveryresource and event listeners.
- * A module will be able to use this singleton to register
- * its recoveryresource listeners and/or event listeners.
+ * Interface implemented by the consumers that are interested in
+ * recovery start and end events
  *
- * @author Binod PG
- * @since 9.1
+ * @author Marina Vatkina
+ * @since 3.1
  */
-@Service
-@Scoped(Singleton.class)
-public class RecoveryResourceRegistry  {
+public interface RecoveryEventListener  {
 
-    private final static Set<RecoveryResourceListener> resourceListeners = 
-            new HashSet<RecoveryResourceListener>();
+    /**
+     * Indicate to the listener that recovery is about to start.
+     */
+    void beforeRecovery();
 
-    private final static Set<RecoveryEventListener> recoveryEventListeners = 
-            new HashSet<RecoveryEventListener>();
-
-    public RecoveryResourceRegistry() {
-    }
-
-    public void addListener(RecoveryResourceListener rrl) {
-        resourceListeners.add(rrl);
-    }
-
-    public void addEventListener(RecoveryEventListener rrl) {
-        recoveryEventListeners.add(rrl);
-    }
-
-    public Set<RecoveryResourceListener> getListeners() {
-        return resourceListeners;
-    }
-
-    public Set<RecoveryEventListener> getEventListeners() {
-        return recoveryEventListeners;
-    }
+    /**
+     * Indicate to the listener that recovery is over.
+     * @param success <code>true</code> if the recovery operation finished successfully
+     */
+    void afterRecovery(boolean success);
 }

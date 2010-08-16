@@ -58,6 +58,16 @@ public interface ResourceRecoveryManager {
     public boolean recoverIncompleteTx(boolean delegated, String logPath) throws Exception;
 
     /**
+     * recover incomplete transactions with before and after event notifications
+     * @param delegated indicates whether delegated recovery is needed
+     * @param logPath transaction log directory path
+     * @param notify indicates whether before and after event notifications are sent
+     * @return boolean indicating the status of transaction recovery
+     * @throws Exception when unable to recover
+     */
+    public boolean recoverIncompleteTx(boolean delegated, String logPath, boolean notify) throws Exception;
+
+    /**
      * recover the xa-resources
      * @param force boolean to indicate if it has to be forced.
      */

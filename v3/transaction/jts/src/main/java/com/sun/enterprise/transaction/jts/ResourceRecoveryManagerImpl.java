@@ -50,6 +50,7 @@ import com.sun.enterprise.transaction.api.ResourceRecoveryManager;
 import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
 import com.sun.enterprise.transaction.spi.RecoveryResourceListener;
 import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
+import com.sun.enterprise.transaction.spi.RecoveryEventListener;
 import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
 
 import com.sun.jts.CosTransactions.DelegatedRecoveryManager;
@@ -102,6 +103,18 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
      * @throws Exception when unable to recover
      */
     public boolean recoverIncompleteTx(boolean delegated, String logPath) throws Exception {
+        return recoverIncompleteTx(delegated, logPath, false);
+    }
+
+    /**
+     * recover incomplete transactions
+     * @param delegated indicates whether delegated recovery is needed
+     * @param logPath transaction log directory path
+     * @param notify indicates whether before and after recovery events are sent
+     * @return boolean indicating the status of transaction recovery
+     * @throws Exception when unable to recover
+     */
+    public boolean recoverIncompleteTx(boolean delegated, String logPath, boolean notify) throws Exception {
         boolean result = false; 
         Map<RecoveryResourceHandler, Vector> handlerToXAResourcesMap = null;
         try {
@@ -110,6 +123,10 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
             }
 
             configure();
+
+            if (notify) {
+                beforeRecovery();
+            }
             Vector xaresList = new Vector();
 
             //TODO V3 will handle ThirdPartyXAResources also (v2 is not so). Is this fine ?
@@ -137,6 +154,13 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
         } finally {
             try {
                 closeAllResources(handlerToXAResourcesMap);
+            } catch (Exception ex1) {
+                _logger.log(Level.WARNING, "xaresource.recover_error", ex1);
+            }
+            try {
+                if (notify) {
+                    afterRecovery(result);
+                }
             } catch (Exception ex1) {
                 _logger.log(Level.WARNING, "xaresource.recover_error", ex1);
             }
@@ -209,7 +233,7 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
                     xaresArray[i] = (XAResource) xaresList.elementAt(i);
                 }
 
-                recoveryStarted();
+                resourceRecoveryStarted();
                 if (_logger.isLoggable(Level.FINE)) {
                     String msg = localStrings.getString("xaresource.recovering",
                         new Object[]{"Recovering {0} XA resources...", String.valueOf(size)});
@@ -217,7 +241,7 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
                     _logger.log(Level.FINE, msg);
                 }
                 txMgr.recover(xaresArray);
-                recoveryCompleted();
+                resourceRecoveryCompleted();
 
                 closeAllResources(resourcesToHandler);
             } catch (Exception ex) {
@@ -227,9 +251,9 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
     }
 
     /**
-     * notifies the listeners that recovery has started
+     * notifies the resource listeners that recovery has started
      */
-    private void recoveryStarted() {
+    private void resourceRecoveryStarted() {
         Set<RecoveryResourceListener> listeners =
                 recoveryListenersRegistry.getListeners();
 
@@ -239,14 +263,38 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
     }
 
     /**
-     * notifies the listeners that recovery has completed
+     * notifies the resource listeners that recovery has completed
      */
-    private void recoveryCompleted() {
+    private void resourceRecoveryCompleted() {
         Set<RecoveryResourceListener> listeners =
                 recoveryListenersRegistry.getListeners();
 
         for (RecoveryResourceListener rrl : listeners) {
             rrl.recoveryCompleted();
+        }
+    }
+
+    /**
+     * notifies the event listeners that recovery is about to start
+     */
+    private void beforeRecovery() {
+        Set<RecoveryEventListener> listeners =
+                recoveryListenersRegistry.getEventListeners();
+
+        for (RecoveryEventListener erl : listeners) {
+            erl.beforeRecovery();
+        }
+    }
+
+    /**
+     * notifies the event listeners that all recovery operations are completed
+     */
+    private void afterRecovery(boolean success) {
+        Set<RecoveryEventListener> listeners =
+                recoveryListenersRegistry.getEventListeners();
+
+        for (RecoveryEventListener erl : listeners) {
+            erl.afterRecovery(success);
         }
     }
 
