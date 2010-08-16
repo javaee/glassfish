@@ -601,8 +601,9 @@ public class ReplicationAttributeStore extends ReplicationStore {
             = new CompositeMetadata(modAttrSession.getVersion(),
                 modAttrSession.getLastAccessedTimeInternal(),
                 modAttrSession.getMaxInactiveInterval(),
-                entries,
-                trunkState);
+                entries);
+                //,
+                //trunkState);
 //                ,modAttrSession.getSsoId()); //ssoId is the extraParam here
         return result;
     }

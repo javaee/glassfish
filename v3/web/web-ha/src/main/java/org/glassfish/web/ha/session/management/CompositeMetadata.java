@@ -37,14 +37,10 @@
 package org.glassfish.web.ha.session.management;
 
 
-
 import org.glassfish.ha.store.api.Storeable;
 import org.glassfish.ha.store.spi.StorableMap;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -57,11 +53,6 @@ import java.util.*;
  */
 public final class CompositeMetadata implements Storeable {
 
-    private Collection<SessionAttributeMetadata> entries;
-
-    private String stringExtraParam;
-
-    private StorableMap storableMap;
 
     private long version;
 
@@ -71,19 +62,26 @@ public final class CompositeMetadata implements Storeable {
 
     private byte[] state;
 
-    private transient static final int SAVE_ALL = 0;
+    private String stringExtraParam;
 
-    private transient static final int SAVE_EP = 1;
+    private Map<String, SessionAttributeMetadata> attributesMap = new HashMap<String, SessionAttributeMetadata>();
 
-    private transient static final int SAVE_TIME_STAMP = 2;
 
-    private transient int saveMode = SAVE_ALL;
+    private transient Collection<SessionAttributeMetadata> entries;
+
+    private transient Map<String, byte[]> storeableEntryMap;
 
     private transient Set<String> _dirtyAttributeNames = new HashSet<String>();
+
+    private transient static String[] _attributeNames = new String[]{
+            "trunkState", "stringExtraParam", "sessionAttributes"
+    };
 
     private transient static Set<String> saveALL = new HashSet<String>();
 
     private transient static Set<String> saveEP = new HashSet<String>();
+
+    private transient boolean[] dirtyBits = new boolean[]{false, false, false};
 
     static {
         saveALL.add(ReplicationAttributeNames.STATE);
@@ -91,44 +89,24 @@ public final class CompositeMetadata implements Storeable {
         saveEP.add(ReplicationAttributeNames.EXTRA_PARAM);
     }
 
-
     /**
-     * Construct a CompositeMetadata object
-     *
-     * @param version                   The version of the data. A freshly created state has a version ==
-     *                                  0
-     * @param lastAccessTime            the last access time of the state. This must be used in
-     *                                  conjunction with getMaxInactiveInterval to determine if the
-     *                                  state is idle enough to be removed.
-     * @param maxInactiveInterval       the maximum time that this state can be idle in the store
-     *                                  before it can be removed.
-     * @param state                     The (trunk) state
-     * @param stringExtraParam Some more data
-     * @param entries                   the SessionAttributeMetadata that are part of this Metadata
+     * Every Storeable must have a public no arg constructor
      */
-/*
-    public CompositeMetadata(long version, long lastAccessTime,
-                             long maxInactiveInterval, Collection<SessionAttributeMetadata> entries, byte[] state,
-                             String stringExtraParam) {
-        this(version, lastAccessTime, maxInactiveInterval, entries, state, stringExtraParam, null);
-        saveMode = SAVE_ALL;
+    public CompositeMetadata() {
+
     }
-*/
 
     /**
      * Construct a CompositeMetadata object
      *
-     * @param version                   The version of the data. A freshly created state has a version ==
-     *                                  0
-     * @param lastAccessTime            the last access time of the state. This must be used in
-     *                                  conjunction with getMaxInactiveInterval to determine if the
-     *                                  state is idle enough to be removed.
-     * @param maxInactiveInterval       the maximum time that this state can be idle in the store
-     *                                  before it can be removed.
-     * @param entries                   the SessionAttributeMetadata that are part of this Metadata
-     * @param state                     The (trunk) state
-     * @param extraParam                Some more data
-     * @param stringExtraParam Some extra data. This object must be Serializable
+     * @param version             The version of the data. A freshly created state has a version ==
+     *                            0
+     * @param lastAccessTime      the last access time of the state. This must be used in
+     *                            conjunction with getMaxInactiveInterval to determine if the
+     *                            state is idle enough to be removed.
+     * @param maxInactiveInterval the maximum time that this state can be idle in the store
+     *                            before it can be removed.
+     * @param entries             the SessionAttributeMetadata that are part of this Metadata
      */
 /*
     public CompositeMetadata(long version, long lastAccessTime,
@@ -143,24 +121,40 @@ public final class CompositeMetadata implements Storeable {
     }
 */
     public CompositeMetadata(long version, long lastAccessTime,
-                             long maxInactiveInterval, Collection<SessionAttributeMetadata> entries, byte[] state) {
+                             long maxInactiveInterval, Collection<SessionAttributeMetadata> entries) {
 
-        // super(version, lastAccessTime, maxInactiveInterval, state, extraParam);
-        this.entries = entries;
-        //this.stringExtraParam = stringExtraParam;
-
-        this.storableMap = new SessionAttributesMapImpl(entries);
         this.version = version;
         this.lastAccessTime = lastAccessTime;
         this.maxInactiveInterval = maxInactiveInterval;
-        this.state = state;
-        saveMode = SAVE_ALL;
+        this.entries = entries;
+        dirtyBits[2] = true;
     }
 
+    public byte[] getState() {
+        return this.state;
+    }
+
+    public void setState(byte[] state) {
+        this.state = state;
+        dirtyBits[0] = true;
+    }
+
+    public String getStringExtraParam() {
+        return stringExtraParam;
+    }
+
+    public void setStringExtraParam(String stringExtraParam) {
+        this.stringExtraParam = stringExtraParam;
+        dirtyBits[1] = true;
+    }
+
+    public Map<String, byte[]> getSessionAttributes() {
+        return storeableEntryMap == null ? new SessionAttributesMapImpl(entries) : storeableEntryMap;
+    }
 
     /**
      * Returns a collection of Metadata (or its subclass). Note that though it
-     * is possible to have a compositeMetadata itself as part of this
+     * is possible to have a compositeMetadata  itself as part of this
      * collection, typically they contain only AttributeMetaData
      *
      * @return a collection of SessionAttributeMetadata
@@ -169,106 +163,212 @@ public final class CompositeMetadata implements Storeable {
         return entries;
     }
 
-    /**
-     * Get the container extra param associated with this metadata
-     *
-     * @return the container extra param or null
-     */
-    public String getStringExtraParam() {
-        return stringExtraParam;
-    }
-
-    public Object _getAttributeValue(String attrName) {
-        Object result = null;
-        if (ReplicationAttributeNames.SESSION_ATTRIBUTES.equals(attrName)) {
-            result = getEntries();
-/*
-        } else if (ReplicationAttributeNames.STRING_EXTRA_PARAM.equals(attrName)) {
-            result = getStringExtraParam();
-        } else if (ReplicationAttributeNames.EXTRA_PARAM.equals(attrName)) {
-            result = getExtraParam();
-*/
-        } else if (ReplicationAttributeNames.STATE.equals(attrName)) {
-            result = getState();
-        }
-
-        return result;
-    }
-
-    public Set<String> _getDirtyAttributeNames() {
-        return _dirtyAttributeNames;
-    }
-
-    public byte[] getState() {
-        return this.state;
-    }
-
     public long getVersion() {
         return 0L;
     }
 
     @Override
     public long _storeable_getVersion() {
-        return 0;
+        return version;
     }
 
     @Override
     public void _storeable_setVersion(long version) {
-
+        this.version = version;
     }
 
     @Override
     public long _storeable_getLastAccessTime() {
-        return 0;
+        return lastAccessTime;
     }
 
     @Override
-    public void _storeable_setLastAccessTime(long version) {
-
+    public void _storeable_setLastAccessTime(long lastAccessTime) {
+        this.lastAccessTime = lastAccessTime;
     }
 
     @Override
     public long _storeable_getMaxIdleTime() {
-        return 0;
+        return maxInactiveInterval;
     }
 
     @Override
-    public void _storeable_setMaxIdleTime(long version) {
-
+    public void _storeable_setMaxIdleTime(long maxInactiveInterval) {
+        this.maxInactiveInterval = maxInactiveInterval;
     }
 
     @Override
     public String[] _storeable_getAttributeNames() {
-        return new String[0];
+        return _attributeNames;
     }
 
     @Override
     public boolean[] _storeable_getDirtyStatus() {
-        return new boolean[0];  
+        return dirtyBits;
     }
 
     @Override
     public void _storeable_writeState(OutputStream os) throws IOException {
-        
+        DataOutputStream dos = null;
+        try {
+            dos = new DataOutputStream(os);
+            dos.writeLong(version);
+            dos.writeLong(lastAccessTime);
+            dos.writeLong(maxInactiveInterval);
+
+            for (boolean b : dirtyBits) {
+                dos.writeBoolean(dirtyBits[0]);
+            }
+
+            if (dirtyBits[0]) {
+                dos.writeInt(state == null ? 0 : state.length);
+                if (state != null) {
+                    dos.write(state);
+                }
+            }
+
+            if (dirtyBits[1]) {
+                if (stringExtraParam == null) {
+                    dos.writeInt(0);
+                } else {
+                    byte[] sd = stringExtraParam.getBytes();
+                    dos.writeInt(sd.length);
+                    dos.write(sd);
+                }
+            }
+
+            if (dirtyBits[2]) {
+                dos.writeInt(entries.size());
+                for (SessionAttributeMetadata attr : entries) {
+                    byte[] opNameInBytes = attr.getOperation().toString().getBytes();
+                    dos.writeInt(opNameInBytes.length);
+                    dos.write(opNameInBytes);
+
+                    String attrName = attr.getAttributeName();
+                    if (attrName == null) {
+                        dos.writeInt(0); //NOTE: We don't allow null attrNames!!
+                    } else {
+                        byte[] attrNameData = attrName.getBytes();
+                        dos.writeInt(attrNameData.length);
+                        dos.write(attrNameData);
+
+                        if ((attr.getOperation() == SessionAttributeMetadata.Operation.ADD) ||
+                                attr.getOperation() == SessionAttributeMetadata.Operation.UPDATE) {
+
+                            byte[] attrData = attr.getState();
+                            if (attrData == null) {
+                                dos.writeInt(0);
+                            } else {
+                                dos.writeInt(attrData.length);
+                                dos.write(attrData);
+                            }
+                        }
+                    }
+                }
+            }
+        } finally {
+            try {
+                dos.flush();
+                dos.close();
+            } catch (Exception ex) {
+            }
+        }
     }
 
     @Override
     public void _storeable_readState(InputStream is) throws IOException {
-        
+        DataInputStream dis = null;
+        try {
+            dis = new DataInputStream(is);
+            version = dis.readLong();
+            lastAccessTime = dis.readLong();
+            maxInactiveInterval = dis.readLong();
+
+            for (int i = 0; i < dirtyBits.length; i++) {
+                dirtyBits[i] = true; //correct?
+            }
+
+            boolean[] dirtyFlags = new boolean[3];
+            for (int i = 0; i < dirtyFlags.length; i++) {
+                dirtyFlags[i] = dis.readBoolean();
+            }
+
+            if (dirtyFlags[0]) {
+                int len = dis.readInt();
+                if (len > 0) {
+                    state = new byte[len];
+                    dis.read(state);
+                }
+            }
+
+            if (dirtyFlags[1]) {
+                int len = dis.readInt();
+                if (len > 0) {
+                    byte[] sd = new byte[len];
+                    dis.read(sd);
+                    stringExtraParam = new String(sd);
+                }
+            }
+
+            if (dirtyFlags[2]) {
+                int entryCount = dis.readInt();
+                for (int i = 0; i < entryCount; i++) {
+
+                    int opNameLen = dis.readInt();
+                    byte[] opnameData = new byte[opNameLen];
+                    dis.read(opnameData);
+                    String opName = new String(opnameData);
+
+                    int attrNameLen = dis.readInt();
+                    if (attrNameLen > 0) {
+                        byte[] sd = new byte[attrNameLen];
+                        dis.read(sd);
+                        String attrName = new String(sd);
+
+                        SessionAttributeMetadata.Operation smdOpcode = SessionAttributeMetadata.Operation.valueOf(opName);
+                        switch (smdOpcode) {
+                            case ADD:
+                            case UPDATE:
+                                int dataLen = dis.readInt();
+                                byte[] attrData = new byte[dataLen];
+                                dis.read(attrData);
+                                attributesMap.put(attrName, new SessionAttributeMetadata(attrName, smdOpcode, attrData));
+                                break;
+
+                            case DELETE:
+                                attributesMap.remove(attrName);
+                                break;
+
+                        }
+                    }
+                }
+            }
+        } finally {
+            try {
+                dis.close();
+            } catch (Exception ex) {
+            }
+        }
     }
 
 
     private static class SessionAttributesMapImpl
-            implements StorableMap<String, byte[]> {
+            extends HashMap<String, byte[]>
+            implements StorableMap<Object, byte[]> {
 
         Set<String> newKeys = new HashSet<String>();
         Set<String> modifiedKeys = new HashSet<String>();
         Set<String> deletedKeys = new HashSet<String>();
         Map<String, byte[]> map = new HashMap<String, byte[]>();
 
+        SessionAttributesMapImpl() {
+            super();
+        }
+
         SessionAttributesMapImpl(Collection<SessionAttributeMetadata> attrs) {
+            super();
             for (SessionAttributeMetadata attr : attrs) {
-                map.put(attr.getAttributeName(), attr.getState());
+                super.put(attr.getAttributeName(), attr.getState());
                 if (attr.getOperation() == SessionAttributeMetadata.Operation.ADD) {
                     newKeys.add(attr.getAttributeName());
                 } else if (attr.getOperation() == SessionAttributeMetadata.Operation.UPDATE) {
@@ -277,10 +377,6 @@ public final class CompositeMetadata implements Storeable {
                     deletedKeys.add(attr.getAttributeName());
                 }
             }
-        }
-
-        public byte[] get(String name) {
-            return map.get(name);  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public Collection getDeletedKeys() {

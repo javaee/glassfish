@@ -116,32 +116,20 @@ public final class SessionAttributeMetadata implements Serializable {
     }
     
     public boolean equals(Object obj) {
-        if(this == obj) {
+        if (this == obj) {
             return true;
-        }
-        if(!(obj instanceof SessionAttributeMetadata) || obj == null) {
+        } else if (obj != null && obj instanceof SessionAttributeMetadata) {
+            SessionAttributeMetadata otherAttributeMetadata = (SessionAttributeMetadata) obj;
+            return (getAttributeName() == null)
+                ? otherAttributeMetadata.getAttributeName() == null
+                : getAttributeName().equals(otherAttributeMetadata.getAttributeName());
+        } else {
             return false;
         }
-        SessionAttributeMetadata otherAttributeMetadata = (SessionAttributeMetadata)obj;
-        if(getAttributeName() == null) {
-            if(otherAttributeMetadata.getAttributeName() == null) { 
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            if(otherAttributeMetadata.getAttributeName() == null) { 
-                return false;
-            } else {
-                return getAttributeName().equalsIgnoreCase(otherAttributeMetadata.getAttributeName());
-            }          
-        }                
     }
     
     public int hashCode() {
-        int hash = 1;
-        hash = hash * 31
-                + (attributeName == null ? 0 : attributeName.hashCode());
-        return hash;
+        return 31 + (attributeName == null ? 0 : attributeName.hashCode());
     }
+    
 }
