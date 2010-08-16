@@ -94,8 +94,9 @@ public final class SSLUtils implements PostConstruct {
     static final String TRUSTSTORE_PASS_PROP = "javax.net.ssl.trustStorePassword";
     private static final String DEFAULT_OUTBOUND_KEY_ALIAS = "s1as";
     public static final String HTTPS_OUTBOUND_KEY_ALIAS = "com.sun.enterprise.security.httpsOutboundKeyAlias";
-    private static final String KEYSTORE_TYPE_PROP="javax.net.ssl.keyStoreType";
-    private static final String TRUSTSTORE_TYPE_PROP="javax.net.ssl.trustStoreType";
+    private static final String KEYSTORE_TYPE_PROP = "javax.net.ssl.keyStoreType";
+    private static final String TRUSTSTORE_TYPE_PROP = "javax.net.ssl.trustStoreType";
+    private static final String DEFAULT_SSL_PROTOCOL = "TLS";
 
     private static final Logger _logger = LogDomains.getLogger(SSLUtils.class, LogDomains.SECURITY_LOGGER);
 
@@ -118,8 +119,6 @@ public final class SSLUtils implements PostConstruct {
             }
             initDate = new Date();
             KeyStore[] keyStores = getKeyStores();
-            initKeyManagers(keyStores, ((SecuritySupportImpl)secSupp).getKeyStorePasswords());
-            initTrustManagers(getTrustStores());
             if (keyStores != null) {
                 for (KeyStore keyStore : keyStores) {
                     Enumeration aliases = keyStore.aliases();
@@ -136,13 +135,16 @@ public final class SSLUtils implements PostConstruct {
                 }
             }
             mergedTrustStore = mergingTrustStores(secSupp.getTrustStores());
+            getSSLContext(null, null, null);
         } catch(Exception ex) {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "SSLUtils static init fails.", ex);
             }
             throw new IllegalStateException(ex);
         }
+    }
 
+    SSLContext getSSLContext(String protocol, String algorithm, String trustAlgorithm) {
         try {
             //V3:Commented to break dependency on WebTier.
             //The SSLSocketFactory CTOR will now take care of setting the kmgr and tmgr
@@ -150,39 +152,39 @@ public final class SSLUtils implements PostConstruct {
 
             // Creating a default SSLContext and HttpsURLConnection for clients
             // that use Https
-            ctx = SSLContext.getInstance("TLS");
+            if (protocol == null) {
+                protocol = DEFAULT_SSL_PROTOCOL;
+            }
+            ctx = SSLContext.getInstance(protocol);
             String keyAlias = System.getProperty(HTTPS_OUTBOUND_KEY_ALIAS);
-            KeyManager[] kMgrs = getKeyManagers();
+            KeyManager[] kMgrs = getKeyManagers(algorithm);
             if (keyAlias != null && keyAlias.length() > 0 && kMgrs != null) {
                 for (int i = 0; i < kMgrs.length; i++) {
                     kMgrs[i] = new J2EEKeyManager((X509KeyManager)kMgrs[i], keyAlias);
                 }
             }
-            ctx.init(kMgrs, getTrustManagers(), null);
+            ctx.init(kMgrs, getTrustManagers(trustAlgorithm), null);
 
             HttpsURLConnection.setDefaultSSLSocketFactory(ctx.getSocketFactory());
         } catch (Exception e) {
             throw new Error(e);
         }
-    }
-
-    SSLContext getSSLContext() {
         return ctx;
     }
 
-    public KeyStore[] getKeyStores() throws Exception{
+    public KeyStore[] getKeyStores() throws IOException{
         return secSupp.getKeyStores();
     }
 
-    public KeyStore getKeyStore() throws Exception{
+    public KeyStore getKeyStore() throws IOException{
         return getKeyStores()[0];
     }
 
-    public KeyStore[] getTrustStores() throws Exception{
+    public KeyStore[] getTrustStores() throws IOException{
         return secSupp.getTrustStores();
     }
 
-    public KeyStore getTrustStore() throws Exception{
+    public KeyStore getTrustStore() throws IOException{
         return getTrustStores()[0];
     }
 
@@ -195,10 +197,47 @@ public final class SSLUtils implements PostConstruct {
     }
 
     public KeyManager[] getKeyManagers() throws Exception{
+        return getKeyManagers(null);
+    }
+    public KeyManager[] getKeyManagers(String algorithm) throws Exception{
+        KeyStore[] kstores = getKeyStores();
+        String[] pwds = ((SecuritySupportImpl)secSupp).getKeyStorePasswords();
+        ArrayList<KeyManager> keyManagers = new ArrayList<KeyManager>();
+        for (int i = 0; i < kstores.length; i++) {
+            checkCertificateDates(kstores[i]);
+	    KeyManagerFactory kmf = KeyManagerFactory.getInstance(
+                    (algorithm != null)? algorithm: KeyManagerFactory.getDefaultAlgorithm());
+	    kmf.init(kstores[i], pwds[i].toCharArray());
+            KeyManager[] kmgrs = kmf.getKeyManagers();
+            if (kmgrs != null)
+                keyManagers.addAll(Arrays.asList(kmgrs));
+        }
+
+        keyManager = new UnifiedX509KeyManager(
+                keyManagers.toArray(new X509KeyManager[keyManagers.size()]),
+            secSupp.getTokenNames());
         return new KeyManager[] { keyManager };
     } 
-
     public TrustManager[] getTrustManagers() throws Exception{
+        return getTrustManagers(null);
+    }
+    public TrustManager[] getTrustManagers(String algorithm) throws Exception{
+        KeyStore[] tstores = getTrustStores();
+        ArrayList<TrustManager> trustManagers = new ArrayList<TrustManager>();
+        for (KeyStore tstore : tstores) {
+            checkCertificateDates(tstore);
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(
+                    (algorithm != null)? algorithm: TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(tstore);
+            TrustManager[] tmgrs = tmf.getTrustManagers();
+            if (tmgrs != null)
+                trustManagers.addAll(Arrays.asList(tmgrs));
+        }
+        if (trustManagers.size() == 1) {
+            trustManager = trustManagers.get(0);
+        } else {
+            trustManager = new UnifiedX509TrustManager(trustManagers.toArray(new X509TrustManager[trustManagers.size()]));
+        }
         return new TrustManager[] { trustManager };
     }
 
@@ -339,44 +378,7 @@ public final class SSLUtils implements PostConstruct {
          //postConstruct is already setting this.
          return  HttpsURLConnection.getDefaultSSLSocketFactory().getSupportedCipherSuites();
     }
-
-    private void initKeyManagers(KeyStore[] kstores, String[] pwds)
-            throws Exception {
-
-        ArrayList<KeyManager> keyManagers = new ArrayList<KeyManager>();
-        for (int i = 0; i < kstores.length; i++) {
-            checkCertificateDates(kstores[i]);
-	    KeyManagerFactory kmf = KeyManagerFactory.getInstance(
-                    KeyManagerFactory.getDefaultAlgorithm());
-	    kmf.init(kstores[i], pwds[i].toCharArray());
-            KeyManager[] kmgrs = kmf.getKeyManagers();
-            if (kmgrs != null)
-                keyManagers.addAll(Arrays.asList(kmgrs));
-        }
-
-        keyManager = new UnifiedX509KeyManager(
-                keyManagers.toArray(new X509KeyManager[keyManagers.size()]),
-            secSupp.getTokenNames());
-    }
     
-    private void initTrustManagers(KeyStore[] tstores) throws Exception {
-        ArrayList<TrustManager> trustManagers = new ArrayList<TrustManager>();
-        for (KeyStore tstore : tstores) {
-            checkCertificateDates(tstore);
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(
-                    TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(tstore);
-            TrustManager[] tmgrs = tmf.getTrustManagers();
-            if (tmgrs != null)
-                trustManagers.addAll(Arrays.asList(tmgrs));
-        }
-        if (trustManagers.size() == 1) {
-            trustManager = trustManagers.get(0);
-        } else {
-            trustManager = new UnifiedX509TrustManager(trustManagers.toArray(new X509TrustManager[trustManagers.size()]));
-        }
-    }
-
     private KeyStore mergingTrustStores(KeyStore[] trustStores)
             throws IOException, KeyStoreException,
             NoSuchAlgorithmException, CertificateException {

@@ -111,6 +111,7 @@ public class CreateSsl implements AdminCommand {
     Domain domain;
     @Inject
     Habitat habitat;
+    private static final String GF_SSL_IMPL_NAME = "com.sun.enterprise.security.ssl.GlassfishSSLImpl";
 
     /**
      * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
@@ -269,6 +270,7 @@ public class CreateSsl implements AdminCommand {
         newSsl.setSsl2Enabled(ssl2Enabled.toString());
         newSsl.setSsl3Enabled(ssl3Enabled.toString());
         newSsl.setSsl3TlsCiphers(ssl3tlsciphers);
+        newSsl.setClassname(GF_SSL_IMPL_NAME);
         newSsl.setTlsEnabled(tlsenabled.toString());
         newSsl.setTlsRollbackEnabled(tlsrollbackenabled.toString());
     }

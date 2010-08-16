@@ -33,10 +33,10 @@
         <orb use-thread-pool-ids="thread-pool-1" />
         <iiop-listener address="0.0.0.0" port="3700" id="orb-listener-1" />
         <iiop-listener security-enabled="true" address="0.0.0.0" port="3820" id="SSL">
-          <ssl cert-nickname="s1as" />
+          <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="s1as" />
         </iiop-listener>
         <iiop-listener security-enabled="true" address="0.0.0.0" port="3920" id="SSL_MUTUALAUTH">
-          <ssl cert-nickname="s1as" client-auth-enabled="true" />
+          <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="s1as" client-auth-enabled="true" />
         </iiop-listener>
       </iiop-service>
       <admin-service type="das-and-server" system-jmx-connector-name="system">

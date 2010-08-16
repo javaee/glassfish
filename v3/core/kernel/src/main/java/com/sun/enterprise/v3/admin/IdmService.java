@@ -78,7 +78,7 @@ public class IdmService implements Init, PostConstruct/*, IdentityManagement*/ {
 
     private volatile char[] masterPassword;
 
-    private final String[] masterPasswordServices = {"Security SSL Password Provider Service"};
+    //private final String[] masterPasswordServices = {"Security SSL Password Provider Service"};
 
     //private final Map<String, String> otherPasswords = Collections.synchronizedMap(new HashMap<String, String>());  //TODO later
 
@@ -108,25 +108,9 @@ public class IdmService implements Init, PostConstruct/*, IdentityManagement*/ {
 
         if (masterPasswordHelper!=null)
             masterPasswordHelper.setMasterPassword(masterPassword);
-        // TODO: Remove once Grizzly provides a method to set the store passwords.
-        setJSSEProperties();
         Arrays.fill(masterPassword, ' ');
         masterPassword = null;
     }
-
-    // TODO: Remove once Grizzly provides a method to set the store passwords.
-    private void setJSSEProperties() {
-        System.setProperty("javax.net.ssl.trustStorePassword", new String(masterPassword));
-        System.setProperty("javax.net.ssl.keyStorePassword", new String(masterPassword));
-    }
-
-    /** Returns the master password. Others are expected to call this method instead of relying on JSSE properties.
-     *
-     * @return char[] as a master password. It's guaranteed that this password is valid
-     */
-//    public char[] getMasterPassword() {
-//        return masterPassword;
-//    }
 
     ///// All Private
     
@@ -220,27 +204,27 @@ public class IdmService implements Init, PostConstruct/*, IdentityManagement*/ {
         }
     }
 
-    private boolean verify() {
-//        long t0 = System.currentTimeMillis();
-        //only tries to open the keystore
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(env.getJKS());
-            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-            ks.load(fis, masterPassword);
-//            long t1 = System.currentTimeMillis();
-//            System.out.println("time spent in verify(): " + (t1-t0) + " ms");
-            return true;
-        } catch (Exception e) {
-            logger.warning(e.getMessage());
-            return false;
-        } finally {
-            try {
-                if (fis != null)
-                    fis.close();
-            } catch(IOException ioe) {
-                //ignore, I know ...
-            }
-        }
-    }
+//    private boolean verify() {
+////        long t0 = System.currentTimeMillis();
+//        //only tries to open the keystore
+//        FileInputStream fis = null;
+//        try {
+//            fis = new FileInputStream(env.getJKS());
+//            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+//            ks.load(fis, masterPassword);
+////            long t1 = System.currentTimeMillis();
+////            System.out.println("time spent in verify(): " + (t1-t0) + " ms");
+//            return true;
+//        } catch (Exception e) {
+//            logger.warning(e.getMessage());
+//            return false;
+//        } finally {
+//            try {
+//                if (fis != null)
+//                    fis.close();
+//            } catch(IOException ioe) {
+//                //ignore, I know ...
+//            }
+//        }
+//    }
 }

@@ -43,6 +43,7 @@ import java.util.Map;
 import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.X509KeyManager;
 import javax.security.auth.Subject;
 
@@ -56,12 +57,12 @@ import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.common.SecurityConstants;
 import com.sun.enterprise.security.common.Util;
-import org.jvnet.hk2.component.Habitat;
 
 import java.util.logging.*;
 import com.sun.logging.*;
 import java.security.PrivilegedAction;
 import java.util.Set;
+import javax.net.ssl.X509ExtendedKeyManager;
 import javax.security.auth.login.LoginContext;
 
 /**
@@ -71,18 +72,15 @@ import javax.security.auth.login.LoginContext;
  * @author Vivek Nagar
  * @author Harpreet Singh
  */
-public final class J2EEKeyManager implements X509KeyManager {
+public final class J2EEKeyManager /*implements X509KeyManager */ extends X509ExtendedKeyManager {
 
-    private static Logger _logger=null;  
-    static {
-        _logger=LogDomains.getLogger(J2EEKeyManager.class, LogDomains.SECURITY_LOGGER);
-    }
+    private static final Logger _logger = LogDomains.getLogger(J2EEKeyManager.class, LogDomains.SECURITY_LOGGER);
 
     private X509KeyManager mgr = null; // delegate
     
     private String alias = null;
 
-    private Map tokenName2MgrMap = null;
+    private Map<String, X509KeyManager> tokenName2MgrMap = null;
     private boolean supportTokenAlias = false;
 
     public J2EEKeyManager(X509KeyManager mgr, String alias) {
@@ -94,7 +92,7 @@ public final class J2EEKeyManager implements X509KeyManager {
             X509KeyManager[] mgrs = umgr.getX509KeyManagers();
             String[] tokenNames = umgr.getTokenNames();
 
-            tokenName2MgrMap = new HashMap();
+            tokenName2MgrMap = new HashMap<String, X509KeyManager>();
             for (int i = 0; i < mgrs.length; i++) {
                 if (tokenNames[i] != null) {
                     tokenName2MgrMap.put(tokenNames[i], mgrs[i]);
@@ -102,6 +100,14 @@ public final class J2EEKeyManager implements X509KeyManager {
             }
             supportTokenAlias = (tokenName2MgrMap.size() > 0);
         }
+    }
+
+    public String chooseEngineClientAlias(String[] keyType, Principal[] issuers, SSLEngine engine) {
+        return mgr.chooseClientAlias(keyType, issuers, null);
+    }
+
+    public String chooseEngineServerAlias(String keyType, Principal[] issuers, SSLEngine engine) {
+        return alias;
     }
 
     /**
@@ -116,14 +122,14 @@ public final class J2EEKeyManager implements X509KeyManager {
     public String chooseClientAlias(String[] keyType, Principal[] issuers,
     Socket socket) {
         
-        String alias = null;
+        String clientAlias = null;
         
         if(this.alias == null){
             //InvocationManager im = Switch.getSwitch().getInvocationManager();
             //if (im == null) {
             if(Util.getInstance().isNotServerORACC()) {
                 // standalone client
-                alias = mgr.chooseClientAlias(keyType, issuers, socket);
+                clientAlias = mgr.chooseClientAlias(keyType, issuers, socket);
             } else {
                 //ComponentInvocation ci = im.getCurrentInvocation();
                 //if (ci == null) {       // 4646060
@@ -149,20 +155,19 @@ public final class J2EEKeyManager implements X509KeyManager {
                         if(o instanceof X509CertificateCredential) {
                             X509CertificateCredential crt =
                             (X509CertificateCredential) o;
-                            alias = crt.getAlias();
+                            clientAlias = crt.getAlias();
                             break;
                         }
                     }
                 }
             }
         }else{
-            alias = this.alias;
+            clientAlias = this.alias;
         }
         if(_logger.isLoggable(Level.FINE)){
-            _logger.log(Level.FINE,
-            "Choose client Alias :" + alias);
+            _logger.log(Level.FINE, "Choose client Alias :{0}", clientAlias);
         }
-        return alias;
+        return clientAlias;
     }
 
     /**
@@ -177,16 +182,16 @@ public final class J2EEKeyManager implements X509KeyManager {
     public String chooseServerAlias(String keyType, Principal[] issuers,
             Socket socket) {
 
-        String alias = null;
+        String serverAlias = null;
         if(this.alias != null){
-            alias = this.alias;
+            serverAlias = this.alias;
         }else{
-            alias =  mgr.chooseServerAlias(keyType, issuers, socket);
+            serverAlias =  mgr.chooseServerAlias(keyType, issuers, socket);
 	}
         if(_logger.isLoggable(Level.FINE)){
-            _logger.log(Level.FINE,"Choosing server alias :"+ alias);
+            _logger.log(Level.FINE, "Choosing server alias :{0}", serverAlias);
         }         
-        return alias;
+        return serverAlias;
     }
 
     /**
@@ -240,7 +245,7 @@ public final class J2EEKeyManager implements X509KeyManager {
      */
     public PrivateKey getPrivateKey(String alias) {
         if(_logger.isLoggable(Level.FINE)){
-	    _logger.log(Level.FINE,"Getting private key for alias:" + alias);
+	    _logger.log(Level.FINE, "Getting private key for alias:{0}", alias);
 	}
         X509KeyManager keyMgr = getManagerFromToken(alias);
         if (keyMgr != null) {
@@ -262,7 +267,7 @@ public final class J2EEKeyManager implements X509KeyManager {
         int ind = -1;
         if (supportTokenAlias && tokenAlias != null && (ind = tokenAlias.indexOf(':')) != -1) {
             String tokenName = alias.substring(0, ind);
-            keyMgr = (X509KeyManager)tokenName2MgrMap.get(tokenName);
+            keyMgr = tokenName2MgrMap.get(tokenName);
         }
         return keyMgr;
     }
@@ -383,14 +388,14 @@ public final class J2EEKeyManager implements X509KeyManager {
      * @param Class the class of the credential object stored in the subject
      *
      */
-    private  static void postClientAuth(Subject subject, Class clazz){
-        final Class clas = clazz;
+    private  static void postClientAuth(Subject subject, Class<?> clazz){
+        final Class<?> clas = clazz;
         final Subject fs = subject;
         Set credset = 
-            (Set) AppservAccessController.doPrivileged(new PrivilegedAction() {
-                public java.lang.Object run() {
+            (Set) AppservAccessController.doPrivileged(new PrivilegedAction<Set>() {
+                public Set run() {
                 if(_logger.isLoggable(Level.FINEST)){
-                    _logger.log(Level.FINEST,"LCD post login subject :" + fs);
+                    _logger.log(Level.FINEST, "LCD post login subject :{0}", fs);
                 }
                     return fs.getPrivateCredentials(clas);
                 }
@@ -415,8 +420,8 @@ public final class J2EEKeyManager implements X509KeyManager {
                 String user = p.getUser();
                 if(_logger.isLoggable(Level.FINEST)){
                     String realm = p.getRealm();
-                    _logger.log(Level.FINEST,"In LCD user-pass login:" +
-                            user +" realm :" + realm);
+                    _logger.log(Level.FINEST, "In LCD user-pass login:{0} realm :{1}",
+                            new Object[]{user, realm});
                 }
                 setClientSecurityContext(user, fs);
                 return;
@@ -425,8 +430,8 @@ public final class J2EEKeyManager implements X509KeyManager {
                 String user = p.getAlias();
                 if(_logger.isLoggable(Level.FINEST)){
                     String realm = p.getRealm();
-                    _logger.log(Level.FINEST,"In LCD cert-login::" +
-                                user +" realm :" + realm);
+                    _logger.log(Level.FINEST, "In LCD cert-login::{0} realm :{1}",
+                            new Object[]{user, realm});
                 }
                 setClientSecurityContext(user, fs);
                 return;

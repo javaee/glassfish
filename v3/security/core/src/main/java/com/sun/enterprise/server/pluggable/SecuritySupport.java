@@ -64,12 +64,6 @@ public interface SecuritySupport {
     public KeyStore[] getTrustStores();
 
     /**
-     * This method returns an array of passwords in order corresponding to
-     * array of keystores.
-     */
-    public String[] getKeyStorePasswords();
-
-    /**
      * @param  token 
      * @return a keystore. If token is null, return the the first keystore.
      */
@@ -85,7 +79,7 @@ public interface SecuritySupport {
      * @param  token
      * @return the password for this token.
      */
-    public String getKeyStorePassword(String token);
+    //public String getKeyStorePassword(String token);
 
     /**
      * Gets the PrivateKey for specified alias from the corresponding keystore

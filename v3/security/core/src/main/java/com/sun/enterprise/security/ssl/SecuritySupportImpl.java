@@ -96,7 +96,7 @@ public class SecuritySupportImpl implements SecuritySupport {
         }
     }
 
-    protected void initJKS() {
+    private void initJKS() {
         String keyStoreFileName = null;
         String trustStoreFileName = null;
 
@@ -219,8 +219,8 @@ public class SecuritySupportImpl implements SecuritySupport {
         try {
             if (keyStoreFile != null) {
                 if (_logger.isLoggable(Level.FINE)) {
-                    _logger.log(Level.FINE, "Loading keystoreFile = " +
-                        keyStoreFile + ", keystorePass = " + keyStorePass);
+                    _logger.log(Level.FINE, "Loading keystoreFile = {0}, keystorePass = {1}",
+                            new Object[]{keyStoreFile, keyStorePass});
 	        }
                 istream = new FileInputStream(keyStoreFile);
                 bstream = new BufferedInputStream(istream);
@@ -260,8 +260,7 @@ public class SecuritySupportImpl implements SecuritySupport {
      * This method returns an array of passwords in order corresponding to
      * array of keystores.
      */
-    public String[] getKeyStorePasswords() {
-        SSLUtils.checkPermission(SSLUtils.KEYSTORE_PASS_PROP);
+    String[] getKeyStorePasswords() {
         return keyStorePasswords.toArray(new String[keyStorePasswords.size()]);
     }
 
@@ -313,14 +312,14 @@ public class SecuritySupportImpl implements SecuritySupport {
      * @param  token
      * @return the password for this token
      */
-    public String getKeyStorePassword(String token) {
-        SSLUtils.checkPermission(SSLUtils.KEYSTORE_PASS_PROP);
-        int idx = getTokenIndex(token);
-        if (idx < 0) {
-            return null;
-        }
-        return keyStorePasswords.get(idx);
-    }
+//    public String getKeyStorePassword(String token) {
+//        SSLUtils.checkPermission(SSLUtils.KEYSTORE_PASS_PROP);
+//        int idx = getTokenIndex(token);
+//        if (idx < 0) {
+//            return null;
+//        }
+//        return keyStorePasswords.get(idx);
+//    }
 
     /**
      * @return returned index 
@@ -330,7 +329,7 @@ public class SecuritySupportImpl implements SecuritySupport {
         if (token!=null) {
             idx = tokenNames.indexOf(token);
             if (idx < 0 && _logger.isLoggable(Level.FINEST)) {
-                _logger.log(Level.FINEST, "token " + token + " is not found");
+                _logger.log(Level.FINEST, "token {0} is not found", token);
             }
         }
         return idx;        
