@@ -79,15 +79,8 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     @Param(name = "checkports", optional = true, defaultValue = "true")
     private boolean checkPorts = true;
 
-    @Param(name = "server_name", primary = true, optional = true, alias = "domain_name")
-    private String userSpecifiedServerName;
-
-    @Param(name = "nodedir", optional = true, alias = "agentdir")
-    private String userSpecifiedNodeDir;           // nodeDirRoot
-
-    @Param(name = "node", optional = true, alias = "nodeagent")
-    private String userSpecifiedNode;
-
+    @Param(name = "bootstrap", optional = true, defaultValue = "true")
+    private boolean bootstrap = true;
 
     private static final String RENDEZVOUS_PROPERTY_NAME = "rendezvousOccurred";
     private String INSTANCE_DOTTED_NAME;
@@ -129,9 +122,9 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
                 passwords.get(CLIConstants.MASTER_PASSWORD) != null ?
                     passwords.get(CLIConstants.MASTER_PASSWORD).toCharArray() : null,
                 programOpts.isInteractive(),
-                userSpecifiedServerName, 
-                userSpecifiedNodeDir,
-                userSpecifiedNode);
+                null /* no server_name option on create-local-instance */,
+                nodeDir,
+                node);
 
         if (!rendezvousWithDAS()) {
             instanceDir.delete();
@@ -176,6 +169,9 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
                 throw ce;
             }
         }
+        if (bootstrap) {
+            bootstrapSecureAdminFiles();
+        }
         try {
             exitCode = super.executeCommand();
         } catch (CommandException ce) {
@@ -190,6 +186,13 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             throw new CommandException(msg, ce);
         }
         return exitCode;
+    }
+
+    private int bootstrapSecureAdminFiles() throws CommandException {
+        RemoteCommand rc = new RemoteCommand("_bootstrap-secure-admin", this.programOpts, this.env);
+        rc.setFileOutputDirectory(instanceDir);
+        logger.printDetailMessage("Download root for bootstrapping: " + instanceDir.getAbsolutePath());
+        return rc.execute(new String[] {"_bootstrap-secure-admin"});
     }
 
     private boolean rendezvousWithDAS() {

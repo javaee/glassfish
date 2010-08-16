@@ -121,6 +121,18 @@ public interface ServerEnvironment {
     File getJKS();
 
     /**
+     * The truststore used by the server.
+     * @return File for the truststore
+     */
+    File getTrustStore();
+
+    /**
+     * The domain.xml config file
+     * @return File for the domain.xml config file
+     */
+    File getDomainXML();
+
+    /**
      * Gets the server status
      */
     Status getStatus();

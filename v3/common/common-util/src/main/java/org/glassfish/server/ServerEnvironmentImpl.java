@@ -334,6 +334,16 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
         return new File (getConfigDirPath(), "keystore.jks");
     }
 
+    @Override
+    public File getTrustStore() {
+        return new File(getConfigDirPath(), "cacerts.jks");
+    }
+
+    @Override
+    public File getDomainXML() {
+        return new File(getConfigDirPath(), "domain.xml");
+    }
+
     private Status status=Status.starting;
     @Override
     public Status getStatus() {
