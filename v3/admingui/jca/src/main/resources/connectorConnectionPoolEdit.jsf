@@ -56,7 +56,7 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
 
         setPageSessionAttribute(key="convertToFalseList" value={"Ping" "IsConnectionValidationRequired" "FailAllConnections" "AssociateWithThread" "ConnectionLeakReclaim" "LazyConnectionAssociation" "LazyConnectionEnlistment" "MatchConnections" });
         setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
@@ -64,9 +64,32 @@
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         //REST-TO DO
         getApplicationBySnifferType(type="connector"  result="#{requestScope.rarList}");
-        addSystemConnectors(rarList="#{requestScope.rarList}" result="#{pageSession.modList}")
-
-        getConnectionDefinitionsForRA(resourceAdapter="#{pageSession.valueMap.resourceAdapterName}" result="#{pageSession.cdList}");
+        //Add SystemConnectors
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-system-rars-allowing-pool-creation"
+                       method="GET"
+                       result="#{requestScope.result}");
+        gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
+                           id="message"
+                           keyList="#{pageSession.modList}");
+        gf.listCombine(list="#{pageSession.modList}" list2="#{requestScope.rarList}");
+        //To get the connection definitions for RA
+        if (!#{resAdapterChoosen}) {
+            setAttribute(key="resAdapterName" value="#{pageSession.valueMap.resourceAdapterName}");
+        }
+        if (#{resAdapterChoosen}) {
+            setAttribute(key="resAdapterName" value="#{resAdapterChoosen}");
+            mapPut(map="#{pageSession.valueMap}" key="resourceAdapterName" value="#{resAdapterChoosen}");
+        }
+        if(#{resAdapterName}) {
+            gf.createAttributeMap(keys={"rarName"} values={"$attribute{resAdapterName}"} map="#{requestScope.connDefAttrs}");
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-connection-definition-names"
+                           attrs="#{requestScope.connDefAttrs}"
+                           method="GET"
+                           result="#{requestScope.result}");
+            gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
+                               id="message"
+                               keyList="#{pageSession.cdList}");
+        }
     />
 </event>
 <sun:form id="propertyForm">
@@ -90,7 +113,7 @@
                 if ("#{valueMap['ping']}") {
                     urlencode(value="#{valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
                     gf.createAttributeMap(keys={"id"} values={"$pageSession{encodeName}"} map="#{requestScope.attrMap}");
-                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
+                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool"
                                    attrs="#{requestScope.attrMap}"
                                    method="GET"
                                    result="#{requestScope.result}");
@@ -115,7 +138,7 @@
     <sun:button id="flush" text="$resource{i18njca.button.Flush}" primary="#{false}" >
         <!command
             gf.createAttributeMap(keys={"id"} values={"$pageSession{encodedName}"} map="#{requestScope.attrMap}");
-            gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/flush-connection-pool.json"
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/flush-connection-pool"
                            attrs="#{requestScope.attrMap}"
                            method="POST"
                            result="#{requestScope.result}");
@@ -127,7 +150,7 @@
     <sun:button id="ping"  text="$resource{i18n.button.Ping}" primary="#{false}" >
         <!command
             gf.createAttributeMap(keys={"id"} values={"$pageSession{encodedName}"} map="#{requestScope.attrMap}");
-            gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool"
                            attrs="#{requestScope.attrMap}"
                            method="GET"
                            result="#{requestScope.result}");

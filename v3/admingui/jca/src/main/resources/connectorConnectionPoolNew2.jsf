@@ -55,6 +55,7 @@
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
         //REST - for setproxyProperties after creating an entity.
         setPageSessionAttribute(key="restObjStr", value="amx:pp=/domain/resources,type=#{pageSession.childType}");
+        //REST - TO DO
         updateProxyProperties(propertyList="#{wizardPoolProperties}" TableList=>$attribute{tableList});
         setPageSessionAttribute(key="convertToFalseList" value={"Ping" "FailAllConnections" "IsConnectionValidationRequired"});
         //set the following for including buttons.inc

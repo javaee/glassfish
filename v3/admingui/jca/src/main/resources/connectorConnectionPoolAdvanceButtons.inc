@@ -50,7 +50,7 @@
             if ("#{valueMap['ping']}") {
                 urlencode(value="#{valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
                 gf.createAttributeMap(keys={"id"} values={"$pageSession{encodeName}"} map="#{requestScope.attrMap}");
-                gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
+                gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool"
                                attrs="#{requestScope.attrMap}"
                                method="GET"
                                result="#{requestScope.result}");

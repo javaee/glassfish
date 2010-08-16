@@ -49,6 +49,14 @@ holder.
         <sun:property id="resAdapterProp"   labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}"  >
             <sun:dropDown id="db"  selected="#{pageSession.valueMap.resourceAdapterName}" submitForm="#{true}" immediate="#{true}"
                 labels="$pageSession{modList}"  values="$pageSession{modList}" required="#{true}" >
+                <!command
+                    //getUIComponent(clientId="#{jndiNameId}", component=>$attribute{nameComponent});
+                    //getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{poolName});
+                    setAttribute(key="click" value="$this{component}");
+                    setAttribute(key="name" value="#{pageSession.Name}")
+                    setAttribute(key="resAdapterChoosen" value="#{click.selected}")
+                    gf.navigate(page="#{request.contextPath}/jca/connectorConnectionPoolEdit.jsf");
+                />
             </sun:dropDown>
         </sun:property>
 
