@@ -51,10 +51,10 @@
          getRequestValue(key="resAdapter" value="#{resAdapter}");
          getRequestValue(key="resType" value="#{resType}");
          getRequestValue(key="className" value="#{className}");
-         mapPut(map="#{pageSession.tmpMap}" key="Name" value="#{pageSession.Name}");
-         mapPut(map="#{pageSession.tmpMap}" key="ResAdapter" value="#{resAdapter}");
-         mapPut(map="#{pageSession.tmpMap}" key="ResType" value="#{resType}");
-         mapPut(map="#{pageSession.tmpMap}" key="ClassName" value="#{className}");
+         mapPut(map="#{pageSession.tmpMap}" key="name" value="#{pageSession.Name}");
+         mapPut(map="#{pageSession.tmpMap}" key="resAdapter" value="#{resAdapter}");
+         mapPut(map="#{pageSession.tmpMap}" key="resType" value="#{resType}");
+         mapPut(map="#{pageSession.tmpMap}" key="className" value="#{className}");
     }
     if(!#{reload}){
         getRequestValue(key="name" value="#{pageSession.Name}");
@@ -69,7 +69,7 @@
     setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
     setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/resources/#{pageSession.childType}/#{pageSession.encodedName}");
     setPageSessionAttribute(key="rest-api" value="true");
-    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
     
     setPageSessionAttribute(key="convertToFalseList" value={"enabled"});
     setPageSessionAttribute(key="skipAttrsList", value={"jndiName"});
@@ -85,18 +85,57 @@
     //REST related
     setPageSessionAttribute(key="childType2", value="resource-ref");
     setPageSessionAttribute(key="selfUrl2", value="#{sessionScope.REST_URL}/servers/server/server/#{pageSession.childType2}/#{pageSession.encodedName}");
-    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}.json", valueMap="#{pageSession.valueMap2}");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
     
     setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
     setPageSessionAttribute(key="has2Objects" value="#{true}" );
 
-    getAdminObjectResourceWizard(
+    gf.getAdminObjectResourceWizard(
         reload="#{reload}"
         attrMap="#{pageSession.tmpMap}"
-        currentMap="#{pageSession.valueMap}"
-        valueMap=>$pageSession{valueMap}
-        resourceTypes=>$attribute{resourceTypes}
-        classNames=>$attribute{classNames})
+        currentMap="#{pageSession.valueMap}")
+    //To get the resource types
+    createMap(result="#{pageSession.attrsMap}");
+    mapPut(map="#{pageSession.attrsMap}" key="rarName" value="#{pageSession.valueMap.resAdapter}");
+    gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-admin-object-interface-names"
+                   attrs="#{pageSession.attrsMap}"
+                   method="GET"
+                   result="#{requestScope.result}");
+    gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
+                       id="message"
+                       keyList="#{requestScope.resourceTypes}");
+    setAttribute(key="zero" value="$int{0}");
+    setAttribute(key="size" value="#{requestScope.resourceTypes.size()}");
+    if (#{requestScope.size} > #{requestScope.zero}) {
+        if("!(#{pageSession.valueMap['resType']})") {
+            mapPut(map="#{pageSession.valueMap}" key="resType" value="#{requestScope.resourceTypes[0]}");
+        }
+        mapPut(map="#{pageSession.attrsMap}" key="adminObjectInterface" value="#{pageSession.valueMap.resType}");
+        //To get the get-admin-object-class-names
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-admin-object-class-names"
+                       attrs="#{pageSession.attrsMap}"
+                       method="GET"
+                       result="#{requestScope.result}");
+        gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
+                           id="message"
+                           keyList="#{requestScope.classNames}");
+        setAttribute(key="size" value="#{requestScope.resourceTypes.size()}");
+        if (#{requestScope.size} > #{requestScope.zero}) {
+            if(!#{pageSession.valueMap['className']}) {
+                mapPut(map="#{pageSession.valueMap}" key="className" value="#{requestScope.classNames[0]}");
+            }
+        }
+        //To get the admin-object-config-props
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-admin-object-config-properties"
+                           attrs="#{pageSession.attrsMap}"
+                           method="GET"
+                           result="#{requestScope.result}");
+        gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
+                               id="message"
+                               propsMap="#{requestScope.adminObjProps}");
+        setAttribute(key="propsList" value="#{requestScope.adminObjProps.data.extraProperties.properties}");
+        gf.listCombine(list="#{requestScope.tableList}" list2="#{requestScope.propsList}");
+    }
     />
 </event>
 <sun:form id="propertyForm">

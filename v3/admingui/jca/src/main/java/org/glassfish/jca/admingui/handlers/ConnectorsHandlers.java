@@ -81,15 +81,15 @@ public class ConnectorsHandlers {
     /**
      *	<p> This handler creates a ConnectorConnection Pool to be used in the wizard
      */
-    @Handler(id = "getConnectorConnectionPoolWizard", input = {
-@HandlerInput(name = "fromStep2", type = Boolean.class),
-@HandlerInput(name = "fromStep1", type = Boolean.class),
-@HandlerInput(name = "attrMap", type = Map.class),
-@HandlerInput(name = "poolName", type = String.class),
-@HandlerInput(name = "resAdapter", type = String.class)
-}, output = {
-@HandlerOutput(name = "connectionDefinitions", type = List.class)
-})
+    @Handler(id = "gf.getConnectorConnectionPoolWizard", input = {
+        @HandlerInput(name = "fromStep2", type = Boolean.class),
+        @HandlerInput(name = "fromStep1", type = Boolean.class),
+        @HandlerInput(name = "attrMap", type = Map.class),
+        @HandlerInput(name = "poolName", type = String.class),
+        @HandlerInput(name = "resAdapter", type = String.class)
+        }, output = {
+        @HandlerOutput(name = "resultAdapter", type = String.class)
+    })
     public static void getConnectorConnectionPoolWizard(HandlerContext handlerCtx) {
         Boolean fromStep2 = (Boolean) handlerCtx.getInputValue("fromStep2");
         Boolean fromStep1 = (Boolean) handlerCtx.getInputValue("fromStep1");
@@ -97,8 +97,7 @@ public class ConnectorsHandlers {
             //wizardMap is already in session map, we don't want to change anything.
             Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
             String resAdapter = (String) extra.get("ResourceAdapterName");
-            List defs = getConnectionDefinitions(resAdapter);
-            handlerCtx.setOutputValue("connectionDefinitions", defs);
+            handlerCtx.setOutputValue("resultAdapter", resAdapter);
         } else if ((fromStep1 != null) && fromStep1) {
             //this is from Step 1 where the page is navigated when changing the dropdown of resource adapter.
             //since the dropdown is immediate, the wizardPoolExtra map is not updated yet, we need
@@ -111,14 +110,11 @@ public class ConnectorsHandlers {
             if (poolName != null) {
                 poolName = poolName.trim();
             }
-            if (resAdapter == null || resAdapter.equals("")) {
-                handlerCtx.setOutputValue("connectionDefinitions", new ArrayList());
-            } else {
+            if (resAdapter != null && !(resAdapter.equals(""))) {               
                 Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
                 extra.put("ResourceAdapterName", resAdapter);
-                extra.put("Name", poolName);
-                List defs = getConnectionDefinitions(resAdapter);
-                handlerCtx.setOutputValue("connectionDefinitions", defs);
+                extra.put("Name", poolName);                
+                handlerCtx.setOutputValue("resultAdapter", resAdapter);
             }
         } else {
             Map extra = new HashMap();
@@ -131,32 +127,21 @@ public class ConnectorsHandlers {
     /**
      *	<p> updates the wizard map
      */
-    @Handler(id = "updateConnectorConnectionPoolWizard")
+    @Handler(id = "gf.updateConnectorConnectionPoolWizard",
+        input = {
+            @HandlerInput(name = "props", type = Map.class),
+            @HandlerInput(name = "currentAdapter", type = String.class),
+            @HandlerInput(name = "currentDef", type = String.class)})
     public static void updateConnectorConnectionPoolWizard(HandlerContext handlerCtx) {
-        Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
-        String resAdapter = (String) extra.get("ResourceAdapterName");
-        String definition = (String) extra.get("ConnectionDefinitionName");
-
-        String previousDefinition = (String) extra.get("previousDefinition");
-        String previousResAdapter = (String) extra.get("previousResAdapter");
-
-        if (definition.equals(previousDefinition) && resAdapter.equals(previousResAdapter)) {
-        //User didn't change defintion and adapter, keep the properties table content the same.
+        Map<String, String> props = (Map<String, String>) handlerCtx.getInputValue("props");
+        if (props != null) {
+            handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
         } else {
-            List propsList = new ArrayList();
-            if (!GuiUtil.isEmpty(definition) && !GuiUtil.isEmpty(resAdapter)) {
-                Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getMCFConfigProps(resAdapter, definition);
-                Map<String, String> props = (Map) result.get(MCF_CONFIG_PROPS_KEY);
-                if(props != null){
-                    handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
-                } else {
-                    handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", propsList);
-                }
-                
-            }
-            extra.put("previousDefinition", definition);
-            extra.put("previousResAdapter", resAdapter);
+            handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", new ArrayList());
         }
+        Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
+        extra.put("previousDefinition", (String) handlerCtx.getInputValue("currentDef"));
+        extra.put("previousResAdapter", (String) handlerCtx.getInputValue("currentAdapter"));
     }
     
     /**
@@ -174,60 +159,8 @@ public class ConnectorsHandlers {
         attrs.put("Name", name);
         attrs.put("ConnectionDefinitionName", definition);
         attrs.put("ResourceAdapterName", resAdapter);
-    }  
-
-    /**
-     *	<p> Adds the list of pre-installed system resource-adapters
-     */
-    @Handler(id = "addSystemConnectors",
-        input = {
-            @HandlerInput(name = "rarList", type = List.class)},
-        output = {
-            @HandlerOutput(name = "result", type = List.class)
-            })
-    public static void addSystemConnectors(HandlerContext handlerCtx) {
-        List rarList = (List) handlerCtx.getInputValue("rarList");
-        if (rarList == null){
-            rarList = new ArrayList();
-        }
-        Map<String, Object> entries = (Map)V3AMX.getInstance().getConnectorRuntime().attributesMap().get("SystemConnectorsAllowingPoolCreation");
-        String[] emap = (String[])entries.get(SYSTEM_CONNECTORS_KEY);
-        if(emap != null) {
-            rarList.addAll(Arrays.asList(emap));
-        }
-        handlerCtx.setOutputValue("result", rarList);
     }
     
-    /**
-     *	<p> This returns the connection definitions based on resource adapter
-     */
-    @Handler(id = "getConnectionDefinitionsForRA",
-        input = {
-            @HandlerInput(name = "resourceAdapter", type = String.class)},
-        output = {
-            @HandlerOutput(name = "result", type = List.class)
-            })
-    public static void getConnectionDefinitionsForRA(HandlerContext handlerCtx) {
-        String ra = (String) handlerCtx.getInputValue("resourceAdapter");
-        handlerCtx.setOutputValue("result", getConnectionDefinitions(ra));
-    }    
-
-
-    private static List getConnectionDefinitions(String resAdapter) {
-        ArrayList defs = new ArrayList();
-        if (resAdapter == null || resAdapter.equals("")) {
-            return defs;
-        } else {
-            Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionNames(resAdapter);
-            String[] names = (String[]) result.get(CONNECTION_DEFINITION_NAMES_KEY);
-            if (names != null) {                
-                return Arrays.asList(names);
-            } else {
-                return defs;
-            }
-        }
-    }
-
     /**
      *	<p> This handler determines whether usergroups or principals will be used and returns appropriate string array
      */
@@ -279,15 +212,12 @@ public class ConnectorsHandlers {
     /**
      *	<p> This handler creates a Admin Object Resource
      */
-    @Handler(id = "getAdminObjectResourceWizard", input = {
+    @Handler(id = "gf.getAdminObjectResourceWizard", input = {
     @HandlerInput(name = "reload", type = Boolean.class),
     @HandlerInput(name = "attrMap", type = Map.class),
     @HandlerInput(name = "currentMap", type = Map.class)
     }, output = {
-    @HandlerOutput(name = "resourceTypes", type = List.class),
-    @HandlerOutput(name = "classNames", type = List.class),
-    @HandlerOutput(name = "valueMap", type = Map.class),
-    @HandlerOutput(name = "result", type = java.util.List.class)
+    @HandlerOutput(name = "valueMap", type = Map.class)
     })
     public static void getAdminObjectResourceWizard(HandlerContext handlerCtx) {
         Boolean reload = (Boolean) handlerCtx.getInputValue("reload");
@@ -301,17 +231,17 @@ public class ConnectorsHandlers {
             attrMap = new HashMap();
         }
         if (((reload == null) || (!reload)) && (currentMap != null)) {
-            name = (String) currentMap.get("Name");
-            resAdapter = (String) currentMap.get("ResAdapter");
-            resType = (String) currentMap.get("ResType");
-            className = (String) currentMap.get("ClassName");
+            name = (String) currentMap.get("name");
+            resAdapter = (String) currentMap.get("resAdapter");
+            resType = (String) currentMap.get("resType");
+            className = (String) currentMap.get("className");
             attrMap.putAll(currentMap);
         } else {
             if (attrMap != null) {
-                name = (String) attrMap.get("Name");
-                resAdapter = (String) attrMap.get("ResAdapter");
-                resType = (String) attrMap.get("ResType");
-                className = (String) attrMap.get("ClassName");
+                name = (String) attrMap.get("name");
+                resAdapter = (String) attrMap.get("resAdapter");
+                resType = (String) attrMap.get("resType");
+                className = (String) attrMap.get("className");
             }
         }
         if (resAdapter != null) {
@@ -320,67 +250,14 @@ public class ConnectorsHandlers {
         if (resAdapter == null || resAdapter.equals("")) {
             resAdapter = "jmsra";
         }
-        List defs = getResourceTypesForRA(resAdapter);
 
-        if (resType == null) {
-            if (defs.size() > 0) {
-                resType = (String) defs.get(0);
-            }
-        }
-        List classNames = getClassNames(resAdapter, resType);
-        if (className == null) {
-            if (classNames.size() > 0) {
-                className = (String) classNames.get(0);
-            }
-        }
-        List result = new ArrayList();
-        try {
-            Map<String,Object> configMap = V3AMX.getInstance().getConnectorRuntime().getAdminObjectConfigProps(resAdapter, resType, className);
-            Map<String, Object> configPropsMap = (Map<String, Object>) configMap.get(ADMINOBJECT_CONFIG_PROPS_KEY);
-            result = V3AMX.getTableList(configPropsMap);
-        } catch (Exception ex) {
-            GuiUtil.getLogger().warning("Cannot get getAdminObjectConfigProps for resource adapter : " + resAdapter + " resource type : " + resType + " and classname : " + className);
-        }
-
-        attrMap.put("Name", name);
-        attrMap.put("ResType", resType);
-        attrMap.put("ResAdapter", resAdapter);
-        attrMap.put("ClassName", className);
-        handlerCtx.setOutputValue("resourceTypes", defs);
-        handlerCtx.setOutputValue("classNames", classNames);
+        attrMap.put("name", name);
+        attrMap.put("resType", resType);
+        attrMap.put("resAdapter", resAdapter);
+        attrMap.put("className", className);
         handlerCtx.setOutputValue("valueMap", attrMap);
-        handlerCtx.setOutputValue("result", result);
     }
-
-    private static List getResourceTypesForRA(String ra) {
-        List defs = new ArrayList();
-        Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getAdminObjectInterfaceNames(ra);
-        String[] names = (String[]) result.get(ADMINOBJECT_INTERFACES_KEY);
-        if (names != null) {
-            defs = Arrays.asList(names);
-            //defs.add(0, "");
-        }
-        return defs;
-    }
-
-    private static List getClassNames(String raName, String resType) {
-        ArrayList defs = new ArrayList();
-        if (raName == null || raName.equals("") || resType == null || resType.equals("")) {
-            return defs;
-        } else {
-            Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getAdminObjectClassNames(raName, resType);
-            String[] names = (String[]) result.get(ADMINOBJECT_CLASSES_KEY);
-            if (names != null) {
-                for(int i=0; i<names.length; i++){
-                    if(names[i] != null){
-                        defs.add(names[i]);
-                    }
-                }
-            } 
-            return defs;
-        }
-    }
-
+    
      @Handler(id = "createWorkSecurityMap",
         input = {
             @HandlerInput(name = "parentObjectNameStr", type = String.class, required = true),
