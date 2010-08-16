@@ -98,6 +98,7 @@ public abstract class ActionReport {
         logger.log(Level.SEVERE, message);
         if (e!=null) {
             setMessage(message + " : "+ e.toString());
+            setFailureCause(e);
         } else {
             setMessage(message);
         }
