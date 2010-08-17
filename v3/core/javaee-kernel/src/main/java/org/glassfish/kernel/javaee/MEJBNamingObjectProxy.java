@@ -36,22 +36,23 @@
 
 package org.glassfish.kernel.javaee;
 
-import org.glassfish.api.naming.NamingObjectProxy;
-import org.glassfish.api.naming.GlassfishNamingManager;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.ActionReport;
-import org.glassfish.internal.api.ServerContext;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import org.glassfish.internal.deployment.Deployment;
-import org.jvnet.hk2.component.Habitat;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.logging.LogDomains;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Logger;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.api.naming.NamingObjectProxy;
+import org.glassfish.internal.api.ServerContext;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Logger;
 
 
 /**
@@ -65,14 +66,14 @@ public class MEJBNamingObjectProxy implements NamingObjectProxy {
             "java:global/mejb/MEJBBean!org.glassfish.admin.mejb.MEJBHome";
 
     private static String[] jndiNames = new String[]
-            { NON_PORTABLE_MEJB_JNDI_NAME,
-              PORTABLE_MEJB_JNDI_NAME_SHORT,
-              PORTABLE_MEJB_JNDI_NAME_LONG };
+            {NON_PORTABLE_MEJB_JNDI_NAME,
+                    PORTABLE_MEJB_JNDI_NAME_SHORT,
+                    PORTABLE_MEJB_JNDI_NAME_LONG};
 
     private Habitat habitat;
 
     private static final Logger _logger = LogDomains.getLogger(
-        MEJBNamingObjectProxy.class, LogDomains.EJB_LOGGER);
+            MEJBNamingObjectProxy.class, LogDomains.EJB_LOGGER);
 
 
     public MEJBNamingObjectProxy(Habitat habitat) {
@@ -93,8 +94,8 @@ public class MEJBNamingObjectProxy implements NamingObjectProxy {
         } catch (NamingException ne) {
             throw ne;
         } catch (Exception e) {
-            NamingException namingException = 
-                new NamingException(e.getMessage());
+            NamingException namingException =
+                    new NamingException(e.getMessage());
             namingException.initCause(e);
             throw namingException;
         }
@@ -103,7 +104,7 @@ public class MEJBNamingObjectProxy implements NamingObjectProxy {
 
     private void unpublishJndiNames() throws NamingException {
         GlassfishNamingManager gfNamingManager = habitat.getComponent(GlassfishNamingManager.class);
-        for(String next : getJndiNames()) {
+        for (String next : getJndiNames()) {
             gfNamingManager.unpublishObject(next);
         }
     }
@@ -112,9 +113,11 @@ public class MEJBNamingObjectProxy implements NamingObjectProxy {
         _logger.info("Loading MEJB app on JNDI look up");
         ServerContext serverContext = habitat.getComponent(ServerContext.class);
         File mejbArchive = new File(serverContext.getInstallRoot(),
-            "lib/install/applications/mejb.jar");
-        DeployCommandParameters deployParams = 
-            new DeployCommandParameters(mejbArchive);
+                "lib/install/applications/mejb.jar");
+        DeployCommandParameters deployParams =
+                new DeployCommandParameters(mejbArchive);
+        String targetName = habitat.getComponent(Server.class, ServerEnvironment.DEFAULT_INSTANCE_NAME).getName();
+        deployParams.target = targetName;
         deployParams.name = "mejb";
         ActionReport report = habitat.getComponent(ActionReport.class, "plain");
         Deployment deployment = habitat.getComponent(Deployment.class);
@@ -123,7 +126,7 @@ public class MEJBNamingObjectProxy implements NamingObjectProxy {
 
         if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
             throw new RuntimeException("Failed to deploy MEJB app: " +
-                report.getFailureCause());
+                    report.getFailureCause());
         }
     }
 }
