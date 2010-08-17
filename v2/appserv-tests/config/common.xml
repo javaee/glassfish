@@ -124,6 +124,8 @@ Variables Used:
       tofile="${build.classes.dir}/tmp/WEB-INF/sun-web.xml" failonerror="false"/>
   <copy file="${weblogic.xml}" 
       tofile="${build.classes.dir}/tmp/WEB-INF/weblogic.xml" failonerror="false"/>
+  <copy file="${glassfish-resources.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/glassfish-resources.xml" failonerror="false"/>
   <copy todir="${build.classes.dir}/tmp/WEB-INF/lib" failonerror="false">
       <fileset dir="lib">
           <include name="**/*.jar"/>
@@ -181,6 +183,7 @@ Variables Used:
     <fileset dir="${build.classes.dir}/tmp/" casesensitive="true">
       <include name="WEB-INF/web.xml"/>
       <include name="WEB-INF/glassfish-web.xml"/>
+      <include name="WEB-INF/glassfish-resources.xml"/>
       <include name="WEB-INF/sun-web.xml"/>
       <include name="WEB-INF/beans.xml"/>
       <include name="WEB-INF/weblogic.xml"/>
@@ -247,6 +250,9 @@ Variables Used:
   <copy file="${glassfish-ejb-jar.xml}" 
     tofile="${build.classes.dir}/META-INF/glassfish-ejb-jar.xml"
     failonerror="false"/>
+  <copy file="${glassfish-resources.xml}"
+    tofile="${build.classes.dir}/META-INF/glassfish-resources.xml"
+    failonerror="false"/>
   <copy file="${sun-cmp-mappings.xml}"
     tofile="${build.classes.dir}/META-INF/sun-cmp-mappings.xml"
     failonerror="false"/>
@@ -261,6 +267,7 @@ Variables Used:
       <include name="persistence-orm.xml"/>
       <include name="webservices.xml"/>
       <include name="sun-ejb-jar.xml"/>
+      <include name="glassfish-resources.xml"/>
       <include name="glassfish-ejb-jar.xml"/>
       <include name="sun-cmp-mappings.xml"/>
       <include name="beans.xml"/>
@@ -353,6 +360,7 @@ Variables Used:
   <mkdir dir="${build.classes.dir}/META-INF"/>   
   <copy file="${sun-application.xml}" tofile="${build.classes.dir}/META-INF/sun-application.xml"  	failonerror="false"/> 
   <copy file="${application.xml}" tofile="${build.classes.dir}/META-INF/application.xml"  	failonerror="false"/> 
+  <copy file="${glassfish-resources-ear.xml}" tofile="${build.classes.dir}/META-INF/glassfish-resources.xml" failonerror="false"  filtering="true"/>
   <jar jarfile="${assemble.dir}/${appname}App.ear"> 
     <fileset dir="${assemble.dir}">
       <include name="*.jar"/>
@@ -361,6 +369,7 @@ Variables Used:
     <fileset dir="${build.classes.dir}">
 	<include name="META-INF/sun-application.xml"/>
 	<include name="META-INF/application.xml"/>
+        <include name="META-INF/glassfish-resources.xml"/>
     </fileset>
     <fileset dir="${env.APS_HOME}" includes="lib/reporter.jar"/>
   </jar>        
@@ -375,6 +384,7 @@ Variables Used:
   <mkdir dir="${assemble.dir}"/>
   <mkdir dir="${build.classes.dir}/META-INF"/>    
   <copy file="${sun-application.xml}" tofile="${build.classes.dir}/META-INF/sun-application.xml"  	failonerror="false"/> 
+  <copy file="${glassfish-resources-ear.xml}" tofile="${build.classes.dir}/META-INF/glassfish-resources.xml" failonerror="false"  filtering="true"/>
   <ear earfile="${assemble.dir}/${appname}App.ear" 
     appxml="${application.xml}">
     <fileset dir="${assemble.dir}">
@@ -383,6 +393,7 @@ Variables Used:
     </fileset>
     <fileset dir="${build.classes.dir}">
 	<include name="META-INF/sun-application.xml"/>
+        <include name="META-INF/glassfish-resources.xml"/>
     </fileset>
     <fileset dir="${env.APS_HOME}" includes="lib/reporter.jar"/>
   </ear>        
