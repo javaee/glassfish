@@ -96,18 +96,24 @@ public class JSFInjectionTestNG {
 
         String line = null;
         String line2 = null;
+        String line3 = null;
         boolean result=false;
 	String EXPECTED_RESPONSE = "Injected entry";
 	String DIVIDER = "===";
+        String PC = "Postconstruct";
         while ((line = input.readLine()) != null) {
-          //echo (line);
+          //echo ("LINE:"+line);
           if (line.indexOf(EXPECTED_RESPONSE)!= -1) {
             testPass = true;
-            //echo("Received: " + line);
+            //echo("Received line: " + line);
           }
           if (line.indexOf(DIVIDER)!= -1) {
             line2 = line;
-            //echo("Received: " + line2);
+            //echo("Received line2: " + line2);
+          }
+          if (line.indexOf(PC)!= -1) {
+            line3 = line;
+            //echo("Received line3: " + line3);
           }
         }
 
@@ -132,6 +138,20 @@ public class JSFInjectionTestNG {
         } else {
           echo("ERROR: line with " + DIVIDER + " not found.");
           errorText = errorText + "ERROR: line with " + DIVIDER + " not found";
+          testPass = false;
+        }
+
+        if (line3 != null) {
+            if (line3.contains("true")) {
+                echo("@PostConstruct worked");
+            } else {
+                echo("ERROR:@PostConstruct failed");
+                errorText = errorText + "ERROR: @PostConstruct failed";
+                testPass = false;
+            } 
+        } else {
+          echo("ERROR: line with " + PC + " not found.");
+          errorText = errorText + "ERROR: line with " + PC + " not found";
           testPass = false;
         }
 

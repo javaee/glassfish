@@ -63,4 +63,14 @@ public class TestBean {
         return tout;
     }
 
+    private boolean initCalled;
+
+    @PostConstruct void init() {
+        initCalled = true;
+    }
+
+    public boolean getInit() {
+        return initCalled;
+    }
+
 }

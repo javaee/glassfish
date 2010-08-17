@@ -46,8 +46,8 @@
       <h3>
         Hello, and welcome<br>
         <h:outputText value="If injection worked, this sentence should be followed by the injected words -> #{bean.entry} "/><br>
-        <h:outputText value="If second injection worked, this sentence should be followed by 'a non-negative number' === #{bean.number} "/>
-        
+        <h:outputText value="If second injection worked, this sentence should be followed by 'a non-negative number' === #{bean.number} ==="/><br>
+        <h:outputText value="If @Postconstruct worked, this sentence should be followed by #{bean.init} "/>
       </h3>
     </h:form>
   </body>
