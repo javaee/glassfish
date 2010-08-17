@@ -245,7 +245,7 @@ public class DeploymentUtils {
                 if(element.endsWith(".jar") || element.endsWith(".war") || element.endsWith(".rar") ||
                         element.endsWith("_jar") || element.endsWith("_war") || element.endsWith("_rar")){
                     ReadableArchive subArchive = archive.getSubArchive(element);
-                    if(hasResourcesXML(subArchive)){
+                    if(subArchive != null && hasResourcesXML(subArchive)){
                         return true;
                     }
                 }
