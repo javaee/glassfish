@@ -52,8 +52,8 @@ import java.util.logging.Logger;
 /**
  * @author Mahesh Kannan
  */
-@Service(name = "replicated")
-public class ShoalBackingStoreProxy
+@Service(name = "replication")
+public class ReplicationStoreProxy2
         implements Startup, PostConstruct, BackingStoreFactory {
 
     @Inject
@@ -82,8 +82,8 @@ public class ShoalBackingStoreProxy
 
     @Override
     public void postConstruct() {
-        BackingStoreFactoryRegistry.register("replicated", this);
-        Logger.getLogger(ShoalBackingStoreProxy.class.getName()).log(Level.INFO, "Registered SHOAL BackingStore Proxy with persistence-type = replicated");
+        BackingStoreFactoryRegistry.register("replication", this);
+        Logger.getLogger(ReplicationStoreProxy2.class.getName()).log(Level.INFO, "Registered ReplicationStoreProxy with persistence-type = replication");
     }
 
     @Override
