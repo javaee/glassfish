@@ -144,6 +144,13 @@ public class GetHealthCommand implements AdminCommand {
             return;
         }
 
+        // check for data
+        if (history.getInstances().isEmpty()) {
+            report.setMessage(Strings.get(
+                "get.health.no.instances", clusterName));
+            return;
+        }
+
         // order by instance name and output
         SortedSet<String> names = new TreeSet<String>(history.getInstances());
         String formatState = "Instance %s %s";
