@@ -40,6 +40,7 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
+import com.sun.enterprise.config.serverbeans.ServerRef;
 import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.ActionReport;
@@ -91,6 +92,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     @Param(name="cluster", optional=true)
     String clusterName;
 
+    @Param(name="lbenabled", optional=true, defaultValue=ServerRef.LBENABLED_DEFAULT_VALUE)
+    private Boolean lbEnabled;
+
     @Param(name = "systemproperties", optional = true, separator = ':')
     private String systemProperties;
 
@@ -137,6 +141,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         map.add("node", node);
         map.add("config", configRef);
         map.add("cluster", clusterName);
+        if(lbEnabled != null){
+            map.add("lbenabled", lbEnabled.toString());
+        }
         map.add("systemproperties", systemProperties);
         map.add("DEFAULT", instance);
         ci.parameters(map);

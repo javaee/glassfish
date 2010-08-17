@@ -109,7 +109,7 @@ public interface ServerRef extends ConfigBeanProxy, Injectable, Ref  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true",dataType=Boolean.class)
+    @Attribute (defaultValue=LBENABLED_DEFAULT_VALUE, dataType=Boolean.class)
     public String getLbEnabled();
 
     /**
@@ -158,5 +158,7 @@ public interface ServerRef extends ConfigBeanProxy, Injectable, Ref  {
     public void setHealthChecker(HealthChecker value) throws PropertyVetoException;
 
 
+    //defines the default value for lb-enabled attribute
+    public String LBENABLED_DEFAULT_VALUE = "true";
 
 }

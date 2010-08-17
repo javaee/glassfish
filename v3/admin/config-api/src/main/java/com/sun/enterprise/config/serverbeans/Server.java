@@ -431,6 +431,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         String clusterName;
         @Param(name = "node", optional = true)
         String node = null;
+        @Param(name = "lbenabled", optional = true)
+        String lbEnabled = null;
         @Param(name = "checkports", optional = true, defaultValue = "true")
         boolean checkPorts = true;
         @Inject
@@ -516,6 +518,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                         Cluster c = tx.enroll(cluster);
                         ServerRef newServerRef = c.createChild(ServerRef.class);
                         newServerRef.setRef(instanceName);
+                        if(lbEnabled != null){
+                            newServerRef.setLbEnabled(lbEnabled);
+                        }
                         c.getServerRef().add(newServerRef);
                     }
                 }

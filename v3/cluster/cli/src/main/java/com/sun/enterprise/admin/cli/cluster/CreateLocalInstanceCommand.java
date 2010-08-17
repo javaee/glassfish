@@ -51,6 +51,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.util.SecureAdminClientManager;
+import com.sun.enterprise.config.serverbeans.ServerRef;
 
 
 /**
@@ -70,6 +71,9 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
 
     @Param(name = CLUSTER, optional = true)
     private String clusterName;
+
+    @Param(name="lbenabled", optional=true, defaultValue = ServerRef.LBENABLED_DEFAULT_VALUE)
+    private Boolean lbEnabled;
 
     @Param(name = "systemproperties", optional = true, separator = ':')
     private String systemProperties;     // XXX - should it be a Properties?
@@ -236,6 +240,10 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         if (clusterName != null) {
             argsList.add("--cluster");
             argsList.add(clusterName);
+        }
+        if (lbEnabled != null) {
+            argsList.add("--lbenabled");
+            argsList.add(lbEnabled.toString());
         }
         if (configName != null) {
             argsList.add("--config");
