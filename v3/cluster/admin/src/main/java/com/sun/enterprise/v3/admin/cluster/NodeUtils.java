@@ -37,8 +37,7 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.internal.api.MasterPassword;
-import com.sun.enterprise.security.store.PasswordAdapter;
+import org.glassfish.internal.api.RelativePathResolver;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.net.NetUtils;
 import org.glassfish.api.admin.*;
@@ -123,17 +122,31 @@ public class NodeUtils {
             }
         }
 
-        validatePassword(map.getOne(PARAM_SSHPASSWORD), sshL);
-        validatePassword(map.getOne(PARAM_SSHKEYPASSPHRASE), sshL);
+        validatePassword(map.getOne(PARAM_SSHPASSWORD));
+        validatePassword(map.getOne(PARAM_SSHKEYPASSPHRASE));
 
         if (sshL != null) {
             validateSSHConnection(map, sshL);
         }
     }
 
-    private void validatePassword(String p, SSHLauncher sshL) throws CommandValidationException {
+    private void validatePassword(String p) throws CommandValidationException {
+
+        String expandedPassword = null;
+
+        // Make sure if a password alias is used we can expand it
         if (StringUtils.ok(p)) {
-            String expandedPassword = sshL.expandPasswordAlias(p);
+            try {
+                expandedPassword = RelativePathResolver.getRealPasswordFromAlias(p);
+            } catch (IllegalArgumentException e) {
+                throw new CommandValidationException(
+                        Strings.get("no.such.password.alias", p));
+            } catch (Exception e) {
+                throw new CommandValidationException(
+                        Strings.get("no.such.password.alias", p),
+                        e);
+            }
+
             if (expandedPassword == null) {
                 throw new CommandValidationException(
                         Strings.get("no.such.password.alias", p));
@@ -163,10 +176,14 @@ public class NodeUtils {
         int port = Integer.parseInt(resolver.resolve(sshport));
 
         try {
+            // sshpassword and sshkeypassphrase may be password alias.
+            // Those aliases are handled by sshLauncher
             sshL.validate(resolver.resolve(nodehost),
                           port,
                           resolver.resolve(sshuser),
+                          sshpassword,      
                           resolver.resolve(sshkeyfile),
+                          sshkeypassphrase, 
                           resolver.resolve(installdir),
                           logger);
         } catch (IOException e) {
@@ -189,56 +206,4 @@ public class NodeUtils {
             }
         }
     }
-
-       /**
-    * Expand a password alias
-    *
-    * @param alias     String that represents either a password alias, or
-    *                  a password. If the string is of the form ${ALIAS=alias}
-    *                  then it is assumed to be a passowrd alias and the
-    *                  password for the alias is returned. If the string
-    *                  is not of this form then it is assumed to already be
-    *                  the password and the input string is returned.
-    * @param logger    Logger
-    * @return          Password for alias key if it was of the form
-    *                  ${ALIAS=aliasname}
-    *
-    *                  null if the alias key was of the form ${ALIAS=aliasname}
-    *                  but no alias by that name was found
-    *
-    *                  The alias string that was passed in if it was not
-    *                  of the form ${ALIAS=aliasname}
-    */
-    public String expandPasswordAlias(String alias) {
-            final String ALIAS_PREFIX = "${ALIAS=";
-            final String ALIAS_SUFFIX = "}";
-
-            if (alias == null) {
-                return null;
-            }
-
-            int head = alias.indexOf(ALIAS_PREFIX);
-            int tail = alias.lastIndexOf(ALIAS_SUFFIX);
-
-            if (head == -1 || tail == -1) {
-                return alias;
-            }
-
-            // Skip over prefix
-            head += ALIAS_PREFIX.length();
-
-            String aliasName = alias.substring(head, tail);
-
-            MasterPassword masterPasswordHelper =
-                    habitat.getByContract(MasterPassword.class);
-
-            try {
-                PasswordAdapter pa = masterPasswordHelper.getMasterPasswordAdapter();
-                String p = pa.getPasswordForAlias(aliasName);
-                return p;
-            } catch (Exception e) {
-                logger.warning(StringUtils.cat(": ", aliasName, e.getMessage()));
-                return null;
-            }
-        }
 }

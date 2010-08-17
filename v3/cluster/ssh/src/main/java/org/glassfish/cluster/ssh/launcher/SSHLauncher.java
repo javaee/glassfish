@@ -40,6 +40,7 @@ import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.util.StringUtils;
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.KnownHosts;
+import org.glassfish.internal.api.RelativePathResolver;
 import org.glassfish.cluster.ssh.util.HostVerifier;
 import org.glassfish.cluster.ssh.util.SSHUtil;
 import org.glassfish.internal.api.MasterPassword;
@@ -101,12 +102,15 @@ public class SSHLauncher {
 
     private String keyPassPhrase;
 
-
     private File knownHosts;
 
     private Logger logger;
 
     private String password;
+
+    // Password before it has been expanded. Used for debugging.
+    private String rawPassword;
+    private String rawKeyPassPhrase;
 
     @Inject
     private Habitat habitat;
@@ -135,8 +139,6 @@ public class SSHLauncher {
         if (sshAuth != null) {
             userName = sshAuth.getUserName();
             this.keyFile = sshAuth.getKeyfile();
-            this.password = expandPasswordAlias(sshAuth.getPassword());
-            this.keyPassPhrase = expandPasswordAlias(sshAuth.getKeyPassphrase());
         }
         try {
             port = Integer.parseInt(connector.getSshPort());
@@ -144,16 +146,21 @@ public class SSHLauncher {
             port = 22;
         }
 
-        init(userName, port);
+        init(userName, port, sshAuth.getPassword(), sshAuth.getKeyPassphrase());
 
     }
 
-    private void init(String userName, int port) {
+    private void init(String userName, int port, String password, String keyPassPhrase) {
 
         this.port = port == 0 ? 22 : port;
 
         this.userName = SSHUtil.checkString(userName) == null ?
                     System.getProperty("user.name") : userName;
+
+        this.rawPassword = password;
+        this.password = expandPasswordAlias(password);
+        this.rawKeyPassPhrase = keyPassPhrase;
+        this.keyPassPhrase = expandPasswordAlias(keyPassPhrase);
 
         if (knownHosts == null) {
             File home = new File(System.getProperty("user.home"));
@@ -240,15 +247,15 @@ public class SSHLauncher {
     }
 
     public void validate(String host, int port,
-                             String userName, String keyFile, String nodeHome,
-                             Logger logger) throws IOException
+                             String userName, String password,
+                             String keyFile, String keyPassPhrase,
+                             String nodeHome, Logger logger) throws IOException
     {
         this.host = host;
         this.keyFile = keyFile;
         this.logger = logger;
         boolean validNodeHome = false;
-        init(userName, port);
-
+        init(userName, port, password, keyPassPhrase);
 
         openConnection();
         logger.fine("Connection settings valid");
@@ -273,52 +280,65 @@ public class SSHLauncher {
     }
 
     public String expandPasswordAlias(String alias) {
-            final String ALIAS_PREFIX = "${ALIAS=";
-            final String ALIAS_SUFFIX = "}";
 
-            if (alias == null) {
-                return null;
-            }
+        String expandedPassword = null;
 
-            int head = alias.indexOf(ALIAS_PREFIX);
-            int tail = alias.lastIndexOf(ALIAS_SUFFIX);
-
-            if (head == -1 || tail == -1) {
-                return alias;
-            }
-
-            // Skip over prefix
-            head += ALIAS_PREFIX.length();
-
-            String aliasName = alias.substring(head, tail);
-
-            MasterPassword masterPasswordHelper =
-                    habitat.getByContract(MasterPassword.class);
-
-            try {
-                PasswordAdapter pa = masterPasswordHelper.getMasterPasswordAdapter();
-                String p = pa.getPasswordForAlias(aliasName);
-                return p;
-            } catch (Exception e) {
-                logger.warning(StringUtils.cat(": ", aliasName, e.getMessage()));
-                return null;
-            }
+        if (alias == null) {
+            return null;
         }
 
+        try {
+            expandedPassword = RelativePathResolver.getRealPasswordFromAlias(alias);
+        } catch (Exception e) {
+            logger.warning(StringUtils.cat(": ", alias, e.getMessage()));
+            return null;
+        }
+
+        return expandedPassword;
+    }
+
+    public boolean isPasswordAlias(String alias) {
+        // Check if the passed string is specified using the alias syntax
+        String aliasName = RelativePathResolver.getAlias(alias);
+        return (aliasName != null);
+    }
+
+    /**
+     * Return a version of the password that is printable.
+     * @param p  password string
+     * @return   printable version of password
+     */
+    private String getPrintablePassword(String p) {
+        // We only display the password if it is an alias, else
+        // we display "<concealed>".
+        String printable = "null";
+        if (p != null) {
+            if (isPasswordAlias(p)) {
+                printable = p;
+            } else {
+                printable = "<concealed>";
+            }
+        }
+        return printable;
+    }
 
     @Override
     public String toString() {
 
-    String knownHostsPath  = "null";
-    if (knownHosts != null) {
-        try {
-            knownHostsPath = knownHosts.getCanonicalPath();
-        } catch (IOException e) {
-            knownHostsPath = knownHosts.getAbsolutePath();
+        String knownHostsPath  = "null";
+        if (knownHosts != null) {
+            try {
+                knownHostsPath = knownHosts.getCanonicalPath();
+            } catch (IOException e) {
+                knownHostsPath = knownHosts.getAbsolutePath();
+            }
         }
-    }
 
-    return String.format("host=%s port=%d user=%s keyFile=%s authType=%s knownHostFile=%s",
-            host, port, userName, keyFile, authType, knownHostsPath);
+        String displayPassword = getPrintablePassword(rawPassword);
+        String displayKeyPassPhrase = getPrintablePassword(rawKeyPassPhrase);
+
+        return String.format("host=%s port=%d user=%s password=%s keyFile=%s keyPassPhrase=%s authType=%s knownHostFile=%s",
+            host, port, userName, displayPassword, keyFile,
+            displayKeyPassPhrase, authType, knownHostsPath);
     }
 }
