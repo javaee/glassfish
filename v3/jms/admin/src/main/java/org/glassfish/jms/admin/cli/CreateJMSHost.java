@@ -58,6 +58,8 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.types.Property;
+import java.util.Map;
 
 /**
  * Create Admin Object Command
@@ -84,6 +86,9 @@ public class CreateJMSHost implements AdminCommand {
 
     @Param(name="mqPassword", alias="adminPassword", defaultValue="admin")
     String mqpassword;
+
+    @Param(name="property", optional=true, separator=':')
+    Properties props;
 
     @Param(optional=true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
@@ -151,7 +156,15 @@ public class CreateJMSHost implements AdminCommand {
                     jmsHost.setName(jmsHostName);
                     jmsHost.setHost(mqhost);
                     jmsHost.setPort(mqport);
-
+		    if(props != null)
+		    {
+		    	for (Map.Entry e: props.entrySet()){
+				Property prop = jmsHost.createChild(Property.class);
+				prop.setName((String)e.getKey());
+				prop.setValue((String)e.getValue());
+				jmsHost.getProperty().add(prop);
+			}
+		    }
                     param.getJmsHost().add(jmsHost);
 
                     return jmsHost;
