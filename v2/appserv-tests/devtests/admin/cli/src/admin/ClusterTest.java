@@ -164,9 +164,10 @@ public class ClusterTest extends AdminBaseDevTest {
         report("check-health-das-restart", success);
     }
 
-    private void testGetHealthInstancesNotRunning(String c) {
+    private void testGetHealthInstancesNotStarted(String c) {
+        final String state = "Not started";
         String out = asadminWithOutput("get-health", c).outAndErr;
-        boolean success = out.indexOf("Not running") > 0;
+        boolean success = out.indexOf(state) > 0;
         report("get-health-instances-not-running", success);
     }
 
@@ -203,7 +204,7 @@ public class ClusterTest extends AdminBaseDevTest {
         }
         report(testName+"list-cl" , !isClusterRunning(cname));
 
-        testGetHealthInstancesNotRunning(cname);
+        testGetHealthInstancesNotStarted(cname);
 
         for (int i = 0 ; i<3; i ++) {
             report(testName +"start-li"+i , asadmin("start-local-instance",iname+i));
