@@ -44,7 +44,7 @@ import java.io.*;
 import java.util.Set;
 
 
-public class SimpleMetadata  implements Storeable {
+public class SimpleMetadata  implements Serializable {
     
     private long version = -1;
 
@@ -125,84 +125,5 @@ public class SimpleMetadata  implements Storeable {
 
     public byte[] getState() {
         return this.state;
-    }
-
-    @Override
-    public long _storeable_getVersion() {
-        return version;
-    }
-
-    @Override
-    public void _storeable_setVersion(long version) {
-        this.version = version;
-    }
-
-    @Override
-    public long _storeable_getLastAccessTime() {
-        return lastAccessTime;
-    }
-
-    @Override
-    public void _storeable_setLastAccessTime(long lastAccessTime) {
-        this.lastAccessTime = lastAccessTime;
-    }
-
-    @Override
-    public long _storeable_getMaxIdleTime() {
-        return maxInactiveInterval;
-    }
-
-    @Override
-    public void _storeable_setMaxIdleTime(long maxInactiveInterval) {
-        this.maxInactiveInterval = maxInactiveInterval;
-    }
-
-    @Override
-    public String[] _storeable_getAttributeNames() {
-        return new String[0];  //FIXME later
-    }
-
-    @Override
-    public boolean[] _storeable_getDirtyStatus() {
-        return new boolean[0];  //FIXME later
-    }
-
-    @Override
-    public void _storeable_writeState(OutputStream os) throws IOException {
-        ObjectOutputStream oos = new ObjectOutputStream(os);
-        try {
-            oos.writeLong(version);
-            oos.writeLong(lastAccessTime);
-            oos.writeLong(maxInactiveInterval);
-            oos.writeInt(state == null ? 0 : state.length);
-            if (state != null) {
-                oos.write(state);
-            }
-        } finally {
-            try { oos.flush();
-                oos.close();
-            } catch (Exception ex) {}
-        }
-    }
-
-    @Override
-    public void _storeable_readState(InputStream is) throws IOException {
-        ObjectInputStream ois = new ObjectInputStream(is);
-        try {
-            long tempVersion = ois.readLong();
-            if (tempVersion > version) {
-                version = tempVersion;
-                lastAccessTime = ois.readLong();
-                maxInactiveInterval = ois.readLong();
-                int len = ois.readInt();
-                if (len > 0) {
-                    state = new byte[len];
-                    ois.read(state);
-                }
-            }
-        } finally {
-            try { ois.close();
-            } catch (Exception ex) {}
-        }
     }
 }
