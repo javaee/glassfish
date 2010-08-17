@@ -60,7 +60,8 @@ import org.jvnet.hk2.config.ObservableBean;
 
 
 /**
- * Resource manager to bind various resources during startup, create/update/delete of resource/pool
+ * Resource manager to bind various application or module scoped resources during
+ * startup, create/update/delete of resource/pool
  * @author Jagadish Ramu
  */
 @Service(name="ApplicationScopedResourcesManager")
@@ -213,8 +214,10 @@ public class ApplicationScopedResourcesManager implements PostStartup, PostConst
                 }
             }
         } else {
-            _logger.finest("ConnectorRuntime not initialized, hence skipping " +
-                    "resource-adapters shutdown, resources, pools cleanup");
+            if(_logger.isLoggable(Level.FINEST)){
+                _logger.finest("ConnectorRuntime not initialized, hence skipping " +
+                        "resource-adapters shutdown, resources, pools cleanup");
+            }
         }
     }
 
@@ -292,7 +295,9 @@ public class ApplicationScopedResourcesManager implements PostStartup, PostConst
 
     private void addListenerToResource(Resource instance) {
         ObservableBean bean = null;
-        debug("adding listener : " + instance);
+        if(_logger.isLoggable(Level.FINEST)){
+            debug("adding listener : " + instance);
+        }
         bean = (ObservableBean) ConfigSupport.getImpl((ConfigBeanProxy)instance);
         bean.addListener(this);
     }
@@ -450,10 +455,14 @@ public class ApplicationScopedResourcesManager implements PostStartup, PostConst
             debug("handling change event");
             try {
                 if (ConnectorsUtil.isValidEventType(instance)) {
-                    debug("redeploying resource : " + instance);
+                    if(_logger.isLoggable(Level.FINEST)){
+                        debug("redeploying resource : " + instance);
+                    }
                     getResourceDeployer(instance).redeployResource(instance);
                 } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
-                    debug("redeploying resource due to property change : " + instance.getParent());
+                    if(_logger.isLoggable(Level.FINEST)){
+                        debug("redeploying resource due to property change : " + instance.getParent());
+                    }
                     //Added in case of a property change
                     //check for validity of the property's parent and redeploy
                     getResourceDeployer(instance.getParent()).redeployResource(instance.getParent());
