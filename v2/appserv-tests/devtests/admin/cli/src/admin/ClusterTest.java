@@ -130,20 +130,32 @@ public class ClusterTest extends AdminBaseDevTest {
     private void testGetHealthStopRestartInstance(String c, String i) {
         final String stopped = "Stopped";
         final String started = "Started";
+        final int tries = 6;
+        final int sleepSeconds = 10;
+        boolean success = false;
+
         asadmin("stop-local-instance", i);
-        sleep(5);
-        boolean success = checkInstanceHealth(c, i, stopped);
-        if (!success) {
-            sleep(5);
+        for (int x=0; x<tries; x++) {
+            sleep(sleepSeconds);
+            printf("Checking instance health for instance %s, expect %s",
+                i, stopped);
             success = checkInstanceHealth(c, i, stopped);
+            if (success) {
+                break;
+            }
         }
         report("get-health-instance-stopped", success);
+
+        success = false;
         asadmin("start-local-instance", i);
-        sleep(5);
-        success = checkInstanceHealth(c, i, started);
-        if (!success) {
-            sleep(5);
+        for (int x=0; x<tries; x++) {
+            sleep(sleepSeconds);
+            printf("Checking instance health for instance %s, expect %s",
+                i, started);
             success = checkInstanceHealth(c, i, started);
+            if (success) {
+                break;
+            }
         }
         report("get-health-instance-started", success);
     }
@@ -153,15 +165,20 @@ public class ClusterTest extends AdminBaseDevTest {
      * method expects that they're all in Started state.
      */
     private void testGetHealthRestartedDomain(String c, String i) {
+        final int tries = 6;
+        final int sleepSeconds = 10;
         final String started = "Started";
+        boolean success = false;
+
         asadmin("restart-domain");
-        sleep(5);
-        boolean success = checkInstanceHealth(c, i, started);
-        if (!success) {
-            sleep(5);
+        for (int x=0; x<tries; x++) {
+            sleep(sleepSeconds);
             success = checkInstanceHealth(c, i, started);
+            if (success) {
+                break;
+            }
         }
-        report("check-health-das-restart", success);
+        report("get-health-das-restart", success);
     }
 
     private void testGetHealthInstancesNotStarted(String c) {
