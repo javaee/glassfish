@@ -53,6 +53,9 @@ import org.apache.catalina.Manager;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.core.StandardContext;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.event.*;
+import org.glassfish.api.event.EventListener;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.osgi.framework.*;
@@ -61,6 +64,7 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.jvnet.hk2.component.Habitat;
 
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * This is the entry point to our implementation of OSGi/HTTP service.
@@ -211,26 +215,41 @@ public class Activator implements BundleActivator {
     }
 
     /**
-     * HK2 OSGi bundle registers ModuleStartup in service
-     * registry after ModuleStartup has been called.
+     * Tracks Habitat and obtains EVents service from it and registers a listener
+     * that takes care of doing the actual work.
      */
     private class GlassFishServerTracker extends ServiceTracker {
         public GlassFishServerTracker(BundleContext context)
         {
-            super(context, ModuleStartup.class.getName(), null);
+            super(context, Habitat.class.getName(), null);
         }
 
         @Override
         public Object addingService(ServiceReference reference)
         {
             ServiceReference habitatServiceRef = context.getServiceReference(Habitat.class.getName());
-            Habitat habitat = Habitat.class.cast(context.getService(habitatServiceRef));
-            WebContainer wc = habitat.getComponent(WebContainer.class);
-            doActualWork(wc);
-            context.ungetService(habitatServiceRef);
+            final Habitat habitat = Habitat.class.cast(context.getService(habitatServiceRef));
+            Events events = habitat.getComponent(Events.class);
+            EventListener listener = new org.glassfish.api.event.EventListener() {
+                public void event(Event event)
+                {
+                    if (EventTypes.SERVER_READY.equals(event.type())) {
+                        WebContainer wc = habitat.getComponent(WebContainer.class);
+                        doActualWork(wc);
+                    }
+                }
+            };
+            events.register(listener);
+            // We can get into infinite waiting loop if server is already started. So check the status once.
+            if (habitat.getComponent(ServerEnvironment.class).getStatus() == ServerEnvironment.Status.started) {
+                WebContainer wc = habitat.getComponent(WebContainer.class);
+                doActualWork(wc);
+            }
+            close(); // no need to track any more
             return super.addingService(reference);
         }
     }
+
 
     /**
      * @return comma-separated list of all defined virtual servers (including __asadmin)
