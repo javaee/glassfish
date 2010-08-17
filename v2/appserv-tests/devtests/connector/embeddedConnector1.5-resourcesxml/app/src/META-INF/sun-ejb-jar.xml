@@ -40,7 +40,7 @@ one/appserver/dtds/sun-ejb-jar_2_0-0.dtd">
       </ior-security-config>
       <resource-ref>
         <res-ref-name>MyDB</res-ref-name>
-        <jndi-name>jdbc/XAPointbase</jndi-name>
+        <jndi-name>java:app/jdbc/XAPointbase</jndi-name>
       </resource-ref>
       <gen-classes />
     </ejb>
@@ -65,11 +65,11 @@ one/appserver/dtds/sun-ejb-jar_2_0-0.dtd">
       </ior-security-config>
       <resource-ref>
         <res-ref-name>MyDB</res-ref-name>
-        <jndi-name>jdbc/XAPointbase</jndi-name>
+        <jndi-name>java:app/jdbc/XAPointbase</jndi-name>
       </resource-ref>
       <resource-env-ref>
         <resource-env-ref-name>eis/testAdmin</resource-env-ref-name>
-	<jndi-name>eis/testAdmin</jndi-name>
+	<jndi-name>java:app/eis/testAdmin</jndi-name>
       </resource-env-ref>
       <gen-classes/>
     </ejb>

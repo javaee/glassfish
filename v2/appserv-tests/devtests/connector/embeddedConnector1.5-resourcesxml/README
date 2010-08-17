@@ -1,1 +1,1 @@
-Embedded connector with resources defined in sun-resources.xml
+@test : Embedded connector with resources defined in glassfish-resources.xml

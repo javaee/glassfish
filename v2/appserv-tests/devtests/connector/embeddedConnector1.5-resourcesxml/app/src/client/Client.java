@@ -12,6 +12,7 @@ import java.util.*;
 import javax.naming.*;
 import javax.rmi.PortableRemoteObject;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+import javax.sql.DataSource;
 
 public class Client   {
 
@@ -64,6 +65,23 @@ public class Client   {
             ex.printStackTrace();
             res = "TEST FAILED";
         }
+
+        try{
+            InitialContext ic = new InitialContext();
+            DataSource ds = (DataSource)ic.lookup("java:app/jdbc/XAPointbase");
+            System.out.println("DataSource in appclient : " + ds);
+        }catch(Exception e){
+	    e.printStackTrace();
+        }
+
+        /*try{
+            InitialContext ic = new InitialContext();
+            Object o = ic.lookup("java:app/eis/testAdmin");
+            System.out.println("test-admin-object : " + o);
+        }catch(Exception e){
+            e.printStackTrace();
+        }*/
+
 
         stat.printSummary("connector1.5EmbeddedID");
 
