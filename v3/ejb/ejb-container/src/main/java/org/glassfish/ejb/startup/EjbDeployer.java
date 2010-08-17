@@ -547,6 +547,6 @@ public class EjbDeployer
     * Embedded is a single-instance like DAS
     */
     private boolean isDas() {
-        return env.isDas() || env.isEmbedded();
+        return EjbContainerUtilImpl.getInstance().isDas();
     }
 }

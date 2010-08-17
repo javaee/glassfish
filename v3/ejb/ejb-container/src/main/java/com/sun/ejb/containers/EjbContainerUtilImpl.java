@@ -63,6 +63,7 @@ import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.ActionReport;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.ejb.spi.CMPDeployer;
+import org.glassfish.ejb.api.DistributedEJBTimerService;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
@@ -267,23 +268,30 @@ public class EjbContainerUtilImpl
     }
 
     public  void setEJBTimerServiceDBReadBeforeTimeout(boolean value) {
-        if (isEJBTimerServiceLoaded()) {
+        _doDBReadBeforeTimeout = value;
+        if (_ejbTimerService != null) {
             _ejbTimerService.setPerformDBReadBeforeTimeout(value);
-        } else {
-            _doDBReadBeforeTimeout = value;
         }
     }
 
     public  EJBTimerService getEJBTimerService(String target) {
         if (!_ejbTimerServiceVerified) {
             deployEJBTimerService(target);
-            // Check EJB Timers in this instance if Timer Service is available
-            if (target == null && _ejbTimerService != null) {
-                _logger.log(Level.INFO, "==> Restoring Timers ... " );
-                if (_ejbTimerService.restoreEJBTimers()) {
-                    _logger.log(Level.INFO, "<== ... Timers Restored.");
+
+            // Do postprocessing if everything is OK
+            if (_ejbTimerService != null) {
+                // load DistributedEJBTimerService 
+                habitat.getByContract(DistributedEJBTimerService.class);
+
+                // target is null when accessed from the BaseContainer on load, i.e. where timers are running
+                if (target == null) {
+                    _logger.log(Level.INFO, "Setting DBReadBeforeTimeout to " + _doDBReadBeforeTimeout);
+                    _ejbTimerService.setPerformDBReadBeforeTimeout(_doDBReadBeforeTimeout);
+                    _logger.log(Level.INFO, "==> Restoring Timers ... " );
+                    if (_ejbTimerService.restoreEJBTimers()) {
+                        _logger.log(Level.INFO, "<== ... Timers Restored.");
+                    }
                 }
-                _ejbTimerService.setPerformDBReadBeforeTimeout(_doDBReadBeforeTimeout);
             }
         }
         return _ejbTimerService;
@@ -638,7 +646,7 @@ public class EjbContainerUtilImpl
    /**
     * Embedded is a single-instance like DAS
     */
-    private boolean isDas() {
+    public boolean isDas() {
         return env.isDas() || env.isEmbedded();
     }
 

@@ -40,16 +40,65 @@ import com.sun.ejb.containers.EjbContainerUtil;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.EJBTimerService;
 import org.glassfish.ejb.api.DistributedEJBTimerService;
+
+import org.glassfish.gms.bootstrap.GMSAdapter;
+import org.glassfish.gms.bootstrap.GMSAdapterService;
+import com.sun.enterprise.ee.cms.core.CallBack;
+import com.sun.enterprise.ee.cms.core.GMSConstants;
+import com.sun.enterprise.ee.cms.core.PlannedShutdownSignal;
+import com.sun.enterprise.ee.cms.core.Signal;
+
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.PostConstruct;
+
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 @Service
 public class DistributedEJBTimerServiceImpl
-    implements DistributedEJBTimerService
-{
+    implements DistributedEJBTimerService, PostConstruct, CallBack {
 
     @Inject
     private EjbContainerUtil ejbContainerUtil;
+
+    @Inject
+    GMSAdapterService gmsAdapterService;
+
+    public void postConstruct() {
+        if (!ejbContainerUtil.isDas()) {
+            if (gmsAdapterService != null) {
+                GMSAdapter gmsAdapter = gmsAdapterService.getGMSAdapter();
+                if (gmsAdapter != null) {
+                    // We only register interest in the Planned Shutdown event here.
+                    // Because of the dependency between transaction recovery and
+                    // timer migration, the timer migration operation during an
+                    // unexpected failure is initiated by the transaction recovery
+                    // subsystem.
+                    gmsAdapter.registerPlannedShutdownListener(this);
+                }
+            }
+            // Do DB read before timeout in a cluster
+            setPerformDBReadBeforeTimeout(true);
+        }
+    }
+
+    @Override
+    public void processNotification(Signal signal) {
+        if (signal instanceof PlannedShutdownSignal) {
+            if (ejbContainerUtil.getLogger().isLoggable(Level.FINE)) {
+                ejbContainerUtil.getLogger().log(Level.FINE, "[DistributedEJBTimerServiceImpl] planned shutdown signal: " + signal);
+            }
+            PlannedShutdownSignal pssig = (PlannedShutdownSignal)signal;
+            if (pssig.getEventSubType() == GMSConstants.shutdownType.INSTANCE_SHUTDOWN) {
+                migrateTimers(signal.getMemberToken());
+            }
+        } else {
+            if (ejbContainerUtil.getLogger().isLoggable(Level.FINE)) {
+                ejbContainerUtil.getLogger().log(Level.FINE, "[DistributedEJBTimerServiceImpl] ignoring signal: " + signal);
+            }
+        }
+    }
 
     /**
      *--------------------------------------------------------------
@@ -57,6 +106,10 @@ public class DistributedEJBTimerServiceImpl
      *--------------------------------------------------------------
      */
     public int migrateTimers( String serverId ) {
+        if (ejbContainerUtil.getLogger().isLoggable(Level.INFO)) {
+            ejbContainerUtil.getLogger().log(Level.INFO, "[DistributedEJBTimerServiceImpl] migrating timers from " + serverId);
+        }
+
         int result = 0;
         EJBTimerService ejbTimerService = ejbContainerUtil.getEJBTimerService();
         if (ejbTimerService != null) {

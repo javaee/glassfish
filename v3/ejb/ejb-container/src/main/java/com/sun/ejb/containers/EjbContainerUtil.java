@@ -156,4 +156,5 @@ public interface EjbContainerUtil {
 
     public ProbeProviderFactory getProbeProviderFactory();
 
+   public boolean isDas();
 }
