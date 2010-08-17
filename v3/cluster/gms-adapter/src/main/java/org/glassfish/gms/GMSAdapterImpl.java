@@ -448,8 +448,12 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 registerPlannedShutdownListener(this);
                 registerFailureSuspectedListener(this);
 
-                // this must be here or appointed recovery server notification is not printed out for automated testing.
-                registerFailureRecoveryListener("GlassfishV31", this);
+                //fix gf it 12905
+                if (! env.isDas()) {
+
+                    // this must be here or appointed recovery server notification is not printed out for automated testing.
+                    registerFailureRecoveryListener("GlassfishV31", this);
+                }
 
                 glassfishEventListener = new org.glassfish.api.event.EventListener() {
                     @Override
