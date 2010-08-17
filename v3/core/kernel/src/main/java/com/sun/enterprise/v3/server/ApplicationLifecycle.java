@@ -1686,10 +1686,14 @@ public class ApplicationLifecycle implements Deployment {
 
     public void disable(String appName, String target, Application app, 
         ApplicationInfo appInfo, ActionReport report, Logger logger, 
-        Boolean keepstate, Properties properties) throws Exception {
+        Boolean isUndeploy, Boolean keepstate, Properties properties) 
+        throws Exception {
         UndeployCommandParameters commandParams =
             new UndeployCommandParameters();
         commandParams.origin = UndeployCommandParameters.Origin.unload;
+        if (isUndeploy) {
+            commandParams.origin = UndeployCommandParameters.Origin.undeploy;
+        }
         commandParams.name = appName;
         commandParams.target = target;
         if (keepstate != null) {

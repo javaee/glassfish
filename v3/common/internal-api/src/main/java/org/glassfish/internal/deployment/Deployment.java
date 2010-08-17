@@ -230,7 +230,7 @@ public interface Deployment {
 
     public void disable(String appName, String target, Application app,
         ApplicationInfo appInfo, ActionReport report, Logger logger,
-        Boolean keepstate, Properties properties)
+        Boolean isUndeploy, Boolean keepstate, Properties properties)
         throws Exception;
 
     public void enable(String target, Application app, ApplicationRef appRef,

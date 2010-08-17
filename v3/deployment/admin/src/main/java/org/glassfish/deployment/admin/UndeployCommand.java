@@ -258,6 +258,7 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 final ParameterMap parameters = new ParameterMap();
                 parameters.add("DEFAULT", appName);
                 parameters.add("target", target);
+                parameters.add("isUndeploy", Boolean.TRUE.toString());
                 if (keepstate != null) {
                     parameters.add("keepstate", keepstate.toString());
                 }

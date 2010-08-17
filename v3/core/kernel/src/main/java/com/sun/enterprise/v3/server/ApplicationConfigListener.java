@@ -237,7 +237,7 @@ public class ApplicationConfigListener implements TransactionListener,
             ActionReport report = new HTMLActionReporter();
 
             deployment.disable(appName, server.getName(), app, appInfo, 
-                report, logger, null, null);
+                report, logger, false, null, null);
 
             if (report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
                 throw new Exception(report.getMessage());

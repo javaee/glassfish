@@ -102,6 +102,9 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
     @Param(optional=true)
     public Boolean keepstate;
 
+    @Param(optional=true, defaultValue="false")
+    public Boolean isUndeploy = false;
+
     @Inject
     ServerEnvironment env;
 
@@ -211,7 +214,7 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
             Application app = applications.getApplication(appName);
 
             deployment.disable(appName, target, app, appInfo, report, logger,
-                keepstate, properties);
+                isUndeploy, keepstate, properties);
 
             if (!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
                 try {
