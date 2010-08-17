@@ -139,6 +139,7 @@ public class ConnectorConnPoolStatsProvider {
 
     public ConnectorConnPoolStatsProvider(PoolInfo poolInfo, Logger logger) {    
         this.poolInfo = poolInfo;
+        this.ccPoolName = poolInfo.getName();
         this.logger = logger;
     }
     
