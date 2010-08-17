@@ -46,6 +46,7 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.servermgmt.services.ServiceFactory;
 import com.sun.enterprise.admin.servermgmt.services.Service;
 import com.sun.enterprise.admin.servermgmt.services.AppserverServiceType;
+import com.sun.enterprise.admin.servermgmt.services.PlatformServicesInfo;
 import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
@@ -123,16 +124,14 @@ public final class CreateServiceCommand extends CLICommand {
     @Override
     protected int executeCommand() throws CommandException {
         try {
-            final Service service = ServiceFactory.getService();
-            // configure service
-            service.setTrace(logger.isDebug());
-            service.setDate(new Date().toString());
-            service.setName(serviceName);
-            service.setDryRun(dry_run);
-            service.setLocation(dirs.getServerDir().getPath());
-            service.setType(getType());
-            service.setFQSN();
-            service.setOSUser();
+            final Service service = ServiceFactory.getService(dirs, getType());
+            PlatformServicesInfo info = service.getInfo();
+            info.setTrace(CLILogger.isDebug());
+
+            if(ok(serviceName))
+                    info.setServiceName(serviceName);
+
+            info.setDryRun(dry_run);
             service.setAsadminPath(asadminScript.getPath());
 
             if (programOpts.getPasswordFile() != null)
@@ -141,10 +140,9 @@ public final class CreateServiceCommand extends CLICommand {
 
             service.setServiceProperties(serviceProperties);
             service.isConfigValid();
-            service.setTrace(CLILogger.isDebug());
             service.setForce(force);
 
-            service.createService(service.tokensAndValues());
+            service.createService();
 
             // Why the messiness?  We don't want to talk about the help
             // file inside the help file thus the complications below...

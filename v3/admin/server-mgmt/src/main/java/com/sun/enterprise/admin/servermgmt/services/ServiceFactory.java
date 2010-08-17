@@ -37,16 +37,30 @@
 package com.sun.enterprise.admin.servermgmt.services;
 
 import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.io.ServerDirs;
 import java.io.File;
 
 public final class ServiceFactory {
     
-    public static final Service getService() {
+    public static final Service getService(ServerDirs dirs, AppserverServiceType type) {
+
+        if(LINUX_HACK)
+            return new LinuxService(dirs, type);
         if(SMFService.apropos())
-            return new SMFService();
-        else if(WindowsService.apropos())
-            return new WindowsService();
-        else
-            throw new RuntimeException(Strings.get("noSuitableServiceImplementation"));
+            return new SMFService(dirs, type);
+        if(WindowsService.apropos())
+            return new WindowsService(dirs, type);
+        if(LinuxService.apropos())
+            return new LinuxService(dirs, type);
+        throw new RuntimeException(Strings.get("noSuitableServiceImplementation"));
     }
+
+    static final boolean LINUX_HACK;
+
+    static {
+        LINUX_HACK = System.getProperty("user.name").equals("bnevins") &&
+                Boolean.parseBoolean(System.getenv("LINUX_HACK"));
+    }
+
+
 }

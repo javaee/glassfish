@@ -36,7 +36,6 @@
 package com.sun.enterprise.admin.servermgmt.services;
 
 import com.sun.enterprise.universal.PropertiesDecoder;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.ServerDirs;
@@ -62,24 +61,8 @@ import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
  */
 public abstract class NonSMFServiceAdapter extends ServiceAdapter {
 
-    @Override
-    public final String getName() {
-        return name;
-    }
-
-    @Override
-    public final void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public final AppserverServiceType getType() {
-        return type;
-    }
-
-    @Override
-    public final void setType(AppserverServiceType type) {
-        this.type = type;
+    NonSMFServiceAdapter(ServerDirs dirs, AppserverServiceType type) {
+        super(dirs, type);
     }
 
     @Override
@@ -90,33 +73,6 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
     @Override
     public final void setDate(String date) {
         this.date = date;
-    }
-
-    /**
-     *
-     * @return the domain directory
-     */
-    @Override
-    public final String getLocation() {
-        return location;
-    }
-
-    /**
-     * @param location the domain directoory
-     */
-    @Override
-    public final void setLocation(String location) {
-        this.location = location;
-    }
-
-    @Override
-    public final String getFQSN() {
-        throw new UnsupportedOperationException("getFQSN not supported for this Platform Service");
-    }
-
-    @Override
-    public final void setFQSN() {
-        // NOOP
     }
 
     @Override
@@ -155,16 +111,6 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
     }
 
     @Override
-    public final String getOSUser() {
-        return user;
-    }
-
-    @Override
-    public final void setOSUser() {
-        // it has been done already...
-    }
-
-    @Override
     public final String getServiceProperties() {
         return flattenedServicePropertes;
     }
@@ -193,26 +139,6 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
     }
 
     @Override
-    public final void setTrace(boolean trace) {
-        this.trace = trace;
-    }
-
-    @Override
-    public final boolean isTrace() {
-        return trace;
-    }
-
-    @Override
-    public final void setDryRun(boolean dryRun) {
-        this.dryRun = dryRun;
-    }
-
-    @Override
-    public final boolean isDryRun() {
-        return dryRun;
-    }
-
-    @Override
     public final boolean isForce() {
         return force;
     }
@@ -228,12 +154,49 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
 
     @Override
     public final String getStartCommand() {
-        return type.startCommand();
+        return info.type.startCommand();
+    }
+
+    @Override
+    public final String getRestartCommand() {
+        return info.type.restartCommand();
     }
 
     @Override
     public final String getStopCommand() {
-        return type.stopCommand();
+        return info.type.stopCommand();
+    }
+
+    @Override
+    public final boolean isConfigValid() {
+        // SMF-only
+        return true;
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    //////////////  pkg-private //////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+
+    File getTemplateFile() {
+        return templateFile;
+    }
+
+    void fillTokenMap() {
+        getTokenMap().put(ENTITY_NAME_TN, getServerDirs().getServerName());
+        getTokenMap().put(DATE_CREATED_TN, getDate());
+        getTokenMap().put(SERVICE_NAME_TN, info.serviceName);
+        getTokenMap().put(AS_ADMIN_PATH_TN, getAsadminPath().replace('\\', '/'));
+        getTokenMap().put(CFG_LOCATION_TN, getServerDirs().getServerParentDir().getPath().replace('\\', '/'));
+        getTokenMap().put(START_COMMAND_TN, getStartCommand());
+        getTokenMap().put(STOP_COMMAND_TN, getStopCommand());
+        getTokenMap().put(LOCATION_ARGS_START_TN, getLocationArgsStart());
+        getTokenMap().put(LOCATION_ARGS_STOP_TN, getLocationArgsStop());
+
+        trace("MAP --> " + getTokenMap().toString());
+    }
+
+    void setTemplateFile(String name) {
+        templateFile = new File(info.libDir, "install/templates/" + name);
     }
 
 
@@ -316,16 +279,11 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
-    private final String user = System.getProperty("user.name");
     private String date = new Date().toString();    // default date string
-    private String location;
-    private String name;
     private String asadminPath;
     private String passwordFilePath;
     private String flattenedServicePropertes;
     private String appserverUser;
-    private boolean trace;
-    private boolean dryRun;
     private boolean force;
-    private AppserverServiceType type = AppserverServiceType.Domain;
+    private File templateFile;
 }

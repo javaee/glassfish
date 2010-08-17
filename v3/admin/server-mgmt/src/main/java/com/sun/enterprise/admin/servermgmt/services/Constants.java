@@ -58,10 +58,15 @@ class Constants {
     static final String PRIVILEGES_TN                = "PRIVILEGES";
     static final String START_COMMAND_TN             = "START_COMMAND";
     static final String STOP_COMMAND_TN              = "STOP_COMMAND";
-    static final String LOCATION_ARGS_START_TN      = "LOCATION_ARGS_START";
-    static final String LOCATION_ARGS_STOP_TN       = "LOCATION_ARGS_STOP";
+    static final String LOCATION_ARGS_START_TN       = "LOCATION_ARGS_START";
+    static final String LOCATION_ARGS_STOP_TN        = "LOCATION_ARGS_STOP";
+    static final String CREDENTIALS_START_TN         = "CREDENTIALS_START";
+    static final String CREDENTIALS_STOP_TN          = "CREDENTIALS_STOP";
     static final String START_ARG_START              = "<startargument>";
     static final String STOP_ARG_START               = "<stopargument>";
     static final String START_ARG_END                = "</startargument>";
     static final String STOP_ARG_END                 = "</stopargument>";
+    static final String TRACE_PREPEND                = "TRACE:  ";
+    static final String README                       = "PlatformServices.log";
+    static final String SERVICE_NAME_PREFIX = "application/GlassFish/";
 }

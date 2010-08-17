@@ -35,19 +35,75 @@
  */
 package com.sun.enterprise.admin.servermgmt.services;
 
+import com.sun.enterprise.util.io.ServerDirs;
+import java.util.*;
+import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
+
 /**
  *
  * @author bnevins
  */
 public abstract class ServiceAdapter implements Service {
 
+    ServiceAdapter(ServerDirs serverDirs, AppserverServiceType type) {
+        info = new PlatformServicesInfo(serverDirs, type);
+    }
+    
+    @Override
+    public PlatformServicesInfo getInfo() {
+        return info;
+    }
+
     @Override
     public final boolean isDomain() {
-        return getType() == AppserverServiceType.Domain;
+        return info.type == AppserverServiceType.Domain;
     }
 
     @Override
     public final boolean isInstance() {
-        return getType() == AppserverServiceType.Instance;
+        return info.type == AppserverServiceType.Instance;
     }
+
+    @Override
+    public final ServerDirs getServerDirs() {
+        return info.serverDirs;
+    }
+
+    @Override
+    public final void createService() {
+        info.validate();
+        initialize();
+        initializeInternal();
+        createServiceInternal();
+    }
+    //////////////////////////////////////////////////////////////////////////
+    ////////////////   pkg-private     ///////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+
+    void initialize() {
+        final String parentPath = info.serverDirs.getServerParentDir().getPath();
+        final String serverName = info.serverDirs.getServerName();
+
+        getTokenMap().put(CFG_LOCATION_TN, parentPath);
+        getTokenMap().put(ENTITY_NAME_TN, serverName);
+        getTokenMap().put(LOCATION_ARGS_START_TN, getLocationArgsStart());
+        getTokenMap().put(LOCATION_ARGS_STOP_TN, getLocationArgsStop());
+        getTokenMap().put(START_COMMAND_TN, info.type.startCommand());
+        getTokenMap().put(STOP_COMMAND_TN, info.type.stopCommand());
+        getTokenMap().put(FQSN_TN,  info.fqsn);
+        getTokenMap().put(OS_USER_TN, info.osUser);
+        getTokenMap().put(SERVICE_NAME_TN, info.smfFullServiceName);
+    }
+
+    void trace(String s) {
+        if (info.trace)
+            System.out.println(TRACE_PREPEND + s);
+    }
+
+    final Map<String, String> getTokenMap() {
+        return tokenMap;
+    }
+
+    private final Map<String, String> tokenMap = new HashMap<String, String>();
+    final PlatformServicesInfo info;
 }

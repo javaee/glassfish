@@ -45,22 +45,28 @@ package com.sun.enterprise.admin.servermgmt.services;
  *
  */
     public enum AppserverServiceType {
-        Domain("start-domain", "stop-domain"),
-        Instance("start-local-instance", "stop-local-instance");
+        Domain("start-domain", "restart-domain", "stop-domain"),
+        Instance("start-local-instance", "restart-local-instance", "stop-local-instance");
 
         public String startCommand() {
             return start;
+        }
+
+        public String restartCommand() {
+            return restart;
         }
 
         public String stopCommand() {
             return stop;
         }
 
-        private AppserverServiceType(String start, String stop) {
+        private AppserverServiceType(String start, String restart, String stop) {
             this.start = start;
+            this.restart = restart;
             this.stop = stop;
         }
         
         private final String start;
+        private final String restart;
         private final String stop;
     }
