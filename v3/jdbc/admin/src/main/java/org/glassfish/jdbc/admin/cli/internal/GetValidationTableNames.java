@@ -61,10 +61,10 @@ public class GetValidationTableNames implements AdminCommand {
     @Param
     private String poolName;
 
-    @Param (optional=true)
+    @Param(name="appname", optional=true)
     private String applicationName;
 
-    @Param (optional=true)
+    @Param(name="modulename", optional=true)
     private String moduleName;
 
     /**
