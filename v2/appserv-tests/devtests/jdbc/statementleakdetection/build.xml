@@ -97,6 +97,11 @@
         <param name="sql.file" value="sql/drop_pointbase.sql"/>
       </antcall>
 
+      <antcall target="asadmin-common">
+          <param name="admin.command" value="set"/>
+          <param name="operand.props"
+                 value="server.monitoring-service.module-monitoring-levels.jdbc-connection-pool=OFF"/>
+      </antcall>
       <antcall target="undeploy-jdbc-common"/>
       <antcall target="delete-jdbc-resource-common">
 	  <param name="jdbc.resource.name" value="jdbc/compareDS"/>

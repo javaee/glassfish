@@ -59,12 +59,6 @@
             <param name="appclient.application.args" value="2"/>
         </antcall>
 
-        <antcall target="asadmin-common">
-            <param name="admin.command" value="set"/>
-            <param name="operand.props"
-                   value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.is_connection_validation_required=true"/>
-        </antcall>
-
 
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
@@ -77,6 +71,12 @@
             <param name="admin.command" value="set"/>
             <param name="operand.props"
                    value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.validation_classname=org.glassfish.api.jdbc.validation.DerbyConnectionValidation"/>
+        </antcall>
+
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.is_connection_validation_required=true"/>
         </antcall>
 
         <antcall target="runclient-common">

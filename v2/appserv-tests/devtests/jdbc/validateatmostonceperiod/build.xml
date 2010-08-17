@@ -56,12 +56,6 @@
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.is_connection_validation_required=true"/>
-        </antcall>
-
-        <antcall target="asadmin-common">
-            <param name="admin.command" value="set"/>
-            <param name="operand.props"
                    value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.connection_validation_method=${validationmethod}"/>
         </antcall>
 
@@ -70,6 +64,12 @@
             <param name="operand.props"
                    value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.validation_table_name=${validationtablename}"/>
         </antcall>
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.is_connection_validation_required=true"/>
+        </antcall>
+
 
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>

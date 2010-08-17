@@ -48,6 +48,12 @@
         <antcall target="deploy-common"/>
     </target>
 
+    <target name="sql" depends="init-common">
+        <antcall target="execute-sql-common">
+            <param name="sql.file" value="sql/create_pointbase.sql"/>
+        </antcall>
+    </target>
+
     <target name="run" depends="init-common">
         <antcall target="execute-sql-common">
             <param name="sql.file" value="sql/create_pointbase.sql"/>
@@ -64,12 +70,6 @@
             <param name="appclient.application.args" value="2"/>
         </antcall>
 
-          <antcall target="asadmin-common">
-            <param name="admin.command" value="set"/>
-            <param name="operand.props"
-                   value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.is_connection_validation_required=true"/>
-        </antcall>
-
 
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
@@ -82,6 +82,12 @@
             <param name="admin.command" value="set"/>
             <param name="operand.props"
                    value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.validation_table_name=sys.systables"/>
+        </antcall>
+
+          <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.is_connection_validation_required=true"/>
         </antcall>
 
         <antcall target="runclient-common">
