@@ -132,7 +132,7 @@ public final class CreateServiceCommand extends CLICommand {
                     info.setServiceName(serviceName);
 
             info.setDryRun(dry_run);
-            service.setAsadminPath(asadminScript.getPath());
+            //service.setAsadminPath(asadminScript.getPath());
 
             if (programOpts.getPasswordFile() != null)
                 service.setPasswordFilePath(SmartFile.sanitize(
