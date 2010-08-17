@@ -256,8 +256,8 @@ public class SecureAdminClientManager {
     }
 
     private Domain prepareDomain(final String serverName,
-            final String node,
-            final String nodeDir) {
+            final String nodeDir,
+            final String node) {
         final ServerDirsSelector selector;
         try {
             selector = ServerDirsSelector.getInstance(null, serverName, nodeDir, node);
