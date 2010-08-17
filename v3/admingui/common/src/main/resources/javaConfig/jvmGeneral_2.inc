@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -46,19 +46,19 @@
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
                             <sun:property id="javaHomeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.JavaHomeLabel}" helpText="$resource{i18nc.jvm.JavaHomeHelp}">
-                                <sun:textField id="JavaHome"  styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['javaHome']}" required="#{true}"/> 
+                                <sun:textField id="JavaHome"  styleClass="required" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.JavaHome']}" text="#{pageSession.valueMap['javaHome']}" required="#{true}"/> 
                             </sun:property>                       
                             <sun:property id="JavacOptionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.JavacOptionsLabel}" helpText="$resource{i18nc.jvm.JavacOptionsHelp}">                           
-                                <sun:textField id="JavacOptions" columns="$int{55}" text="#{pageSession.valueMap['javacOptions']}"/>     
+                                <sun:textField id="JavacOptions" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.JavacOptions']}" text="#{pageSession.valueMap['javacOptions']}"/>     
                             </sun:property>                        
                           <sun:property id="debugEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.DebugLabel}" helpText="$resource{i18nc.jvm.DebugHelp}">
                                 <sun:checkbox id="debug" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['debugEnabled']}" selectedValue="true" />      
                             </sun:property>
                             <sun:property id="DebugOptionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.DebugOptionsLabel}" helpText="$resource{i18nc.jvm.DebugOptionsHelp}">
-                                <sun:textField id="DebugOptions" columns="$int{55}" text="#{pageSession.valueMap['debugOptions']}" />      
+                                <sun:textField id="DebugOptions" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.DebugOptions']}" text="#{pageSession.valueMap['debugOptions']}" />      
                             </sun:property>
                             <sun:property id="RmicOptionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.RMICompileOptionsLabel}" helpText="$resource{i18nc.jvm.RMICompileOptionsHelp}">
-                                <sun:textField id="RmicOptions" columns="$int{55}" text="#{pageSession.valueMap['rmicOptions']}"/>      
+                                <sun:textField id="RmicOptions" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.RMICompileOptions']}" text="#{pageSession.valueMap['rmicOptions']}"/>      
                             </sun:property> 
                             <sun:property id="bytecodePreprocessorProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.BytecodePreprocessorLabel}" helpText="$resource{i18nc.jvm.BytecodePreprocessorHelp}">
                                 <sun:textArea id="bytecodePreprocessor" rows="$int{8}" columns="$int{55}" text="#{pageSession.valueMap['bytecodePreprocessors']}"/>      

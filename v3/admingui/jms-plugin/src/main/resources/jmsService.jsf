@@ -102,21 +102,21 @@
                                 <sun:dropDown id="Type"  selected="#{pageSession.valueMap['type']}" labels={"LOCAL" "REMOTE" "EMBEDDED"} values={"LOCAL" "REMOTE" "EMBEDDED"}/>
                             </sun:property>
                             <sun:property id="timeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Timeout}" helpText="$resource{i18njms.jms.TimeoutHelp}">
-                                <sun:textField id="Timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['initTimeoutInSeconds']}" />
+                                <sun:textField id="Timeout" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jms.Timeout']}" text="#{pageSession.valueMap['initTimeoutInSeconds']}" />
                                 <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
                             </sun:property>
                             <sun:property id="argumentsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Arguments}" helpText="$resource{i18njms.jms.ArgumentsHelp}">
-                                <sun:textField id="Arguments" columns="$int{35}" text="#{pageSession.valueMap['startArgs']}"/>
+                                <sun:textField id="Arguments" columns="$int{35}" maxLength="#{sessionScope.fieldLengths['maxLength.jms.Arguments']}" text="#{pageSession.valueMap['startArgs']}"/>
                             </sun:property>
                             <sun:property id="reconnectProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Reconnect}" helpText="$resource{i18njms.jms.ReconnectHelp}">
                                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['reconnectEnabled']}" selectedValue="true"/>
                             </sun:property>
                             <sun:property id="intervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Interval}" helpText="$resource{i18njms.jms.IntervalHelp}">
-                                <sun:textField id="Interval" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['reconnectIntervalInSeconds']}" />
+                                <sun:textField id="Interval" styleClass="intAllowMinusOne" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jms.Interval']}" text="#{pageSession.valueMap['reconnectIntervalInSeconds']}" />
                                 <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
                             </sun:property>
                             <sun:property id="attemptsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Attempts}" helpText="$resource{i18njms.jms.AttemptsHelp}">
-                                <sun:textField id="Attempts" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['reconnectAttempts']}" />
+                                <sun:textField id="Attempts" styleClass="intAllowMinusOne" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jms.Attempts']}" text="#{pageSession.valueMap['reconnectAttempts']}" />
                             </sun:property>
                             <sun:property id="hostProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Host}" helpText="$resource{i18njms.jms.HostHelp}">
                                 <sun:dropDown id="Host" labels="$pageSession{jmsHostList}" selected="#{pageSession.valueMap['defaultJmsHost']}">
@@ -135,13 +135,13 @@
                                 <sun:dropDown id="Behavior" selected="#{pageSession.valueMap['addresslistBehavior']}" labels={"random" "priority"} />
                             </sun:property>
                             <sun:property id="iterationsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Iterations}" helpText="$resource{i18njms.jms.IterationsHelp}">
-                                <sun:textField id="Iterations" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['addresslistIterations']}" />
+                                <sun:textField id="Iterations" styleClass="intAllowMinusOne" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jms.Iterations']}" text="#{pageSession.valueMap['addresslistIterations']}" />
                             </sun:property>
                             <sun:property id="schemeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Scheme}" helpText="$resource{i18njms.jms.SchemeHelp}">
-                                <sun:textField id="Scheme" columns="$int{25}" text="#{pageSession.valueMap['mqScheme']}"/>
+                                <sun:textField id="Scheme" columns="$int{25}" maxLength="#{sessionScope.fieldLengths['maxLength.jms.Scheme']}" text="#{pageSession.valueMap['mqScheme']}"/>
                             </sun:property>
                             <sun:property id="serviceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Service}" helpText="$resource{i18njms.jms.ServiceHelp}">
-                                <sun:textField id="Service" columns="$int{25}" text="#{pageSession.valueMap['mqService']}"/>
+                                <sun:textField id="Service" columns="$int{25}" maxLength="#{sessionScope.fieldLengths['maxLength.jms.Service']}" text="#{pageSession.valueMap['mqService']}"/>
                             </sun:property>
                             "<br /><br />
                         </sun:propertySheetSection>

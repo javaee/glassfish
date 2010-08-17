@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,7 @@
         </sun:property>
 
         <sun:property id="mapNameNew" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.securityMapName}" >
-            <sun:textField id="mapName"   styleClass="required" text="#{pageSession.valueMap['name']}" required="#{true}"/>
+            <sun:textField id="mapName"   styleClass="required" maxLength="#{sessionScope.fieldLengths['maxLength.connectorSecurityMap.securityMapName']}" text="#{pageSession.valueMap['name']}" required="#{true}"/>
         </sun:property>
                 <sun:property id="groupProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.workSecurityMap.Group}">
 
@@ -56,7 +56,7 @@
                     onClick="enableWorkSecurityMapFields('users'); "
                 />
             "<br /><br />
-            <sun:textField id="eisgrouptext" columns="$int{55}" text="#{pageSession.valueMap2['groupMapping']}" >
+            <sun:textField id="eisgrouptext" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.workSecurityMap.Group']}" text="#{pageSession.valueMap2['groupMapping']}" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{eisuserGroupsId});
                     />
@@ -74,7 +74,7 @@
                     onClick="javascript: enableWorkSecurityMapFields('principals');"
                 />
             "<br /><br />
-            <sun:textField id="eisprincipals" columns="$int{55}" text="#{pageSession.valueMap2['principalMapping']}" >
+            <sun:textField id="eisprincipals" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.workSecurityMap.GroupMapping']}" text="#{pageSession.valueMap2['principalMapping']}" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{eisprincipalsId});
                     />
@@ -96,7 +96,7 @@
            </sun:dropDown>
         </sun:property>
      <sun:property id="descriptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
-            <sun:textField id="descAdaptor" columns="$int{55}" text="#{pageSession.valueMap['description']}" />
+            <sun:textField id="descAdaptor" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.valueMap['description']}" />
         </sun:property>
         <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}" >
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />

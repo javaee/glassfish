@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -76,7 +76,7 @@
     <sun:propertySheet id="sessionPropSheet" requiredFields="#{hasRequiredFields}">
     <sun:propertySheetSection id="sessionPropSheetSection">
         <sun:property id="SessionTimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webSession.sessionTimeoutLabel}" helpText="$resource{i18n_web.webSession.sessionTimeoutHelp}">
-            <sun:textField id="SessionTimeout" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['timeoutInSeconds']}" />
+            <sun:textField id="SessionTimeout" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.webSession.sessionTimeout']}" text="#{pageSession.valueMap['timeoutInSeconds']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
     </sun:propertySheetSection>

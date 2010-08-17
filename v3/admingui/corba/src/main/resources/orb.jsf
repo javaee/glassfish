@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -133,7 +133,7 @@
                 <sun:staticText id="bytes" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
             </sun:property>
             <sun:property id="TotalConnsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.orb.totalConnsLabel}" helpText="$resource{i18n_corba.orb.totalConnsHelp}">
-                <sun:textField id="TotalConns" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['maxConnections']}" >
+                <sun:textField id="TotalConns" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.orb.totalConns']}" text="#{pageSession.valueMap['maxConnections']}" >
                  </sun:textField>
             </sun:property>
             <sun:property id="IIOPClientProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.orb.iiopClientLabel}" >

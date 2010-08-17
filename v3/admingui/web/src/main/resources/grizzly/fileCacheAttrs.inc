@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -47,17 +47,17 @@
         </sun:property>
 
         <sun:property id="maxAge"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.fileCache.maxAge}" helpText="$resource{i18n_web.fileCache.maxAgeHelp}" >
-            <sun:textField id="maxAge" columns="$int{20}" text="#{pageSession.fileMap['maxAgeSeconds']}" />
+            <sun:textField id="maxAge" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.fileCache.maxAge']}" text="#{pageSession.fileMap['maxAgeSeconds']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
         <sun:property id="maxCacheSizeBytes"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.fileCache.MaxCacheSizeBytes}" helpText="$resource{i18n_web.fileCache.MaxCacheSizeBytesHelp}" >
-            <sun:textField id="maxCacheSizeBytes" columns="$int{20}" text="#{pageSession.fileMap['maxCacheSizeBytes']}" />
+            <sun:textField id="maxCacheSizeBytes" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.fileCache.MaxCacheSizeBytes']}" text="#{pageSession.fileMap['maxCacheSizeBytes']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
         </sun:property>
 
         <sun:property id="maxFile"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.fileCache.MaxFileCount}" helpText="$resource{i18n_web.fileCache.MaxFileCountHelp}" >
-            <sun:textField id="maxFile" columns="$int{20}" text="#{pageSession.fileMap['maxFilesCount']}" />
+            <sun:textField id="maxFile" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.fileCache.MaxFileCount']}" text="#{pageSession.fileMap['maxFilesCount']}" />
         </sun:property>
 
 </sun:propertySheetSection>

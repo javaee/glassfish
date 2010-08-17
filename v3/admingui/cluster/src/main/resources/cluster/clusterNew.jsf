@@ -95,7 +95,7 @@
     <sun:propertySheet id="propertySheet">
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="NameTextProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.ClusterName}" >
-                <sun:textField id="NameText" text="#{pageSession.name}" styleClass="required" columns="$int{55}" required="#{true}" />
+                <sun:textField id="NameText" text="#{pageSession.name}" styleClass="required" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.cluster.ClusterName']}" required="#{true}" />
             </sun:property>
             <sun:property id="configProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.clusterNew.Configuration}" helpText="$resource{i18ncs.clusterNew.ConfigurationHelp}">
                 <sun:dropDown id="Config" labels="#{pageSession.configsList}" selected="#{pageSession.config}" >
@@ -138,10 +138,10 @@
                 <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
             </sun:tableColumn>
             <sun:tableColumn headerText="$resource{i18ncs.clusterNew.InstanceNameCol}" rowHeader="$boolean{false}" id="col2">
-                <sun:textField columns="$int{35}" id="name" value="#{td.value.name}" />
+                <sun:textField columns="$int{35}" maxLength="#{sessionScope.fieldLengths['maxLength.cluster.instanceName']}" id="name" value="#{td.value.name}" />
             </sun:tableColumn>
             <sun:tableColumn headerText="$resource{i18ncs.clusterNew.WeightCol}" rowHeader="$boolean{false}" id="col3">
-                <sun:textField columns="$int{25}" id="weight" value="#{td.value.weight}"  toolTip="100" />
+                <sun:textField columns="$int{25}" maxLength="#{sessionScope.fieldLengths['maxLength.cluster.Weight']}" id="weight" value="#{td.value.weight}"  toolTip="100" />
             </sun:tableColumn>
             <sun:tableColumn headerText="$resource{i18ncs.clusterNew.NodeCol}" rowHeader="$boolean{false}" id="col4">
                 <sun:dropDown id="node" labels="#{pageSession.nodesList}" selected="#{td.value.node}">

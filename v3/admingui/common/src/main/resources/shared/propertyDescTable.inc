@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -100,13 +100,13 @@
             />
         </sun:tableColumn>                    
         <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="name" rowHeader="$boolean{false}" id="col2">
-            <sun:textField columns="$int{40}" id="col1St" value="#{td.value.name}" />
+            <sun:textField columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.PropertyName']}" id="col1St" value="#{td.value.name}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="value" rowHeader="$boolean{false}" id="col3">
-            <sun:textField columns="$int{40}" id="col1St" value="#{td.value.value}" />
+            <sun:textField columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.PropertyValue']}"  id="col1St" value="#{td.value.value}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{i18n.common.description}" sort="value" rowHeader="$boolean{false}" id="col4">
-            <sun:textField columns="$int{20}" id="col1St" value="#{td.value.description}" />
+            <sun:textField columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}"  id="col1St" value="#{td.value.description}" />
         </sun:tableColumn>
         "<br/>
     </sun:tableRowGroup>

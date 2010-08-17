@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -57,10 +57,10 @@
             />
         </sun:property>
         <sun:property id="defaultPrincipalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.DefaultPrincipal}" helpText="$resource{i18nc.security.DefaultPrincipalHelp}">
-            <sun:textField id="DefaultPrincipal" columns="$int{55}" text="#{pageSession.valueMap['defaultPrincipal']}"/>
+            <sun:textField id="DefaultPrincipal" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.security.DefaultPrincipal']}" text="#{pageSession.valueMap['defaultPrincipal']}"/>
         </sun:property>
         <sun:property id="defaultPrincipalPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.DefaultPrincipalPassword}" helpText="$resource{i18nc.security.DefaultPrincipalPasswordHelp}">
-            <sun:passwordField id="DefaultPrincipalPassword" columns="$int{55}" text="#{pageSession.valueMap['defaultPrincipalPassword']}"/>
+            <sun:passwordField id="DefaultPrincipalPassword" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.security.DefaultPrincipalPassword']}" text="#{pageSession.valueMap['defaultPrincipalPassword']}"/>
         </sun:property>
       <sun:property id="jaccProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.Jacc}" helpText="$resource{i18nc.security.JaccHelp}">
             <sun:dropDown id="Jacc" labels="$pageSession{jaccs}" selected="#{pageSession.valueMap['jacc']}" />
@@ -87,7 +87,7 @@
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['activateDefaultPrincipalToRoleMapping']}" selectedValue="true" />
         </sun:property>
         <sun:property id="mappedPrincipalClassProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.MappedPrincipalClass}" helpText="$resource{i18nc.security.MappedPrincipalClassHelp}">
-            <sun:textField id="MappedPrincipalClass" columns="$int{55}" text="#{pageSession.valueMap['mappedPrincipalClass']}"/>
+            <sun:textField id="MappedPrincipalClass" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.security.MappedPrincipalClass']}" text="#{pageSession.valueMap['mappedPrincipalClass']}"/>
         </sun:property>
 
         "<br /><br />

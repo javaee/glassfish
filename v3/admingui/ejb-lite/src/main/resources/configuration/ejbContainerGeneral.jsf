@@ -81,7 +81,7 @@
          <!-- General Settings section -->
          <sun:propertySheetSection id="generalPropertySection">
              <sun:property id="SessionStoreProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.sessionStoreLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.sessionStoreHelp}">
-                 <sun:textField id="SessionStore" columns="$int{65}" text="#{pageSession.valueMap['sessionStore']}" />
+                 <sun:textField id="SessionStore" columns="$int{65}" maxLength="#{sessionScope.fieldLengths['maxLength.ejbSettings.sessionStore']}"  text="#{pageSession.valueMap['sessionStore']}" />
              </sun:property>
              <sun:property id="commitOptionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.commitOptionLabel}">
                  <sun:radioButton id="optB"  name="commitOptGrp" label="$resource{i18n_ejbLite.ejbSettings.optB}" selected="#{pageSession.valueMap['commitOption']}" selectedValue="B" />
@@ -95,33 +95,33 @@
          <!-- Pool Settings section -->
          <sun:propertySheetSection id="poolSettingSection" label="$resource{i18n_ejbLite.ejbSettings.poolSettingsLabel}">
              <sun:property id="MinSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.minSizeLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.minSizeHelp}">
-                 <sun:textField id="MinSize" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['steadyPoolSize']}" />
+                 <sun:textField id="MinSize" styleClass="integer"  columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ejbSettings.minSize']}" text="#{pageSession.valueMap['steadyPoolSize']}" />
                  <sun:staticText id="nobeans" style="padding: 8pt" text="$resource{i18n_ejbLite.ejb.NumBeans}"/>
              </sun:property>
              <sun:property id="MaxSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.maxSizeLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.maxSizeHelp}">
-                 <sun:textField id="MaxSize" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['maxPoolSize']}" />
+                 <sun:textField id="MaxSize" styleClass="integer"  columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ejbSettings.maxSize']}" text="#{pageSession.valueMap['maxPoolSize']}" />
                  <sun:staticText id="nobeans" style="padding: 8pt" text="$resource{i18n_ejbLite.ejb.NumBeans}"/>
              </sun:property>
              <sun:property id="PoolResizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.poolResizeLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.poolResizeHelp}">
-                 <sun:textField id="PoolResize" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['poolResizeQuantity']}" />
+                 <sun:textField id="PoolResize" styleClass="integer"  columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ejbSettings.poolResize']}" text="#{pageSession.valueMap['poolResizeQuantity']}" />
                  <sun:staticText id="nobeans" style="padding: 8pt" text="$resource{i18n_ejbLite.ejb.NumBeans}"/>
              </sun:property>
              <sun:property id="TimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.timeoutLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.timeoutHelp}">
-                 <sun:textField id="Timeout" styleClass="integer" columns="$int{20}" style="padding-bottom 8pt" text="#{pageSession.valueMap['poolIdleTimeoutInSeconds']}" />
+                 <sun:textField id="Timeout" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ejbSettings.timeout']}" style="padding-bottom 8pt" text="#{pageSession.valueMap['poolIdleTimeoutInSeconds']}" />
                  <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
              </sun:property>
          </sun:propertySheetSection>
          <!-- Cache Settings section -->
          <sun:propertySheetSection id="cacheSettingSection" label="$resource{i18n_ejbLite.ejbSettings.cacheSettingsLabel}">
              <sun:property id="MaxCacheProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.maxCacheLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.maxCacheHelp}">
-                 <sun:textField id="MaxCache" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['maxCacheSize']}" />
+                 <sun:textField id="MaxCache" styleClass="integer"  columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ejbSettings.maxCache']}" text="#{pageSession.valueMap['maxCacheSize']}" />
                  <sun:staticText id="nobeans" style="padding: 8pt" text="$resource{i18n_ejbLite.ejb.NumBeans}"/>
              </sun:property>
              <sun:property id="CacheResizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.cacheReSizeLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.cacheReSizeHelp}">
-                 <sun:textField id="CacheResize" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['cacheResizeQuantity']}" />
+                 <sun:textField id="CacheResize" styleClass="integer"  columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ejbSettings.cacheReSize']}" text="#{pageSession.valueMap['cacheResizeQuantity']}" />
              </sun:property>
              <sun:property id="RemTimoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.remTimoutLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.remTimoutHelp}">
-                 <sun:textField id="RemTimout"styleClass="integer"   columns="$int{20}" text="#{pageSession.valueMap['removalTimeoutInSeconds']}" />
+                 <sun:textField id="RemTimout"styleClass="integer"   columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ejbSettings.remTimout']}" text="#{pageSession.valueMap['removalTimeoutInSeconds']}" />
                  <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
              </sun:property>
              <sun:property id="RemPolicyProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.remSelectionLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.remSelectionHelp}">
@@ -131,7 +131,7 @@
                     selected="#{pageSession.valueMap['victimSelectionPolicy']}"  />
              </sun:property>
              <sun:property id="CacheIdleProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.cacheIdleLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.cacheIdleHelp}">
-                 <sun:textField id="CacheIdle" styleClass="integer"  columns="$int{20}" text="#{pageSession.valueMap['cacheIdleTimeoutInSeconds']}" />
+                 <sun:textField id="CacheIdle" styleClass="integer"  columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ejbSettings.cacheIdle']}" text="#{pageSession.valueMap['cacheIdleTimeoutInSeconds']}" />
                  <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
              </sun:property>
          </sun:propertySheetSection>

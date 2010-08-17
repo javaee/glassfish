@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -76,14 +76,14 @@
     <sun:propertySheet id="managerPropSheet" requiredFields="#{hasRequiredFields}">
     <sun:propertySheetSection id="managerPropSheetSection">
         <sun:property id="ReapIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.reapIntervalLabel}" helpText="$resource{i18n_web.webManager.reapIntervalHelp}" >
-            <sun:textField id="ReapInterval" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['reapIntervalInSeconds']}" />
+            <sun:textField id="ReapInterval" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.webManager.reapInterval']}" text="#{pageSession.valueMap['reapIntervalInSeconds']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
         <sun:property id="MaxSessionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.maxSessionsLabel}" >
-            <sun:textField id="MaxSessions" styleClass="intAllowMinusOne" columns="$int{20}" text="#{pageSession.valueMap['maxSessions']}" />
+            <sun:textField id="MaxSessions" styleClass="intAllowMinusOne" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.webManager.maxSessions']}" text="#{pageSession.valueMap['maxSessions']}" />
         </sun:property>
         <sun:property id="SessFileNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.sessFileNameLabel}" helpText="$resource{i18n_web.webManager.sessFileNameHelp}" >
-            <sun:textField id="SessFileName" columns="$int{50}" text="#{pageSession.valueMap['sessionFileName']}" />
+            <sun:textField id="SessFileName" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.webManager.sessFileName']}" text="#{pageSession.valueMap['sessionFileName']}" />
         </sun:property>
         <!-- commented out, refer to issue# 8903 -->
         <!--

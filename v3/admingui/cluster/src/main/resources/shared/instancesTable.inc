@@ -63,7 +63,7 @@
         <sun:hyperlink id="link" text="#{td.value.name}" url="#{pageSession.editLink}&instanceName=#{td.value.name}" />
     </sun:tableColumn>
     <sun:tableColumn headerText="$resource{i18ncs.standalone.ColWeight}" rowHeader="$boolean{true}" id="col2">
-        <sun:textField id="weight" columns="$int{10}" text="#{td.value.lbWeight}" />
+        <sun:textField id="weight" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.standalone.lbWeight']}" text="#{td.value.lbWeight}" />
     </sun:tableColumn>
     <sun:tableColumn headerText="$resource{i18ncs.common.ConfigurationCol}" rowHeader="$boolean{true}" id="col3">
         <sun:hyperlink id="configlink" text="#{td.value.configRef}" url="/configuration/configuration.jsf?configName=#{td.value.configRef}" />

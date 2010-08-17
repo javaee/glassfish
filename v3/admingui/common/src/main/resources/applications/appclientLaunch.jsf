@@ -91,7 +91,7 @@
                 </sun:property>
 
                 <sun:property id="argsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.appClientLaunch.argLabel}">
-                    <sun:textField id="args" text="#{pageSession.args}" columns="$int{50}" maxLength="$int{255}" >
+                    <sun:textField id="args" text="#{pageSession.args}" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.appClientLaunch.args']}" >
                         <!afterCreate
                             getClientId(component="$this{component}" clientId="#{pageSession.argId}");
                         />

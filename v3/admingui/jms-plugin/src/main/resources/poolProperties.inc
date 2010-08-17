@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -36,7 +36,7 @@
 <sun:propertySheet id="propertySheet">
     <sun:propertySheetSection id="generalPropertySheet" label="$resource{i18n.common.GeneralSettings}">
         <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}">
-            <sun:textField id="jndiProp" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['name']}" required="#{true}" rendered="#{!edit}" />
+            <sun:textField id="jndiProp" styleClass="required" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.poolName']}" text="#{pageSession.valueMap['name']}" required="#{true}" rendered="#{!edit}" />
             <sun:staticText text="#{pageSession.valueMap['name']}" required="#{true}" rendered="#{edit}"/>
         </sun:property>
         <sun:property id="nameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}" rendered="#{edit}">
@@ -48,7 +48,7 @@
             <sun:staticText text="#{pageSession.valueMap['connectiondefinitionname']}" required="#{true}" rendered="#{edit}"/>
         </sun:property>
         <sun:property id="descProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
-            <sun:textField id="descProp" columns="$int{55}" text="#{pageSession.valueMap['description']}" />
+            <sun:textField id="descProp" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.valueMap['description']}" />
         </sun:property>
         <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.resourceRef['enabled']}" selectedValue="true"/>
@@ -58,23 +58,23 @@
     </sun:propertySheetSection>
     <sun:propertySheetSection id="poolPropertySheet" label="$resource{i18njms.connectionFactory.poolSettings}">
         <sun:property id="initSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.initPoolSize}" helpText="$resource{i18njms.connectionFactory.initPoolSizeHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['steadypoolsize']}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.initPoolSize']}" text="#{pageSession.valueMap['steadypoolsize']}" />
             <sun:staticText id="con1" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
         <sun:property id="maxProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.maxPoolSize}" helpText="$resource{i18njms.connectionFactory.maxPoolSizeHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['maxpoolsize']}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.maxPoolSize']}" text="#{pageSession.valueMap['maxpoolsize']}" />
             <sun:staticText id="con" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
         <sun:property id="resizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.poolResize}" helpText="$resource{i18njms.connectionFactory.poolResizeHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['poolresizequantity']}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.poolResize']}" text="#{pageSession.valueMap['poolresizequantity']}" />
             <sun:staticText id="con" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
         <sun:property id="idleProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.idleTimeout}" helpText="$resource{i18njms.connectionFactory.idleTimeoutHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['idletimeoutinseconds']}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.idleTimeout']}" text="#{pageSession.valueMap['idletimeoutinseconds']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
         <sun:property id="maxWaitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.maxWait}" helpText="$resource{i18njms.connectionFactory.maxWaitHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['maxwaittimeinmillis']}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.maxWait']}" text="#{pageSession.valueMap['maxwaittimeinmillis']}" />
             <sun:staticText id="mil" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
         </sun:property>
 

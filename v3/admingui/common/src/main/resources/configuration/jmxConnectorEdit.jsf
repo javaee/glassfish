@@ -99,13 +99,13 @@
                 <sun:checkbox id="Security" label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap2['securityEnabled']}" selectedValue="true" />
             </sun:property>
             <sun:property id="AddressProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.addressLabel}" helpText="$resource{i18n.edJmxConnector.addressHelp}" >
-                <sun:textField id="Address" styleClass="required" columns="$int{40}" text="#{pageSession.valueMap2['address']}" required="#{true}" />
+                <sun:textField id="Address" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmxConnector.address']}" text="#{pageSession.valueMap2['address']}" required="#{true}" />
             </sun:property>
             <sun:property id="PortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.portLabel}" helpText="$resource{i18n.edJmxConnector.portHelp}" >
-                <sun:textField id="Port" styleClass="required port" columns="$int{40}" text="#{pageSession.valueMap2['port']}" required="#{true}" />
+                <sun:textField id="Port" styleClass="required port" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmxConnector.port']}" text="#{pageSession.valueMap2['port']}" required="#{true}" />
             </sun:property>
             <sun:property id="RealmNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.realmNameLabel}" helpText="$resource{i18n.edJmxConnector.realmNameHelp}" >
-                <sun:textField id="RealmName" styleClass="required" columns="$int{40}" text="#{pageSession.valueMap2['authRealmName']}" required="#{true}" />
+                <sun:textField id="RealmName" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmxConnector.realmName']}" text="#{pageSession.valueMap2['authRealmName']}" required="#{true}" />
             </sun:property>
 
 

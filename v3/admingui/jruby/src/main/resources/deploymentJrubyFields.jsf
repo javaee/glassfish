@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -36,7 +36,7 @@
 <!-- deploymentJrubyFields.jsf -->
 
 <sun:property id="nameProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.ApplicationName}" >
-    <sun:textField id="appName" columns="$int{40}" text="#{pageSession.jruby['name']}" styleClass="required" required="#{true}"
+    <sun:textField id="appName" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.deploy.ApplicationName']}" text="#{pageSession.jruby['name']}" styleClass="required" required="#{true}"
         onChange="javascript: setAppName('#{appNameId}', this.value, window)">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{appNameId});
@@ -45,7 +45,7 @@
 </sun:property>
 
 <sun:property id="cxp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.ContextRoot}" helpText="$resource{i18n.webApp.contextRootHelp}" >
-    <sun:textField id="ctx" columns="$int{40}" text="#{pageSession.jruby['contextroot']}" >
+    <sun:textField id="ctx" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.webApp.ContextRoot']}" text="#{pageSession.jruby['contextroot']}" >
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{contextRootId});
         />
@@ -66,19 +66,19 @@
 </sun:property>
 
 <sun:property id="jhome" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.jrubyHome}" helpText="$resource{i18n_jruby.jrubyHomeHelp}">
-    <sun:textField id="jhome" columns="$int{40}" text="#{pageSession.jruby['PROPERTY-jruby.home']}" />
+    <sun:textField id="jhome" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.jrubyHome']}" text="#{pageSession.jruby['PROPERTY-jruby.home']}" />
 </sun:property>
 
 <sun:property id="jruntime" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.runtime}" helpText="$resource{i18n_jruby.runtimeHelp}">
-    <sun:textField id="jruntime" styleClass="integer" columns="$int{40}" text="#{pageSession.jruby['PROPERTY-jruby.runtime']}" />
+    <sun:textField id="jruntime" styleClass="integer" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.runtime']}" text="#{pageSession.jruby['PROPERTY-jruby.runtime']}" />
 </sun:property>
 
 <sun:property id="jruntime-mim" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.runtimeMin}" helpText="$resource{i18n_jruby.runtimeMinHelp}">
-    <sun:textField id="jruntime-mim" styleClass="integer" columns="$int{40}" text="#{pageSession.jruby['PROPERTY-jruby.runtime.min']}" />
+    <sun:textField id="jruntime-mim" styleClass="integer" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.runtimeMin']}" text="#{pageSession.jruby['PROPERTY-jruby.runtime.min']}" />
 </sun:property>
 
 <sun:property id="jruntime-max" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.runtimeMax}" helpText="$resource{i18n_jruby.runtimeMaxHelp}">
-    <sun:textField id="jruntime-max" styleClass="integer" columns="$int{40}" text="#{pageSession.jruby['PROPERTY-jruby.runtime.max']}" />
+    <sun:textField id="jruntime-max" styleClass="integer" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.runtimeMax']}" text="#{pageSession.jruby['PROPERTY-jruby.runtime.max']}" />
 </sun:property>
 
 <sun:property id="applicationType"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.appType}" helpText="$resource{i18n_jruby.appTypeHelp}">
@@ -124,5 +124,5 @@
 
 
 <sun:property id="descriptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}" helpText="$resource{i18n.deploy.descHelp}" >
-	<sun:textField id="description" columns="$int{40}" text="#{pageSession.jruby['description']}" />
+	<sun:textField id="description" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.jruby['description']}" />
 </sun:property>

@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -78,27 +78,27 @@
         </sun:property>
 
         <sun:property id="JmsHostTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.jmsHostNameLabel}">
-            <sun:textField id="JmsHostText" text="#{pageSession.valueMap['name']}" columns="$int{55}" styleClass="required" required="#{true}" />
+            <sun:textField id="JmsHostText" text="#{pageSession.valueMap['name']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmsHost.jmsHostName']}" styleClass="required" required="#{true}" />
         </sun:property>
 
         <sun:property id="HostProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.hostLabel}" helpText="$resource{i18njms.edJmsHost.hostHelp}" >
-            <sun:textField id="Host" columns="$int{55}"  text="#{pageSession.valueMap['host']}" />
+            <sun:textField id="Host" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmsHost.host']}"  text="#{pageSession.valueMap['host']}" />
         </sun:property>
         <sun:property id="PortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.portLabel}" helpText="$resource{i18njms.edJmsHost.portHelp}" >
-            <sun:textField id="Port" columns="$int{25}" styleClass="port"text="#{pageSession.valueMap['port']}" />
+            <sun:textField id="Port" columns="$int{25}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmsHost.port']}"  styleClass="port"text="#{pageSession.valueMap['port']}" />
         </sun:property>
         <sun:property id="AdminUserProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.adminUserLabel}" helpText="$resource{i18njms.edJmsHost.adminUserHelp}" >
-            <sun:textField id="AdminUser" columns="$int{25}" text="#{pageSession.valueMap['adminUserName']}" styleClass="required"  required="#{true}" />
+            <sun:textField id="AdminUser" columns="$int{25}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmsHost.adminUser']}"  text="#{pageSession.valueMap['adminUserName']}" styleClass="required"  required="#{true}" />
         </sun:property>
         <sun:property id="newPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.adminPwdLabel}" helpText="$resource{i18njms.edJmsHost.adminPwdHelp}">
-        <sun:passwordField id="NewPassword" columns="$int{25}" text="#{pageSession.valueMap['adminPassword']}" styleClass="required"  required="#{true}">
+        <sun:passwordField id="NewPassword" columns="$int{25}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmsHost.adminPwd']}"  text="#{pageSession.valueMap['adminPassword']}" styleClass="required"  required="#{true}">
              <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{ps1});
             />
         </sun:passwordField>
         </sun:property>
         <sun:property id="confirmPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.ConfirmNewPassword}">
-            <sun:passwordField id="ConfirmPassword"  columns="$int{25}" text="#{pageSession.valueMap['adminPassword']}" styleClass="required" required="#{true}"  >
+            <sun:passwordField id="ConfirmPassword"  columns="$int{25}" maxLength="#{sessionScope.fieldLengths['maxLength.server.ConfirmNewPassword']}"  text="#{pageSession.valueMap['adminPassword']}" styleClass="required" required="#{true}"  >
                 <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{ps2});
                 />

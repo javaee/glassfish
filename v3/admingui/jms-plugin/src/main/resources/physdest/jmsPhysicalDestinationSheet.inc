@@ -73,7 +73,7 @@
         <sun:property id="NameTextProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
             <h:outputText id="NameStatic" rendered="#{edit}" value="#{pageSession.destName}"/>
             <h:inputHidden rendered="#{edit}" value="#{pageSession.destName}" />
-            <sun:textField id="NameText" rendered="#{!edit}" styleClass="required" text="#{name}" columns="$int{55}" required="#{true}" />
+            <sun:textField id="NameText" rendered="#{!edit}" styleClass="required" text="#{name}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Name']}" required="#{true}" />
         </sun:property>
         <sun:property id="typeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.type}">
             <h:outputText id="TypeStatic" rendered="#{edit}" value="#{pageSession.destType}"/>
@@ -82,13 +82,13 @@
         </sun:property>
 
         <sun:property id="maxNumMsgsProp" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.MaxNumMsgs}" helpText="$resource{i18njms.jmsPhysDestinations.MaxNumMsgsHelp}" >
-            <sun:textField id="maxNumMsgs" text="#{pageSession.valueMap['MaxNumMsgs']}" columns="$int{6}"/>
+            <sun:textField id="maxNumMsgs" text="#{pageSession.valueMap['MaxNumMsgs']}" columns="$int{6}" maxLength="#{sessionScope.fieldLengths['maxLength.jmsPhysDestinations.MaxNumMsgs']}" />
         </sun:property>
         <sun:property id="maxBytesPerMsgProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.MaxBytesPerMsg}" helpText="$resource{i18njms.jmsPhysDestinations.MaxBytesPerMsgHelp}" >
-            <sun:textField id="maxBytesPerMsg" text="#{pageSession.valueMap['MaxBytesPerMsg']}" columns="$int{6}"/>
+            <sun:textField id="maxBytesPerMsg" text="#{pageSession.valueMap['MaxBytesPerMsg']}" columns="$int{6}" maxLength="#{sessionScope.fieldLengths['maxLength.jmsPhysDestinations.MaxBytesPerMsg']}" />
         </sun:property>
         <sun:property id="maxTotalMsgBytesProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.MaxTotalMsgBytes}" helpText="$resource{i18njms.jmsPhysDestinations.MaxTotalMsgBytesHelp}" >
-            <sun:textField id="maxTotalMsgBytes" text="#{pageSession.valueMap['MaxTotalMsgBytes']}" columns="$int{6}"/>
+            <sun:textField id="maxTotalMsgBytes" text="#{pageSession.valueMap['MaxTotalMsgBytes']}" columns="$int{6}" maxLength="#{sessionScope.fieldLengths['maxLength.jmsPhysDestinations.MaxTotalMsgBytes']}" />
         </sun:property>
         <sun:property id="limitBehaviorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.LimitBehavior}" helpText="$resource{i18njms.jmsPhysDestinations.LimitBehaviorHelp}" >
             <sun:dropDown id="Type" values={"REJECT_NEWEST", "FLOW_CONTROL","REMOVE_OLDEST","REMOVE_LOW_PRIORITY"}
@@ -96,16 +96,16 @@
                           selected="#{pageSession.valueMap['LimitBehavior']}"/>
         </sun:property>
         <sun:property id="maxNumProducersProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.MaxNumProducers}" helpText="$resource{i18njms.jmsPhysDestinations.MaxNumProducersHelp}" >
-            <sun:textField id="maxNumProducers" text="#{pageSession.valueMap['MaxNumProducers']}" columns="$int{6}"/>
+            <sun:textField id="maxNumProducers" text="#{pageSession.valueMap['MaxNumProducers']}" columns="$int{6}" maxLength="#{sessionScope.fieldLengths['maxLength.jmsPhysDestinations.MaxNumProducers']}" />
         </sun:property>
         <sun:property id="maxNumActiveConsumersProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" rendered="#{pageSesssion.destType != 'topic'" label="$resource{i18njms.jmsPhysDestinations.MaxNumActiveConsumers}" helpText="$resource{i18njms.jmsPhysDestinations.MaxNumActiveConsumersHelp}" >
-            <sun:textField id="maxNumActiveConsumers" text="#{pageSession.valueMap['MaxNumActiveConsumers']}" columns="$int{6}"/>
+            <sun:textField id="maxNumActiveConsumers" text="#{pageSession.valueMap['MaxNumActiveConsumers']}" columns="$int{6}" maxLength="#{sessionScope.fieldLengths['maxLength.jmsPhysDestinations.MaxNumActiveConsumers']}" />
         </sun:property>
         <sun:property id="maxNumBackupConsumersProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" rendered="#{pageSesssion.destType != 'topic'" label="$resource{i18njms.jmsPhysDestinations.MaxNumBackupConsumers}" helpText="$resource{i18njms.jmsPhysDestinations.MaxNumBackupConsumersHelp}" >
-            <sun:textField id="maxNumBackupConsumers" text="#{pageSession.valueMap['MaxNumBackupConsumers']}" columns="$int{6}"/>
+            <sun:textField id="maxNumBackupConsumers" text="#{pageSession.valueMap['MaxNumBackupConsumers']}" columns="$int{6}" maxLength="#{sessionScope.fieldLengths['maxLength.jmsPhysDestinations.MaxNumBackupConsumers']}" />
         </sun:property>
         <sun:property id="consumerFlowLimitProp" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.ConsumerFlowLimit}" helpText="$resource{i18njms.jmsPhysDestinations.ConsumerFlowLimitHelp}" >
-            <sun:textField id="consumerFlowLimit" text="#{pageSession.valueMap['ConsumerFlowLimit']}" columns="$int{6}"/>
+            <sun:textField id="consumerFlowLimit" text="#{pageSession.valueMap['ConsumerFlowLimit']}" columns="$int{6}" maxLength="#{sessionScope.fieldLengths['maxLength.jmsPhysDestinations.ConsumerFlowLimit']}" />
         </sun:property>
         <sun:property id="localDeliveryPreferredProp" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" rendered="#{pageSesssion.destType != 'topic'" label="$resource{i18njms.jmsPhysDestinations.LocalDeliveryPreferred}" helpText="$resource{i18njms.jmsPhysDestinations.LocalDeliveryPreferredHelp}" >
             <sun:dropDown id="localDeliveryPreferred" values={"true", "false"} labels={"True", "False"} selected="#{pageSession.valueMap['LocalDeliveryPreferred']}" selectedValue="true"/>
@@ -117,7 +117,7 @@
             <sun:dropDown id="validateXMLSchemaEnabled" values={"true", "false"} labels={"True", "False"} selected="#{pageSession.valueMap['ValidateXMLSchemaEnabled']}" selectedValue="true"/>
         </sun:property>
         <sun:property id="xmlSchemeUrlProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.XMLSchemaURIList}" helpText="$resource{i18njms.jmsPhysDestinations.XMLSchemaURIListHelp}" >
-            <sun:textField id="xmlSchemaURIList" text="#{pageSession.valueMap['XmlSchemaURIList']}" columns="$int{55}"/>
+            <sun:textField id="xmlSchemaURIList" text="#{pageSession.valueMap['XmlSchemaURIList']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jmsPhysDestinations.XMLSchemaURIList']}" />
         </sun:property>
     </sun:propertySheetSection>
 </sun:propertySheet>

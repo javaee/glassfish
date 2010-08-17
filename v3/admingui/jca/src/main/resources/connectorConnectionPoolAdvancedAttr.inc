@@ -47,12 +47,12 @@
         </sun:property>
 
     <sun:property id="p1"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.validateAtmostOnceInSeconds}" helpText="$resource{i18njca.jcaPool.validateAtmostOnceInSecondsHelp}">
-        <sun:textField id="va" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['validateAtmostOncePeriodInSeconds']}" /> 
+        <sun:textField id="va" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.validateAtmostOnceInSeconds']}" text="#{pageSession.valueMap['validateAtmostOncePeriodInSeconds']}" /> 
         <sun:staticText id="vasec" text="$resource{i18n.common.Seconds}"/>
     </sun:property>
 
     <sun:property id="p2"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.connectionLeakTimeoutInSeconds}" helpText="$resource{i18njca.jcaPool.connectionLeakTimeoutInSecondsHelp}">
-        <sun:textField id="p2" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['connectionLeakTimeoutInSeconds']}"/> 
+        <sun:textField id="p2" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.connectionLeakTimeoutInSeconds']}" text="#{pageSession.valueMap['connectionLeakTimeoutInSeconds']}"/> 
         <sun:staticText id="vasec" text="$resource{i18n.common.Seconds}"/>
    </sun:property>   
 
@@ -61,11 +61,11 @@
     </sun:property> 
 
     <sun:property id="p4"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.connectionCreationRetryAttempts}" helpText="$resource{i18njca.jcaPool.connectionCreationRetryAttemptsHelp}">
-        <sun:textField id="p4" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['connectionCreationRetryAttempts']}"/> 
+        <sun:textField id="p4" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.connectionCreationRetryAttempts']}" text="#{pageSession.valueMap['connectionCreationRetryAttempts']}"/> 
    </sun:property>   
 
     <sun:property id="p5"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.connectionCreationRetryIntervalInSeconds}" helpText="$resource{i18njca.jcaPool.connectionCreationRetryIntervalInSecondsHelp}">
-        <sun:textField id="p5" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['connectionCreationRetryIntervalInSeconds']}"/> 
+        <sun:textField id="p5" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.connectionCreationRetryIntervalInSeconds']}" text="#{pageSession.valueMap['connectionCreationRetryIntervalInSeconds']}"/> 
         <sun:staticText id="p51" text="$resource{i18n.common.Seconds}"/>
    </sun:property>
 
@@ -98,7 +98,7 @@
    </sun:property>
 
     <sun:property id="p10"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.maxConnectionUsageCount}" helpText="$resource{i18njca.jcaPool.maxConnectionUsageCountHelp}">
-        <sun:textField id="p5" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['maxConnectionUsageCount']}"/> 
+        <sun:textField id="p5" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.maxConnectionUsageCount']}" text="#{pageSession.valueMap['maxConnectionUsageCount']}"/> 
    </sun:property>
 
 </sun:propertySheetSection>

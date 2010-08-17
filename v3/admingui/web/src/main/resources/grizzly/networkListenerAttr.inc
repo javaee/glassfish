@@ -41,7 +41,7 @@
     <sun:propertySheetSection id="propertSectionTextField">
 
         <sun:property id="nameNew"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}" helpText="$resource{i18n_web.common.nameHelp}">
-            <sun:textField id="name"  required="#{true}" columns="$int{50}" text="#{pageSession.valueMap['name']}"
+            <sun:textField id="name"  required="#{true}" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Name']}" text="#{pageSession.valueMap['name']}"
                 onChange="setProtocolName()" >
                 <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{listenerId});
@@ -57,7 +57,7 @@
       />
    </sun:radioButton>
    <sun:staticText text="$resource{i18n_web.grizzly.networkListener.createNewProtocol}" />
-   <sun:textField id="pName" required="#{false}" text="#{pageSession.valueMap['newProtocolName']}" submitForm="false" style="margin-left: 4pt" columns="$int{50}"  >
+   <sun:textField id="pName" required="#{false}" text="#{pageSession.valueMap['newProtocolName']}" submitForm="false" style="margin-left: 4pt" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.grizzly.networkListener.newProtocolName']}"  >
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{pNameId});
         />
@@ -102,11 +102,11 @@
         </sun:property>
 
         <sun:property id="port"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.port}" helpText="$resource{i18n_web.grizzly.networkListener.portHelp}">
-            <sun:textField id="port" columns="$int{20}" required="#{true}" styleClass="required port" text="#{pageSession.valueMap['port']}"  />
+            <sun:textField id="port" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.grizzly.networkListener.port']}" required="#{true}" styleClass="required port" text="#{pageSession.valueMap['port']}"  />
         </sun:property>
 
         <sun:property id="addr"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.address}" helpText="$resource{i18n_web.grizzly.networkListener.addressHelp}">
-            <sun:textField id="addr" columns="$int{20}" text="#{pageSession.valueMap['address']}"  />
+            <sun:textField id="addr" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.grizzly.networkListener.address']}" text="#{pageSession.valueMap['address']}"  />
         </sun:property>
 
         <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.status}"  helpText="$resource{i18n_web.grizzly.networkListener.statusHelp}" >

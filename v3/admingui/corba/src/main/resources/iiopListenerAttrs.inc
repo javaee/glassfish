@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -42,13 +42,13 @@
             <sun:staticText id="IiopName" text="#{pageSession.valueMap['id']}" />
         </sun:property>
         <sun:property id="IiopNameTextProp"  rendered="#{!pageSession.edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-            <sun:textField id="IiopNameText" styleClass="required" text="#{pageSession.valueMap['id']}" columns="$int{55}" required="#{true}" />
+            <sun:textField id="IiopNameText" styleClass="required" text="#{pageSession.valueMap['id']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Name']}" required="#{true}" />
         </sun:property>
         <sun:property id="NetwkAddrProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.iiopListener.netwkAddrLabel}" helpText="$resource{i18n_corba.iiopListener.netwkAddrHelp}" >
-            <sun:textField id="NetwkAddr" styleClass="required"  columns="$int{20}" text="#{pageSession.valueMap['address']}" required="#{true}" />
+            <sun:textField id="NetwkAddr" styleClass="required"  columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.iiopListener.netwkAddr']}" text="#{pageSession.valueMap['address']}" required="#{true}" />
         </sun:property>
         <sun:property id="ListenerPortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.iiopListener.listPortLabel}" helpText="$resource{i18n_corba.iiopListener.listPortHelp}" >
-            <sun:textField id="ListenerPort" styleClass="required port" columns="$int{20}" text="#{pageSession.valueMap['port']}" required="#{true}" />
+            <sun:textField id="ListenerPort" styleClass="required port" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.iiopListener.listPort']}" text="#{pageSession.valueMap['port']}" required="#{true}" />
         </sun:property>
         <sun:property id="ListenerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.iiopListener.listenerLabel}" helpText="$resource{i18n_corba.iiopListener.listenerHelp}" >
             <sun:checkbox label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />

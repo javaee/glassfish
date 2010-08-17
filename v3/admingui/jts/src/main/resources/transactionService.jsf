@@ -82,22 +82,22 @@
                    </sun:checkbox>
                 </sun:property>
                 <sun:property id="timeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jts.ts.Timeout}" helpText="$resource{i18n_jts.ts.TimeoutHelp}">
-                    <sun:textField id="Timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['timeoutInSeconds']}" />
+                    <sun:textField id="Timeout" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.ts.Timeout']}" text="#{pageSession.valueMap['timeoutInSeconds']}" />
                     <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
                 </sun:property>
                 <sun:property id="retryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jts.ts.Retry}" helpText="$resource{i18n_jts.ts.RetryHelp}">
-                    <sun:textField id="Retry" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['retryTimeoutInSeconds']}" />
+                    <sun:textField id="Retry" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.ts.Retry']}" text="#{pageSession.valueMap['retryTimeoutInSeconds']}" />
                     <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
                 </sun:property>
                 <sun:property id="logLocationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jts.ts.LogLocation}">
-                    <sun:textField id="LogLocation" columns="$int{55}" text="#{pageSession.valueMap['txLogDir']}"/>
+                    <sun:textField id="LogLocation" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.ts.LogLocation']}" text="#{pageSession.valueMap['txLogDir']}"/>
                 </sun:property>
                 <sun:property id="heuristicProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jts.ts.HeuristicDesc}" helpText="$resource{i18n_jts.ts.HeuristicDescHelp}">
                    <sun:dropDown id="HeuristicDecision" selected="#{pageSession.valueMap['heuristicDecision']}" labels={"$resource{i18n_jts.ts.rollback}" "$resource{i18n_jts.ts.commit}"} values={"rollback" "commit"} >
                     </sun:dropDown>
                  </sun:property>
                 <sun:property id="keyPointProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jts.ts.KeypointInterval}" helpText="$resource{i18n_jts.ts.KeypointIntervalHelp}">
-                    <sun:textField id="Keypoint" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['keypointInterval']}" />
+                    <sun:textField id="Keypoint" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.ts.KeypointInterval']}" text="#{pageSession.valueMap['keypointInterval']}" />
                 </sun:property>
                 "<br /><br />
             </sun:propertySheetSection>

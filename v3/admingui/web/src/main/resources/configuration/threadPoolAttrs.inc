@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -43,27 +43,27 @@
             <sun:staticText id="name" text="#{pageSession.Name}"/>
         </sun:property> 
         <sun:property id="nameProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" helpText="$resource{i18n_web.threadPool.nameHelp}">
-            <sun:textField id="nameText" text="#{pageSession.valueMap['name']}" columns="$int{55}" styleClass="required" required="#{true}" />
+            <sun:textField id="nameText" text="#{pageSession.valueMap['name']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Name']}" styleClass="required" required="#{true}" />
         </sun:property>
 
         <sun:property id="classname"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.classname}" helpText="$resource{i18n_web.threadPool.classnameHelp}">
-        <sun:textField id="classname" styleClass="required" columns="$int{50}" text="#{pageSession.valueMap['classname']}" />
+        <sun:textField id="classname" styleClass="required" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.threadPool.classname']}" text="#{pageSession.valueMap['classname']}" />
         </sun:property>
 
         <sun:property id="max"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.maxQueue}" helpText="$resource{i18n_web.threadPool.maxQueueHelp}">
-        <sun:textField id="max" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['maxQueueSize']}" />
+        <sun:textField id="max" styleClass="intAllowMinusOne" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.threadPool.maxQueue']}" text="#{pageSession.valueMap['maxQueueSize']}" />
         </sun:property>
 
         <sun:property id="maxThread"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.maxThread}" helpText="$resource{i18n_web.threadPool.maxThreadHelp}">
-        <sun:textField id="maxThread" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['maxThreadPoolSize']}" />
+        <sun:textField id="maxThread" styleClass="intAllowMinusOne" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.threadPool.maxThread']}" text="#{pageSession.valueMap['maxThreadPoolSize']}" />
         </sun:property>
 
         <sun:property id="minThread"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.minThread}" helpText="$resource{i18n_web.threadPool.minThreadHelp}">
-        <sun:textField id="minThread" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['minThreadPoolSize']}" />
+        <sun:textField id="minThread" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.threadPool.minThread']}" text="#{pageSession.valueMap['minThreadPoolSize']}" />
         </sun:property>
 
         <sun:property id="timeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.threadPool.timeout}" helpText="$resource{i18n_web.threadPool.timeoutHelp}">
-        <sun:textField id="timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['idleThreadTimeoutSeconds']}" />
+        <sun:textField id="timeout" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.threadPool.timeout']}" text="#{pageSession.valueMap['idleThreadTimeoutSeconds']}" />
         <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 

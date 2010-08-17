@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -45,23 +45,23 @@
             <sun:staticText id="name" text="#{pageSession.name}"  rendered="#{Edit}" />
         </sun:property>
         <sun:property id="nameNew"  rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
-            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['name']}" />
+            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.common.jndiName']}" text="#{pageSession.valueMap['name']}" />
         </sun:property>
         
         <sun:property id="hostProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njmail.javaMail.mailHost}" helpText="$resource{i18njmail.javaMail.mailHostHelp}">
-            <sun:textField id="host" styleClass="required" text="#{pageSession.valueMap['host']}" columns="$int{55}" required="#{true}" /> 
+            <sun:textField id="host" styleClass="required" text="#{pageSession.valueMap['host']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.javaMail.mailHost']}" required="#{true}" /> 
         </sun:property>   
 
         <sun:property id="userProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njmail.javaMail.user}" helpText="$resource{i18njmail.javaMail.userHelp}">
-            <sun:textField id="user" styleClass="required" text="#{pageSession.valueMap['user']}" columns="$int{55}" required="#{true}" /> 
+            <sun:textField id="user" styleClass="required" text="#{pageSession.valueMap['user']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.javaMail.user']}" required="#{true}" /> 
         </sun:property>   
 
         <sun:property id="fromProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njmail.javaMail.returnAddr}" helpText="$resource{i18njmail.javaMail.returnAddrHelp}">
-            <sun:textField id="from" styleClass="required" text="#{pageSession.valueMap['from']}" columns="$int{55}" required="#{true}" /> 
+            <sun:textField id="from" styleClass="required" text="#{pageSession.valueMap['from']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.javaMail.returnAddr']}" required="#{true}" /> 
         </sun:property>   
 
         <sun:property id="descProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}" helpText="$resource{i18njmail.javaMail.descHelp}">
-            <sun:textField id="desc" columns="$int{55}" text="#{pageSession.valueMap['description']}" />      
+            <sun:textField id="desc" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.valueMap['description']}" />      
         </sun:property>
 
         <sun:property id="statusProp" rendered="#{useCheckBox}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
@@ -74,19 +74,19 @@
 
     <sun:propertySheetSection id="section2" label="$resource{i18n.common.Advanced}" >
         <sun:property id="storeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njmail.javaMail.storeProtocol}" helpText="$resource{i18njmail.javaMail.storeProtocolHelp}">
-            <sun:textField id="storeP" columns="$int{55}" text="#{pageSession.valueMap['storeProtocol']}" />      
+            <sun:textField id="storeP" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.javaMail.storeProtocol']}" text="#{pageSession.valueMap['storeProtocol']}" />      
         </sun:property>
 
         <sun:property id="storeClassProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njmail.javaMail.storeClass}" helpText="$resource{i18njmail.javaMail.storeClassHelp}">
-            <sun:textField id="storeClass" columns="$int{55}" text="#{pageSession.valueMap['storeProtocolClass']}" />      
+            <sun:textField id="storeClass" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.javaMail.storeClass']}" text="#{pageSession.valueMap['storeProtocolClass']}" />      
         </sun:property>
 
         <sun:property id="transPProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njmail.javaMail.transportProtocol}" helpText="$resource{i18njmail.javaMail.transportProtocolHelp}">
-            <sun:textField id="transP" columns="$int{55}" text="#{pageSession.valueMap['transportProtocol']}" />      
+            <sun:textField id="transP" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.javaMail.transportProtocol']}" text="#{pageSession.valueMap['transportProtocol']}" />      
         </sun:property>
 
         <sun:property id="transClassProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njmail.javaMail.transProtocolClass}" helpText="$resource{i18njmail.javaMail.transProtocolClassHelp}">
-            <sun:textField id="transPClass" columns="$int{55}" text="#{pageSession.valueMap['transportProtocolClass']}" />      
+            <sun:textField id="transPClass" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.javaMail.transProtocolClass']}" text="#{pageSession.valueMap['transportProtocolClass']}" />      
         </sun:property>
 
         <sun:property id="debugProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njmail.javaMail.Debug}">

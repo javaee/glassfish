@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -40,13 +40,13 @@
                 <sun:staticText id="IdStatic" text="#{pageSession.valueMap['name']}"/>
             </sun:property> 
             <sun:property id="IdTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" helpText="$resource{i18nc.jacc.NameHelp}">
-                <sun:textField id="IdText" text="#{pageSession.valueMap['name']}" columns="$int{55}" styleClass="required" required="#{true}" />
+                <sun:textField id="IdText" text="#{pageSession.valueMap['name']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Name']}" styleClass="required" required="#{true}" />
             </sun:property> 
             <sun:property id="policyConfigProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jacc.PolicyConfig}" helpText="$resource{i18nc.jacc.PolicyConfigHelp}">
-                <sun:textField id="PolicyConfig" columns="$int{75}" text="#{pageSession.valueMap['policyConfigurationFactoryProvider']}" styleClass="required" required="#{true}"/>
+                <sun:textField id="PolicyConfig" columns="$int{75}" maxLength="#{sessionScope.fieldLengths['maxLength.jacc.PolicyConfig']}" text="#{pageSession.valueMap['policyConfigurationFactoryProvider']}" styleClass="required" required="#{true}"/>
             </sun:property>      
             <sun:property id="policyProviderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jacc.PolicyProvider}" helpText="$resource{i18nc.jacc.PolicyProviderHelp}">
-                <sun:textField id="PolicyProvider" columns="$int{75}" text="#{pageSession.valueMap['policyProvider']}" styleClass="required" required="#{true}"/>
+                <sun:textField id="PolicyProvider" columns="$int{75}" maxLength="#{sessionScope.fieldLengths['maxLength.jacc.PolicyProvider']}" text="#{pageSession.valueMap['policyProvider']}" styleClass="required" required="#{true}"/>
             </sun:property>      
         </sun:propertySheetSection>
 </sun:propertySheet>    

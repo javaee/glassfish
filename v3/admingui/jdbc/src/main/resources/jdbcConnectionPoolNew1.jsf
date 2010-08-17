@@ -84,7 +84,7 @@
                     <sun:propertySheet id="propertySheet" requiredFields="true">			 
                         <sun:propertySheetSection id="generalPropertySheet" label="$resource{i18njdbc.jdbcPool.general}">
                             <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.poolName}">
-                                <sun:textField id="name"  styleClass="required"  columns="$int{30}" text="#{wizardPoolExtra.Name}" required="#{true}"/> 
+                                <sun:textField id="name"  styleClass="required"  columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.poolName']}" text="#{wizardPoolExtra.Name}" required="#{true}"/> 
                             </sun:property>   
 
                             <sun:property id="resTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}" helpText="$resource{i18njdbc.jdbcPool.resTypeHelp}" >
@@ -98,7 +98,7 @@
                                     />
                                 </sun:dropDown>
                                 "<br/>
-                                <sun:textField id="dbField"  columns="$int{60}" text="#{wizardPoolExtra.DBVendorField}" onChange="emptyDropdown(this.value);">
+                                <sun:textField id="dbField"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.common.resType']}" text="#{wizardPoolExtra.DBVendorField}" onChange="emptyDropdown(this.value);">
                                     <!afterCreate
                                         getClientId(component="$this{component}" clientId="#{pageSession.dbFieldId}");
                                     />

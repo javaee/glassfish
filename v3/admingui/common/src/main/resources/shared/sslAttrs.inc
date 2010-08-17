@@ -72,19 +72,19 @@
         <sun:checkbox id="ClientAuth" label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap['clientAuthEnabled']}" selectedValue="true" />
      </sun:property>
      <sun:property id="CertNicknameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.certNicknameLabel}" helpText="$resource{i18n.ssl.certNicknameHelp}" >
-        <sun:textField id="CertNickname" columns="$int{20}" text="#{pageSession.valueMap['certNickname']}" />
+        <sun:textField id="CertNickname" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ssl.certNickname']}" text="#{pageSession.valueMap['certNickname']}" />
      </sun:property>
      <sun:property id="keystore"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.keyStore}" helpText="$resource{i18n.ssl.keyStoreHelp}" >
-        <sun:textField id="keystore" columns="$int{20}" text="#{pageSession.valueMap['keyStore']}" />
+        <sun:textField id="keystore" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ssl.keyStore']}" text="#{pageSession.valueMap['keyStore']}" />
      </sun:property>
      <sun:property id="trustedAlg"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.TrustAlgorithm}" helpText="$resource{i18n.ssl.TrustAlgorithmHelp}" >
-        <sun:textField id="trustedAlg" columns="$int{20}" text="#{pageSession.valueMap['trustAlgorithm']}" />
+        <sun:textField id="trustedAlg" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ssl.TrustAlgorithm']}" text="#{pageSession.valueMap['trustAlgorithm']}" />
      </sun:property>
      <sun:property id="maxCertLength"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.trustMaxCert}" helpText="$resource{i18n.ssl.trustMaxCertHelp}" >
-        <sun:textField id="maxCertLength" columns="$int{20}" text="#{pageSession.valueMap['trustMaxCertLength']}" />
+        <sun:textField id="maxCertLength" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ssl.trustMaxCert']}" text="#{pageSession.valueMap['trustMaxCertLength']}" />
      </sun:property>
      <sun:property id="trustStore"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.trustStore}" helpText="$resource{i18n.ssl.trustStoreHelp}" >
-        <sun:textField id="trustStore" columns="$int{20}" text="#{pageSession.valueMap['trustStore']}" />
+        <sun:textField id="trustStore" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ssl.trustStore']}" text="#{pageSession.valueMap['trustStore']}" />
      </sun:property>
 
 

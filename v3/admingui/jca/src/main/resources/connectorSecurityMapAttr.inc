@@ -51,14 +51,14 @@
         </sun:property>
 
         <sun:property id="mapNameNew" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.securityMapName}" >
-            <sun:textField id="mapName"   styleClass="required" text="#{pageSession.valueMap['name']}" required="#{true}"/>
+            <sun:textField id="mapName"   maxLength="#{sessionScope.fieldLengths['maxLength.connectorSecurityMap.securityMapName']}" styleClass="required" text="#{pageSession.valueMap['name']}" required="#{true}"/>
         </sun:property>
 
         <sun:property id="groupProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.userGroups}"  helpText="$resource{i18njca.connectorSecurityMap.userGroupsHelp}">
             <sun:radioButton id="optA"  name="usersOption" selected="#{requestScope.usersOptionU}" selectedValue="users"
                 onClick="enableSecurityMapFields('users'); "
             />
-            <sun:textField id="group" columns="$int{55}" text="#{pageSession.valueMap['userGroupCommaStr']}" >
+            <sun:textField id="group" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.connectorSecurityMap.userGroups']}" text="#{pageSession.valueMap['userGroupCommaStr']}" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{userGroupsId});
                     />
@@ -72,7 +72,7 @@
                    <sun:radioButton id="optB"  name="usersOption" selected="#{requestScope.usersOptionP}" selectedValue="principals"
                     onClick="javascript: enableSecurityMapFields('principals');"
                 />
-            <sun:textField id="principals" columns="$int{55}" text="#{pageSession.valueMap['principalCommaStr']}" >
+            <sun:textField id="principals" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.connectorSecurityMap.principals']}" text="#{pageSession.valueMap['principalCommaStr']}" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{principalsId});
                     />
@@ -86,7 +86,7 @@
 
     <sun:propertySheetSection id="propertSectionTextField2" label="$resource{i18njca.connectorSecurityMap.backendPrincipal}">
         <sun:property id="userNameEdit" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.userName}">
-            <sun:textField id="userNameEdit" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap2['userName']}" required="#{true}" />
+            <sun:textField id="userNameEdit" styleClass="required" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.connectorSecurityMap.userName']}" text="#{pageSession.valueMap2['userName']}" required="#{true}" />
         </sun:property>
         <sun:property id="passwordEdit" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.password}">
             <sun:passwordField id="passwordEdit" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap2['password']}" required="#{true}" />

@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -103,29 +103,29 @@
             </sun:dropDown>
          </sun:property>
        <sun:property id="intervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.RotationInterval}" helpText="$resource{i18n_web.access.RotationIntervalHelp}">
-            <sun:textField id="Interval" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap2['rotationIntervalInMinutes']}" />
+            <sun:textField id="Interval" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.access.RotationInterval']}" text="#{pageSession.valueMap2['rotationIntervalInMinutes']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Minutes}"/>
         </sun:property>
         <sun:property id="suffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.RotationSuffix}" helpText="$resource{i18n_web.access.RotationSuffixHelp}">
-            <sun:textField id="Suffix" columns="$int{30}" text="#{pageSession.valueMap2['rotationSuffix']}" />
+            <sun:textField id="Suffix" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.access.RotationSuffix']}" text="#{pageSession.valueMap2['rotationSuffix']}" />
         </sun:property>
 
         <sun:property id="MaxHistoryFiles"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.MaxHistoryFiles}" helpText="$resource{i18n_web.access.MaxHistoryFilesHelp}">
-            <sun:textField id="MaxHistoryFiles" columns="$int{30}" text="#{pageSession.valueMap2['maxHistoryFiles']}" />
+            <sun:textField id="MaxHistoryFiles" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.access.MaxHistoryFiles']}" text="#{pageSession.valueMap2['maxHistoryFiles']}" />
         </sun:property>
 
         <sun:property id="accessLogBufferSize"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.accessLogBufferSize}" helpText="$resource{i18n_web.access.accessLogBufferSizeHelp}">
-        <sun:textField id="accessLogBufferSize" styleClass="intAllowMinus" columns="$int{30}" text="#{pageSession.valueMap2['bufferSizeBytes']}" />
+        <sun:textField id="accessLogBufferSize" styleClass="intAllowMinus" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.access.accessLogBufferSize']}"  text="#{pageSession.valueMap2['bufferSizeBytes']}" />
         <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
         </sun:property>
 
         <sun:property id="accessLogWriteInterval"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.accessLogWriteInterval}" helpText="$resource{i18n_web.access.accessLogWriteIntervalHelp}">
-            <sun:textField id="accessLogWriteInterval" styleClass="intAllowMinus" columns="$int{30}" text="#{pageSession.valueMap2['writeIntervalSeconds']}" />
+            <sun:textField id="accessLogWriteInterval" styleClass="intAllowMinus" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.access.accessLogWriteInterval']}"  text="#{pageSession.valueMap2['writeIntervalSeconds']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
         <sun:property id="formatProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.Format}" helpText="$resource{i18n_web.access.FormatHelp}">
-            <sun:textField id="Format" columns="$int{90}" text="#{pageSession.valueMap2['format']}"/>
+            <sun:textField id="Format" columns="$int{90}" maxLength="#{sessionScope.fieldLengths['maxLength.access.Format']}"  text="#{pageSession.valueMap2['format']}"/>
         </sun:property>
         </sun:propertySheetSection>
     </sun:propertySheet>

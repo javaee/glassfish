@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -43,11 +43,11 @@
             </sun:property> 
 
             <sun:property id="IdTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-                <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['name']}" columns="$int{55}" required="#{true}" />
+                <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['name']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Name']}" required="#{true}" />
             </sun:property> 
 
             <sun:property id="classNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.Classname}">                           
-                <sun:textField id="ClassName" styleClass="required" text="#{pageSession.valueMap['classname']}" columns="$int{55}" required="#{true}" />
+                <sun:textField id="ClassName" styleClass="required" text="#{pageSession.valueMap['classname']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.realm.Classname']}" required="#{true}" />
             </sun:property>
 
         </sun:propertySheetSection>

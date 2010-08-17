@@ -10,6 +10,16 @@
 	<ui:event type="beforeCreate">
 	    setPartialRequest("false");
 	    initSessionAttributes();
+        if ("!#{sessionScope.fieldLengths}") {
+            // Reads a properties file located at:
+            //   v3/admingui/common/src/main/resources/org/glassfish/common/FieldLengths.properties
+            setResourceBundle(key="tmpLengths" bundle="org.glassfish.common.FieldLengths");
+
+            // Passes the ResourceBundle (#{tmpLengths}) into Java code... the ResourceBundle will
+            // need to be converted into a Map<String, String> (or maybe Map<String, Integer>?)
+            // and will be stored in #{sessionScope.fieldLengths}
+            getFieldLengths(bundle="#{tmpLengths}" result="#{sessionScope.fieldLengths}");
+        }
             setShowRegTreeNode();
             <!--
 	    checkSupport(supportCluster=>$session{supportCluster});

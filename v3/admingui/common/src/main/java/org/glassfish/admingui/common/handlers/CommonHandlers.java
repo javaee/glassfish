@@ -60,6 +60,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
@@ -119,6 +120,36 @@ public class CommonHandlers {
         return;
     }
 
+    /**
+     * <p>
+     * This handler will be called from baseLayout.xhtml to load the maximum
+     * field lengths (maximum number of characters that a user can enter in each
+     * field).
+     */
+    @Handler(id="getFieldLengths",
+        input={
+            @HandlerInput(name="bundle", type=java.util.ResourceBundle.class, required=true)
+        },
+        output={
+            @HandlerOutput(name="result", type=Map.class)
+    })
+    public static void getFieldLengths(HandlerContext handlerCtx) {
+        ResourceBundle bundle = (ResourceBundle) handlerCtx.getInputValue("bundle");
+        Map<String, Integer> result = new HashMap<String, Integer>();
+        for (String key : bundle.keySet()) {
+            try {
+                result.put(key, Integer.decode(bundle.getString(key)));
+            } catch (NumberFormatException ex) {
+                // Log warning about expecting a number...
+                // This should never happen; if it does it's a bug, so no need to localize.
+                GuiUtil.getLogger().warning(
+                    "Field length is expected to be a number, but got ('"
+                    + bundle.getString(key) + "') instead for key '"
+                    + key + "'.");
+            }
+        }
+        handlerCtx.setOutputValue("result", result);
+    }
 
     /** This function is called in login.jsf to set the various product specific attributes such as the 
      *  product GIFs and product names. A similar function is called for Sailfin to set Sailfin specific

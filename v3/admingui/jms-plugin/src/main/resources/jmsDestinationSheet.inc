@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,7 @@
         />
         </event>
         <sun:property id="jndiProp" rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}" helpText="$resource{i18n.common.jndiNameHelp}" >
-            <sun:textField id="jndi" columns="$int{55}" text="#{pageSession.valueMap['name']}" styleClass="required" required="#{true}" />
+            <sun:textField id="jndi" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.jndiName']}" text="#{pageSession.valueMap['name']}" styleClass="required" required="#{true}" />
         </sun:property>
 
         <sun:property rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}" >
@@ -54,7 +54,7 @@
         </sun:property>
 
         <sun:property id="nameProp" labelAlign="left" noWrap="true" overlapLabel="false" label="$resource{i18njms.jmsDestination.destName}" helpText="$resource{i18njms.jmsDestination.destNameHelp}">
-            <sun:textField id="name" columns="55" text="#{pageSession.physDestName}" styleClass="required" required="true" />
+            <sun:textField id="name" columns="55" maxLength="#{sessionScope.fieldLengths['maxLength.jmsDestination.destName']}" text="#{pageSession.physDestName}" styleClass="required" required="true" />
         </sun:property>
 
         <sun:property id="resTypeProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  >
@@ -62,7 +62,7 @@
         </sun:property>
 
         <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
-            <sun:textField id="desc" columns="$int{55}" text="#{pageSession.valueMap['description']}" />
+            <sun:textField id="desc" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.valueMap['description']}" />
         </sun:property>
 
         <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">

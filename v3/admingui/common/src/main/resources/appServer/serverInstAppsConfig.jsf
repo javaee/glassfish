@@ -86,13 +86,13 @@
             </sun:checkbox>
         </sun:property>
         <sun:property id="reloadIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.ReloadPollInterval}" helpText="$resource{i18nc.domain.ReloadPollIntervalHelp}">
-            <sun:textField id="ReloadInterval" styleClass="integer" columns="$int{15}" text="#{pageSession.valueMap['dynamicReloadPollIntervalInSeconds']}">
+            <sun:textField id="ReloadInterval" styleClass="integer" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.domain.ReloadPollInterval']}" text="#{pageSession.valueMap['dynamicReloadPollIntervalInSeconds']}">
 
             </sun:textField>
             <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
         <sun:property id="AdminTimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AdminTimeout}" helpText="$resource{i18nc.domain.AdminTimeoutHelp}">
-            <sun:textField id="AdminTimeout" styleClass="integer" columns="$int{15}" text="#{pageSession.valueMap['adminSessionTimeoutInMinutes']}"/>
+            <sun:textField id="AdminTimeout" styleClass="integer" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.domain.AdminTimeout']}" text="#{pageSession.valueMap['adminSessionTimeoutInMinutes']}"/>
             <sun:staticText id="mins" style="padding: 8pt" text="$resource{i18n.common.Minutes}"/>
         </sun:property>
     </sun:propertySheetSection>
@@ -101,15 +101,15 @@
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['autodeployEnabled']}" selectedValue="true" />
         </sun:property>
        <sun:property id="AutoDeployIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AutoDeployPollInterval}" helpText="$resource{i18nc.domain.AutoDeployPollIntervalHelp}">
-            <sun:textField id="AutoDeployInterval" styleClass="integer" columns="$int{15}" text="#{pageSession.valueMap['autodeployPollingIntervalInSeconds']}" />
+            <sun:textField id="AutoDeployInterval" styleClass="integer" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.domain.AutoDeployPollInterval']}" text="#{pageSession.valueMap['autodeployPollingIntervalInSeconds']}" />
             <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
         <sun:property id="AutoDeployTimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AutoDeployTimeout}" helpText="$resource{i18nc.domain.AutoDeployTimeoutHelp}">
-            <sun:textField id="AutoDeployTimeout" styleClass="integer" columns="$int{15}" text="#{pageSession.valueMap['autodeployRetryTimeout']}" />
+            <sun:textField id="AutoDeployTimeout" styleClass="integer" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.domain.AutoDeployTimeout']}" text="#{pageSession.valueMap['autodeployRetryTimeout']}" />
             <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
        <sun:property id="AutoDeployDirectoryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AutoDeployDirectory}" helpText="$resource{i18nc.domain.AutoDeployDirectoryHelp}">
-            <sun:textField id="AutoDeployDirectory" columns="$int{55}" text="#{pageSession.valueMap['autodeployDir']}" />
+            <sun:textField id="AutoDeployDirectory" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.domain.AutoDeployDirectory']}" text="#{pageSession.valueMap['autodeployDir']}" />
         </sun:property>
         <sun:property id="transprop"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.deployXmlValidation}" helpText="$resource{i18nc.domain.deployXmlValidationHelp}" >
                     <sun:dropDown id="trans" selected="#{pageSession.valueMap['deployXmlValidation']}" labels={"$resource{i18nc.domain.Full}" "$resource{i18nc.domain.Parsing}"  "$resource{i18nc.domain.None}"}  values={"full" "parsing"  "none"} />

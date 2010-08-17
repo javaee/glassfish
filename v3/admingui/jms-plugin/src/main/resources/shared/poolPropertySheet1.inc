@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -35,27 +35,27 @@
 -->
 
     <sun:property id="initSizeProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.initPoolSize}" helpText="$resource{i18n.jdbcPool.initPoolSizeHelp}">
-        <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{steadyPoolSize}" /> 
+        <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{steadyPoolSize}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.initPoolSize']}" /> 
         <sun:staticText id="con1" style="padding: 8pt" text="$resource{i18n.common.Connections}"/> 
     </sun:property>
 
     <sun:property id="maxProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.maxPoolSize}" helpText="$resource{i18n.jdbcPool.maxPoolSizeHelp}">
-        <sun:textField id="ds2" styleClass="integer" columns="$int{10}" text="#{maxPoolSize}" />
+        <sun:textField id="ds2" styleClass="integer" columns="$int{10}" text="#{maxPoolSize}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.maxPoolSize']}" />
         <sun:staticText id="con2" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
     </sun:property>
 
     <sun:property id="resizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.poolResize}" helpText="$resource{i18n.jdbcPool.poolResizeHelp}">
-        <sun:textField id="ds3" styleClass="integer" columns="$int{10}" text="#{poolResizeQuantity}" /> 
+        <sun:textField id="ds3" styleClass="integer" columns="$int{10}" text="#{poolResizeQuantity}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.poolResize']}" /> 
         <sun:staticText id="con3" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
     </sun:property>
 
     <sun:property id="idleProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.idleTimeout}" helpText="$resource{i18n.jdbcPool.idleTimeoutHelp}">
-        <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{idleTimeoutInSeconds}" />
+        <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{idleTimeoutInSeconds}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.idleTimeout']}" />
         <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
     </sun:property>
 
     <sun:property id="maxWaitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.maxWait}" helpText="$resource{i18n.jdbcPool.maxWaitHelp}">
-        <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{maxWaitTimeInMillis}" /> 
+        <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{maxWaitTimeInMillis}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.maxWait']}" /> 
         <sun:staticText id="mil" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
     </sun:property>
 

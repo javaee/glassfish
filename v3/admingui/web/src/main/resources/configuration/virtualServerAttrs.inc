@@ -42,11 +42,11 @@
         </sun:property>
 
         <sun:property id="IdTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.Id}">
-            <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['id']}" columns="$int{55}" required="#{true}" />
+            <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['id']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.vs.Id']}" required="#{true}" />
         </sun:property>
 
         <sun:property id="hostsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.Hosts}" helpText="$resource{i18n_web.vs.HostsHelp}">
-            <sun:textField id="Hosts" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['hosts']}" required="#{true}"/>
+            <sun:textField id="Hosts" styleClass="required" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.vs.Hosts']}" text="#{pageSession.valueMap['hosts']}" required="#{true}"/>
         </sun:property>
 
         <sun:property id="stateProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.State}">
@@ -94,11 +94,11 @@
             />
         </sun:property>
         <sun:property id="logFileProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.LogFile}" helpText="$resource{i18n_web.vs.LogFileHelp}">
-            <sun:textField id="LogFile" columns="$int{55}" text="#{pageSession.valueMap['logFile']}" />
+            <sun:textField id="LogFile" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.vs.LogFile']}" text="#{pageSession.valueMap['logFile']}" />
         </sun:property>
 
         <sun:property id="docroot"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.docroot}" helpText="$resource{i18n_web.vs.docrootHelp}">
-            <sun:textField id="docroot" columns="$int{55}" text="#{pageSession.valueMap['docroot']}" />
+            <sun:textField id="docroot" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.vs.docroot']}" text="#{pageSession.valueMap['docroot']}" />
         </sun:property>
 
     </sun:propertySheetSection>
@@ -117,7 +117,7 @@
          </sun:property>
 
         <sun:property id="accesslog"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.path}" helpText="$resource{i18n_web.vs.pathHelp}">
-            <sun:textField id="accesslog" columns="$int{55}" text="#{pageSession.valueMap['accessLog']}" />
+            <sun:textField id="accesslog" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.vs.path']}" text="#{pageSession.valueMap['accessLog']}" />
         </sun:property>
 
     </sun:propertySheetSection>

@@ -89,7 +89,7 @@
             </sun:property>
 
             <sun:property id="NameTextProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.instanceName}" >
-                <sun:textField id="NameText" text="#{pageSession.name}" styleClass="required" columns="$int{55}" required="#{true}" />
+                <sun:textField id="NameText" text="#{pageSession.name}" styleClass="required" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.cluster.instanceName']}" required="#{true}" />
             </sun:property>
             <sun:property id="node"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.clusterNew.Node}" helpText="$resource{i18ncs.clusterNew.NodeHelp}">
                 <sun:dropDown id="node" labels="#{pageSession.nodesList}" selected="#{pageSession.node}" >

@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -97,14 +97,14 @@
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{userNameId});
                         />
-                        <sun:textField id="userName" styleClass="required" columns="$int{40}" text="#{requestScope.userName}" required="#{false}" />
+                        <sun:textField id="userName" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.desc.Enabled']}" text="#{requestScope.userName}" required="#{false}" />
                     </sun:property>
                     
                     <sun:property id="pswdProp" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.pswd}" helpText="$resource{i18nc.reg.resetPswdHelp}" >                           
                         <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{pswdId});
                         />
-                        <sun:passwordField id="pswd" styleClass="required" columns="$int{40}" text="#{requestScope.pswd}" required="#{false}" />
+                        <sun:passwordField id="pswd" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.reg.pswd']}" text="#{requestScope.pswd}" required="#{false}" />
                     </sun:property>
                     
                     <sun:property id="space"  >                      
@@ -115,14 +115,14 @@
                         <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{proxyId});
                         />
-                        <sun:textField id="proxy" columns="$int{40}" text="#{requestScope.proxy}" required="#{false}" />
+                        <sun:textField id="proxy" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.reg.proxy']}" text="#{requestScope.proxy}" required="#{false}" />
                     </sun:property>
                     
                     <sun:property id="port" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.port}">                           
                         <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{portId});
                         />
-                        <sun:textField id="port"  columns="$int{8}" text="#{requestScope.port}" required="#{false}" />
+                        <sun:textField id="port"  columns="$int{8}" maxLength="#{sessionScope.fieldLengths['maxLength.reg.port']}" text="#{requestScope.port}" required="#{false}" />
                         "</br>
                     </sun:property>
                     <sun:property  >
@@ -140,21 +140,21 @@
                             <!afterCreate
                                 getClientId(component="$this{component}" clientId=>$page{emailAdrId});
                             />
-                        <sun:textField id="emailAdr" styleClass="required" columns="$int{40}" text="#{requestScope.emailAdr}" required="#{false}" />
+                        <sun:textField id="emailAdr" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.reg.reg.emailAdr']}" text="#{requestScope.emailAdr}" required="#{false}" />
                     </sun:property>
                     
                     <sun:property id="newPswdProp" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.pswd}">                           
                             <!afterCreate
                                 getClientId(component="$this{component}" clientId=>$page{newPswdId});
                             />
-                        <sun:passwordField id="newPswd" styleClass="required" columns="$int{40}" text="#{requestScope.newPswd}" required="#{false}" />
+                        <sun:passwordField id="newPswd" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.reg.pswd']}" text="#{requestScope.newPswd}" required="#{false}" />
                     </sun:property>
                     
                     <sun:property id="pswd2Prop" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.retypePswd}"  helpText="$resource{i18nc.reg.pswdHelp}" >                           
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{newPswd2Id});
                         />
-                        <sun:passwordField id="newPswd2" styleClass="required" columns="$int{40}" text="#{requestScope.newPswd2}" required="#{false}" />
+                        <sun:passwordField id="newPswd2" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.reg.retypePswd']}" text="#{requestScope.newPswd2}" required="#{false}" />
                          
                     </sun:property>
                     <!-- due to bug# 6627551
@@ -162,7 +162,7 @@
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{screenNameId});
                         />
-                        <sun:textField id="screenName"  disabled="#{true}"  styleClass="required" columns="$int{40}" text="#{requestScope.screenName}" required="#{false}" />
+                        <sun:textField id="screenName"  disabled="#{true}"  styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.reg.screenName']}" text="#{requestScope.screenName}" required="#{false}" />
                     </sun:property>
                     -->
                     
@@ -171,21 +171,21 @@
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{firstNameId});
                         />
-                         <sun:textField id="firstName" styleClass="required" columns="$int{40}" text="#{requestScope.firstName}" required="#{false}" />
+                         <sun:textField id="firstName" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.reg.firstName']}" text="#{requestScope.firstName}" required="#{false}" />
                      </sun:property>
                     
                     <sun:property id="lastName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.lastName}" >                           
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{lastNameId});
                         />
-                        <sun:textField id="lastName" styleClass="required" columns="$int{40}" text="#{requestScope.lastName}" required="#{false}" />
+                        <sun:textField id="lastName" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.reg.lastName']}" text="#{requestScope.lastName}" required="#{false}" />
                     </sun:property>
                     
                     <sun:property id="companyName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.companyName}" >                           
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{companyNameId});
                         />
-                        <sun:textField id="companyName" columns="$int{40}" text="#{requestScope.companyName}" required="#{false}" />
+                        <sun:textField id="companyName" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.reg.companyName']}" text="#{requestScope.companyName}" required="#{false}" />
                     </sun:property>
                     
                     <sun:property id="country" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.country}" >                           
@@ -209,14 +209,14 @@
                         <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{newProxyId});
                         />
-                        <sun:textField id="newProxy" columns="$int{40}" text="#{requestScope.newProxy}" required="#{false}" />
+                        <sun:textField id="newProxy" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.reg.country']}" text="#{requestScope.newProxy}" required="#{false}" />
                     </sun:property>
                     
                     <sun:property id="newPort" visible="#{false}" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.port}">
                         <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{newPortId});
                         />
-                        <sun:textField id="newPort"  columns="$int{8}" text="#{requestScope.newPort}" required="#{false}" />
+                        <sun:textField id="newPort"  columns="$int{8}" maxLength="#{sessionScope.fieldLengths['maxLength.reg.port']}" text="#{requestScope.newPort}" required="#{false}" />
                     </sun:property>
                     <sun:property>
                     <sun:textField  id="action" visible="$boolean{false}" text="#{pageSession.radioChoosen}">

@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -220,12 +220,12 @@
                                             <sun:label text="$resource{i18nc.logViewer.fromDateLabel}" />
                                         "</td>
                                         "<td nowrap>
-                                            <sun:textField id="fromDate" columns="$int{20}" text="#{requestScope.fromDate}"/>
+                                            <sun:textField id="fromDate" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.logViewer.fromDate']}" text="#{requestScope.fromDate}"/>
                                             <sun:helpInline id="fromDateHelp" text="$resource{i18nc.logViewer.fromDateHelp, #{requestScope.fromDate}}" />
                                         "</td>
                                         "<td nowrap>&nbsp;</td>
                                         "<td nowrap>
-                                            <sun:textField id="fromTime" columns="$int{20}" text="#{requestScope.fromTime}"/>
+                                            <sun:textField id="fromTime" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.logViewer.fromTime']}" text="#{requestScope.fromTime}"/>
                                     "</td></tr>
                                     "<tr><td nowrap>&nbsp;</td></tr>
                                     "<tr valign="top">
@@ -235,12 +235,12 @@
                                             <sun:label text="$resource{i18nc.logViewer.toDateLabel}" />
                                         "</td>
                                         "<td nowrap>
-                                            <sun:textField id="toDate" columns="$int{20}" text="#{requestScope.toDate}"/>
+                                            <sun:textField id="toDate" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.logViewer.toDate']}" text="#{requestScope.toDate}"/>
                                             <sun:helpInline id="toDateHelp" text="$resource{i18nc.logViewer.toDateHelp, #{requestScope.fromDate}}" />
                                         "</td>
                                         "<td nowrap>&nbsp;</td>
                                         "<td nowrap>
-                                            <sun:textField id="toTime" columns="$int{20}" text="#{requestScope.toTime}"/>
+                                            <sun:textField id="toTime" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.logViewer.toTime']}" text="#{requestScope.toTime}"/>
                                             <sun:helpInline id="toTimeHelp" text="$resource{i18nc.logViewer.toTimeHelp, #{toTime}}" />
                                     "</td></tr>
                                 "</table>
@@ -275,16 +275,16 @@
                 <sun:staticText id="displayNumHelp"text="$resource{i18nc.logViewer.moduleHelp}"/>
             </sun:property>
            <sun:property id="CustomLoggerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.customLoggerLabel}" helpText="$resource{i18nc.logViewer.customLoggerLabelHelp}">
-                <sun:textArea id="customLogger" rows="$int{8}" columns="$int{30}" text="#{requestScope.customLogger}">
+                <sun:textArea id="customLogger" rows="$int{8}" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.logViewer.customLogger']}" text="#{requestScope.customLogger}">
                 </sun:textArea><sun:staticText id="displayNumHelp"text="$resource{i18nc.logViewer.customLoggerHelp}"/>
             </sun:property>            
           <sun:property id="nameValueProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.nvpLabel}" helpText="$resource{i18nc.logViewer.nvpHelp}">
-                <sun:textArea id="nameValue" rows="$int{8}" columns="$int{30}" text="#{requestScope.nvp}">
+                <sun:textArea id="nameValue" rows="$int{8}" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.logViewer.nvp']}" text="#{requestScope.nvp}">
                 </sun:textArea>
             </sun:property>
             <sun:property id="anySearchProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"
                           label="Any Search" helpText="$resource{i18nc.logViewer.nvpHelp}">
-                <sun:textField id="anySearch" columns="$int{20}" text="#{requestScope.anySearch}"/>
+                <sun:textField id="anySearch" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.logViewer.anySearch']}" text="#{requestScope.anySearch}"/>
             </sun:property>
          <sun:property id="displayProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.numberToDisplayLabel}" helpText="$resource{i18nc.logViewer.truncateMessageHelp}">
                  <sun:dropDown id="display" selected="#{requestScope.numToDisplay}" labels={"40" "100" "250" "1000"} >

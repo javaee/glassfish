@@ -43,19 +43,19 @@
     </sun:property>
 
     <sun:property id="IdTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-        <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['Name']}" columns="$int{55}" required="#{true}" />
+        <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['Name']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Name']}" required="#{true}" />
     </sun:property>
 
     <sun:property id="classNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.lifecycleModule.classname}" helpText="$resource{i18nc.lifecycleModule.classnameHelp}" >
-        <sun:textField id="classname" styleClass="required" columns="$int{70}" text="#{pageSession.valueMap['class-name']}"  required="#{true}" />
+        <sun:textField id="classname" styleClass="required" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.lifecycleModule.classname']}" text="#{pageSession.valueMap['class-name']}"  required="#{true}" />
     </sun:property> 
 
     <sun:property id="pathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"  label="$resource{i18nc.lifecycleModule.classPath}" helpText="$resource{i18nc.lifecycleModule.classPathHelp}" >
-        <sun:textField id="classPath" columns="$int{70}" text="#{pageSession.valueMap['classpath']}" />
+        <sun:textField id="classPath" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.lifecycleModule.classPath']}" text="#{pageSession.valueMap['classpath']}" />
     </sun:property> 
 
     <sun:property id="loadOrderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.lifecycleModule.loadOrder}"  helpText="$resource{i18nc.lifecycleModule.loadOrderHelp}" >
-        <sun:textField id="loadOrder" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['load-order']}" />
+        <sun:textField id="loadOrder" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.lifecycleModule.loadOrder']}" text="#{pageSession.valueMap['load-order']}" />
     </sun:property> 
 
     
@@ -85,7 +85,7 @@
     </sun:property>
 
     <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
-        <sun:textField id="desc" columns="$int{70}" text="#{pageSession.valueMap['Description']}" />
+        <sun:textField id="desc" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.valueMap['Description']}" />
     </sun:property>
 
     </sun:propertySheetSection>

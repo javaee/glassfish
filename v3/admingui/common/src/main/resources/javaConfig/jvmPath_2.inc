@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -82,10 +82,10 @@
         <sun:propertySheetSection id="propertSectionTextField">
 
             <sun:property id="NativeLibraryPathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.NativeLibraryPathPrefix}" helpText="$resource{i18nc.jvm.NativeLibraryPathPrefixHelp}">
-                <sun:textArea id="NativeLibraryPathPrefix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['nativeLibraryPathPrefix']}"/>
+                <sun:textArea id="NativeLibraryPathPrefix" rows="$int{4}" columns="$int{75}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.NativeLibraryPathPrefix']}" text="#{pageSession.valueMap['nativeLibraryPathPrefix']}"/>
             </sun:property>
             <sun:property id="NativeLibraryPathSuffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.NativeLibraryPathSuffix}" helpText="$resource{i18nc.jvm.NativeLibraryPathSuffixHelp}">
-                <sun:textArea id="NativeLibraryPathSuffix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['nativeLibraryPathSuffix']}"/>
+                <sun:textArea id="NativeLibraryPathSuffix" rows="$int{4}" columns="$int{75}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.NativeLibraryPathSuffix']}" text="#{pageSession.valueMap['nativeLibraryPathSuffix']}"/>
             </sun:property>
             <sun:property  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" >
                 <sun:staticText text=" " />
@@ -112,13 +112,13 @@
             </sun:property>
             
             <sun:property id="SystemClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.SystemClasspath}" helpText="$resource{i18nc.jvm.SystemClasspathHelp}">
-                <sun:textArea disabled="true"  id="systemClasspath" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['systemClasspath']}"/>
+                <sun:textArea disabled="true"  id="systemClasspath" rows="$int{4}" columns="$int{75}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.SystemClasspath']}" text="#{pageSession.valueMap['systemClasspath']}"/>
             </sun:property>
             <sun:property id="ClasspathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ClasspathPrefix}" helpText="$resource{i18nc.jvm.ClasspathPrefixHelp}">
-                <sun:textArea disabled="true"  id="ClasspathPrefix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['classpathPrefix']}"/>
+                <sun:textArea disabled="true"  id="ClasspathPrefix" rows="$int{4}" columns="$int{75}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.ClasspathPrefix']}" text="#{pageSession.valueMap['classpathPrefix']}"/>
             </sun:property>
             <sun:property id="ClasspathSuffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ClasspathSuffix}" helpText="$resource{i18nc.jvm.ClasspathSuffixHelp}">
-                <sun:textArea disabled="true"  id="ClasspathSuffix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['classpathSuffix']}"/>
+                <sun:textArea disabled="true"  id="ClasspathSuffix" rows="$int{4}" columns="$int{75}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.ClasspathSuffix']}" text="#{pageSession.valueMap['classpathSuffix']}"/>
             </sun:property>
             
         </sun:propertySheetSection>

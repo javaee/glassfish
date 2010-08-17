@@ -43,7 +43,7 @@
             </sun:property>
 
         <sun:property id="p2"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.statementTimeoutInSeconds}" helpText="$resource{i18njdbc.jdbcPool.statementTimeoutInSecondsHelp}">
-            <sun:textField id="va" columns="$int{10}" text="#{pageSession.valueMap['statementTimeoutInSeconds']}" >
+            <sun:textField id="va" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.statementTimeoutInSeconds']}" text="#{pageSession.valueMap['statementTimeoutInSeconds']}" >
             <!afterCreate
                  getClientId(component="$this{component}" clientId=>$page{timeoutId});
             />
@@ -51,17 +51,17 @@
             <sun:staticText id="vasec" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
         <sun:property id="cacheSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.statementCacheSize}" helpText="$resource{i18njdbc.jdbcPool.statementCacheSizeHelp}">
-            <sun:textField id="cachesize" columns="$int{10}" text="#{pageSession.valueMap['statementCacheSize']}" >
+            <sun:textField id="cachesize" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.statementCacheSize']}" text="#{pageSession.valueMap['statementCacheSize']}" >
 
             </sun:textField>
         </sun:property>
         <sun:property id="initSqlProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.initSql}" helpText="$resource{i18njdbc.jdbcPool.initSqlHelp}">
-            <sun:textField id="initsql" columns="$int{50}" text="#{pageSession.valueMap['initSql']}" >
+            <sun:textField id="initsql" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.initSql']}" text="#{pageSession.valueMap['initSql']}" >
 
             </sun:textField>
         </sun:property>
         <sun:property id="sqlTLProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.sqlTL}"  helpText="$resource{i18njdbc.jdbcPool.sqlTLHelp}">
-            <sun:textField id="sqlTL" columns="$int{50}" text="#{pageSession.valueMap['sqlTraceListeners']}" >
+            <sun:textField id="sqlTL" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.sqlTL']}" text="#{pageSession.valueMap['sqlTraceListeners']}" >
 
             </sun:textField>
         </sun:property>
@@ -75,12 +75,12 @@
 <sun:propertySheetSection id="connectionPropertySheet" label="$resource{i18njdbc.jdbcPool.connectionSettings}">
 
     <sun:property id="p1"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.validateAtmostOnceInSeconds}" helpText="$resource{i18njdbc.jdbcPool.validateAtmostOnceInSecondsHelp}">
-        <sun:textField id="va" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['validateAtmostOncePeriodInSeconds']}" /> 
+        <sun:textField id="va" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.validateAtmostOnceInSeconds']}" text="#{pageSession.valueMap['validateAtmostOncePeriodInSeconds']}" /> 
         <sun:staticText id="vasec" text="$resource{i18n.common.Seconds}"/>
     </sun:property>
 
     <sun:property id="p2"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.connectionLeakTimeoutInSeconds}" helpText="$resource{i18njdbc.jdbcPool.connectionLeakTimeoutInSecondsHelp}">
-        <sun:textField id="p2" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['connectionLeakTimeoutInSeconds']}"/> 
+        <sun:textField id="p2" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.connectionLeakTimeoutInSeconds']}" text="#{pageSession.valueMap['connectionLeakTimeoutInSeconds']}"/> 
         <sun:staticText id="vasec" text="$resource{i18n.common.Seconds}"/>
    </sun:property>   
 
@@ -89,11 +89,11 @@
     </sun:property> 
 
     <sun:property id="p4"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.connectionCreationRetryAttempts}" helpText="$resource{i18njdbc.jdbcPool.connectionCreationRetryAttemptsHelp}">
-        <sun:textField id="p4" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['connectionCreationRetryAttempts']}"/> 
+        <sun:textField id="p4" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.connectionCreationRetryAttempts']}" text="#{pageSession.valueMap['connectionCreationRetryAttempts']}"/> 
    </sun:property>   
 
     <sun:property id="p5"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.connectionCreationRetryIntervalInSeconds}" helpText="$resource{i18njdbc.jdbcPool.connectionCreationRetryIntervalInSecondsHelp}">
-        <sun:textField id="p5" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['connectionCreationRetryIntervalInSeconds']}"/> 
+        <sun:textField id="p5" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.connectionCreationRetryIntervalInSeconds']}" text="#{pageSession.valueMap['connectionCreationRetryIntervalInSeconds']}"/> 
         <sun:staticText id="p51" text="$resource{i18n.common.Seconds}"/>
    </sun:property>
 
@@ -121,7 +121,7 @@
    </sun:property>
 
     <sun:property id="p10"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.maxConnectionUsageCount}" helpText="$resource{i18njdbc.jdbcPool.maxConnectionUsageCountHelp}">
-        <sun:textField id="p5" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['maxConnectionUsageCount']}"/> 
+        <sun:textField id="p5" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.maxConnectionUsageCount']}" text="#{pageSession.valueMap['maxConnectionUsageCount']}"/> 
    </sun:property>
 
 </sun:propertySheetSection>
@@ -163,7 +163,7 @@
             </sun:dropDown>
         </sun:property>
         <sun:property id="validCNProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.valCN}" helpText="$resource{i18njdbc.jdbcPool.valCNHelp}">
-            <sun:textField id="validCNTextField"  columns="$int{55}" text="#{pageSession.valueMap.validationClassname}" >
+            <sun:textField id="validCNTextField"  columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.valCN']}" text="#{pageSession.valueMap.validationClassname}" >
             <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{validCNTextField});
             />

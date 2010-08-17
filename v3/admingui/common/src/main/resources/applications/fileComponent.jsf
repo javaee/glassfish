@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,7 @@
         />
    </sun:radioButton>
     "<br />
-    <sun:upload id="fileupload" style="margin-left: 17pt" columns="$int{50}" uploadedFile="#{requestScope.uploadedFile}"
+    <sun:upload id="fileupload" style="margin-left: 17pt" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.deploy.uploadedFile']}" uploadedFile="#{requestScope.uploadedFile}"
         onChange="javascript:admingui.deploy.setFieldValue('#{appNameId}', this.value,  '#{dropDownProp}', '#{typeId}', '#{contextRootId}', '#{extensionId}', window, '#{sessionScope.appTypeString}');">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{fileuploadId});
@@ -62,7 +62,7 @@
     />
     "<br />
 
-    <sun:textField id="dirPath" required="#{false}" text="#{dirPath}" submitForm="false" style="margin-left: 17pt" columns="$int{50}"
+    <sun:textField id="dirPath" required="#{false}" text="#{dirPath}" submitForm="false" style="margin-left: 17pt" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.deploy.dirPath']}" 
         onChange="javascript:admingui.deploy.setFieldValue('#{appNameId}', this.value, '#{dropDownProp}', '#{typeId}', '#{contextRootId}', '#{extensionId}', window, '#{sessionScope.appTypeString}'); ">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{dirPathId});

@@ -44,7 +44,7 @@
         </sun:property>
 
         <sun:property id="ServerNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.serverNameLabel}" helpText="$resource{i18n_web.http.serverNameHelp}" >
-            <sun:textField id="ServerName" columns="$int{50}" text="#{pageSession.httpMap['serverName']}" />
+            <sun:textField id="ServerName" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.http.serverName']}" text="#{pageSession.httpMap['serverName']}" />
         </sun:property>
 
         <sun:property id="DefaultVirtServersProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.defVirtualServerLabel}" helpText="$resource{i18n_web.http.defVirtualServerLabelHelp}">
@@ -52,17 +52,17 @@
         </sun:property>
 
         <sun:property id="RedirectPortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.redirectPortLabel}" helpText="$resource{i18n_web.http.redirectPortLabelHelp}" >
-            <sun:textField id="RedirectPort" styleClass="port" columns="$int{20}" text="#{pageSession.httpMap['redirectPort']}" />
+            <sun:textField id="RedirectPort" styleClass="port" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.redirectPort']}" text="#{pageSession.httpMap['redirectPort']}" />
         </sun:property>
 
 
         <sun:property id="maxC"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.maxConnections}" helpText="$resource{i18n_web.http.maxConnectionsHelp}" >
-            <sun:textField id="maxC" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['maxConnections']}" />
+            <sun:textField id="maxC" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.maxConnections']}" text="#{pageSession.httpMap['maxConnections']}" />
         </sun:property>
 
 
         <sun:property id="TimeoutSeconds"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.TimeoutSeconds}" helpText="$resource{i18n_web.http.TimeoutSecondsHelp}" >
-            <sun:textField id="TimeoutSeconds" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['timeoutSeconds']}" />
+            <sun:textField id="TimeoutSeconds" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.TimeoutSeconds']}" text="#{pageSession.httpMap['timeoutSeconds']}" />
             <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
@@ -71,36 +71,36 @@
         </sun:property>
 
           <sun:property id="connectionUploadTimeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.ConnectionUploadTimeout}" helpText="$resource{i18n_web.http.ConnectionUploadTimeoutHelp}" >
-            <sun:textField id="connectionUploadTimeout" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['connectionUploadTimeoutMillis']}" />
+            <sun:textField id="connectionUploadTimeout" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.ConnectionUploadTimeout']}" text="#{pageSession.httpMap['connectionUploadTimeoutMillis']}" />
             <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
         </sun:property>
 
         <sun:property id="RequestTimeoutSeconds"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.RequestTimeoutSeconds}" helpText="$resource{i18n_web.http.RequestTimeoutSecondsHelp}" >
-            <sun:textField id="RequestTimeoutSeconds" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['requestTimeoutSeconds']}" />
+            <sun:textField id="RequestTimeoutSeconds" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.RequestTimeoutSeconds']}" text="#{pageSession.httpMap['requestTimeoutSeconds']}" />
             <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
         <sun:property id="sendBsize"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.SendBufferSize}" helpText="$resource{i18n_web.http.SendBufferSizeHelp}" >
-            <sun:textField id="sendBsize" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['sendBufferSizeBytes']}" />
+            <sun:textField id="sendBsize" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.SendBufferSize']}" text="#{pageSession.httpMap['sendBufferSizeBytes']}" />
             <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
         </sun:property>
 
         <sun:property id="headerBLength"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.HeaderBufferLength}" helpText="$resource{i18n_web.http.HeaderBufferLengthHelp}" >
-            <sun:textField id="headerBLength" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['headerBufferLengthBytes']}" />
+            <sun:textField id="headerBLength" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.HeaderBufferLength']}" text="#{pageSession.httpMap['headerBufferLengthBytes']}" />
             <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
         </sun:property>
 
         <sun:property id="MaxPostSize"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.MaxPostSize}" helpText="$resource{i18n_web.http.MaxPostSizeHelp}" >
-            <sun:textField id="headerBLength" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['maxPostSizeBytes']}" />
+            <sun:textField id="headerBLength" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.MaxPostSize']}" text="#{pageSession.httpMap['maxPostSizeBytes']}" />
             <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
         </sun:property>
 
         <sun:property id="UriEncoding"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.UriEncoding}" helpText="$resource{i18n_web.http.UriEncodingHelp}" >
-            <sun:textField id="UriEncoding"  columns="$int{50}" text="#{pageSession.httpMap['uriEncoding']}" />
+            <sun:textField id="UriEncoding"  columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.http.UriEncoding']}" text="#{pageSession.httpMap['uriEncoding']}" />
         </sun:property>
 
         <sun:property id="Version"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.Version}" helpText="$resource{i18n_web.http.VersionHelp}" >
-            <sun:textField id="Version"  columns="$int{50}" text="#{pageSession.httpMap['version']}" />
+            <sun:textField id="Version"  columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.http.Version']}" text="#{pageSession.httpMap['version']}" />
         </sun:property>
 
        <sun:property id="Compression"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.Compression}" helpText="$resource{i18n_web.http.CompressionHelp}">
@@ -109,34 +109,34 @@
 
 
         <sun:property id="CompressableMimeType"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.CompressableMimeType}" helpText="$resource{i18n_web.http.CompressableMimeTypeHelp}" >
-            <sun:textField id="CompressableMimeType"  columns="$int{50}" text="#{pageSession.httpMap['compressableMimeType']}" />
+            <sun:textField id="CompressableMimeType"  columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.http.CompressableMimeType']}" text="#{pageSession.httpMap['compressableMimeType']}" />
         </sun:property>
 
         <sun:property id="compressableMime"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.CompressionMinSizeBytes}" helpText="$resource{i18n_web.http.CompressionMinSizeBytesHelp}" >
-            <sun:textField id="compressableMime"  styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['compressionMinSizeBytes']}" />
+            <sun:textField id="compressableMime"  styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.CompressionMinSizeBytes']}" text="#{pageSession.httpMap['compressionMinSizeBytes']}" />
             <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
         </sun:property>
 
 
         <sun:property id="NoCompressionUserAgents"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.NoCompressionUserAgents}" helpText="$resource{i18n_web.http.NoCompressionUserAgentsHelp}" >
-            <sun:textField id="NoCompressionUserAgents" styleClass="integer" columns="$int{20}" text="#{pageSession.httpMap['noCompressionUserAgents']}" />
+            <sun:textField id="NoCompressionUserAgents" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.http.NoCompressionUserAgents']}" text="#{pageSession.httpMap['noCompressionUserAgents']}" />
         </sun:property>
 
 
         <sun:property id="RestrictedUserAgents"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.RestrictedUserAgents}" helpText="$resource{i18n_web.http.RestrictedUserAgentsHelp}" >
-            <sun:textField id="RestrictedUserAgents"  columns="$int{50}" text="#{pageSession.httpMap['restrictedUserAgents']}" />
+            <sun:textField id="RestrictedUserAgents"  columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.http.RestrictedUserAgents']}" text="#{pageSession.httpMap['restrictedUserAgents']}" />
         </sun:property>
 
         <sun:property id="DefaultResponseType"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.DefaultResponseType}" helpText="$resource{i18n_web.http.DefaultResponseTypeHelp}" >
-            <sun:textField id="DefaultResponseType"  columns="$int{50}" text="#{pageSession.httpMap['defaultResponseType']}" />
+            <sun:textField id="DefaultResponseType"  columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.http.DefaultResponseType']}" text="#{pageSession.httpMap['defaultResponseType']}" />
         </sun:property>
 
         <sun:property id="ForcedResponseType"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.ForcedResponseType}" helpText="$resource{i18n_web.http.ForcedResponseTypeHelp}" >
-            <sun:textField id="ForcedResponseType"  columns="$int{50}" text="#{pageSession.httpMap['forcedResponseType']}" />
+            <sun:textField id="ForcedResponseType"  columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.http.ForcedResponseType']}" text="#{pageSession.httpMap['forcedResponseType']}" />
         </sun:property>
 
         <sun:property id="adapter"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.Adapter}" helpText="$resource{i18n_web.http.AdapterHelp}" >
-            <sun:textField id="adapter"   columns="$int{50}" text="#{pageSession.httpMap['adapter']}" />
+            <sun:textField id="adapter"   columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.http.Adapter']}" text="#{pageSession.httpMap['adapter']}" />
         </sun:property>
 
 

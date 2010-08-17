@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -37,13 +37,13 @@
 <sun:propertySheet id="propertySheet">			 
     <sun:propertySheetSection id="propertSectionTextField">
         <sun:property id="appRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.AppRoot}" helpText="$resource{i18n.server.AppRootHelp}">
-            <sun:textField id="AppRoot" columns="$int{55}" text="#{pageSession.valueMap['ApplicationRoot']}"/>
+            <sun:textField id="AppRoot" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.server.AppRoot']}" text="#{pageSession.valueMap['ApplicationRoot']}"/>
         </sun:property>
         <sun:property id="logRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.LogRoot}" helpText="$resource{i18n.server.LogRootHelp}">
-            <sun:textField id="LogRoot" columns="$int{55}" text="#{pageSession.valueMap['LogRoot']}"/>
+            <sun:textField id="LogRoot" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.server.LogRoot']}" text="#{pageSession.valueMap['LogRoot']}"/>
         </sun:property>
         <sun:property id="localeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.Locale}" helpText="$resource{i18n.server.LocaleHelp}">
-            <sun:textField id="Locale" columns="$int{55}" text="#{pageSession.valueMap['Locale']}"/>
+            <sun:textField id="Locale" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.server.Locale']}" text="#{pageSession.valueMap['Locale']}"/>
         </sun:property>
     "<br /><br />
     </sun:propertySheetSection>

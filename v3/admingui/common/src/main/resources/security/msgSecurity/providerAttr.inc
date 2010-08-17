@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -45,7 +45,7 @@
         <sun:staticText id="ProviderId" text="#{pageSession.valueMap['Name']}" />
     </sun:property>
     <sun:property id="ProviderIdTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecProvider.ProviderIdLabel}">
-        <sun:textField id="ProviderIdText" styleClass="required" text="#{pageSession.valueMap['Name']}" columns="$int{55}" required="#{true}" />
+        <sun:textField id="ProviderIdText" styleClass="required" text="#{pageSession.valueMap['Name']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.msgSecProvider.ProviderId']}" required="#{true}" />
     </sun:property>
 
     <sun:property id="DefaultProviderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecProvider.defaultProviderLabel}" >
@@ -57,7 +57,7 @@
     </sun:property>                          
     
     <sun:property id="ClassNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecProvider.classNameLabel}" helpText="$resource{i18nc.msgSecProvider.classNameHelp}">
-        <sun:textField id="ClassName" styleClass="required" columns="$int{60}" text="#{pageSession.valueMap['ClassName']}" required="#{true}" />
+        <sun:textField id="ClassName" styleClass="required" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.msgSecProvider.className']}" text="#{pageSession.valueMap['ClassName']}" required="#{true}" />
     </sun:property>
 
 </sun:propertySheetSection>                            

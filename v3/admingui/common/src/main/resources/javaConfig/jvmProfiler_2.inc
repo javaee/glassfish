@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -95,7 +95,7 @@
             <!-- Text Field section -->
             <sun:propertySheetSection id="propertSectionTextField">
                 <sun:property id="profilerNameProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ProfilerName}">
-                    <sun:textField id="ProfilerName"  styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['name']}" required="#{true}"/>
+                    <sun:textField id="ProfilerName"  styleClass="required" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.ProfilerName']}" text="#{pageSession.valueMap['name']}" required="#{true}"/>
                 </sun:property>
                 <sun:property id="profilerNamePropEdit" rendered="#{edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ProfilerName}">
                     <sun:staticText id="ProfilerName2" text="#{pageSession.valueMap['name']}"/>
@@ -104,10 +104,10 @@
                     <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
                </sun:property>
                 <sun:property id="ClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.Classpath}" helpText="$resource{i18nc.jvm.ClasspathHelp}">
-                    <sun:textField id="ClasspathLabel" columns="$int{55}" text="#{pageSession.valueMap['classpath']}" />
+                    <sun:textField id="ClasspathLabel" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.Classpath']}"  text="#{pageSession.valueMap['classpath']}" />
                 </sun:property>
                 <sun:property id="NativeLibraryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.NativeLibraryPath}" helpText="$resource{i18nc.jvm.NativeLibraryPathHelp}">
-                    <sun:textField id="NativeLibrary" columns="$int{55}" text="#{pageSession.valueMap['nativeLibraryPath']}"/>
+                    <sun:textField id="NativeLibrary" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.NativeLibraryPath']}" text="#{pageSession.valueMap['nativeLibraryPath']}"/>
                 </sun:property>
                 "<br /><br />
             </sun:propertySheetSection>
