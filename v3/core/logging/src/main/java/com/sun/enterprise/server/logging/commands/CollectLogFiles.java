@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.server.logging.commands;
 
+import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -95,6 +96,10 @@ public class CollectLogFiles implements AdminCommand {
     @Inject
     GFFileHandler gf;
 
+    @Inject
+    LoggingConfigImpl loggingConfig;
+
+    boolean zipDone = false;
 
     public void execute(AdminCommandContext context) {
 
@@ -102,9 +107,9 @@ public class CollectLogFiles implements AdminCommand {
 
             final ActionReport report = context.getActionReport();
 
-            File tempFile = File.createTempFile("download", "tmp");
-            tempFile.delete();
-            tempFile.mkdirs();
+            File tempDirectory = File.createTempFile("downloaded", "log");
+            tempDirectory.delete();
+            tempDirectory.mkdirs();
 
             Properties props = initFileXferProps();
 
@@ -114,25 +119,30 @@ public class CollectLogFiles implements AdminCommand {
             List<String> instancesForReplication = new ArrayList<String>();
 
             File outputFile = new File(outputFilePath);
-            if(!outputFile.exists()){
+            if (!outputFile.exists()) {
                 boolean created = outputFile.mkdir();
-                if(!created) {
+                if (!created) {
                     report.setMessage("Outputfilepath Doen not exists. Please enter correct value for Outputfilepath.");
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);                    
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 }
             }
 
             if (targetServer != null && targetServer.isDas()) {
+
+                // This loop if target instance is DAS
                 File file = new File(outputFilePath + File.separator + "server");
                 file.mkdir();
 
+                // Getting currenet Log File
                 File logFile = gf.getCurrentLogFile();
 
+                // File to copy in output file path.
                 File toFile = new File(file, logFile.getName());
 
                 FileInputStream from = null;
                 FileOutputStream to = null;
 
+                // Copying File
                 from = new FileInputStream(logFile);
                 to = new FileOutputStream(toFile);
                 byte[] buffer = new byte[4096];
@@ -144,7 +154,28 @@ public class CollectLogFiles implements AdminCommand {
                 if (!toFile.exists()) {
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 }
+
+                try {
+                    String zipFile = loggingConfig.createZipFile(outputFile.getAbsolutePath());
+                    if (zipFile==null || new File(zipFile)==null) {
+                        // Failure during zip
+                        final String errorMsg = localStrings.getLocalString(
+                                "download.errDownloading", "Error while creating zip file.");
+                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                        report.setMessage(errorMsg);
+                    }
+
+                } catch (Exception e) {
+                    // Catching Exception if any
+                    final String errorMsg = localStrings.getLocalString(
+                            "download.errDownloading", "Error while creating zip file.");
+                    logger.log(Level.SEVERE, errorMsg, e);
+                    report.setMessage(errorMsg);
+                    report.setFailureCause(e);
+                }
+
             } else {
+                // This loop if target instance is not DAS
                 if (targetServer != null) {
                     instancesForReplication.add(target);
                 } else {
@@ -154,34 +185,56 @@ public class CollectLogFiles implements AdminCommand {
                     }
                 }
 
+                // Executing Remote Command to download zip file in temp directory
                 ActionReport.ExitCode result = ClusterOperationUtil.replicateCommand("_get-log-file",
                         FailurePolicy.Error,
                         FailurePolicy.Error,
                         instancesForReplication,
                         context,
                         new ParameterMap(),
-                        habitat, tempFile);
+                        habitat, tempDirectory);
 
+                // Creating zip file and returning zip file absolute path.
+                String zipFileName = loggingConfig.createZipFile(tempDirectory.getAbsolutePath());
+
+
+                // Playing with outbound payload to attach zip file..
                 Payload.Outbound outboundPayload = context.getOutboundPayload();
-                for (File instanceSubDir : tempFile.listFiles()) {
-                    for (File fileFromInstance : instanceSubDir.listFiles()) {
 
-                        if (logger.isLoggable(Level.FINE)) {
-                            logger.log(Level.FINE, "About to download artifact " + fileFromInstance.getAbsolutePath());
+                // Code to download individual log files.
+                /*for (File instanceSubDir : tempDirectory.listFiles()) {
+                                    for (File fileFromInstance : instanceSubDir.listFiles()) {
+
+                                        if (logger.isLoggable(Level.FINE)) {
+                                            logger.log(Level.FINE, "About to download artifact " + fileFromInstance.getAbsolutePath());
+                                        }
+                                        outboundPayload.attachFile(
+                                                "application/octet-stream",
+                                                tempDirectory.toURI().relativize(fileFromInstance.toURI()),
+                                                "files",
+                                                props,
+                                                fileFromInstance);
+                                    }
+                            }*/
+
+                File zipFile = new File(zipFileName);
+
+                if (logger.isLoggable(Level.FINE)) {
+                            logger.log(Level.FINE, "About to download artifact " + zipFile.getAbsolutePath());
                         }
-                        outboundPayload.attachFile(
+
+                outboundPayload.attachFile(
                                 "application/octet-stream",
-                                tempFile.toURI().relativize(fileFromInstance.toURI()),
+                                tempDirectory.toURI().relativize(zipFile.toURI()),
                                 "files",
                                 props,
-                                fileFromInstance);
-                    }
-                }
+                                zipFile);
             }
 
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         }
         catch (Exception e) {
+            // Catching Exception if any
             final String errorMsg = localStrings.getLocalString(
                     "download.errDownloading", "Error while downloading generated files");
             logger.log(Level.SEVERE, errorMsg, e);

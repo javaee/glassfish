@@ -52,25 +52,23 @@ import java.util.Set;
 
 @Contract
 public interface LoggingConfig {
-    /* set propertyName to be propertyValue.  The logManager
-     *  readConfiguration is not called in this method.
-     */
 
+    /* set propertyName to be propertyValue.  The logManager
+        *  readConfiguration is not called in this method.
+        */
     String setLoggingProperty(String propertyName, String propertyValue) throws IOException;
 
     /* set propertyName to be propertyValue.  The logManager
 	*  readConfiguration is not called in this method.
 	*/
-
     String setLoggingProperty(String propertyName, String propertyValue, String targetServer) throws IOException;
 
     /* update the properties to new values.  properties is a Map of names of properties and
-      * their cooresponding value.  If the property does not exist then it is added to the
-      * logging.properties file.
-      *
-      * The readConfiguration method is called on the logManager after updating the properties.
-     */
-
+       * their cooresponding value.  If the property does not exist then it is added to the
+       * logging.properties file.
+       *
+       * The readConfiguration method is called on the logManager after updating the properties.
+      */
     Map<String, String> updateLoggingProperties(Map<String, String> properties) throws IOException;
 
     /* update the properties to new values for given target server..  properties is a Map of names of properties and
@@ -79,26 +77,22 @@ public interface LoggingConfig {
 	 *
 	 * The readConfiguration method is called on the logManager after updating the properties.
 	*/
-
     Map<String, String> updateLoggingProperties(Map<String, String> properties, String targetServer) throws IOException;
 
     /* get the properties and corresponding values in the logging.properties file for given target server..
-     */
-
+        */
     Map<String, String> getLoggingProperties(String targetServer) throws IOException;
 
     /* get the properties and corresponding values in the logging.properties file.
 	*/
-
     Map<String, String> getLoggingProperties() throws IOException;
 
     /* remove a set of properties from the logging.properties file.
-     */
-
+        */
     void removeLoggingProperties(Set<String> properties) throws IOException;
 
-    /* creates zip file for server.log for given target */
-
-    void createZipForLog(String target) throws IOException;
+    /* creates zip file for given sourceDirectory
+        */
+    String createZipFile(String sourceDir) throws IOException;
 
 }

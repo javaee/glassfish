@@ -395,6 +395,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
             throw ex;
         }
     }
+
     /*
       * remove the listed properties from the logging.properties file.
       * The readConfiguration method is called on the logManager after updating the properties.
@@ -403,7 +404,6 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
       *
       * @throws  IOException
       */
-
     public void removeLoggingProperties(Set<String> properties) throws IOException {
         try {
             openPropFile();
@@ -434,12 +434,13 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
         }
     }
 
-    public void createZipForLog(String target) throws IOException {
-        // need to implement this in MS5
-    }
-
-    private void createZip(String fileName[]) throws IOException {
-        // Create a buffer for reading the files
+    /*
+      * Returns the zip File Name to create for collection log files
+      *
+      * @param sourceDir Directory underneath zip file should be created.
+      *
+      */
+    private String getZipFileName(String sourceDir) {
 
         final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 
@@ -447,33 +448,118 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
         String currentTime = sdf.format(cal.getTime());
 
+        String zipFile = sourceDir + File.separator + "log_" + currentTime + ".zip";
 
-        byte[] buf = new byte[1024];
+        return zipFile;
+    }
 
-        // Create the ZIP file
-        String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
-        String target = instanceRoot + File.separator + "log_" + currentTime + ".zip";
-        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(target));
+    /*
+      * Creating zip file for given log files
+      *
+      * @param sourceDir Source directory from which needs to create zip
+      *
+      * @throws  IOException
+      */
+    public String createZipFile(String sourceDir) throws IOException {
 
-        // Compress the files
-        for (int i = 0; i < fileName.length; i++) {
-            FileInputStream in = new FileInputStream(fileName[i]);
+        String zipFile = getZipFileName(sourceDir);
+        boolean zipDone = false;
+        try
+        {
+            //create object of FileOutputStream
+            FileOutputStream fout = new FileOutputStream(zipFile);
 
-            // Add ZIP entry to output stream.
-            out.putNextEntry(new ZipEntry(fileName[i]));
+            //create object of ZipOutputStream from FileOutputStream
+            ZipOutputStream zout = new ZipOutputStream(fout);
 
-            // Transfer bytes from the file to the ZIP file
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
+            //create File object from source directory
+            File fileSource = new File(sourceDir);
+
+            zipDone = addDirectory(zout, fileSource);
+
+            //close the ZipOutputStream
+            zout.close();
+        }
+        catch (IOException ioe)
+        {
+            Logger.getAnonymousLogger().log(Level.SEVERE, "Error while creating zip file :", ioe);
+            throw ioe;
+        }
+        return zipFile;
+    }
+
+
+    /*
+      * Helper method to creating zip.
+      *
+      * @param zout ZipOutputStream which points to zip file
+      * @param  fileSource File which needs to add under zip
+      *
+      * @throws  IOException
+      */
+    private boolean addDirectory(ZipOutputStream zout, File fileSource) throws IOException {
+
+        boolean zipDone = false;
+
+        //get sub-folder/files list
+        File[] files = fileSource.listFiles();
+
+        for (int i = 0; i < files.length; i++)
+        {
+            //if the file is directory, call the function recursively
+            if (files[i].isDirectory())
+            {
+                addDirectory(zout, files[i]);
+                continue;
             }
 
-            // Complete the entry
-            out.closeEntry();
-            in.close();
+			if(files[i].getAbsolutePath().contains(".zip")) {
+                continue;
+            }
+             /*
+                    * we are here means, its file and not directory, so
+                    * add it to the zip file
+                    */
+            try
+            {
+                //create byte buffer
+                byte[] buffer = new byte[1024];
+
+                //create object of FileInputStream
+                FileInputStream fin = new FileInputStream(files[i].getAbsolutePath());
+                zout.putNextEntry(new ZipEntry(files[i].getAbsolutePath()));
+
+                /*
+                            * After creating entry in the zip file, actually
+                            * write the file.
+                            */
+                int length;
+                while ((length = fin.read(buffer)) > 0)
+                {
+                    zout.write(buffer, 0, length);
+                }
+
+                /*
+                            * After writing the file to ZipOutputStream, use
+                            * void closeEntry() method of ZipOutputStream class to
+                            * close the current entry and position the stream to
+                            * write the next entry.
+                            */
+                zout.closeEntry();
+
+                //close the InputStream
+                fin.close();
+
+                zipDone = true;
+            }
+            catch (IOException ioe)
+            {
+                Logger.getAnonymousLogger().log(Level.SEVERE, "Error while creating zip file :", ioe);
+                throw ioe;
+            }
         }
-        // Complete the ZIP file
-        out.close();
+        return zipDone;
     }
+
 
 }
