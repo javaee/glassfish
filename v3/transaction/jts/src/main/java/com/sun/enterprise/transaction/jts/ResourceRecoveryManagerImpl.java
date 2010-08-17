@@ -54,6 +54,7 @@ import com.sun.enterprise.transaction.spi.RecoveryEventListener;
 import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
 
 import com.sun.jts.CosTransactions.DelegatedRecoveryManager;
+import com.sun.jts.CosTransactions.Configuration;
 import com.sun.jts.CosTransactions.RecoveryManager;
 
 import org.jvnet.hk2.annotations.*;
@@ -103,18 +104,18 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
      * @throws Exception when unable to recover
      */
     public boolean recoverIncompleteTx(boolean delegated, String logPath) throws Exception {
-        return recoverIncompleteTx(delegated, logPath, false);
+        return recoverIncompleteTx(delegated, logPath, ((delegated)? null : Configuration.getPropertyValue(Configuration.INSTANCE_NAME)));
     }
 
     /**
      * recover incomplete transactions
      * @param delegated indicates whether delegated recovery is needed
      * @param logPath transaction log directory path
-     * @param notify indicates whether before and after recovery events are sent
+     * @param instance the name of the instance for which delegated recovery is performed, null if unknown.
      * @return boolean indicating the status of transaction recovery
      * @throws Exception when unable to recover
      */
-    public boolean recoverIncompleteTx(boolean delegated, String logPath, boolean notify) throws Exception {
+    public boolean recoverIncompleteTx(boolean delegated, String logPath, String instance) throws Exception {
         boolean result = false; 
         Map<RecoveryResourceHandler, Vector> handlerToXAResourcesMap = null;
         try {
@@ -123,10 +124,8 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
             }
 
             configure();
+            beforeRecovery(instance);
 
-            if (notify) {
-                beforeRecovery();
-            }
             Vector xaresList = new Vector();
 
             //TODO V3 will handle ThirdPartyXAResources also (v2 is not so). Is this fine ?
@@ -158,9 +157,7 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
                 _logger.log(Level.WARNING, "xaresource.recover_error", ex1);
             }
             try {
-                if (notify) {
-                    afterRecovery(result);
-                }
+                afterRecovery(result, instance);
             } catch (Exception ex1) {
                 _logger.log(Level.WARNING, "xaresource.recover_error", ex1);
             }
@@ -277,24 +274,24 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
     /**
      * notifies the event listeners that recovery is about to start
      */
-    private void beforeRecovery() {
+    private void beforeRecovery(String instance) {
         Set<RecoveryEventListener> listeners =
                 recoveryListenersRegistry.getEventListeners();
 
         for (RecoveryEventListener erl : listeners) {
-            erl.beforeRecovery();
+            erl.beforeRecovery(instance);
         }
     }
 
     /**
      * notifies the event listeners that all recovery operations are completed
      */
-    private void afterRecovery(boolean success) {
+    private void afterRecovery(boolean success, String instance) {
         Set<RecoveryEventListener> listeners =
                 recoveryListenersRegistry.getEventListeners();
 
         for (RecoveryEventListener erl : listeners) {
-            erl.afterRecovery(success);
+            erl.afterRecovery(success, instance);
         }
     }
 

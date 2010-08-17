@@ -46,13 +46,15 @@ package com.sun.enterprise.transaction.spi;
 public interface RecoveryEventListener  {
 
     /**
-     * Indicate to the listener that recovery is about to start.
+     * Indicate to the listener that recovery for a specific instance is about to start.
+     * @param instance the instance name for which transaction recovery is performed, null if unknown
      */
-    void beforeRecovery();
+    void beforeRecovery(String instance);
 
     /**
      * Indicate to the listener that recovery is over.
      * @param success <code>true</code> if the recovery operation finished successfully
+     * @param instance the instance name for which transaction recovery is performed, null if unknown
      */
-    void afterRecovery(boolean success);
+    void afterRecovery(boolean success, String instance);
 }
