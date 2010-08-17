@@ -36,11 +36,9 @@
 package org.glassfish.config.support;
 
 import com.sun.hk2.component.InjectionResolver;
+import com.sun.enterprise.config.serverbeans.CopyConfig;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.CommandModel;
-import org.glassfish.api.admin.CommandModelProvider;
+import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.*;
@@ -59,6 +57,10 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
 
     @Inject
     Habitat habitat;
+
+    @Inject
+    CommandRunner runner;
+
 
     Class<? extends CrudResolver> resolverType;
     CommandModel model;
@@ -101,6 +103,18 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
     public void execute(final AdminCommandContext context) {
 
         final ActionReport result = context.getActionReport();
+
+        //check if cluster software is installed else fail , see issue 12023
+        //This will be revisited with issue 12900
+        final CopyConfig command = (CopyConfig) runner
+                .getCommand("copy-config", context.getActionReport(), context.getLogger());
+        if (command == null ) {
+            String msg = localStrings.getLocalString("cannot.execute.command",
+                    "Cluster software is not installed");
+            result.failure(logger,msg) ;
+            return;
+        }
+
         // inject resolver with command parameters...
         final InjectionManager manager = new InjectionManager();
 
