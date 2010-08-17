@@ -158,7 +158,8 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      */
     /* 
      * Moved to FailureDetection in v3.1.
-     */ 
+     */
+     @Deprecated
      void setFdProtocolMaxTries(String value) throws PropertyVetoException;
     
 
@@ -194,6 +195,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
     /* 
      * Moved to FailureDetection in v3.1.
      */
+    @Deprecated
     void setFdProtocolTimeoutInMillis(String value) throws PropertyVetoException;
     
 
@@ -222,6 +224,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      * @deprecate
      */
     /* Not needed by gms in v3.1, was not used in v2. */
+    @Deprecated
     void setMergeProtocolMaxIntervalInMillis(String value) throws PropertyVetoException;
 
     /**
@@ -249,6 +252,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *              {@link String }
      * @deprecate
      */
+    @Deprecated
     void setMergeProtocolMinIntervalInMillis(String value) throws PropertyVetoException;
 
     /**
@@ -264,9 +268,10 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      */
     /* renamed in v3.1 */
     @Deprecated
-    @Attribute (defaultValue="5000")
-    @Min(value=1000)
-    @Max(value=120000)    
+    @Attribute
+    //@Attribute (defaultValue="5000")
+    //@Min(value=1000)
+    //@Max(value=120000)
     String getPingProtocolTimeoutInMillis();
 
     /**
@@ -278,6 +283,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      * @see #setGroupDiscoveryTimeoutInMillis(String)
      */
     /* renamed in v3.1 to GroupDiscoveryTimeoutInMillis */
+    @Deprecated
     void setPingProtocolTimeoutInMillis(String value) throws PropertyVetoException;
 
     /**
@@ -312,6 +318,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      */
     /* Moved to FailureDetection in v3.1
      */
+    @Deprecated
     void setVsProtocolTimeoutInMillis(String value) throws PropertyVetoException;
     
 
