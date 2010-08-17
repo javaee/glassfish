@@ -295,11 +295,11 @@
         <echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
         <ant dir="installed-libraries-embedded" target="all-ext"/>
 
-        <echo message="@@## beanvalidation-simple ##@@"/>
+<!--        <echo message="@@## beanvalidation-simple ##@@"/>
         <ant dir="beanvalidation-simple" target="all"/>
 
         <echo message="@@## beanvalidation-simple ##@@"/>
-        <ant dir="beanvalidation-simple" target="embedded-all"/>
+        <ant dir="beanvalidation-simple" target="embedded-all"/>-->
 
        <echo message="@@## security-map-web#@@"/>
         <ant dir="securitymapweb" target="all"/>
@@ -307,8 +307,62 @@
         <echo message="@@## rar-accessibility ##@@"/>
         <ant dir="rar-accessibility" target="all"/>
 
+        <echo message="@@## glassfish-resources-xml tests ##@@"/>
+        <antcall target="glassfish-resources-xml-tests"/>
+
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
+    </target>
+
+    <target name="glassfish-resources-xml-tests">
+
+        <delete  file="glassfish-resources-xml-tests.output" failonerror="false"/>
+        <record name="glassfish-resources-xml-tests.output" action="start"/>
+
+        <echo message="@@## connector1.5-resourcesxml ##@@"/>
+        <ant dir="../connector1.5-resourcesxml" target="all"/>
+        
+        <echo message="@@## embeddedConnector1.5-resourcesxml ##@@"/>
+        <ant dir="../embeddedConnector1.5-resourcesxml" target="all"/>
+
+        <echo message="@@## embeddedweb-resourcesxml-defaultconnpool ##@@"/>
+        <ant dir="../embeddedweb-resourcesxml-defaultconnpool" target="all"/>
+
+<!--        <echo message="@@## beanvalidation-simple-resources-xml ##@@"/>
+        <ant dir="beanvalidation-simple-resources-xml" target="all"/>-->
+
+        <echo message="@@## embeddedweb-resources-xml ##@@"/>
+        <ant dir="embeddedweb-resources-xml" target="all"/>
+
+        <echo message="@@## installed-libraries-resources-xml ##@@"/>
+        <ant dir="installed-libraries-resources" target="all-ext"/>
+
+        <echo message="@@## installed-libraries-resources-xml ##@@"/>
+        <ant dir="installed-libraries-resources" target="all--libraries"/>
+        
+        <echo message="@@## connector1.6-resources-xml ##@@"/>
+        <ant dir="connector1.6-resources-xml" target="all-with-mappings"/>
+
+        <echo message="@@## built-in-custom-resources-resources-xml ##@@"/>
+        <ant dir="built-in-custom-resources-resources-xml" target="all"/>
+
+        <echo message="@@## built-in-custom-resources-resources-xml-module ##@@"/>
+        <ant dir="custom-resources-gf-resources-module-scoped" target="all"/>
+
+        <echo message="@@## multiple-resources.xml ##@@"/>
+        <ant dir="multiple-resources.xml" target="all-with-mappings"/>
+
+        <echo message="@@## multiple-resources.xml-1 ##@@"/>
+        <ant dir="multiple-resources-app-module-scoped" target="all-with-mappings"/>
+
+        <echo message="@@## connector1.5-resourcesxml-module-scope ##@@"/>
+        <ant dir="../connector1.5-resourcesxml-module-scope" target="all"/>
+        
+<!--        <echo message="@@## ejb/ejb30/persistence/tx_propagation.modified ##@@"/>
+        <ant dir="${env.APS_HOME}/devtests/ejb/ejb30/persistence/tx_propagation.modified" target="all"/>-->
+
+        <record name="glassfish-resources-xml-tests.output" action="stop"/>
+
     </target>
 
     <target name="usage">
