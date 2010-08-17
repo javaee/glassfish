@@ -209,8 +209,13 @@ public class Parser {
                                 logger.log(Level.FINER, "Parsing class " + entry.name);
                             }
 
-                            ClassReader cr = new ClassReader(bytes);
-                            cr.accept(context.getClassVisitor(uri, entry.name), ClassReader.SKIP_DEBUG);
+                            ClassReader cr = new ClassReader(bytes, 0, (int) entry.size);
+                            try {
+                                cr.accept(context.getClassVisitor(uri, entry.name), ClassReader.SKIP_DEBUG);
+                            } catch (Throwable e) {
+                                logger.log(Level.SEVERE, "Exception while visiting " + entry.name
+                                        + " of size " + entry.size, e);
+                            }
                         }
                     },
                     logger

@@ -38,8 +38,10 @@ package org.glassfish.hk2.classmodel.reflect.util;
 import org.glassfish.hk2.classmodel.reflect.ArchiveAdapter;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.net.URI;
+import java.nio.channels.FileChannel;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
@@ -82,7 +84,8 @@ public class DirectoryArchive extends AbstractAdapter {
 
     private void parse(File dir, Selector selector, EntryTask task, Logger logger) throws IOException {
 
-        byte[] bytes = new byte[52000];
+        ByteBuffer buffer = ByteBuffer.allocate(52000);
+
         for (File f : dir.listFiles()) {
             Entry ae = new Entry(mangle(f), f.length(), f.isDirectory());
             if (!f.isDirectory()) {
@@ -91,16 +94,18 @@ public class DirectoryArchive extends AbstractAdapter {
                 InputStream is = null;
                 try {
                     try {
-                        if (bytes.length<f.length()) {
-                            bytes = new byte[(int) f.length()];
+                        if (buffer.capacity()<f.length()) {
+                            buffer = ByteBuffer.allocate((int) f.length());
                         }
-                        is = Channels.newInputStream((new FileInputStream(f)).getChannel());
-                        int read=is.read(bytes);
+                        FileChannel fc = (new FileInputStream(f)).getChannel();
+
+                        int read = fc.read(buffer);
                         if (read!=f.length()) {
                              logger.severe("Incorrect file length while reading " + f.getName() +
                                      " of size " + f.length() + " reported is " + read);
                         }
-                        task.on(ae, bytes);
+                        buffer.rewind();
+                        task.on(ae, buffer.array());
                     } catch(Exception e) {
                         logger.log(Level.SEVERE, "Exception while processing " + f.getName() +
                                 " of size " + f.length(), e);
