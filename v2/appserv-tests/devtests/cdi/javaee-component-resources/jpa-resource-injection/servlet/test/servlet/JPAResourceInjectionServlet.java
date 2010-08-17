@@ -38,70 +38,76 @@ package test.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.util.AnnotationLiteral;
+import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.UserTransaction;
 
-import test.beans.Preferred;
-import test.beans.TestBean;
-import test.beans.TransactionInterceptor;
-import test.extension.MyExtension;
+import test.beans.TestBeanInterface;
+import test.beans.artifacts.Preferred;
+import test.beans.artifacts.TestDatabase;
+import test.util.JpaTest;
 
 @WebServlet(name = "mytest", urlPatterns = { "/myurl" })
-public class SimplePortableExtensionTestServlet extends HttpServlet {
+public class JPAResourceInjectionServlet extends HttpServlet {
+
+    @PersistenceUnit(unitName = "pu1")
+    private EntityManagerFactory emf;
+
     @Inject
-    @Preferred
-    TestBean tb;
+    @TestDatabase
+    private EntityManagerFactory emf1;
+
+    private @Resource
+    UserTransaction utx;
     
     @Inject
-    BeanManager bm;
+    @Preferred
+    TestBeanInterface tbi;
 
-    public void service(HttpServletRequest req, HttpServletResponse res)
-            throws IOException, ServletException {
-
-        PrintWriter writer = res.getWriter();
+    protected void doGet(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException,
+            IOException {
+        PrintWriter writer = response.getWriter();
         writer.write("Hello from Servlet 3.0.");
         String msg = "";
+        System.out.println("JPAResourceInjectionServlet::@PersistenceUnit " +
+        		"CDI EntityManagerFactory=" + emf1);
 
-        if (tb == null)
-            msg += "Injection of request scoped bean failed";
+        EntityManager em = emf1.createEntityManager();
+        System.out.println("JPAResourceInjectionServlet::createEM" +
+        		"EntityManager=" + em);
+        String testcase = request.getParameter("testcase");
+        System.out.println("testcase=" + testcase);
 
-        tb.m1();
-        if (!TransactionInterceptor.aroundInvokeCalled)
-            msg += "Business method interceptor aroundInvoke not called";
-        tb.m2();
-        if (TransactionInterceptor.aroundInvokeInvocationCount != 2)
-            msg += "Business method interceptor invocation on method-level "
-                    + "interceptor annotation count not expected. "
-                    + "expected =2, actual="
-                    + TransactionInterceptor.aroundInvokeInvocationCount;
-        if (!TransactionInterceptor.errorMessage.trim().equals(""))
-            msg += TransactionInterceptor.errorMessage;
-        
-        //check if our portable extension was called
-        if (!MyExtension.beforeBeanDiscoveryCalled)
-            msg += "Portable Extension lifecycle observer method: " +
-            		"beforeBeanDiscovery not called";
-
-        if (!MyExtension.afterBeanDiscoveryCalled)
-            msg += "Portable Extension lifecycle observer method: " +
-            		"afterBeanDiscovery not called or injection of BeanManager " +
-            		"in an observer method failed";
-        
-        if (!MyExtension.processAnnotatedTypeCalled)
-            msg += "Portable Extension lifecycle observer method: process " +
-            		"annotated type not called";
-
-        if((bm.getBeans(MyExtension.class, new AnnotationLiteral<Any>(){}).iterator().next().getClass()) == null) 
-            msg += "Portable Extension not available for lookup through BeanManager";
+        if (testcase != null) {
+            JpaTest jt = new JpaTest(em, utx);
+            boolean status = false;
+            if ("llinit".equals(testcase)) {
+                status = jt.lazyLoadingInit();
+            } else if ("llfind".equals(testcase)) {
+                status = jt.lazyLoadingByFind(1);
+            } else if ("llquery".equals(testcase)) {
+                status = jt.lazyLoadingByQuery("Carla");
+            } else if ("llinj".equals(testcase)){
+                status = ((tbi != null) && 
+                        (tbi.testDatasourceInjection().trim().length()==0));
+            }
+            if (status) {
+                msg += "";// pass
+            } else {
+                msg += (testcase + ":fail");
+            }
+        }
 
         writer.write(msg + "\n");
-    }
 
+    }
 }

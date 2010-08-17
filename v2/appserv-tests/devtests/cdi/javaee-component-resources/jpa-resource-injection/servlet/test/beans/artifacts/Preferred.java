@@ -34,48 +34,22 @@
  * holder.
  */
 
-package test.extension;
+package test.beans.artifacts;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
 
-import test.beans.DuplicateTestBean;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class MyExtension implements Extension{
-    public static boolean beforeBeanDiscoveryCalled = false;
-    public static boolean afterBeanDiscoveryCalled = false;
-    public static boolean processAnnotatedTypeCalled = false;
-    public MyExtension(){
-        System.out.println("In MyExtension ctor");
-        //new Throwable().printStackTrace();
-    }
-    
-    void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bdd){
-        System.out.println("MyExtension::beforeBeanDiscovery" + bdd);
-        beforeBeanDiscoveryCalled = true;
-    }
-    
-    <T> void processAnnotatedType(@Observes ProcessAnnotatedType<T> pat){
-        System.out.println("MyExtension:Process annotated type" + pat.getAnnotatedType().getBaseType());
-        processAnnotatedTypeCalled = true;
-        //Vetoing the processing of DuplicateTestBean
-        //If this is not vetoed, at the InjectionPoint in Servlet, there would be
-        //an ambiguous dependency due to TestBean and DuplicateTestBean
-        if (pat.getAnnotatedType().getBaseType().equals(DuplicateTestBean.class)){
-            pat.veto();
-        }
-    }
-    
-    void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager bm){
-        System.out.println("MyExtension: abd: " + abd + " BeanManager: " + bm);
-        
-        if (bm != null) {
-            //ensure a valid BeanManager is injected
-            afterBeanDiscoveryCalled = true;
-        }
-    }
+import javax.inject.Qualifier;
+
+@Qualifier
+@Target({ TYPE, METHOD, PARAMETER, FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Preferred {
+
 }

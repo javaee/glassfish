@@ -96,6 +96,7 @@
     <target name="javaee-comp">
         <record name="javaee-comp.output" action="start" />
             <ant dir="javaee-component-resource-typesafe-injection" target="${javaee-comp-target}"/>
+            <ant dir="jpa-resource-injection" target="${javaee-comp-target}"/>
         <record name="javaee-comp.output" action="stop" />
     </target>
 

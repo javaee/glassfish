@@ -34,48 +34,69 @@
  * holder.
  */
 
-package test.extension;
+package test.entity;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import java.util.Set;
 
-import test.beans.DuplicateTestBean;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-public class MyExtension implements Extension{
-    public static boolean beforeBeanDiscoveryCalled = false;
-    public static boolean afterBeanDiscoveryCalled = false;
-    public static boolean processAnnotatedTypeCalled = false;
-    public MyExtension(){
-        System.out.println("In MyExtension ctor");
-        //new Throwable().printStackTrace();
+@Entity
+@Table(name = "DEPARTMENT")
+public class Department implements java.io.Serializable {
+
+    // Instance variables
+    private int id;
+    private String name;
+    private Set<Employee> employees;
+
+    public Department() {
     }
-    
-    void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bdd){
-        System.out.println("MyExtension::beforeBeanDiscovery" + bdd);
-        beforeBeanDiscoveryCalled = true;
+
+    public Department(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
-    
-    <T> void processAnnotatedType(@Observes ProcessAnnotatedType<T> pat){
-        System.out.println("MyExtension:Process annotated type" + pat.getAnnotatedType().getBaseType());
-        processAnnotatedTypeCalled = true;
-        //Vetoing the processing of DuplicateTestBean
-        //If this is not vetoed, at the InjectionPoint in Servlet, there would be
-        //an ambiguous dependency due to TestBean and DuplicateTestBean
-        if (pat.getAnnotatedType().getBaseType().equals(DuplicateTestBean.class)){
-            pat.veto();
-        }
+
+    // ===========================================================
+    // getters and setters for the state fields
+
+    @Id
+    @Column(name = "ID")
+    public int getId() {
+        return id;
     }
-    
-    void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager bm){
-        System.out.println("MyExtension: abd: " + abd + " BeanManager: " + bm);
-        
-        if (bm != null) {
-            //ensure a valid BeanManager is injected
-            afterBeanDiscoveryCalled = true;
-        }
+
+    public void setId(int id) {
+        this.id = id;
     }
+
+    @Column(name = "NAME")
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // ===========================================================
+    // getters and setters for the association fields
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "department")
+    public Set<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(Set<Employee> employees) {
+        this.employees = employees;
+    }
+
+    public String toString() {
+        return "Department id=" + getId() + ", Department Name=" + getName();
+    }
+
 }
