@@ -258,6 +258,20 @@ public class SecureAdminClientManager {
     private Domain prepareDomain(final String serverName,
             final String nodeDir,
             final String node) {
+        /*
+         * At least one of serverName, nodeDir, or node must be non-null.
+         * Otherwise we'll have no way of figuring out which domain.xml to
+         * look in to see if we should use client authentication.  This will
+         * often be the case, for instance, if create-local-instance is
+         * run directly (not from another command).  In such cases, if
+         * secure admin is enabled the user should provide --user and
+         * --passwordfile on the command line to authenticate to the DAS.
+         */
+        if (serverName == null
+                && nodeDir == null
+                && node == null) {
+            return null;
+        }
         final ServerDirsSelector selector;
         try {
             selector = ServerDirsSelector.getInstance(null, serverName, nodeDir, node);
