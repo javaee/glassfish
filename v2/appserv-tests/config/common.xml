@@ -147,6 +147,9 @@ Variables Used:
   <copy file="${web.xml}" 
       tofile="${build.classes.dir}/tmp/WEB-INF/web.xml"
         failonerror="false"/>
+    <copy file="${persistence.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/classes/META-INF/persistence.xml"
+        failonerror="false"/>
    <copy file="${beans.xml}" 
       tofile="${build.classes.dir}/tmp/WEB-INF/beans.xml"
         failonerror="false"/>
@@ -197,6 +200,7 @@ Variables Used:
       <include name="${mappingfile.name}"/>
       <include name="META-INF/context.xml"/>
       <include name="WEB-INF/classes/META-INF/services/javax.enterprise.inject.spi.Extension"/>
+      <include name="WEB-INF/classes/META-INF/persistence.xml"/>
     </fileset>
   </jar>       
   <echo message="created war file ${war.file}" level="verbose"/>
