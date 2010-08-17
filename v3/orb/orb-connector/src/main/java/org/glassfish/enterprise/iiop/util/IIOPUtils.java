@@ -46,11 +46,13 @@ import java.util.TreeSet;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.IiopService;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerRef;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.ThreadPool;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.enterprise.iiop.api.GlassFishORBLifeCycleListener;
 import org.glassfish.enterprise.iiop.api.IIOPInterceptorFactory;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
@@ -69,9 +71,8 @@ public class IIOPUtils implements PostConstruct {
 
     private static IIOPUtils _me;
 
-
     @Inject
-    private Habitat habitat;
+    Habitat habitat ;
 
     @Inject
     private ClassLoaderHierarchy clHierarchy;
@@ -198,5 +199,5 @@ public class IIOPUtils implements PostConstruct {
     public ORB getORB() {
         return defaultORB;
     }
-    
+
 }

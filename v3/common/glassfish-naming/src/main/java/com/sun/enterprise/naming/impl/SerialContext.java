@@ -37,18 +37,11 @@
 package com.sun.enterprise.naming.impl;
 
 import com.sun.enterprise.naming.util.LogFacade;
-import com.sun.enterprise.module.ModulesRegistry;
 import org.glassfish.api.naming.NamingObjectProxy;
 import org.jvnet.hk2.component.Habitat;
 
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-
-import com.sun.enterprise.module.single.StaticModulesRegistry;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
-import javax.naming.*;
 import javax.naming.spi.ObjectFactory;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -57,14 +50,27 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Map;
 import java.util.HashMap;
+import javax.naming.Binding;
+import javax.naming.CommunicationException;
+import javax.naming.CompositeName;
+import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.NameClassPair;
+import javax.naming.NameParser;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.NotContextException;
+import javax.naming.OperationNotSupportedException;
+import javax.naming.Reference;
+import javax.naming.Referenceable;
 
 import org.omg.CosNaming.NamingContext;
 import org.omg.CosNaming.NameComponent;
 import org.omg.CosNaming.NamingContextHelper;
 import javax.rmi.PortableRemoteObject;
-
-import org.glassfish.internal.api.*;
-
+import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.ORBLocator;
+import org.glassfish.internal.api.ServerContext;
 
 import org.omg.CORBA.ORB;
 
@@ -81,8 +87,6 @@ import org.omg.CORBA.ORB;
  * <b>NOT THREAD SAFE: mutable instance variables</b>
  */
 public class SerialContext implements Context {
-
-
     private static final String JAVA_URL = "java:";
 
     private static final String JAVA_GLOBAL_URL = "java:global/";
@@ -91,13 +95,20 @@ public class SerialContext implements Context {
     // Sets unmanaged SerialContext in test mode to prevent attempts to contact server. 
     static final String INITIAL_CONTEXT_TEST_MODE = "com.sun.enterprise.naming.TestMode";
 
-    private static Logger _logger = LogFacade.getLogger();
+    private static final Logger _logger = LogFacade.getLogger();
 
     private static final NameParser myParser = new SerialNameParser();
 
-    private static Map<ProviderCacheKey, SerialContextProvider> providerCache =
+    private static final Map<ProviderCacheKey, SerialContextProvider> providerCache =
             new HashMap<ProviderCacheKey, SerialContextProvider>();
 
+    private static final ThreadLocal<ThreadLocalIC> stickyContext =
+        new ThreadLocal<ThreadLocalIC>() {
+            @Override
+            protected ThreadLocalIC initialValue() {
+                return new ThreadLocalIC() ;
+            }
+        } ;
 
     private Hashtable myEnv = null; // THREAD UNSAFE
 
@@ -137,12 +148,7 @@ public class SerialContext implements Context {
     // GlassFish object factories.
     private ClassLoader commonCL;
 
-    /**
-     * NOTE: ALL "stickyContext" LOGIC REMOVED FOR INITIAL V3 RELEASE.  WE'LLl
-     * REVISIT THE UNDERLYING ISSUE WHEN ADDING LOAD-BALANCING / FAILOVER
-     * SUPPORT POST V3.  ORIGINAL COMMENT BLOCK PRESERVED HERE UNTIL THEN.
-     *
-     * set and get methods for preserving stickiness. This is a temporary
+    /** Methods for preserving stickiness. This is a
      * solution to store the sticky IC as a thread local variable. This sticky
      * IC will be used by all classes that require a context object to do lookup
      * (if LB is enabled) SerialContext.lookup() sets a value for the thread
@@ -151,10 +157,58 @@ public class SerialContext implements Context {
      * SerialContext.lookup() method, the thread local variable gets set to
      * null. So actually speaking, more than being a global variable for the
      * entire thread, its global only during the execution of the
-     * SerialContext.lookup() method. bug 5050591 This will be cleaned for the
-     * next release.
+     * SerialContext.lookup() method. bug 5050591
      *
      */
+    public static Context getStickyContext() {
+        return stickyContext.get().getContext() ;
+    }
+
+    private void grabSticky() {
+        stickyContext.get().grab( this ) ;
+    }
+
+    private void releaseSticky() {
+        stickyContext.get().release() ;
+    }
+
+    private void clearSticky() {
+        stickyContext.get().clear() ;
+    }
+
+    /** Store the sticky context as a threadlocal variable (bug 5050591).
+    * Count is needed to know how many times the lookup method is being called
+    * from within the user code's ic.lookup().
+    * e.g. JMS resource lookups (via ConnectorObjectFactory)
+    */
+    private static class ThreadLocalIC {
+        private Context ctx;
+        private int count = 1;
+
+        Context getContext() {
+            return ctx ;
+        }
+
+        void grab( Context context ) {
+            if (ctx == null) {
+                ctx = context ;
+            } else {
+                count++ ;
+            }
+        }
+
+        void release() {
+            count-- ;
+            if (count == 0) {
+                ctx = null ;
+            }
+        }
+
+        void clear() {
+            ctx = null ;
+            count = 1 ;
+        }
+    }
 
 
     /**
@@ -170,8 +224,10 @@ public class SerialContext implements Context {
                 : null;
 
         // TODO REMOVE when property stuff is figured out
-        myEnv.put("java.naming.factory.url.pkgs", "com.sun.enterprise.naming");
-        myEnv.put("java.naming.factory.state", "com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl" );
+        myEnv.put("java.naming.factory.url.pkgs",
+            "com.sun.enterprise.naming");
+        myEnv.put("java.naming.factory.state",
+            "com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl" );
 
         this.myName = name;
         if (_logger.isLoggable(Level.FINE))
@@ -210,24 +266,22 @@ public class SerialContext implements Context {
         } else {
             ProcessEnvironment processEnv = habitat.getComponent(ProcessEnvironment.class);
             processType = processEnv.getProcessType();
-            _logger.fine("Serial Context initializing with process environment " + processEnv);
-
+            _logger.log(Level.FINE,
+                "Serial Context initializing with process environment {0}",
+                processEnv);
         }
-
-
 
         // using these two temp variables allows instance variables
         // to be 'final'.
         JavaURLContext urlContextTemp = null;
 
         if (myEnv.get("com.sun.appserv.ee.iiop.endpointslist") != null) {
-
             urlContextTemp = new JavaURLContext(myEnv, this);
         } else {
             urlContextTemp = new JavaURLContext(myEnv, null);
         }
-        javaUrlContext = urlContextTemp;
 
+        javaUrlContext = urlContextTemp;
 
         orbFromEnv  = (ORB) myEnv.get(ORBLocator.JNDI_CORBA_ORB_PROPERTY);
         targetHostFromEnv = (String)myEnv.get(ORBLocator.OMG_ORB_INIT_HOST_PROPERTY);
@@ -255,7 +309,9 @@ public class SerialContext implements Context {
         orb = orbFromEnv;
         if (habitat != null) { // can happen in test mode
             ServerContext sc = habitat.getByContract(ServerContext.class);
-            if (sc != null) commonCL = sc.getCommonClassLoader();
+            if (sc != null) {
+                commonCL = sc.getCommonClassLoader();
+            }
         }
     }
 
@@ -381,6 +437,7 @@ public class SerialContext implements Context {
      *
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public String getNameInNamespace() throws NamingException {
         return myName;
     }
@@ -389,11 +446,7 @@ public class SerialContext implements Context {
      * method to check if the name to look up starts with "java:"
      */
     private boolean isjavaURL(String name) {
-
-        if ((name.startsWith(JAVA_URL)) && (! name.startsWith(JAVA_GLOBAL_URL))) {
-            return true;
-        } else
-            return false;
+        return name.startsWith(JAVA_URL) && !name.startsWith(JAVA_GLOBAL_URL) ;
     }
 
     /**
@@ -418,14 +471,14 @@ public class SerialContext implements Context {
          *
          */
         if (myEnv.get("com.sun.appserv.ee.iiop.endpointslist") != null) {
-           // TODO post V3
+            grabSticky() ;
         }
 
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine("SerialContext ==> lookup( " + name +")");
+            _logger.log(Level.FINE, "SerialContext ==> lookup( {0})", name);
         }
 
-        if (name.equals("")) {
+        if (name.isEmpty()) {
             // Asking to look up this context itself. Create and return
             // a new instance with its own independent environment.
             return (new SerialContext(myName, myEnv, habitat));
@@ -434,11 +487,18 @@ public class SerialContext implements Context {
         name = getRelativeName(name);
 
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine("SerialContext ==> lookup relative name : " + name);
+            _logger.log(Level.FINE,
+                "SerialContext ==> lookup relative name : {0}", name);
+        }
+
+        if (name.isEmpty()) {
+            releaseSticky();
         }
 
         try {
             if (isjavaURL(name)) {
+                releaseSticky();
+
                 //it is possible that the object bound in a java url ("java:") is
                 //reference object.
                 Object o = javaUrlContext.lookup(name);
@@ -449,13 +509,17 @@ public class SerialContext implements Context {
             } else {
                 Object obj = getProvider().lookup(name);
                 if (obj instanceof NamingObjectProxy) {
+                    releaseSticky();
                     return ((NamingObjectProxy) obj).create(this);
                 }
+
                 if (obj instanceof Context) {
+                    releaseSticky();
                     return new SerialContext(name, myEnv, habitat);
                 }
-                Object retObj = getObjectInstance(name, obj);
 
+                releaseSticky();
+                Object retObj = getObjectInstance(name, obj);
                 return retObj;
             }
         } catch (NamingException nnfe) {
@@ -479,19 +543,18 @@ public class SerialContext implements Context {
                 return lookup(name);
             } else {
                 CommunicationException ce = new CommunicationException(
-                        "Communication exception for " + this);
+                    "Communication exception for " + this);
                 ce.initCause(ex);
                 throw ce;
             }
         }
-
     }
 
     private Object getObjectInstance(String name, Object obj) throws Exception
     {
-        Object retObj = javax.naming.spi.NamingManager
-                .getObjectInstance(obj, new CompositeName(name), null,
-                        myEnv);
+        Object retObj = javax.naming.spi.NamingManager.getObjectInstance(
+            obj, new CompositeName(name), null, myEnv);
+
         if (retObj == obj) {
             // NamingManager.getObjectInstance() returns the same object
             // when it can't find the factory class. Since NamingManager
@@ -584,6 +647,7 @@ public class SerialContext implements Context {
      * @return the resolved object.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public Object lookup(Name name) throws NamingException {
         // Flat namespace; no federation; just call string version
         return lookup(name.toString());
@@ -593,9 +657,10 @@ public class SerialContext implements Context {
      * Bind the object to the specified name.
      *
      * @param name name that the object is being bound to.
-     * @param name object that is being bound.
+     * @param obj object that is being bound.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public void bind(String name, Object obj) throws NamingException {
 
         name = getRelativeName(name);
@@ -617,6 +682,7 @@ public class SerialContext implements Context {
      * @param obj  object that is being bound.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public void bind(Name name, Object obj) throws NamingException {
         // Flat namespace; no federation; just call string version
         bind(name.toString(), obj);
@@ -629,6 +695,7 @@ public class SerialContext implements Context {
      * @param obj  object that is being bound.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public void rebind(String name, Object obj) throws NamingException {
 
         name = getRelativeName(name);
@@ -650,6 +717,7 @@ public class SerialContext implements Context {
      * @param obj  object that is being bound.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public void rebind(Name name, Object obj) throws NamingException {
         // Flat namespace; no federation; just call string version
         rebind(name.toString(), obj);
@@ -661,6 +729,7 @@ public class SerialContext implements Context {
      * @param name that is being unbound.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public void unbind(String name) throws NamingException {
         name = getRelativeName(name);
         if (isjavaURL(name)) {
@@ -680,6 +749,7 @@ public class SerialContext implements Context {
      * @param name name that is being unbound.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public void unbind(Name name) throws NamingException {
         // Flat namespace; no federation; just call string version
         unbind(name.toString());
@@ -692,6 +762,7 @@ public class SerialContext implements Context {
      * @param newname new name that the object will be bound as.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public void rename(String oldname, String newname) throws NamingException {
         oldname = getRelativeName(oldname);
         newname = getRelativeName(newname);
@@ -713,6 +784,7 @@ public class SerialContext implements Context {
      * @param newname new name that the object will be bound as.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public void rename(Name oldname, Name newname) throws NamingException {
         // Flat namespace; no federation; just call string version
         rename(oldname.toString(), newname.toString());
@@ -725,8 +797,9 @@ public class SerialContext implements Context {
      * @return an enumeration of the contents.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public NamingEnumeration list(String name) throws NamingException {
-        if (name.equals("")) {
+        if (name.isEmpty()) {
             // listing this context
             try {
                 Hashtable bindings = getProvider().list(myName);
@@ -756,6 +829,7 @@ public class SerialContext implements Context {
      * @return an enumeration of the contents.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public NamingEnumeration list(Name name) throws NamingException {
         // Flat namespace; no federation; just call string version
         return list(name.toString());
@@ -768,8 +842,9 @@ public class SerialContext implements Context {
      * @return an enumeration of the bindings.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public NamingEnumeration listBindings(String name) throws NamingException {
-        if (name.equals("")) {
+        if (name.isEmpty()) {
             // listing this context
             try {
                 Hashtable bindings = getProvider().list(myName);
@@ -802,6 +877,7 @@ public class SerialContext implements Context {
      * @return an enumeration of the bindings.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public NamingEnumeration listBindings(Name name) throws NamingException {
         // Flat namespace; no federation; just call string version
         return listBindings(name.toString());
@@ -813,6 +889,7 @@ public class SerialContext implements Context {
      * @param name name of the subcontext.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public void destroySubcontext(String name) throws NamingException {
         name = getRelativeName(name);
         if (isjavaURL(name)) {
@@ -835,6 +912,7 @@ public class SerialContext implements Context {
      * @param name name of the subcontext.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public void destroySubcontext(Name name) throws NamingException {
         // Flat namespace; no federation; just call string version
         destroySubcontext(name.toString());
@@ -847,6 +925,7 @@ public class SerialContext implements Context {
      * @return the created subcontext.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public Context createSubcontext(String name) throws NamingException {
         Context c = null;
         name = getRelativeName(name);
@@ -880,6 +959,7 @@ public class SerialContext implements Context {
      * @return the created subcontext.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public Context createSubcontext(Name name) throws NamingException {
         // Flat namespace; no federation; just call string version
         return createSubcontext(name.toString());
@@ -892,6 +972,7 @@ public class SerialContext implements Context {
      * @return the resolved object.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public Object lookupLink(String name) throws NamingException {
         name = getRelativeName(name);
         if (isjavaURL(name)) {
@@ -909,6 +990,7 @@ public class SerialContext implements Context {
      * @return the resolved object.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public Object lookupLink(Name name) throws NamingException {
         // Flat namespace; no federation; just call string version
         return lookupLink(name.toString());
@@ -922,6 +1004,7 @@ public class SerialContext implements Context {
      * @return NameParser object
      * @throws NamingException
      */
+    @Override
     public NameParser getNameParser(String name) throws NamingException {
         return myParser;
     }
@@ -934,11 +1017,13 @@ public class SerialContext implements Context {
      * @return NameParser object
      * @throws NamingException
      */
+    @Override
     public NameParser getNameParser(Name name) throws NamingException {
         // Flat namespace; no federation; just call string version
         return getNameParser(name.toString());
     }
 
+    @Override
     public String composeName(String name, String prefix)
             throws NamingException {
         Name result = composeName(new CompositeName(name), new CompositeName(
@@ -946,6 +1031,7 @@ public class SerialContext implements Context {
         return result.toString();
     }
 
+    @Override
     public Name composeName(Name name, Name prefix) throws NamingException {
         Name result = (Name) (prefix.clone());
         result.addAll(name);
@@ -957,6 +1043,7 @@ public class SerialContext implements Context {
      *
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public Object addToEnvironment(String propName, Object propVal)
             throws NamingException {
         if (myEnv == null) {
@@ -970,6 +1057,7 @@ public class SerialContext implements Context {
      *
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public Object removeFromEnvironment(String propName) throws NamingException {
         if (myEnv == null) {
             return null;
@@ -982,6 +1070,7 @@ public class SerialContext implements Context {
      *
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public Hashtable getEnvironment() throws NamingException {
         if (myEnv == null) {
             // Must return non-null
@@ -995,6 +1084,7 @@ public class SerialContext implements Context {
      *
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public void close() throws NamingException {
         myEnv = null;
     }
@@ -1017,28 +1107,34 @@ public class SerialContext implements Context {
             this.names = bindings.keys();
         }
 
+        @Override
         public boolean hasMoreElements() {
             return names.hasMoreElements();
         }
 
+        @Override
         public boolean hasMore() throws NamingException {
             return hasMoreElements();
         }
 
+        @Override
         public Object nextElement() {
             if (names.hasMoreElements()) {
                 String name = (String) names.nextElement();
                 String className = bindings.get(name).getClass().getName();
                 return new NameClassPair(name, className);
-            } else
+            } else {
                 return null;
+            }
         }
 
+        @Override
         public Object next() throws NamingException {
             return nextElement();
         }
 
         // New API for JNDI 1.2
+        @Override
         public void close() throws NamingException {
             throw new OperationNotSupportedException("close() not implemented");
         }
@@ -1055,49 +1151,56 @@ public class SerialContext implements Context {
             this.names = bindings.keys();
         }
 
+        @Override
         public boolean hasMoreElements() {
             return names.hasMoreElements();
         }
 
+        @Override
         public boolean hasMore() throws NamingException {
             return hasMoreElements();
         }
 
+        @Override
         public Object nextElement() {
             if (hasMoreElements()) {
                 String name = (String) names.nextElement();
                 return new Binding(name, bindings.get(name));
-            } else
+            } else {
                 return null;
+            }
         }
 
+        @Override
         public Object next() throws NamingException {
             return nextElement();
         }
 
         // New API for JNDI 1.2
+        @Override
         public void close() throws NamingException {
             throw new OperationNotSupportedException("close() not implemented");
         }
     }
 
+    @Override
     public String toString() {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("SerialContext ");
         if(testMode) {
             sb.append("( IN TEST MODE ) ");
         }
         if( targetHost != null) {
-            sb.append("targetHost="+targetHost);
+            sb.append("targetHost=").append(targetHost);
         }
         if( targetPort != null) {
-            sb.append(",targetPort="+targetPort);
+            sb.append(",targetPort=").append(targetPort);
         }
 
         if( orb != null ) {
-            sb.append(",orb'sInitialHost="+orbsInitialHostValue);
-            sb.append(",orb'sInitialPort="+orbsInitialPortValue);
+            sb.append(",orb'sInitialHost=").append(orbsInitialHostValue);
+            sb.append(",orb'sInitialPort=").append(orbsInitialPortValue);
         }
 
         return sb.toString();
@@ -1112,20 +1215,22 @@ public class SerialContext implements Context {
         private String host;
         private String port;
 
-        public ProviderCacheKey(ORB orb) {
+        ProviderCacheKey(ORB orb) {
             this.orb = orb;
         }
 
         // Host and Port must both be non-null
-        public ProviderCacheKey(String host, String port) {
+        ProviderCacheKey(String host, String port) {
             this.host = host;
             this.port = port;
         }
 
+        @Override
         public int hashCode() {
             return (orb != null) ? orb.hashCode() : host.hashCode();
         }
 
+        @Override
         public boolean equals(Object other) {
             boolean equal = false;
 

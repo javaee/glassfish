@@ -37,15 +37,15 @@
 package org.glassfish.enterprise.iiop.impl;
 
 
+import com.sun.logging.LogDomains;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.omg.IOP.Codec;
 import org.omg.IOP.CodecFactory;
 import org.omg.IOP.Encoding;
 import org.omg.IOP.ENCODING_CDR_ENCAPS;
 import org.omg.PortableInterceptor.ORBInitializer;
 import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
-
-import java.util.logging.*;
-import com.sun.logging.*;
 
 /**
  * This class is used to add IOR interceptors for supporting IN_ADDR_ANY
@@ -54,10 +54,8 @@ import com.sun.logging.*;
 public class IORAddrAnyInitializer extends org.omg.CORBA.LocalObject 
                                 implements ORBInitializer{
                                     
-    private static Logger _logger=null;
-    static {
-       _logger=LogDomains.getLogger(IORAddrAnyInitializer.class, LogDomains.CORBA_LOGGER);
-    }
+    private static final Logger _logger = LogDomains.getLogger(
+        IORAddrAnyInitializer.class, LogDomains.CORBA_LOGGER);
     
     public static final String baseMsg = IORAddrAnyInitializer.class.getName();
     
@@ -75,6 +73,7 @@ public class IORAddrAnyInitializer extends org.omg.CORBA.LocalObject
      * @param info provides initialization attributes and operations by
      *    which Interceptors can be registered.
      */
+    @Override
     public void pre_init(org.omg.PortableInterceptor.ORBInitInfo info) {
     }
     
@@ -96,6 +95,7 @@ public class IORAddrAnyInitializer extends org.omg.CORBA.LocalObject
      * @param info provides initialization attributes and
      *    operations by which Interceptors can be registered.
      */
+    @Override
     public void post_init(org.omg.PortableInterceptor.ORBInitInfo info) {
         Codec codec = null;
         CodecFactory cf = info.codec_factory();

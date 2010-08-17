@@ -62,6 +62,15 @@
     </developers>       
     <dependencies>
         <dependency>
+            <groupId>com.sun.corba</groupId>
+            <artifactId>glassfish-corba-omgapi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.orb</groupId>
+            <artifactId>orb-connector</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
         </dependency>
