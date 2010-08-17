@@ -54,6 +54,7 @@ public class MigrateTimersTest extends TimerTestBase {
             deployEjbCreateTimers(cluster_name);
             migrateTimers();
             migrateTimersWithTarget();
+            migrateTimersOutsideCluster();
         } finally {
             undeployEjb(cluster_name);
         }
@@ -91,5 +92,16 @@ public class MigrateTimersTest extends TimerTestBase {
         //3 timers in instance_1: 2 migrated from instance_2, 1 created after restart
         report(testName + instance_name_1 + "-3", timerCounts.get(instance_name_1) == 3);
         report(testName + instance_name_2 + "-0", timerCounts.get(instance_name_2) == 0);
+    }
+
+    public void migrateTimersOutsideCluster() {
+        String testName = "migrateTimersOutsideCluster";
+
+        //assuming no automatic migration when stopping a local instance.
+        asadmin("stop-local-instance", instance_name_1);
+        asadmin("start-local-instance", instance_name_3);
+        AsadminReturn output = asadminWithOutput("migrate-timers", "--target", instance_name_3, instance_name_1);
+        logger.log(Level.INFO, "Finished migrate-timer: {0}", new Object[]{output.outAndErr});
+        report(testName, output.returnValue == false);
     }
 }
