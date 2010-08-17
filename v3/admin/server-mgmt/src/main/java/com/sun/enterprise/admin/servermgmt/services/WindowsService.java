@@ -224,11 +224,11 @@ public class WindowsService extends NonSMFServiceAdapter {
         StringBuilder sb = new StringBuilder();
 
         if (user != null) {
-            sb.append(" " + begin + "--user" + end);
-            sb.append("  " + begin + user + end);
+            StringBuilder append = sb.append(" " + begin + "--user" + end);
+            sb.append("  ").append(begin).append(user).append(end);
         }
-        sb.append("  " + begin + "--passwordfile" + end);
-        sb.append("  " + begin + getPasswordFilePath() + end);
+        sb.append("  ").append(begin).append("--passwordfile").append(end);
+        sb.append("  ").append(begin).append(getPasswordFilePath()).append(end);
         sb.append("  "); // such obsessive attention to detail!!! :-)
 
         return sb.toString();

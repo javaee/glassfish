@@ -48,7 +48,7 @@ public abstract class ServiceAdapter implements Service {
     ServiceAdapter(ServerDirs serverDirs, AppserverServiceType type) {
         info = new PlatformServicesInfo(serverDirs, type);
     }
-    
+
     @Override
     public PlatformServicesInfo getInfo() {
         return info;
@@ -90,9 +90,11 @@ public abstract class ServiceAdapter implements Service {
         getTokenMap().put(LOCATION_ARGS_STOP_TN, getLocationArgsStop());
         getTokenMap().put(START_COMMAND_TN, info.type.startCommand());
         getTokenMap().put(STOP_COMMAND_TN, info.type.stopCommand());
-        getTokenMap().put(FQSN_TN,  info.fqsn);
+        getTokenMap().put(FQSN_TN, info.fqsn);
         getTokenMap().put(OS_USER_TN, info.osUser);
         getTokenMap().put(SERVICE_NAME_TN, info.smfFullServiceName);
+        getTokenMap().put(AS_ADMIN_PATH_TN, info.asadminScript.getPath().replace('\\', '/'));
+
     }
 
     void trace(String s) {
@@ -103,7 +105,6 @@ public abstract class ServiceAdapter implements Service {
     final Map<String, String> getTokenMap() {
         return tokenMap;
     }
-
     private final Map<String, String> tokenMap = new HashMap<String, String>();
     final PlatformServicesInfo info;
 }

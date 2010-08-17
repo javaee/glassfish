@@ -67,15 +67,6 @@ import java.util.Map;
      void setDate(final String date);
     
     
-    /** Returns the absolute path to the asadmin script.
-     */
-     String getAsadminPath();
-    /** Sets the absolute path to the asadmin script. May not be null.
-     */
-     void setAsadminPath(final String path);
-    /** Returns the absolute path of the password file that contains asadmin
-     * authentication artifacts.
-     */
      String getPasswordFilePath();
     /** Sets the absolute path of the password file that contains asadmin
      * authentication artifacts. Parameter may not be null.

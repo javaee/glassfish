@@ -159,24 +159,6 @@ public final class SMFService extends ServiceAdapter {
         getTokenMap().put(DATE_CREATED_TN, date);
     }
 
-    /** Returns the absolute path to the asadmin script.
-     */
-    public String getAsadminPath() {
-        return (getTokenMap().get(AS_ADMIN_PATH_TN));
-    }
-
-    /** Sets the absolute path to the asadmin script. May not be null.
-     */
-    public void setAsadminPath(final String path) {
-        if (path == null)
-            throw new IllegalArgumentException(nullArgMsg);
-        if (!new File(path).exists()) {
-            final String msg = sm.getString("doesNotExist", path);
-            throw new IllegalArgumentException(msg);
-        }
-        getTokenMap().put(AS_ADMIN_PATH_TN, path);
-    }
-
     /** Returns the absolute path of the password file that contains asadmin
      * authentication artifacts.
      */

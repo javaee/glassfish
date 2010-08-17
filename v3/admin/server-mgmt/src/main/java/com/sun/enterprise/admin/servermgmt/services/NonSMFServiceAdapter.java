@@ -76,16 +76,6 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
     }
 
     @Override
-    public final String getAsadminPath() {
-        return asadminPath;
-    }
-
-    @Override
-    public final void setAsadminPath(String path) {
-        asadminPath = path;
-    }
-
-    @Override
     public final String getPasswordFilePath() {
         return passwordFilePath;
     }
@@ -185,7 +175,6 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
         getTokenMap().put(ENTITY_NAME_TN, getServerDirs().getServerName());
         getTokenMap().put(DATE_CREATED_TN, getDate());
         getTokenMap().put(SERVICE_NAME_TN, info.serviceName);
-        getTokenMap().put(AS_ADMIN_PATH_TN, getAsadminPath().replace('\\', '/'));
         getTokenMap().put(CFG_LOCATION_TN, getServerDirs().getServerParentDir().getPath().replace('\\', '/'));
         getTokenMap().put(START_COMMAND_TN, getStartCommand());
         getTokenMap().put(STOP_COMMAND_TN, getStopCommand());
@@ -280,7 +269,6 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
         return s != null && s.length() > 0;
     }
     private String date = new Date().toString();    // default date string
-    private String asadminPath;
     private String passwordFilePath;
     private String flattenedServicePropertes;
     private String appserverUser;

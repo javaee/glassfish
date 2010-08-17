@@ -158,13 +158,12 @@ public class PlatformServicesInfo {
     boolean trace;
     File libDir;
     String smfFullServiceName;
+    File asadminScript;
 
     // private to this implementation
-    private File asdminFile;
     private File passwordFile;
     private boolean force;
     private Date date;
     private boolean valid;
     private File installRootDir;
-    private File asadminScript;
 }
