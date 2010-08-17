@@ -38,9 +38,11 @@ package org.glassfish.hk2.classmodel.reflect.util;
 
 import org.glassfish.hk2.classmodel.reflect.ArchiveAdapter;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -73,27 +75,54 @@ public class InputStreamArchiveAdapter extends AbstractAdapter {
 
     @Override
     public void onSelectedEntries(Selector selector, EntryTask task, Logger logger) throws IOException {
-        JarInputStream jis = new JarInputStream(is);
-        final byte[] bytes = new byte[52000];
+        JarInputStream jis = new JarInputStream(new BufferedInputStream(is));
+        byte[] bytes = new byte[52000];
         JarEntry ja;
         while ((ja=jis.getNextJarEntry())!=null) {
-            Entry je = new Entry(ja.getName(), ja.getSize(), ja.isDirectory());
-            if (!selector.isSelected(je))
-                continue;
-
             try {
-                if (ja.getSize()>0) {
-                    if (jis.read(bytes, 0, (int) ja.getSize())!=ja.getSize()) {
-                        logger.severe("Incorrect file length while processing " + ja.getName() + " of size " + ja.getSize());
-                    }
-                }
-                task.on(je, bytes);
+                Entry je = new Entry(ja.getName(), ja.getSize(), ja.isDirectory());
+                if (!selector.isSelected(je))
+                    continue;
 
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Exception while processing " + ja.getName()
-                        + " of size " + ja.getSize(), e);
+                try {
+                    if (ja.getSize()>bytes.length) {
+                        bytes = new byte[(int) ja.getSize()];
+                    }
+                    if (ja.getSize()!=0) {
+                        // beware, ja.getSize() can be equal to -1 if the size cannot be determined.
+
+                        int read = 0;
+                        int allRead=0;
+                        do {
+                            read = jis.read(bytes, allRead, bytes.length-allRead);
+                            allRead+=read;
+                            if (allRead==bytes.length) {
+                                // oh crap !
+                                bytes = Arrays.copyOf(bytes, bytes.length*2);
+                            }
+
+                        } while (read!=-1);
+
+                        if (ja.getSize()!=-1 && ja.getSize()!=(allRead+1)) {
+                            logger.severe("Incorrect file length while processing " + ja.getName() + " of size " + ja.getSize() + " got " + allRead);
+                        }
+
+                        // if the size was not known, let's reset it now.
+                        if (je.size==-1) {
+                            je = new Entry(ja.getName(), allRead+1, ja.isDirectory());
+                        }
+                    }
+                    task.on(je, bytes);
+
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "Exception while processing " + ja.getName()
+                            + " of size " + ja.getSize(), e);
+                }
+            } finally {
+                jis.closeEntry();
             }
         }
+        jis.close();
     }
 
     @Override

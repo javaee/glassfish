@@ -40,6 +40,8 @@ import org.glassfish.hk2.classmodel.reflect.ExtensibleType;
 import org.glassfish.hk2.classmodel.reflect.InterfaceModel;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 import org.objectweb.asm.*;
+import org.objectweb.asm.commons.EmptyVisitor;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -56,6 +58,8 @@ public class ModelClassVisitor implements ClassVisitor {
     private final String entryName;
     TypeImpl type;
     boolean deepVisit =false;
+    final VisitingContext visitingContext = new VisitingContext();
+    private final ModelFieldVisitor fieldVisitor = new ModelFieldVisitor(visitingContext);
 
     public ModelClassVisitor(ParsingContext ctx, URI definingURI, String entryName) {
         this.ctx = ctx;
@@ -192,26 +196,14 @@ public class ModelClassVisitor implements ClassVisitor {
 
         TypeProxy<?> fieldType =  typeBuilder.getHolder(asmType.getClassName());
         final FieldModelImpl field = typeBuilder.getFieldModel(name, fieldType, cm);
+        visitingContext.field = field;
 
         // reverse index.
         fieldType.getRefs().add(field);
 
         // forward index
         cm.addField(field);
-        return new org.objectweb.asm.commons.EmptyVisitor() {
-            @Override
-            public AnnotationVisitor visitAnnotation(String s, boolean b) {
-                AnnotationTypeImpl annotationType = (AnnotationTypeImpl) typeBuilder.getType(Opcodes.ACC_ANNOTATION, unwrap(s), null );
-                AnnotationModelImpl annotationModel = new AnnotationModelImpl(field, annotationType);
-
-                // reverse index.
-                annotationType.getAnnotatedElements().add(field);
-
-                // forward index
-                field.addAnnotation(annotationModel);
-                return null;
-            }
-        };
+        return fieldVisitor;
     }
 
     @Override
@@ -249,10 +241,40 @@ public class ModelClassVisitor implements ClassVisitor {
 
     @Override
     public void visitEnd() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        visitingContext.field=null;
     }                                                            
 
     private String unwrap(String desc) {
         return org.objectweb.asm.Type.getType(desc).getClassName();
+    }
+
+    private static class VisitingContext {
+        FieldModelImpl field;
+
+    }
+
+    private class ModelFieldVisitor extends EmptyVisitor implements FieldVisitor {
+
+        private final VisitingContext context;
+
+        private ModelFieldVisitor(VisitingContext context) {
+            this.context = context;
+        }
+
+        @Override
+        public AnnotationVisitor visitAnnotation(String s, boolean b) {
+            FieldModelImpl field = context.field;
+
+            AnnotationTypeImpl annotationType = (AnnotationTypeImpl) typeBuilder.getType(Opcodes.ACC_ANNOTATION, unwrap(s), null );
+            AnnotationModelImpl annotationModel = new AnnotationModelImpl(field, annotationType);
+
+            // reverse index.
+            annotationType.getAnnotatedElements().add(field);
+
+            // forward index
+            field.addAnnotation(annotationModel);
+            return null;
+        }
+
     }
 }

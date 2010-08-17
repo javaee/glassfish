@@ -75,17 +75,20 @@ public class JarTest {
         logger.setLevel(Level.FINE);
         ParsingContext pc = new ParsingContext.Builder().logger(logger).build();
         Parser parser = new Parser(pc);
-        parser.parse(f, null);
+        long start = System.currentTimeMillis();
+        parser.parse(f, new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Done parsing");
+            }
+        });
         try {
             parser.awaitTermination();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         Collection<Type> types = pc.getTypes().getAllTypes();
-        for (Type type : types) {
-            System.out.println("Parsed " + type.getName());
-        }
-        System.out.println("Finished parsing " + types.size() + " classes");
+        System.out.println("Finished parsing " + types.size() + " classes in " + (System.currentTimeMillis() - start) + "ms");
 
     }
 
