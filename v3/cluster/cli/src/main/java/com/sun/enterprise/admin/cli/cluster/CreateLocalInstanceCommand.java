@@ -38,8 +38,8 @@ package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.admin.cli.CLIConstants;
 import com.sun.enterprise.admin.cli.CLILogger;
-import com.sun.enterprise.admin.cli.ProgramOptions;
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
@@ -52,6 +52,10 @@ import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.util.SecureAdminClientManager;
 import com.sun.enterprise.config.serverbeans.ServerRef;
+import com.sun.enterprise.admin.servermgmt.KeystoreManager;
+import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
+import com.sun.enterprise.security.store.PasswordAdapter;
+import com.sun.enterprise.util.OS;
 
 
 /**
@@ -87,12 +91,18 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     @Param(name = "bootstrap", optional = true, defaultValue = "true")
     private boolean bootstrap = true;
 
+    @Param(name = "savemasterpassword", optional = true, defaultValue = "false")
+    private boolean saveMasterPassword = false;
+
     private static final String RENDEZVOUS_PROPERTY_NAME = "rendezvousOccurred";
     private String INSTANCE_DOTTED_NAME;
     private String RENDEZVOUS_DOTTED_NAME;
     private boolean _rendezvousOccurred;
     private String _node;
     private PortBaseHelper pbh;
+    protected static final String DEFAULT_MASTER_PASSWORD = KeystoreManager.DEFAULT_MASTER_PASSWORD;
+    private ParamModelData masterPasswordOption;
+    private static final String MASTER_PASSWORD_ALIAS="master-password";
 
     /**
      */
@@ -179,6 +189,9 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         }
         try {
             exitCode = super.executeCommand();
+            if (exitCode == SUCCESS) {
+                saveMasterPassword();
+            }
         } catch (CommandException ce) {
             String msg = "Something went wrong in creating the local filesystem for instance " + instanceName;
             if (ce.getLocalizedMessage() != null) {
@@ -213,6 +226,73 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         final File domainXMLFile = new File(instanceDir.toURI().resolve(domainXMLURI));
         domainXMLFile.setLastModified(domainXMLFile.lastModified() - 1000);
         return result;
+    }
+
+    /**
+     * If --savemasterpassword=true, then saves tries to save the master password.
+     * If AS_ADMIN_MASTERPASSWORD from --passwordfile exists that is used.
+     * If it does not exist, the user is asked to enter the master password.
+     * The password is validated against the keystore if it exists. If successful, master-password
+     * is saved to the server instance directory <glassfish-install>/nodes/<host name>/<instance>/master-password.
+     * If the password entered does not match the keystore, master-password is not
+     * saved and a warning is displayed. The command is still successful.
+     * @throws CommandException
+     */
+    private void saveMasterPassword() throws CommandException {
+        if (saveMasterPassword) {
+            masterPasswordOption = new ParamModelData(CLIConstants.MASTER_PASSWORD,
+                        String.class, false, null);
+            masterPasswordOption.description = Strings.get("MasterPassword");
+            masterPasswordOption.param._password = true;
+            String masterPassword = getPassword(masterPasswordOption, DEFAULT_MASTER_PASSWORD, false);
+            if (masterPassword != null) {
+                File mp = new File(new File(getServerDirs().getServerDir(), "config"), "keystore.jks");
+                if (mp.canRead()) {
+                    if (verifyMasterPassword(masterPassword)) {
+                        createMasterPasswordFile(masterPassword);
+                    } else {
+                        logger.printMessage(Strings.get("masterPasswordIncorrect"));
+                    }
+                } else {
+                    createMasterPasswordFile(masterPassword);
+                }
+                
+            }
+        }
+    }
+
+    /**
+     * Create the master password keystore. This routine can also modify the master password
+     * if the keystore already exists
+     * @param masterPassword
+     * @throws CommandException
+     */
+    protected void createMasterPasswordFile(String masterPassword) throws CommandException {
+        final File pwdFile = new File(this.getServerDirs().getServerDir(), MASTER_PASSWORD_ALIAS);
+        try {
+            PasswordAdapter p = new PasswordAdapter(pwdFile.getAbsolutePath(),
+                MASTER_PASSWORD_ALIAS.toCharArray());
+            p.setPasswordForAlias(MASTER_PASSWORD_ALIAS, masterPassword.getBytes());
+            chmod("600", pwdFile);
+        } catch (Exception ex) {
+            throw new CommandException(Strings.get("masterPasswordFileNotCreated", pwdFile),
+                ex);
+        }
+    }
+
+    protected void chmod(String args, File file) throws IOException {
+        if (OS.isUNIX()) {
+            if (!file.exists()) throw new IOException(Strings.get("fileNotFound", file.getAbsolutePath()));
+
+            // " +" regular expression for 1 or more spaces
+            final String[] argsString = args.split(" +");
+            List<String> cmdList = new ArrayList<String>();
+            cmdList.add("/bin/chmod");
+            for (String arg : argsString)
+                cmdList.add(arg);
+            cmdList.add(file.getAbsolutePath());
+            new ProcessBuilder(cmdList).start();
+        }
     }
 
     private boolean rendezvousWithDAS() {
