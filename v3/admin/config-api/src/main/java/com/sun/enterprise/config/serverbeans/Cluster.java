@@ -233,9 +233,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *         {@link String }
      */
     @Attribute
-    @Min(value=2048)
-    @Max(value=49151)
-    @Deprecated
+    //@Min(value=2048)
+    //@Max(value=49151)
+    //@Deprecated
     String getHeartbeatPort();
 
     /**
