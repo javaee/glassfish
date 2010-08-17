@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,9 +33,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-import java.io.*;
-import java.net.*;
-import com.sun.ejte.ccl.reporter.*;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.Socket;
+import java.net.URL;
+
+import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
 /*
  * Unit test for 6346226 ("SessionLockingStandardPipeline.hasFailoverOccurred
@@ -45,14 +52,9 @@ import com.sun.ejte.ccl.reporter.*;
  * because the target servlet performs a security-checked operation.
  */
 public class WebTest {
-
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
-
     private static final String TEST_NAME = "jroute-id-in-cookie-or-url";
-
     private static final String EXPECTED_RESPONSE = "jrouteId=1234";
-
+    private static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", TEST_NAME);
     private String host;
     private String port;
     private String contextRoot;
@@ -64,7 +66,6 @@ public class WebTest {
     }
 
     public static void main(String[] args) {
-
         stat.addDescription("Unit test for 6346226");
         WebTest webTest = new WebTest(args);
         try {
@@ -73,7 +74,7 @@ public class WebTest {
                 webTest.doTestCookie();
             }
         } catch (Exception ex) {
-            stat.addStatus(TEST_NAME, stat.FAIL);
+            stat.addStatus("exception found", SimpleReporterAdapter.FAIL);
             ex.printStackTrace();
         }
         stat.printSummary();
@@ -83,63 +84,56 @@ public class WebTest {
      * @return true on success, false on failure
      */
     public boolean doTestURL() throws Exception {
-     
-        URL url = new URL("http://" + host  + ":" + port
-                          + contextRoot + "/TestServlet"
-                          + ";jsessionid=CFE28BD89B33B59CD7249ACBDA5B479D"
-                          + ":1234");
+        URL url = new URL("http://" + host + ":" + port
+            + contextRoot + "/TestServlet"
+            + ";jsessionid=CFE28BD89B33B59CD7249ACBDA5B479D"
+            + ":1234");
         System.out.println("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
-        if (responseCode != 200) { 
+        final String testName = "test url";
+        if (responseCode != 200) {
             System.err.println("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+                + ", received: " + responseCode);
+            stat.addStatus(testName, SimpleReporterAdapter.FAIL);
             return false;
         } else {
             InputStream is = conn.getInputStream();
             BufferedReader input = new BufferedReader(new InputStreamReader(is));
             String line = input.readLine();
-
             if (EXPECTED_RESPONSE.equals(line)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
+                stat.addStatus(testName, SimpleReporterAdapter.PASS);
                 return true;
             } else {
                 System.err.println("Wrong response. Expected: "
-                                   + EXPECTED_RESPONSE
-                                   + ", received: " + line);
-                stat.addStatus(TEST_NAME, stat.FAIL);
+                    + EXPECTED_RESPONSE
+                    + ", received: " + line);
+                stat.addStatus(testName, SimpleReporterAdapter.FAIL);
                 return false;
             }
         }
     }
 
     public void doTestCookie() throws Exception {
-
         Socket socket = new Socket(host, Integer.parseInt(port));
         OutputStream os = socket.getOutputStream();
-        os.write(("GET " + contextRoot
-                    + "/TestServlet HTTP/1.0\n").getBytes());
-        os.write(("Cookie: JROUTE=1234\n").getBytes());
+        os.write(("GET " + contextRoot + "/TestServlet HTTP/1.0\n").getBytes());
+        os.write("Cookie: JROUTE=1234\n".getBytes());
         os.write("\n".getBytes());
-        
         InputStream is = socket.getInputStream();
         BufferedReader bis = new BufferedReader(new InputStreamReader(is));
         String line = null;
         String lastLine = null;
-
         while ((line = bis.readLine()) != null) {
             lastLine = line;
         }
-
-        if (EXPECTED_RESPONSE.equals(line)) {
-            stat.addStatus(TEST_NAME, stat.PASS);
+        final String testName = "test cookie";
+        if (EXPECTED_RESPONSE.equals(lastLine)) {
+            stat.addStatus(testName, SimpleReporterAdapter.PASS);
         } else {
-            System.err.println("Wrong response. Expected: "
-                               + EXPECTED_RESPONSE
-                               + ", received: " + line);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+            System.err.printf("Wrong response. Expected: %s, received: %s\n", EXPECTED_RESPONSE, line);
+            stat.addStatus(testName, SimpleReporterAdapter.FAIL);
         }
     }
 }
