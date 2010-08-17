@@ -130,6 +130,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
+    @Param(name="gmsenabled", optional=true)
     void setGmsEnabled(String value) throws PropertyVetoException;
 
     /**
