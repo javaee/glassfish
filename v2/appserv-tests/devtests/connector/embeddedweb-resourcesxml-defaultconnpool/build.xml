@@ -167,7 +167,7 @@
       <include name="*.rar"/>
     </fileset>
     <fileset dir="${basedir}">
-      <include name="META-INF/sun-resources.xml"/>
+      <include name="META-INF/glassfish-resources.xml"/>
     </fileset>
     </ear>
     </target> 
@@ -194,7 +194,7 @@
     </target>
  
     <target name="undeploy-ear" depends="init-common">
-        <antcall target="delete-ra-config"/>
+<!--        <antcall target="delete-ra-config"/>-->
         <antcall target="undeploy-common"/>
     </target>  
 

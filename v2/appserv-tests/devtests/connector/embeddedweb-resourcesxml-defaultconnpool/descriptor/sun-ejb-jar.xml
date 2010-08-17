@@ -11,7 +11,7 @@
       <jndi-name>ejb/customerSavings</jndi-name>
       <resource-ref>
         <res-ref-name>jdbc/SimpleBank</res-ref-name>
-        <jndi-name>jdbc/ejb-subclassing</jndi-name>
+        <jndi-name>java:app/jdbc/ejb-subclassing</jndi-name>
       </resource-ref>
       <is-read-only-bean>false</is-read-only-bean> 
       <commit-option>B</commit-option> 
@@ -33,7 +33,7 @@
       <jndi-name>ejb/customerChecking</jndi-name>
       <resource-ref>
         <res-ref-name>jdbc/SimpleBank</res-ref-name>
-        <jndi-name>jdbc/ejb-subclassing</jndi-name>
+        <jndi-name>java:app/jdbc/ejb-subclassing</jndi-name>
       </resource-ref>
       <is-read-only-bean>false</is-read-only-bean> 
       <commit-option>B</commit-option> 

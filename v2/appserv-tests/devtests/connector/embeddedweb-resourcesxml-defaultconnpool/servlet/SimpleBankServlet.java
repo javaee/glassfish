@@ -207,7 +207,7 @@ public class SimpleBankServlet extends HttpServlet {
     }
 
     try {
-      JdbcSetupAdmin ja = (JdbcSetupAdmin) initContext.lookup("eis/jdbcAdmin");
+      JdbcSetupAdmin ja = (JdbcSetupAdmin) initContext.lookup("java:app/eis/jdbcAdmin");
       if (ja.checkSetup() == false) {
          throw new RuntimeException("JDBC Setup Wroing");
       }

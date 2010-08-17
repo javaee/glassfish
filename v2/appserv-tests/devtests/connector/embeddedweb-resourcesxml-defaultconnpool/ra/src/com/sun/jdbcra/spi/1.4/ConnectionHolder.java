@@ -9,6 +9,7 @@ import java.sql.*;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Enumeration;
+import java.util.Properties;
 
 /**
  * Holds the java.sql.Connection object, which is to be 
@@ -254,7 +255,13 @@ public class ConnectionHolder implements Connection{
 	checkValidity();    
     	return con.getTypeMap();
     }
-    
+
+/*
+    public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+*/
+
     /**
      * Retrieves the the first warning reported by calls on the underlying
      * <code>Connection</code> object.
@@ -438,8 +445,52 @@ public class ConnectionHolder implements Connection{
     public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
 	checkValidity();    
     	return con.prepareStatement(sql,columnNames);
-    } 
-    
+    }
+
+    public Clob createClob() throws SQLException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Blob createBlob() throws SQLException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public NClob createNClob() throws SQLException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public SQLXML createSQLXML() throws SQLException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean isValid(int timeout) throws SQLException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void setClientInfo(String name, String value) throws SQLClientInfoException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void setClientInfo(Properties properties) throws SQLClientInfoException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public String getClientInfo(String name) throws SQLException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Properties getClientInfo() throws SQLException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     /**
      * Removes the given <code>Savepoint</code> object from the current transaction.
      *
@@ -582,5 +633,12 @@ public class ConnectionHolder implements Connection{
     void setActive(boolean actv) {
         active = actv;
     }
-    
+
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

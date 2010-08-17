@@ -184,5 +184,13 @@ public class DataSource implements javax.sql.DataSource, java.io.Serializable,
      */
     public void setReference(Reference reference) {
     	this.reference = reference;
-    }    
+    }
+
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
