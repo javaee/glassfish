@@ -211,7 +211,7 @@ public class ListInstancesCommand implements AdminCommand {
                     (stateService.setState(name, InstanceState.StateType.RUNNING, false)) :
                     (stateService.setState(name, InstanceState.StateType.NO_RESPONSE, false));
             String display = state.getDisplayString();
-            if(state.equals(InstanceState.StateType.RESTART_REQUIRED)) {
+            if(state == InstanceState.StateType.RESTART_REQUIRED) {
                 display += (" [pending config changes are : " + stateService.getFailedCommands(name) + "]");
             }
             String value = state.getDescription();
@@ -219,6 +219,12 @@ public class ListInstancesCommand implements AdminCommand {
             sb.append(name).append(display);
             top.addProperty(name, value);
             if (ii.isRunning()) top.addProperty(name + ".uptime", "" + ii.getUptime());
+            ActionReport.MessagePart child = top.addChild();
+            child.addProperty("name", name);
+            child.addProperty("status", value);
+            if(stateService.getState(name) == InstanceState.StateType.RESTART_REQUIRED) {
+                child.addProperty("restartReasons", stateService.getFailedCommands(name));
+            }
         }
 
         if (verbose)
