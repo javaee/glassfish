@@ -87,6 +87,9 @@ public class PostCreateApplicationRefCommand implements AdminCommand {
     @Param(optional=true, defaultValue="true")
     public Boolean enabled = true;
 
+    @Param(optional=true, defaultValue="true")
+    public Boolean lbenabled = true;
+
     @Inject
     private Deployment deployment;   
 

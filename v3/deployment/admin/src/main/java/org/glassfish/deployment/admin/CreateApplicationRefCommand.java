@@ -100,6 +100,9 @@ public class CreateApplicationRefCommand implements AdminCommand {
     @Param(optional=true, defaultValue="true")
     public Boolean enabled = true;
 
+    @Param(optional=true, defaultValue="true")
+    public Boolean lbenabled = true;
+
     @Inject
     Deployment deployment;
 
@@ -159,6 +162,7 @@ public class CreateApplicationRefCommand implements AdminCommand {
             commandParams.target = target;
             commandParams.virtualservers = virtualservers;
             commandParams.enabled = enabled;
+            commandParams.lbenabled = lbenabled;
             contextProps = app.getDeployProperties();
             modulePropsMap = app.getModulePropertiesMap();
             savedAppConfig = new ApplicationConfigInfo(app);
