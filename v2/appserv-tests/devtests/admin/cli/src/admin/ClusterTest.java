@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,7 +63,12 @@ public class ClusterTest extends AdminBaseDevTest {
             startingNumberOfClusters = (Double)o;
         }
 
+        // should fail since cluster not created yet
+        report("get-health-no-cluster-before", !asadmin("get-health", "cl1"));
+
         report("create-cluster", asadmin("create-cluster", "cl1"));
+
+        testGetHealthEmptyCluster();
 
         //create-cluster using existing config
         report("create-cluster-with-config", asadmin("create-cluster",
@@ -116,6 +121,75 @@ public class ClusterTest extends AdminBaseDevTest {
         stat.printSummary();
     }
 
+    /*
+     * Stop instance, check health, restart instance, and check again.
+     * This method relies on another for the actual call. It will wait
+     * for a bit for a positive result since the GMS notifications
+     * may take a few seconds to be sent.
+     */
+    private void testGetHealthStopRestartInstance(String c, String i) {
+        final String stopped = "Stopped";
+        final String started = "Started";
+        asadmin("stop-local-instance", i);
+        sleep(5);
+        boolean success = checkInstanceHealth(c, i, stopped);
+        if (!success) {
+            sleep(5);
+            success = checkInstanceHealth(c, i, stopped);
+        }
+        report("get-health-instance-stopped", success);
+        asadmin("start-local-instance", i);
+        sleep(5);
+        success = checkInstanceHealth(c, i, started);
+        if (!success) {
+            sleep(5);
+            success = checkInstanceHealth(c, i, started);
+        }
+        report("get-health-instance-started", success);
+    }
+
+    /*
+     * Restart the domain, wait, and check health of instances. This
+     * method expects that they're all in Started state.
+     */
+    private void testGetHealthRestartedDomain(String c, String i) {
+        final String started = "Started";
+        asadmin("restart-domain");
+        sleep(5);
+        boolean success = checkInstanceHealth(c, i, started);
+        if (!success) {
+            sleep(5);
+            success = checkInstanceHealth(c, i, started);
+        }
+        report("check-health-das-restart", success);
+    }
+
+    private void testGetHealthInstancesNotRunning(String c) {
+        String out = asadminWithOutput("get-health", c).outAndErr;
+        boolean success = out.indexOf("Not running") > 0;
+        report("get-health-instances-not-running", success);
+    }
+
+    /*
+     * Given a status and instance in cluster cl1, reports whether or
+     * not that status is returned.
+     */
+    private boolean checkInstanceHealth(String cluster,
+        String instanceName, String status) {
+
+        final String expected = String.format("Instance %s %s",
+            instanceName, status);
+        String out = asadminWithOutput("get-health", cluster).outAndErr;
+        return out.indexOf(expected) >= 0;
+    }
+
+    private void testGetHealthEmptyCluster() {
+        AsadminReturn retVal = asadminWithOutput("get-health", "cl1");
+        final String expected = "No instances found for cluster cl1";
+        boolean success = retVal.outAndErr.indexOf(expected) >= 0;
+        report("get-health-empty-cluster", success);
+    }
+
 
     private void testListClusters(){
         final String testName = "issue12249-";
@@ -128,14 +202,21 @@ public class ClusterTest extends AdminBaseDevTest {
            
         }
         report(testName+"list-cl" , !isClusterRunning(cname));
+
+        testGetHealthInstancesNotRunning(cname);
+
         for (int i = 0 ; i<3; i ++) {
             report(testName +"start-li"+i , asadmin("start-local-instance",iname+i));
         }
         AsadminReturn ret = asadminWithOutput("list-instances","--verbose");
         AsadminReturn lc = asadminWithOutput("list-clusters");
         report(testName+"list-cl1" , isClusterRunning(cname));
+
+        testGetHealthStopRestartInstance(cname, iname+1);
+        testGetHealthRestartedDomain(cname, iname+0);
+        
         report(testName +"stop-one" , asadmin("stop-local-instance",iname+1));
-        report(testName+"list-cl2" , isClusterPartiallyRunning(cname));
+        report(testName+"list-cl2" , isClusterPartiallyRunning(cname));        
         report(testName +"start-one" , asadmin("start-local-instance",iname+1));
 
         for (int i = 0 ; i<3; i ++) {
@@ -862,6 +943,8 @@ public class ClusterTest extends AdminBaseDevTest {
         report("delete-cl3", !asadmin("delete-cluster", "cl3")); // should not have been created
         report("delete-cl4", asadmin("delete-cluster", "cl4"));
 
+        report("get-health-no-cluster-after", !asadmin("get-health", "cl1"));
+
         AsadminReturn ret = asadminWithOutput("list-clusters");
         String s = (ret.out == null) ? "" : ret.out.trim();
 
@@ -878,7 +961,7 @@ public class ClusterTest extends AdminBaseDevTest {
 			asadmin("restart-domain");
 			asadmin("list-clusters");
 		}
-	else	
+	else
         report("verify-list-of-zero-clusters", success);
     }
 }
