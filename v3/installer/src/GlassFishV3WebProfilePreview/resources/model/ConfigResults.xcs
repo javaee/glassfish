@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+   DO NOT ALTER OR REMOVE COPYRIGHT NOTICE OR THIS HEADER.
+
+   Copyright 2006, 2007 Sun Microsystems, Inc. All rights reserved.
+   Use is subject to license terms.
+
+   The contents of this file are subject to the terms of the Common Development
+   and Distribution License("CDDL") (the "License"). You may not use this file
+   except in compliance with the License.
+
+   You can obtain a copy of the License at https://openinstaller.dev.java.net/license.html
+   or http://openinstaller.dev.java.net/license.txt . See the License for the
+   specific language governing permissions and limitations under the License.
+
+   When distributing the Covered Code, include this CDDL Header Notice in each
+   file and include the License file at http://openinstaller.dev.java.net/license.txt .
+   If applicable, add the following below this CDDL Header, with the fields
+   enclosed by brackets [] replaced by your own identifying information:
+   "Portions Copyrighted [year] [name of copyright owner]"
+
+   ident "@(#)%Name% %Revision% %Date% SMI"
+
+-->
+<oor:component-schema oor:version="1.1" oor:name="ConfigResults" oor:package="org.openinstaller.summary"
+ xsi:schemaLocation="http://openoffice.org/2001/registry"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ xmlns:oor="http://openoffice.org/2001/registry"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xml:lang='en-US'>
+ <component>
+     <group oor:name="information">
+	<prop oor:name="ONLOAD" oor:type="xs:string" oor:nillable="false">
+		<value>Dummy</value>
+	<actions>
+		<onSet><![CDATA[
+              import org.openinstaller.bus.*;
+              import org.openinstaller.core.*;
+              import org.openinstaller.util.*;
+              import org.openinstaller.provider.conf.*;
+              import org.glassfish.installer.util.*;
+              import org.glassfish.installer.conf.*;
+
+    String createDomain(Product productRef, String runningMode) throws EnhancedException {
+       DomainManager domainManager = new DomainManager(productRef);
+       domainManager.createDomain(
+                ConfigHelper.getStringValue("Domain.Configuration.DOMAIN_NAME"),
+                productRef.getInstallLocation() + File.separator + "glassfish" + File.separator + "domains",
+                ConfigHelper.getStringValue("Domain.Configuration.HTTP_PORT"),
+                ConfigHelper.getStringValue("Domain.Configuration.ADMIN_PORT"),
+                true,
+                false,
+                ConfigHelper.getStringValue("Domain.Configuration.ADMIN_USER"),
+                ConfigHelper.getStringValue("Domain.Configuration.ADMIN_PASSWORD"),
+                runningMode);
+        return domainManager.getOutputFromRecentRun();
+    }
+		run() {
+                BusRequest modeReq = new BusRequest("ConfigRequest",
+                new EngineConfigCommand(EngineConfigCommand.COMMAND.GET_CONFIG, EngineConfigItem.DISPLAY_MODE));
+                BusResponse modeResp = bus.publishRequest(modeReq, "svc://general/EngineConfig");
+                String mode = (String)modeResp.getResult();
+                if ("SILENT".equals(mode)) {
+		System.out.println("SETTING UP DOMAIN FOR SILENT INSTALL...");
+		Product productRef = new Product("GlassFish",
+                	ConfigHelper.getStringValue("InstallHome.directory.INSTALL_HOME"),
+                	GlassFishUtils.getGlassfishAdminScriptPath(ConfigHelper.getStringValue("InstallHome.directory.INSTALL_HOME")),
+                	GlassFishUtils.getGlassfishConfigFilePath(ConfigHelper.getStringValue("InstallHome.directory.INSTALL_HOME")));
+		System.out.println("Executing " + createDomain(productRef,"DRYRUN"));
+		System.out.println(createDomain(productRef,"REALRUN"));
+		}
+             }
+	return (Runnable)this;
+	]]></onSet>
+	</actions>
+	</prop>
+     </group>
+ </component>
+</oor:component-schema>

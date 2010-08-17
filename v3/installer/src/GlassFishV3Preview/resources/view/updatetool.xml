@@ -36,12 +36,12 @@
 * holder. 
 */ 
 --> 
-<apt:template apt:name="updatetool"
+<apt:template apt:name="UpdateTool"
     xmlns:apt="http://www.sun.com/jds/apoc/2004/template"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:oor="http://openoffice.org/2001/registry"
     xsi:schemaLocation="http://www.sun.com/jds/apoc/2004/template ../../../consumables/schemas/config/apoc/policytemplate.xsd">
-    <apt:category apt:name="updatetool" apt:label="Updatetool">
+    <apt:category apt:name="UpdateTool" apt:label="Updatetool">
       <apt:page apt:name="Configuration_Item" apt:label="Configuration Settings">
         <apt:section apt:name="Configuration" apt:label="Configuration" >
          <apt:property apt:name="UPDATETOOL_TEXT_TOP"
@@ -166,14 +166,14 @@ validateProxyPort(prop) {
 validatePortValues(String inputPort)  {
 	// First check if the port is empty
 	/*
-	String inputStatus = (String)ConfigHelper.getValue("updatetool.Configuration.STATUS"));
+	String inputStatus = (String)ConfigHelper.getValue("UpdateTool.Configuration.STATUS"));
 	if (inputStatus.equals("ERROR")) {
 		return;
 	}
 	*/
         //This field is optional, so skip the validation if the user ignores it.
         if ((inputPort == null) || inputPort.equals("")) {
-            ConfigHelper.setValue("updatetool.Configuration.STATUS", "SUCCESS");
+            ConfigHelper.setValue("UpdateTool.Configuration.STATUS", "SUCCESS");
         }
 
         else {
@@ -182,28 +182,28 @@ validatePortValues(String inputPort)  {
 	try {
 		intPortNumber = Integer.parseInt(inputPort);
 	}catch(NumberFormatException dummy) {
-            ConfigHelper.setValue("updatetool.Configuration.STATUS", "ERROR");
+            ConfigHelper.setValue("UpdateTool.Configuration.STATUS", "ERROR");
 		throw new EnhancedException("PORT_NOT_NUMERIC",new String[]{});
 	}
 
 	// Check for out of range values
 	if (intPortNumber <=0 || intPortNumber > 65535) {
-            ConfigHelper.setValue("updatetool.Configuration.STATUS", "ERROR");
+            ConfigHelper.setValue("UpdateTool.Configuration.STATUS", "ERROR");
 		throw new EnhancedException("PORT_OUT_OF_RANGE", new String[]{});
     }
 
 	// Check if the port is free
 	int retStat = isPortFree(intPortNumber);
 	if (retStat == -1) {
-            ConfigHelper.setValue("updatetool.Configuration.STATUS", "ERROR");
+            ConfigHelper.setValue("UpdateTool.Configuration.STATUS", "ERROR");
 		throw new EnhancedException("PORT_OCCUPIED", new String[]{});
     }
 	if (retStat == -2) {
-            ConfigHelper.setValue("updatetool.Configuration.STATUS", "ERROR");
+            ConfigHelper.setValue("UpdateTool.Configuration.STATUS", "ERROR");
 		throw new EnhancedException("HOST_NAME_CANNOT_BE_FOUND_WARNING", new String[]{});
     }
   }
-            ConfigHelper.setValue("updatetool.Configuration.STATUS", "SUCCESS");
+            ConfigHelper.setValue("UpdateTool.Configuration.STATUS", "SUCCESS");
 }
 
 // Check if the port is free

@@ -45,8 +45,6 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Pack200;
 import java.util.logging.Level;
 import java.util.zip.GZIPInputStream;
-import org.glassfish.installer.util.ExceptionUtil;
-import org.glassfish.installer.util.InstallFileFilter;
 import java.util.logging.Logger;
 import org.openinstaller.util.ClassUtils;
 

@@ -121,7 +121,7 @@ else
 fi
 
 #Check if config is available
-if [ ! -d ${CWD}/var/install/config/glassfish ]
+if [ ! -d ${CWD}/var/install/config/Domain ]
 then
 	echo "Config directory is missing from this installation. Aborting uninstallation."
 	exit ${CONFIG_DIRECTORY_MISSING}
@@ -140,7 +140,7 @@ fi
 fireUninstaller() {
 cd ${CWD}/install/bin
 #Pass in any additional arguments passed to the script.
-./uninstaller -s ${CWD}/var/install/config/glassfish -m file://${CWD}/install/metadata -p Default-Product-ID=glassfish -p Pkg-Format=zip -J "-Dorg.openinstaller.provider.configurator.class=org.openinstaller.provider.conf.InstallationConfigurator" ${ARGS} 
+./uninstaller -s ${CWD}/var/install/config/Domain -m file://${CWD}/install/metadata -p Default-Product-ID=Domain -p Pkg-Format=zip -J "-Dorg.openinstaller.provider.configurator.class=org.openinstaller.provider.conf.InstallationConfigurator" ${ARGS} 
 EXIT_CODE=$?
 if [ -f /bin/rm ]
 then

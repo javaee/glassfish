@@ -212,8 +212,8 @@ run() {
     wizard.enableNext(false);
    if (regOption.equals("USE_EXISTINGACCT")) {
 	
-     String proxyHost = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_HOST");
-     String proxyPortString = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_PORT");
+     String proxyHost = (String)ConfigHelper.getValue("UpdateTool.Configuration.PROXY_HOST");
+     String proxyPortString = (String)ConfigHelper.getValue("UpdateTool.Configuration.PROXY_PORT");
 
      String email = (String)ConfigHelper.getValue("RegistrationOptions.regoptions.USERNAME");
      String password = (String)ConfigHelper.getValue("RegistrationOptions.regoptions.USERPASSWORD");
@@ -251,8 +251,8 @@ run() {
       String company = (String)ConfigHelper.getValue("SOAccountCreation.accountinfo.COMPANYNAME");
       String country = (String)ConfigHelper.getValue("SOAccountCreation.accountinfo.COUNTRY");
 	
-     String proxyHost = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_HOST");
-     String proxyPortString = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_PORT");
+     String proxyHost = (String)ConfigHelper.getValue("UpdateTool.Configuration.PROXY_HOST");
+     String proxyPortString = (String)ConfigHelper.getValue("UpdateTool.Configuration.PROXY_PORT");
 
      int proxyPort;
      if (proxyPortString.trim() == null || proxyPortString.length() == 0)

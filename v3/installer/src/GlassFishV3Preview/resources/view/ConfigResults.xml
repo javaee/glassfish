@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+# 
+# Use is subject to License Terms
+#
+-->
+<apt:template apt:name="ConfigResults" xmlns:apt="http://www.sun.com/jds/apoc/2004/template"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:oor="http://openoffice.org/2001/registry"
+              xsi:schemaLocation="http://www.sun.com/jds/apoc/2004/template ../../../consumables/schemas/config/apoc/policytemplate.xsd">
+    <apt:category apt:name="ConfigResults" apt:label="ConfigResults" >
+        <apt:page apt:name="summary_page" apt:label="ConfigResults" >
+            <apt:section apt:name="Information" apt:label="ConfigResults" >
+                <apt:property apt:name="SUMMARY_HEADER"
+                              apt:dataPath=""
+                              apt:type="xs:string">
+                    <apt:prop-value></apt:prop-value>
+                    <apt:visual>
+                        <apt:htmlPanel>
+
+                        </apt:htmlPanel>
+                    </apt:visual>
+                </apt:property>
+
+
+                <apt:property apt:name="SUMMARY_OF_CONFIGURATION"
+                              apt:dataPath=""
+                              apt:type="xs:string">
+                    <apt:prop-value></apt:prop-value>
+                    <apt:visual>
+                        <apt:textArea apt:rows="9" apt:columns="33" apt:readOnly="true"/>
+                    </apt:visual>
+                </apt:property>
+            </apt:section>
+            <apt:scriptHandler apt:scriptLanguage="beanshell" >
+                <apt:scriptCode><![CDATA[
+
+import org.openinstaller.util.*;
+import org.glassfish.installer.util.*;
+import org.glassfish.installer.conf.*;
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+  
+
+
+    String createDomain(Product productRef, String runningMode) throws EnhancedException {
+
+       DomainManager domainManager = new DomainManager(productRef);
+       domainManager.createDomain(
+                ConfigHelper.getStringValue("Domain.Configuration.DOMAIN_NAME"),
+                productRef.getInstallLocation() + File.separator + "glassfish" + File.separator + "domains",
+                ConfigHelper.getStringValue("Domain.Configuration.HTTP_PORT"),
+                ConfigHelper.getStringValue("Domain.Configuration.ADMIN_PORT"),
+                true,
+                false,
+                ConfigHelper.getStringValue("Domain.Configuration.ADMIN_USER"),
+                ConfigHelper.getStringValue("Domain.Configuration.ADMIN_PASSWORD"),
+                runningMode);
+        overallStatus = domainManager.isConfigSuccessful();
+        return domainManager.getOutputFromRecentRun();
+    }
+	
+	String startDomain(Product productRef, String runningMode) throws EnhancedException {
+
+       DomainManager domainManager = new DomainManager(productRef);
+       domainManager.startDomain(ConfigHelper.getStringValue("Domain.Configuration.DOMAIN_NAME"), runningMode);
+	   overallStatus = domainManager.isConfigSuccessful();
+	   return domainManager.getOutputFromRecentRun();
+    }
+
+
+    /* Creates the service for the specified domain
+     * Wrapper for "asadmin create-service" command.
+     * Currently support is available only for Windows and Solaris platforms.
+     */
+    String createDomainService(Product productRef,String runningMode) throws EnhancedException {
+
+        Domain glassfishDomain = new Domain();
+        glassfishDomain.setDomainName(ConfigHelper.getStringValue("Domain.Configuration.DOMAIN_NAME"));
+
+        ServiceManager glassfishServiceManager = new ServiceManager();
+        glassfishServiceManager.createService(ConfigHelper.getStringValue("Domain.Configuration.SERVICE_NAME"),
+		null,
+                GlassFishUtils.getGlassfishAdminScriptPath(productRef.getInstallLocation()),
+                glassfishDomain,
+                runningMode);
+
+        overallStatus = glassfishServiceManager.isConfigSuccessful();
+        return glassfishServiceManager.getOutputFromRecentRun();
+
+    }
+
+    String createStandaloneInstance(Product productRef, String runningMode) throws EnhancedException {
+
+        InstanceManager glassfishInstanceManager = new InstanceManager(productRef);
+        glassfishInstanceManager.createInstance(
+                ConfigHelper.getStringValue("StandaloneInstance.Configuration.INSTANCE_NAME"),
+                ConfigHelper.getStringValue("StandaloneInstance.Configuration.SERVER_HOST_NAME"),
+                ConfigHelper.getStringValue("StandaloneInstance.Configuration.SERVER_ADMIN_PORT"),
+                "standalone",
+                null,
+                runningMode);
+
+        overallStatus = glassfishInstanceManager.isConfigSuccessful();
+        return glassfishInstanceManager.getOutputFromRecentRun();
+
+    }
+
+    String createClusteredInstance(Product productRef,String runningMode) throws EnhancedException {
+
+        InstanceManager glassfishInstanceManager = new InstanceManager(productRef);
+        glassfishInstanceManager.createInstance(
+                ConfigHelper.getStringValue("ClusteredInstance.Configuration.INSTANCE_NAME"),
+                ConfigHelper.getStringValue("ClusteredInstance.Configuration.SERVER_HOST_NAME"),
+                ConfigHelper.getStringValue("ClusteredInstance.Configuration.SERVER_ADMIN_PORT"),
+                "clustered",
+                ConfigHelper.getStringValue("ClusteredInstance.Configuration.CLUSTER_NAME"),
+                runningMode);
+
+        overallStatus = glassfishInstanceManager.isConfigSuccessful();
+        return glassfishInstanceManager.getOutputFromRecentRun();
+
+    }
+
+    String createCluster(Product productRef,String runningMode) throws EnhancedException {
+
+        Domain glassfishDomain = new Domain();
+        glassfishDomain.setDomainName(ConfigHelper.getStringValue("ClusteredInstance.Configuration.DOMAIN_NAME"));
+        glassfishDomain.setAdminPort(ConfigHelper.getStringValue("ClusteredInstance.Configuration.SERVER_ADMIN_PORT"));
+
+        ClusterManager glassfishClusterManager = new ClusterManager(productRef);
+        glassfishClusterManager.createCluster(glassfishDomain, ConfigHelper.getStringValue("ClusteredInstance.Configuration.CLUSTER_NAME"), null, runningMode);
+
+        overallStatus = glassfishClusterManager.isConfigSuccessful();
+        return glassfishClusterManager.getOutputFromRecentRun();
+
+    }
+
+    void run() throws EnhancedException {
+        wizard.enableNext(false);
+        wizard.enableCancel(true);
+        wizard.setNextButtonText("I am Done");
+        wizard.setBackButtonText("Configure again");
+        wizard.setCancelButtonText("Exit installation");
+        String output = "PERFORMING THE REQUIRED CONFIGURATIONS\n";
+        output += "---------------------------------------------------\n\n";
+        summaryHeader = wizard.getComponentByName((Container) content, "SUMMARY_HEADER");
+        summaryTab = wizard.getComponentByName((Container) content, "SUMMARY_OF_CONFIGURATION");
+        summaryHeader.setText("<HTML><body><font face='Sans-Serif'><BLINK>Please wait while this program is performing the required configuration...</BLINK><body><HTML>");
+        summaryHeader.repaint();
+		
+		frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        // Tracks the overall status of each command execution, even a Single failure
+        // is considered as overall failure.
+        boolean overallStatus = true;
+
+        Product productRef = new Product("GlassFish",
+                ConfigHelper.getStringValue("InstallHome.directory.INSTALL_HOME"),
+                GlassFishUtils.getGlassfishAdminScriptPath(ConfigHelper.getStringValue("InstallHome.directory.INSTALL_HOME")),
+                GlassFishUtils.getGlassfishConfigFilePath(ConfigHelper.getStringValue("InstallHome.directory.INSTALL_HOME")));
+
+        // Create a clusterd instance
+        if (ConfigHelper.getStringValue("ConfigType.Option.CONFIGURATION_MODE").equals("CREATE_CLUSTEREDINSTANCE")) {
+            output += "CREATING A CLUSTERED INSTANCE\n";
+            output += "------------------------------------------\n\n";
+            // Create a cluster if user chooses to do so.
+            if (ConfigHelper.getBooleanValue("ClusteredInstance.Configuration.CREATE_CLUSTER")) {
+                output += "CREATING CLUSTER\n";
+                output += "------------------------------\n\n";
+                output += "Executing Command: " + createCluster(productRef, "DRYRUN") + "\n";
+                summaryTab.setText(output);
+                summaryTab.repaint();
+				summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
+                output += createCluster(productRef,"REALRUN");
+                output += "\n\n";
+                summaryTab.setText(output);
+                summaryTab.repaint();
+				summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
+
+            }
+
+            // Continue only when cluster creation is ok.
+            if (overallStatus) {
+            output += "CREATING INSTANCE\n";
+            output += "-----------------------------------\n\n";
+            output += "Executing Command: " + createClusteredInstance(productRef, "DRYRUN") + "\n";
+            summaryTab.setText(output);
+            summaryTab.repaint();
+			summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
+            output += createClusteredInstance(productRef,"REALRUN");
+            output += "\n\n";
+            }
+        }
+
+        // Create a standalone instance
+        if (ConfigHelper.getStringValue("ConfigType.Option.CONFIGURATION_MODE").equals("CREATE_STANDALONEINSTANCE")) {
+            output += "CREATING STANDALONE INSTANCE\n";
+            output += "--------------------------------------------\n\n";
+            output += "Executing Command: " + createStandaloneInstance(productRef, "DRYRUN") + "\n";
+            summaryTab.setText(output);
+            summaryTab.repaint();
+			summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
+            output += createStandaloneInstance(productRef,"REALRUN");
+            output += "\n\n";
+        }
+
+        // Create a Domain.
+        if (ConfigHelper.getStringValue("ConfigType.Option.CONFIGURATION_MODE").equals("CREATE_DOMAIN")) {
+            output += "CREATING DOMAIN\n";
+            output += "--------------------------\n\n";
+            output += "Executing Command: " + createDomain(productRef, "DRYRUN") + "\n";
+            summaryTab.setText(output);
+            summaryTab.repaint();
+            output += createDomain(productRef,"REALRUN");
+            output += "\n\n";
+            summaryTab.setText(output);
+            summaryTab.repaint();
+			summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
+
+            // Create a service for domain if needed.
+            // Continue only when the domain is created successfully.
+            if (overallStatus) {
+            if (ConfigHelper.getBooleanValue("Domain.Configuration.CREATE_SERVICE")) {
+                output += "CREATING DOMAIN SERVICE\n";
+                output += "-------------------------------------------\n\n";
+                output += "Executing Command: " + createDomainService(productRef, "DRYRUN") + "\n";
+                summaryTab.setText(output);
+                summaryTab.repaint();
+				summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
+                output += createDomainService(productRef,"REALRUN");
+                output += "\n\n";
+            }
+            }
+			
+			// start the recently created domain if needed.
+            // Continue only when the domain is created successfully.
+            if (overallStatus) {
+				if (ConfigHelper.getStringValue("Domain.Configuration.STARTUP_TYPE").equals("AUTOMATIC")) {
+					output += "STARTING THE DOMAIN\n";
+					output += "--------------------------\n\n";
+					output += "Executing Command: " + startDomain(productRef, "DRYRUN") + "\n";
+					summaryTab.setText(output);
+					summaryTab.repaint();
+					summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
+					output += startDomain(productRef,"REALRUN");
+					output += "\n\n";
+				}
+            }
+
+        }
+	LOGGER.log(Level.INFO, "Configuring GlassFish");
+	LOGGER.log(Level.INFO, output);
+     summaryTab.setText(output);
+     summaryTab.repaint();
+	 summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
+     if (overallStatus) {
+     summaryHeader.setText
+    ("<HTML><body><font face='Sans-Serif'>The Configuration has <B> SUCCEEDED.</B> Please see the output below..<body><HTML>");
+    }
+    else {
+     summaryHeader.setText
+    ("<HTML><body><font face='Sans-Serif'>The Configuration has <B> FAILED. </B> Please see the output below..<body><HTML>");
+
+    }
+    summaryHeader.repaint();
+	frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+   
+    // Enable back only for Advanced installation.
+    if (ConfigHelper.getStringValue("InstallUserType.Option.USER_TYPE").equals("ADVANCED_USER"))
+    	wizard.enableBack(true);
+    wizard.enableNext(true);
+  }
+return (Runnable)this;]]>
+                </apt:scriptCode>
+            </apt:scriptHandler>
+        </apt:page>
+    </apt:category>
+</apt:template>

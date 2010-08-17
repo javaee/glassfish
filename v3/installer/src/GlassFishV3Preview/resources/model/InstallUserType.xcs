@@ -36,36 +36,36 @@
 * holder. 
 */ 
 --> 
-<oor:component-schema oor:version="1.1" oor:name="NodeServerOptions" oor:package="com.sun.install.L10nSelection"
+<oor:component-schema oor:version="1.1" oor:name="InstallUserType" oor:package="com.sun.install.L10nSelection"
  xsi:schemaLocation="http://openoffice.org/2001/registry"
  xmlns:xs="http://www.w3.org/2001/XMLSchema"
  xmlns:oor="http://openoffice.org/2001/registry"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xml:lang='en-US'>
  <component>
-     <group oor:name="configoptions">
+     <group oor:name="Option">
 
-        <prop oor:name="CREATE_DOMAIN" oor:type="xs:string" oor:nillable="true">
+        <prop oor:name="BASIC_USER" oor:type="xs:string" oor:nillable="true">
             <value>
-	    CREATE_DOMAIN
+	    BASIC_USER
             </value>
             <info>
-                <desc xml:lang="en-US">Configure as Domain</desc>
+                <desc xml:lang="en-US">Install and Configure</desc>
             </info>
         </prop>
 
-        <prop oor:name="CREATE_INSTANCE" oor:type="xs:string" oor:nillable="true">
+  <prop oor:name="ADVANCED_USER" oor:type="xs:string" oor:nillable="true">
             <value>
-	    CREATE_INSTANCE
+	    ADVANCED_USER
             </value>
             <info>
-                <desc xml:lang="en-US">Configure as Node</desc>
+                <desc xml:lang="en-US">Configure Only</desc>
             </info>
         </prop>
 
-	<prop oor:name="CONFIGURATION_MODE" oor:type="xs:string" oor:nillable="true">
+	<prop oor:name="USER_TYPE" oor:type="xs:string" oor:nillable="true">
           <value>
-		CREATE_DOMAIN
+		BASIC_USER
           </value>
           <info>
             <desc xml:lang="en-US">User Selected Option</desc>

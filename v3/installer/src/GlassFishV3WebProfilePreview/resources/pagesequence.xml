@@ -42,31 +42,50 @@
     <page name="Welcome">
       <when>!FOOBAR</when>
     </page>
-    <page name="License"/>
+    <page name="InstallUserType"/>
+    <page name="InstallType">
+	<when><![CDATA[ ADVANCED_USER  ]]></when>
+    </page>
     <page name="InstallHome"/>
-    <page name="NodeServerOptions"/>
-    <page name="glassfish">
-	<when><![CDATA[ CREATE_DOMAIN  ]]></when>
-    </page>
-    <page name="Node">
-	<when><![CDATA[ CREATE_INSTANCE  ]]></when>
-    </page>
-    <page name="updatetool"/>
     <page name="JDKSelection">
-	<when><![CDATA[ !(IS_MAC || IS_AIX)]]></when>
+	<when><![CDATA[ !CONFIG_ONLY && !(IS_MAC || IS_AIX) ]]></when>
     </page>
-    <page name="ReadyToInstall"/>
-    <page name="Progress"/>
+    <page name="UpdateTool">
+	<when><![CDATA[ !CONFIG_ONLY  ]]></when>
+    </page>
+    <page name="ReadyToInstall">
+	<when><![CDATA[ !CONFIG_ONLY  ]]></when>
+    </page>
+    <page name="Progress">
+	<when><![CDATA[ !CONFIG_ONLY  ]]></when>
+    </page>
+    <page name="ConfigType">
+	<when><![CDATA[ !INSTALL_ONLY && ADVANCED_USER ]]></when>
+    </page>
+    <page name="Domain">
+	<when><![CDATA[ BASIC_USER || (!INSTALL_ONLY && CREATE_DOMAIN)  ]]></when>
+    </page>
+    <page name="StandaloneInstance">
+	<when><![CDATA[ (!INSTALL_ONLY && ADVANCED_USER && CREATE_STANDALONEINSTANCE)  ]]></when>
+    </page>
+    <page name="ClusteredInstance">
+	<when><![CDATA[ (!INSTALL_ONLY && ADVANCED_USER && CREATE_CLUSTEREDINSTANCE)  ]]></when>
+    </page>
+    <page name="ConfigResults">
+	<when><![CDATA[ !DRY_RUN_MODE && !INSTALL_ONLY && !NO_CONFIGURATION ]]></when>
+    </page>
     <page name="RegistrationOptions">
-	<when><![CDATA[ !DRY_RUN_MODE ]]></when>
+	<when><![CDATA[ !DRY_RUN_MODE && !CONFIG_ONLY ]]></when>
     </page>
     <page name="SOAccountCreation">
-	<when><![CDATA[ !DRY_RUN_MODE && CREATE_NEWACCT ]]></when>
+	<when><![CDATA[ !DRY_RUN_MODE && CREATE_NEWACCT && !CONFIG_ONLY ]]></when>
     </page>
     <page name="RegistrationInfo">
-	<when><![CDATA[ !DRY_RUN_MODE && (CREATE_NEWACCT || USE_EXISTINGACCT) ]]></when>
+	<when><![CDATA[ !DRY_RUN_MODE && (CREATE_NEWACCT || USE_EXISTINGACCT) && !CONFIG_ONLY ]]></when>
     </page> 
-    <page name="Summary"/>
+    <page name="Summary">
+	<when><![CDATA[ !CONFIG_ONLY  ]]></when>
+    </page>
   </flow>
   <flow name="REMOVE">
     <page name="ReadyToUninstall"/>

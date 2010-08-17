@@ -8,7 +8,7 @@
 # Use is subject to License Terms
 #
 --> 
-<oor:component-schema oor:version="1.1" oor:name="glassfish" oor:package="com.sun.PH"
+<oor:component-schema oor:version="1.1" oor:name="ClusteredInstance" oor:package="com.sun.PH"
  xsi:schemaLocation="http://openoffice.org/2001/registry"
  xmlns:xs="http://www.w3.org/2001/XMLSchema"
  xmlns:oor="http://openoffice.org/2001/registry"
@@ -16,9 +16,9 @@
  xmlns:if="http://openinstaller.org/config/V1"
  xml:lang='en-US'>
  <component>
-    <group oor:name="Administration">
+    <group oor:name="Configuration">
 
-       <prop oor:name="ADMIN_PORT" oor:type="xs:string">
+       <prop oor:name="SERVER_ADMIN_PORT" oor:type="xs:string">
            <value>4848</value>
            <info>
              <desc xml:lang="en-US">Admin Port</desc>
@@ -40,31 +40,10 @@
 	</actions>
        </prop> 
 
-       <prop oor:name="HTTP_PORT" oor:type="xs:string">
-           <value>8080</value>
-           <info>
-             <desc xml:lang="en-US">HTTP Port</desc>
-           </info>
-	<actions>
-	<onSet><![CDATA[
-		import org.openinstaller.provider.conf.ConfigHelper;
-		import org.openinstaller.bus.*;
-		import org.openinstaller.core.*;
-   		BusRequest modeReq = new BusRequest("ConfigRequest",
-		new EngineConfigCommand(EngineConfigCommand.COMMAND.GET_CONFIG, EngineConfigItem.DISPLAY_MODE));
-		BusResponse modeResp = bus.publishRequest(modeReq, "svc://general/EngineConfig");
-		String mode = (String)modeResp.getResult();
-		if ("SILENT".equals(mode)) 
-		   System.out.println("");
-		else
-		   validateHttpPort(thisProperty);
-	]]></onSet>
-	</actions>
-        </prop>       
-       <prop oor:name="ADMIN_USER" oor:type="xs:string">
-           <value>admin</value>
+       <prop oor:name="INSTANCE_NAME" oor:type="xs:string">
+           <value>instance1</value>
           <info>
-            <desc xml:lang="en-US">User Name</desc>
+            <desc xml:lang="en-US">Instance Name</desc>
           </info>
         <actions>
           <onSet><![CDATA[
@@ -74,24 +53,17 @@ import org.openinstaller.provider.conf.ConfigHelper;
 
        String enteredValue = (String)thisProperty.getUnconfirmedValue();
         if ((enteredValue == null) || enteredValue.equals("")) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("ClusteredInstance.Configuration.STATUS", "ERROR");
             throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
         }
           ]]></onSet>
         </actions>
         </prop>
         
-       <prop oor:name="ADMIN_PASSWORD" oor:transient="true" oor:type="xs:string">
-          <value/>
+       <prop oor:name="SERVER_HOST_NAME" oor:type="xs:string">
+           <value>localhost</value>
           <info>
-            <desc xml:lang="en-US">User Password</desc>
-          </info>
-        </prop>
-
-       <prop oor:name="ADMIN_PASSWORD_REENTER" oor:transient="true" oor:type="xs:string">
-          <value/>
-          <info>
-            <desc xml:lang="en-US">Reenter Password</desc>
+            <desc xml:lang="en-US">DAS Host Name</desc>
           </info>
         <actions>
           <onSet><![CDATA[
@@ -99,53 +71,61 @@ import java.lang.String;
 import java.util.List;
 import org.openinstaller.provider.conf.ConfigHelper;
 
-        String reenterPassword = (String)thisProperty.getUnconfirmedValue();
-	String Password  = ConfigHelper.getValue("glassfish.Administration.ADMIN_PASSWORD");
-        if (!reenterPassword.equals(Password)) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
-            throw new EnhancedException("PASSWORDS_DONOT_MATCH", new String[]{});
-   }
-          ]]></onSet>
-        </actions>
-        </prop>
-       <prop oor:name="CREATE_SERVICE" oor:type="xs:boolean">
-          <value/>
-          <info>
-            <desc xml:lang="en-US">Create service or not</desc>
-          </info>
-        <actions>
-        </actions>
-        </prop>
-
-       <prop oor:name="SERVICE_NAME" oor:type="xs:string">
-         <value>domain1Service</value>
-          <info>
-            <desc xml:lang="en-US">Name of the service</desc>
-          </info>
-        <actions>
-          <onSet><![CDATA[
-import java.lang.String;
-import java.util.List;
-import org.openinstaller.provider.conf.ConfigHelper;
-
-	boolean createService  = ConfigHelper.getValue("glassfish.Administration.CREATE_SERVICE");
-if (createService)  {
        String enteredValue = (String)thisProperty.getUnconfirmedValue();
         if ((enteredValue == null) || enteredValue.equals("")) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("ClusteredInstance.Configuration.STATUS", "ERROR");
             throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
         }
-   }
+          ]]></onSet>
+        </actions>
+        </prop>
+        
+       <prop oor:name="CREATE_CLUSTER" oor:type="xs:boolean">
+          <value/>
+          <info>
+            <desc xml:lang="en-US">Create Cluster or not</desc>
+          </info>
+        <actions>
+        </actions>
+        </prop>
+
+       <prop oor:name="CLUSTER_NAME" oor:type="xs:string">
+         <value>c1</value>
+          <info>
+            <desc xml:lang="en-US">Name of the cluster</desc>
+          </info>
+        <actions>
+          <onSet><![CDATA[
+import java.lang.String;
+import java.util.List;
+import org.openinstaller.provider.conf.ConfigHelper;
+
+       String enteredValue = (String)thisProperty.getUnconfirmedValue();
+        if ((enteredValue == null) || enteredValue.equals("")) {
+            ConfigHelper.setValue("ClusteredInstance.Configuration.STATUS", "ERROR");
+            throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
+        }
           ]]></onSet>
         </actions>
         </prop>
 
-       <prop oor:name="SERVICE_PROPS" oor:type="xs:string">
-         <value/>
+       <prop oor:name="DOMAIN_NAME" oor:type="xs:string">
+         <value>domain1</value>
           <info>
-            <desc xml:lang="en-US">Service properties</desc>
+            <desc xml:lang="en-US">Name of the Domain</desc>
           </info>
         <actions>
+          <onSet><![CDATA[
+import java.lang.String;
+import java.util.List;
+import org.openinstaller.provider.conf.ConfigHelper;
+
+       String enteredValue = (String)thisProperty.getUnconfirmedValue();
+        if ((enteredValue == null) || enteredValue.equals("")) {
+            ConfigHelper.setValue("ClusteredInstance.Configuration.STATUS", "ERROR");
+            throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
+        }
+          ]]></onSet>
         </actions>
         </prop>
 

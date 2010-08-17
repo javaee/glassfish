@@ -46,27 +46,7 @@ public class OSUtils {
 
     public static String osVersion = System.getProperty("os.version");
 
-    /* Move it to Resources */
-    static public String windowsCopyRightNoticeText =
-            "@echo off\n"
-            + "REM DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n"
-            + "REM\n"
-            + "REM Copyright 2010 Sun Microsystems, Inc. All rights reserved.\n"
-            + "REM\n"
-            + "REM Use is subject to License Terms\n"
-            + "REM\n";
-
-    /* Move it to Resources */
-    static public String unixCopyRightNoticeText =
-            "#!/bin/sh\n"
-            + "#\n"
-            + "# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n"
-            + "#\n"
-            + "# Copyright 2010 Sun Microsystems, Inc. All rights reserved.\n"
-            + "#\n"
-            + "# Use is subject to License Terms\n"
-            + "#\n";
-
+    
     /* @return true/false */
     static public boolean isWindows() {
         return osName.indexOf("windows") == -1 ? false: true;

@@ -37,7 +37,7 @@
  
 
 # Sample fake product.
-PRODUCTNAME="glassfish"
+PRODUCTNAME="Domain"
 ORIG_ARGS=$@
 
 INST_DIR=/tmp/.launcher.$$

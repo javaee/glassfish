@@ -36,14 +36,14 @@
 * holder. 
 */ 
 --> 
-<apt:template apt:name="glassfish"
+<apt:template apt:name="Domain"
     xmlns:apt="http://www.sun.com/jds/apoc/2004/template"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:oor="http://openoffice.org/2001/registry"
     xsi:schemaLocation="http://www.sun.com/jds/apoc/2004/template ../../../consumables/schemas/config/apoc/policytemplate.xsd">
-    <apt:category apt:name="glassfish" apt:label="GlassFishV3">
-      <apt:page apt:name="Configuration_Item" apt:label="Configuration Settings">
-        <apt:section apt:name="Administration" apt:label="Administration" >
+    <apt:category apt:name="Domain" apt:label="GlassFish Domain">
+      <apt:page apt:name="Configuration_Item" apt:label="Domain Configuration">
+        <apt:section apt:name="Configuration" apt:label="Config Data" >
           <apt:property apt:name="ADMINISTRATION_TEXT_TOP"
              apt:dataPath=""
              apt:type="xs:string">
@@ -53,9 +53,19 @@
          </apt:visual>
          </apt:property>
       
+           <apt:property apt:name="DOMAIN_NAME"
+              apt:label="$DOMAIN_NAME_TEXT"
+              apt:dataPath="Configuration.DOMAIN_NAME"
+              apt:type="xs:string">
+            <apt:visual>
+                <apt:textField apt:columns="15" apt:toolTip="$DOMAIN_NAME_TOOL_TIP"/>
+            </apt:visual>
+	</apt:property>
+
+      
            <apt:property apt:name="ADMIN_PORT"
               apt:label="$ADMIN_PORT_TEXT"
-              apt:dataPath="Administration.ADMIN_PORT"
+              apt:dataPath="Configuration.ADMIN_PORT"
               apt:type="xs:string">
             <apt:visual>
                 <apt:textField apt:columns="6" apt:toolTip="$ADMIN_PORT_TOOL_TIP"/>
@@ -64,7 +74,7 @@
 
            <apt:property apt:name="HTTP_PORT"
               apt:label="$HTTP_PORT_TEXT"
-              apt:dataPath="Administration.HTTP_PORT"
+              apt:dataPath="Configuration.HTTP_PORT"
               apt:type="xs:string">
             <apt:visual>
                 <apt:textField apt:columns="6" apt:toolTip="$HTTP_PORT_TOOL_TIP"/>
@@ -72,7 +82,7 @@
 	</apt:property>
 
        <apt:property apt:name="ADMIN_USER" apt:label="$ADMIN_USER_TEXT"
-                apt:dataPath="Administration.ADMIN_USER"
+                apt:dataPath="Configuration.ADMIN_USER"
                 apt:type="xs:string">
           <apt:visual>
             <apt:textField apt:columns="15" apt:toolTip="$ADMIN_USER_TOOL_TIP"/>
@@ -80,7 +90,7 @@
         </apt:property>
 
         <apt:property apt:name="ADMIN_PASSWORD" apt:label="$ADMIN_PASSWORD_TEXT"
-                      apt:dataPath="Administration.ADMIN_PASSWORD"
+                      apt:dataPath="Configuration.ADMIN_PASSWORD"
                       apt:type="xs:string">
           <apt:visual>
             <apt:password apt:columns="15" apt:toolTip="$ADMIN_PASSWORD_TOOL_TIP"/>
@@ -88,24 +98,15 @@
         </apt:property>
 
         <apt:property apt:name="ADMIN_REENTERPASSWORD" apt:label="Reenter password"
-                      apt:dataPath="Administration.ADMIN_PASSWORD_REENTER"
+                      apt:dataPath="Configuration.ADMIN_PASSWORD_REENTER"
                       apt:type="xs:string">
           <apt:visual>
             <apt:password apt:columns="15" apt:toolTip="$ADMIN_PASSWORD_TOOL_TIP"/>
           </apt:visual>
         </apt:property>
 
-          <apt:property apt:name="ADMIN_SERVICE_TEXT"
-             apt:dataPath=""
-             apt:type="xs:string">
-            <apt:prop-value>$ADMINISTRATION_SERVICE_TEXT</apt:prop-value>
-         <apt:visual>
-            <apt:htmlPanel/>
-         </apt:visual>
-         </apt:property>
-
     <apt:property apt:name="CREATE_SERVICE" apt:label=""
-         apt:dataPath="Administration.CREATE_SERVICE"
+         apt:dataPath="Configuration.CREATE_SERVICE"
          apt:type="xs:boolean">
        <apt:prop-value>false</apt:prop-value>
        <apt:visual>
@@ -117,19 +118,13 @@
                actionPerformed(e) {
                  option = wizard.getComponentByName(content, "CREATE_SERVICE");
                  serviceName = wizard.getComponentByName(content, "SERVICE_NAME");
-                 serviceProps = wizard.getComponentByName(content, "SERVICE_PROPS");
                  if(option.isSelected()) {
 		// Currently service related entries are enabled only on w2k and solaris.
      		if (System.getProperty("os.name").toLowerCase().startsWith("sunos") || System.getProperty("os.name").toLowerCase().startsWith("windows")) 
                    serviceName.setEnabled(true);
-
-		// Service properties text field is applicable only or solaris. 
-     			if (System.getProperty("os.name").toLowerCase().startsWith("sunos")) 
-                   		serviceProps.setEnabled(true);
                  }
                  else {
                    serviceName.setEnabled(false);
-                   serviceProps.setEnabled(false);
                  }
                }
              };
@@ -137,22 +132,40 @@
            ]]></apt:scriptCode>
          </apt:scriptHandler>
         </apt:property>
-
+		
         <apt:property apt:name="SERVICE_NAME" apt:label="$ADMIN_SERVICE_NAME_TEXT"
-                      apt:dataPath="Administration.SERVICE_NAME"
+                      apt:dataPath="Configuration.SERVICE_NAME"
                       apt:type="xs:string">
           <apt:visual>
             <apt:textField apt:columns="15" apt:toolTip="$ADMIN_SERVICE_NAME_TOOL_TIP"/>
           </apt:visual>
         </apt:property>
 
-        <apt:property apt:name="SERVICE_PROPS" apt:label="$ADMIN_SERVICE_PROPS_TEXT"
-                      apt:dataPath="Administration.SERVICE_PROPS"
-                      apt:type="xs:string">
-          <apt:visual>
-            <apt:password apt:columns="20" apt:toolTip="$ADMIN_SERVICE_PROPS_TOOL_TIP"/>
-          </apt:visual>
+    <apt:property apt:name="START_SERVER" apt:label=""
+         apt:dataPath="Configuration.START_SERVER"
+         apt:type="xs:boolean">
+       <apt:prop-value>true</apt:prop-value>
+       <apt:visual>
+          <apt:checkBox apt:labelPost="$START_SERVER_CHOICE_TEXT" apt:toolTip="$START_SERVER_CHOICE_TOOL_TIP"/>
+       </apt:visual>
+	    <apt:scriptHandler apt:scriptLanguage="beanshell" >
+          <apt:scriptCode><![CDATA[
+             theAL = new ActionListener() {
+               actionPerformed(e) {
+                 startOption = wizard.getComponentByName(content, "START_SERVER");
+                 if(startOption.isSelected()) 
+					ConfigHelper.setValue("Domain.Configuration.STARTUP_TYPE", "AUTOMATIC");
+				 else
+					ConfigHelper.setValue("Domain.Configuration.STARTUP_TYPE", "MANUAL");
+               }
+             };
+             return theAL;
+           ]]></apt:scriptCode>
+         </apt:scriptHandler>
         </apt:property>
+		
+		
+		
 	</apt:section>
       <apt:scriptHandler apt:scriptLanguage="beanshell">
 	<apt:scriptCode><![CDATA[
@@ -165,7 +178,6 @@ import org.openinstaller.util.*;
 
 wizard.enableCancel(true);
 wizard.enableNext(true);
-wizard.enableBack(true);
 wizard.enableHelp(true);
 
 /* Helper to determine installation mode */
@@ -180,7 +192,7 @@ isSilentMode() {
   }
  return false;
 } 
-/* Validate Administration Port */
+/* Validate Configuration Port */
 validateAdminPort(prop) {
 	if (isSilentMode())
 		return;
@@ -199,14 +211,13 @@ validateHttpPort(prop) {
 validatePortValues(String inputPort)  {
 	// First check if the port is empty
 	/*
-	String inputStatus = (String)ConfigHelper.getValue("glassfish.Administration.STATUS"));
+	String inputStatus = (String)ConfigHelper.getValue("Domain.Configuration.STATUS"));
 	if (inputStatus.equals("ERROR")) {
-		System.out.println("Not validating stuff");
 		return;
 	}
 	*/
         if ((inputPort == null) || inputPort.equals("")) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("Domain.Configuration.STATUS", "ERROR");
             throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
         }
 
@@ -215,19 +226,19 @@ validatePortValues(String inputPort)  {
 	try {
 		intPortNumber = Integer.parseInt(inputPort);
 	}catch(NumberFormatException dummy) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("Domain.Configuration.STATUS", "ERROR");
 		throw new EnhancedException("PORT_NOT_NUMERIC",new String[]{});
 	}
 
 	// Check for out of range values
 	if (intPortNumber <=0 || intPortNumber > 65535) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("Domain.Configuration.STATUS", "ERROR");
 		throw new EnhancedException("PORT_OUT_OF_RANGE", new String[]{});
     }
 
 	/*Commented out as ConfigHelper() has bugs..
 	if (inputPort.equals(theOtherPort)) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("Domain.Configuration.STATUS", "ERROR");
             throw new EnhancedException("PORTS_HAVE_SAME_VALUE", new String[]{});
 	}
 	*/
@@ -235,14 +246,14 @@ validatePortValues(String inputPort)  {
 	// Check if the port is free
 	int retStat = isPortFree(intPortNumber);
 	if (retStat == -1) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("Domain.Configuration.STATUS", "ERROR");
 		throw new EnhancedException("PORT_OCCUPIED", new String[]{});
     }
 	if (retStat == -2) {
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "ERROR");
+            ConfigHelper.setValue("Domain.Configuration.STATUS", "ERROR");
 		throw new EnhancedException("HOST_NAME_CANNOT_BE_FOUND_WARNING", new String[]{});
     }
-            ConfigHelper.setValue("glassfish.Administration.STATUS", "SUCCESS");
+            ConfigHelper.setValue("Domain.Configuration.STATUS", "SUCCESS");
 }
 
 // Check if the port is free
@@ -361,19 +372,21 @@ run() {
 		activeModes.add("IS_AIX");
      }
      serviceName = wizard.getComponentByName(content, "SERVICE_NAME");
-     serviceProps = wizard.getComponentByName(content, "SERVICE_PROPS");
      serviceOption = wizard.getComponentByName(content, "CREATE_SERVICE");
-
-     if (System.getProperty("os.name").toLowerCase().startsWith("sunos") || System.getProperty("os.name").toLowerCase().startsWith("windows")) 
+     startOption = wizard.getComponentByName(content, "START_SERVER");
+	 ConfigHelper.setValue("Domain.Configuration.STARTUP_TYPE", "AUTOMATIC");
+     if (System.getProperty("os.name").toLowerCase().startsWith("sunos") || System.getProperty("os.name").toLowerCase().startsWith("windows"))  
                    serviceOption.setEnabled(true);
-	else
+	else 
 		  serviceOption.setEnabled(false);
-     serviceName.setEnabled(false);
-     serviceProps.setEnabled(false);
+
+      startOption.setSelected(true);
+      serviceName.setEnabled(false);
       wizard.enableNext(true);
       wizard.enableCancel(true);
-      wizard.enableBack(true);
-
+      // Enable back only for Advanced installation.
+      if (ConfigHelper.getStringValue("InstallUserType.Option.USER_TYPE").equals("ADVANCED_USER"))
+    	wizard.enableBack(true);
       List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
      
      }

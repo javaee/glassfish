@@ -8,7 +8,7 @@
 # Use is subject to License Terms
 #
 --> 
-<oor:component-schema oor:version="1.1" oor:name="Node" oor:package="com.sun.PH"
+<oor:component-schema oor:version="1.1" oor:name="StandaloneInstance" oor:package="com.sun.PH"
  xsi:schemaLocation="http://openoffice.org/2001/registry"
  xmlns:xs="http://www.w3.org/2001/XMLSchema"
  xmlns:oor="http://openoffice.org/2001/registry"
@@ -16,7 +16,7 @@
  xmlns:if="http://openinstaller.org/config/V1"
  xml:lang='en-US'>
  <component>
-    <group oor:name="NodeConfiguration">
+    <group oor:name="Configuration">
 
        <prop oor:name="SERVER_ADMIN_PORT" oor:type="xs:string">
            <value>4848</value>
@@ -53,7 +53,7 @@ import org.openinstaller.provider.conf.ConfigHelper;
 
        String enteredValue = (String)thisProperty.getUnconfirmedValue();
         if ((enteredValue == null) || enteredValue.equals("")) {
-            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
+            ConfigHelper.setValue("StandaloneInstance.Configuration.STATUS", "ERROR");
             throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
         }
           ]]></onSet>
@@ -73,41 +73,9 @@ import org.openinstaller.provider.conf.ConfigHelper;
 
        String enteredValue = (String)thisProperty.getUnconfirmedValue();
         if ((enteredValue == null) || enteredValue.equals("")) {
-            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
+            ConfigHelper.setValue("StandaloneInstance.Configuration.STATUS", "ERROR");
             throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
         }
-          ]]></onSet>
-        </actions>
-        </prop>
-        
-       <prop oor:name="PART_OF_CLUSTER" oor:type="xs:boolean">
-          <value/>
-          <info>
-            <desc xml:lang="en-US">Include it in cluster or not</desc>
-          </info>
-        <actions>
-        </actions>
-        </prop>
-
-       <prop oor:name="CLUSTER_NAME" oor:type="xs:string">
-         <value>c1</value>
-          <info>
-            <desc xml:lang="en-US">Name of the cluster</desc>
-          </info>
-        <actions>
-          <onSet><![CDATA[
-import java.lang.String;
-import java.util.List;
-import org.openinstaller.provider.conf.ConfigHelper;
-
-	boolean isClustered  = ConfigHelper.getValue("Node.NodeConfiguration.PART_OF_CLUSTER");
-if (isClustered)  {
-       String enteredValue = (String)thisProperty.getUnconfirmedValue();
-        if ((enteredValue == null) || enteredValue.equals("")) {
-            ConfigHelper.setValue("Node.Configuration.STATUS", "ERROR");
-            throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
-        }
-   }
           ]]></onSet>
         </actions>
         </prop>

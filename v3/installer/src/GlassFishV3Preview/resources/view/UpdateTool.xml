@@ -9,12 +9,12 @@
 * General Public License Version 2 only ("GPL") or the Common Development 
 * and Distribution License("CDDL") (collectively, the "License").  You 
 * may not use this file except in compliance with the License. You can obtain 
-* a copy of the License at https://Node.dev.java.net/public/CDDL+GPL.html 
-* or Node/bootstrap/legal/LICENSE.txt.  See the License for the specific 
+* a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html 
+* or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific 
 * language governing permissions and limitations under the License. 
 * 
 * When distributing the software, include this License Header Notice in each 
-* file and include the License file at Node/bootstrap/legal/LICENSE.txt. 
+* file and include the License file at glassfish/bootstrap/legal/LICENSE.txt. 
 * Sun designates this particular file as subject to the "Classpath" exception 
 * as provided by Sun in the GPL Version 2 section of the License file that 
 * accompanied this code.  If applicable, add the following below the License 
@@ -36,104 +36,112 @@
 * holder. 
 */ 
 --> 
-<apt:template apt:name="Node"
+<apt:template apt:name="UpdateTool"
     xmlns:apt="http://www.sun.com/jds/apoc/2004/template"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:oor="http://openoffice.org/2001/registry"
     xsi:schemaLocation="http://www.sun.com/jds/apoc/2004/template ../../../consumables/schemas/config/apoc/policytemplate.xsd">
-    <apt:category apt:name="Node" apt:label="GlassFishV3">
+    <apt:category apt:name="UpdateTool" apt:label="Updatetool">
       <apt:page apt:name="Configuration_Item" apt:label="Configuration Settings">
-        <apt:section apt:name="NodeConfiguration" apt:label="NodeConfiguration" >
-          <apt:property apt:name="CONFIGURATION_TEXT_TOP"
-             apt:dataPath=""
-             apt:type="xs:string">
-            <apt:prop-value>$CONFIGURATION_TOP_TEXT</apt:prop-value>
+        <apt:section apt:name="Configuration" apt:label="Configuration" >
+         <apt:property apt:name="UPDATETOOL_TEXT_TOP"
+         apt:dataPath=""
+         apt:type="xs:string">
+         <apt:prop-value>$UPDATETOOL_TOP_TEXT</apt:prop-value>
          <apt:visual>
             <apt:htmlPanel/>
          </apt:visual>
-         </apt:property>
-      
-       <apt:property apt:name="INSTANCE_NAME" apt:label="$INSTANCE_NAME_TEXT"
-                apt:dataPath="NodeConfiguration.INSTANCE_NAME"
-                apt:type="xs:string">
-          <apt:visual>
-            <apt:textField apt:columns="15" apt:toolTip="$INSTANCE_NAME_TOOL_TIP"/>
-          </apt:visual>
         </apt:property>
 
-           <apt:property apt:name="SERVER_HOST_NAME"
-              apt:label="$SERVER_HOST_NAME_TEXT"
-              apt:dataPath="NodeConfiguration.SERVER_HOST_NAME"
-              apt:type="xs:string">
+         <apt:property apt:name="BOOTSTRAP_UPDATETOOL"
+              apt:dataPath="Configuration.BOOTSTRAP_UPDATETOOL"
+              apt:label=""              
+              apt:type="xs:boolean">
+            <apt:prop-value>true</apt:prop-value>
             <apt:visual>
-                <apt:textField apt:columns="15" apt:toolTip="$SERVER_HOST_NAME_TOOL_TIP"/>
+                <apt:checkBox apt:labelPost="$INSTALL_UPDATE_TOOL_TEXT" apt:toolTip="Requires Online Installation" />
             </apt:visual>
-	</apt:property>
-
-      
-           <apt:property apt:name="SERVER_ADMIN_PORT"
-              apt:label="$SERVER_ADMIN_PORT_TEXT"
-              apt:dataPath="NodeConfiguration.SERVER_ADMIN_PORT"
-              apt:type="xs:string">
-            <apt:visual>
-                <apt:textField apt:columns="6" apt:toolTip="$SERVER_ADMIN_PORT_TOOL_TIP"/>
-            </apt:visual>
-	</apt:property>
-
-          <apt:property apt:name="CLUSTER_INFO"
-             apt:dataPath=""
-             apt:type="xs:string">
-            <apt:prop-value>$CLUSTER_INFO_TEXT</apt:prop-value>
-         <apt:visual>
-            <apt:htmlPanel/>
-         </apt:visual>
-         </apt:property>
-
-    <apt:property apt:name="PART_OF_CLUSTER" apt:label=""
-         apt:dataPath="NodeConfiguration.PART_OF_CLUSTER"
-         apt:type="xs:boolean">
-       <apt:prop-value>false</apt:prop-value>
-       <apt:visual>
-          <apt:checkBox apt:labelPost="$PART_OF_CLUSTER_CHOICE_TEXT" apt:toolTip=""/>
-       </apt:visual>
-       <apt:scriptHandler apt:scriptLanguage="beanshell" >
-          <apt:scriptCode><![CDATA[
-             theAL = new ActionListener() {
-               actionPerformed(e) {
-                 option = wizard.getComponentByName(content, "PART_OF_CLUSTER");
-                 clusterName = wizard.getComponentByName(content, "CLUSTER_NAME");
-                 if(option.isSelected()) 
-                   clusterName.setEnabled(true);
-                 else 
-                   clusterName.setEnabled(false);
-                 }
-             };
-             return theAL;
-           ]]></apt:scriptCode>
-         </apt:scriptHandler>
-        </apt:property>
-
-        <apt:property apt:name="CLUSTER_NAME" apt:label="$CLUSTER_NAME_TEXT"
-                      apt:dataPath="NodeConfiguration.CLUSTER_NAME"
-                      apt:type="xs:string">
-          <apt:visual>
-            <apt:textField apt:columns="15" apt:toolTip=""/>
-          </apt:visual>
-        </apt:property>
-	</apt:section>
       <apt:scriptHandler apt:scriptLanguage="beanshell">
-	<apt:scriptCode><![CDATA[
-
+         <apt:scriptCode><![CDATA[
 import java.lang.String;
 import java.io.*;
 import java.net.*;
+import java.util.List;
 import org.openinstaller.provider.conf.ConfigHelper;
-import org.openinstaller.util.*;
+import org.openinstaller.bus.*;
+import org.openinstaller.core.*;
+theAL = new ActionListener() {
+    actionPerformed(e) {
+      radio1 = getComponentByName(content, "BOOTSTRAP_UPDATETOOL");
+      radio2 = getComponentByName(content, "ALLOW_UPDATE_CHECK");
+      proxy_host = getComponentByName(content, "PROXY_HOST");
+      proxy_port = getComponentByName(content, "PROXY_PORT");
 
-wizard.enableCancel(true);
-wizard.enableNext(true);
-wizard.enableBack(true);
-wizard.enableHelp(true);
+      if (!radio1.isSelected()) {
+          radio2.setSelected(false);
+          radio2.setEnabled(false);
+
+          proxy_host.setEnabled(false);
+          proxy_port.setEnabled(false);
+      } else if (radio1.isSelected()) {
+          radio2.setEnabled(true);
+          proxy_host.setEnabled(true);
+          proxy_port.setEnabled(true);
+      }
+    }
+};
+       ]]></apt:scriptCode>
+      </apt:scriptHandler>
+      </apt:property>
+
+          <apt:property apt:name="PROXY_HOST"
+              apt:label="$PROXY_HOST_TEXT"
+              apt:dataPath="Configuration.PROXY_HOST"
+              apt:type="xs:string">
+            <apt:visual>
+                <apt:textField apt:columns="25" apt:toolTip="Enter Proxy Host if required"/>
+            </apt:visual>
+      </apt:property>  
+
+           <apt:property apt:name="PROXY_PORT"
+              apt:label="$PROXY_PORT_TEXT"
+              apt:dataPath="Configuration.PROXY_PORT"
+              apt:type="xs:string">
+            <apt:visual>
+                <apt:textField apt:columns="6" apt:toolTip="Enter Proxy Port if required"/>
+            </apt:visual>
+      </apt:property> 
+
+
+         <apt:property apt:name="UPDATE_TOOL_PRIVACY_NOTICE"
+         apt:dataPath=""
+         apt:type="xs:string">
+         <apt:prop-value>$UPDATE_TOOL_PRIVACY_NOTICE</apt:prop-value>
+         <apt:visual>
+            <apt:htmlPanel/>
+         </apt:visual>
+        </apt:property>         
+          <apt:property apt:name="ALLOW_UPDATE_CHECK"
+              apt:label=""
+              apt:dataPath="Configuration.ALLOW_UPDATE_CHECK"
+              apt:type="xs:boolean">
+            <apt:prop-value>true</apt:prop-value>
+            <apt:visual>
+                <apt:checkBox apt:labelPost="$ENABLE_UPDATE_TOOL_TEXT" apt:toolTip="" />
+            </apt:visual>
+           </apt:property>                   
+        </apt:section>        
+
+
+      <apt:scriptHandler apt:scriptLanguage="beanshell">
+         <apt:scriptCode><![CDATA[
+import java.lang.String;
+import java.io.*;
+import java.net.*;
+import java.util.List;
+import org.openinstaller.provider.conf.ConfigHelper;
+import org.openinstaller.bus.*;
+import org.openinstaller.core.*;
 
 /* Helper to determine installation mode */
 isSilentMode() {
@@ -148,60 +156,54 @@ isSilentMode() {
  return false;
 } 
 /* Validate Administration Port */
-validateAdminPort(prop) {
+validateProxyPort(prop) {
 	if (isSilentMode())
 		return;
-        String adminPort = (String)prop.getUnconfirmedValue();
-	validatePortValues(adminPort);
+        String ProxyPort = (String)prop.getUnconfirmedValue();
+	validatePortValues(ProxyPort);
 }
 
 validatePortValues(String inputPort)  {
 	// First check if the port is empty
 	/*
-	String inputStatus = (String)ConfigHelper.getValue("Node.NodeConfiguration.STATUS"));
+	String inputStatus = (String)ConfigHelper.getValue("UpdateTool.Configuration.STATUS"));
 	if (inputStatus.equals("ERROR")) {
-		System.out.println("Not validating stuff");
 		return;
 	}
 	*/
+        //This field is optional, so skip the validation if the user ignores it.
         if ((inputPort == null) || inputPort.equals("")) {
-            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
-            throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
+            ConfigHelper.setValue("UpdateTool.Configuration.STATUS", "SUCCESS");
         }
 
+        else {
 	// Check for non-numeric values
 	int intPortNumber = 0;
 	try {
 		intPortNumber = Integer.parseInt(inputPort);
 	}catch(NumberFormatException dummy) {
-            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
+            ConfigHelper.setValue("UpdateTool.Configuration.STATUS", "ERROR");
 		throw new EnhancedException("PORT_NOT_NUMERIC",new String[]{});
 	}
 
 	// Check for out of range values
 	if (intPortNumber <=0 || intPortNumber > 65535) {
-            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
+            ConfigHelper.setValue("UpdateTool.Configuration.STATUS", "ERROR");
 		throw new EnhancedException("PORT_OUT_OF_RANGE", new String[]{});
     }
-
-	/*Commented out as ConfigHelper() has bugs..
-	if (inputPort.equals(theOtherPort)) {
-            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
-            throw new EnhancedException("PORTS_HAVE_SAME_VALUE", new String[]{});
-	}
-	*/
 
 	// Check if the port is free
 	int retStat = isPortFree(intPortNumber);
 	if (retStat == -1) {
-            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
+            ConfigHelper.setValue("UpdateTool.Configuration.STATUS", "ERROR");
 		throw new EnhancedException("PORT_OCCUPIED", new String[]{});
     }
 	if (retStat == -2) {
-            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "ERROR");
+            ConfigHelper.setValue("UpdateTool.Configuration.STATUS", "ERROR");
 		throw new EnhancedException("HOST_NAME_CANNOT_BE_FOUND_WARNING", new String[]{});
     }
-            ConfigHelper.setValue("Node.NodeConfiguration.STATUS", "SUCCESS");
+  }
+            ConfigHelper.setValue("UpdateTool.Configuration.STATUS", "SUCCESS");
 }
 
 // Check if the port is free
@@ -282,55 +284,17 @@ isPortFreeServer(InetAddress addr, int port) {
         }
         return isPortFree;
 }
- getComponentByName(aParent, aName) {
-      if (aParent == null || ! (aParent instanceof Container)) {
-        return null;
-      }
-      Component[] theComponents = ((Container)aParent).getComponents();
-      for (Component theComp : theComponents) {
-        if (aName.equals(theComp.getName())) {
-          return theComp;
-        }
-      }
-      for (Component theComp : theComponents) {
-        if (theComp instanceof Container) {
-          Object theCompo = getComponentByName((Container) theComp, aName);
-          if (theCompo != null) {
-            return theCompo;
-          }
-        }
-      }
-      return null;
-    }
 
 run() {
 
-       if (System.getProperty("os.name").toLowerCase().startsWith("mac")) {
-                ConfigHelper.setValue
-                        ("JDKSelection.directory.SELECTED_JDK",
-                        System.getProperty("java.home"));
- 		List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
-		activeModes.add("IS_MAC");
-     }
-       if (System.getProperty("os.name").toLowerCase().startsWith("aix")) {
-                ConfigHelper.setValue
-                        ("JDKSelection.directory.SELECTED_JDK",
-                        System.getProperty("java.home"));
- 		List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
-		activeModes.add("IS_AIX");
-     }
-     clusterName = wizard.getComponentByName(content, "CLUSTER_NAME");
-     clusterOption = wizard.getComponentByName(content, "PART_OF_CLUSTER");
-     clusterName.setEnabled(false);
-     clusterOption.setEnabled(true);
       wizard.enableNext(true);
       wizard.enableCancel(true);
       wizard.enableBack(true);
       List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
      }
-	return (Runnable)this;
+return (Runnable)this;
     
-	]]></apt:scriptCode>
+       ]]></apt:scriptCode>
       </apt:scriptHandler>
     </apt:page>
   </apt:category>

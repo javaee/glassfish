@@ -13,7 +13,7 @@
 
 
   <Identity>
-    <Identifier feature="true">glassfish</Identifier>
+    <Identifier feature="true">Domain</Identifier>
     <Description>GlassFish v3</Description>
     <IdentityVersion>
       <VersionBaseline>0.5</VersionBaseline>
@@ -24,7 +24,7 @@
   <Requirements>
      <ComponentRefs>
       <ComponentRef>
-        <ComponentIdentifier>updatetool</ComponentIdentifier>
+        <ComponentIdentifier>UpdateTool</ComponentIdentifier>
         <ComponentRefVersion>
           <VersionBaseline>0.5</VersionBaseline>
         </ComponentRefVersion>

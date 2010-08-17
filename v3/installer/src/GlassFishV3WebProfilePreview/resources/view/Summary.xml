@@ -106,10 +106,10 @@ void run ()  {
     for (Summary sum : theSummary) {
     theContent.append("<tr>");
     String productDescription = "";
-    if (sum.getProductName().equals("glassfish")) {
+    if (sum.getProductName().equals("Domain")) {
         productDescription = "GlassFish V3";
     }
-    if (sum.getProductName().equals("updatetool")) {
+    if (sum.getProductName().equals("UpdateTool")) {
         productDescription = "Update Tool Bootstrap";
     }
     if (sum.getProductName().equals("Engine")) {

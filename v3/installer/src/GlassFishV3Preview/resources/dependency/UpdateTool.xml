@@ -7,36 +7,24 @@
 # 
 # Use is subject to License Terms
 #
---> 
+-->
 <Component xmlns="http://openinstaller.org/dependency/V1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://openinstaller.org/dependency/V1 ../schemas/Component.xsd">
 
 
   <Identity>
-    <Identifier feature="true">glassfish</Identifier>
-    <Description>GlassFish v3</Description>
+    <Identifier feature="true">UpdateTool</Identifier>
+    <Description>Update Tool Bootstrap</Description>
     <IdentityVersion>
       <VersionBaseline>0.5</VersionBaseline>
     </IdentityVersion>
     <Vendor>Sun Microsystems Inc.</Vendor>
   </Identity>  
 
-  <Requirements>
-     <ComponentRefs>
-      <ComponentRef>
-        <ComponentIdentifier>updatetool</ComponentIdentifier>
-        <ComponentRefVersion>
-          <VersionBaseline>0.5</VersionBaseline>
-        </ComponentRefVersion>
-      </ComponentRef>
-     </ComponentRefs>
-  </Requirements>
-
 
   <Payload>
     <CompositeUnit>
-      <Name>core</Name>
-      
+      <Name>client</Name>     
       <Realization version="0.5.0.0">
         <OS>
           <Type>unix</Type>
@@ -45,7 +33,7 @@
           <OtherArch>sparcv9</OtherArch>
 
           <VersionCertified><VersionBaseline>5.9</VersionBaseline></VersionCertified>
-           <RequirementsRealization>
+           <RequirementsRealization>            
              <Item type="disk">30Mb</Item>
              <Item type="ram">1Gb</Item>
              <Item type="swap">2Gb</Item>
@@ -53,9 +41,8 @@
           </RequirementsRealization>
 
         </OS>
-        <InstallableUnit>glassfish.zip</InstallableUnit>
-        <InstallableUnit>icons.zip</InstallableUnit>
-        
+ 
+
       </Realization>
 
 
@@ -67,16 +54,15 @@
           <OtherArch>x86_64</OtherArch>
 
           <VersionCertified><VersionBaseline>5.9</VersionBaseline></VersionCertified>
-           <RequirementsRealization>           
+           <RequirementsRealization>            
             <Item type="disk">30Mb</Item>
              <Item type="ram">1Gb</Item>
              <Item type="swap">2Gb</Item>
             <Item type="speed">800MHz</Item>
           </RequirementsRealization>
         </OS>
-        <InstallableUnit>glassfish.zip</InstallableUnit>
-        <InstallableUnit>icons.zip</InstallableUnit>
-               
+
+        
       </Realization>
 
       <Realization version="0.5.0.0">
@@ -94,12 +80,10 @@
              <Item type="speed">800MHz</Item>
           </RequirementsRealization>
         </OS>
-        <InstallableUnit>glassfish.zip</InstallableUnit>
-        <InstallableUnit>icons.zip</InstallableUnit>
-        
-     </Realization>
+ 
+      </Realization>
 
-     <Realization>
+      <Realization>
         <OS>
           <Type>unix</Type>
           <Name>MacOSX</Name>
@@ -108,7 +92,7 @@
           <OtherArch>x86_64</OtherArch>
           <OtherArch>PowerPC</OtherArch>
           <VersionCertified>
-            <VersionBaseline>0.6.0.0</VersionBaseline>
+            <VersionBaseline>0.3</VersionBaseline>
           </VersionCertified>
           <RequirementsRealization>
             <Item type="disk">30Mb</Item>
@@ -116,15 +100,14 @@
              <Item type="speed">800MHz</Item>
           </RequirementsRealization>
       </OS> 
-      <InstallableUnit>glassfish.zip</InstallableUnit>
-      <InstallableUnit>icons.zip</InstallableUnit>
+ 
 
       </Realization>
 
       <Realization version="0.5.0.0">
         <OS>
           <Type>windows</Type>
-          <Name>Windows XP</Name>
+         <Name>Windows XP</Name>
           <OtherName>Windows 2000</OtherName>
           <OtherName>Windows 2003</OtherName>
           <OtherName>UNDEFINED</OtherName>
@@ -139,9 +122,8 @@
              <Item type="speed">800MHz</Item>
           </RequirementsRealization>
         </OS>
-        <InstallableUnit>glassfish.zip</InstallableUnit>
-        <InstallableUnit>icons.zip</InstallableUnit>
-        
+ 
+
       </Realization>
 
     </CompositeUnit>
