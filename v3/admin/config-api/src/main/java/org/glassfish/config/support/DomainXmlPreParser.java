@@ -298,9 +298,8 @@ class DomainXmlPreParser {
     private ClusterData cluster;
     private String instanceName;
     private String serverConfigRef;
-    private final static boolean debug = true;
     private boolean valid = false;
-    //private final static boolean debug = Boolean.parseBoolean(Utility.getEnvOrProp("AS_DEBUG"));
+    private final static boolean debug = Boolean.parseBoolean(Utility.getEnvOrProp("AS_DEBUG"));
 
 
     private static class ClusterData {
