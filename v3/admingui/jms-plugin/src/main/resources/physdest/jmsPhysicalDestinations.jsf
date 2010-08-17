@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -35,23 +35,32 @@
 -->
 
 <!initPage
-    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
-    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+    setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
+    setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="" >
+
+<!composition
+	template="/templates/default.layout"
+	guiTitle="$resource{i18njms.jmsPhysDestinations.pageTitle}"
+	guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configurations:#{pageSession.configName}:jmsConfiguration:jmsPhysDest');">
 <!define name="content">
     <event>
         <!beforeCreate
-            getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
-            urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
-            setSessionAttribute(key="standaloneInstanceTabs" value="general");
+            getRequestValue(key="name" value=>$page{clusterName});     #in case this is from cluster
+            getRequestValue(key="name" value=>$page{instanceName});    #in case this is from standalone instance
+            getRequestValue(key="name" value=>$page{targetName});
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf");
+            setPageSessionAttribute(key="editPage" value="#{request.contextPath}/jms/jmsPhysicalDestinationEdit.jsf");
+            setPageSessionAttribute(key="viewPage" value="#{request.contextPath}/jms/jmsPhysicalDestinationStats.jsf");
+            getPhysicalDestinations(result=>$attribute{listOfRows});
         />
     </event>
     <sun:form id="propertyForm">
-
-#include "/cluster/standalone/standaloneInstanceTabs.inc"
-"<br/>instanceName = #{pageSession.instanceName}
+#include "/common/shared/alertMsg.inc"
+        <sun:title id="propertyContentPage" title="$resource{i18njms.jmsPhysDestinations.pageTitle}" helpText="$resource{i18njms.jmsPhysDestinations.pageHelp}"/>
+        "<br /> <br />
+#include "physDestTable.jsf
+        <sun:hidden id="helpKey" value="$resource{helpjms.jmsPhysicalDestinations}" />
     </sun:form>
 </define>
 </composition>

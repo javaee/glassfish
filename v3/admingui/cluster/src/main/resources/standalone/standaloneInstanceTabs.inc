@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -80,6 +79,6 @@
 </sun:tabSet>
 <event>
     <!afterCreate
-	includeIntegrations(type="org.glassfish.admingui:standaloneInstTab");
+        includeIntegrations(type="org.glassfish.admingui:standaloneInstTab");
     />
 </event>

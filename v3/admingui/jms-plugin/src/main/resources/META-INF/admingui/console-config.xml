@@ -29,4 +29,18 @@
                 priority="300"
                 content="jmsResourceLink.jsf"
     />
+    <integration-point
+                id="physDestStandaloneInstance"
+                parentId="standaloneInstanceTabs"
+                type="org.glassfish.admingui:standaloneInstTab"
+                priority="300"
+                content="/physdest/serverInstPhysDestTab.jsf"
+    />
+    <integration-point
+                id="physDestCluster"
+                parentId="clusterTabs"
+                type="org.glassfish.admingui:clusterTab"
+                priority="300"
+                content="/physdest/clusterPhysDestTab.jsf"
+    />
 </console-config> 

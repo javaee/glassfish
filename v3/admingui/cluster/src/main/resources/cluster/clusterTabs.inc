@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -93,5 +92,9 @@
             />
 	</sun:tab>    
     </sun:tab>
-    
 </sun:tabSet>
+<event>
+    <!afterCreate
+	includeIntegrations(type="org.glassfish.admingui:clusterTab");
+    />
+</event>

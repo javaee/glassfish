@@ -19,10 +19,4 @@
                 alt="$resource{i18n.tree.jmsHosts}"/>
         </facet>
     </dynamicTreeNode>
-
-    <gf:navNode id="jmsPhysDest"
-                label="$resource{i18n.tree.physicalDestinations}"
-                icon="#{request.contextPath}/resource/jms/images/tree_folder.gif"
-                url="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf?configName=${configName}">
-    </gf:navNode>
 </gf:navNode>
