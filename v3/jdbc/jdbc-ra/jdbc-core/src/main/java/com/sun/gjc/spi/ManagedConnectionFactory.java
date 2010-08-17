@@ -102,6 +102,8 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     protected boolean isLazyCm_;
     private int statementCacheSize = 0;
     private String statementCacheType = null;
+    private long statementLeakTimeout = 0;
+    private boolean statementLeakReclaim = false;
 
     //Jdbc Stats provider that is created
     private JdbcStatsProvider jdbcStatsProvider = null;
@@ -995,6 +997,23 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         return spec.getDetail(DataSourceSpec.STATEMENTCACHESIZE);
     }
 
+    public void setStatementLeakTimeoutInSeconds(String value){
+        spec.setDetail(DataSourceSpec.STATEMENTLEAKTIMEOUTINSECONDS, value);
+        detectStatementLeakSupport();
+    }
+
+    public String getStatementLeakTimeoutInSeconds(){
+        return spec.getDetail(DataSourceSpec.STATEMENTLEAKTIMEOUTINSECONDS);
+    }
+
+    public void setStatementLeakReclaim(String value) {
+        spec.setDetail(DataSourceSpec.STATEMENTLEAKRECLAIM, value);
+    }
+
+    public String getStatementLeakReclaim() {
+        return spec.getDetail(DataSourceSpec.STATEMENTLEAKRECLAIM);
+    }
+
     public void setPoolMonitoringSubTreeRoot(String value) {
         spec.setDetail(DataSourceSpec.POOLMONITORINGSUBTREEROOT, value);
     }
@@ -1208,7 +1227,8 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
                                                            Connection sqlCon, PasswordCredential passCred,
                                                            ManagedConnectionFactory mcf) throws ResourceException {
         return new com.sun.gjc.spi.ManagedConnection(pc, sqlCon, passCred, mcf, 
-                getPoolMonitoringSubTreeRoot(), statementCacheSize, statementCacheType, sqlTraceDelegator);
+                getPoolMonitoringSubTreeRoot(), statementCacheSize, statementCacheType, sqlTraceDelegator,
+                statementLeakTimeout, statementLeakReclaim);
     }
 
     /**
@@ -1325,7 +1345,8 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         }
         _logger.finest("MCF Created");
         if (statementCacheSize > 0 ||
-                (sqlTraceListeners != null && !sqlTraceListeners.equals("null"))) {
+                (sqlTraceListeners != null && !sqlTraceListeners.equals("null")) ||
+                statementLeakTimeout > 0) {
             jdbcStatsProvider = new JdbcStatsProvider(poolMonitoringSubTreeRoot, sqlTraceCacheSize,
                     timeToKeepQueries);
             //get the poolname and use it to initialize the stats provider n register
@@ -1353,6 +1374,20 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
             StatsProviderManager.unregister(jdbcStatsProvider);
             jdbcStatsProvider = null;
             _logger.finest("Unregistered JDBCRA Stats Provider");
+        }
+    }
+
+    private void detectStatementLeakSupport() {
+        String stmtLeakTimeout = getStatementLeakTimeoutInSeconds();
+        String stmtLeakReclaim = getStatementLeakReclaim();
+        if (stmtLeakTimeout != null) {
+            statementLeakTimeout = Integer.valueOf(stmtLeakTimeout) * 1000L;
+            statementLeakReclaim = Boolean.valueOf(stmtLeakReclaim);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "StatementLeakTimeout in seconds: "
+                        + statementLeakTimeout + " & StatementLeakReclaim: "
+                        + statementLeakReclaim + " for pool : " + getPoolMonitoringSubTreeRoot());
+            }
         }
     }
 }

@@ -95,4 +95,14 @@ public interface Cache {
      * @return boolean synchronized flag.
      */   
     public boolean isSynchronized();
+
+    /**
+     * Remove the specified entry stored in the statement cache after closing
+     * the statement object associated with this entry. Used when statement is
+     * being reclaimed and is being used for the subsequent requests from the
+     * application.
+     *
+     * @param entry 
+     */
+    public void purge(Object entry);
 }

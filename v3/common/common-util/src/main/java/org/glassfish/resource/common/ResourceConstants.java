@@ -133,6 +133,10 @@ public final class ResourceConstants {
     
     public static final String CASCADE = "cascade";
 
+    public static final String STATEMENT_LEAK_TIMEOUT_IN_SECONDS = "statement-leak-timeout-in-seconds";
+
+    public static final String STATEMENT_LEAK_RECLAIM = "statement-leak-reclaim";
+
     //Mail resource
     public static final String MAIL_HOST = "host";
 

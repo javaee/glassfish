@@ -62,6 +62,8 @@ public interface JdbcRAConstants {
      */
     public static final String CACHE_SQL_QUERY = "cacheSqlQueryEvent";
 
+    public static final String POTENTIAL_STATEMENT_LEAK = "potentialStatementLeakEvent";
+    
     /**
      * Represents module provider name.
      */
@@ -82,6 +84,8 @@ public interface JdbcRAConstants {
      */
     public static final String SQL_TRACING_PROBE = "sqltracing";
 
+    public static final String STATEMENT_LEAK_PROBE = "statementleak";
+
     /**
      * Dotted name used in monitoring for Statement caching.
      */
@@ -94,6 +98,9 @@ public interface JdbcRAConstants {
     public static final String SQL_TRACING_DOTTED_NAME = GLASSFISH + ":" +
             JDBCRA + ":" + SQL_TRACING_PROBE + ":";
 
+    public static final String STATEMENT_LEAK_DOTTED_NAME = GLASSFISH + ":" +
+            JDBCRA + ":" + STATEMENT_LEAK_PROBE + ":";
+    
     /**
      * Represents top queries to report.
      */

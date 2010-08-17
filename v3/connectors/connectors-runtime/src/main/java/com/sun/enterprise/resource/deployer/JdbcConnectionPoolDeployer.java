@@ -331,6 +331,16 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 "Sql Trace Listeners",
                 "java.lang.String"));
         
+        propList.add(new ConnectorConfigProperty ("StatementLeakTimeoutInSeconds",
+                adminPool.getStatementLeakTimeoutInSeconds() + "",
+                "Statement Leak Timeout in seconds",
+                "java.lang.String"));
+
+        propList.add(new ConnectorConfigProperty ("StatementLeakReclaim",
+                adminPool.getStatementLeakReclaim() + "",
+                "Statement Leak Reclaim",
+                "java.lang.String"));
+
         //dump user defined poperties into the list
         Set connDefDescSet = connDesc.getOutboundResourceAdapter().
                 getConnectionDefs();
@@ -725,6 +735,8 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         excludes.add("StatementTimeout");
         excludes.add("ValidationClassName");
         excludes.add("StatementCacheSize");
+        excludes.add("StatementLeakTimeoutInSeconds");
+        excludes.add("StatementLeakReclaim");
 
 
         try {

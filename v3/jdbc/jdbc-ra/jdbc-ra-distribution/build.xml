@@ -58,7 +58,7 @@
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
-                <attribute name="probe-provider-class-names" value="com.sun.gjc.monitoring.StatementCacheProbeProvider,com.sun.gjc.monitoring.SQLTraceProbeProvider"/>
+                <attribute name="probe-provider-class-names" value="com.sun.gjc.monitoring.StatementCacheProbeProvider,com.sun.gjc.monitoring.SQLTraceProbeProvider,com.sun.gjc.monitoring.StatementLeakProbeProvider"/>
             </manifest>
         </jar>
 
@@ -84,7 +84,7 @@
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
-                <attribute name="probe-provider-class-names" value="com.sun.gjc.monitoring.StatementCacheProbeProvider,com.sun.gjc.monitoring.SQLTraceProbeProvider"/>
+                <attribute name="probe-provider-class-names" value="com.sun.gjc.monitoring.StatementCacheProbeProvider,com.sun.gjc.monitoring.SQLTraceProbeProvider,com.sun.gjc.monitoring.StatementLeakProbeProvider"/>
             </manifest>
         </jar>
 
@@ -113,7 +113,7 @@
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
-                <attribute name="probe-provider-class-names" value="com.sun.gjc.monitoring.StatementCacheProbeProvider,com.sun.gjc.monitoring.SQLTraceProbeProvider"/>
+                <attribute name="probe-provider-class-names" value="com.sun.gjc.monitoring.StatementCacheProbeProvider,com.sun.gjc.monitoring.SQLTraceProbeProvider,com.sun.gjc.monitoring.StatementLeakProbeProvider"/>
             </manifest>
         </jar>
 
@@ -141,7 +141,7 @@
                 <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
-                <attribute name="probe-provider-class-names" value="com.sun.gjc.monitoring.StatementCacheProbeProvider,com.sun.gjc.monitoring.SQLTraceProbeProvider"/>
+                <attribute name="probe-provider-class-names" value="com.sun.gjc.monitoring.StatementCacheProbeProvider,com.sun.gjc.monitoring.SQLTraceProbeProvider,com.sun.gjc.monitoring.StatementLeakProbeProvider"/>
             </manifest>
         </jar>
 

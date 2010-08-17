@@ -60,6 +60,7 @@ public abstract class PreparedStatementWrapper extends StatementWrapper implemen
     private int currentQueryTimeout;
     private int currentFetchDirection;
     private int currentFetchSize;
+    private boolean valid = true;
 
     /**
      * Abstract class for wrapping PreparedStatement <br>
@@ -74,6 +75,8 @@ public abstract class PreparedStatementWrapper extends StatementWrapper implemen
         super(con, statement);
         preparedStatement = statement;
         cached = cachingEnabled;
+        ConnectionHolder wrappedCon = (ConnectionHolder) con;
+        leakDetector = wrappedCon.getManagedConnection().getLeakDetector();
 
         if (cached) {
 
@@ -89,6 +92,11 @@ public abstract class PreparedStatementWrapper extends StatementWrapper implemen
             currentMaxRows = defaultMaxRows;
             currentFetchDirection = defaultFetchDirection;
 
+        } else {
+            //Start Statement leak detection
+            if(leakDetector != null) {
+                leakDetector.startStatementLeakTracing(preparedStatement, this);
+            }            
         }
     }
 
@@ -740,6 +748,22 @@ public abstract class PreparedStatementWrapper extends StatementWrapper implemen
 
     public void setBusy(boolean busy) {
         this.busy = busy;
+        if (busy) {
+            if (leakDetector != null) {
+                leakDetector.startStatementLeakTracing(preparedStatement, this);
+            }
+        } else {
+            if (leakDetector != null) {
+                leakDetector.stopStatementLeakTracing(preparedStatement, this);
+                if(cached && isMarkedForReclaim()) {
+                    //When caching is on and is marked for reclaim, the statement
+                    //would still remain in cache. Hence mark it as invalid and
+                    //let the client that uses the statement, detect and purge
+                    //it if found as invalid
+                    setValid(false);
+                }
+            }
+        }
     }
 
     public boolean getCached() {
@@ -747,9 +771,13 @@ public abstract class PreparedStatementWrapper extends StatementWrapper implemen
     }
 
     public void close() throws SQLException {
-        if (!cached)
+        if (!cached) {
+            //Stop leak tracing
+            if(leakDetector != null) {
+                leakDetector.stopStatementLeakTracing(preparedStatement, this);
+            }
             preparedStatement.close();
-        else {  
+        } else {
             //TODO-SC what if Exception is thrown in this block, should there be a way to indicate the
             // con. not to use this statement any more ?
             clearParameters();
@@ -812,5 +840,13 @@ public abstract class PreparedStatementWrapper extends StatementWrapper implemen
 
     public void setCached(boolean cached){
         this.cached =  cached;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 }

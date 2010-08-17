@@ -39,7 +39,6 @@ package com.sun.gjc.spi;
 import com.sun.appserv.connectors.internal.spi.BadConnectionEventListener;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.common.DataSourceObjectBuilder;
-import com.sun.gjc.spi.base.ConnectionHolder;
 import com.sun.logging.LogDomains;
 
 import javax.resource.NotSupportedException;
@@ -65,6 +64,7 @@ import com.sun.gjc.spi.base.CacheObjectKey;
 import com.sun.gjc.spi.base.datastructure.Cache;
 import com.sun.gjc.spi.base.datastructure.CacheFactory;
 import com.sun.gjc.util.SQLTraceDelegator;
+import com.sun.gjc.util.StatementLeakDetector;
 
 /**
  * <code>ManagedConnection</code> implementation for Generic JDBC Connector.
@@ -118,6 +118,10 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     private int cacheSize;
     private String cacheType;
     private boolean statementCaching;
+    private long stmtLeakTimeout;
+    private boolean stmtLeakReclaim;
+    private boolean statementLeakTracing;
+    protected StatementLeakDetector leakDetector;
 
     private SQLTraceDelegator sqlTraceDelegator;
     
@@ -156,7 +160,8 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
                              javax.resource.spi.ManagedConnectionFactory mcf,
                              String poolName,
                              int statementCacheSize, String statementCacheType,
-                             SQLTraceDelegator delegator)
+                             SQLTraceDelegator delegator,
+                             long statementLeakTimeout, boolean statementLeakReclaim)
             throws ResourceException {
         if (pooledConn == null && sqlConn == null) {
 
@@ -185,6 +190,11 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         logWriter = mcf.getLogWriter();
         ce = new ConnectionEvent(this, ConnectionEvent.CONNECTION_CLOSED);
         tuneStatementCaching(poolName, statementCacheSize, statementCacheType);
+        tuneStatementLeakTracing(poolName, statementLeakTimeout, statementLeakReclaim);
+    }
+
+    public StatementLeakDetector getLeakDetector() {
+        return leakDetector;
     }
 
     private void executeInitSql(String initSql) {
@@ -228,6 +238,21 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         }
     }
 
+    private void tuneStatementLeakTracing(String poolName, long statementLeakTimeout,
+            boolean statementLeakReclaim) {
+        stmtLeakTimeout = statementLeakTimeout;
+        stmtLeakReclaim = statementLeakReclaim;
+
+        if(stmtLeakTimeout > 0) {
+            ManagedConnectionFactory spiMCF = (ManagedConnectionFactory) mcf;
+            statementLeakTracing = true;
+            if (leakDetector == null) {
+                leakDetector = new StatementLeakDetector(poolName, statementLeakTracing,
+                        stmtLeakTimeout, stmtLeakReclaim,
+                        ((com.sun.gjc.spi.ResourceAdapter) spiMCF.getResourceAdapter()).getTimer());
+            }
+        }
+    }
     /**
      * Adds a connection event listener to the ManagedConnection instance.
      *
@@ -341,6 +366,13 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
             return;
         }
         clearStatementCache();
+        //Connection could be closed even before statement is closed. Connection
+        //close need not call statement close() method.
+        //When application uses a statement, leakDetector could be started.At
+        //this point, there is a need to clear the statement leak tasks
+        if (leakDetector != null) {
+            leakDetector.clearAllStatementLeakTasks();
+        }
 
         try {
             if (connectionType == ISXACONNECTION || connectionType == ISPOOLEDCONNECTION) {
@@ -866,11 +898,23 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
                     statementCache.checkAndUpdateCache(key);
             //TODO-SC-DEFER can the usability (isFree()) check be done by the cache itself and make sure that only a free stmt is returned
             if (ps != null) {
-                if (isFree(ps))
-                    ps.setBusy(true);
-                else
+                if (isFree(ps)) {
+                    //Find if this ps is a valid one. If invalid, remove it
+                    //from the cache and prepare a new stmt & add it to cache
+                    if(!ps.isValid()) {
+                        statementCache.purge(ps);
+                        ps = conWrapper.prepareCachedStatement(sql, resultSetType,
+                                resultSetConcurrency, true);
+                        ps.setBusy(true);
+                        statementCache.addToCache(key, ps, false);
+                    } else {
+                        //Valid ps
+                        ps.setBusy(true);
+                    }
+                } else {
                     return conWrapper.prepareCachedStatement(sql, resultSetType, 
                             resultSetConcurrency, false);
+                }
             } else {
                 ps = conWrapper.prepareCachedStatement(sql, resultSetType, 
                         resultSetConcurrency, true);
@@ -898,11 +942,24 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
                     statementCache.checkAndUpdateCache(key);
             //TODO-SC-DEFER can the usability (isFree()) check be done by the cache itself and make sure that only a free stmt is returned
             if (ps != null) {
-                if (isFree(ps))
-                    ps.setBusy(true);
-                else
+                if (isFree(ps)) {
+                    //Find if this ps is a valid one. If invalid, remove it
+                    //from the cache and prepare a new stmt & add it to cache
+                    if(!ps.isValid()) {
+                        statementCache.purge(ps);
+                        ps = conWrapper.prepareCachedStatement(sql, resultSetType,
+                                resultSetConcurrency, resultSetHoldability, true);
+                        ps.setBusy(true);
+                        statementCache.addToCache(key, ps, false);
+                    } else {
+                        //Valid ps
+                        ps.setBusy(true);
+                    }
+                    
+                } else {
                     return conWrapper.prepareCachedStatement(sql, resultSetType, 
                             resultSetConcurrency, resultSetHoldability, false);
+                }
             } else {
                 ps = conWrapper.prepareCachedStatement(sql, resultSetType, 
                         resultSetConcurrency, resultSetHoldability, true);
@@ -928,10 +985,23 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
                     statementCache.checkAndUpdateCache(key);
             //TODO-SC-DEFER can the usability (isFree()) check be done by the cache itself and make sure that only a free stmt is returned
             if (ps != null) {
-                if (isFree(ps))
-                    ps.setBusy(true);
-                else
+                if (isFree(ps)) {
+                    //Find if this ps is a valid one. If invalid, remove it
+                    //from the cache and prepare a new stmt & add it to cache
+                    if(!ps.isValid()) {
+                        statementCache.purge(ps);
+                        ps = conWrapper.prepareCachedStatement(sql, 
+                                columnNames, true);
+                        ps.setBusy(true);
+                        statementCache.addToCache(key, ps, false);
+                    } else {
+                        //Valid ps
+                        ps.setBusy(true);
+                    }                    
+                    
+                } else {
                     return conWrapper.prepareCachedStatement(sql, columnNames, false);
+                }
             } else {
                 ps = conWrapper.prepareCachedStatement(sql, columnNames, true);
 
@@ -955,10 +1025,23 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
                     statementCache.checkAndUpdateCache(key);
             //TODO-SC-DEFER can the usability (isFree()) check be done by the cache itself and make sure that only a free stmt is returned
             if (ps != null) {
-                if (isFree(ps))
-                    ps.setBusy(true);
-                else
+                if (isFree(ps)) {
+                    //Find if this ps is a valid one. If invalid, remove it
+                    //from the cache and prepare a new stmt & add it to cache
+                    if(!ps.isValid()) {
+                        statementCache.purge(ps);
+                        ps = conWrapper.prepareCachedStatement(sql,
+                                columnIndexes, true);
+                        ps.setBusy(true);
+                        statementCache.addToCache(key, ps, false);
+                    } else {
+                        //Valid ps
+                        ps.setBusy(true);
+                    }
+
+                } else {
                     return conWrapper.prepareCachedStatement(sql, columnIndexes, false);
+                }
             } else {
                 ps = conWrapper.prepareCachedStatement(sql, columnIndexes, true);
 
@@ -982,10 +1065,23 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
                     statementCache.checkAndUpdateCache(key);
             //TODO-SC-DEFER can the usability (isFree()) check be done by the cache itself and make sure that only a free stmt is returned
             if (ps != null) {
-                if (isFree(ps))
-                    ps.setBusy(true);
-                else
+                if (isFree(ps)) {
+                    //Find if this ps is a valid one. If invalid, remove it
+                    //from the cache and prepare a new stmt & add it to cache
+                    if(!ps.isValid()) {
+                        statementCache.purge(ps);
+                        ps = conWrapper.prepareCachedStatement(sql, 
+                                autoGeneratedKeys, true);
+                        ps.setBusy(true);
+                        statementCache.addToCache(key, ps, false);
+                    } else {
+                        //Valid ps
+                        ps.setBusy(true);
+                    }
+                                        
+                } else {
                     return conWrapper.prepareCachedStatement(sql, autoGeneratedKeys, false);
+                }
             } else {
                 ps = conWrapper.prepareCachedStatement(sql, autoGeneratedKeys, true);
 
@@ -1010,12 +1106,24 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
             //TODO-SC-DEFER can the usability (isFree()) check be done by the cache 
             //itself and make sure that only a free stmt is returned
             if (cs != null) {
-                if (isFree(cs))
-                    cs.setBusy(true);
-                else
+                if (isFree(cs)) {
+                    //Find if this cs is a valid one. If invalid, remove it
+                    //from the cache and prepare a new stmt & add it to cache
+                    if(!cs.isValid()) {
+                        statementCache.purge(cs);
+                        cs = conWrapper.callableCachedStatement(sql, resultSetType,
+                                resultSetConcurrency, true);
+                        cs.setBusy(true);
+                        statementCache.addToCache(key, cs, false);
+                    } else {
+                        //Valid ps
+                        cs.setBusy(true);
+                    }
+
+                } else {
                     return conWrapper.callableCachedStatement(sql, 
                             resultSetType, resultSetConcurrency, false);
-            
+                }
             } else {
                 cs = conWrapper.callableCachedStatement(sql, resultSetType, 
                         resultSetConcurrency, true);
@@ -1043,13 +1151,25 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
             //TODO-SC-DEFER can the usability (isFree()) check be done by the cache 
             //itself and make sure that only a free stmt is returned
             if (cs != null) {
-                if (isFree(cs))
-                    cs.setBusy(true);
-                else
+                if (isFree(cs)) {
+                    //Find if this cs is a valid one. If invalid, remove it
+                    //from the cache and prepare a new stmt & add it to cache
+                    if(!cs.isValid()) {
+                        statementCache.purge(cs);
+                        cs = conWrapper.callableCachedStatement(sql, resultSetType,
+                                resultSetConcurrency, resultSetHoldability, true);
+                        cs.setBusy(true);
+                        statementCache.addToCache(key, cs, false);
+                    } else {
+                        //Valid ps
+                        cs.setBusy(true);
+                    }
+
+                } else {
                     return conWrapper.callableCachedStatement(sql, 
                             resultSetType, resultSetConcurrency, 
                             resultSetHoldability, false);
-            
+                }
             } else {
                 cs = conWrapper.callableCachedStatement(sql, resultSetType, 
                         resultSetConcurrency, resultSetHoldability, true);

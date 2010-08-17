@@ -72,6 +72,10 @@ public class JdbcStatsProvider {
             "NumStatementCacheMiss", StatisticImpl.UNIT_COUNT,
             "The total number of Statement Cache misses.");
 
+    private CountStatisticImpl numPotentialStatementLeak = new CountStatisticImpl(
+            "NumPotentialStatementLeak", StatisticImpl.UNIT_COUNT,
+            "The total number of potential Statement leaks");
+
     private String poolName;
     private SQLTraceCache sqlTraceCache;
 
@@ -131,6 +135,20 @@ public class JdbcStatsProvider {
         }
     }
 
+    /**
+     * Whenever statement leak happens, increment numPotentialStatementLeak count.
+     * @param poolName JdbcConnectionPool that has got a statement leak event.
+     */
+    @ProbeListener(JdbcRAConstants.STATEMENT_LEAK_DOTTED_NAME + JdbcRAConstants.POTENTIAL_STATEMENT_LEAK)
+    public void potentialStatementLeakEvent(@ProbeParam("connectionPoolName")
+            String connectionPoolName) {
+
+        if ((connectionPoolName != null) && (connectionPoolName.equals(this.poolName))) {
+            numPotentialStatementLeak.increment();
+        }
+    }
+
+
     @ManagedAttribute(id="numstatementcachehit")
     public CountStatistic getNumStatementCacheHit() {
         return numStatementCacheHit;
@@ -151,6 +169,11 @@ public class JdbcStatsProvider {
         return freqUsedSqlQueries;
     }
 
+    @ManagedAttribute(id="numpotentialstatementleak")
+    public CountStatistic getNumPotentialStatementLeak() {
+        return numPotentialStatementLeak;
+    }
+    
     /**
      * Get the SQLTraceCache associated with this stats provider.
      * @return SQLTraceCache

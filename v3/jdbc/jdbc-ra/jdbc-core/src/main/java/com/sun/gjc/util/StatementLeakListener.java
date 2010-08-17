@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,50 +34,22 @@
  * holder.
  */
 
-package com.sun.gjc.spi.base.datastructure;
+package com.sun.gjc.util;
 
-import com.sun.gjc.spi.base.CacheObjectKey;
+import java.sql.SQLException;
 
 /**
+ * Leak listener that will be used by StatementLeakDetector to intimate the
+ * listeners during statement leaks and to print statement leak stack traces and
+ * reclaim leaked statements if statement-leak-reclaim is turned ON.
  *
  * @author Shalini M
  */
-public class SynchronizedCache implements Cache {
-    private Cache cacheImpl;
+public interface StatementLeakListener {
 
-    public synchronized Object checkAndUpdateCache(CacheObjectKey key) {
-        return cacheImpl.checkAndUpdateCache(key);
-    }
+    /**
+     * Reclaim the leaked statement
+     */
+    public void reclaimStatement() throws SQLException;
 
-    public synchronized void addToCache(CacheObjectKey key, Object entry, boolean force) {
-        cacheImpl.addToCache(key, entry, force);
-    }
-
-    public synchronized void clearCache() {
-        cacheImpl.clearCache();
-    }
-
-    public synchronized void purge() {
-        cacheImpl.purge();
-    }
-
-    public synchronized int getSize() {
-        return cacheImpl.getSize();
-    }
-
-    public boolean isSynchronized() {
-        return true;
-    }
-
-    public SynchronizedCache(Cache cacheImpl) {
-        this.cacheImpl = cacheImpl;
-    }
-
-    public void flushCache() {
-        cacheImpl.flushCache();
-    }
-
-    public void purge(Object entry) {
-        cacheImpl.purge(entry);
-    }
 }

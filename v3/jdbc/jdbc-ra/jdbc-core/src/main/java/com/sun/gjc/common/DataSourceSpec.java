@@ -95,6 +95,8 @@ public class DataSourceSpec implements java.io.Serializable {
     public static final int POOLMONITORINGSUBTREEROOT = 40;
     public static final int NUMBEROFTOPQUERIESTOREPORT = 41;
     public static final int TIMETOKEEPQUERIESINMINUTES = 42;
+    public static final int STATEMENTLEAKTIMEOUTINSECONDS = 43;
+    public static final int STATEMENTLEAKRECLAIM = 44;
 
     private ConcurrentHashMap<Integer, String> details = new ConcurrentHashMap<Integer, String>();
 

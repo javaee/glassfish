@@ -98,6 +98,16 @@ public class ConnectionPoolValidator
                         return false;
                     }
                 }
+                if (Integer.valueOf(jdbcPool.getStatementLeakTimeoutInSeconds()) != 0) {
+                    if (!Boolean.valueOf(jdbcPool.getWrapJdbcObjects())) {
+                        return false;
+                    }
+                }
+                if (Boolean.valueOf(jdbcPool.getStatementLeakReclaim())) {
+                    if (!Boolean.valueOf(jdbcPool.getWrapJdbcObjects())) {
+                        return false;
+                    }
+                }
             }
         }
         

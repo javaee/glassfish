@@ -44,6 +44,7 @@ import com.sun.gjc.monitoring.StatementCacheProbeProvider;
 import java.util.*;
 import java.util.logging.Logger;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 /**
  *
@@ -145,6 +146,8 @@ public class LRUCacheImpl implements Cache {
             CacheObjectKey key = (CacheObjectKey)keyIterator.next();
             CacheEntry entry = list.get(key);
             try{
+                //TODO Move to a more generic Contract and invoke close()
+                //PreparedStatementWrapper could implement the contract instead
                 PreparedStatementWrapper ps = (PreparedStatementWrapper)entry.entryObj;
                 ps.setCached(false);
                 ps.close();
@@ -156,6 +159,32 @@ public class LRUCacheImpl implements Cache {
         }
     }
 
+    public void purge(Object obj) {
+        PreparedStatementWrapper tmpPS = (PreparedStatementWrapper) obj;
+        Iterator keyIterator = list.keySet().iterator();
+        while(keyIterator.hasNext()){
+            CacheObjectKey key = (CacheObjectKey)keyIterator.next();
+            CacheEntry entry = list.get(key);
+            try{
+                //TODO Move to a more generic Contract and invoke close()
+                //PreparedStatementWrapper could implement the contract instead
+                PreparedStatementWrapper ps = (PreparedStatementWrapper)entry.entryObj;
+                if(ps.equals(tmpPS)) {
+                    //Found the entry in the cache. Remove this entry.
+                    if(_logger.isLoggable(Level.FINEST)) {
+                        _logger.log(Level.FINEST, "Purging an entry from cache");
+                    }
+                    ps.setCached(false);
+                    ps.close();
+                }
+            }catch(SQLException e){
+                //ignore
+            }
+            keyIterator.remove();
+            break;
+        }        
+    }
+    
     /**
      * Returns the number of entries in the statement cache
      * @return has integer value

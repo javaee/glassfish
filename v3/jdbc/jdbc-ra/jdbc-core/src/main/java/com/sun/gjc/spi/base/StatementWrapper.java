@@ -36,7 +36,11 @@
 
 package com.sun.gjc.spi.base;
 
+import com.sun.gjc.util.StatementLeakDetector;
+import com.sun.gjc.util.StatementLeakListener;
+import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
@@ -44,11 +48,13 @@ import java.sql.Statement;
 /**
  * Abstract class for wrapping Statement<br>
  */
-public abstract class StatementWrapper implements Statement {
+public abstract class StatementWrapper implements Statement, StatementLeakListener {
 
     protected Connection connection = null;
     protected Statement jdbcStatement = null;
-
+    protected StatementLeakDetector leakDetector = null;
+    private boolean markedForReclaim = false;
+    
     /**
      * Abstract class for wrapping Statement<br>
      *
@@ -58,6 +64,20 @@ public abstract class StatementWrapper implements Statement {
     public StatementWrapper(Connection con, Statement statement) {
         connection = con;
         jdbcStatement = statement;
+        //Start leak tracing if statement is a pure Statement & stmtWrapping is ON
+        //Check if this is an instanceof PS/CS. There could exist
+        //a CustomStatement class in a jdbc driver that implements PS/CS as well
+        //as Statement
+        if(!(this instanceof PreparedStatement) &&
+                !(this instanceof CallableStatement)) {
+            ConnectionHolder wrappedCon = (ConnectionHolder) con;
+
+            leakDetector = wrappedCon.getManagedConnection().getLeakDetector();
+            if(leakDetector != null) {
+                leakDetector.startStatementLeakTracing(jdbcStatement, this);
+            }
+        }
+        //If PS or CS, do not start leak tracing here
     }
 
     /**
@@ -96,6 +116,10 @@ public abstract class StatementWrapper implements Statement {
      * @throws java.sql.SQLException if a database access error occurs
      */
     public void close() throws SQLException {
+        //Stop leak tracing
+        if(leakDetector != null) {
+            leakDetector.stopStatementLeakTracing(jdbcStatement, this);
+        }
         jdbcStatement.close();
     }
 
@@ -804,5 +828,18 @@ public abstract class StatementWrapper implements Statement {
      */
     public int getResultSetHoldability() throws SQLException {
         return jdbcStatement.getResultSetHoldability();
+    }
+
+    public void reclaimStatement() throws SQLException {
+        markForReclaim(true);
+        close();
+    }
+
+    public void markForReclaim(boolean reclaimStatus) {
+        markedForReclaim = reclaimStatus;
+    }
+
+    public boolean isMarkedForReclaim() {
+        return markedForReclaim;
     }
 }

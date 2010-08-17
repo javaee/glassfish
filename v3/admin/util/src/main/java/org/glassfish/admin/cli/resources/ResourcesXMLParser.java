@@ -621,6 +621,10 @@ public class ResourcesXMLParser implements EntityResolver
             = attributes.getNamedItem(SQL_TRACE_LISTENERS);
         Node statementCacheSizeNode
             = attributes.getNamedItem(STATEMENT_CACHE_SIZE);
+        Node statementLeakTimeoutNode =
+                attributes.getNamedItem(STATEMENT_LEAK_TIMEOUT_IN_SECONDS);
+        Node statementLeakReclaimNode =
+                attributes.getNamedItem(STATEMENT_LEAK_RECLAIM);
 
         String datasource = datasourceNode.getNodeValue();
         
@@ -760,6 +764,14 @@ public class ResourcesXMLParser implements EntityResolver
         if(statementCacheSizeNode != null){
            String statementCacheSize = statementCacheSizeNode.getNodeValue();
            jdbcConnPool.setAttribute(STATEMENT_CACHE_SIZE,statementCacheSize);
+        }
+        if (statementLeakTimeoutNode != null) {
+           jdbcConnPool.setAttribute(STATEMENT_LEAK_TIMEOUT_IN_SECONDS,
+                                        statementLeakTimeoutNode.getNodeValue());
+        }
+        if (statementLeakReclaimNode != null) {
+           jdbcConnPool.setAttribute(STATEMENT_LEAK_RECLAIM,
+                                        statementLeakReclaimNode.getNodeValue());
         }
 
         NodeList children = nextKid.getChildNodes();

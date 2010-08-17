@@ -731,5 +731,21 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         public void setDriverClassname(String value) throws PropertyVetoException {
             //do nothing
         }
+
+        public String getStatementLeakTimeoutInSeconds() {
+            return String.valueOf(0);
+        }
+
+        public void setStatementLeakTimeoutInSeconds(String value) throws PropertyVetoException {
+            //do nothing
+        }
+
+        public String getStatementLeakReclaim() {
+            return String.valueOf(false);
+        }
+
+        public void setStatementLeakReclaim(String value) throws PropertyVetoException {
+            //do nothing
+        }
     }
 }

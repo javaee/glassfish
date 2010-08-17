@@ -756,6 +756,36 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     void setStatementCacheSize(String value) throws PropertyVetoException;
 
     /**
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="0")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)
+    String getStatementLeakTimeoutInSeconds();
+
+    /**
+     * Sets the value of the statementLeakTimeoutInSeconds property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setStatementLeakTimeoutInSeconds(String value) throws PropertyVetoException;
+
+    @Attribute (defaultValue="false", dataType=Boolean.class)
+    String getStatementLeakReclaim();
+
+    /**
+     * Sets the value of the statementLeakReclaim property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setStatementLeakReclaim(String value) throws PropertyVetoException;
+
+
+    /**
      * Gets the value of the initSql property.
      *
      * Init sql is executed whenever a connection created from the pool. 
