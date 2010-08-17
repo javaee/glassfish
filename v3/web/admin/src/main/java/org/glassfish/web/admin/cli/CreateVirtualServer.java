@@ -77,7 +77,7 @@ import org.jvnet.hk2.config.types.Property;
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class CreateVirtualServer implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateVirtualServer.class);
-    @Param(name = "hosts")
+    @Param(name = "hosts", defaultValue = "${com.sun.aas.hostName}")
     String hosts;
     @Param(name = "httplisteners", optional = true)
     String httpListeners;
@@ -85,9 +85,9 @@ public class CreateVirtualServer implements AdminCommand {
     String networkListeners;
     @Param(name = "defaultwebmodule", optional = true)
     String defaultWebModule;
-    @Param(name = "state", acceptableValues = "on, off", optional = true)
+    @Param(name = "state", acceptableValues = "on, off, disabled", optional = true)
     String state;
-    @Param(name = "logfile", optional = true)
+    @Param(name = "logfile", optional = true, defaultValue = "${com.sun.aas.instanceRoot}/logs/server.log")
     String logFile;
     @Param(name = "property", optional = true, separator = ':')
     Properties properties;
