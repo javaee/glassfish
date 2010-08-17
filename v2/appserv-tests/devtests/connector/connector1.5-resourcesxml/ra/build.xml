@@ -21,7 +21,7 @@
     <ant dir="src" inheritAll="false" target="all"/>
 
     <jar jarfile="generic-ra.rar" basedir="."
-         includes="generic-ra.jar, META-INF/ra.xml, META-INF/sun-resources.xml" />
+         includes="generic-ra.jar, META-INF/ra.xml" />
   </target>
 
   <target name="deploy" depends="init-common">

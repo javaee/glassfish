@@ -131,7 +131,7 @@ public class MyMessageBean implements MessageDrivenBean,
                 debug("Inserting one message in the database\n");
             
                 // Creating a database connection
-                DataSource ds = (DataSource) ic.lookup("java:comp/env/MyDB");
+                DataSource ds = (DataSource) ic.lookup("java:app/jdbc/XAPointbase");
                 //debug("Looked up Datasource\n");
                 //debug("Get JDBC connection, auto sign on");
                 dbConnection = ds.getConnection();
@@ -144,7 +144,7 @@ public class MyMessageBean implements MessageDrivenBean,
                 debug("Deleting one message from the database\n");
                 
                 // Creating a database connection
-                DataSource ds = (DataSource) ic.lookup("java:comp/env/MyDB");
+                DataSource ds = (DataSource) ic.lookup("java:app/jdbc/XAPointbase");
                 //debug("Looked up Datasource\n");
                 //debug("Get JDBC connection, auto sign on");
                 dbConnection = ds.getConnection();
@@ -156,7 +156,7 @@ public class MyMessageBean implements MessageDrivenBean,
                 debug("Deleting all messages from the database\n");
                 
                 // Creating a database connection
-                DataSource ds = (DataSource) ic.lookup("java:comp/env/MyDB");
+                DataSource ds = (DataSource) ic.lookup("java:app/jdbc/XAPointbase");
                 //debug("Looked up Datasource\n");
                 //debug("Get JDBC connection, auto sign on");
                 dbConnection = ds.getConnection();

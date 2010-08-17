@@ -25,6 +25,7 @@
    <antcall target="ear-common">
 	<param name="appname" value="simplemdb"/>
 	<param name="application.xml" value="META-INF/application.xml"/>
+	<param name="glassfish-resources-ear.xml" value="src/META-INF/glassfish-resources.xml"/>
    </antcall>
   </target>
 

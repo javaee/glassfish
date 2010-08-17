@@ -227,9 +227,12 @@ public class WorkDispatcher implements Work {
                 done();
                 break;
             }  catch (Exception ex) {
+                System.out.println("Exception while executing work");
                 ex.printStackTrace();
                 done();
                 break;
+            }finally{
+                done();
             }
         }
         
@@ -296,10 +299,12 @@ public class WorkDispatcher implements Work {
 
     private void done() {
         try {
-            Controls.done = true;
+
             synchronized(Controls.readyLock) {
+                Controls.done = true;
                 //Notify the client to check the results
-                Controls.readyLock.notify(); 
+                Controls.readyLock.notifyAll();
+
             }
         } catch (Exception ex) {
             ex.printStackTrace();

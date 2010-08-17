@@ -112,13 +112,24 @@ public class MessageCheckerEJB implements SessionBean {
             Context ic = new InitialContext();
             user = (String) ic.lookup("java:comp/env/user");
             password = (String) ic.lookup("java:comp/env/password");
-	    Controls = (MyAdminObject) ic.lookup("java:comp/env/eis/testAdmin");
+	    Controls = (MyAdminObject) ic.lookup("java:app/eis/testAdmin");
 	    System.out.println("CALLING INITILIZE ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]");
 	    Controls.initialize();
 	    System.out.println("CALLED INITILIZE ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]");
+
+            
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+/*
+        try{
+          
+            Context ic = new InitialContext();
+            Object ds = ic.lookup("java:app/jdbc/app-level-resource");
+            System.out.println("java:app/jdbc/app-level-resource : " + ds);
+        }catch(Exception e){
+            e.printStackTrace();
+        }*/
     }
 
     public void ejbRemove() {
@@ -146,7 +157,7 @@ public class MessageCheckerEJB implements SessionBean {
         Connection con = null;
         try {
             Context ic = new InitialContext();
-            DataSource ds = (DataSource) ic.lookup("java:comp/env/MyDB");
+            DataSource ds = (DataSource) ic.lookup("java:app/jdbc/XAPointbase");
             debug("Looked up Datasource\n");
             debug("Get JDBC connection, auto sign on");
             con = ds.getConnection();
