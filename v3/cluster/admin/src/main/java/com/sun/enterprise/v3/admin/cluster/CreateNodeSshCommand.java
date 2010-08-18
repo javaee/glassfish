@@ -36,6 +36,8 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
+import java.io.*;
+
 import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -87,7 +89,10 @@ public class CreateNodeSshCommand implements AdminCommand  {
     @Param(name = "sshkeyfile", optional = true)
     private String sshkeyfile;
 
-    @Param(name = "sshpassword", optional = true, password=true)
+    @Param(optional = true)
+    private String sshpublickeyfile;
+
+    @Param(name = "sshpassword", optional = true, password = true)
     private String sshpassword;
 
     @Param(name = "sshkeypassphrase", optional = true, password=true)
@@ -108,7 +113,22 @@ public class CreateNodeSshCommand implements AdminCommand  {
 
         logger = context.getLogger();
 
-        setDefaults();
+        setDefaults();        
+
+        sshL.init(sshuser, nodehost,  Integer.parseInt(sshport), sshpassword, sshkeyfile, sshkeypassphrase, logger);
+        
+        try {
+            sshL.setupKey(nodehost, sshpublickeyfile);
+        } catch (IOException ce) {
+            logger.fine("SSH key setup failed: " + ce.getMessage());
+            if(!force) {
+                report.setMessage(ce.getMessage());
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+        } catch (Exception e) {
+            //handle KeyStoreException
+        }
 
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
@@ -162,6 +182,6 @@ public class CreateNodeSshCommand implements AdminCommand  {
         }
         if (installdir == null) {
             installdir = NodeUtils.NODE_DEFAULT_INSTALLDIR;
-        }
+        }        
     }
 }

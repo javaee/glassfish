@@ -143,6 +143,11 @@
             <artifactId>cluster-common</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.cluster</groupId>
+            <artifactId>cluster-ssh</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
 

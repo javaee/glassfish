@@ -36,14 +36,15 @@
 
 package org.glassfish.cluster.ssh.launcher;
 
-import com.sun.enterprise.security.store.PasswordAdapter;
+import java.io.*;
+
 import com.sun.enterprise.util.StringUtils;
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.KnownHosts;
+import com.trilead.ssh2.SCPClient;
 import org.glassfish.internal.api.RelativePathResolver;
 import org.glassfish.cluster.ssh.util.HostVerifier;
 import org.glassfish.cluster.ssh.util.SSHUtil;
-import org.glassfish.internal.api.MasterPassword;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -59,14 +60,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.logging.Logger;
-import java.util.Formatter;
 
 @Service(name="SSHLauncher")
 @Scoped(PerLookup.class)
 public class SSHLauncher {
 
+    private static final String SSH_DIR = ".ssh/";
+    private static final String AUTH_KEY_FILE = "authorized_keys";
   /**
      * Database of known hosts.
      */
@@ -146,13 +147,17 @@ public class SSHLauncher {
             port = 22;
         }
 
-        init(userName, port, sshAuth.getPassword(), sshAuth.getKeyPassphrase());
+        init(userName, host, port, sshAuth.getPassword(), keyFile, sshAuth.getKeyPassphrase(), logger);
 
     }
 
-    private void init(String userName, int port, String password, String keyPassPhrase) {
+    public void init(String userName, String host, int port, String password, String keyFile, String keyPassPhrase, Logger logger) {
 
         this.port = port == 0 ? 22 : port;
+
+        this.host = host;
+        this.keyFile = (keyFile == null) ? findDefaultKeyFile(): keyFile;
+        this.logger = logger;
 
         this.userName = SSHUtil.checkString(userName) == null ?
                     System.getProperty("user.name") : userName;
@@ -251,11 +256,8 @@ public class SSHLauncher {
                              String keyFile, String keyPassPhrase,
                              String nodeHome, Logger logger) throws IOException
     {
-        this.host = host;
-        this.keyFile = keyFile;
-        this.logger = logger;
         boolean validNodeHome = false;
-        init(userName, port, password, keyPassPhrase);
+        init(userName, host,  port, password, keyFile, keyPassPhrase, logger);
 
         openConnection();
         logger.fine("Connection settings valid");
@@ -320,6 +322,176 @@ public class SSHLauncher {
             }
         }
         return printable;
+    }
+
+     public void setupKey(String node, String pubKeyFile) throws IOException {
+        boolean connected = false;
+
+        File key = new File(keyFile);
+        logger.fine("Key = " + keyFile);
+        if (key.exists()) {
+            if (checkConnection()) {
+                logger.fine("SSH key already setup");
+                return;
+            }
+            if ( pubKeyFile == null) {
+                pubKeyFile = findDefaultKeyFile() + ".pub";
+            }
+        } else {
+            throw new IOException("SSH key pair not present. Please generate a key pair manually and re-run the command.");
+        }
+
+
+        if (password == null) {
+            throw new IOException("SSH password is required for distributing the public key. You can specify the SSH password alias in a password file and pass it through --passwordfile option.");
+        }
+        try {
+            connection = new Connection(node, port);
+            connection.connect();
+            connected = connection.authenticateWithPassword(userName, password);
+        } catch (Exception ex) {
+            //logger.printExceptionStackTrace(ex);
+            throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
+        }
+
+        if(!connected) {
+            throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
+        }
+        //initiate scp client
+        SCPClient scp = new SCPClient(connection);
+
+        if (key.exists()) {
+
+            File pubKey = new File(pubKeyFile);
+            if(!pubKey.exists()) {
+                throw new IOException("Public key file " + pubKeyFile + " does not exist.");
+            }
+
+            ByteArrayOutputStream out = null;
+            OutputStream oStream = null;
+            InputStream sendFile = null;
+            File f = null;
+
+            try {
+                out = new ByteArrayOutputStream();
+                try {
+                    scp.get(SSH_DIR + AUTH_KEY_FILE, out);
+                } catch (IOException io) {
+                    //ignore this, we will anyway send across the key
+                    //logger.printExceptionStackTrace(io);
+                    //logger.printDebugMessage("The auth file probably doesn't exist");
+                }
+
+                logger.fine("Got the remote authorized_keys file");
+                File home = new File(System.getProperty("user.home"));
+                f = new File(home,SSH_DIR + AUTH_KEY_FILE +".temp");
+                oStream = new FileOutputStream(f);
+                out.writeTo(oStream);
+                logger.fine("Wrote the temp file");
+
+                appendPublicKey(pubKey, f);
+
+                sendFile = new FileInputStream(f);
+                byte[] theBytes = new byte[sendFile.available()];
+                sendFile.read(theBytes);
+
+                scp.put(theBytes, AUTH_KEY_FILE, SSH_DIR);
+
+                logger.fine("Sent the merged file");
+            } catch (FileNotFoundException fne) {
+                //logger.printExceptionStackTrace(fne);
+            } catch (IOException ioe) {
+                //logger.printExceptionStackTrace(ioe);
+            } finally {
+                //remove the temp file
+                f.delete();
+                //clean up streams
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException io){
+                        //logger.printExceptionStackTrace(io);
+                    }
+                }
+
+                if(oStream != null) {
+                    try {
+                        oStream.close();
+                    } catch (IOException io) {
+                        //logger.printExceptionStackTrace(io);
+                    }
+                }
+                if(sendFile != null) {
+                    try {
+                        sendFile.close();
+                    } catch (IOException io) {
+                        //logger.printExceptionStackTrace(io);
+                    }
+                }
+            }
+
+        }
+    }
+
+    private void appendPublicKey(File pubKey, File f) {
+        try {
+            //open file in append mode
+            BufferedWriter out = new BufferedWriter(new FileWriter(f, true));
+            InputStream in = new FileInputStream(pubKey);
+
+            int c;
+            while ((c = in.read()) != -1) {
+               out.write(c);
+            }
+            out.close();
+
+        } catch (Exception ex) {
+            //logger.printExceptionStackTrace(ex);
+        }
+    }
+
+    public static byte[] toByteArray( InputStream input )
+        throws IOException
+    {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] buf = new byte[4096];
+        int len;
+        while ((len = input.read(buf)) >= 0) {
+           output.write(buf, 0, len);
+        }
+        byte[] o = output.toByteArray();
+        output.close();
+        return o;
+    }
+
+    public boolean checkConnection() {
+        boolean status = false;
+        Connection c = null;
+        try {
+            c = new Connection(host, port);
+            c.connect();
+            File f = new File(keyFile);
+            status = c.authenticateWithPublicKey(userName, f, null);
+        } catch(IOException ioe) {
+            //logger.printExceptionStackTrace(ioe);
+        }
+        c.close();
+        return status;
+    }
+
+    private String findDefaultKeyFile() {
+        String key = null;
+        for (String keyName : Arrays.asList("id_rsa","id_dsa",
+                                                "identity"))
+        {
+            String h = System.getProperty("user.home") + File.separator;
+            File f = new File(h+".ssh/"+keyName);
+            if (f.exists()) {
+                key =  h  + ".ssh/" + keyName;
+                break;
+            }
+        }
+        return key;
     }
 
     @Override
