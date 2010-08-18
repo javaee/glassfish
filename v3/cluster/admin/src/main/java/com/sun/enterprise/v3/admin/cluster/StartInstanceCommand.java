@@ -161,8 +161,6 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         if(env.isDas()) {
             callInstance();
-        } else if(env.isInstance()) {
-            startInstance();
         } else {
             msg = Strings.get("start.instance.notAnInstanceOrDas",
                     env.getRuntimeType().toString());

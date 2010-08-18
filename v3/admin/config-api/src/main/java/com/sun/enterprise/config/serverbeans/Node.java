@@ -174,7 +174,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
         @Param(name="installdir", optional=true)
         String installdir=null;
 
-        @Param(name="type", optional=true)
+        @Param(name="type", optional=true, defaultValue="CONFIG")
         String type="CONFIG";
 
         @Param(name="sshport",optional=true)
@@ -220,32 +220,32 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
         @Override
         public void decorate(AdminCommandContext context, final Node instance) throws TransactionFailure, PropertyVetoException {
 
-            if (nodedir != null)
+            if (nodedir != null && nodedir !="")
                 instance.setNodeDir(nodedir);
-            if(installdir != null)
+            if(installdir != null && installdir != "")
                 instance.setInstallDir(installdir);
-            if (nodehost != null)
+            if (nodehost != null && nodehost !="")
                 instance.setNodeHost(nodehost);
             //only create-node-ssh and update-node-ssh should be changing the type to SSH
             instance.setType(type);
             
             SshConnector sshC = instance.createChild(SshConnector.class);
-            if (sshPort != "-1" )
+            if (sshPort != "-1" && sshPort != "" )
                 sshC.setSshPort(sshPort);
 
-            if (sshHost != null)
+            if (sshHost != null && sshHost != "")
                 sshC.setSshHost(sshHost);
 
             if (sshuser != null || sshkeyfile != null || sshpassword != null ||
                 sshkeypassphrase != null) {
                 SshAuth sshA = sshC.createChild(SshAuth.class);
-                if (sshuser != null)
+                if (sshuser != null && sshuser != "")
                     sshA.setUserName(sshuser);
-                if (sshkeyfile != null)
+                if (sshkeyfile != null && sshkeyfile != "")
                     sshA.setKeyfile(sshkeyfile);
-                if (sshpassword != null)
+                if (sshpassword != null && sshpassword != "")
                     sshA.setPassword(sshpassword);
-                if (sshkeypassphrase != null)
+                if (sshkeypassphrase != null && sshkeypassphrase != "")
                     sshA.setKeyPassphrase(sshkeypassphrase);
                 sshC.setSshAuth(sshA);
             }
