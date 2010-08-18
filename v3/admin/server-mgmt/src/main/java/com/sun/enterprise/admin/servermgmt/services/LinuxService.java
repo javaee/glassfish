@@ -36,45 +36,18 @@
 package com.sun.enterprise.admin.servermgmt.services;
 
 import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.ServerDirs;
 import java.io.File;
-import java.io.IOException;
-import java.util.Map;
+import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
 
 /**
  *
  * @author Byron Nevins
  */
 public class LinuxService extends NonSMFServiceAdapter {
-
     static boolean apropos() {
-
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-        // todo temp
-
-        //return OS.isLinux();
-        return true;
+        return OS.isLinux();
     }
 
     LinuxService(ServerDirs dirs, AppserverServiceType type) {
@@ -85,6 +58,26 @@ public class LinuxService extends NonSMFServiceAdapter {
                     "Constructor called but Linux Services are not available."));
         }
     }
+
+    @Override
+    public final void initializeInternal() {
+        try {
+            getTokenMap().put(SERVICEUSER_START_TN, getServiceUserStart());
+            getTokenMap().put(SERVICEUSER_STOP_TN, getServiceUserStop());
+            setTemplateFile(TEMPLATE_FILE_NAME);
+            checkWritePermissions();
+            setTarget();
+            handlePreExisting(info.force);
+            ServicesUtils.tokenReplaceTemplateAtDestination(getTokenMap(), getTemplateFile().getPath(), target.getPath());
+            trace("Target file written: " + target);
+        }
+        catch (RuntimeException e) {
+            throw e;
+        }
+        catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
     // bnevins, Aug 2010.  The unfortunate FAT interdace of the Service interface makes
     // it confusing -- this method is really the only one that does something --
     // all the other methods do configuration.
@@ -93,6 +86,12 @@ public class LinuxService extends NonSMFServiceAdapter {
     public final void createServiceInternal() {
         try {
             trace("**********   Object Dump  **********\n" + this.toString());
+
+
+
+
+
+
 
             throw new UnsupportedOperationException("Not supported yet.");
             /*
@@ -132,24 +131,67 @@ public class LinuxService extends NonSMFServiceAdapter {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-
     @Override
-    public String getLocationArgsStart() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public final String getLocationArgsStart() {
+        if (isDomain()) {
+            return " --domaindir " + getServerDirs().getServerParentDir().getPath() + " ";
+        }
+        else {
+            return " --nodedir " + getServerDirs().getServerGrandParentDir().getPath()
+                    + " --node " + getServerDirs().getServerParentDir().getName() + " ";
+        }
     }
 
     @Override
-    public String getLocationArgsStop() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public final String getLocationArgsStop() {
+        // exactly the same on Linux
+        return getLocationArgsStart();
     }
 
     ///////////////////////////////////////////////////////////////////////
     //////////////////////////   ALL PRIVATE BELOW    /////////////////////
     ///////////////////////////////////////////////////////////////////////
-    @Override
-    public void initializeInternal(){
-        setTemplateFile(TEMPLATE_FILE_NAME);
-        throw new UnsupportedOperationException("Not supported yet.");
+    private void checkWritePermissions() {
+        File initd = new File(INITD);
+
+        if (!initd.isDirectory())
+            throw new RuntimeException(Strings.get("no_initd", INITD));
+
+        if (!initd.canWrite())
+            throw new RuntimeException(Strings.get("no_write_initd", INITD));
     }
+
+    private void setTarget() {
+        targetName = "GlassFish_" + info.serverDirs.getServerName();
+        target = new File(INITD + "/" + targetName);
+    }
+
+    private void handlePreExisting(boolean force) {
+        if (target.isFile()) {
+            if (force) {
+                target.delete();
+                // we call this same method to make sure they were deleted
+                handlePreExisting(false);
+            }
+            else {
+                throw new RuntimeException(Strings.get("services.alreadyCreated", target, "rm"));
+            }
+        }
+    }
+
+    private String getServiceUserStart() {
+        if (StringUtils.ok(info.serviceUser))
+            return "su --login " + info.serviceUser + " --command \"";
+        return "";
+    }
+
+    private String getServiceUserStop() {
+        if (StringUtils.ok(info.serviceUser))
+            return "\"";
+        return "";
+    }
+    private String targetName;
+    private File target;
     private static final String TEMPLATE_FILE_NAME = "linux-service.template";
+    private static final String INITD = "/etc/init.d";
 }

@@ -87,7 +87,6 @@ public final class SMFService extends ServiceAdapter {
     private static final String MANIFEST_FILE_SUFFIX = "Domain-service-smf.xml";
     private static final String MANIFEST_FILE_TEMPL_SUFFIX = MANIFEST_FILE_SUFFIX + ".template";
     private static final String REL_PATH_TEMPLATES = "lib/install/templates";
-    private boolean force;
     /**
      * Creates SMFService instance. All the tokens are initialized to default values. 
      * Callers must verify that the tokens are properly token-replaced before
@@ -505,7 +504,7 @@ public final class SMFService extends ServiceAdapter {
 
         if (manifestParent != null && manifestParent.isDirectory()) {
 
-            if (isForce()) {
+            if (info.force) {
                 FileUtils.whack(manifestParent);
 
                 if (manifestParent != null && manifestParent.isDirectory()) {
@@ -571,16 +570,6 @@ public final class SMFService extends ServiceAdapter {
     public void writeReadmeFile(String msg) {
         File f = new File(getServerDirs().getServerDir(), README);
         ServicesUtils.appendTextToFile(f, msg);
-    }
-
-    @Override
-    public boolean isForce() {
-        return force;
-    }
-
-    @Override
-    public void setForce(boolean b) {
-        force = b;
     }
 
     @Override

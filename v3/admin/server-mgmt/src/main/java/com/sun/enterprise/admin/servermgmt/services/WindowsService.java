@@ -72,7 +72,7 @@ public class WindowsService extends NonSMFServiceAdapter {
     }
 
 
-    // bnevins, Aug 2010.  The unfortunate FAT interdace of the Service interface makes
+    // bnevins, Aug 2010.  The unfortunate FAT interface of the Service interface makes
     // it confusing -- this method is really the only one that does something --
     // all the other methods do configuration.
     @Override
@@ -146,9 +146,6 @@ public class WindowsService extends NonSMFServiceAdapter {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////
-    //////////////////////////   ALL PRIVATE BELOW    /////////////////////
-    ///////////////////////////////////////////////////////////////////////
     @Override
     public final void initializeInternal() {
         try {
@@ -160,9 +157,25 @@ public class WindowsService extends NonSMFServiceAdapter {
                 throw new RuntimeException(Strings.get("noTargetDir", targetDir));
             targetWin32Exe = new File(targetDir, getServerDirs().getServerName() + "Service.exe");
             targetXml = new File(targetDir, getServerDirs().getServerName() + "Service.xml");
-            handlePreExisting(targetWin32Exe, targetXml, isForce());
+            handlePreExisting(targetWin32Exe, targetXml, info.force);
             FileUtils.copy(sourceWin32Exe, targetWin32Exe);
             trace("Copied from " + sourceWin32Exe + " to " + targetWin32Exe);
+
+
+            // TODO TODO TODO TODO
+            // TODO TODO TODO TODO
+            // TODO TODO TODO TODO
+            // TODO TODO TODO TODO
+            // TODO TODO TODO TODO
+            // TODO TODO TODO TODO
+            // TODO TODO TODO TODO
+            // TODO TODO TODO TODO
+            // filltokenmap needs to go
+            // filltokenmap needs to go
+            // filltokenmap needs to go
+            // filltokenmap needs to go
+            // filltokenmap needs to go
+            // filltokenmap needs to go
             fillTokenMap();
             getTokenMap().put(CREDENTIALS_START_TN, getAsadminCredentials("startargument"));
             getTokenMap().put(CREDENTIALS_STOP_TN, getAsadminCredentials("stopargument"));
@@ -174,6 +187,9 @@ public class WindowsService extends NonSMFServiceAdapter {
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////
+    //////////////////////////   ALL PRIVATE BELOW    /////////////////////
+    ///////////////////////////////////////////////////////////////////////
     private void setSourceWin32Exe() throws IOException {
         sourceWin32Exe = new File(info.libDir, SOURCE_WIN32_EXE_FILENAME);
 
@@ -283,8 +299,9 @@ public class WindowsService extends NonSMFServiceAdapter {
                 handlePreExisting(targetWin32Exe, targetXml, false);
             }
             else {
-                throw new RuntimeException(Strings.get("windows.services.alreadyCreated", 
-                        new File(targetDir, getServerDirs().getServerName() + "Service")));
+                throw new RuntimeException(Strings.get("services.alreadyCreated", 
+                        new File(targetDir, getServerDirs().getServerName() + "Service").toString() + ".*",
+                        "del"));
             }
         }
     }

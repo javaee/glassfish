@@ -36,6 +36,7 @@
 package com.sun.enterprise.admin.cli.optional;
 
 import com.sun.enterprise.admin.util.ServerDirsSelector;
+import com.sun.enterprise.util.OS;
 import java.io.*;
 import java.util.*;
 import org.jvnet.hk2.annotations.Scoped;
@@ -60,7 +61,6 @@ import com.sun.enterprise.util.io.ServerDirs;
 @org.jvnet.hk2.annotations.Service(name = "create-service")
 @Scoped(PerLookup.class)
 public final class CreateServiceCommand extends CLICommand {
-
     @Param(name = "name", optional = true)
     private String serviceName;
     @Param(name = "serviceproperties", optional = true)
@@ -71,6 +71,8 @@ public final class CreateServiceCommand extends CLICommand {
     private boolean force;
     @Param(name = "domaindir", optional = true)
     private File userSpecifiedDomainDirParent;
+    @Param(name = "serviceuser", optional = true)
+    private String serviceUser;
 
     /*
      * The following parameters allow an unattended start-up any number of
@@ -83,12 +85,10 @@ public final class CreateServiceCommand extends CLICommand {
     private String userSpecifiedNodeDir;           // nodeDirRoot
     @Param(name = "node", optional = true, alias = "nodeagent")
     private String userSpecifiedNode;
-    
     private File asadminScript;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateServiceCommand.class);
     private ServerDirs dirs;
-
     private ServerDirsSelector selector = null;
 
     /**
@@ -98,6 +98,11 @@ public final class CreateServiceCommand extends CLICommand {
         try {
             super.validate(); // pointless empty method but who knows what the future holds?
 
+
+            if (ok(serviceUser) && !OS.isLinux()) {
+                // serviceUser is only supported on Linux
+                throw new CommandException(strings.get("serviceUser_wrong_os"));
+            }
             // The order that you make these calls matters!!
 
             selector = ServerDirsSelector.getInstance(
@@ -119,29 +124,26 @@ public final class CreateServiceCommand extends CLICommand {
         }
     }
 
-    /**
-     */
     @Override
     protected int executeCommand() throws CommandException {
         try {
             final Service service = ServiceFactory.getService(dirs, getType());
             PlatformServicesInfo info = service.getInfo();
             info.setTrace(CLILogger.isDebug());
-
-            if(ok(serviceName))
-                    info.setServiceName(serviceName);
-
             info.setDryRun(dry_run);
-            //service.setAsadminPath(asadminScript.getPath());
+            info.setForce(force);
+
+            if (ok(serviceName))
+                info.setServiceName(serviceName);
+
+            if (ok(serviceUser))
+                info.setServiceUser(serviceUser);
 
             if (programOpts.getPasswordFile() != null)
                 service.setPasswordFilePath(SmartFile.sanitize(
                         new File(programOpts.getPasswordFile()).getPath()));
 
             service.setServiceProperties(serviceProperties);
-            service.isConfigValid();
-            service.setForce(force);
-
             service.createService();
 
             // Why the messiness?  We don't want to talk about the help
@@ -169,8 +171,6 @@ public final class CreateServiceCommand extends CLICommand {
         }
         return 0;
     }
-
-    
 
     private void validateServiceName() {
         if (!ok(serviceName))

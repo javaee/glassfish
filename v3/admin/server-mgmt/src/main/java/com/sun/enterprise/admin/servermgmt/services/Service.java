@@ -132,12 +132,11 @@ import java.util.Map;
      String getSuccessMessage();
 
      void writeReadmeFile(String msg);
-     boolean isForce();
-     void setForce(boolean b);
      String getStartCommand();
      String getRestartCommand();
      String getStopCommand();
      String getLocationArgsStart();
+     String getLocationArgsRestart();
      String getLocationArgsStop();
      boolean isDomain();
      boolean isInstance();

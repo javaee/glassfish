@@ -44,7 +44,6 @@ import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
  * @author bnevins
  */
 public abstract class ServiceAdapter implements Service {
-
     ServiceAdapter(ServerDirs serverDirs, AppserverServiceType type) {
         info = new PlatformServicesInfo(serverDirs, type);
     }
@@ -76,10 +75,15 @@ public abstract class ServiceAdapter implements Service {
         initializeInternal();
         createServiceInternal();
     }
+
+    @Override
+    public String getLocationArgsRestart() {
+        return getLocationArgsStart();
+    }
+
     //////////////////////////////////////////////////////////////////////////
     ////////////////   pkg-private     ///////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////
-
     void initialize() {
         final String parentPath = info.serverDirs.getServerParentDir().getPath();
         final String serverName = info.serverDirs.getServerName();
@@ -87,8 +91,10 @@ public abstract class ServiceAdapter implements Service {
         getTokenMap().put(CFG_LOCATION_TN, parentPath);
         getTokenMap().put(ENTITY_NAME_TN, serverName);
         getTokenMap().put(LOCATION_ARGS_START_TN, getLocationArgsStart());
+        getTokenMap().put(LOCATION_ARGS_RESTART_TN, getLocationArgsRestart());
         getTokenMap().put(LOCATION_ARGS_STOP_TN, getLocationArgsStop());
         getTokenMap().put(START_COMMAND_TN, info.type.startCommand());
+        getTokenMap().put(RESTART_COMMAND_TN, info.type.restartCommand());
         getTokenMap().put(STOP_COMMAND_TN, info.type.stopCommand());
         getTokenMap().put(FQSN_TN, info.fqsn);
         getTokenMap().put(OS_USER_TN, info.osUser);

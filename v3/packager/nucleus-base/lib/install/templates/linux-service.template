@@ -40,20 +40,17 @@
 # http://blogs.sun.com/foo/entry/run_glassfish_v3_as_a
 # Remove the GF_USER setting to have the System account run GlassFish
 
-#GF_USER=glassfish
-#GF_HOME=/home/$GF_USER/glassfishv3/glassfish
-ASADMIN=$GF_HOME/bin/asadmin
-SU="su --login  $GF_USER --command  "
+ASADMIN="%%%AS_ADMIN_PATH%%%"
 
 case "$1" in
 start)
-    $SU "%%%AS_ADMIN_PATH%%% %%%START_COMMAND%%% %%%CREDENTIALS%%% %%%LOCATION_ARGS_START%%% %%%ENTITY_NAME%% > /dev/null 2>&1 &"
+    %%%SERVICEUSER_START%%%$ASADMIN %%%START_COMMAND%%% %%%CREDENTIALS%%% %%%LOCATION_ARGS_START%%% %%%ENTITY_NAME%% > /dev/null 2>&1 &%%%SERVICEUSER_STOP%%%
     ;;
 stop)
-    $SU "%%%AS_ADMIN_PATH%%% %%%STOP_COMMAND%%%  %%%LOCATION_ARGS_STOP%%% %%%ENTITY_NAME%%%" > /dev/null 2>&1 &"
+    %%%SERVICEUSER_START%%%$ASADMIN %%%STOP_COMMAND%%%  %%%LOCATION_ARGS_STOP%%% %%%ENTITY_NAME%%% > /dev/null 2>&1 &%%%SERVICEUSER_STOP%%%
     ;;
 restart)
-    $SU "%%%AS_ADMIN_PATH%%% %%%RESTART_COMMAND%%%  %%%LOCATION_ARGS_RESTART%%% %%%ENTITY_NAME%%%" > /dev/null 2>&1 &"
+    %%%SERVICEUSER_START%%%$ASADMIN %%%RESTART_COMMAND%%%  %%%LOCATION_ARGS_RESTART%%% %%%ENTITY_NAME%%% > /dev/null 2>&1 &%%%SERVICEUSER_STOP%%%
     ;;
 *)
     echo "usage: $0 (start|stop|restart|help)"

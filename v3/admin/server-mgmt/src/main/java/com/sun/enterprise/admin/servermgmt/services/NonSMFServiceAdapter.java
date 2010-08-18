@@ -128,16 +128,6 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
         throw new UnsupportedOperationException("getManifestFileTemplatePath() is not supported in this platform.");
     }
 
-    @Override
-    public final boolean isForce() {
-        return force;
-    }
-
-    @Override
-    public final void setForce(boolean b) {
-        force = b;
-    }
-
     final String getAppserverUser() {
         return appserverUser;
     }
@@ -272,6 +262,5 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
     private String passwordFilePath;
     private String flattenedServicePropertes;
     private String appserverUser;
-    private boolean force;
     private File templateFile;
 }

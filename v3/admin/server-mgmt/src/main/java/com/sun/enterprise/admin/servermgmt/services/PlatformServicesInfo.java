@@ -93,9 +93,6 @@ public class PlatformServicesInfo {
         this.passwordFile = passwordFile;
     }
 
-    /**
-     * @param force the force to set
-     */
     public void setForce(boolean force) {
         this.force = force;
     }
@@ -104,10 +101,13 @@ public class PlatformServicesInfo {
         this.trace = trace;
     }
 
+    public void setServiceUser(String serviceUser) {
+        this.serviceUser = serviceUser;
+    }
+
     //////////////////////////////////////////////////////////////////////
     //////////////          private         //////////////////////////////
     //////////////////////////////////////////////////////////////////////
-
     private void setLibDir() {
         libDir = SmartFile.sanitize(new File(installRootDir, "lib"));
 
@@ -145,11 +145,9 @@ public class PlatformServicesInfo {
                     Strings.get("noAsadminScript", asadminScript));
         }
     }
-    
     // set at construction-time
     final ServerDirs serverDirs;
     final AppserverServiceType type;
-
     // accessed by classes in this package
     String fqsn;
     String serviceName;
@@ -159,10 +157,10 @@ public class PlatformServicesInfo {
     File libDir;
     String smfFullServiceName;
     File asadminScript;
-
+    boolean force;
+    String serviceUser;
     // private to this implementation
     private File passwordFile;
-    private boolean force;
     private Date date;
     private boolean valid;
     private File installRootDir;
