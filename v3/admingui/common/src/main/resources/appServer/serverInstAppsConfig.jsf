@@ -62,10 +62,10 @@
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
 	gf.restRequest(
-	    endpoint="#{REST_URL}/configs/config/server-config/admin-service/property.json"
+	    endpoint="#{pageSession.selfUrl}/property.json"
 	    method="GET"
 	    result="#{requestScope.propTable}");
-	setAttribute(
+	setPageSessionAttribute(
 	    key="tableList"
 	    value="#{requestScope.propTable.data.extraProperties.properties}");
         />
