@@ -1684,22 +1684,9 @@ public class ApplicationLifecycle implements Deployment {
         return false;
     }
 
-    public void disable(String appName, String target, Application app, 
-        ApplicationInfo appInfo, ActionReport report, Logger logger, 
-        Boolean isUndeploy, Boolean keepstate, Properties properties) 
-        throws Exception {
-        UndeployCommandParameters commandParams =
-            new UndeployCommandParameters();
-        commandParams.origin = UndeployCommandParameters.Origin.unload;
-        if (isUndeploy) {
-            commandParams.origin = UndeployCommandParameters.Origin.undeploy;
-        }
-        commandParams.name = appName;
-        commandParams.target = target;
-        if (keepstate != null) {
-            commandParams.keepstate = keepstate;
-        }
-
+    public void disable(UndeployCommandParameters commandParams, 
+        Application app, ApplicationInfo appInfo, ActionReport report, 
+        Logger logger) throws Exception {
         final ExtendedDeploymentContext deploymentContext =
                 getBuilder(logger, commandParams, report).source(appInfo.getSource()).build();
         deploymentContext.getAppProps().putAll(
@@ -1707,8 +1694,8 @@ public class ApplicationLifecycle implements Deployment {
         deploymentContext.setModulePropsMap(
             app.getModulePropertiesMap());
 
-        if (properties != null) {
-            deploymentContext.getAppProps().putAll(properties);
+        if (commandParams.properties != null) {
+            deploymentContext.getAppProps().putAll(commandParams.properties);
         }
 
         appInfo.stop(deploymentContext, deploymentContext.getLogger());

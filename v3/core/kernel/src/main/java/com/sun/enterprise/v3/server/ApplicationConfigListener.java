@@ -48,6 +48,7 @@ import org.jvnet.hk2.component.PostConstruct;
 
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.internal.api.PostStartup;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -235,9 +236,12 @@ public class ApplicationConfigListener implements TransactionListener,
 
         try {
             ActionReport report = new HTMLActionReporter();
-
-            deployment.disable(appName, server.getName(), app, appInfo, 
-                report, logger, false, null, null);
+            UndeployCommandParameters commandParams =
+                new UndeployCommandParameters();
+            commandParams.name = appName;
+            commandParams.target = server.getName();
+            commandParams.origin = UndeployCommandParameters.Origin.unload;
+            deployment.disable(commandParams, app, appInfo, report, logger);
 
             if (report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
                 throw new Exception(report.getMessage());

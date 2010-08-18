@@ -50,7 +50,6 @@ import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.deployment.StateCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.admin.Cluster;
@@ -92,15 +91,9 @@ import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
 @Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @Scoped(PerLookup.class)
 @TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE})
-public class DisableCommand extends StateCommandParameters implements AdminCommand {
+public class DisableCommand extends UndeployCommandParameters implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DisableCommand.class);    
-
-    @Param(optional=true, separator=':')
-    public Properties properties=null;
-
-    @Param(optional=true)
-    public Boolean keepstate;
 
     @Param(optional=true, defaultValue="false")
     public Boolean isUndeploy = false;
@@ -140,6 +133,10 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
         final Logger logger = context.getLogger();
 
         String appName = name();
+
+        if (isUndeploy) {
+            origin = Origin.undeploy;
+        }
 
         try {
             List<String> matchedVersions = versioningService.getMatchedVersions(appName, target);
@@ -213,8 +210,9 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
         try {
             Application app = applications.getApplication(appName);
 
-            deployment.disable(appName, target, app, appInfo, report, logger,
-                isUndeploy, keepstate, properties);
+            this.name = appName;
+
+            deployment.disable(this, app, appInfo, report, logger);
 
             if (!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
                 try {

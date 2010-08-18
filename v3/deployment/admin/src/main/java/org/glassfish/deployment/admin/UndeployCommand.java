@@ -244,58 +244,47 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 try {
                     deployment.unregisterAppFromDomainXML(appName, target);
                 } catch(TransactionFailure e) {
-                    logger.warning("Module " + name + " not found in configuration");
+                    logger.warning("Module " + appName + " not found in configuration");
                 }
                 return;
             }
 
             // now start the normal undeploying
+            this.name = appName;
 
             // disable the application first
             if (env.isDas()) {
                 CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("disable", report);
 
-                final ParameterMap parameters = new ParameterMap();
-                parameters.add("DEFAULT", appName);
-                parameters.add("target", target);
-                parameters.add("isUndeploy", Boolean.TRUE.toString());
-                if (keepstate != null) {
-                    parameters.add("keepstate", keepstate.toString());
-                }
-                if (properties!=null && properties.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
-                    Properties disableProperties = new Properties();
-                    disableProperties.put(DeploymentProperties.KEEP_SESSIONS, properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
-                    parameters.add("properties", DeploymentUtils.propertiesValue(disableProperties, ':'));
-                }
+                try {
+                    final ParameterMapExtractor extractor = new ParameterMapExtractor(this);
+                    final ParameterMap parameters = extractor.extract(Collections.EMPTY_LIST);
+                    parameters.set("DEFAULT", appName);
+                    parameters.add("isUndeploy", Boolean.TRUE.toString());
+                    inv.parameters(parameters).execute();
 
-                inv.parameters(parameters).execute();
-
-                if (report.getActionExitCode().equals(
+                    if (report.getActionExitCode().equals(
                     ActionReport.ExitCode.FAILURE)) {
                     // if disable application failed
                     // we should just return
-                    report.setMessage(localStrings.getLocalString("disable.command.failed","{0} disabled failed", appName));
+                        report.setMessage(localStrings.getLocalString("disable.command.failed","{0} disabled failed", appName));
                     return;
-                }
-
-                if (DeploymentUtils.isDomainTarget(target)) { 
-                    List<String> targets = domain.getAllReferencedTargetsForApplication(name());
-                    // replicate command to all referenced targets
-                    try {
-                        ParameterMapExtractor extractor = new ParameterMapExtractor(this);
-                        ParameterMap paramMap = extractor.extract(Collections.EMPTY_LIST);
-                        paramMap.set("DEFAULT", appName);
-                        ClusterOperationUtil.replicateCommand("undeploy", FailurePolicy.Error, FailurePolicy.Warn, targets, context, paramMap, habitat);
-                    } catch (Exception e) {
-                        report.failure(logger, e.getMessage());
-                        return;
                     }
+
+                    if (DeploymentUtils.isDomainTarget(target)) { 
+                        List<String> targets = domain.getAllReferencedTargetsForApplication(appName);
+                        // replicate command to all referenced targets
+                        parameters.remove("isUndeploy");
+                        ClusterOperationUtil.replicateCommand("undeploy", FailurePolicy.Error, FailurePolicy.Warn, targets, context, parameters, habitat);
+                    }
+                } catch (Exception e) {
+                    report.failure(logger, e.getMessage());
+                    return;
                 }
             }   
 
             ExtendedDeploymentContext deploymentContext = null;
             try {
-                this.name = appName;
                 deploymentContext = deployment.getBuilder(logger, this, report).source(source).build();
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "Cannot create context for undeployment ", e);

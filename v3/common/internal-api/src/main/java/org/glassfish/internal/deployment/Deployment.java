@@ -40,6 +40,7 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.ActionReport;
@@ -228,10 +229,9 @@ public interface Deployment {
 
     public boolean isAppEnabled(Application app);
 
-    public void disable(String appName, String target, Application app,
-        ApplicationInfo appInfo, ActionReport report, Logger logger,
-        Boolean isUndeploy, Boolean keepstate, Properties properties)
-        throws Exception;
+    public void disable(UndeployCommandParameters commandParams, 
+        Application app, ApplicationInfo appInfo, ActionReport report, 
+        Logger logger) throws Exception;
 
     public void enable(String target, Application app, ApplicationRef appRef,
         ActionReport report, Logger logger) throws Exception;
