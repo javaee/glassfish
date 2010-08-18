@@ -59,6 +59,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.glassfish.deployment.common.VersioningDeploymentUtil;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -106,8 +107,13 @@ public class PostCreateApplicationRefCommand implements AdminCommand {
 
         if (suppInfo.isAppRefExists()) {
             // the application ref already exists
-            report.setMessage(localStrings.getLocalString("appref.already.exists","Application reference {0} already exists in target {1}.", name, target));
-            report.setActionExitCode(ActionReport.ExitCode.WARNING);
+
+            // some versioning specific warning messages are already setup
+            // if a versioned name has been provided to the command
+            if(VersioningDeploymentUtil.isUntagged(name)){
+                report.setMessage(localStrings.getLocalString("appref.already.exists","Application reference {0} already exists in target {1}.", name, target));
+                report.setActionExitCode(ActionReport.ExitCode.WARNING);
+            }
             return;
         }
 

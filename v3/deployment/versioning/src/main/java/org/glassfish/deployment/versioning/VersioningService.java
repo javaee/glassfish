@@ -37,9 +37,7 @@ package org.glassfish.deployment.versioning;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -81,8 +79,12 @@ public class VersioningService {
      * @return all the version(s) of the given application
      */
     public final List<String> getAllversions(String untaggedName, String target) {
-        List<Application> allApplications =
-            domain.getApplicationsInTarget(target);
+        List<Application> allApplications = null;
+        if (target != null) {
+            allApplications = domain.getApplicationsInTarget(target);
+        } else {
+            allApplications = domain.getApplications().getApplications();
+        }
         return VersioningDeploymentUtil.getVersions(untaggedName, allApplications);
     }
 

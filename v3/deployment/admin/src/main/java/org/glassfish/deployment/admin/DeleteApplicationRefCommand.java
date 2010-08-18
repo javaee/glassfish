@@ -73,6 +73,10 @@ import java.util.logging.Logger;
 import java.util.Map;
 import java.io.File;
 import java.net.URI;
+import java.util.Iterator;
+import java.util.List;
+import org.glassfish.deployment.common.VersioningDeploymentException;
+import org.glassfish.deployment.versioning.VersioningService;
 
 /**
  * Delete application ref command
@@ -107,6 +111,9 @@ public class DeleteApplicationRefCommand implements AdminCommand {
     @Inject
     ArchiveFactory archiveFactory;
 
+    @Inject
+    VersioningService versioningService;
+
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
 
@@ -118,79 +125,102 @@ public class DeleteApplicationRefCommand implements AdminCommand {
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
-        Application application = applications.getApplication(name);
-        if (application == null) {
-            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
-        ApplicationRef applicationRef = domain.getApplicationRefInTarget(name, target);
-        if (applicationRef == null) {
-            report.setMessage(localStrings.getLocalString("appref.not.exists","Target {1} does not have a reference to application {0}.", name, target));
-            report.setActionExitCode(ActionReport.ExitCode.WARNING);
-            return;
-        }
-
+        // retrieve matched version(s) if exist
+        List<String> matchedVersions = null;
         try {
-            ReadableArchive source = null;
-            ApplicationInfo appInfo = deployment.get(name);
-            if (appInfo != null) {
-                source = appInfo.getSource();
-            } else {
-                File location = new File(new URI(application.getLocation()));
-                source = archiveFactory.openArchive(location);
-            }
+            matchedVersions = versioningService.getMatchedVersions(name, target);
+        } catch (VersioningDeploymentException e) {
+            report.failure(logger, e.getMessage());
+            return;
+        }
 
-            UndeployCommandParameters commandParams =
-                new UndeployCommandParameters();
-
-            if (server.isDas()) {
-                commandParams.origin = Origin.unload;
-            } else {
-                // delete application ref on instance
-                // is essentially an undeploy
-                commandParams.origin = Origin.undeploy;
-            }
-
-            commandParams.name = name;
-            commandParams.cascade = cascade;
-
-            final ExtendedDeploymentContext deploymentContext =
-                    deployment.getBuilder(logger, commandParams, report).source(source).build();
-            deploymentContext.getAppProps().putAll(
-                application.getDeployProperties());
-            deploymentContext.setModulePropsMap(
-                application.getModulePropertiesMap());
-
-            if (domain.isCurrentInstanceMatchingTarget(target, name, server.getName(), null)&& appInfo != null) {
-                // stop and unload application if it's the target and the 
-                // the application is in enabled state
-                appInfo.stop(deploymentContext, deploymentContext.getLogger());
-                appInfo.unload(deploymentContext);
-            }
-
-            if (report.getActionExitCode().equals(
-                ActionReport.ExitCode.SUCCESS)) {
-                try {
-                    if (server.isInstance()) {
-                        // if it's on instance, we should clean up
-                        // the bits
-                        deployment.undeploy(name, deploymentContext);
-                        deploymentContext.clean();
-                        if (!Boolean.valueOf(application.getDirectoryDeployed()) && source.exists()) {
-                            FileUtils.whack(new File(source.getURI()));
-                        }
-                    }
-                    deployment.unregisterAppFromDomainXML(name, target, true);
-                } catch(TransactionFailure e) {
-                    logger.warning("failed to delete application ref for " + name);
-                }
-            }
-        } catch(Exception e) {
-            logger.log(Level.SEVERE, "Error during deleteing application ref ", e);
+        // if matched list is empty and no VersioningException thrown,
+        // this is an unversioned behavior and the given application is not registered
+        if(matchedVersions.isEmpty()){
+            report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name, target));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(e.getMessage());
+            return;
+        }
+
+        UndeployCommandParameters commandParams =
+            new UndeployCommandParameters();
+
+        if (server.isDas()) {
+            commandParams.origin = Origin.unload;
+        } else {
+            // delete application ref on instance
+            // is essentially an undeploy
+            commandParams.origin = Origin.undeploy;
+        }
+
+        // for each matched version
+        Iterator it = matchedVersions.iterator();
+        while (it.hasNext()) {
+            String appName = (String)it.next();
+
+            Application application = applications.getApplication(appName);
+            if (application == null) {
+                report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+
+            ApplicationRef applicationRef = domain.getApplicationRefInTarget(appName, target);
+            if (applicationRef == null) {
+                report.setMessage(localStrings.getLocalString("appref.not.exists","Target {1} does not have a reference to application {0}.", appName, target));
+                report.setActionExitCode(ActionReport.ExitCode.WARNING);
+                return;
+            }
+
+            try {
+                ReadableArchive source = null;
+                ApplicationInfo appInfo = deployment.get(appName);
+                if (appInfo != null) {
+                    source = appInfo.getSource();
+                } else {
+                    File location = new File(new URI(application.getLocation()));
+                    source = archiveFactory.openArchive(location);
+                }
+
+                commandParams.name = appName;
+                commandParams.cascade = cascade;
+
+                final ExtendedDeploymentContext deploymentContext =
+                        deployment.getBuilder(logger, commandParams, report).source(source).build();
+                deploymentContext.getAppProps().putAll(
+                    application.getDeployProperties());
+                deploymentContext.setModulePropsMap(
+                    application.getModulePropertiesMap());
+
+                if (domain.isCurrentInstanceMatchingTarget(target, appName, server.getName(), null)&& appInfo != null) {
+                    // stop and unload application if it's the target and the
+                    // the application is in enabled state
+                    appInfo.stop(deploymentContext, deploymentContext.getLogger());
+                    appInfo.unload(deploymentContext);
+                }
+
+                if (report.getActionExitCode().equals(
+                    ActionReport.ExitCode.SUCCESS)) {
+                    try {
+                        if (server.isInstance()) {
+                            // if it's on instance, we should clean up
+                            // the bits
+                            deployment.undeploy(appName, deploymentContext);
+                            deploymentContext.clean();
+                            if (!Boolean.valueOf(application.getDirectoryDeployed()) && source.exists()) {
+                                FileUtils.whack(new File(source.getURI()));
+                            }
+                        }
+                        deployment.unregisterAppFromDomainXML(appName, target, true);
+                    } catch(TransactionFailure e) {
+                        logger.warning("failed to delete application ref for " + appName);
+                    }
+                }
+            } catch(Exception e) {
+                logger.log(Level.SEVERE, "Error during deleteing application ref ", e);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(e.getMessage());
+            }
         }
     }
 }

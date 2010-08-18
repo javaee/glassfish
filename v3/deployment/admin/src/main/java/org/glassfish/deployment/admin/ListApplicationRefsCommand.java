@@ -57,6 +57,7 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.deployment.common.DeploymentUtils;
 
 /**
  * List application ref command
@@ -73,6 +74,9 @@ public class ListApplicationRefsCommand implements AdminCommand {
     @Param(primary=true, optional=true)
     String target = "server";
 
+    @Param(optional=true, defaultValue="false", shortName="v")
+    public Boolean verbose = false;
+
     @Inject
     Domain domain;
 
@@ -85,12 +89,35 @@ public class ListApplicationRefsCommand implements AdminCommand {
         final Logger logger = context.getLogger();
 
         ActionReport.MessagePart part = report.getTopMessagePart();
+        int numOfApplications = 0;
 
         for (ApplicationRef ref : domain.getApplicationRefsInTarget(target)) {
             ActionReport.MessagePart childPart = part.addChild();
-            childPart.setMessage(ref.getRef());
+            String message = ref.getRef();
+            if( verbose ){
+                message += getVerboseStatus(ref);
+            }
+            childPart.setMessage(message);
+            numOfApplications++;
         }
-
+        if (numOfApplications == 0) {
+            part.setMessage(localStrings.getLocalString("list.components.no.elements.to.list", "Nothing to List."));
+        }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
+
+    private String getVerboseStatus(ApplicationRef ref) {
+       String message = "";
+       if (DeploymentUtils.isDomainTarget(target)) {
+           // ignore --verbose for target domain
+           return message;
+       }
+       boolean isVersionEnabled = domain.isAppRefEnabledInTarget(ref.getRef(), target);
+       if ( isVersionEnabled ) {
+           message = localStrings.getLocalString("list.applications.verbose.enabled", "(enabled)");
+       } else {
+           message = localStrings.getLocalString("list.applications.verbose.disabled", "(disabled)");
+       }
+       return message;
+   }
 }

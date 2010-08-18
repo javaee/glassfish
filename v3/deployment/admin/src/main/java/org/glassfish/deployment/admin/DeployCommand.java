@@ -203,6 +203,12 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             // create an initial  context
             ExtendedDeploymentContext initialContext = new DeploymentContextImpl(report, logger, archive, this, env);
 
+            if (name==null) {
+                name = archiveHandler.getDefaultApplicationName(archive, initialContext);
+            } else {
+                DeploymentUtils.validateApplicationName(name);
+            }
+
             boolean isUntagged = VersioningDeploymentUtil.isUntagged(name);
             // no GlassFish versioning support for OSGi budles
             if ( name != null && !isUntagged && type != null && type.equals("osgi") ) {
@@ -215,18 +221,12 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 name = VersioningDeploymentUtil.getUntaggedName(name);
             }
 
-            if (name==null) {
-                name = archiveHandler.getDefaultApplicationName(archive, initialContext);
-            } else {
-                DeploymentUtils.validateApplicationName(name);
-            }
-
             // if no version information embedded as part of application name
             // we try to retrieve the version-identifier element's value from DD
             if ( isUntagged ){
                 String versionIdentifier = archiveHandler.getVersionIdentifier(archive);
 
-                if ( versionIdentifier != null ) {
+                if ( versionIdentifier != null && !versionIdentifier.isEmpty() ) {
                   StringBuilder sb = new StringBuilder(name).
                           append(VersioningDeploymentUtil.EXPRESSION_SEPARATOR).
                           append(versionIdentifier);

@@ -134,12 +134,14 @@ public class VersioningDeploymentUtil {
      * @param appName the application name
      * @throws VersioningDeploymentSyntaxException if the given application name had some
      * critical patterns.
+     * @throws VersioningWildCardException if the given application name had some
+     * wildcard character(s) in its identifier part.
      */
     public static final void checkIdentifier(String appName)
             throws VersioningDeploymentSyntaxException {
         String identifier = getExpression(appName);
         if (identifier != null && identifier.contains(EXPRESSION_WILDCARD)) {
-            throw new VersioningDeploymentSyntaxException(
+            throw new VersioningWildcardException(
                     LOCALSTRINGS.getLocalString("versioning.deployment.wildcard.not.allowed",
                     "Wildcard character(s) are not allowed in a version identifier."));
         }
