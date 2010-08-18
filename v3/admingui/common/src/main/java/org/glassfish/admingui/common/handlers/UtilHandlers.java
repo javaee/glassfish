@@ -46,6 +46,7 @@
 package org.glassfish.admingui.common.handlers;
 
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.JSONUtil;
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
@@ -830,7 +831,21 @@ public class UtilHandlers {
         handlerCtx.setOutputValue("result", GuiUtil.genId(id));
     }
 
-
+    /**
+     *	<p> This handler will convert a Java object to JSON by using
+     *	    {@link JSONUtil#javaToJSON}.</p>
+     */
+    @Handler(id="javaToJSON",
+    	input={
+            @HandlerInput(name="obj", type=Object.class, required=true),
+            @HandlerInput(name="depth", type=Integer.class, required=false, defaultValue="9")},
+        output={
+            @HandlerOutput(name="json", type=String.class)})
+    public static void javaToJSON(HandlerContext handlerCtx) {
+        Object obj = ((Object) handlerCtx.getInputValue("obj"));
+        int depth = ((Integer) handlerCtx.getInputValue("depth"));
+        handlerCtx.setOutputValue("json", JSONUtil.javaToJSON(obj, depth));
+    }
 
 
     private static final String PATH_SEPARATOR = "${path.separator}";
