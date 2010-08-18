@@ -66,27 +66,27 @@
         </sun:button>
     </sun:panelGroup>
     </facet>       
-    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{tableList}", "$attribute{tableList2}"}  sourceVar="td">
+    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$pageSession{tableList}", "$pageSession{tableList2}"}  sourceVar="td">
         <ui:event type="beforeCreate">
 	    // Ensure all required fields exist
-	    if ("#{requestScope.tableList[0].name}") {
-		if ("!#{requestScope.tableList[0].value}") {
-		    mapPut(map="#{requestScope.tableList[0]}" key="value" value="");
+	    if ("#{pageSession.tableList[0].name}") {
+		if ("!#{pageSession.tableList[0].value}") {
+		    mapPut(map="#{pageSession.tableList[0]}" key="value" value="");
 		}
-		if ("!#{requestScope.tableList[0].description}") {
-		    mapPut(map="#{requestScope.tableList[0]}" key="description" value="");
+		if ("!#{pageSession.tableList[0].description}") {
+		    mapPut(map="#{pageSession.tableList[0]}" key="description" value="");
 		}
 	    }
 
 	    // Add extra table properties...
-	    createList(size="0", result="#{requestScope.tableList2}");
-	    foreach(var="row" list="#{requestScope.tableList}") {
+	    createList(size="0", result="#{pageSession.tableList2}");
+	    foreach(var="row" list="#{pageSession.tableList}") {
 		selectiveEncode(value="#{row.name}" result="#{requestScope.tlEncName}");
 		gf.createAttributeMap(
 		    keys={"selected", "encodedName", "description"},
 		    values={"$boolean{false}", "$attribute{tlEncName}", ""},
 		    map="#{requestScope.tlMap}");
-		listAdd(list="#{requestScope.tableList2}", value="#{requestScope.tlMap}");
+		listAdd(list="#{pageSession.tableList2}", value="#{requestScope.tlMap}");
 	    }
         </ui:event>
         <ui:event type="afterCreate">
