@@ -718,9 +718,31 @@ public class JSONUtil {
 	test("[true,false,null,{'a':'b'},['1',2,3.3]]");
 	test("{'x':['foo',null ,{'a':true, 'b':false }]}");
 	test("{	    'key'   :	\"value\" ,\n  \r \"key2\"   :   {  'innerKey'  : [  3.3E-2 , false  , 800e+8, null , 37  , \"test\" ] , \n \"innerKey2\" : {'a' : 'b', 'c' : 'd'}, 'innerKey3' : true} }");
+
+	testJavaToJSON(new HashMap<String, String>() {{ put("foo", "bar"); }});
+
+	System.out.println("\n\n");
+	encodeDecodeTest("[true,false,null,{'a':'b'},['1','2','3']]");
+	encodeDecodeTest("3");
+	encodeDecodeTest("true");
+	encodeDecodeTest("false");
+	encodeDecodeTest("null");
+	encodeDecodeTest("[null]");
+	encodeDecodeTest("[true,false,null,{'a':'b'},['1','2','3']]");
+	encodeDecodeTest("[true,false,null,{'a':'b'},[1,2,3]]");
+	encodeDecodeTest("[true,false,null,{'a':'b'},[1.1,2.2,3.3]]");
+	encodeDecodeTest("[true,false,null,{'a':'b'},['1',2,3.3]]");
+	encodeDecodeTest("{'x':['foo',null ,{'a':true, 'b':false }]}");
+	encodeDecodeTest("{	    'key'   :	\"value\" ,\n  \r \"key2\"   :   {  'innerKey'  : [  3.3E-2 , false  , 800e+8, null , 37  , \"test\" ] , \n \"innerKey2\" : {'a' : 'b', 'c' : 'd'}, 'innerKey3' : true} }");
     }
     private static void test(String json) {
 	System.out.println("src:\t\t" + json + "\n\tresult:\t" + jsonToJava(json));
+    }
+    private static void testJavaToJSON(Object obj) {
+	System.out.println("obj:\t\t" + obj + "\n\tJSON Result:\t" + javaToJSON(obj, 2));
+    }
+    private static void encodeDecodeTest(String json) {
+	System.out.println("before:\t\t" + json + "\n\tafter:\t" + javaToJSON(jsonToJava(json), 9));
     }
 
     private static final String	ABORT_PROCESSING    =	"____EnD___";
