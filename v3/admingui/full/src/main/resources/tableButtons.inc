@@ -20,6 +20,7 @@
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
+	    // FIXME: This uses AMX, convert to REST
             updateStatus(resType="#{pageSession.childType}", selectedRows="${selectedRows}", enabled="true");
             setAttribute(key="selectedRows" value="${selectedRows}");
             gf.redirect(page="#{pageSession.listLink}");
@@ -29,6 +30,7 @@
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
+	    // FIXME: This uses AMX, convert to REST
             updateStatus(resType="#{pageSession.childType}", selectedRows="${selectedRows}", enabled="false");
             setAttribute(key="selectedRows" value="${selectedRows}");
             gf.redirect(page="#{pageSession.listLink}");

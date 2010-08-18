@@ -53,8 +53,30 @@
         //REST related
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.tmpRows}", id="JndiName");
-        gf.getResourceRealStatus(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref" rows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}")
+	gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/mail-resource" method="GET" result="#{requestScope.resList}");
+// FIXME: Move the following code to resourcesTable.inc and just endpoint(s?)
+// FIXME: adjust all code that calls this to do the same.
+setAttribute(key="listOfRows" value={});
+setAttribute(key="listOfRowsExtra" value={});
+mapEntrySet("#{requestScope.resList.data.extraProperties.childResources}" set="#{requestScope.entries}");
+foreach(var="entry" list="#{requestScope.entries}") {
+    gf.restRequest(endpoint="#{requestScope.entry.value}" method="GET" result="#{requestScope.res}");
+    listAdd(list="#{requestScope.listOfRows}" value="#{res.data.extraProperties.entity}");
+    //selectiveEncode(value="#{res.data.extraProperties.entity.jndiName}" result="#{requestScope.encName}");
+    gf.createAttributeMap(
+	keys={"selected" /*"encodedName"*/},
+	values={"$boolean{false}" /*"$attribute{encName}"*/},
+	map="#{requestScope.tmpMap}");
+    listAdd(list="#{requestScope.listOfRowsExtra}" value="#{requestScope.tmpMap}");
+}
+// FIXME: end
+
+	// NOTE:  The old way of doing this... this is more complicated so I
+	// NOTE:  removed it.  This pattern is done in other places, so I left
+	// NOTE:  it in as a reminder to change those other places.
+        //gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.tmpRows}", id="JndiName");
+        //gf.getResourceRealStatus(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref" rows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}")
+
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njmail.msg.JS.confirmDeleteCR}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/full/mailResourceNew.jsf");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/full/mailResources.jsf");

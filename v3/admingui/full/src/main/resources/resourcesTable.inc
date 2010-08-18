@@ -46,7 +46,7 @@
     
 #include "/full/tableButtons.inc"
 
-   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
+   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}", "$attribute{listOfRowsExtra}"} sourceVar="td">
      <!afterCreate
          getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
         />
@@ -58,18 +58,18 @@
             />
     </sun:tableColumn>    
 
-    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colJndiName}" sort="Name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.Name}" 
-            url="#{pageSession.editLink}?name=#{td.value.Name}" />
+    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colJndiName}" sort="jndiName" rowHeader="$boolean{true}" id="col1">
+        <sun:hyperlink id="link" text="#{td.value.jndiName}" 
+            url="#{pageSession.editLink}?name=#{td.value.jndiName}" />
     </sun:tableColumn>
 
     <!--TODO enable when we enable cluster support
     <sun:tableColumn rendered="#{supportCluster}" headerText="$resource{i18n.deployTable.colStatus}" sort="enabled" rowHeader="$boolean{true}" id="col2">
-        <sun:hyperlink rendered="#{supportCluster}" id="targetLink" text="#{td.value.enabled}" url="#{targetLink}?name=#{td.value.name}" />
+        <sun:hyperlink rendered="#{supportCluster}" id="targetLink" text="#{td.value.enabled}" url="#{targetLink}?name=#{td.value.jndiName}" />
     </sun:tableColumn>-->
 
-    <sun:tableColumn headerText="$resource{i18n.deployTable.colEnabled}" sort="Enabled" rowHeader="$boolean{true}" id="col22">
-        <staticText id="typeCol" value="#{td.value.Enabled}" />
+    <sun:tableColumn headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col22">
+        <staticText id="typeCol" value="#{td.value.enabled}" />
     </sun:tableColumn>
     
     <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colResType}" sort="ResType" rendered="#{pageSession.hasResType}"  rowHeader="$boolean{true}" id="coltype">
@@ -82,7 +82,7 @@
             rowHeader="$boolean{true}" id="colTarget">
             <event>
                 <!beforeEncode
-                    getTargetStatus(appName="#{td.value.name}", forApp="$boolean{false}",  result=>$page{listOfTargets});
+                    getTargetStatus(appName="#{td.value.jndiName}", forApp="$boolean{false}",  result=>$page{listOfTargets});
                 />				    
             </event>
             <foreach key="target" list="#{listOfTargets}">
@@ -95,7 +95,7 @@
      
     
     <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">
-        <sun:staticText escape="true" id="typeDesc" value="#{td.value.Description}" />
+        <sun:staticText escape="true" id="typeDesc" value="#{td.value.description}" />
     </sun:tableColumn>
     
   </sun:tableRowGroup>
