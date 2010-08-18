@@ -93,17 +93,18 @@ public class DistributedEJBTimerServiceImpl
 
     @Override
     public void processNotification(Signal signal) {
+        Logger logger = ejbContainerUtil.getLogger();
         if (signal instanceof PlannedShutdownSignal) {
-            if (ejbContainerUtil.getLogger().isLoggable(Level.FINE)) {
-                ejbContainerUtil.getLogger().log(Level.FINE, "[DistributedEJBTimerServiceImpl] planned shutdown signal: " + signal);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "[DistributedEJBTimerServiceImpl] planned shutdown signal: " + signal);
             }
             PlannedShutdownSignal pssig = (PlannedShutdownSignal)signal;
             if (pssig.getEventSubType() == GMSConstants.shutdownType.INSTANCE_SHUTDOWN) {
                 migrateTimers(signal.getMemberToken());
             }
         } else {
-            if (ejbContainerUtil.getLogger().isLoggable(Level.FINE)) {
-                ejbContainerUtil.getLogger().log(Level.FINE, "[DistributedEJBTimerServiceImpl] ignoring signal: " + signal);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "[DistributedEJBTimerServiceImpl] ignoring signal: " + signal);
             }
         }
     }
@@ -113,12 +114,17 @@ public class DistributedEJBTimerServiceImpl
 
     @Override
     public void afterRecovery(boolean success,String instance) {
-        if (ejbContainerUtil.getLogger().isLoggable(Level.INFO)) {
-                ejbContainerUtil.getLogger().log(Level.INFO, "[DistributedEJBTimerServiceImpl] afterRecovery event for instance " + instance);
+        Logger logger = ejbContainerUtil.getLogger();
+        if (logger.isLoggable(Level.INFO)) {
+                logger.log(Level.INFO, "[DistributedEJBTimerServiceImpl] afterRecovery event for instance " + instance);
         }
 
         if (instance != null && !instance.equals(ejbContainerUtil.getServerEnvironment().getInstanceName())) {
-            migrateTimers(instance);
+            if (success) {
+                migrateTimers(instance);
+            } else {
+                logger.log(Level.WARNING, "[DistributedEJBTimerServiceImpl] Cannot perform automatic timer migration after failed transaction recovery");
+            }
         }
     }
 
@@ -128,8 +134,9 @@ public class DistributedEJBTimerServiceImpl
      *--------------------------------------------------------------
      */
     public int migrateTimers( String serverId ) {
-        if (ejbContainerUtil.getLogger().isLoggable(Level.INFO)) {
-            ejbContainerUtil.getLogger().log(Level.INFO, "[DistributedEJBTimerServiceImpl] migrating timers from " + serverId);
+        Logger logger = ejbContainerUtil.getLogger();
+        if (logger.isLoggable(Level.INFO)) {
+            logger.log(Level.INFO, "[DistributedEJBTimerServiceImpl] migrating timers from " + serverId);
         }
 
         int result = 0;
