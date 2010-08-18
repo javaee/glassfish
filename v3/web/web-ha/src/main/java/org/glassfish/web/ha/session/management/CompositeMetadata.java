@@ -121,13 +121,15 @@ public final class CompositeMetadata implements Storeable {
     }
 */
     public CompositeMetadata(long version, long lastAccessTime,
-                             long maxInactiveInterval, Collection<SessionAttributeMetadata> entries) {
+                             long maxInactiveInterval, Collection<SessionAttributeMetadata> entries, byte[] state, String stringExtraParam) {
 
         this.version = version;
         this.lastAccessTime = lastAccessTime;
         this.maxInactiveInterval = maxInactiveInterval;
         this.entries = entries;
         dirtyBits[2] = true;
+        setState(state);
+        setStringExtraParam(stringExtraParam);
     }
 
     public byte[] getState() {
@@ -254,7 +256,7 @@ public final class CompositeMetadata implements Storeable {
 
                         if ((attr.getOperation() == SessionAttributeMetadata.Operation.ADD) ||
                                 attr.getOperation() == SessionAttributeMetadata.Operation.UPDATE) {
-
+                            System.out.println("CompositeMetadata:write " + attr.getOperation() + " Attribute name " + attrName);
                             byte[] attrData = attr.getState();
                             if (attrData == null) {
                                 dos.writeInt(0);
@@ -333,10 +335,12 @@ public final class CompositeMetadata implements Storeable {
                                 byte[] attrData = new byte[dataLen];
                                 dis.read(attrData);
                                 attributesMap.put(attrName, new SessionAttributeMetadata(attrName, smdOpcode, attrData));
+                                System.out.println("CompositeMetadata: " + smdOpcode + " Attribute name " + attrName);
                                 break;
 
                             case DELETE:
                                 attributesMap.remove(attrName);
+                                System.out.println("CompositeMetadata: DELETE " + smdOpcode + " Attribute name " + attrName);
                                 break;
 
                         }

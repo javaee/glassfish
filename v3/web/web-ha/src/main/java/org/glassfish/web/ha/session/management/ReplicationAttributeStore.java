@@ -167,7 +167,7 @@ public class ReplicationAttributeStore extends ReplicationStore {
             replicator.save(session.getIdInternal(), //id
                     compositeMetadata, !((HASession) session).isPersistent());
             modAttrSession.resetAttributeState();
-            //postSaveUpdate(modAttrSession);
+            postSaveUpdate(modAttrSession);
         } catch (BackingStoreException ex) {
             //FIXME
         }
@@ -206,7 +206,7 @@ public class ReplicationAttributeStore extends ReplicationStore {
             replicator.save(session.getIdInternal(), //id
                     compositeMetadata, !((HASession) session).isPersistent());
             modAttrSession.resetAttributeState();
-            //postSaveUpdate(modAttrSession);
+            postSaveUpdate(modAttrSession);
         } catch (BackingStoreException ex) {
             //FIXME
         }
@@ -484,14 +484,12 @@ public class ReplicationAttributeStore extends ReplicationStore {
         
         //now load entries from deserialized entries collection
         ((ModifiedAttributeHASession)_session).clearAttributeStates();
-/*
         byte[] entriesState = metadata.getState();
         Collection entries = null;
         if(entriesState != null) {
             entries = this.deserializeStatesCollection(entriesState);
             loadAttributes((ModifiedAttributeHASession)_session, entries);
         }
-*/
         loadAttributes((ModifiedAttributeHASession)_session, metadata.getEntries());
         return _session;
     }
@@ -553,9 +551,9 @@ public class ReplicationAttributeStore extends ReplicationStore {
         ArrayList addedAttrs = modAttrSession.getAddedAttributes();
         ArrayList modifiedAttrs = modAttrSession.getModifiedAttributes();
         ArrayList deletedAttrs = modAttrSession.getDeletedAttributes();
-        //printAttrList("ADDED", addedAttrs);
-        //printAttrList("MODIFIED", modifiedAttrs);
-        //printAttrList("DELETED", deletedAttrs);
+        printAttrList("ADDED", addedAttrs);
+        printAttrList("MODIFIED", modifiedAttrs);
+        printAttrList("DELETED", deletedAttrs);
 
         postProcessSetAttrStates(modAttrSession, addedAttrs);
         postProcessSetAttrStates(modAttrSession, modifiedAttrs);
@@ -586,9 +584,9 @@ public class ReplicationAttributeStore extends ReplicationStore {
         ArrayList addedAttrs = modAttrSession.getAddedAttributes();
         ArrayList modifiedAttrs = modAttrSession.getModifiedAttributes();
         ArrayList deletedAttrs = modAttrSession.getDeletedAttributes();
-        //printAttrList("ADDED", addedAttrs);
-        //printAttrList("MODIFIED", modifiedAttrs);
-        //printAttrList("DELETED", deletedAttrs);
+        printAttrList("ADDED", addedAttrs);
+        printAttrList("MODIFIED", modifiedAttrs);
+        printAttrList("DELETED", deletedAttrs);
         
         addToEntries(modAttrSession, entries, 
                 SessionAttributeMetadata.Operation.ADD, addedAttrs);
@@ -601,7 +599,7 @@ public class ReplicationAttributeStore extends ReplicationStore {
             = new CompositeMetadata(modAttrSession.getVersion(),
                 modAttrSession.getLastAccessedTimeInternal(),
                 modAttrSession.getMaxInactiveInterval(),
-                entries);
+                entries, trunkState, null);
                 //,
                 //trunkState);
 //                ,modAttrSession.getSsoId()); //ssoId is the extraParam here
@@ -609,12 +607,12 @@ public class ReplicationAttributeStore extends ReplicationStore {
     }
     
     private void printAttrList(String attrListType, ArrayList attrList) {
-        if (_logger.isLoggable(Level.FINER)) {
-            _logger.finer("AttributeType = " + attrListType);
+        if (_logger.isLoggable(Level.INFO)) {
+            _logger.info("AttributeType = " + attrListType);
             String nextAttrName = null;
             for(int i=0; i<attrList.size(); i++) {
                 nextAttrName = (String)attrList.get(i);
-                _logger.finer("attribute[" + i + "]=" + nextAttrName);
+                _logger.info("attribute[" + i + "]=" + nextAttrName);
             }
         }
     }

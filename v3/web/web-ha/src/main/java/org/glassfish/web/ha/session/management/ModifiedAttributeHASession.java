@@ -203,8 +203,8 @@ public class ModifiedAttributeHASession extends BaseHASession
         synchronized (attributes) {         
             super.setAttribute(name, value);        
             SessionAttributeState attributeState = getAttributeState(name);
-            if (_logger.isLoggable(Level.FINEST)) {
-                _logger.finest("ModifiedAttributeHASession>>setAttribute name=" + name + " attributeState=" + attributeState);
+            if (_logger.isLoggable(Level.INFO)) {
+                _logger.info("ModifiedAttributeHASession>>setAttribute name=" + name + " attributeState=" + attributeState);
             }
             if(value == null) {
                 if(attributeState != null) {
