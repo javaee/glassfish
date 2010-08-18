@@ -544,8 +544,8 @@ public class RestApiHandlers {
             if (extraProperties.containsKey(key)) {
                 valueMap = (Map<String, Object>) extraProperties.get(key);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+	    throw new RuntimeException(ex);
         }
 
         return valueMap;

@@ -60,19 +60,20 @@ import com.sun.jsftemplating.util.FileUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.GregorianCalendar;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
-import java.util.Iterator;
-
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.component.UIViewRoot;
@@ -701,10 +702,10 @@ public class UtilHandlers {
     @Handler(id="foreach",
 	input={
 	    @HandlerInput(name="var", type=String.class, required=false, defaultValue="idx"),
-	    @HandlerInput(name="list", type=List.class, required=true) })
+	    @HandlerInput(name="list", type=Collection.class, required=true) })
     public static boolean foreach(HandlerContext handlerCtx) {
 	String var = (String) handlerCtx.getInputValue("var");
-	List<Object> list = (List<Object>) handlerCtx.getInputValue("list");
+	Collection<Object> list = (Collection<Object>) handlerCtx.getInputValue("list");
 
 	List<com.sun.jsftemplating.layout.descriptors.handler.Handler> handlers =
             handlerCtx.getHandler().getChildHandlers();
@@ -728,13 +729,40 @@ public class UtilHandlers {
 	return false;
     }
 
+    /**
+     *	<p> This handler returns the <code>Set</code> of entries for the given
+     *	    <code>Map</code>.</p>
+     */
+    @Handler(id="mapEntrySet",
+	input = {
+	    @HandlerInput(name="map", type=Map.class, required=true)},
+	output = {
+	    @HandlerOutput(name="set", type=Set.class)})
+    public static void mapEntrySet(HandlerContext handlerCtx) {
+        Map map = (Map) handlerCtx.getInputValue("map");
+        handlerCtx.setOutputValue("set", map.entrySet());
+    }
+
+    /**
+     *	<p> This handler returns the <code>Set</code> of keys for the given
+     *	    <code>Map</code>.</p>
+     */
+    @Handler(id="mapKeySet",
+	input = {
+	    @HandlerInput(name="map", type=Map.class, required=true)},
+	output = {
+	    @HandlerOutput(name="set", type=Set.class)})
+    public static void mapKeySet(HandlerContext handlerCtx) {
+        Map map = (Map) handlerCtx.getInputValue("map");
+        handlerCtx.setOutputValue("set", map.keySet());
+    }
+
     @Handler(id = "convertStrToBoolean",
     input = {
         @HandlerInput(name = "str", type = String.class, required = true)},
     output = {
         @HandlerOutput(name = "out", type = Boolean.class)})
     public static void convertStrToBoolean(HandlerContext handlerCtx) {
-
         String str = (String) handlerCtx.getInputValue("str");
         handlerCtx.setOutputValue("out", "true".equals(str));
     }
