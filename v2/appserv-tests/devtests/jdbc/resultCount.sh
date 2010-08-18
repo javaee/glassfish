@@ -4,8 +4,8 @@ FILE=$APS_HOME/test_resultsValid.xml
 echo "input file=$FILE"
 
 TOTAL=188
-PASSED=`grep "pass" $FILE | wc -l`
-FAILED=`grep "fail" $FILE | wc -l`
+PASSED=`grep "\"pass\"" $FILE | wc -l`
+FAILED=`grep "\"fail\"" $FILE | wc -l`
 TOTAL_RUN=`expr $PASSED + $FAILED `
 DNR=`expr $TOTAL - $TOTAL_RUN `
 
