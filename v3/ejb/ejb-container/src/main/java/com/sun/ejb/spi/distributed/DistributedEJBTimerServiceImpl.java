@@ -39,6 +39,8 @@ package com.sun.ejb.spi.distributed;
 import com.sun.ejb.containers.EjbContainerUtil;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.EJBTimerService;
+import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
+import com.sun.enterprise.transaction.spi.RecoveryEventListener;
 import org.glassfish.ejb.api.DistributedEJBTimerService;
 
 import org.glassfish.gms.bootstrap.GMSAdapter;
@@ -57,13 +59,16 @@ import java.util.logging.Level;
 
 @Service
 public class DistributedEJBTimerServiceImpl
-    implements DistributedEJBTimerService, PostConstruct, CallBack {
+    implements DistributedEJBTimerService, RecoveryEventListener, PostConstruct, CallBack {
 
     @Inject
     private EjbContainerUtil ejbContainerUtil;
 
     @Inject
     GMSAdapterService gmsAdapterService;
+
+    @Inject
+    RecoveryResourceRegistry recoveryResourceRegistry;
 
     public void postConstruct() {
         if (!ejbContainerUtil.isDas()) {
@@ -80,6 +85,9 @@ public class DistributedEJBTimerServiceImpl
             }
             // Do DB read before timeout in a cluster
             setPerformDBReadBeforeTimeout(true);
+
+            // Register for transaction recovery events
+            recoveryResourceRegistry.addEventListener(this);
         }
     }
 
@@ -97,6 +105,20 @@ public class DistributedEJBTimerServiceImpl
             if (ejbContainerUtil.getLogger().isLoggable(Level.FINE)) {
                 ejbContainerUtil.getLogger().log(Level.FINE, "[DistributedEJBTimerServiceImpl] ignoring signal: " + signal);
             }
+        }
+    }
+
+    @Override
+    public void beforeRecovery(String instance) {}
+
+    @Override
+    public void afterRecovery(boolean success,String instance) {
+        if (ejbContainerUtil.getLogger().isLoggable(Level.INFO)) {
+                ejbContainerUtil.getLogger().log(Level.INFO, "[DistributedEJBTimerServiceImpl] afterRecovery event for instance " + instance);
+        }
+
+        if (instance != null && !instance.equals(ejbContainerUtil.getServerEnvironment().getInstanceName())) {
+            migrateTimers(instance);
         }
     }
 
