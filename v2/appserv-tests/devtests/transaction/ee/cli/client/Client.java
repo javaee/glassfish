@@ -143,7 +143,7 @@ public class Client extends AdminBaseDevTest {
         try {
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.log-service.module-log-levels.resourceadapter=FINE");
             String txLog = new StringBuffer(location).append(File.separator)
-                    .append("nodeagents").append(File.separator).append("localhost")
+                    .append("nodes").append(File.separator).append("localhost")
                     .append(File.separator).append(INSTANCE1_NAME).append(File.separator)
                     .append("logs").append(File.separator).append(INSTANCE1_NAME)
                     .append(File.separator).append("tx").toString();
