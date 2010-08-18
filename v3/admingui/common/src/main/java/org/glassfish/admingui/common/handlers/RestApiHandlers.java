@@ -49,6 +49,7 @@ import org.glassfish.admingui.common.util.RestResponse;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -173,12 +174,15 @@ public class RestApiHandlers {
     /**
      *	<p> This handler can be used to execute a generic REST request.  It
      *	    will return a Java data structure based on the response of the
-     *	    REST request.</p>
+     *	    REST request.  'data' and 'attrs' are mutually exclusive.  'data'
+     *	    is used to pass RAW data to the endpoint (such as JSON).</p>
      */
     @Handler(id = "gf.restRequest",
             input = {
                     @HandlerInput(name="endpoint", type=String.class, required=true),
                     @HandlerInput(name="attrs", type=Map.class, required=false),
+                    @HandlerInput(name="data", type=Object.class, required=false),
+                    @HandlerInput(name="contentType", type=String.class, required=false),
                     @HandlerInput(name="method", type=String.class, defaultValue="post")},
             output = {
                     @HandlerOutput(name="result", type=Map.class)})
@@ -189,10 +193,19 @@ public class RestApiHandlers {
         handlerCtx.setOutputValue("result",  restRequest(endpoint, attrs, method, handlerCtx));
     }
 
-
     public static Map restRequest(String endpoint, Map<String, Object> attrs, String method, HandlerContext handlerCtx) {
+	boolean useData = false;
+
+	Object data = null;
         if (attrs == null) {
-            attrs = new HashMap<String, Object>();
+	    data = (handlerCtx == null) ? null : handlerCtx.getInputValue("data");
+	    if (data != null) {
+		// We'll send the raw data
+		useData = true;
+	    } else {
+		// Initialize the attributes to an empty map
+		attrs = new HashMap<String, Object>();
+	    }
         }
         method = method.toLowerCase();
 
@@ -202,7 +215,11 @@ public class RestApiHandlers {
 	// Execute the request...
         RestResponse response = null;
         if ("post".equals(method)) {
-            response = post(endpoint, attrs);
+	    if (useData) {
+		response = post(endpoint, data, (String) handlerCtx.getInputValue("contentType"));
+	    } else {
+		response = post(endpoint, attrs);
+	    }
         } else if ("get".equals(method)) {
             response = get(endpoint, attrs);
         } else if ("delete".equals(method)) {
@@ -211,7 +228,6 @@ public class RestApiHandlers {
 
         return parseResponse(response, handlerCtx, endpoint, attrs);
     }
-
 
     /**
      *
@@ -701,6 +717,18 @@ public class RestApiHandlers {
                 .queryParams(buildMultivalueMap(payload))
                 .accept(RESPONSE_TYPE)
                 .get(ClientResponse.class));
+    }
+
+    public static RestResponse post(String address, Object payload, String contentType) {
+        WebResource webResource = JERSEY_CLIENT.resource(address);
+	if (contentType == null) {
+	    contentType = MediaType.APPLICATION_JSON;
+	}
+        ClientResponse cr = webResource.header("Content-Type", contentType).
+		accept(RESPONSE_TYPE).post(ClientResponse.class, payload);
+        //checkStatusForSuccess(cr);
+        RestResponse rr = RestResponse.getRestResponse(cr);
+        return rr;
     }
 
     public static RestResponse post(String address, Map<String, Object> payload) {
