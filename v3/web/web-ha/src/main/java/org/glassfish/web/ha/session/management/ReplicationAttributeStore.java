@@ -571,10 +571,12 @@ public class ReplicationAttributeStore extends ReplicationStore {
     private CompositeMetadata createCompositeMetadata(ModifiedAttributeHASession modAttrSession) {
         
         byte[] trunkState = null;
-        try {
-            trunkState = this.getByteArray(modAttrSession);
-        } catch(IOException ex) {
-            //no op
+        if (modAttrSession.isNew()) {
+            try {
+                trunkState = this.getByteArray(modAttrSession);
+            } catch(IOException ex) {
+                //no op
+            }
         }
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("ReplicationAttributeStore>>createCompositeMetadata:trunkState=" + trunkState);                       

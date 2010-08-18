@@ -81,7 +81,7 @@ public final class CompositeMetadata implements Storeable {
 
     private transient static Set<String> saveEP = new HashSet<String>();
 
-    private transient boolean[] dirtyBits = new boolean[]{false, false, false};
+    private boolean[] dirtyBits = new boolean[]{false, false, false};
 
     static {
         saveALL.add(ReplicationAttributeNames.STATE);
@@ -128,7 +128,11 @@ public final class CompositeMetadata implements Storeable {
         this.maxInactiveInterval = maxInactiveInterval;
         this.entries = entries;
         dirtyBits[2] = true;
-        setState(state);
+        if (state != null) {
+            setState(state);
+        } else {
+            dirtyBits[0] = false;
+        }
         setStringExtraParam(stringExtraParam);
     }
 
@@ -162,7 +166,7 @@ public final class CompositeMetadata implements Storeable {
      * @return a collection of SessionAttributeMetadata
      */
     public Collection<SessionAttributeMetadata> getEntries() {
-        return entries;
+        return attributesMap.values();
     }
 
     public long getVersion() {
@@ -218,8 +222,8 @@ public final class CompositeMetadata implements Storeable {
             dos.writeLong(lastAccessTime);
             dos.writeLong(maxInactiveInterval);
 
-            for (boolean b : dirtyBits) {
-                dos.writeBoolean(dirtyBits[0]);
+            for (int i = 0; i < dirtyBits.length; i++) {
+                dos.writeBoolean(dirtyBits[i]);
             }
 
             if (dirtyBits[0]) {
@@ -285,15 +289,19 @@ public final class CompositeMetadata implements Storeable {
             version = dis.readLong();
             lastAccessTime = dis.readLong();
             maxInactiveInterval = dis.readLong();
-
+            dirtyBits = new boolean[]{true, true, true};
+/*
             for (int i = 0; i < dirtyBits.length; i++) {
                 dirtyBits[i] = true; //correct?
             }
+*/
 
             boolean[] dirtyFlags = new boolean[3];
             for (int i = 0; i < dirtyFlags.length; i++) {
                 dirtyFlags[i] = dis.readBoolean();
+                System.out.println("_storeable_readState.DirtyFlag [" + i + "] is " + dirtyFlags[i]);
             }
+
 
             if (dirtyFlags[0]) {
                 int len = dis.readInt();
