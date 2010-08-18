@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,6 +37,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.config.serverbeans.*;
 import org.jvnet.hk2.annotations.Service;
@@ -52,7 +53,6 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 
-import java.util.logging.Level;
 
 @Service(name = "flush-connection-pool")
 @Scoped(PerLookup.class)
@@ -97,14 +97,14 @@ public class FlushConnectionPool implements AdminCommand {
             Application application = applications.getApplication(applicationName);
             Module module = application.getModule(moduleName);
             resources = module.getResources();
-            scope = "java:module/";
+            scope = ConnectorConstants.JAVA_MODULE_SCOPE_PREFIX;
         }else if(applicationName != null){
             if(!poolUtil.isValidApplication(applicationName, poolName, report)){
                 return;
             }
             Application application = applications.getApplication(applicationName);
             resources = application.getResources();
-            scope = "java:app/";
+            scope = ConnectorConstants.JAVA_APP_SCOPE_PREFIX;
         }
 
         if(!poolUtil.isValidPool(resources, poolName, scope, report)){
