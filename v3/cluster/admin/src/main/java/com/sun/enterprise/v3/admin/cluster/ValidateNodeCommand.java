@@ -52,6 +52,8 @@ import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import java.util.logging.Logger;
 import java.io.File;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Remote AdminCommand to validate a config Node. This command is run only on DAS.
@@ -105,10 +107,13 @@ public class ValidateNodeCommand implements AdminCommand {
     @Param(name="sshkeyfile", optional=true)
     private String sshkeyfile;
 
+    private Set<String> excludeFromUpdate = new HashSet<String>();
+
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         Logger logger= context.logger;
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
         logger.fine(Strings.get("Validating node {0}", name));
         Node node = nodes.getNode(name);
@@ -137,14 +142,24 @@ public class ValidateNodeCommand implements AdminCommand {
         CommandInvocation ci = cr.getCommandInvocation("_update-node", report);
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
-        map.add("installdir", installdir);
-        map.add("nodehost", nodehost);
-        map.add("nodedir", nodedir);
-        map.add("sshport", sshport);
-        map.add("sshuser", sshuser);
-        map.add("sshkeyfile", sshkeyfile);
-        ci.parameters(map);
-        ci.execute();
+        if (! excludeFromUpdate.contains("installdir"))
+            map.add("installdir", installdir);
+        if (! excludeFromUpdate.contains("nodehost"))
+            map.add("nodehost", nodehost);
+        if (! excludeFromUpdate.contains("nodedir"))
+            map.add("nodedir", nodedir);
+        if (! excludeFromUpdate.contains("sshport"))
+            map.add("sshport", sshport);
+        if (! excludeFromUpdate.contains("sshuser"))
+            map.add("sshuser", sshuser);
+        if (! excludeFromUpdate.contains("sshkeyfile"))
+            map.add("sshkeyfile", sshkeyfile);
+
+        // Only update if there is something to do
+        if ( map.size() > 1) {
+            ci.parameters(map);
+            ci.execute();
+        }
     }
 
     public void validateNode(final Node node) throws
@@ -205,6 +220,8 @@ public class ValidateNodeCommand implements AdminCommand {
                 Strings.get("attribute.mismatch",
                                propname, value, configValue));
         }
+        // Don't update an attribute that is considered a match
+        excludeFromUpdate.add(propname);
     }
 
     private void validateHostname(String propname,
@@ -221,11 +238,18 @@ public class ValidateNodeCommand implements AdminCommand {
             // "sidewinder" and "sidewinder.us.oracle.com". NetUtils
             // isEqual() handles this check.
             if (! NetUtils.isEqual(value, configValue)) {
-                throw new CommandValidationException(
-                    Strings.get("attribute.mismatch",
+                // If they both refer to the localhost then consider them
+                // them same.
+                if ( ! (NetUtils.IsThisHostLocal(value) &&
+                        NetUtils.IsThisHostLocal(configValue)) ) {
+                    throw new CommandValidationException(
+                        Strings.get("attribute.mismatch",
                             propname, value, configValue));
+                }
             }
         }
+        // Don't update an attribute that is considered a match
+        excludeFromUpdate.add(propname);
     }
 
     private void validateString(String propname,
@@ -252,6 +276,8 @@ public class ValidateNodeCommand implements AdminCommand {
                 Strings.get("attribute.mismatch",
                             propname, value, configValue));
         }
+        // Don't update an attribute that is considered a match
+        excludeFromUpdate.add(propname);
     }
 }
 

@@ -42,7 +42,6 @@ import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.ServerRef;
 import com.sun.enterprise.universal.process.ProcessManagerException;
-import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.universal.process.LocalAdminCommand;
 import org.glassfish.api.I18n;
@@ -95,6 +94,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     @Param(name="lbenabled", optional=true, defaultValue=ServerRef.LBENABLED_DEFAULT_VALUE)
     private Boolean lbEnabled;
 
+    @Param(name = "checkports", optional = true, defaultValue = "true")
+    private boolean checkPorts;
+
     @Param(name = "systemproperties", optional = true, separator = ':')
     private String systemProperties;
 
@@ -143,6 +145,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         map.add("cluster", clusterName);
         if(lbEnabled != null){
             map.add("lbenabled", lbEnabled.toString());
+        }
+        if(!checkPorts){
+            map.add("checkports", "false");
         }
         map.add("systemproperties", systemProperties);
         map.add("DEFAULT", instance);

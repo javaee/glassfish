@@ -37,28 +37,27 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.config.serverbeans.Nodes;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
-import org.glassfish.api.admin.CommandValidationException;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
-import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import java.util.logging.Logger;
 
 /**
- * Remote AdminCommand to create and ssh node.  This command is run only on DAS.
- * Register the node with SSH info on DAS
+ * Remote AdminCommand to update a config node.
  *
- * @author Carla Mott
+ * @author Joe Di Pol
  */
-@Service(name = "create-node-ssh")
-@I18n("create.node.ssh")
+@Service(name = "update-node-config")
+@I18n("update.node.config")
 @Scoped(PerLookup.class)
 @Cluster({RuntimeType.DAS})
-public class CreateNodeSshCommand implements AdminCommand  {
+public class UpdateNodeConfigCommand implements AdminCommand  {
 
     @Inject
     private CommandRunner cr;
@@ -66,35 +65,20 @@ public class CreateNodeSshCommand implements AdminCommand  {
     @Inject
     Habitat habitat;
 
+    @Inject
+    private Nodes nodes;
+
     @Param(name="name", primary = true)
     private String name;
 
-    @Param(name="nodehost")
+    @Param(name="nodehost", optional=true)
     private String nodehost;
 
     @Param(name = "installdir", optional=true)
     private String installdir;
 
-    @Param(name="nodedir", optional=true)
+    @Param(name = "nodedir", optional=true)
     private String nodedir;
-
-    @Param(name="sshport", optional=true)
-    private String sshport;
-
-    @Param(name = "sshuser", optional = true)
-    private String sshuser;
-
-    @Param(name = "sshkeyfile", optional = true)
-    private String sshkeyfile;
-
-    @Param(name = "sshpassword", optional = true, password=true)
-    private String sshpassword;
-
-    @Param(name = "sshkeypassphrase", optional = true, password=true)
-    private String sshkeypassphrase;
-
-    @Param(name = "force", optional = true, defaultValue = "false")
-    private boolean force;
 
     private static final String NL = System.getProperty("line.separator");
 
@@ -104,64 +88,47 @@ public class CreateNodeSshCommand implements AdminCommand  {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         StringBuilder msg = new StringBuilder();
-        SSHLauncher sshL=habitat.getComponent(SSHLauncher.class);
+        Node node = null;
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
         logger = context.getLogger();
 
-        setDefaults();
+        // Make sure Node is valid
+        node = nodes.getNode(name);
+        if (node == null) {
+            String m = Strings.get("noSuchNode", node);
+            logger.warning(m);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(m);
+            return;
+        }
 
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
-        map.add(NodeUtils.PARAM_INSTALLDIR, installdir);
-        map.add(NodeUtils.PARAM_NODEHOST, nodehost);
-        map.add(NodeUtils.PARAM_NODEDIR, nodedir);
-        map.add(NodeUtils.PARAM_SSHPORT, sshport);
-        map.add(NodeUtils.PARAM_SSHUSER, sshuser);
-        map.add(NodeUtils.PARAM_SSHKEYFILE, sshkeyfile);
-        map.add(NodeUtils.PARAM_SSHPASSWORD, sshpassword);
-        map.add(NodeUtils.PARAM_SSHKEYPASSPHRASE, sshkeypassphrase);
-        map.add(NodeUtils.PARAM_TYPE,"SSH");
 
-        try {
-            NodeUtils nodeUtils = new NodeUtils(habitat, logger);
-            nodeUtils.validate(map, sshL);
-        } catch (CommandValidationException e) {
-            String m1 = Strings.get("node.ssh.invalid.params");
-            if (!force) {
-                String m2 = Strings.get("create.node.ssh.not.created");
-                msg.append(StringUtils.cat(NL, m1, m2, e.getMessage()));
-                report.setMessage(msg.toString());
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            } else {
-                String m2 = Strings.get("create.node.ssh.continue.force");
-                msg.append(StringUtils.cat(NL, m1, e.getMessage(), m2));
+        if (StringUtils.ok(installdir)) {
+            map.add(NodeUtils.PARAM_INSTALLDIR, installdir);
+        }
+        if (StringUtils.ok(nodehost)) {
+            map.add(NodeUtils.PARAM_NODEHOST, nodehost);
+        }
+        if (StringUtils.ok(nodedir)) {
+            map.add(NodeUtils.PARAM_NODEDIR, nodedir);
+        }
+
+        if (map.size() > 1) {
+            CommandInvocation ci = cr.getCommandInvocation("_update-node", report);
+            ci.parameters(map);
+            ci.execute();
+
+            if (StringUtils.ok(report.getMessage())) {
+                if (msg.length() > 0) {
+                    msg.append(NL);
+                }
+                msg.append(report.getMessage());
             }
-        }
 
-        CommandInvocation ci = cr.getCommandInvocation("_create-node", report);
-        ci.parameters(map);
-        ci.execute();
-
-        if (StringUtils.ok(report.getMessage())) {
-            if (msg.length() > 0) {
-                msg.append(NL);
-            }
-            msg.append(report.getMessage());
-        }
-
-        report.setMessage(msg.toString());
-    }
-
-    private void setDefaults() {
-        if (sshport == null) {
-            sshport = NodeUtils.NODE_DEFAULT_SSH_PORT;
-        }
-        if (sshuser == null) {
-            sshuser = NodeUtils.NODE_DEFAULT_SSH_USER;
-        }
-        if (installdir == null) {
-            installdir = NodeUtils.NODE_DEFAULT_INSTALLDIR;
+            report.setMessage(msg.toString());
         }
     }
 }

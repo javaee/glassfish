@@ -99,9 +99,6 @@ public class UpdateNodeSshCommand implements AdminCommand  {
     @Param(name = "sshkeypassphrase", optional = true, password=true)
     private String sshkeypassphrase;
 
-    @Param(name = "type", optional=true)
-    private String type;
-
     @Param(name =  "force", optional = true, defaultValue = "false")
     private boolean force;
 

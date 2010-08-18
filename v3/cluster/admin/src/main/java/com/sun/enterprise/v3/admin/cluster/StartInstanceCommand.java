@@ -36,7 +36,6 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
-import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.util.StringUtils;
@@ -45,7 +44,6 @@ import java.util.logging.Logger;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
@@ -53,21 +51,15 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.HashMap;
-import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
 import com.sun.enterprise.universal.process.LocalAdminCommand;
 import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
 
 import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
-import java.io.IOException;
-import java.lang.InterruptedException;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
@@ -99,11 +91,21 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     @Inject
     private ServerEnvironment env;
     
-    @Param(optional = true, defaultValue = "true")
-    private Boolean force;
     @Param(optional = true, primary = true)
-
     private String instanceName;
+
+    @Param(optional = true)
+    private boolean fullsync;
+
+    @Param(optional = true, defaultValue = "false")
+    private boolean nosync;
+
+    @Param(optional = true, defaultValue = "false")
+    private boolean debug;
+
+    @Param(optional = true, obsolete = true)
+    private String setenv;
+
     private Logger logger;
     private RemoteInstanceCommandHelper helper;
 
@@ -115,6 +117,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
 
     private static final String NL = System.getProperty("line.separator");
 
+    @Override
     public void execute(AdminCommandContext context) {
         logger = context.getLogger();
         this.ctx=context;
@@ -185,11 +188,31 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
 
     private void startInstance()  {
         LocalAdminCommand lac = null;
-        if (nodedir == null) {
-            lac = new LocalAdminCommand("start-local-instance", "--node", noderef, instanceName);
-        } else {
-            lac = new LocalAdminCommand("start-local-instance", "--node", noderef, "--nodedir", nodedir, instanceName);
+        ArrayList<String> command = new ArrayList<String>();
+
+        command.add("--node");
+        command.add(noderef);
+
+        if (StringUtils.ok(nodedir)) {
+            command.add("--nodedir");
+            command.add(nodedir);
         }
+        if (fullsync) {
+            command.add("--fullsync");
+        }
+        if (nosync) {
+            command.add("--nosync");
+        }
+        if (debug) {
+            command.add("--debug");
+        }
+
+        command.add(instanceName);
+
+        String[] commandArray = new String[command.size()];
+        lac = new LocalAdminCommand("start-local-instance",
+                                    command.toArray(commandArray));
+
         try {
             lac.waitForReaderThreads(false);
             int status = lac.execute();
@@ -216,8 +239,17 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             if (nodedir != null) {
                 map.set("--nodedir", nodedir);
             }
+            if (fullsync) {
+                map.set("--fullsync", "true");
+            }
+            if (nosync) {
+                map.set("--nosync", "true");
+            }
+            if (debug) {
+                map.set("--debug", "true");
+            }
             try {
-            int status = rch.runCommand(noderef, "start-local-instance",
+                int status = rch.runCommand(noderef, "start-local-instance",
                      map, output);
             if (output.length() > 0) {
                  logger.info(output.toString());
