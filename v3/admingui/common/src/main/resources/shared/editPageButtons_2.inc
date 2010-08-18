@@ -65,7 +65,7 @@
                 //}
                 -->
 
-               if (#{pageSession['rest-api']}){
+               if (#{pageSession['rest-api']}) {
                     if(#{pageSession.hasPropertySheet}){
                         gf.createEntity(endpoint="#{pageSession.selfUrl}"
                             attrs="#{pageSession.valueMap}"
@@ -84,7 +84,7 @@
                     }
                }
 
-               if ( !#{pageSession['rest-api']}){
+               if (!#{pageSession['rest-api']}) {
                     if(#{pageSession.hasPropertySheet}){
                         saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                             skipAttrs="#{pageSession.skipAttrsList}"
@@ -101,14 +101,25 @@
                     }
                }
 
-                //REST-TODO  need to take care of setProxyProperties()
-                if (#{pageSession.hasPropertyTable}){
+		// Save properties...
+		if (#{pageSession.hasPropertyTable}) {
+		    javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+//println("payload -------------------------------> #{requestScope.tmpJSON}");
+		    gf.restRequest(
+			endpoint="#{pageSession.selfUrl}/property.json"
+			method="POST"
+			data="#{requestScope.tmpJSON}"
+			result="#{requestScope.restResponse}");
+
+		    /*
+		    Dead code:
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+		    */
                 }
 
-                if (#{pageSession.additionalSaveHandler}){
+                if (#{pageSession.additionalSaveHandler}) {
                     gf.invokeHandler(handler="#{pageSession.additionalSaveHandler}", args="#{pageSession.additionalSaveHandlerArgs}" );
                 }
                 prepareSuccessfulMsg();
