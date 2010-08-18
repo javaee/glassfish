@@ -252,21 +252,7 @@ public class RemoteAdminCommand {
      */
     public CommandModel getCommandModel() throws CommandException {
         if (commandModel == null) {
-            try {
-                fetchCommandModel();
-            } catch (AuthenticationException ex) {
-                /*
-                 * Failed to authenticate to server.
-                 * If we can update our authentication information
-                 * (e.g., by prompting the user for the username
-                 * and password), try again.
-                 */
-                if (updateAuthentication())
-                    fetchCommandModel();
-                else
-                    throw ex;
-                logger.finer("Update authentication worked");
-            }
+            fetchCommandModel();
         }
         return commandModel;
     }
@@ -353,20 +339,7 @@ public class RemoteAdminCommand {
 
             // remove the last character, whether it was "?" or "&"
             uriString.setLength(uriString.length() - 1);
-            try {
-                executeRemoteCommand(uriString.toString());
-            } catch (AuthenticationException ex) {
-                /*
-                 * Failed to authenticate to server.
-                 * If we can update our authentication information
-                 * (e.g., by prompting the user for the username
-                 * and password), try again.
-                 */
-                if (updateAuthentication())
-                    executeRemoteCommand(uriString.toString());
-                else
-                    throw ex;
-            }
+            executeRemoteCommand(uriString.toString());
         } catch (IOException ioex) {
             // possibly an error caused while reading or writing a file?
             throw new CommandException("I/O Error", ioex);
@@ -487,6 +460,11 @@ public class RemoteAdminCommand {
     /**
      * Set up an HTTP connection, call cmd.doCommand to do all the work,
      * and handle common exceptions.
+     * <P>
+     * This method will try to execute the command repeatedly, for example
+     * retrying with a secure connection if redirected, retrying with updated
+     * credentials (typically from the interactive user), etc., until the
+     * command succeeds or there are no more ways to retry that might succeed.
      *
      * @param uriString     the URI to connect to
      * @param httpMethod    the HTTP method to use for the connection
@@ -496,96 +474,194 @@ public class RemoteAdminCommand {
     private void doHttpCommand(String uriString, String httpMethod,
             HttpCommand cmd) throws CommandException {
         HttpURLConnection urlConnection = null;
-        try {
+
+        /*
+         * There are various reasons we might retry the command - an authentication
+         * challenges from the DAS, shifting from an insecure connection to
+         * a secure one, etc.  So just keep trying as long as it makes sense.
+         *
+         * Any exception handling code inside the loop that changes something
+         * about the connection or the request and wants to retry must set
+         * shoudTryCommandAgain to true.
+         */
+        boolean shouldTryCommandAgain;
+        
+        /*
+         * Do not send caller-provided credentials the first time unless
+         * we know we will send the first request securely.
+         */
+        boolean shouldSendCredentials = secure;
+        
+        /*
+         * If the DAS challenges us for credentials and we've already sent
+         * the caller-provided ones, we might ask the user for a new set
+         * and use them.  But we want to ask only once.
+         */
+        boolean askedUserForCredentials = false;
+        
+        /*
+         * On a subsequent retry we might need to use secure, even if the
+         * caller did not request it.
+         */
+        boolean shouldUseSecure = secure;
+
+        /*
+         * Send the caller-provided credentials (typically from command line
+         * options or the password file) on the first attempt only if we know
+         * the connection will
+         * be secure.
+         */
+        boolean usedCallerProvidedCredentials = secure;
+
+        do {
             /*
-             * Note: HttpConnectorAddress will set up SSL/TLS client cert
-             * handling if the current configuration calls for it.
+             * Any code that wants to trigger a retry will say so explicitly.
              */
-            HttpConnectorAddress url = new HttpConnectorAddress(
-                            host, port, secure);
-            logger.finer("URI: " + uriString);
-            logger.finer("URL: " + url.toString());
-            logger.finer("URL: " +
-                    url.toURL(uriString.toString()).toString());
-            logger.finer("Using auth info: User: " + user +
-                ", Password: " + (ok(password) ? "<non-null>" : "<null>"));
-            if (user != null || password != null)
-                url.setAuthenticationInfo(
-                    new AuthenticationInfo(user, password));
-
-            urlConnection = (HttpURLConnection)
-                    url.openConnection(uriString.toString());
-            urlConnection.setRequestProperty("User-Agent", responseFormatType);
-            urlConnection.setRequestProperty(
-                    HttpConnectorAddress.AUTHORIZATION_KEY,
-                    url.getBasicAuthString());
-            urlConnection.setRequestMethod(httpMethod);
-            urlConnection.setReadTimeout(readTimeout);
-            if (connectTimeout >= 0)
-                urlConnection.setConnectTimeout(connectTimeout);
-            addAdminIndicatorHeaderIfReqd(urlConnection);
-            cmd.doCommand(urlConnection);
-            logger.finer("doHttpCommand succeeds");
-
-        } catch (ConnectException ce) {
-            logger.finer("doHttpCommand: connect exception " + ce);
-            // this really means nobody was listening on the remote server
-            // note: ConnectException extends IOException and tells us more!
-            String msg = strings.get("ConnectException", host, port + "");
-            throw new CommandException(msg, ce);
-        } catch (UnknownHostException he) {
-            logger.finer("doHttpCommand: host exception " + he);
-            // bad host name
-            String msg = strings.get("UnknownHostException", host);
-            throw new CommandException(msg, he);
-        } catch (SocketException se) {
-            logger.finer("doHttpCommand: socket exception " + se);
+            shouldTryCommandAgain = false;
             try {
-                boolean serverAppearsSecure = NetUtils.isSecurePort(host, port);
-                if (serverAppearsSecure && !secure) {
-                    if (retryUsingSecureConnection(host, port)) {
-                        // retry using secure connection
-                        secure = true;
-                        try {
-                            doHttpCommand(uriString, httpMethod, cmd);
-                        } finally {
-                            secure = false;
+                /*
+                 * Note: HttpConnectorAddress will set up SSL/TLS client cert
+                 * handling if the current configuration calls for it.
+                 */
+                HttpConnectorAddress url = new HttpConnectorAddress(
+                                host, port, shouldUseSecure);
+                logger.finer("URI: " + uriString);
+                logger.finer("URL: " + url.toString());
+                logger.finer("URL: " +
+                        url.toURL(uriString.toString()).toString());
+                logger.finer("Using auth info: User: " + user +
+                    ", Password: " + (ok(password) ? "<non-null>" : "<null>"));
+                if (user != null || password != null)
+                    url.setAuthenticationInfo(
+                        new AuthenticationInfo(user, password));
+
+                urlConnection = (HttpURLConnection)
+                        url.openConnection(uriString.toString());
+                urlConnection.setRequestProperty("User-Agent", responseFormatType);
+
+                if (shouldSendCredentials) {
+                    urlConnection.setRequestProperty(
+                            HttpConnectorAddress.AUTHORIZATION_KEY,
+                            url.getBasicAuthString());
+                }
+                urlConnection.setRequestMethod(httpMethod);
+                urlConnection.setReadTimeout(readTimeout);
+                if (connectTimeout >= 0)
+                    urlConnection.setConnectTimeout(connectTimeout);
+                addAdminIndicatorHeaderIfReqd(urlConnection);
+                cmd.doCommand(urlConnection);
+                logger.finer("doHttpCommand succeeds");
+            } catch (AuthenticationException authEx) {
+                
+                logger.log(Level.FINER, "DAS has challenged for credentials");
+
+                /*
+                 * The DAS has challenged us to provide valid credentials.
+                 *
+                 * We might have sent the request without credentials previously
+                 * (because the connection was not secure, typically). In that case,
+                 * retry using the caller provided credentials (if there are any).
+                 */
+                if ( ! usedCallerProvidedCredentials) {
+                    logger.log(Level.FINER, "Have not tried caller-supplied credentials yet; will do that next");
+                    usedCallerProvidedCredentials = true;
+                    shouldSendCredentials = true;
+                    shouldTryCommandAgain = true;
+                    continue;
+                }
+                /*
+                 * We already tried the caller-provided credentials.  Try to
+                 * update the credentials if we haven't already done so.
+                 */
+                logger.log(Level.FINER, "Already used caller-supplied credentials");
+                if (askedUserForCredentials) {
+                    /*
+                     * We already updated the credentials once, and the updated
+                     * ones did not work.  No recourse.
+                     */
+                    logger.log(Level.FINER, "Already tried with updated credentials; cannot authenticate");
+                    throw authEx;
+                }
+
+                /*
+                 * Try to update the creds.
+                 */
+                logger.log(Level.FINER, "Have not yet tried to update credentials, so will try to update them");
+                if ( ! updateAuthentication()) {
+                    /*
+                     * No updated credentials are avaiable, so we
+                     * have no more options.
+                     */
+                    logger.log(Level.FINER, "Could not update credentials; cannot authenticate");
+                    throw authEx;
+                }
+                /*
+                 * We have another set of credentials we can try.
+                 */
+                logger.log(Level.FINER, "Was able to update the credentials so will retry with the updated ones");
+                askedUserForCredentials = true;
+                shouldSendCredentials = true;
+                shouldTryCommandAgain = true;
+                continue;
+
+            } catch (ConnectException ce) {
+                logger.finer("doHttpCommand: connect exception " + ce);
+                // this really means nobody was listening on the remote server
+                // note: ConnectException extends IOException and tells us more!
+                String msg = strings.get("ConnectException", host, port + "");
+                throw new CommandException(msg, ce);
+            } catch (UnknownHostException he) {
+                logger.finer("doHttpCommand: host exception " + he);
+                // bad host name
+                String msg = strings.get("UnknownHostException", host);
+                throw new CommandException(msg, he);
+            } catch (SocketException se) {
+                logger.finer("doHttpCommand: socket exception " + se);
+                try {
+                    boolean serverAppearsSecure = NetUtils.isSecurePort(host, port);
+                    if (serverAppearsSecure && !secure) {
+                        if (retryUsingSecureConnection(host, port)) {
+                            // retry using secure connection
+                            shouldUseSecure = true;
+                            shouldSendCredentials = true;
+                            usedCallerProvidedCredentials = true;
+                            shouldTryCommandAgain = true;
+                            continue;
                         }
-                        return;
                     }
+                    throw new CommandException(se);
+                } catch(IOException io) {
+                    // XXX - logger.printExceptionStackTrace(io);
+                    throw new CommandException(io);
                 }
-                throw new CommandException(se);
-            } catch(IOException io) {
-                // XXX - logger.printExceptionStackTrace(io);
-                throw new CommandException(io);
-            }
-        } catch (SSLException se) {
-            logger.finer("doHttpCommand: SSL exception " + se);
-            try {
-                boolean serverAppearsSecure = NetUtils.isSecurePort(host, port);
-                if (!serverAppearsSecure && secure) {
-                    logger.severe(strings.get("ServerIsNotSecure",
-                                                host, port + ""));
+            } catch (SSLException se) {
+                logger.finer("doHttpCommand: SSL exception " + se);
+                try {
+                    boolean serverAppearsSecure = NetUtils.isSecurePort(host, port);
+                    if (!serverAppearsSecure && secure) {
+                        logger.severe(strings.get("ServerIsNotSecure",
+                                                    host, port + ""));
+                    }
+                    throw new CommandException(se);
+                } catch(IOException io) {
+                    // XXX - logger.printExceptionStackTrace(io);
+                    throw new CommandException(io);
                 }
-                throw new CommandException(se);
-            } catch(IOException io) {
-                // XXX - logger.printExceptionStackTrace(io);
-                throw new CommandException(io);
+            } catch (IOException e) {
+                logger.finer("doHttpCommand: IO exception " + e);
+                throw new CommandException(
+                    strings.get("IOError", e.getMessage()), e);
+            } catch (CommandException e) {
+                throw e;
+            } catch (Exception e) {
+                // logger.log(Level.FINER, "doHttpCommand: exception", e);
+                logger.finer("doHttpCommand: exception " + e);
+                ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                e.printStackTrace(new PrintStream(buf));
+                logger.finer(buf.toString());
+                throw new CommandException(e);
             }
-        } catch (IOException e) {
-            logger.finer("doHttpCommand: IO exception " + e);
-            throw new CommandException(
-                strings.get("IOError", e.getMessage()), e);
-        } catch (CommandException e) {
-            throw e;
-        } catch (Exception e) {
-            // logger.log(Level.FINER, "doHttpCommand: exception", e);
-            logger.finer("doHttpCommand: exception " + e);
-            ByteArrayOutputStream buf = new ByteArrayOutputStream();
-            e.printStackTrace(new PrintStream(buf));
-            logger.finer(buf.toString());
-            throw new CommandException(e);
-        }
+        } while (shouldTryCommandAgain);
     }
 
     /**
