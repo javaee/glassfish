@@ -39,7 +39,7 @@ package com.sun.enterprise.security.ssl;
 
 import com.sun.enterprise.security.GUIErrorDialog;
 import com.sun.enterprise.security.LoginDialog;
-import org.glassfish.internal.api.MasterPassword;
+import org.glassfish.security.common.MasterPassword;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;

@@ -1,8 +1,9 @@
 /*
+ * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
+ * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +11,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +20,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,53 +34,53 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.security.ssl;
 
-import org.glassfish.security.common.MasterPassword;
-import org.glassfish.security.common.MasterPassword;
-import com.sun.enterprise.security.store.PasswordAdapter;
-import java.io.IOException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.util.Arrays;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.Singleton;
+package com.sun.enterprise.configapi.tests;
+
+import org.glassfish.config.support.GlassFishDocument;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.DomDocument;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigModel;
+import org.junit.Ignore;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
+import com.sun.grizzly.config.dom.*;
+import com.sun.enterprise.config.serverbeans.BackendPrincipal;
 
 /**
- * A contract to pass the Glassfish master password between the admin module and
- * the security module.
- *
- * @author Sudarsan Sridhar
+ * @author: Bhakti Mehta
  */
-@Service(name="Security SSL Password Provider Service")
-@Scoped(Singleton.class)
-public class MasterPasswordImpl implements MasterPassword, PreDestroy {
+public  class PasswordAliasTest extends ConfigApiTest  {
 
-    private char[] _masterPassword;
+    BackendPrincipal bp1  ;
+    final String ALIAS_TOKEN = "ALIAS";
 
-    @Override
-    public void setMasterPassword(char[] masterPassword) {
-        _masterPassword = Arrays.copyOf(masterPassword, masterPassword.length);
+    @Before
+    public void setup() {
+        bp1 = super.getHabitat().getComponent(BackendPrincipal.class);
     }
 
-    @Override
-    public PasswordAdapter getMasterPasswordAdapter() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
-        PasswordAdapter passwordAdapter = new PasswordAdapter(_masterPassword);
-        return passwordAdapter;
+    @Test
+    public void passwordAttributeTest() throws NoSuchMethodException {
+
+        String starter = "${" + ALIAS_TOKEN + "="; //no space is allowed in starter
+
+        String password = bp1.getPassword();
+        //Currently the habitat.getByContract(MasterPassword is null)
+        
+        assertTrue(password!=null);
+        //assertTrue(!password.startsWith(starter));
+
+
     }
 
-    char[] getMasterPassword() {
-        if (_masterPassword == null) {
-            return null;
-        }
-        return Arrays.copyOf(_masterPassword, _masterPassword.length);
-    }
 
-    @Override
-    public void preDestroy() {
-        Arrays.fill(_masterPassword, ' ');
-    }
 }

@@ -93,7 +93,7 @@ import com.sun.enterprise.security.jmac.config.CallbackHandlerConfig;
 import com.sun.enterprise.security.jmac.config.GFServerConfigProvider;
 import com.sun.enterprise.security.jmac.config.HandlerContext;
 import com.sun.enterprise.security.ssl.SecuritySupportImpl;
-import org.glassfish.internal.api.MasterPassword;
+import org.glassfish.security.common.MasterPassword;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.logging.LogDomains;

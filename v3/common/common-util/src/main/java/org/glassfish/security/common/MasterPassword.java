@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.internal.api;
+package org.glassfish.security.common;
 
 import com.sun.enterprise.security.store.PasswordAdapter;
 import java.io.IOException;

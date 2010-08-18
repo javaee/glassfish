@@ -37,7 +37,7 @@
 package com.sun.enterprise.security.ssl;
 
 import com.sun.enterprise.security.LoginDialog;
-import org.glassfish.internal.api.MasterPassword;
+import org.glassfish.security.common.MasterPassword;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;

@@ -41,6 +41,7 @@ import java.io.File;
 
 import com.sun.enterprise.util.i18n.StringManagerBase;
 import com.sun.logging.LogDomains;
+import org.glassfish.security.common.MasterPassword;
 
 import com.sun.enterprise.security.store.PasswordAdapter;
 import java.io.IOException;

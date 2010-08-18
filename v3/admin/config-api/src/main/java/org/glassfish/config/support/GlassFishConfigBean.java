@@ -88,6 +88,7 @@ public final class GlassFishConfigBean extends ConfigBean {
 
     @Override
     public <T extends ConfigBeanProxy> T createProxy(Class<T> proxyType) {
+        TranslatedConfigView.setHabitat(habitat);
         if (defaultView==null) {
             defaultView = new TranslatedConfigView(this);
         }

@@ -41,7 +41,7 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.security.store.IdentityManagement;
 import com.sun.enterprise.glassfish.bootstrap.StartupContextUtil;
-import org.glassfish.internal.api.MasterPassword;
+import org.glassfish.security.common.MasterPassword;
 import org.glassfish.internal.api.Init;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
