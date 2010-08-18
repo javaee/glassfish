@@ -150,7 +150,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         _rendezvousOccurred = rendezvousOccurred();
         if (_rendezvousOccurred) {
             throw new CommandException(
-                    Strings.get("Instance.rendezvousAlready", instanceName, DASHost, "" + DASPort));
+                    Strings.get("Instance.rendezvousAlready", instanceName));
         }
     }
 
@@ -297,15 +297,10 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
 
     private boolean rendezvousWithDAS() {
         try {
-            logger.printMessage(Strings.get("Instance.rendezvousAttempt", DASHost, "" + DASPort));
-            boolean success = false;
-            RemoteCommand rc = new RemoteCommand("uptime", this.programOpts, this.env);
-            int exitCode = rc.execute("uptime");
-            if (exitCode == 0) {
-                logger.printMessage(Strings.get("Instance.rendezvousSuccess", DASHost, "" + DASPort));
-                success = true;
-            }
-            return success;
+            //logger.printMessage(Strings.get("Instance.rendezvousAttempt", DASHost, "" + DASPort));
+            getUptime();
+            logger.printMessage(Strings.get("Instance.rendezvousSuccess", DASHost, "" + DASPort));
+            return true;
         } catch (CommandException ex) {
             return false;
         }
@@ -352,14 +347,11 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         boolean isRegistered = false;
         try {
             RemoteCommand rc = new RemoteCommand("get", this.programOpts, this.env);
-            int exitCode = rc.execute("get", INSTANCE_DOTTED_NAME);
-            if (exitCode == SUCCESS) {
-                isRegistered = true;
-            }
+            rc.executeAndReturnOutput("get", INSTANCE_DOTTED_NAME);
+            isRegistered = true;
         } catch (CommandException ex) {
-            logger.printDebugMessage("asadmin get " + INSTANCE_DOTTED_NAME + " failed.");
-            logger.printDebugMessage(instanceName +" may not be registered yet to DAS.");
-            //logger.printExceptionStackTrace(ex);
+            logger.printDebugMessage(instanceName +" is not yet registered to DAS.");
+            isRegistered=false;
         }
         return isRegistered;
     }
@@ -377,27 +369,18 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
                 logger.printDebugMessage("rendezvousOccurred = " + val + " for instance " + instanceName);
             }
         } catch (CommandException ce) {
-            logger.printDebugMessage("Remote command failed:");
-            if (rc != null) {
-                logger.printDebugMessage(rc.toString());
-            }
-            logger.printDebugMessage(RENDEZVOUS_PROPERTY_NAME+" property may not be set yet on instance " + instanceName);
-            if (ce.getLocalizedMessage() != null) {
-                logger.printDebugMessage(ce.getLocalizedMessage());
-            }
-            //logger.printExceptionStackTrace(ce);
+            logger.printDebugMessage(RENDEZVOUS_PROPERTY_NAME+" property may not be set yet on " + instanceName);
         }
         return rendezvousOccurred;
     }
 
-    private int setRendezvousOccurred(String rendezVal) throws CommandException {
+    private void setRendezvousOccurred(String rendezVal) throws CommandException {
         String dottedName = RENDEZVOUS_DOTTED_NAME + "=" + rendezVal;
         RemoteCommand rc = new RemoteCommand("set", this.programOpts, this.env);
         if (CLILogger.isDebug()) {
             logger.printDebugMessage("Setting rendezvousOccurred to " + rendezVal + " for instance " + instanceName);
-            logger.printDebugMessage(rc.toString());
         }
-        return rc.execute("set", dottedName);
+        rc.executeAndReturnOutput("set", dottedName);
     }
 
     private int createNodeImplicit(String name, String installdir, String nodeHost) throws CommandException {
