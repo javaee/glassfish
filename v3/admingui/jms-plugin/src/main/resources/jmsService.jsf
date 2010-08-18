@@ -52,9 +52,13 @@
             setPageSessionAttribute(key="convertToFalseList" value={"reconnectEnabled"});
 
             setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
-            //guiLog(message="***** objectNameStr = #{pageSession.objectNameStr}");
-            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-            //guiLog(message="***** valueMap = #{pageSession.valueMap}");
+
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config");
+            setPageSessionAttribute(key="childType", value="config");
+            setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.configName}/jms-service");
+            setPageSessionAttribute(key="rest-api" value="true");
+            gf.restRequest(endpoint="#{pageSession.selfUrl}", method="get", result="#{pageSession.result}");
+            setPageSessionAttribute(key="valueMap", value="#{pageSession.result.data.extraProperties.entity}");
 
             getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
 
@@ -81,8 +85,8 @@
                             mapPut(map="#{attrs}", key="name", value="tempConnectionPool");
                             mapPut(map="#{attrs}", key="connectionDefinitionName", value="javax.jms.QueueConnectionFactory");
                             mapPut(map="#{attrs}", key="resourceAdapterName", value="jmsra");
-                            createProxy(parentObjectNameStr="amx:pp=/domain,type=resources",
-                                childType="connector-connection-pool", attrs="#{attrs}");
+                            // TODO: REST
+                            createProxy(parentObjectNameStr="amx:pp=/domain,type=resources", childType="connector-connection-pool", attrs="#{attrs}");
                             pingJms(poolName="tempConnectionPool");
                             deleteChild(objectNameStr="amx:pp=/domain,type=resources",type="connector-connection-pool",name="tempConnectionPool");
                         />
@@ -121,13 +125,8 @@
                             <sun:property id="hostProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Host}" helpText="$resource{i18njms.jms.HostHelp}">
                                 <sun:dropDown id="Host" labels="$pageSession{jmsHostList}" selected="#{pageSession.valueMap['defaultJmsHost']}">
                                     <!beforeCreate
-                                        getChildrenByType(parentObjectNameStr="#{pageSession.objectNameStr}" type="jms-host" result="#{pageSession.jmsHosts}");
-            
-                                        getListBoxOptions(
-                                            availableList="#{pageSession.jmsHosts}",
-                                            selectedCommaString="name",
-                                            availableListResult="#{pageSession.jmsHostList}");
-                                        //guiLog(message="***** jmsHostList = #{pageSession.jmsHostList}");
+                                        gf.getChildrenNamesList(endpoint="#{pageSession.selfUrl}/jms-host", result="#{pageSession.jmsHosts}");
+                                        getListBoxOptions( availableList="#{pageSession.jmsHosts}", selectedCommaString="name", availableListResult="#{pageSession.jmsHostList}");
                                     />
                                 </sun:dropDown>
                             </sun:property>
