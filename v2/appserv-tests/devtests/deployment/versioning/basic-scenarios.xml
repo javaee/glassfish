@@ -2,58 +2,159 @@
     BASIC SCENARIOS TARGETS
 -->
 
+<!-- runs only on PE mode-->
+<target name="autodeploy.scenario" if="PE">
+    <antcall target="autodeploy.version">
+        <param name="versionExpression" value="${identifier.2}"/>
+        <param name="xmlVersionIdentifier" value="${identifier.2}"/>
+    </antcall>
+
+    <antcall target="test.registred">
+        <param name="versionExpression" value="${identifier.2}"/>
+    </antcall>
+</target>
+
+<!--
+    xml.version.information: test the retrieval of the version information
+    contained in the version-identifier element of the glassfish deployment descriptor
+-->
+<target name="xml.version.information">
+    <antcall target="clean.scenario"/>
+    <!--
+        deploys an untagged version containing a version-identifier elements
+        in its GlassFish Deployment Descriptor XML file.
+    -->
+    <antcall target="deploy.version">
+        <param name="force" value="true"/>
+        <param name="xmlVersionIdentifier" value="${identifier.1}"/>
+        <param name="dontUseNameOption" value="true"/>
+    </antcall>
+     <!-- test that version ${identifier.1} is registred -->
+    <antcall target="test.registred">
+        <param name="versionExpression" value="${identifier.1}"/>
+        <param name="description" value="xml.version(1)"/>
+    </antcall>
+     <!-- undeploys the version ${identifier.1} -->
+    <antcall target="undeploy.version">
+        <param name="versionExpression" value="${identifier.1}"/>
+    </antcall>
+
+    <!--
+        deploys explicitly the version ${identifier.2} that contains a version-identifier
+        elements with another value in its GlassFish Deployment Descriptor XML file
+        by providing the versioning syntax to the deploy command name option.
+    -->
+    <antcall target="deploy.version">
+        <param name="force" value="true"/>
+        <param name="versionExpression" value="${identifier.2}"/>
+	<param name="xmlVersionIdentifier" value="${identifier.1}"/>
+    </antcall>
+    <!-- test that the deployed version running is ${identifier.2} -->
+    <antcall target="test.registred">
+        <param name="versionExpression" value="${identifier.2}"/>
+        <param name="description" value="xml.version(2)"/>
+    </antcall>
+
+    <!-- undeploys the version ${identifier.2} -->
+    <antcall target="undeploy.version">
+        <param name="versionExpression" value="${identifier.2}"/>
+    </antcall>
+
+    <!-- Simple deploiment using jsr88. File mode -->
+    <antcall target="deploy.version.jsr88">
+        <param name="versionExpression" value="${identifier.1}"/>
+        <param name="xmlVersionIdentifier" value="${identifier.1}"/>
+    </antcall>
+
+    <antcall target="test.registred">
+        <param name="versionExpression" value="${identifier.1}"/>
+        <param name="description" value="xml.version(3) deploy jsr88"/>
+    </antcall>
+
+    <antcall target="deploy.version.jsr88">
+        <param name="versionExpression" value="${identifier.4}"/>
+        <param name="xmlVersionIdentifier" value="${identifier.4}"/>
+    </antcall>
+
+    <antcall target="test.registred">
+        <param name="versionExpression" value="${identifier.4}"/>
+        <param name="description" value="xml.version(4) deploy jsr88"/>
+    </antcall>
+
+    <!-- Force deployment using jsr88. File mode -->
+    <antcall target="redeploy.version.jsr88">
+        <param name="versionExpression" value="${identifier.4}"/>
+        <param name="xmlVersionIdentifier" value="${identifier.4}"/>
+    </antcall>
+
+    <antcall target="test.registred">
+        <param name="versionExpression" value="${identifier.4}"/>
+        <param name="description" value="xml.version(5) redeploy jsr88"/>
+    </antcall>
+
+    <antcall target="autodeploy.scenario">
+        <param name="description" value="xml.version(6) autodeploy"/>
+    </antcall>
+</target>
+
 <!--
     deployment: deploys the set of version, to process the tests the
     deployWithTest's param is required (true value)
 -->
-<target name="deployment">
+<target name="deployment" depends="clean.scenario">
     <!-- deploys the untagged version -->
     <antcall target="deploy.version">
         <param name="force" value="true"/>
     </antcall>
-    <!-- test that the deployed version running is the untagged -->
-    <antcall target="run.positive.deploy"/>
-    
+    <!-- test that the deployed -->
+    <antcall target="run.positive.deploy">
+      <param name="description" value="deployment(1) untagged"/>
+    </antcall>
+
     <!-- deploys the ${identifier.1} -->
     <antcall target="deploy.version">
         <param name="force" value="true"/>
-        <param name="identifier" value="${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
     <!-- test that the deployed version running is ${identifier.1} -->
     <antcall target="run.positive.deploy">
-        <param name="versionIdentifier" value="${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
+        <param name="description" value="deployment(2) ${identifier.1}"/>
     </antcall>
 
     <!-- deploys the ${identifier.2} -->
     <antcall target="deploy.version">
         <param name="enabled" value="false"/>
         <param name="force" value="true"/>
-        <param name="identifier" value="${identifier.2}"/>
+        <param name="versionExpression" value="${identifier.2}"/>
     </antcall>
     <!-- test that the deployed version running is ${identifier.1} -->
     <antcall target="run.positive.deploy">
-        <param name="versionIdentifier" value="${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
+        <param name="description" value="deployment(3) ${identifier.2} (enabled=false)"/>
     </antcall>
 
     <!-- deploys the ${identifier.3} -->
     <antcall target="deploy.version">
         <param name="enabled" value="false"/>
         <param name="force" value="true"/>
-        <param name="identifier" value="${identifier.3}"/>
+        <param name="versionExpression" value="${identifier.3}"/>
     </antcall>
     <!-- test that the deployed version running is ${identifier.1} -->
     <antcall target="run.positive.deploy">
-        <param name="versionIdentifier" value="${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
+        <param name="description" value="deployment(4) ${identifier.3} (enabled=false)"/>
     </antcall>
 
     <!-- deploys the ${identifier.4} -->
     <antcall target="deploydir.version">
         <param name="force" value="true"/>
-        <param name="identifier" value="${identifier.4}"/>
+        <param name="versionExpression" value="${identifier.4}"/>
     </antcall>
     <!-- test that the deployed version running is ${identifier.4} -->
     <antcall target="run.positive.deploy">
-        <param name="versionIdentifier" value="${identifier.4}"/>
+        <param name="versionExpression" value="${identifier.4}"/>
+        <param name="description" value="deployment(5) ${identifier.4}"/>
     </antcall>
 </target>
 
@@ -62,37 +163,37 @@
     <antcall target="undeploy.version"/>
     <!-- test that the untagged version isn't registred -->
     <antcall target="test.notregistred">
-        <param name="description" value="undeployment"/>
+        <param name="description" value="undeployment(1) untagged"/>
     </antcall>
 
     <!-- undeploys all the version -->
     <antcall target="undeploy.version">
-        <param name="expression" value="${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
     <!-- test that the version ${identifier.1} isn't registred -->
     <antcall target="test.notregistred">
-        <param name="description" value="undeployment"/>
-        <param name="identifier" value="${identifier.1}"/>
+        <param name="description" value="undeployment(2) ${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
 
     <!-- undeploys all the ${qualifier.1} version -->
     <antcall target="undeploy.version">
-        <param name="expression" value="${qualifier.1}*"/>
+        <param name="versionExpression" value="${qualifier.1}*"/>
     </antcall>
     <!-- test that the version ${identifier.2} isn't registred -->
     <antcall target="test.notregistred">
-        <param name="description" value="undeployment"/>
-        <param name="identifier" value="${identifier.2}"/>
+        <param name="description" value="undeployment(3) ${qualifier.1}*"/>
+        <param name="versionExpression" value="${identifier.2}"/>
     </antcall>
 
     <!-- undeploys all the versions -->
     <antcall target="undeploy.version">
-        <param name="expression" value="*"/>
+        <param name="versionExpression" value="*"/>
     </antcall>
     <!-- test that the version ${identifier.3} isn't registred -->
     <antcall target="test.notregistred">
-        <param name="description" value="undeployment"/>
-        <param name="identifier" value="${identifier.3}"/>
+        <param name="description" value="undeployment(4) *"/>
+        <param name="versionExpression" value="${identifier.3}"/>
     </antcall>
 </target>
 
@@ -101,38 +202,37 @@
     <antcall target="disable.version"/>
     <!-- test that the untagged version is disabled -->
     <antcall target="run.negative">
-        <param name="description" value="deactivation"/>
+        <param name="description" value="deactivation(1) untagged"/>
     </antcall>
 
     <!-- disables the version ${identifier.1} -->
     <antcall target="disable.version">
-        <param name="expression" value="${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
     <!-- test that the version ${identifier.1} is disabled -->
     <antcall target="run.negative">
-        <param name="description" value="deactivation"/>
-        <param name="versionIdentifier" value="${identifier.1}"/>
+        <param name="description" value="deactivation(2) ${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
 
     <!-- disables all the ${qualifier.1} version(s) -->
     <antcall target="disable.version">
-        <param name="expression" value="${qualifier.1}*"/>
+        <param name="versionExpression" value="${qualifier.1}*"/>
     </antcall>
     <!-- test that the version ${identifier.1} is disabled -->
     <antcall target="run.negative">
-        <param name="description" value="deactivation"/>
-        <param name="versionIdentifier" value="${identifier.1}"/>
+        <param name="description" value="deactivation(3) ${qualifier.1}*"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
 
-    <!-- enables the version ${identifier.3} for the test -->
     <!-- disables all the versions -->
     <antcall target="disable.version">
-        <param name="expression" value="*"/>
+        <param name="versionExpression" value="*"/>
     </antcall>
     <!-- test that the version ${identifier.3} isn't registred -->
     <antcall target="run.negative">
-        <param name="description" value="deactivation"/>
-        <param name="versionIdentifier" value="${identifier.3}"/>
+        <param name="description" value="deactivation(4) *"/>
+        <param name="versionExpression" value="${identifier.3}"/>
     </antcall>
 </target>
 
@@ -142,47 +242,47 @@
     <antcall target="enable.version"/>
     <!-- test that the untagged version is enabled  -->
     <antcall target="run.positive">
-        <param name="description" value="switch"/>
+        <param name="description" value="switch(1) untagged"/>
     </antcall>
 
     <!-- enables the ${identifier.1} -->
     <antcall target="enable.version">
-        <param name="identifier" value="${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
     <!-- test that the the ${identifier.1} version is enabled  -->
     <antcall target="run.positive">
-        <param name="description" value="switch"/>
-        <param name="versionIdentifier" value="${identifier.1}"/>
+        <param name="description" value="switch(2) ${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
 
     <!-- enables the ${identifier.2} -->
     <antcall target="enable.version">
-        <param name="identifier" value="${identifier.2}"/>
+        <param name="versionExpression" value="${identifier.2}"/>
     </antcall>
     <!-- test that the the ${identifier.2} version is enabled  -->
     <antcall target="run.positive">
-        <param name="description" value="switch"/>
-        <param name="versionIdentifier" value="${identifier.2}"/>
+        <param name="description" value="switch(3) ${identifier.2}"/>
+        <param name="versionExpression" value="${identifier.2}"/>
     </antcall>
 
     <!-- enables the ${identifier.3} -->
     <antcall target="enable.version">
-        <param name="identifier" value="${identifier.3}"/>
+        <param name="versionExpression" value="${identifier.3}"/>
     </antcall>
     <!-- test that the ${identifier.3} version is enabled  -->
     <antcall target="run.positive">
-        <param name="description" value="switch"/>
-        <param name="versionIdentifier" value="${identifier.3}"/>
+        <param name="description" value="switch(4) ${identifier.3}"/>
+        <param name="versionExpression" value="${identifier.3}"/>
     </antcall>
 
     <!-- enables the ${identifier.4} -->
     <antcall target="enable.version">
-        <param name="identifier" value="${identifier.4}"/>
+        <param name="versionExpression" value="${identifier.4}"/>
     </antcall>
     <!-- test that the the ${identifier.4} version is enabled  -->
     <antcall target="run.positive">
-        <param name="description" value="switch"/>
-        <param name="versionIdentifier" value="${identifier.4}"/>
+        <param name="description" value="switch(5) ${identifier.4}"/>
+        <param name="versionExpression" value="${identifier.4}"/>
     </antcall>
 </target>
 
@@ -195,7 +295,7 @@
     <antcall target="redeploy.version"/>
     <!-- test that the deployed version running is the untagged -->
     <antcall target="run.positive">
-        <param name="description" value="redeployment"/>
+        <param name="description" value="redeployment(1) untagged"/>
     </antcall>
     <!-- deploys the untagged version with force=true -->
     <antcall target="deploy.version">
@@ -203,79 +303,78 @@
     </antcall>
     <!-- test that the deployed version running is the untagged -->
     <antcall target="run.positive">
-        <param name="description" value="redeployment"/>
+        <param name="description" value="redeployment(2) untagged"/>
     </antcall>
-
     <!-- redeployment scenario of the ${identifier.1} version -->
-    <!-- deploys the untagged version -->
     <antcall target="deploy.version">
-        <param name="identifier" value="${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
     <!-- redeploys using redeploy command -->
     <antcall target="redeploy.version">
-        <param name="identifier" value="${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
     <!-- test that the deployed version running is the ${identifier.1} -->
     <antcall target="run.positive">
-        <param name="description" value="redeployment"/>
-        <param name="versionIdentifier" value="${identifier.1}"/>
+        <param name="description" value="redeployment(3) ${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
     <!-- deploys the ${identifier.1} version with force=true -->
     <antcall target="deploy.version">
         <param name="force" value="true"/>
-        <param name="identifier" value="${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
     <!-- test that the deployed version running is the ${identifier.1} -->
     <antcall target="run.positive">
-        <param name="description" value="redeployment"/>
-        <param name="versionIdentifier" value="${identifier.1}"/>
+        <param name="description" value="redeployment(4) ${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
 </target>
 
 <target name="versioned.vs.unversioned">
     <antcall target="clean.scenario"/>
     <!-- deploys an untagged version in v2 style -->
-    <antcall target="deploy.v2">
-        <param name="applicationName" value="${untaggedName}"/>
+    <antcall target="deploy.version">
+        <param name="dontUseNameOption" value="true"/>
     </antcall>
     <!-- test that the deployed version running is the untagged version -->
     <antcall target="run.positive">
-        <param name="description" value="versioned.vs.unversioned"/>
+        <param name="description" value="versioned.vs.unversioned(1) untagged"/>
     </antcall>
     <!-- disable the untagged version -->
     <antcall target="disable.version"/>
      <!-- test that the deployed version running is not the untagged version -->
     <antcall target="run.negative">
-        <param name="description" value="versioned.vs.unversioned"/>
+        <param name="description" value="versioned.vs.unversioned(2) untagged"/>
     </antcall>
     <!-- deploys the ${identifier.1} version -->
     <antcall target="deploy.version">
-        <param name="identifier" value="${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
     <!-- test that the deployed version running is the ${identifier.1} -->
     <antcall target="run.positive">
-        <param name="description" value="versioned.vs.unversioned"/>
-        <param name="versionIdentifier" value="${identifier.1}"/>
+        <param name="description" value="versioned.vs.unversioned(3) ${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
 </target>
 
-<target name="client-stubs">
+<target name="client-stubs" if="PE">
     <antcall target="clean.scenario"/>
     <!-- deploys an untagged version and retrieve the stubs -->
     <antcall target="deploy.version"/>
     <antcall target="get-client-stubs.asadmin">
-        <param name="appName" value="${untaggedName}"/>
         <param name="stubsPath" value="."/>
+        <param name="description" value="get-client-stubs(1) untagged"/>
     </antcall>
 
     <!-- deploys a specific version and retrieve the stubs -->
     <antcall target="deploy.version">
-        <param name="identifier" value="${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
 
     <antcall target="get-client-stubs.asadmin">
-        <param name="appName" value="${untaggedName}:${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
         <param name="stubsPath" value="."/>
+        <param name="description" value="get-client-stubs(2) ${identifier.1}"/>
     </antcall>
 </target>
 <target name="samples.scenarios">
@@ -283,75 +382,75 @@
     <!-- deploys an untagged version -->
     <antcall target="deploy.version"/>
     <antcall target="run.positive">
-        <param name="description" value="sample.scenarios"/>
+        <param name="description" value="sample.scenarios(1)"/>
     </antcall>
     <!-- deploys the same version, but has to force -->
     <antcall target="deploy.version">
         <param name="force" value="true"/>
     </antcall>
     <antcall target="run.positive">
-        <param name="description" value="sample.scenarios"/>
+        <param name="description" value="sample.scenarios(2)"/>
     </antcall>
     <!-- deploys a specific version -->
     <antcall target="deploy.version">
-        <param name="identifier" value="${identifier.1}"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
     <antcall target="run.positive">
-        <param name="description" value="sample.scenarios"/>
-        <param name="versionIdentifier" value="${identifier.1}"/>
+        <param name="description" value="sample.scenarios(3)"/>
+        <param name="versionExpression" value="${identifier.1}"/>
     </antcall>
     <!-- deploys a specific version in a disable state -->
     <antcall target="deploy.version">
-        <param name="identifier" value="${identifier.2}"/>
+        <param name="versionExpression" value="${identifier.2}"/>
         <param name="enabled" value="false"/>
     </antcall>
     <antcall target="run.negative">
-        <param name="description" value="sample.scenarios"/>
-        <param name="versionIdentifier" value="${identifier.2}"/>
+        <param name="description" value="sample.scenarios(4)"/>
+        <param name="versionExpression" value="${identifier.2}"/>
     </antcall>
 
     <!-- enables the previously deployed version ${identifier.2} -->
     <antcall target="enable.version">
-        <param name="identifier" value="${identifier.2}"/>
+        <param name="versionExpression" value="${identifier.2}"/>
     </antcall>
     <antcall target="run.positive">
-        <param name="description" value="sample.scenarios"/>
-        <param name="versionIdentifier" value="${identifier.2}"/>
+        <param name="description" value="sample.scenarios(5)"/>
+        <param name="versionExpression" value="${identifier.2}"/>
     </antcall>
     <!-- deploys a new specific version (enable state) -->
     <antcall target="deploy.version">
-        <param name="identifier" value="${identifier.3}"/>
+        <param name="versionExpression" value="${identifier.3}"/>
     </antcall>
     <antcall target="run.positive">
-        <param name="description" value="sample.scenarios"/>
-        <param name="versionIdentifier" value="${identifier.3}"/>
+        <param name="description" value="sample.scenarios(6)"/>
+        <param name="versionExpression" value="${identifier.3}"/>
     </antcall>
     <!-- undeploys all the version qualified by ${qualifier.1} -->
     <antcall target="undeploy.version">
-        <param name="expression" value="${qualifier.1}*"/>
+        <param name="versionExpression" value="${qualifier.1}*"/>
     </antcall>
     <!--
         test that version ${identifier.2} isn't registred because
         it's qualified by ${qualifier.1}, see build.properties
     -->
     <antcall target="test.notregistred">
-        <param name="identifier" value="${identifier.2}"/>
-        <param name="description" value="sample.scenarios"/>
+        <param name="versionExpression" value="${identifier.2}"/>
+        <param name="description" value="sample.scenarios(7)"/>
     </antcall>
     <!-- switch to the untagged version -->
     <antcall target="enable.version"/>
     <antcall target="run.positive">
-        <param name="description" value="sample.scenarions"/>
+        <param name="description" value="sample.scenarions(8)"/>
     </antcall>
     <!-- undeploys all the versions -->
     <antcall target="undeploy.version">
-        <param name="expression" value="*"/>
+        <param name="versionExpression" value="*"/>
     </antcall>
     <antcall target="test.notregistred">
-        <param name="description" value="sample.scenarios"/>
-        <param name="identifier" value="${identifier.3}"/>
+        <param name="description" value="sample.scenarios(9)"/>
+        <param name="versionExpression" value="${identifier.3}"/>
     </antcall>
     <antcall target="test.notregistred">
-        <param name="description" value="sample.scenarios"/>
+        <param name="description" value="sample.scenarios(10)"/>
     </antcall>
 </target>

@@ -6,15 +6,27 @@
 
 <project name="versioning" default="all" basedir=".">
 
-	&commonBuild;
+    &commonBuild;
 
-    <!-- Only run the tests in PE mode till all tests pass in EE -->
-    <target name="private-all" if="PE">
-        <!--
-            Build the versioning devtests with simple-version-servlet
-        -->
-        <ant dir="simple-versionned-servlet" target="private-all">
-            <property name="build" value="${build}/simple-versionned-servlet"/>
-        </ant>
+    <target name="private-all">
+      <!-- play some versioning devtests scenarios with simple-version-servlet -->
+      <ant dir="simple-versioned-servlet" target="private-all">
+          <property name="build" value="${build}/simple-versioned-servlet"/>
+      </ant>
+
+      <!-- play some versioning devtests scenarios with simple-versioned-appclient -->
+      <ant dir="simple-versioned-appclient" target="private-all">
+          <property name="build" value="${build}/simple-versioned-appclient"/>
+      </ant>
+      
+      <!-- play some versioning devtests scenarios with simple-versioned-ejb -->
+      <ant dir="simple-versioned-ejb" target="private-all">
+        <property name="build" value="${build}/simple-versioned-ejb"/>
+      </ant>
+
+      <!-- play some versioning devtests scenarios with simple-versioned-ear -->
+      <ant dir="simple-versioned-ear" target="private-all">
+        <property name="build" value="${build}/simple-versioned-ear"/>
+      </ant>
     </target>
 </project>

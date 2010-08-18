@@ -1,556 +1,750 @@
+<!-- GLOBAL PROPERTIES -->
+<property name="autodeployDir" value="${appserver.instance.dir}/autodeploy"/>
+<property name="clientStubsDir" value="${build}/${untaggedName}Client-stubs"/>
+
 <!--
-    VERSION HANDLING TARGETS
+  HANDLING COMMANDS TARGETS, usable for making versioning scenarios
 -->
 
-<!-- create.version: create the archive of a version -->
-<target name="create.version" depends="prepare">
-    <condition property="appName"
-        value="${untaggedName}" else="${untaggedName}:${identifier}">
-            <not>
-                <isset property="identifier"/>
-            </not>
-    </condition>
+<!--
+  Deploys the given version if not registred, force=true can be supply to redeploy.
+  @param ${versionExpression} (optional)
+  @param ${xmlVersionIdentifier} (optional)
+  @param ${dontUseNameOption} (optional)
+  @param ${force} (optional)
+-->
+<target name="deploy.version">
+  <antcall target="del.ref.registred"/>
+  <antcall target="deploy.version.unregistred"/>
+</target>
 
-    <condition property="fileNotExist">
-        <not>
-            <available file="${build}/${appName}.${packaging}"/>
-        </not>
-    </condition>
+<!--
+  Deploys the given version from it's directory if not registred, force=true can be supply to redeploy.
+  @param ${versionExpression} (optional)
+  @param ${xmlVersionIdentifier} (optional)
+  @param ${dontUseNameOption} (optional)
+  @param ${force} (optional)
+-->
+<target name="deploydir.version" depends="process.appname,create.version,unzip.version,deploy.version"/>
 
-    <!-- war creation -->
-    <antcall target="assemble.non-existent">
-        <param name="archiveFile" value="${build}/${appName}.${packaging}"/>
-        <param name="classPath" value="${build}"/>
+<!--
+  Redeploys the given version
+  @param ${versionExpression} (optional)
+-->
+<target name="redeploy.version" depends="process.appname,prepare.cluster">
+  <antcall target="common.redeploy.asadmin">
+    <param name="arg.list" value="--name ${appName} ${build}/${appName}.${packaging}"/>
+  </antcall>
+</target>
+
+<!--
+  Enables the given version
+  @param ${versionExpression} (optional)
+-->
+<target name="enable.version" depends="process.appname,prepare.cluster">
+  <antcall target="common.enable.asadmin">
+    <param name="arg.list" value="${appName}"/>
+  </antcall>
+</target>
+
+<!--
+  Disables the given version(s)
+  @param ${versionExpression} (optional)
+-->
+<target name="disable.version" depends="process.appname,prepare.cluster">
+  <antcall target="common.disable.asadmin">
+    <param name="arg.list" value="${appName}"/>
+  </antcall>
+</target>
+
+<!--
+  Undeploys the given version(s)
+  @param ${versionExpression} (optional)
+-->
+<target name="undeploy.version" depends="process.appname,prepare.cluster">
+  <antcall target="common.undeploy.asadmin">
+    <param name="arg.list" value="${appName}"/>
+  </antcall>
+</target>
+
+<!--
+  Deploys the given version with JSR88
+  @param ${versionExpression} (optional)
+  @param ${xmlVersionIdentifier} (optional)
+-->
+<target name="deploy.version.jsr88" depends="prepare.version.jsr88,common.deploy.jsr88"/>
+
+<!--
+  Redeploys the given version with JSR88
+  @param ${versionExpression} (optional)
+-->
+<target name="redeploy.version.jsr88" depends="prepare.version.jsr88">
+    <antcall target="common.run.jsr88">
+        <param name="command" value="redeploy"/>
+        <param name="arg.list" value="true ${arg.list}"/>
     </antcall>
 </target>
+
 <!--
-    deploy.version.smart: deploys a version's archive, this target is called
-    by deploy.version to process only if the given version isn't registred.
+  Deploys the given version with autodeploy directory, available only in PE mode
+  @param ${versionExpression} (optional)
+  @param ${xmlVersionIdentifier} (optional)
 -->
-<target name="deploy.version.unregistred" if="versionNotRegistred">
-    <!--  deployment of a version -->
-    <!-- retrieve the enabled param -->
-    <condition property="enabledState" value="false" else="true">
-        <and>
-            <isset property="enabled"/>
-            <not><istrue value="${enabled}"/></not>
-        </and>
-    </condition>
+<target name="autodeploy.version" if="PE">
+  <antcall target="_autodeploy.version"/>
+</target>
+<!-- the parent target intend to block the dependency resolution if PE isn't defined -->
+<target name="_autodeploy.version" depends="process.appname,create.version">
+    <!-- Copy the module in the autodeploy directory -->
+    <copy file="${build}/${appName}.${packaging}" todir="${autodeployDir}"/>
+    <!-- Wait for the module deployment (timout 10s) -->
+    <waitfor maxwait="6" maxwaitunit="second" checkevery="500">
+        <available file="${autodeployDir}/${appName}.${packaging}_deployed"/>
+    </waitfor>
+    <!-- clean the autodeploy directory -->
+    <delete file="${autodeployDir}/${appName}.${packaging}"/>
+    <delete file="${autodeployDir}/${appName}.${packaging}_deployed"/>
+    <delete file="${autodeployDir}/.autodeploystatus/${appName}.${packaging}"/>
+ </target>
+
+<!--
+    TESTS TARGETS, usable for making versioning scenarios
+-->
+
+<!--
+  Test that the given version is running
+  @param ${versionExpression} (optional)
+  @param ${description} (optional, but very important for investigations)
+
+  This target duplicate the run.positive, to have the possible to run the
+  deployment scenario without performing the tests.
+-->
+<target name="run.positive.deploy" if="withTest">
+  <antcall target="run.positive"/>
+</target>
+
+<!--
+  Test that the given version is running or not running
+  @param ${versionExpression} (optional)
+  @param ${description} (optional, but very important for investigations)
+-->
+<target name="run" depends="run.positive"/>
+<target name="run.positive" depends="prepare.client, prepare.run, common.run.positive"/>
+<target name="run.negative" depends="prepare.client, prepare.run, common.run.negative"/>
+
+<!--
+  Test that the given version is registred or not on the ${testServer} target.
+  In clustering mode, the default target that is used is ${testCluster},
+  but we have also to test the ${testServer} references.
+  
+  @param ${versionExpression} (optional)
+  @param ${description} (optional, but very important for investigations)
+-->
+<target name="test.registred.cluster" if="doCluster">
+  <antcall target="show-component-status.asadmin">
+    <param name="direction" value="true"/>
+    <param name="targetName" value="${testServer}"/>
+  </antcall>
+</target>
+<target name="test.notregistred.cluster" if="doCluster">
+  <antcall target="show-component-status.asadmin">
+    <param name="direction" value="false"/>
+    <param name="targetName" value="${testServer}"/>
+  </antcall>
+</target>
+
+<!--
+  Test that the given version is registred or not
+  @param ${versionExpression} (optional)
+  @param ${description} (optional, but very important for investigations)
+-->
+<target name="test.registred">
+  <antcall target="show-component-status.asadmin">
+    <param name="direction" value="true"/>
+  </antcall>
+  <antcall target="test.registred.cluster"/>
+</target>
+<target name="test.notregistred">
+  <antcall target="show-component-status.asadmin">
+    <param name="direction" value="false"/>
+  </antcall>
+  <antcall target="test.notregistred.cluster"/>
+</target>
+
+<!-- 
+  PROPERTIES PROCESSING TARGETS, not directly usable for making scenarios
+-->
+
+<target name="process.versionExpression" unless="versionExpression">
+  <condition property="versionExpression" value="">
+    <not><isset property="versionExpression"/></not>
+  </condition>
+</target>
+<target name="process.classpath">
+  <condition property="classpath" value="">
+    <not><isset property="classpath"/></not>
+  </condition>
+</target>
+<target name="process.jvmargs">
+  <condition property="jvm.args" value="">
+    <not><isset property="jvm.args"/></not>
+  </condition>
+</target>
+<target name="process.appname" unless="appName" depends="process.versionExpression">
+  <condition property="appName"
+             value="${untaggedName}" else="${untaggedName}:${versionExpression}">
+    <equals arg1="${versionExpression}" arg2=""/>
+  </condition>
+</target>
+<target name="process.enabled" unless="enabled">
+  <condition property="enabled" value="">
+    <not><isset property="enabled"/></not>
+  </condition>
+</target>
+<target name="process.xmlversionidentifier" unless="xmlVersionIdentifier">
+  <condition property="xmlVersionIdentifier" value="">
+    <not><isset property="xmlVersionIdentifier"/></not>
+  </condition>
+</target>
+<target name="process.registred">
+  <condition property="notRegistred">
+    <or>
+      <and>
+        <isset property="result"/>
+        <equals arg1="${result}" arg2="1"/>
+      </and>
+    </or>
+  </condition>
+</target>
+<target name="process.hasToDeploy">
+  <condition property="hasToDeploy">
+    <or>
+      <isset property="notRegistred"/>
+      <and>
+        <isset property="force"/>
+        <istrue value="${force}"/>
+      </and>
+    </or>
+  </condition>
+</target>
+<target name="process.versionexpression">
+  <condition property="versionExpression" value="">
+    <not><isset property="versionExpression"/></not>
+  </condition>
+</target>
+<target name="process.result">
+  <condition property="newResult" value="0">
+    <and>
+      <equals arg1="${result}" arg2="1"/>
+      <equals arg1="${direction}" arg2="false"/>
+      <isset property="direction"/>
+    </and>
+  </condition>
+  <condition property="newResult" value="1">
+    <and>
+      <equals arg1="${result}" arg2="0"/>
+      <isset property="direction"/>
+      <equals arg1="${direction}" arg2="false"/>
+    </and>
+  </condition>
+  <condition property="newResult" value="${result}">
+    <or>
+      <not><isset property="direction"/></not>
+      <equals arg1="${direction}" arg2="true"/>
+    </or>
+  </condition>
+  <antcall target="processResult">
+    <param name="result" value="${newResult}"/>
+    <param name="log" value="${build}/${log.next}.output.log"/>
+  </antcall>
+</target>
+<target name="_process.target">
+  <condition property="targetName" value="${testServer}">
+    <and>
+      <isset property="EE"/>
+      <not><isset property="doCluster"/></not>
+    </and>
+  </condition>
+  <condition property="targetName" value="${testCluster}">
+    <isset property="doCluster"/>
+  </condition>
+  <condition property="targetName" value="server">
+    <not><isset property="target"/></not>
+  </condition>
+</target>
+<target name="process.target" depends="_process.target">
+  <property name="target" value="--target=${targetName}"/>
+</target>
+<target name="process.xml.delete.flag">
+  <condition property="hasToDeleteXmlFlag">
+    <equals arg1="${xmlVersionIdentifier}" arg2=""/>
+  </condition>
+</target>
+<target name="process.xml.create.flag" depends="process.versionExpression">
+  <condition property="hasToCreateXmlFlag">
+     <not><equals arg1="${xmlVersionIdentifier}" arg2=""/></not>
+  </condition>
+</target>
+
+<!--
+  CONFIGURATION TARGETS, not directly usable for making scenarios
+-->
+
+<target name="prepare.update.xml.identifier" depends="process.xmlversionidentifier" if="hasToUpdateXmlVersion">
+  <property name="archiveFile" value="${build}/${appName}.${packaging}"/>
+</target>
+<target name="prepare.is.version.registred" depends="process.appname,process.target">
+  <property name="outputLog" value="${build}/test-is-version-registred.log"/>
+  <property name="errorLog" value="${outputLog}"/>
+  <property name="arg2.list" value="show-component-status ${target} ${appName}"/>
+</target>
+<target name="prepare.has.version.registred" depends="process.appname,process.target">
+  <property name="outputLog" value="${build}/test-has-version-registred.log"/>
+  <property name="errorLog" value="${outputLog}"/>
+  <property name="arg2.list" value="show-component-status ${target} ${untaggedName}:*"/>
+</target>
+<target name="prepare.is.ref.registred" if="doCluster" depends="process.appname">
+  <property name="outputLog" value="${build}/test-is-ref-registred.log"/>
+  <property name="errorLog" value="${outputLog}"/>
+  <property name="arg2.list" value="show-component-status --target ${testServer} ${appName}"/>
+</target>
+<target name="prepare.has.ref.registred" if="doCluster">
+  <property name="outputLog" value="${build}/test-has-ref-registred.log"/>
+  <property name="errorLog" value="${outputLog}"/>
+  <property name="arg2.list" value="show-component-status --target ${testServer} ${untaggedName}:*"/>
+</target>
+<target name="prepare.del.all.version.registred" unless="notRegistred" depends="process.target">
+  <property name="outputLog" value="${build}/clean-scenario.log"/>
+  <property name="errorLog" value="${outputLog}"/>
+  <property name="arg.list" value="undeploy ${target} ${untaggedName}:*"/>
+</target>
+<target name="prepare.clean.scenario.cluster" if="doCluster" unless="notRegistred" depends="process.target">
+  <property name="outputLog" value="${build}/clean-scenario.log"/>
+  <property name="errorLog" value="${outputLog}"/>
+  <property name="arg.list" value="delete-application-ref --target=${testServer} ${untaggedName}:*"/>
+</target>
+<target name="prepare.run" depends="increment.log.next,process.versionexpression">
+  <loadproperties srcFile="log.properties"/>
+  <property name="extra.args" value="${versionExpression}"/>
+  <property name="desc" value="${description} - logID=${log.next}"/>
+  <property name="log.id" value="${log.next}"/>
+</target>
+<target name="prepare.cluster" if="doCluster" depends="process.versionExpression,process.xmlversionidentifier">
+  <condition property="testIdentifier" value="${versionExpression}" else="${xmlVersionIdentifier}">
+    <or>
+      <equals arg1="${versionExpression}" arg2="${xmlVersionIdentifier}"/>
+      <and>
+        <not><isset property="dontUseNameOption"/></not>
+        <not><equals arg1="${versionExpression}" arg2="${xmlVersionIdentifier}"/></not>
+        <not><equals arg1="${versionExpression}" arg2=""/></not>
+      </and>
+    </or>
+  </condition>
+  <condition property="testName" value="${untaggedName}:${testIdentifier}" else="${untaggedName}">
+    <not><equals arg1="${testIdentifier}" arg2=""/></not>
+  </condition>
+</target>
+<target name="prepare.show-component-status.asadmin" depends="process.appname, process.target">
+  <property name="arg.list" value="show-component-status ${target} ${appName}"/>
+  <property name="desc" value="${description}"/>
+</target>
+<target name="prepare.get-client-stubs.asadmin" depends="process.appname,process.target">
+  <property name="arg.list" value="get-client-stubs --appname=${appName} ${stubsPath}"/>
+  <property name="desc" value="${description}"/>
+</target>
+<target name="prepare.version.jsr88" depends="process.appname,create.version">
+    <property name="arg.list" value="${build}/${appName}.${packaging}"/>
+</target>
+<target name="prepare.appclient.preparator">
+  <property name="classname" value="${preparatorClassName}"/>
+  <property name="outputLog" value="${build}/getJwsClientStubs.log"/>
+  <property name="classpath" value="${build}"/>
+  <property name="arg.list" value="http://${http.host}:${depltest.port}/${untaggedName} ${build}"/>
+</target>
+<target name="prepare.runclient">
+  <!-- set jvm.args="" if notset previously -->
+  <condition property="jvm.args" value="${jvm.arguments}" else="">
+    <isset property="jvm.arguments"/>
+  </condition>
+  <!-- build the classpath property -->
+  <condition property="classpath" value="${build}" else="${runClientClassPath}">
+    <not><isset property="runClientClassPath"/></not>
+  </condition>
+  <property name="classname" value="${classRunclient}"/>
+  <property name="outputLog" value="${build}/${log.id}.output.log"/>
+</target>
+
+<!--
+  INTERNAL TESTS TARGET, not directly usable for making scenarios
+-->
+
+<!--
+  if the given version isn't registred, the property notRegistred will be created.
+  @param ${versionExpression} (optional)
+-->
+<target name="is.version.registred" depends="prepare.is.version.registred,exec.asadmin2,process.registred"/>
+<!--
+  if no version are registred, the property notRegistred will be created.
+  @param ${versionExpression} (optional)
+-->
+<target name="has.version.registred" depends="prepare.has.version.registred,exec.asadmin2,process.registred"/>
+<!--
+  if the given version ref isn't registred, the property notRegistred will be created.
+  @param ${versionExpression} (optional)
+-->
+<target name="is.ref.registred" depends="prepare.is.ref.registred,exec.asadmin2,process.registred"/>
+<!--
+  if no version ref(s) are registred, the property notRegistred will be created.
+  @param ${versionExpression} (optional)
+-->
+<target name="has.ref.registred" depends="prepare.has.ref.registred,exec.asadmin2,process.registred"/>
+
+<!--
+  INTERNAL CLEANING TARGET
+-->
+
+<!--
+  Undeploys and delete all the versions and their references, only if registred
+  Very usefull for writing scenarios
+-->
+<target name="clean.scenario">
+  <antcall target="clean.scenario.cluster"/>
+  <antcall target="_clean.scenario"/>
+</target>
+<target name="_clean.scenario" depends="prepare,has.version.registred,del.all.version.registred"/>
+<target name="clean.scenario.cluster" if="doCluster">
+  <antcall target="_clean.scenario.cluster"/>
+</target>
+<target name="_clean.scenario.cluster" depends="prepare, has.ref.registred, del.all.ref.registred"/>
+
+<!-- del all the version references if registred -->
+<target name="del.all.ref.registred" if="doCluster" unless="notRegistred">
+  <antcall target="_del.all.ref.registred"/>
+</target>
+<target name="_del.all.ref.registred" depends="prepare.clean.scenario.cluster, exec.asadmin"/>
+<!-- del the given version reference if registred -->
+<target name="del.ref.registred" if="doCluster">
+  <antcall target="_del.ref.registred"/>
+</target>
+<target name="_del.ref.registred" unless="notRegistred" depends="prepare.cluster,is.ref.registred">
+  <antcall target="delAppRef"/>
+</target>
+<!-- del all the version if registred -->
+<target name="del.all.version.registred" unless="notRegistred">
+  <antcall target="_del.all.version.registred"/>
+</target>
+<target name="_del.all.version.registred" depends="prepare.del.all.version.registred, exec.asadmin"/>
+
+<!--
+  INTERNAL TARGETS, not directly usable for making scenarios
+-->
+
+<!--
+  Performs a test with a show-component-status command
+  Test result is based on return code
+  @param ${xmlVersionIdentifier} (optional)
+-->
+<target name="show-component-status.asadmin" depends="prepare.show-component-status.asadmin, asadmin.with.result"/>
+
+<!--
+  Performs a test with a get-client-stubs command, available only in PE mode
+  Test result is based on return code
+  @param ${xmlVersionIdentifier} (optional)
+-->
+<target name="get-client-stubs.asadmin" if="PE">
+  <antcall target="_get-client-stubs.asadmin"/>
+</target>
+<target name="_get-client-stubs.asadmin" depends="prepare.get-client-stubs.asadmin, asadmin.with.result"/>
+
+<!--
+  Performs a test with an asadmin command
+  @param ${outputLog} (required)
+  @param ${errorLog} (required)
+  @param ${arg.list} (required)
+-->
+<target name="asadmin.with.result" depends="declare.test,exec.asadmin,process.result"/>
+
+<!--
+  Deploys a version if not registred or if force=true is provided
+  @param ${force} (optional)
+  @param ${dontUseNameOption} (optional)
+  @param ${xmlVersionIdentifier} (optional)
+  @param ${versionExpression} (optional)
+-->
+<target name="deploy.version.unregistred" if="hasToDeploy" depends="is.version.registred,prepare.cluster,process.enabled,process.hasToDeploy">
     <!-- retrieve the force param -->
     <condition property="forceState" value="true" else="false">
+    <and>
+      <isset property="force"/>
+      <istrue value="${force}"/>
+    </and>
+  </condition>
+
+  <!-- build  ${useNameOption} -->
+  <condition property="useNameOption" value="true">
+    <not><isset property="dontUseNameOption"/></not>
+  </condition>
+  <antcall target="create.version"/>
+  <antcall target="deployWithNameOption"/>
+  <antcall target="deployWithoutNameOption"/>
+</target>
+<target name="deployWithNameOption" if="useNameOption">
+  <antcall target="common.deploy.asadmin">
+    <param name="arg.list" value="
+           --enabled ${enabled}
+           --force=${forceState}
+           --name=${appName}
+           ${build}/${appName}.${packaging}"/>
+  </antcall>
+</target>
+<target name="deployWithoutNameOption" if="dontUseNameOption">
+  <antcall target="common.deploy.asadmin">
+    <param name="arg.list" value="
+           --enabled ${enabled}
+           --force=${forceState}
+           ${build}/${appName}.${packaging}"/>
+  </antcall>
+</target>
+
+<!--
+  Creates a version archive, if the archive already exist, we just update it
+  @param ${xmlVersionIdentifier} (optional)
+  @param ${versionExpression} (optional)
+-->
+<target name="create.version" depends="prepare, process.appname">
+  <condition property="fileNotExist">
+    <not><available file="${build}/${appName}.${packaging}"/></not>
+  </condition>
+  <!-- archive creation -->
+  <antcall target="assemble.non-existent">
+    <param name="archiveFile" value="${build}/${appName}.${packaging}"/>
+    <param name="classPath" value="${build}"/>
+  </antcall>
+  <!-- update the xmlVersionIdentifier if needed to avoid unexpected behavior -->
+  <condition property="hasToUpdateXmlVersion" value="true">
+    <and>
+      <!-- file exists -->
+      <not><isset property="fileNotExist"/></not>
+      <or>
+        <available file="${build}/${appName}-hasXmlVersion"/>
         <and>
-            <isset property="force"/>
-            <istrue value="${force}"/>
+          <isset property="xmlVersionIdentifier"/>
+          <not><equals arg1="${xmlVersionIdentifier}" arg2=""/></not>
         </and>
-    </condition>
-
-    <!--
-        build appName property for untaggedName in case where identifier not set
-    -->
-    <condition property="appName"
-        value="${untaggedName}" else="${untaggedName}:${identifier}">
-        <not>
-            <isset property="identifier"/>
-        </not>
-    </condition>
-
-    <!-- deployment ... -->
-    <antcall target="deploy.asadmin">
-        <param name="arg.list" value="
-            --enabled=${enabledState}
-            --force=${forceState}
-            --name=${appName}
-            ${build}/${appName}.${packaging}"/>
-    </antcall>
-</target>
-<!-- deploy.version: deploys a version's archive if it's not registred -->
-<target name="deploy.version" depends="create.version">
-    <condition property="appName"
-        value="${untaggedName}" else="${untaggedName}:${identifier}">
-        <not>
-            <isset property="identifier"/>
-        </not>
-    </condition>
-    
-    <!-- try asadmin show-component-status -->
-    <exec executable="${ASADMIN}"
-        resultproperty="result"
-        failonerror="false"
-        output="${build}/test-before-deploy-version.log"
-        error="${build}/test-before-deploy-version.log"
-        append="yes">
-
-        <arg line="show-component-status ${appName}"/>
-    </exec>
-
-    <condition property="versionNotRegistred">
-        <or>
-            <and>
-                <isset property="result"/>
-                <equals arg1="${result}" arg2="1"/>
-            </and>
-            <and>
-                <isset property="force"/>
-                <istrue value="${force}"/>
-            </and>
-        </or>
-    </condition>
-
-    <antcall target="deploy.version.unregistred"/>
-</target>
-<!-- deploy.v2.unregistred process if versionNotRegistred isset -->
-<target name="deploy.v2.unregistred" if="versionNotRegistred">
-    <!-- deployment properties -->
-    <condition property="enabledState" value="false" else="true">
-        <and>
-            <isset property="enabled"/>
-            <not><istrue value="${enabled}"/></not>
-        </and>
-    </condition>
-    <!-- retrieve the force param -->
-    <condition property="forceState" value="true" else="false">
-        <and>
-            <isset property="force"/>
-            <istrue value="${force}"/>
-        </and>
-    </condition>
-    <!-- deployment ... -->
-    <antcall target="deploy.asadmin">
-        <param name="arg.list" value="
-            --enabled=${enabledState}
-            --force=${forceState}
-            ${build}/${applicationName}.${packaging}"/>
-    </antcall>
-</target>
-<!--
-    deploy.v2: process the deployment without specifying the
-    name option to asadmin deploy
--->
-<target name="deploy.v2" depends="create.version">
-    <!-- try asadmin show-component-status -->
-    <exec executable="${ASADMIN}"
-        resultproperty="result"
-        failonerror="false"
-        output="${build}/test-before-deploy-version.log"
-        error="${build}/test-before-deploy-version.log"
-        append="yes">
-
-        <arg line="show-component-status ${appName}"/>
-    </exec>
-    <!-- allows the use of force -->
-    <condition property="versionNotRegistred">
-        <or>
-            <and>
-                <isset property="result"/>
-                <equals arg1="${result}" arg2="1"/>
-            </and>
-            <and>
-                <isset property="force"/>
-                <istrue value="${force}"/>
-            </and>
-        </or>
-    </condition>
-    <antcall target="deploy.v2.unregistred"/>
-</target>
-<!-- deploydir.version: unzip the archive and deploy it from its directory -->
-<target name="deploydir.version" depends="create.version">
-    <antcall target="unzip.version">
-        <param name="applicationName" value="${untaggedName}:${identifier}"/>
-    </antcall>
-    <antcall target="deploy.version">
-        <param name="appName" value="${untaggedName}:${identifier}"/>
-    </antcall>
-</target>
-<!-- redeploy.version: redeploys a version -->
-<target name="redeploy.version">
-    <condition property="applicationName"
-        value="${untaggedName}" else="${untaggedName}:${identifier}">
-        <not>
-            <isset property="identifier"/>
-        </not>
-    </condition>
-    <antcall target="delAppRef">
-        <param name="testName" value="${testName}"/>
-    </antcall>
-    <antcall target="common.run.asadmin">
-        <param name="arg.list"
-               value="${redeploy} --name=${applicationName} ${build}/${applicationName}.${packaging}"/>
-    </antcall>
-    <antcall target="createAppRef">
-        <param name="testName" value="${testName}"/>
-    </antcall>
-</target>
-<!-- enable.version: enables a version -->
-<target name="enable.version">
-    <condition property="applicationName"
-        value="${untaggedName}" else="${untaggedName}:${identifier}">
-        <not>
-            <isset property="identifier"/>
-        </not>
-    </condition>
-    <antcall target="enable.asadmin">
-        <param name="arg.list" value="${applicationName}"/>
-    </antcall>
-</target>
-<!-- disable.version: disables a version -->
-<target name="disable.version">
-    <condition property="applicationName"
-        value="${untaggedName}" else="${untaggedName}:${expression}">
-        <not>
-            <isset property="expression"/>
-        </not>
-    </condition>
-    <antcall target="disable.asadmin">
-        <param name="arg.list" value="${applicationName}"/>
-    </antcall>
-</target>
-<!-- undeploy.version: undeploys a version -->
-<target name="undeploy.version">
-
-    <condition property="applicationName"
-        value="${untaggedName}" else="${untaggedName}:${expression}">
-        <not>
-            <isset property="expression"/>
-        </not>
-    </condition>
-
-    <antcall target="undeploy.asadmin">
-        <param name="arg.list" value="${applicationName}"/>
-    </antcall>
+      </or>
+    </and>
+  </condition>
+  <antcall target="update.xml.identifier"/>
 </target>
 
 <!--
-    VERSION SET HANDLING TARGETS
+  Updates a version archive: modify the xmlVersionIdentifier if needed
+  @param ${gfDDDir} (required)
+  @param ${gfDDFile} (required)
+  @param ${packaging} (required)
+  @param ${xmlVersionIdentifier} (optional)
+  @param ${versionExpression} (optional)
 -->
-
-<!-- create.version.set: create the archives of a version set -->
-<target name="create.version.set">
-    <!-- archive creation of untagged version -->
-    <antcall target="create.version"/>
-    
-    <!-- archive creation of ${identifier.1} -->
-    <antcall target="create.version">
-        <param name="identifier" value="${identifier.1}"/>
-    </antcall>
-
-    <!-- archive creation of ${identifier.2} -->
-    <antcall target="create.version">
-        <param name="identifier" value="${identifier.2}"/>
-    </antcall>
-
-    <!-- archive creation of ${identifier.3} -->
-    <antcall target="create.version">
-        <param name="identifier" value="${identifier.3}"/>
-    </antcall>
-
-    <antcall target="create.version">
-        <param name="identifier" value="${identifier.4}"/>
-    </antcall>
+<target name="update.xml.identifier" if="hasToUpdateXmlVersion" depends="prepare.update.xml.identifier">
+  <!-- extract only the GFDD -->
+  <unzip src="${archiveFile}" dest="${build}">
+    <patternset>
+      <include name="${gfDDDir}/${gfDDFile}"/>
+    </patternset>
+    <mapper type="flatten"/>
+  </unzip>
+  <antcall target="generate.xml.identifier">
+    <param name="xmlFile" value="${build}/${gfDDFile}"/>
+  </antcall>
+  <!-- creates the new archive -->
+  <zip destfile="${build}/tmp.${packaging}">
+    <zipfileset src="${archiveFile}">
+      <exclude name="${gfDDDir}/${gfDDFile}"/>
+    </zipfileset>
+    <zipfileset dir="${build}" prefix="${gfDDDir}">
+      <include name="${gfDDFile}"/>
+    </zipfileset>
+  </zip>
+  <!-- clean some files -->
+  <delete file="${archiveFile}"/>
+  <move file="${build}/tmp.${packaging}" tofile="${archiveFile}"/>
+  <delete file="${build}/${gfDDFile}" failonerror="false"/>
+  <antcall target="delete.xml.flag"/>
+</target>
+<!-- the flag is delete only when an empty value has been written -->
+<target name="delete.xml.flag" if="hasToDeleteXmlFlag" depends="process.xml.delete.flag">
+  <delete file="${build}/${appName}-hasXmlVersion" failonerror="false"/>
+</target>
+<!--  the flag is created only when a non-empty value is written -->
+<target name="create.xml.flag" if="hasToCreateXmlFlag" depends="process.xml.create.flag">
+  <touch file="${build}/${appName}-hasXmlVersion"/>
 </target>
 
 <!--
-    STUFF TARGETS
+  Updates the ${xmlVersionIdentifier} value in the appropriate GlassFish DD
 -->
-<target name="clean.scenario" depends="prepare">
-    <!-- cleaning process: undeploys all version -->
-    <exec executable="${ASADMIN}"
-        resultproperty="result"
-        failonerror="false"
-        output="${build}/clean-scenario.log"
-        error="${build}/clean-scenario.log"
-        append="yes">
+<target name="generate.xml.identifier" depends="process.xmlversionidentifier,create.xml.flag">
+  <replaceregexp file="${xmlFile}"
+                 match="&lt;version-identifier&gt;(.*)&lt;&#47;version-identifier&gt;"
+                 replace="&lt;version-identifier&gt;${xmlVersionIdentifier}&lt;&#47;version-identifier&gt;"
+                 byline="true"/>
+</target>
 
-        <arg line="undeploy ${untaggedName}:*"/>
-    </exec>
-</target>
-<target name="delete.log.next">
-    <delete file="log.properties"/>
-</target>
-<!-- increment the log number -->
-<target name="increment.log.next">
-    <propertyfile file="log.properties">
-        <entry key="log.next" default="0" type="int" operation="+" value="1"/>
-    </propertyfile>
-</target>
-<!--
-    assemble.smart: allows to avoid the target assemble when file exists.
-    called from the create.version's target
--->
-<target name="assemble.non-existent" if="fileNotExist">
-    <antcall target="assemble"/>
-</target>
-<target name="clobber" depends="clean, delete.log.next">
-    <delete dir="${build}"/>
-</target>
-<target name="usage">
-    <antcall target="all"/>
-</target>
-<target name="private-all" depends="delete.log.next">
-    <!-- TODO: check that GlassFish is running -->
-    <antcall target="main-all"/>
-    <antcall target="delete.log.next"/>
-</target>
+<!-- Unzip a the given version's archive for a directory deployment -->
 <target name="unzip.version">
-    <unzip src="${build}/${applicationName}.${packaging}"
-           dest="${build}/${applicationName}">
-    </unzip>
+  <unzip src="${build}/${appName}.${packaging}"
+         dest="${build}/${appName}">
+  </unzip>
 </target>
 
 <!--
-    TESTS DECLARATION TARGETS
--->
+  TESTS DECLARATIONS
 
-<!--
-    declare.test: declares the test, param direction should be provided to
-    specify the evaluation of the result property
+  These targets are used only with the following targets: test.registred, test.notregistred
 -->
-<target name="declare.test">
-    <condition property="runPositive">
-        <or>
-            <not><isset property="direction"/></not>
-            <equals arg1="${direction}" arg2="true"/>
-        </or>
-    </condition>
-    <condition property="runNegative">
-        <and>
-            <equals arg1="${direction}" arg2="false"/>
-            <isset property="direction"/>
-        </and>
-    </condition>
-    
-    <!--
+<target name="declare.test" depends="increment.log.next">
+  <loadproperties srcFile="log.properties"/>
+  <condition property="runPositive">
+    <or>
+      <not><isset property="direction"/></not>
+      <equals arg1="${direction}" arg2="true"/>
+    </or>
+  </condition>
+  <condition property="runNegative">
+    <and>
+      <equals arg1="${direction}" arg2="false"/>
+      <isset property="direction"/>
+    </and>
+  </condition>
+  <property name="outputLog" value="${build}/${log.next}.output.log"/>
+  <property name="errorLog" value="${outputLog}"/>
+  <!--
         add informations to the log : what we are expecting
         (a sucess or a fail)
     -->
-    <antcall target="declare.test.positive"/>
-    <antcall target="declare.test.negative"/>
+  <antcall target="declare.test.positive"/>
+  <antcall target="declare.test.negative"/>
 </target>
-
-<!-- log.test.positive: generate a log message that we expect a success -->
-<target name="declare.test.positive" if="runPositive">
-    <echo message="expected to succeed => "
-        file="${outputFile}"/>
-    <antcall target="declare-test">
-        <param name="description" value="${desc} - (sucess expected)"/>
-    </antcall>
+<target name="declare.test.positive" if="runPositive" depends="setHttpPort">
+  <echo message="expected to succeed => " file="${outputLog}"/>
+  <antcall target="declare-test">
+    <param name="description" value="${desc} - logID=${log.next} - (${targetName}) - (sucess expected)"/>
+  </antcall>
 </target>
-
-<!-- log.test.negative: generate a log message that we expect a fail -->
-<target name="declare.test.negative" if="runNegative">
-    <echo message="expected to fail => "
-        file="${outputFile}"/>
-    <antcall target="declare-test">
-        <param name="description" value="${desc} - (fail expected)"/>
-    </antcall>
+<target name="declare.test.negative" if="runNegative" depends="setHttpPort">
+  <echo message="expected to fail => " file="${outputLog}"/>
+  <antcall target="declare-test">
+    <param name="description" value="${desc} - logID=${log.next} - (${targetName}) - (fail expected)"/>
+  </antcall>
 </target>
 
 <!--
-    HANDLING COMMANDS TARGETS
+  INTERNAL EXECUTION TARGETS
 -->
 
 <!--
-    this target process as the existing target common.run.asasdmin and store
-    the result of the command into a property
+  @param ${outputLog} (required)
+  @param ${errorLog} (required)
+  @param ${arg.list} (required)
 -->
-<target name="asadmin.with.result">
-    <!-- increment the log number -->
-    <antcall target="increment.log.next"/>
-    <loadproperties srcFile="log.properties"/>
-
-    <!-- declare the test -->
-    <antcall target="declare.test">
-        <param name="outputFile" value="${build}/${log.next}.output.log"/>
-    </antcall>
-
-    <!-- process the command -->
-    <exec executable="${ASADMIN}"
+<target name="exec.asadmin" depends="prepare">
+  <exec executable="${ASADMIN}"
         resultproperty="result"
         failonerror="false"
-        output="${build}/${log.next}.output.log"
-        error="${build}/${log.next}.output.log"
+        output="${outputLog}"
+        error="${errorLog}"
         append="yes">
-
-        <arg line="${arg.list}"/>
-    </exec>
-    
-    <!--  re-evaluate the result property with the direction value -->
-    <condition property="newResult" value="0">
-        <and>
-            <equals arg1="${result}" arg2="1"/>
-            <equals arg1="${direction}" arg2="false"/>
-            <isset property="direction"/>
-        </and>
-    </condition>    
-    <condition property="newResult" value="1">
-        <and>
-            <equals arg1="${result}" arg2="0"/>
-            <isset property="direction"/>
-            <equals arg1="${direction}" arg2="false"/>
-        </and>
-    </condition>
-    <condition property="newResult" value="${result}">
-        <or>
-            <not><isset property="direction"/></not>
-            <equals arg1="${direction}" arg2="true"/>
-        </or>
-    </condition>
-
-    <antcall target="processResult">
-        <param name="result" value="${newResult}"/>
-        <param name="log" value="${build}/${log.next}.output.log"/>
-    </antcall>
+    <arg line="${arg.list}"/>
+  </exec>
 </target>
-<!-- runclient: parse a servlet's page and process the result -->
-<target name="runclient">
-    <antcall target="increment.log.next"/>
-    <loadproperties srcFile="log.properties"/>
-    <javaWithResult
-        fork="true"
+<!--
+  This target duplicates the previous as it's used to perform an asadmin command
+  before the real one. (for internal tests targets)
+  @param ${outputLog} (required)
+  @param ${errorLog} (required)
+  @param ${arg2.list} (required)
+-->
+<target name="exec.asadmin2" depends="prepare">
+  <exec executable="${ASADMIN}"
+        resultproperty="result"
         failonerror="false"
-        jvm="${JAVA}"
-        classname="${classRunclient}"
-        output="${build}/${log.next}.output.log"
-        resultproperty="result">
-        <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${http.host}"/>
-        <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
-        <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
-
-        <classpath>
-            <path location="${inst}/lib/j2ee.jar"/>
-            <path location="${build}"/>
-        </classpath>
-
-        <arg line="${arg.list}"/>
-    </javaWithResult>
-
-    <antcall target="processResult">
-        <param name="result" value="${result}"/>
-        <param name="log" value="${build}/${log.next}.output.log"/>
-    </antcall>
+        output="${outputLog}"
+        error="${errorLog}"
+        append="yes">
+    <arg line="${arg2.list}"/>
+  </exec>
 </target>
 
 <!--
-    RUNNING TESTS TARGET
+  This target is used to launch Java classes (clients, and others like for appclient)
+  @param ${outputLog} (required)
+  @param ${arg.list} (required)
+  @param ${classname} (required)
 -->
-
-<!-- test.registred: test if the application is registred -->
-<target name="test.registred">
-    <antcall target="show-component-status.asadmin">
-        <param name="direction" value="true"/>
-    </antcall>
-</target>
-<!-- test.notregistred: test if the application isn't registred -->
-<target name="test.notregistred">
-    <antcall target="show-component-status.asadmin">
-        <param name="direction" value="false"/>
-    </antcall>
-</target>
-<!--
-    deploy.test.positive: allows to run deploy.version.set without tests, the
-    deployWithTest property can be set when calling deploy.version.set.
-    Its allows to no run the tests when deploy scenario is a dependency.
--->
-<target name="run.positive.deploy" if="withTest">
-    <antcall target="run.positive">
-        <param name="description" value="deployment"/>
-    </antcall>
-</target>
-<target name="run" depends="run.positive"/>
-<target name="run.positive" depends="init">
-    <condition property="appName"
-        value="${untaggedName}" else="${untaggedName}:${versionIdentifier}">
-        <not>
-            <isset property="versionIdentifier"/>
-        </not>
-    </condition>
-    <condition property="versionIdentifier" value="">
-        <not>
-            <isset property="versionIdentifier"/>
-        </not>
-    </condition>
-
-    <antcall target="common.run.positive">
-        <param name="extra.args" value="${versionIdentifier}"/>
-        <param name="desc" value="${description}: ${appName}"/>
-    </antcall>
-</target>
-<target name="run.negative" depends="init">
-    <condition property="appName"
-        value="${untaggedName}" else="${untaggedName}:${versionIdentifier}">
-        <not>
-            <isset property="versionIdentifier"/>
-        </not>
-    </condition>
-    <condition property="versionIdentifier" value="">
-        <not>
-            <isset property="versionIdentifier"/>
-        </not>
-    </condition>
-    
-    <antcall target="common.run.negative">
-        <param name="extra.args" value="${versionIdentifier}"/>
-        <param name="desc" value="${description}: ${appName}"/>
-    </antcall>
+<target name="java.with.result" depends="process.classpath,process.jvmargs">
+  <javaWithResult
+    fork="true"
+    failonerror="false"
+    jvm="${JAVA}"
+    classname="${classname}"
+    classpath="${classpath}"
+    output="${outputLog}"
+    append="yes"
+    resultproperty="result">
+    <jvmarg line="${jvm.args}"/>
+    <arg line="${arg.list}"/>
+  </javaWithResult>
 </target>
 
 <!--
-    ASADMIN TARGETS
+ OTHER TARGETS
 -->
+<target name="delete.log.next">
+  <delete file="log.properties"/>
+</target>
+<target name="increment.log.next">
+  <propertyfile file="log.properties">
+    <entry key="log.next" default="0" type="int" operation="+" value="1"/>
+  </propertyfile>
+</target>
+<target name="assemble.non-existent" if="fileNotExist">
+  <antcall target="assemble"/>
+</target>
+<target name="clobber" depends="clean, delete.log.next">
+  <delete dir="${build}"/>
+</target>
+<target name="usage">
+  <antcall target="all"/>
+</target>
+<target name="private-all" depends="delete.log.next">
+  <antcall target="main-all"/>
+  <antcall target="delete.log.next"/>
+</target>
 
-<target name="deploy.asadmin" depends="init">
-    <antcall target="common.deploy.asadmin">
-        <param name="arg.list" value="${arg.list}"/>
-    </antcall>
-</target>
-<target name="redeploy.asadmin" depends="init">
-    <antcall target="common.redeploy.asadmin">
-        <param name="arg.list" value="${arg.list}"/>
-    </antcall>
-</target>
-<target name="undeploy.asadmin" depends="init">
-    <antcall target="common.undeploy.asadmin">
-        <param name="arg.list" value="${arg.list}"/>
-    </antcall>
-</target>
-<target name="enable.asadmin" depends="init">
-    <antcall target="common.enable.asadmin">
-        <param name="arg.list"
-               value="${arg.list}"/>
-    </antcall>
-</target>
-<target name="disable.asadmin" depends="init">
-    <antcall target="common.disable.asadmin">
-        <param name="arg.list"
-               value="${arg.list}"/>
-    </antcall>
-</target>
 <!--
-    show-component-status.asadmin: exec the asadmin command, and store the
-    result in a property in accordance with the expected state
+  prepare.client: this target intends to call the appropriate target before
+  the call to runClient target
 -->
-<target name="show-component-status.asadmin">
-    <!--
-        asadmin show-component-status fail if the application isn't
-        registred, we can verify for example that a version has been
-        undeployed correctly.
-     -->
-    <condition property="appName"
-        value="${untaggedName}" else="${untaggedName}:${identifier}">
-        <not>
-            <isset property="identifier"/>
-        </not>
-    </condition>
-
-    <antcall target="asadmin.with.result">
-        <param name="arg.list"
-               value="show-component-status ${appName}"/>
-        <param name="desc" value="${description}: show-component-status ${appName}"/>
-    </antcall>
+<target name="prepare.client" depends="init">
+  <condition property="isAppClient" value="true">
+    <and>
+      <isset property="appType"/>
+      <equals arg1="${appType}" arg2="appClient"/>
+    </and>
+  </condition>
+  <antcall target="prepare.client.appclient"/>
 </target>
 
-<target name="get-client-stubs.asadmin">
-    <antcall target="asadmin.with.result">
-        <param name="arg.list" value="get-client-stubs --appname=${appName} ${stubsPath}"/>
-        <param name="desc" value="get-client-stubs"/>
-    </antcall>
+<!--
+  prepare.client.appclient: this target is called before the runClient one.
+  It performs some extra processes needed for appclient.
+-->
+<target name="prepare.client.appclient" if="isAppClient">
+  <antcall target="_prepare.client.appclient"/>
 </target>
+<target name="_prepare.client.appclient" depends="setHttpPort,process.appname,prepare.appclient.preparator,java.with.result"/>
+
+<!--
+  This target is called with the following targets common.run, common.run.positive, common.run.negative
+-->
+<target name="runclient" depends="prepare.runclient,java.with.result,process.result"/>

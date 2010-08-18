@@ -286,6 +286,14 @@
     <property name="appclient.targetservers" value="localhost:${depltest.orbport}"/>
 </target>
 
+<target name="setEnabled">
+  <condition property="enabled" value="true">
+    <not>
+      <isset property="enabled"/>
+    </not>
+  </condition>
+</target>
+
 <!--
     The following target compiles all Java files that are used in custom Ant tasks and places them into a 
     jar file.  Subsequent taskdefs can then refer to the jar file.
@@ -497,11 +505,11 @@ AS_ADMIN_MASTERPASSWORD=changeit
 </target>
 
 
-<target name="createAppRef" depends="init" if="doCluster">
+<target name="createAppRef" depends="init,setEnabled" if="doCluster">
     <echo message="Create Application Reference for ${testName}"/>
     <antcall target="common.run.asadmin">
         <param name="arg.list" 
-               value="create-application-ref --user ${admin.user} --passwordfile ${passwordFile} --port ${admin.port} --target ${testServer} ${testName}"/>
+               value="create-application-ref --user ${admin.user} --passwordfile ${passwordFile} --port ${admin.port} --target ${testServer} --enabled ${enabled} ${testName}"/>
     </antcall>
 </target>
 
@@ -708,7 +716,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </antcall>
     <property name="clurl1" value="http://${http.host}:${deploy.clusterinstance1.httpport}/${link}"/>
     <antcall target="runclient">
-        <param name="arg.list" value="${clurl1} ${state}"/>
+        <param name="arg.list" value="${clurl1} ${state} ${extra.args}"/>
         <param name="log.id" value="${log.id}CL1"/>
     </antcall>
 </target>

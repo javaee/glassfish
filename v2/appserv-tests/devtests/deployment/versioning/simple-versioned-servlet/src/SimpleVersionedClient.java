@@ -12,6 +12,10 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ *
+ * @author Romain GRECOURT - SERLI (romain.grecourt@serli.com)
+ */
 public class SimpleVersionedClient {
 
     String url;
@@ -28,10 +32,15 @@ public class SimpleVersionedClient {
         }
     }
     
-    public void doTest() {
-        
+    public void doTest() {        
         try {
+            // this provides some usefull informations to investigate
             log("Test: devtests/deployment/versioning/simple-versioned-servlet");
+            if(testPositive){
+                log("this test is expected to succeed");
+            } else {
+                log("this test is expected to fail");
+            }
             TestResponse response = invokeServlet();
             report(response);
         } catch (IOException ex) {
@@ -105,7 +114,7 @@ public class SimpleVersionedClient {
 
     private void fail() {
         log("FAILED: devtests/deployment/versioning/simple-versioned-servlet");
-        System.exit(-1);
+        System.exit(1);
     }
 
     private class TestResponse{
