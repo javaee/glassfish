@@ -201,14 +201,16 @@ public abstract class TemplateListOfResource {
                     ConfigModel childModel = prop2.getModel();
                     Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); ///  a should be the typename
                     List<ConfigModel> lcm = parent.document.getAllModelsImplementing(subType);
-                    if (lcm != null) {
-                        for (ConfigModel cmodel : lcm) {
-                            if (cmodel.getTagName().equals(tagName)) {
-                                MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData2(parent,
-                                        cmodel, Constants.MESSAGE_PARAMETER);
-                                postMethodMetaData.setDescription("Update");
-                                map.put("POST", postMethodMetaData);
-                            }
+                    if (lcm == null) { //https://glassfish.dev.java.net/issues/show_bug.cgi?id=12654
+                        lcm = new ArrayList<ConfigModel>();
+                        lcm.add(childModel);
+                    }
+                    for (ConfigModel cmodel : lcm) {
+                        if (cmodel.getTagName().equals(tagName)) {
+                            MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData2(parent,
+                                    cmodel, Constants.MESSAGE_PARAMETER);
+                            postMethodMetaData.setDescription("Update");
+                            map.put("POST", postMethodMetaData);
                         }
                     }
                 } catch (ClassNotFoundException e) {
@@ -237,7 +239,8 @@ public abstract class TemplateListOfResource {
     public void setParentAndTagName(Dom parent, String tagName) {
         this.parent = parent;
         this.tagName = tagName;
-        entity = parent.nodeElements(tagName);
+        if (parent!=null)
+            entity = parent.nodeElements(tagName);
 
     }
 
@@ -353,6 +356,11 @@ public abstract class TemplateListOfResource {
     }
 
     protected ActionReportResult buildActionReportResult() {
+        if (entity == null) {//wrong resource
+            String errorMessage = localStrings.getLocalString("rest.resource.erromessage.noentity",
+                    "Resource not found.");
+            return ResourceUtil.getActionReportResult(404, errorMessage, requestHeaders, uriInfo);
+        }
         RestActionReporter ar = new RestActionReporter();
         final String typeKey = upperCaseFirstLetter((decode(getName(uriInfo.getPath(), '/'))));
         ar.setActionDescription(typeKey);
