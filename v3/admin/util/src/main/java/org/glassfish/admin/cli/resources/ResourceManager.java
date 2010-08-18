@@ -60,6 +60,7 @@ public interface ResourceManager {
      * @param target target 
      * @param requiresNewTransaction indicates whether the resource need to be created under a new transaction
      * @param createResourceRef flag indicating whether to create resource-ref for the resource or not
+     * @param requiresValidation indicates whether validation of attributes is required or not
      * @return ResourceStatus indicating the status of resource creation
      * @throws Exception when unable to create the resource
      */
