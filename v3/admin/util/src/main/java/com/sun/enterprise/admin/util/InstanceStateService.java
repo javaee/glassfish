@@ -49,6 +49,7 @@ import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -146,17 +147,11 @@ public class InstanceStateService implements Startup, PostConstruct {
         return s.getState();
     }
 
-    public String getFailedCommands(String instanceName) {
+    public List<String> getFailedCommands(String instanceName) {
         InstanceState s = instanceStates.get(instanceName);
         if(s == null)
-            return "";
-        List<String> cmds = s.getFailedCommands();
-        if( (cmds==null) || (cmds.size() == 0) )
-            return "";
-        String ret = "";
-        for(String z : cmds)
-            ret += (z + "; ");
-        return ret;
+            return new ArrayList<String>();
+        return(s.getFailedCommands());
     }
 
     public synchronized InstanceState.StateType setState(String name, InstanceState.StateType newState, boolean force) {

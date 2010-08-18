@@ -199,6 +199,7 @@ public class ListInstancesCommand implements AdminCommand {
         
         StringBuilder sb = new StringBuilder();
         boolean first = true;
+        Properties extraProps = new Properties();
 
         for (InstanceInfo ii : infos) {
             if(first) 
@@ -207,25 +208,37 @@ public class ListInstancesCommand implements AdminCommand {
                 sb.append(EOL);
             
             String name = ii.getName();
+            String display = (ii.isRunning()) ? InstanceState.StateType.RUNNING.getDisplayString() :
+                    InstanceState.StateType.NOT_RUNNING.getDisplayString();
+            String value = (ii.isRunning()) ? InstanceState.StateType.RUNNING.getDescription() :
+                    InstanceState.StateType.NOT_RUNNING.getDescription();
             InstanceState.StateType state = (ii.isRunning()) ?
                     (stateService.setState(name, InstanceState.StateType.RUNNING, false)) :
-                    (stateService.setState(name, InstanceState.StateType.NO_RESPONSE, false));
-            String display = state.getDisplayString();
+                    (stateService.setState(name, InstanceState.StateType.NOT_RUNNING, false));
+            List<String> failedCmds = stateService.getFailedCommands(name);
             if(state == InstanceState.StateType.RESTART_REQUIRED) {
-                display += (" [pending config changes are : " + stateService.getFailedCommands(name) + "]");
+                if(ii.isRunning()) {
+                    display += ("; " + InstanceState.StateType.RESTART_REQUIRED.getDisplayString());
+                    value += (";"+ InstanceState.StateType.RESTART_REQUIRED.getDescription());
+                }
+                String list = "";
+                for(String z : failedCmds)
+                    list += (z + "; ");
+                display += (" [pending config changes are : " + list + "]");
             }
-            String value = state.getDescription();
-            
+
             sb.append(name).append(display);
-            top.addProperty(name, value);
-            if (ii.isRunning()) top.addProperty(name + ".uptime", "" + ii.getUptime());
-            ActionReport.MessagePart child = top.addChild();
-            child.addProperty("name", name);
-            child.addProperty("status", value);
-            if(stateService.getState(name) == InstanceState.StateType.RESTART_REQUIRED) {
-                child.addProperty("restartReasons", stateService.getFailedCommands(name));
+            HashMap<String, Object> insDetails = new HashMap<String, Object>();
+            insDetails.put("name", name);
+            insDetails.put("status", value);
+            if(state == InstanceState.StateType.RESTART_REQUIRED) {
+                insDetails.put("restartReasons", failedCmds);
             }
+            if(ii.isRunning())
+                insDetails.put("uptime", ii.getUptime());
+            extraProps.put(name, insDetails);
         }
+        report.setExtraProperties(extraProps);
 
         if (verbose)
             report.setMessage(InstanceInfo.format(infos));
