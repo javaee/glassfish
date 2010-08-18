@@ -117,10 +117,17 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
             cluster.setHeartbeatPort(null);
 
             //gms-bind-interface is an attribute of cluster in 3.1
-            cluster.setGmsBindInterfaceAddress(String.format(
-                "${GMS-BIND-INTERFACE-ADDRESS-%s}",
-                cluster.getName()));
-           return cluster;
+            Property prop  = cluster.getProperty("gms-bind-interface-address");
+            if (prop != null && prop.getValue() != null) {
+                cluster.setGmsBindInterfaceAddress(prop.getValue());
+                List<Property> props = cluster.getProperty();
+                props.remove(prop);
+            } else {
+                cluster.setGmsBindInterfaceAddress(String.format(
+                        "${GMS-BIND-INTERFACE-ADDRESS-%s}",
+                        cluster.getName()));
+            }
+            return cluster;
         }
     }
 
@@ -158,9 +165,11 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
             } // else null for server-config
             //gms.setVsProtocolTimeoutInMillis(null);
 
-            value = gms.getPropertyValue("failure-detection-tcp-retransmit-timeout", "10000");
-            if (value != null ) {
-                fd.setVerifyFailureConnectTimeoutInMillis(value);
+            Property prop = gms.getProperty("failure-detection-tcp-retransmit-timeout");
+            if (prop != null && prop.getValue() != null ) {
+                fd.setVerifyFailureConnectTimeoutInMillis(prop.getValue().trim());
+                List<Property> props = gms.getProperty();
+                props.remove(prop);
             } //else v3.1 default value for VerifyFailureConnectTimeoutInMillis is sufficient.
 
             // remove v2.1 attributes that are no longer needed.  No info to transfer to v3.1 gms config.

@@ -289,7 +289,10 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
                 case BIND_INTERFACE_ADDRESS:
                     if (cluster != null) {
-                        String value = cluster.getGmsBindInterfaceAddress().trim();
+                        String value = cluster.getGmsBindInterfaceAddress();
+                        if (value != null) {
+                            value = value.trim();
+                        }
                         if (value != null && value.length() > 1 && value.charAt(0) != '$') {
 
                             // todo: remove check for value length greater than 1.
