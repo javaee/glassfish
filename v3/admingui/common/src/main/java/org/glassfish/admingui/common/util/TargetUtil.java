@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.glassfish.admingui.common.handlers.RestApiHandlers;
+import org.glassfish.admingui.common.handlers.RestUtilHandlers;
 
 /**
  *
@@ -62,22 +63,18 @@ public class TargetUtil {
     }
 
     public static List getStandaloneInstances(){
-        List result = new ArrayList();
+        List<String> result = new ArrayList<String>();
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/list-instances" ;
         Map attrsMap = new HashMap();
         attrsMap.put("standaloneonly", "true");
         try{
-            //TODO:  need to change when switching to json
             Map responseMap = RestApiHandlers.restRequest( endpoint , attrsMap, "get" , null);
-            ArrayList  messages = (ArrayList) responseMap.get("messages");
-            Map message = (Map) messages.get(0);
-            List<Map<String, String>> props = (List<Map<String, String>>) message.get("properties");
+            Map  dataMap = (Map) responseMap.get("data");
+            List<Map<String, Object>>  props = (List<Map<String, Object>>) dataMap.get("children");
             if (props == null){
                 return result;
             }
-            for(Map<String, String> oneProp : props){
-                result.add(oneProp.get("name"));
-            }
+            result.addAll(RestUtilHandlers.getListFromPropertiesList(props));
         }catch (Exception ex){
             GuiUtil.getLogger().severe("Error in getStandaloneInstances ; \nendpoint = " +endpoint + ", attrsMap=" + attrsMap);
         }
@@ -88,7 +85,7 @@ public class TargetUtil {
     public static List getClusters(){
         List clusters = new ArrayList();
         try{
-            clusters = RestApiHandlers.getChildList(GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster");
+            clusters.addAll(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster").keySet());
         }catch (Exception ex){
             GuiUtil.getLogger().severe("Error in getClusters;");
             ex.printStackTrace();

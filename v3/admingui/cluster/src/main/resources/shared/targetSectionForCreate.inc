@@ -41,12 +41,13 @@
         
         createMap(result="#{requestScope.stAttrs}");
         mapPut(map="#{requestScope.stAttrs}" key="standaloneonly" value="true" );
-        gf.callRestAndExtractMsgProps(
-            endpoint="#{sessionScope.REST_URL}/list-instances.xml"
+        gf.restRequest(
+            endpoint="#{sessionScope.REST_URL}/list-instances"
             attrs="#{requestScope.stAttrs}"
             method="GET"
-            keyList="#{pageSession.targetList}");
-
+            result="#{pageSession.restMap}");         
+         gf.getPropertiesList(listProps="#{pageSession.restMap.data.children}" keyList="#{pageSession.targetList}");
+         
          gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.clusterList}");
          listAdd(list="#{pageSession.targetList}", value="server" index="0");
 
@@ -69,7 +70,7 @@
             if (#{pageSession.setDefaultTarget}){
                 setPageSessionAttribute(key="selectedTargets" value=["server"] );
                 #setPageSessionAttribute(key="selectedTargets" value=[] );
-            }
+        }
         }
 
         gf.convertListToOptionArray(list="#{pageSession.targetList}", optionArray="#{pageSession.availableTargets}");

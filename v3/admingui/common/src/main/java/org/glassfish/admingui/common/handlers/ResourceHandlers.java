@@ -44,7 +44,9 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.TargetUtil;
 
 
 /**
@@ -68,22 +70,23 @@ public class ResourceHandlers {
         List<Map> rows = (List) handlerCtx.getInputValue("rows");
         String resourceRefEndPoint = (String) handlerCtx.getInputValue("endpoint");
         for (Map oneRow : rows) {
-            String enabled = (String) oneRow.get("enabled");
             String name = (String) oneRow.get("encodedName");
             String endpoint = resourceRefEndPoint + "/" +name;
             if (! RestApiHandlers.get(endpoint).isSuccess()){
                 continue;            //The resource is only created on domain, no source-ref exists.
             }
-            if (enabled == null){
-                continue;   //this should never happen.
+            String enabledStr = DeployUtil.getTargetEnableInfo(name, false, false);
+            List<String> targets = DeployUtil.getApplicationTarget(name, "resource-ref");
+            List<String> targetUrls = new ArrayList<String>();
+            for ( String target : targets) {
+                if(TargetUtil.isCluster(target)) {
+                    targetUrls.add(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+target);
+                } else {
+                    targetUrls.add(GuiUtil.getSessionValue("REST_URL")+"/servers/server/"+target);
+                }
             }
-            Map<String,Object> attrMp = RestApiHandlers.getEntityAttrs(endpoint, "entity");
-            String refStatus = (String) attrMp.get("enabled");
-            if (refStatus.equals("true")){
-                    oneRow.put("enabled", enabled);   //depend on the resource itself.
-            }else{
-                    oneRow.put("enabled", false);
-            }            
+            oneRow.put("targetUrls", targetUrls);
+            oneRow.put("enabled", enabledStr);
         }
         handlerCtx.setOutputValue("result", rows);
     }

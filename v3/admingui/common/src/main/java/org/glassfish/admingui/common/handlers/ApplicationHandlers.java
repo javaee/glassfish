@@ -103,7 +103,7 @@ public class ApplicationHandlers {
             HashMap oneRow = new HashMap();
             oneRow.put("name", oneAppName);
             oneRow.put("selected", false);
-            oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(oneAppName, true));
+            oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(oneAppName, true, true));
             oneRow.put("sniffers", engines);
 
             List sniffersList = GuiUtil.parseStringList(engines, ",");
@@ -186,7 +186,7 @@ public class ApplicationHandlers {
             @HandlerOutput(name = "result", type = java.util.List.class)})
     public static void getApplicationTarget(HandlerContext handlerCtx) {
         String appName = (String) handlerCtx.getInputValue("appName");
-        handlerCtx.setOutputValue( "result", DeployUtil.getApplicationTarget(appName));
+        handlerCtx.setOutputValue( "result", DeployUtil.getApplicationTarget(appName, "application-ref"));
     }
 
 
@@ -230,7 +230,7 @@ public class ApplicationHandlers {
 
         Map attrs = new HashMap();
         attrs.put("ref", appName);
-        List<String> associatedTargets = DeployUtil.getApplicationTarget(appName);
+        List<String> associatedTargets = DeployUtil.getApplicationTarget(appName, "application-ref");
         for(String newTarget :  selectedTargets){
             String endpoint;
             if (associatedTargets.contains(newTarget)){
@@ -276,13 +276,18 @@ public class ApplicationHandlers {
 
    @Handler(id = "gf.getTargetEnableInfo",
         input = {
-            @HandlerInput(name = "appName", type = String.class, required = true)
+            @HandlerInput(name = "appName", type = String.class, required = true),
+            @HandlerInput(name = "isApp", type = Boolean.class)
         },
         output = {
             @HandlerOutput(name = "status", type = String.class)})
     public static void getTargetEnableInfo(HandlerContext handlerCtx) {
         String appName = (String) handlerCtx.getInputValue("appName");
-        handlerCtx.setOutputValue("status", DeployUtil.getTargetEnableInfo(appName, false));
+        Boolean isApp = (Boolean) handlerCtx.getInputValue("isApp");
+        if(isApp == null) {
+            isApp = true;
+        }
+        handlerCtx.setOutputValue("status", DeployUtil.getTargetEnableInfo(appName, false, isApp));
     }
 
    @Handler(id = "getVsForDeployment",
@@ -312,7 +317,7 @@ public class ApplicationHandlers {
         List clusters = TargetUtil.getClusters();
         List standalone = TargetUtil.getStandaloneInstances();
         standalone.add("server");
-        List<String> targetList = DeployUtil.getApplicationTarget(appName);
+        List<String> targetList = DeployUtil.getApplicationTarget(appName, "application-ref");
         List result = new ArrayList();
         Map attrs = null;
         String endpoint="";

@@ -242,6 +242,28 @@ public class UtilHandlers {
     }
 
     /**
+     *	<p> Returns the keys  </p>
+     *
+     *  <p> Input value: "Map" -- Type: <code>java.util.Map</code>
+     *  <p> Output value: "Keys" -- Type: <code>Object</code></p>
+     *	@param	handlerCtx	The HandlerContext.
+     */
+    @Handler(id="gf.getMapKeys",
+    	input={
+	    @HandlerInput(name="Map", type=Map.class, required=true)},
+        output={
+            @HandlerOutput(name="Keys", type=List.class)})
+    public static void getMapKeys(HandlerContext handlerCtx) {
+        Map map = (Map) handlerCtx.getInputValue("Map");
+        List keyList = new ArrayList();
+        if (map == null) {
+            map = new HashMap();
+        }
+        keyList.addAll(map.keySet());
+        handlerCtx.setOutputValue("Keys", keyList);
+    }
+
+    /**
      * <p> Adds the given value to a <code>List</code></p>
      * <p> Input value: "list" -- Type: <code>java.util.List</code>
      * <p> Input value: "value" -- Type: <code>java.lang.Object</code>
@@ -258,6 +280,9 @@ public class UtilHandlers {
     public static void listAdd(HandlerContext handlerCtx) {
 
         List list = (List)handlerCtx.getInputValue("list");
+        if (list == null) {
+            list = new ArrayList();
+        }
         Integer index = (Integer)handlerCtx.getInputValue("index");
         if (index == null)
                 list.add(handlerCtx.getInputValue("value"));
@@ -284,8 +309,11 @@ public class UtilHandlers {
     public static void listCombine(HandlerContext handlerCtx) {
         List list = (List)handlerCtx.getInputValue("list");
         List list2 = (List)handlerCtx.getInputValue("list2");
-        if (list == null || list2 == null){
-            return;
+        if (list == null) {
+            list = new ArrayList();
+            if (list2 == null) {
+                return;
+            }
         }
         for(Object one : list2) {
                 list.add(one);

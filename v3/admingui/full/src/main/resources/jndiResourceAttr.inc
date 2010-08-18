@@ -110,6 +110,14 @@
             />
             </sun:checkbox>
        </sun:property>
+       <sun:property id="statusProp2" rendered="#{useString}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"
+            label="$resource{i18n.common.status}" helpText="$resource{i18n.application.EnableTargetHelp}">
+            <sun:staticText  id="enabledStr" text="#{requestScope.enabledString}" >
+                <!beforeCreate
+                    gf.getTargetEnableInfo(appName="#{pageSession.encodedName}" isApp="#{false}" status="#{requestScope.enabledString}");
+                />
+           </sun:staticText>
+       </sun:property>
         "<br /><br />
     </sun:propertySheetSection>
 </sun:propertySheet>  

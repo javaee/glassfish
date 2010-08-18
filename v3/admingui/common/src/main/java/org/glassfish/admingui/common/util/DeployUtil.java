@@ -53,6 +53,7 @@ import org.glassfish.deployment.client.DFDeploymentProperties;
 
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.net.URI;
+import java.net.URLDecoder;
 import javax.enterprise.deploy.spi.Target;
 import org.glassfish.admingui.common.handlers.RestApiHandlers;
 /**
@@ -161,13 +162,14 @@ public class DeployUtil {
     }
 
     //This method returns the list of targets (clusters and standalone instances) of any deployed application
-    static public List getApplicationTarget(String appName){
+    static public List getApplicationTarget(String appName, String ref){
         List targets = new ArrayList();
         try{
             //check if any cluster has this application-ref
-            List<String> clusters = RestApiHandlers.getChildList(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster");
+            List<String> clusters = TargetUtil.getClusters();
             for(String oneCluster:  clusters){
-                List appRefs = RestApiHandlers.getChildList(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+oneCluster+"/application-ref");
+                List appRefs = new ArrayList(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+oneCluster+"/"+ref).keySet());
+
                 if (appRefs.contains(appName)){
                     targets.add(oneCluster);
                 }
@@ -175,7 +177,7 @@ public class DeployUtil {
             List<String> servers = TargetUtil.getStandaloneInstances();
             servers.add("server");
             for(String oneServer:  servers){
-                List appRefs = RestApiHandlers.getChildList(GuiUtil.getSessionValue("REST_URL")+"/servers/server/"+oneServer+"/application-ref");
+                List appRefs = new ArrayList(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + oneServer + "/" + ref).keySet());
                 if (appRefs.contains(appName)){
                     targets.add(oneServer);
                 }
@@ -187,37 +189,46 @@ public class DeployUtil {
         return targets;
     }
 
-    public static String getTargetEnableInfo(String appName, boolean useImage){
+    public static String getTargetEnableInfo(String appName, boolean useImage, boolean isApp){
         String prefix = (String) GuiUtil.getSessionValue("REST_URL");
         List clusters = TargetUtil.getClusters();
         List standalone = TargetUtil.getStandaloneInstances();
         String enabled = "true";
         int numEnabled = 0;
         int numDisabled = 0;
+        String ref = "application-ref";
+        if (!isApp) {
+            ref = "resource-ref";
+        }
         if (clusters.isEmpty() && standalone.isEmpty()){
             //just return Enabled or not.
-            enabled = (String)RestApiHandlers.getAttributesMap(prefix  +"/servers/server/server/application-ref/"+appName).get("enabled");
+            enabled = (String)RestApiHandlers.getAttributesMap(prefix  +"/servers/server/server/"+ref+"/"+appName).get("enabled");
             if (useImage){
                 return (Boolean.parseBoolean(enabled))? "/resource/images/enabled.png" : "/resource/images/disabled.png";
             }else{
                 return enabled;
             }
         }
-        standalone.add("server");  
-        List<String> targetList = getApplicationTarget(appName);
-        for(String oneTarget : targetList){
-            if (clusters.contains(oneTarget)){
-                enabled = (String)RestApiHandlers.getAttributesMap(prefix  +"/clusters/cluster/" + oneTarget + "/application-ref/" + appName).get("enabled");
-            }else{
-                enabled = (String)RestApiHandlers.getAttributesMap(prefix  +"/servers/server/" + oneTarget + "/application-ref/" + appName).get("enabled");
+        standalone.add("server");        
+        List<String> targetList = new ArrayList<String> ();
+        try {
+            targetList = getApplicationTarget(URLDecoder.decode(appName, "UTF-8"), ref);
+        } catch (Exception ex) {
+            //ignore
+        }
+        for (String oneTarget : targetList) {
+            if (clusters.contains(oneTarget)) {
+                enabled = (String) RestApiHandlers.getAttributesMap(prefix + "/clusters/cluster/" + oneTarget + "/" + ref + "/" + appName).get("enabled");
+            } else {
+                enabled = (String) RestApiHandlers.getAttributesMap(prefix + "/servers/server/" + oneTarget + "/" + ref + "/" + appName).get("enabled");
             }
-            if (Boolean.parseBoolean(enabled)){
+            if (Boolean.parseBoolean(enabled)) {
                 numEnabled++;
-            }else{
+            } else {
                 numDisabled++;
             }
         }
-        
+                
         int numTargets = targetList.size();
         if (numEnabled == numTargets){
             return GuiUtil.getMessage("deploy.allEnabled");

@@ -58,9 +58,9 @@
             />
     </sun:tableColumn>    
 
-    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colJndiName}" sort="jndiName" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.jndiName}" 
-            url="#{pageSession.editLink}?name=#{td.value.jndiName}" />
+    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colJndiName}" sort="name" rowHeader="$boolean{true}" id="col1">
+        <sun:hyperlink id="link" text="#{td.value.name}"
+            url="#{pageSession.editLink}?name=#{td.value.name}" />
     </sun:tableColumn>
 
     <!--TODO enable when we enable cluster support
@@ -72,8 +72,8 @@
         <staticText id="typeCol" value="#{td.value.enabled}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colResType}" sort="ResType" rendered="#{pageSession.hasResType}"  rowHeader="$boolean{true}" id="coltype">
-        <staticText id="typeCol" rendered="#{pageSession.hasResType}" value="#{td.value.ResType}" />
+    <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colResType}" sort="resType" rendered="#{pageSession.hasResType}"  rowHeader="$boolean{true}" id="coltype">
+        <staticText id="typeCol" rendered="#{pageSession.hasResType}" value="#{td.value.resType}" />
     </sun:tableColumn>
 
     <!-- TODO enable when we enable cluster support

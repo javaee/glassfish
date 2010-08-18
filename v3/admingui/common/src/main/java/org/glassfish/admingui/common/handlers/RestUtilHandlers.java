@@ -120,6 +120,34 @@ public class RestUtilHandlers {
             processProps(props, handlerCtx, id);
     }
 
+    /*
+     * This handler takes the format
+     * [{properites={name="NAME1"}}, {properites={name="NAME2"}}]
+     * It is used in list-instances
+     */
+    @Handler(id = "gf.getPropertiesList",
+        input = {
+            @HandlerInput(name = "listProps", type = List.class, required = true)
+        },
+        output = {
+            @HandlerOutput(name = "keyList", type = List.class)})
+    public static void getPropertiesList(HandlerContext handlerCtx) {
+        //If restRequest() change to output json,  this needs to be changed.
+        List<Map<String, Object>> props = (List<Map<String, Object>>) handlerCtx.getInputValue("listProps");
+        List<String> keyList = getListFromPropertiesList(props);
+        handlerCtx.setOutputValue("keyList", keyList);
+    }
+
+    public static List<String> getListFromPropertiesList(List<Map<String, Object>> props) {
+        List<String> keyList = new ArrayList<String>();
+        if (props != null) {
+            for (Map<String, Object> map : props) {
+                Map<String, String> oneProp = (Map<String, String>) map.get("properties");
+                keyList.add(oneProp.get("name"));
+            }
+        }
+        return keyList;
+    }
 
     public static void processProps(List<Map<String, String>>props, HandlerContext handlerCtx, String... ids){
         List keyList = new ArrayList();

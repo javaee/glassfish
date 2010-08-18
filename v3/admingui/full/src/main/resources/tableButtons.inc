@@ -12,7 +12,7 @@
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", selectedRows="${selectedRows}", id="JndiName");
+            gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", selectedRows="${selectedRows}", id="jndiName");
             gf.redirect(page="#{pageSession.listLink}");
         />
         </sun:button>
@@ -20,8 +20,19 @@
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-	    // FIXME: This uses AMX, convert to REST
-            updateStatus(resType="#{pageSession.childType}", selectedRows="${selectedRows}", enabled="true");
+            // enable the resource for all targets
+            foreach (var="row" list="#{requestScope.selectedRows}") {
+                gf.createAttributeMap(keys={"enabled"} values={"true"} map="#{requestScope.attrMap}");
+                urlencode(value="#{row['name']}" result="#{requestScope.encodedResName}");
+                setAttribute(key="targetUrlsList" value="#{row['targetUrls']}");
+                foreach (var="targetUrl" list="#{requestScope.targetUrlsList}") {
+                    gf.restRequest(
+                        endpoint="#{requestScope.targetUrl}/resource-ref/#{requestScope.encodedResName}"
+                        attrs="#{requestScope.attrMap}"
+                        method="POST"
+                        result="#{requestScope.foo}");
+                }
+            }
             setAttribute(key="selectedRows" value="${selectedRows}");
             gf.redirect(page="#{pageSession.listLink}");
         />
@@ -30,8 +41,19 @@
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-	    // FIXME: This uses AMX, convert to REST
-            updateStatus(resType="#{pageSession.childType}", selectedRows="${selectedRows}", enabled="false");
+            // disable the resource for all targets
+            foreach (var="row" list="#{requestScope.selectedRows}") {
+                gf.createAttributeMap(keys={"enabled"} values={"false"} map="#{requestScope.attrMap}");
+                urlencode(value="#{row['name']}" result="#{requestScope.encodedResName}");
+                setAttribute(key="targetUrlsList" value="#{row['targetUrls']}");
+                foreach (var="targetUrl" list="#{requestScope.targetUrlsList}") {
+                    gf.restRequest(
+                        endpoint="#{requestScope.targetUrl}/resource-ref/#{requestScope.encodedResName}"
+                        attrs="#{requestScope.attrMap}"
+                        method="POST"
+                        result="#{requestScope.foo}");
+                }
+            }
             setAttribute(key="selectedRows" value="${selectedRows}");
             gf.redirect(page="#{pageSession.listLink}");
         />

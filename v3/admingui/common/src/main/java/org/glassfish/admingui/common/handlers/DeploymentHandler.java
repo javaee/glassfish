@@ -269,7 +269,7 @@ public class DeploymentHandler {
         for (int i = 0; i < selectedRows.size(); i++) {
             Map oneRow = (Map) selectedRows.get(i);
             String appName = (String) oneRow.get("name");
-            List targets = DeployUtil.getApplicationTarget(appName);
+            List targets = DeployUtil.getApplicationTarget(appName, "application-ref");
             if (targets.isEmpty()){
                 targets.add("domain");
             }
