@@ -240,7 +240,7 @@ public class TableHandlers {
         @HandlerInput(name="NameList", type=List.class),
         @HandlerInput(name="HasSelected", type=Boolean.class),
         @HandlerInput(name="DefaultValueList", type=List.class)} )
-        public static void addRowToTable(HandlerContext handlerCtx) {
+    public static void addRowToTable(HandlerContext handlerCtx) {
         TableRowGroup trg = (TableRowGroup)handlerCtx.getInputValue("TableRowGroup");
         List names = (List)handlerCtx.getInputValue("NameList");
         List defaults = (List)handlerCtx.getInputValue("DefaultValueList");
@@ -248,52 +248,66 @@ public class TableHandlers {
         MultipleListDataProvider dp = (MultipleListDataProvider)trg.getSourceData();
         List data = dp.getLists();
         ListIterator li = data.listIterator();
-        while(li.hasNext()) {
-            List list = (List)li.next();
-            Map map = new HashMap<String, Object>();
-            if(defaults != null && names != null) {
-               if(names.size() == defaults.size()) {
-                ListIterator ni = names.listIterator();
-                ListIterator dv = defaults.listIterator();
-                while(ni.hasNext() && dv.hasNext()) {
-                    String name = (String)ni.next();
-                    String value = (String)dv.next();
-                    map.put(name, value);
-                } 
-                
-               } else {
-                    ListIterator ni = names.listIterator();
-                    while(ni.hasNext()) {
-                    String name = (String)ni.next();
-                    map.put(name, "");
-                }
-            } 
-            }
-            if( names != null && defaults == null) {
-                ListIterator ni = names.listIterator();
-                while(ni.hasNext()) {
-                    String name = (String)ni.next();
-                    map.put(name, "");
-                }
-            }
-            if(names == null && defaults == null) {
+        if (li.hasNext()) {
+	    // Get the first List and create a new Map to represent the row
+            List list = (List) li.next();
+            Map<String, Object> map = new HashMap<String, Object>();
+	    if (names != null) {
+		// Fill it up...
+		if (defaults != null) {
+		    if (names.size() != defaults.size()) {
+			throw new IllegalArgumentException("NameList.size("
+			    + names.size()
+			    + ") does not match DefaultValueList.size("
+			    + defaults.size() + ")!");
+		    }
+		    ListIterator ni = names.listIterator();
+		    ListIterator dv = defaults.listIterator();
+		    while (ni.hasNext() && dv.hasNext()) {
+			String name = (String) ni.next();
+			String value = (String) dv.next();
+			map.put(name, value);
+		    }
+		} else {
+		    ListIterator ni = names.listIterator();
+		    while(ni.hasNext()) {
+			String name = (String) ni.next();
+			map.put(name, "");
+		    }
+		}
+	    } else if (defaults == null) {
+		// Use a simple name/value default...
                 map.put("name", "");
                 map.put("value", "");
             }
-            if(hasSelected == null) {
-                    map.put("selected", false);
+	    // Add the Map to the List
+            list.add(0, map);
+
+	    // See if we have more lists of map... if so put selected in it
+	    if (li.hasNext()) {
+		list = (List) li.next();
+		map = new HashMap<String, Object>();
+		list.add(0, map);
+	    }
+
+	    // Add selected column (either to the 1st or 2nd map)
+            if (hasSelected == null) {
+		map.put("selected", false);
             } else {
-                if(hasSelected.booleanValue()) {
+                if (hasSelected.booleanValue()) {
                     map.put("selected", false);
                 }
-            } 
-                 
-            list.add(0, map);
-            
+            }
+
+	    // Add something to the remaining Maps (if any)
+	    while (li.hasNext()) {
+		list = (List) li.next();
+		map = new HashMap<String, Object>();
+		list.add(0, map);
+	    }
         }
-        
-    }  
-    
+    }
+
   /**
      *	<p> This handler converts the table list to arraylist.</p>
      *
