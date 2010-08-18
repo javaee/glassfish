@@ -118,8 +118,8 @@ public class CreateAuthRealm implements AdminCommand {
     private Config config;
     @Inject
     private Domain domain;
-    @Inject
-    private SecurityConfigListener securityListener;
+  //  @Inject
+ //   private SecurityConfigListener securityListener;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -163,10 +163,12 @@ public class CreateAuthRealm implements AdminCommand {
                 AuthRealm newAuthRealm = param.createChild(AuthRealm.class);
                     populateAuthRealmElement(newAuthRealm);                    
                     param.getAuthRealm().add(newAuthRealm);
+                    //temporary fix - since the SecurityConfigListener is  not being called on an realm add.
+                    SecurityConfigListener.authRealmCreated(newAuthRealm);
                     return newAuthRealm;
+                    
                 }
             }, securityService);
-
         } catch(TransactionFailure e) {
             report.setMessage(localStrings.getLocalString("create.auth.realm.fail", 
                     "Creation of Authrealm {0} failed", authRealmName) +
@@ -175,6 +177,7 @@ public class CreateAuthRealm implements AdminCommand {
             report.setFailureCause(e);
             return;
         }
+
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }       
     

@@ -241,7 +241,7 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
      * @throws AdminEventListenerException when the listener is unable to
      *         process the event.
      */
-    public void authRealmCreated(AuthRealm instance){
+    public static void authRealmCreated(AuthRealm instance){
         try {
             createRealm(instance);
         } catch (Exception ex) {
@@ -256,7 +256,7 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
      * @throws AdminEventListenerException when the listener is unable to
      *         process the event.
      */
-    public void authRealmDeleted(AuthRealm instance) {
+    public static void authRealmDeleted(AuthRealm instance) {
         try {
             
             Realm.unloadInstance(instance.getName());
@@ -288,7 +288,7 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
      * @exception for instance, BadRealmException, ConfigException,
      *            SynchronizationException
      */
-    private void createRealm(AuthRealm authRealm) throws Exception {
+    private static void createRealm(AuthRealm authRealm) throws Exception {
         //authRealm cannot be null here
         String className = authRealm.getClassname();
         List<Property> elementProps = authRealm.getProperty();
@@ -297,11 +297,6 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
             for (Property p : elementProps) {
                 props.setProperty(p.getName(), p.getValue());
             }
-        }
-        if ("com.sun.enterprise.security.auth.realm.file.FileRealm".equals(className)) {
-            SecuritySupport secSupp = Globals.getDefaultHabitat().getByContract(SecuritySupport.class);
-            //TODO:V3:Cluster for EE/cluster we really need to FIXME
-            secSupp.synchronizeKeyFile((Object) null, authRealm.getName());
         }
         Realm.instantiate(authRealm.getName(), className, props);
         Configuration.getConfiguration().refresh();

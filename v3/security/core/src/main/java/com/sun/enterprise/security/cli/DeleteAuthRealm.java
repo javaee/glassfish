@@ -95,8 +95,8 @@ public class DeleteAuthRealm implements AdminCommand {
     private Config config;
     @Inject
     private Domain domain;
-    @Inject
-    private SecurityConfigListener securityListener;
+   // @Inject
+   // private SecurityConfigListener securityListener;
 
     AuthRealm authRealm = null;
     
@@ -137,6 +137,8 @@ public class DeleteAuthRealm implements AdminCommand {
                 public Object run(SecurityService param) 
                 throws PropertyVetoException, TransactionFailure {
                     param.getAuthRealm().remove(authRealm);
+                    //temporary fix - since the SecurityConfigListener is  not being called on an realm delete.
+                    SecurityConfigListener.authRealmDeleted(authRealm);
                     return null;
                 }
             }, securityService);
