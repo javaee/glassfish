@@ -60,7 +60,8 @@
             gf.restRequest(endpoint="#{pageSession.selfUrl}", method="get", result="#{pageSession.result}");
             setPageSessionAttribute(key="valueMap", value="#{pageSession.result.data.extraProperties.entity}");
 
-            getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+            gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="GET", result="#{requestScope.propTable}");
+            setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.properties}");
 
             setPageSessionAttribute(key="edit" value="#{true}" );
             setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
@@ -145,7 +146,7 @@
                             "<br /><br />
                         </sun:propertySheetSection>
                     </sun:propertySheet>    
-#include "/common/shared/propertyTable.inc"
+#include "/common/shared/propertyDescTable.inc"
                 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{helpjms.jmsService}" />
             </sun:form>
