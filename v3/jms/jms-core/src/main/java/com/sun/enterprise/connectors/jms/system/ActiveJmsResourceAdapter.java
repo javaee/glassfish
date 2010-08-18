@@ -69,6 +69,7 @@ import java.util.StringTokenizer;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.StringWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
@@ -731,7 +732,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             String brokerType = adjustForDirectMode(getJmsService().getType());
 
             String brokerPort = jmsHost.getPort();
-        brkrPort = brokerPort;
+            brkrPort = brokerPort;
             String adminUserName = jmsHost.getAdminUserName();
             String adminPassword = jmsHost.getAdminPassword();
             List jmsHostProps= getJmsService().getProperty();
@@ -764,11 +765,24 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             String brokerArgs = tmpString;
 
 
-            //XXX: Extract the information from the optional properties.
-           // ElementProperty[] jmsProperties =    jmsService.getProperty();
-
+            //XX: Extract the information from the optional properties.
+           List jmsProperties =    getJmsService().getProperty();
+	   List jmsHostProperties = jmsHost.getProperty();
+	   Properties jmsServiceProp = listToProperties(jmsProperties);
+	   Properties jmsHostProp = listToProperties (jmsHostProperties);
+	   jmsServiceProp.putAll(jmsHostProp);
+	   
+	   String jmsPropertiesStr =  null ;
+	   if(jmsServiceProp.size() > 0)
+	   {
+	     try{
+	   	StringWriter writer = new StringWriter();
+	   	jmsServiceProp.store(writer, "Properties defined in JMSService and JMSHost");
+	   	jmsPropertiesStr =  writer.toString();
+	     }catch(Exception e){}//todo: log error;
+	   } 
             String brokerHomeDir = getBrokerHomeDir();
-        String brokerLibDir = getBrokerLibDir();
+            String brokerLibDir = getBrokerLibDir();
             if (brokerInstanceName == null) {
                 brokerInstanceName = getBrokerInstanceName(getJmsService());
             }
@@ -780,6 +794,11 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             //BrokerArgs, BrokerHomeDir, BrokerVarDir, BrokerStartTimeout
             //adminUserName, adminPassword
             ConnectorDescriptor cd = getDescriptor();
+	    if(jmsPropertiesStr != null){
+            	ConnectorConfigProperty  envProp = new ConnectorConfigProperty  (
+                    "BrokerProps", jmsPropertiesStr, "Broker Props", "java.lang.String");
+            	setProperty(cd, envProp);
+	    }
             ConnectorConfigProperty  envProp1 = new ConnectorConfigProperty  (
                     BROKERTYPE, brokerType, "Broker Type", "java.lang.String");
             setProperty(cd, envProp1);
@@ -850,6 +869,19 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         //BrokerBindAddress, RmiRegistryPort
     }
 
+   private Properties listToProperties(List<Property> props){
+	Properties properties = new Properties();   
+	if(props != null){
+		for (Property prop : props){
+			String key = prop.getName();
+			String value = prop.getValue();
+
+			properties.setProperty(key, value);
+		}
+	}
+
+	return properties;
+   }	   
     private String getAdminPassFilePath(String adminPassword) {
         try {
             mqPassFile = File.createTempFile(MQ_PASS_FILE_PREFIX,null);
