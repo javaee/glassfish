@@ -369,7 +369,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 String accept = req.getHeader("Accept");
                 if (accept != null) {
                     if (accept.indexOf("html") != -1) {//html is possible so get it...
-                        type = "html";
+                        return "html";
                     }
                     StringTokenizer st = new StringTokenizer(accept, ",");
                     while (st.hasMoreElements()) {
