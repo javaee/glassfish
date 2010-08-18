@@ -81,7 +81,6 @@
 
 
 
-            String installMode = ConfigHelper.getValue("InstallType.Option.CONFIGURATION_MODE");
 
             /**
              * This method checks if the installhome path specified refers to the root
@@ -239,72 +238,7 @@
              * make sure directory is suitable
              */
 
-            if (!installMode.equals("CONFIG_ONLY")) {
-            if (theInstallHomeDir.exists() && theInstallHomeDir.isDirectory()){
-              if (!theInstallHomeDir.canWrite()) {
-                /**
-                 * TODO: Right approach would be to pop up a dialog box (gui)/or just display a
-                 * text message (cli) and give the user chance to select another install home
-                 * instead of throwing the exception. Only in silent mode the installer should
-                 * die silently.
-                 */
-
-                throw new EnhancedException("INSTALL_HOME_NOT_WRITEABLE", null,
-                  new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
-              }
-              else {
-                // If it is writable, then check if it is not empty.
-                     String[] files = theInstallHomeDir.list();
-                     if (files.length > 0) {
-                   throw new EnhancedException("INSTALL_HOME_NOT_EMPTY", null,
-                        new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
-
-                      }
-              }
-            } else {
-                /**
-                 * InstallHome directory does not exists. So, create one.
-                 */
-                if (!theInstallHomeDir.mkdirs()) {
-                  throw new EnhancedException ("CANNOT_CREATE_INSTALLHOME_DIRECTORY", null,
-                    new String[] {"dir=" + theInstallHomeDir.getAbsolutePath()});
-                }
-            }
-            }
-            else {
-            /* Perform validations for Config only installs. */
-            if (theInstallHomeDir.exists() && theInstallHomeDir.isDirectory()){
-              if (!theInstallHomeDir.canWrite()) {
-                /**
-                 * TODO: Right approach would be to pop up a dialog box (gui)/or just display a
-                 * text message (cli) and give the user chance to select another install home
-                 * instead of throwing the exception. Only in silent mode the installer should
-                 * die silently.
-                 */
-                throw new EnhancedException("INSTALL_HOME_NOT_GLASSFISH", null,
-                  new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
-              }
-              else {
-                /* Validate for GlassFish installation. */
-                    String installMode = (String)ConfigHelper.getUnconfirmedValue
-                            ("InstallType.Option.CONFIGURATION_MODE");
-               // Check if this is the GlassFish directory.
-                    if (!GlassFishUtils.isGlassFishInstalledHere(aInstallHomePath)) {
-                        throw new EnhancedException("INSTALL_HOME_NOT_GLASSFISH", null,
-                  new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
-                  }
-                }
-
-            } else {
-                /**
-                 * InstallHome directory does not exists. So, create one.
-                 */
-                 throw new EnhancedException("INSTALL_HOME_NOT_GLASSFISH", null,
-                  new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
-            }
-            } /* end for Config only install validation.
-     
-            /**
+                       /**
              * Set up SIMS to point to the right place.  SIMS needs to know the
              * altroot, and the domain name.  The altroot is setup during Orchestrator,
              * but the InstallHome is not known until now, so set that as SIMS' Domain Home.
@@ -371,6 +305,66 @@
             /* Find out what kind of an operation it is */
             gOpType = theProdMap.getOperation();
             if (gOpType == Operation.OPTYPE.INSTALL) {
+		/*
+	System.out.println("Here...");
+            String installMode = ConfigHelper.getValue("InstallType.Option.CONFIGURATION_MODE");
+			 if (!installMode.equals("CONFIG_ONLY")) {
+            if (theInstallHomeDir.exists() && theInstallHomeDir.isDirectory()){
+              if (!theInstallHomeDir.canWrite()) {
+                 * TODO: Right approach would be to pop up a dialog box (gui)/or just display a
+                 * text message (cli) and give the user chance to select another install home
+                 * instead of throwing the exception. Only in silent mode the installer should
+                 * die silently.
+                throw new EnhancedException("INSTALL_HOME_NOT_WRITEABLE", null,
+                  new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
+              }
+              else {
+                 If it is writable, then check if it is not empty.
+                     String[] files = theInstallHomeDir.list();
+                     if (files.length > 0) {
+                   throw new EnhancedException("INSTALL_HOME_NOT_EMPTY", null,
+                        new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
+
+                      }
+              }
+            } else {
+		
+                 * InstallHome directory does not exists. So, create one.
+                if (!theInstallHomeDir.mkdirs()) {
+                  throw new EnhancedException ("CANNOT_CREATE_INSTALLHOME_DIRECTORY", null,
+                    new String[] {"dir=" + theInstallHomeDir.getAbsolutePath()});
+                }
+            }
+            }
+            else {
+            if (theInstallHomeDir.exists() && theInstallHomeDir.isDirectory()){
+              if (!theInstallHomeDir.canWrite()) {
+                 * TODO: Right approach would be to pop up a dialog box (gui)/or just display a
+                 * text message (cli) and give the user chance to select another install home
+                 * instead of throwing the exception. Only in silent mode the installer should
+                 * die silently.
+                throw new EnhancedException("INSTALL_HOME_NOT_GLASSFISH", null,
+                  new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
+              }
+              else {
+                    String installMode = (String)ConfigHelper.getUnconfirmedValue
+                            ("InstallType.Option.CONFIGURATION_MODE");
+                Check if this is the GlassFish directory.
+                    if (!GlassFishUtils.isGlassFishInstalledHere(aInstallHomePath)) {
+                        throw new EnhancedException("INSTALL_HOME_NOT_GLASSFISH", null,
+                  new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
+                  }
+                }
+
+            } else {
+                 * InstallHome directory does not exists. So, create one.
+                 throw new EnhancedException("INSTALL_HOME_NOT_GLASSFISH", null,
+                  new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
+            }
+            } end for Config only install validation.
+	*/
+     
+
 		// Add all the defaults.
               List theActiveModesList = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
               theActiveModesList.add("DO_NOT_SHOW_UPGRADE");
