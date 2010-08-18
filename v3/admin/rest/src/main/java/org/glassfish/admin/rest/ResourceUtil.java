@@ -841,6 +841,10 @@ public class ResourceUtil {
                 try {
                     Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
                     List<ConfigModel> lcm = dom.document.getAllModelsImplementing(subType);
+                    if (lcm == null) { //https://glassfish.dev.java.net/issues/show_bug.cgi?id=12654
+                        lcm = new ArrayList<ConfigModel>();
+                        lcm.add(childModel);
+                    }
                     Collections.sort(lcm, new ConfigModelComparator());
                     if (lcm != null) {
                         for (ConfigModel cmodel : lcm) {
